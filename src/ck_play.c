@@ -40,6 +40,26 @@ bool ck_demoEnabled;
 
 CK_GameState ck_gameState;
 
+
+void CK_DebugMemory()
+{
+	US_CenterWindow(16,10);
+
+	US_CPrint("Memory Usage:");
+	US_CPrint("-------------");
+	US_PrintF("In Use      : %dk", MM_UsedMemory()/1024);
+	US_PrintF("Blocks      : %d", MM_UsedBlocks());
+	US_PrintF("Purgable    : %d", MM_PurgableBlocks());
+	US_PrintF("GFX Mem Used: %dk", VL_MemUsed()/1024);
+	US_PrintF("GFX Surfaces: %d", VL_NumSurfaces());
+	VL_Present();
+	IN_WaitKey();
+	//MM_ShowMemory();
+}
+
+
+
+
 void CK_SetTicsPerFrame()
 {
 	if (!ck_demoEnabled)
@@ -323,6 +343,23 @@ void hackdraw(CK_object *me)
 	RF_AddSpriteDraw(&(me->sde),(150 << 4),(100 << 4),121,false,0);
 }
 
+void CK_DebugKeys()
+{
+	if(IN_GetKeyState(IN_SC_M))
+	{
+		CK_DebugMemory();
+	}
+}
+
+// Check non-game keys
+void CK_CheckKeys()
+{
+	if(IN_GetKeyState(IN_SC_F10))
+	{
+		CK_DebugKeys();
+	}
+}
+
 IN_ControlFrame ck_inputFrame;
 
 void CK_HandleInput()
@@ -337,6 +374,8 @@ void CK_HandleInput()
 
 	if (!ck_keenState.jumpIsPressed) ck_keenState.jumpWasPressed = false;
 	if (!ck_keenState.pogoIsPressed) ck_keenState.pogoWasPressed = false;
+
+	CK_CheckKeys();
 
 }
 

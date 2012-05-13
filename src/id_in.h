@@ -120,6 +120,7 @@ typedef struct IN_ControlFrame
 } IN_ControlFrame;
 
 void IN_PumpEvents();
+void IN_WaitKey();
 bool IN_GetKeyState(IN_ScanCode scanCode);
 void IN_Startup();
 void IN_DemoStartPlaying(uint8_t *data, int len);

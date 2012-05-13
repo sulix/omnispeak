@@ -188,6 +188,21 @@ void MM_SetLock(mm_ptr_t *ptr, bool lock)
 	blk->locked = lock;
 }
 
+int MM_UsedMemory()
+{
+	return mm_memused;
+}
+
+int MM_UsedBlocks()
+{
+	return mm_blocksused;
+}
+
+int MM_PurgableBlocks()
+{
+	return mm_numpurgeable;
+}
+
 void MM_SortMem()
 {
 	//We're not actually sorting memory, as we just handball

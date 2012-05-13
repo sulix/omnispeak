@@ -127,6 +127,17 @@ void IN_PumpEvents()
 		INL_HandleSDLEvent(&event);
 }
 
+void IN_WaitKey()
+{
+	SDL_Event event;
+	while (SDL_WaitEvent(&event))
+	{
+		INL_HandleSDLEvent(&event);
+		if(event.type == SDL_KEYDOWN)
+			break;
+	}
+}
+
 bool IN_GetKeyState(IN_ScanCode scanCode)
 {
 	return in_keyStates[scanCode];

@@ -6,6 +6,7 @@
 #define max(a,b) (((a) < (b))?(b):(a))
 #define min(a,b) (((a) < (b))?(a):(b))
 
+static int vl_memused, vl_numsurfaces;
 
 typedef struct VL_EGAPaletteEntry
 {
@@ -233,16 +234,31 @@ void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 
 static SDL_Surface *vl_screen;
 
+int VL_MemUsed()
+{
+	return vl_memused;
+}
+
+int VL_NumSurfaces()
+{
+	return vl_numsurfaces;
+}
+
 void VL_InitScreen()
 {
 	SDL_Init(SDL_INIT_VIDEO);
+	vl_memused = 0;
+	vl_numsurfaces = 1;
 	vl_screen = SDL_SetVideoMode(320,200,32,0);
+	vl_memused += 320*200*4; //320x200x32bit
 }
 
 void *VL_CreateSurface(int w, int h)
 {
 	//TODO: Big-endian support and Optimize flags (alpha is rarely needed)
 	SDL_Surface *s = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA, w, h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+	vl_memused += w*h*4;
+	vl_numsurfaces++;
 	return s;
 }
 

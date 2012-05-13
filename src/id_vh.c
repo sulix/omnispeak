@@ -106,7 +106,7 @@ void VH_MeasureString(const char *string, int *width, int *height, VH_Font *fnt)
 
 	for (*width = 0; *string; string++)
 	{
-		width += fnt->width[*string];
+		*width += fnt->width[*string];
 	}
 }
 

@@ -12,6 +12,10 @@ void VL_MaskedBlitClipToRGB(void *src,void *dest, int x, int y, int pitch, int w
 void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 
+
+int VL_MemUsed();
+int VL_NumSurfaces();
+
 void VL_InitScreen();
 void *VL_CreateSurface(int w, int h);
 void VL_SurfaceRect(void *dst, int x, int y, int w, int h, int colour);

@@ -19,6 +19,9 @@ void MM_SortMem (void);
 
 void MM_ShowMemory (void);
 
+int MM_UsedMemory();
+int MM_UsedBlocks();
+int MM_PurgableBlocks();
 long MM_UnusedMemory (void);
 long MM_TotalFree (void);
 

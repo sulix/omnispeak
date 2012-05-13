@@ -2,6 +2,8 @@
 #include "id_vl.h"
 #include "id_ca.h"
 
+#include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <stdbool.h>
 
@@ -52,10 +54,54 @@ void US_Print(const char *str)
 		}
 		else
 		{
-			us_printX += w;
+			us_printY += h;
 			break;
 		}
 	}
+}
+
+void US_PrintF(const char *str, ...)
+{
+	char buf[256];
+	va_list args;
+	va_start(args, str);
+	vsprintf(buf, str, args);
+	va_end(args);
+	US_Print(buf);
+}
+
+void US_CPrintLine(const char *str)
+{
+	int w, h;
+	CA_CacheGrChunk(3);
+	VH_MeasurePropString(str, &w, &h, 3);
+	if (w < us_windowW)
+	{
+		int x = us_windowX + ((us_windowW - w)/2);
+		printf("US_CPrintLine(): Window W: %d, X: %d, x = %d, w = %d.\n",us_windowW, us_windowX, x, w);
+		VH_DrawPropString(str, x, us_printY, 3, 0);
+		us_printY += h;
+	}
+	else
+	{
+		Quit("US_CPrintLine() - String exceeds width");
+	}
+}
+
+void US_CPrint(const char *str)
+{
+	//TODO: Support newlines
+	US_CPrintLine(str);
+}
+
+void US_CPrintF(const char *str, ...)
+{
+	char buf[256];
+	va_list args;
+	va_start(args, str);
+	vsprintf(buf, str, args);
+	va_end(args);
+	US_CPrint(buf);
 }
 
 void US_ClearWindow()
@@ -73,7 +119,7 @@ void US_DrawWindow(int x, int y, int w, int h)
 	us_windowW = w * 8;
 	us_windowH = h * 8;
 
-	//printf("US_DrawWindow: (%d,%d)-(%d,%d)\n", x, y, w, h);
+	printf("US_DrawWindow: (%d,%d)-(%d,%d)\n", x, y, w, h);
 
 	int borderX = us_windowX - 8;
 	int borderY = us_windowY - 8;
