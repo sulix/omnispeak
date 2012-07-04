@@ -4,7 +4,7 @@
 #include "ck_play.h"
 #include "ck_phys.h"
 #include "ck_def.h"
-
+#include "ck_act.h"
 #include <stdio.h>
 
 // Contains some keen-5 specific functions.
@@ -39,6 +39,12 @@ void CK5_PointItem(CK_object *obj)
 	obj->visible = true;
 	if (++obj->gfxChunk == obj->user3)
 		obj->gfxChunk = obj->user2;
+}
+
+void CK5_SetupFunctions()
+{
+	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
+	CK_ACT_AddFunction("CK5_PointItem", &CK5_PointItem);
 }
 
 //TODO: Collision boxes.
@@ -148,7 +154,7 @@ void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
 	obj->user3 = obj->gfxChunk + 2;
 	obj->user4 = CK5_ItemNotifyChunks[itemNumber];
 	//obj->currentAction = &CK_act_item;
-	CK_SetAction(obj, &CK_act_item);
+	CK_SetAction(obj, CK_GetActionByName("CK5_act_item") );
 	CA_CacheGrChunk(obj->gfxChunk);
 	CA_CacheGrChunk(obj->gfxChunk+1);
 	//printf("Adding item %d at (%d, %d)\n", itemNumber, tileX, tileY);

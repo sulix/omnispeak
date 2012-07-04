@@ -4,6 +4,7 @@
 #include "id_rf.h"
 #include "ck_def.h"
 #include "ck_play.h"
+#include "ck_act.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,6 +43,11 @@ int main(int argc, char **argv)
 	CA_CacheGrChunk(ca_gfxInfoE.hdrBitmaps);
 	CA_CacheGrChunk(ca_gfxInfoE.hdrMasked);
 	CA_CacheGrChunk(ca_gfxInfoE.hdrSprites);
+
+	/* Load the actions */
+	CK_ACT_SetupFunctions();
+	CK5_SetupFunctions();
+	CK_ACT_LoadActions("ACTION.CK5");
 
 	if (ch <= 100)
 	{

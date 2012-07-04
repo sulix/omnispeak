@@ -66,7 +66,7 @@ bool CA_WriteFile(char *filename, void *offset, int bufLength)
 	return (amountWritten == bufLength);
 }
 
-bool CA_LoadFile(char *filename, mm_ptr_t *ptr)
+bool CA_LoadFile(char *filename, mm_ptr_t *ptr, int *memsize)
 {
 	FILE *f = fopen(filename, "rb");
 
@@ -77,9 +77,12 @@ bool CA_LoadFile(char *filename, mm_ptr_t *ptr)
 
 	MM_GetPtr(ptr,length);
 
+	if (memsize)
+		*memsize = length;
+
 	int amountRead = fread(*ptr,1, length,f);
 
-	printf("LoadFile: read %d of %d bytes.\n",amountRead,length);
+	printf("LoadFile: read %d of %d bytes from %s.\n",amountRead,length, filename);
 	
 	fclose(f);	
 
@@ -212,10 +215,10 @@ void CAL_CarmackExpand(void *src, void *dest, int expLength)
 
 int CAL_RLEWCompress (void *src, int expLength, void *dest, uint16_t rletag)
 {
-	int compLength;
+	int compLength = 0;
 	uint16_t *srcptr = (uint16_t*)src;
 	uint16_t *dstptr = (uint16_t*)dest-1;
-	uint16_t count;
+	uint16_t count = 0;
 
 	while (expLength)
 	{
@@ -346,12 +349,12 @@ void CAL_SetupGrFile()
 	// Read gfxinfoe for data?
 
 	//Load the ?GADICT
-	CA_LoadFile("EGADICT.CK5", (void**)(&ca_gr_huffdict));
+	CA_LoadFile("EGADICT.CK5", (void**)(&ca_gr_huffdict), 0);
 
 	//CAL_OptimizeNodes(ca_gr_huffdict);
 
 	//Load the ?GAHEAD
-	CA_LoadFile("EGAHEAD.CK5", &ca_graphStarts);
+	CA_LoadFile("EGAHEAD.CK5", &ca_graphStarts, 0);
 
 	FILE *gfxinfoe = fopen("GFXINFOE.CK5","rb");
 	fread(&ca_gfxInfoE, 1, sizeof(ca_gfxinfo), gfxinfoe);
@@ -422,9 +425,9 @@ uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
 extern uint8_t *ti_tileInfo;
 void CAL_SetupMapFile()
 {
-	CA_LoadFile("MAPHEAD.CK5", (void**)(&ca_MapHead));
+	CA_LoadFile("MAPHEAD.CK5", (void**)(&ca_MapHead), 0);
 	ca_GameMaps = fopen("GAMEMAPS.CK5", "rb");
-	CA_LoadFile("TILEINFO.CK5",(void**)(&ti_tileInfo));
+	CA_LoadFile("TILEINFO.CK5",(void**)(&ti_tileInfo), 0);
 }
 
 void CA_CacheMap(int mapIndex)

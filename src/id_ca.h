@@ -11,7 +11,7 @@
 bool CA_ReadFile(char *filename, void *offset);
 bool CA_SafeReadFile(char *filename, void *offset, int bufLength);
 bool CA_WriteFile(char *filename, void *offset, int bufLength);
-bool CA_LoadFile(char *filename, mm_ptr_t *ptr);
+bool CA_LoadFile(char *filename, mm_ptr_t *ptr, int *memsize);
 
 
 

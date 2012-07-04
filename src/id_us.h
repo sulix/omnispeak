@@ -3,8 +3,15 @@
 
 #include <stdbool.h>
 
+/* This keeps clang's static analyzer quiet. */
+#ifdef __GNUC__
+#define _NORETURN __attribute__((noreturn))
+#else
+#define _NORETURN
+#endif
+
 // In ck_quit.c, as it may be customized by individual games.
-void Quit(const char *msg);
+void Quit(const char *msg) _NORETURN;
 
 // id_us_1.c: UI functions
 void US_Print(const char *str);

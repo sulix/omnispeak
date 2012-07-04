@@ -45,7 +45,7 @@ static void MML_ClearBlock()
 		//Is it locked?
 		if (mm_blocks[i].locked) continue;
 
-		if (mm_blocks[i].purgelevel > bestBlock->purgelevel)
+		if (!bestBlock || mm_blocks[i].purgelevel > bestBlock->purgelevel)
 		{
 			bestBlock = &(mm_blocks[i]);
 			continue;
