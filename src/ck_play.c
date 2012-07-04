@@ -7,6 +7,8 @@
 #include "id_rf.h"
 #include "id_vl.h"
 
+#include "ck5_ep.h"
+
 #include <stdio.h> /* For printf() debugging */
 #include <stdlib.h> /* For abs() */
 
@@ -33,7 +35,6 @@ static int ck_activeX1Tile;
 static int ck_activeY1Tile;
 
 
-void CK5_ScanInfoLayer();
 void CK_KeenCheckSpecialTileInfo(CK_object *obj);
 
 bool ck_demoEnabled;

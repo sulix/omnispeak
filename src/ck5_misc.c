@@ -5,13 +5,10 @@
 #include "ck_phys.h"
 #include "ck_def.h"
 #include "ck_act.h"
+#include "ck5_ep.h"
 #include <stdio.h>
 
 // Contains some keen-5 specific functions.
-
-
-void CK5_TurretSpawn(int tileX, int tileY, int direction);
-void CK5_SpawnKorath(int tileX, int tileY);
 
 //StartSprites + 
 int CK5_ItemSpriteChunks[] = 
@@ -40,16 +37,6 @@ void CK5_PointItem(CK_object *obj)
 	if (++obj->gfxChunk == obj->user3)
 		obj->gfxChunk = obj->user2;
 }
-
-void CK5_SetupFunctions()
-{
-	CK5_Obj1_SetupFunctions();
-	CK5_Obj3_SetupFunctions();
-	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
-	CK_ACT_AddFunction("CK5_PointItem", &CK5_PointItem);
-}
-
-//TODO: Collision boxes.
 
 void CK5_BlockPlatform(CK_object *obj)
 {
@@ -132,12 +119,15 @@ void CK5_BlockPlatform(CK_object *obj)
 	obj->visible = true;
 }
 
+void CK5_SetupFunctions()
+{
+	CK5_Obj1_SetupFunctions();
+	CK5_Obj3_SetupFunctions();
+	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
+	CK_ACT_AddFunction("CK5_PointItem", &CK5_PointItem);
+	CK_ACT_AddFunction("CK5_BlockPlatform",&CK5_BlockPlatform);
+}
 
-CK_action CK_act_item2;
-CK_action CK_act_item = {0, 0, AT_UnscaledOnce, 0, 0, 20, 0, 0, &CK5_PointItem, 0,  &CK_BasicDrawFunc1, &CK_act_item2};
-CK_action CK_act_item2 = {0, 0, AT_UnscaledOnce, 0, 0, 20, 0, 0, &CK5_PointItem, 0,  &CK_BasicDrawFunc1, &CK_act_item};
-CK_action CK_act_redBlockPlatform = {446, 446, AT_Frame, 0, 0, 0, 0, 0, &CK5_BlockPlatform, 0, &CK_BasicDrawFunc1, 0};
-CK_action CK_act_purpleBlockPlatform = {423, 423, AT_UnscaledFrame, 0, 0, 0, 0, 0, &CK5_BlockPlatform, 0, &CK_BasicDrawFunc1, 0};
 
 void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
 {
@@ -199,12 +189,12 @@ void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
 		obj->user1 = 1;
 		obj->posX += 0x40;
 		obj->posY += 0x40;
-		CK_SetAction(obj,&CK_act_purpleBlockPlatform);
+		CK_SetAction(obj,CK_GetActionByName("CK5_act_purpleBlockPlatform"));
 	}
 	else
 	{
 		obj->user1 = 0;	
-		CK_SetAction(obj,&CK_act_redBlockPlatform);
+		CK_SetAction(obj,CK_GetActionByName("CK5_act_redBlockPlatform"));
 	}
 	obj->gfxChunk = obj->currentAction->chunkLeft;
 	CA_CacheGrChunk(obj->gfxChunk);

@@ -5,6 +5,7 @@
 #include "ck_def.h"
 #include "ck_play.h"
 #include "ck_act.h"
+#include "ck5_ep.h"
 
 #include <stdio.h>
 #include <stdlib.h>
