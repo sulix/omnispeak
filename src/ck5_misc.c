@@ -43,6 +43,8 @@ void CK5_PointItem(CK_object *obj)
 
 void CK5_SetupFunctions()
 {
+	CK5_Obj1_SetupFunctions();
+	CK5_Obj3_SetupFunctions();
 	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
 	CK_ACT_AddFunction("CK5_PointItem", &CK5_PointItem);
 }
@@ -251,7 +253,7 @@ void CK5_ScanInfoLayer()
 			case 47:
 			case 48:
 				CK5_TurretSpawn(x,y,infoValue-45);
-
+				break;
 			case 57:
 			case 58:
 			case 59:

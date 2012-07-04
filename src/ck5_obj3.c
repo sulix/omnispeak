@@ -1,6 +1,7 @@
 #include "ck_def.h"
 #include "ck_phys.h"
 #include "ck_play.h"
+#include "ck_act.h"
 #include "id_rf.h"
 #include "id_us.h"
 
@@ -45,7 +46,7 @@ void CK5_KorathWalk(CK_object *obj)
 	{
 		obj->nextX = 0;
 		obj->xDirection = US_RndT()<128 ? 1: -1;
-		obj->currentAction = &CK5_ACT_KorathWait;
+		obj->currentAction = CK_GetActionByName("CK5_ACT_KorathWait");
 	}
 }
 
@@ -59,18 +60,17 @@ void CK5_KorathColFunc(CK_object *obj, CK_object *other)
 	}
 }
 
+/*
+ * Add the Obj3 functions to the function db
+ */
+void CK5_Obj3_SetupFunctions()
+{
+	CK_ACT_AddFunction("CK5_KorathDraw",&CK5_KorathDraw);
+	CK_ACT_AddFunction("CK5_KorathWalk",&CK5_KorathWalk);
+	CK_ACT_AddColFunction("CK5_KorathColFunc",&CK5_KorathColFunc);
+}
+
 // Korath Actions
-
-CK_action CK5_ACT_KorathWalk2;
-CK_action CK5_ACT_KorathWalk3;
-CK_action CK5_ACT_KorathWalk4;
-
-CK_action CK5_ACT_KorathWalk1 = {0x126, 0x12A, 0, 0, 1, 8, 128, 0, CK5_KorathWalk, CK5_KorathColFunc, CK5_KorathDraw, &CK5_ACT_KorathWalk2};
-CK_action CK5_ACT_KorathWalk2 = {0x127, 0x12B, 0, 0, 1, 8, 128, 0, CK5_KorathWalk, CK5_KorathColFunc, CK5_KorathDraw, &CK5_ACT_KorathWalk3};
-CK_action CK5_ACT_KorathWalk3 = {0x128, 0x12C, 0, 0, 1, 8, 128, 0, CK5_KorathWalk, CK5_KorathColFunc, CK5_KorathDraw, &CK5_ACT_KorathWalk4};
-CK_action CK5_ACT_KorathWalk4 = {0x129, 0x12D, 0, 0, 1, 8, 128, 0, CK5_KorathWalk, CK5_KorathColFunc, CK5_KorathDraw, &CK5_ACT_KorathWalk1};
-
-CK_action CK5_ACT_KorathWait = {0x12E, 0x12E, 0, 0, 1, 0x1E, 0, 0, 0, 0, CK5_KorathDraw, &CK5_ACT_KorathWalk1};
 
 
 void CK5_SpawnKorath(int tileX, int tileY)
@@ -82,7 +82,7 @@ void CK5_SpawnKorath(int tileX, int tileY)
 	obj->posX = tileX << 8;
 	obj->posY = (tileY << 8) - 128;
 	obj->xDirection = US_RndT()<128 ? 1 : -1;	
-	CK_SetAction(obj, &CK5_ACT_KorathWalk1);
+	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_KorathWalk1"));
 
 	printf("Spawning Korath at %d,%d\n", tileX, tileY);
 }

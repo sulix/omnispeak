@@ -235,7 +235,7 @@ bool CK_ACT_ParseAction(CK_ACT_ParserState *ps)
 
 	const char *nextActionName = CK_ACT_GetToken(ps);
 
-	act->next = CK_GetOrCreateActionByName(nextActionName);
+	act->next = strcmp(nextActionName,"NULL")?CK_GetOrCreateActionByName(nextActionName):0;
 
 	return true;
 }
