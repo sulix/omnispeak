@@ -2,13 +2,22 @@
 #include "id_str.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 /* String manager, allows objects to be indexed by strings */
 
+// Hash a string using an xor variant of the djb2 hash
+static int STR_HashString(const char *str)
+{
+	int slen = strlen(str);
+	int hash = 0;
+	for (int i = 0; i < slen; ++i)
+	{
+		hash = ((hash << 5) + hash) ^ (int)(str[i]);
+	}
+	return hash;
+}
 
-/*
- * TODO: Implement this as a nice hash-table.
- */
 
 // Allocate a table 'tabl' of size 'size'
 void STR_AllocTable(STR_Table **tabl, size_t size)
@@ -27,9 +36,10 @@ void STR_AllocTable(STR_Table **tabl, size_t size)
 // Returns the pointer associated with 'str' in 'tabl'
 void* STR_LookupEntry(STR_Table *tabl, const char* str)
 {
-	for (size_t i = 0; i < tabl->size; ++i)
+	int hash = STR_HashString(str) % tabl->size;
+	for (size_t i = hash; ; i = (i+1)%tabl->size)
 	{
-		if (tabl->arr[i].str == 0) continue;
+		if (tabl->arr[i].str == 0) break;
 		if (strcmp(str, tabl->arr[i].str) == 0)
 		{
 			return (tabl->arr[i].ptr);
@@ -41,7 +51,9 @@ void* STR_LookupEntry(STR_Table *tabl, const char* str)
 // Add an entry 'str' with pointer 'value' to 'tabl'. Returns 'true' on success
 bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
 {
-	for (size_t i = 0; i < tabl->size; ++i)
+	int hash = STR_HashString(str) % tabl->size;
+	if (tabl->arr[hash].str) printf("[DEBUG] WARNING: str %s has hash collision with %s (hash: %x %% %d == %x)\n",str,tabl->arr[hash].str,STR_HashString(str),tabl->size, hash);
+	for (size_t i = hash; ; i = (i+1)%tabl->size)
 	{
 		if (tabl->arr[i].str == 0)
 		{
