@@ -3,10 +3,35 @@
 #include "id_ca.h"
 #include "id_us.h"
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <stdbool.h>
+
+#include <time.h>
+
+// Check for a parameter in a list of strings
+// Returns index of string found, or -1 if none
+int US_CheckParm(const char *parm, char **strings)
+{
+	// Strip any non-alphabetic characters from 'parm'
+	while (*parm)
+	{
+		if (isalpha(*(parm++))) break;
+	}
+
+	// For every string in 'strings'
+	for (int i = 0; strings[i]; ++i)
+	{
+
+		if (strings[i][0] == '\0') continue;
+
+		if (!strcasecmp(parm,strings[i])) return i;
+	}
+	return -1;
+}
+
 
 // Coords in pixels
 static int us_windowX;
@@ -163,6 +188,11 @@ void US_CenterWindow(int w, int h)
 
 // Random Number Generator
 
+/*
+ * This random number generator simply outputs these numbers, in order
+ * from a random index. This makes behaviour predictable during demos, and
+ * ensures a uniform (enough) distribution.
+ */
 uint8_t us_RandomTable[256] = {
 	0,   8, 109, 220, 222, 241, 149, 107,  75, 248, 254, 140,  16,  66,
 	74,  21, 211,  47,  80, 242, 154,  27, 205, 128, 161,  89,  77,  36,
@@ -186,22 +216,32 @@ uint8_t us_RandomTable[256] = {
 
 static int us_randomIndex;
 
+// Seed the random number generator.
 void US_InitRndT(bool randomize)
 {
-	//TODO: Actually randomize.
-	us_randomIndex = 0;
+	if (randomize)
+	{
+		us_randomIndex = time(0);
+	}
+	else
+	{
+		us_randomIndex = 0;
+	}
 }
 
+// Get a random integer in the range 0-255
 int US_RndT()
 {
 	return us_RandomTable[(us_randomIndex++)&0xff];
 }
 
+// Set the random seed (index)
 void US_SetRndI(int index)
 {
 	us_randomIndex = index;
 }
 
+// Get the random seed (index)
 int US_GetRndI()
 {
 	return us_randomIndex;
