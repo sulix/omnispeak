@@ -119,8 +119,14 @@ void CK5_BlockPlatform(CK_object *obj)
 	obj->visible = true;
 }
 
+void CK_DeadlyCol(CK_object *o1, CK_object *o2)
+{
+}
+
 void CK5_SetupFunctions()
 {
+	//Quick hack as we haven't got a deadly function yet
+	CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
 	CK5_Obj1_SetupFunctions();
 	CK5_Obj3_SetupFunctions();
 	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
@@ -225,7 +231,11 @@ void CK5_ScanInfoLayer()
 			case 2:
 				CK_SpawnKeen(x,y,-1);
 				break;
-				
+			case 18:	//TODO: Difficulty hard
+			case 17:	//TODO: Difficulty normal
+			case 16:
+				CK5_SpawnSpirogrip(x,y);
+				break;
 			case 25:
 				RF_SetScrollBlock(x,y,true);
 				break;

@@ -158,7 +158,7 @@ int CK_ACT_GetInteger(CK_ACT_ParserState *ps)
 		result = strtol(token+1, 0 , 16);
 	else
 		result = strtol(token, 0, 0);
-	printf("GetInteger %s -> %d\n", token, result);
+	//printf("GetInteger %s -> %d\n", token, result);
 	STR_UnPool(token);
 	return result;
 }
@@ -167,7 +167,7 @@ bool CK_ACT_ExpectToken(CK_ACT_ParserState *ps, const char *str)
 {
 	const char *c = CK_ACT_GetToken(ps);
 	bool result = !strcmp(c,str);
-	printf("ExpectToken, got %s expected %s\n", c, str);
+	if (!result) printf("WARNING: ExpectToken, got \"%s\" expected \"%s\" on line %d\n", c, str, ps->linecount);
 	STR_UnPool(c);
 	return result;
 }

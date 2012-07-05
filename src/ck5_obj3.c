@@ -7,9 +7,56 @@
 
 #include <stdio.h>
 
+// Spirogrip Funcs
+
+void CK5_SpawnSpirogrip(int tileX, int tileY)
+{
+	CK_object *obj = CK_GetNewObj(false);
+	
+	obj->type = 13; // Spirogrip
+	obj->active = true;
+	obj->posX = (tileX << 8);
+	obj->posY = (tileY << 8) - 256;
+
+	obj->xDirection = -1; // Left
+	obj->yDirection = 1; //Down
+
+	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_SpirogripSpin1"));
+}
+
+void CK5_SpirogripSpin(CK_object *obj)
+{
+	// If we're bored of spinning...
+	if (US_RndT() > 20) return;
+
+	// TODO: Play sound (0x3D)
+	
+	// and we're in the right direction, fly!
+	if (obj->currentAction == CK_GetActionByName("CK5_ACT_SpirogripSpin1"))
+		obj->currentAction = CK_GetActionByName("CK5_ACT_SpirogripFlyUp");
+	else if (obj->currentAction == CK_GetActionByName("CK5_ACT_SpirogripSpin3"))
+		obj->currentAction = CK_GetActionByName("CK5_ACT_SpirogripFlyRight");
+	else if (obj->currentAction == CK_GetActionByName("CK5_ACT_SpirogripSpin5"))
+		obj->currentAction = CK_GetActionByName("CK5_ACT_SpirogripFlyDown");
+	else if (obj->currentAction == CK_GetActionByName("CK5_ACT_SpirogripSpin7"))
+		obj->currentAction = CK_GetActionByName("CK5_ACT_SpirogripFlyLeft");
+
+}
+
+void CK5_SpirogripFlyDraw(CK_object *obj)
+{
+	// Draw the sprite
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
+
+	// Check if we've collided with a tile
+	if (obj->topTI || obj->rightTI || obj->bottomTI || obj->leftTI)
+	{
+		obj->currentAction = obj->currentAction->next;
+		//TODO: Play sound (0x1B)
+	}
+}
 // Korath Funcs
 
-CK_action CK5_ACT_KorathWait;
 void CK5_KorathDraw(CK_object *obj)
 {
 	if (obj->xDirection == 1 && obj->leftTI)
@@ -60,18 +107,6 @@ void CK5_KorathColFunc(CK_object *obj, CK_object *other)
 	}
 }
 
-/*
- * Add the Obj3 functions to the function db
- */
-void CK5_Obj3_SetupFunctions()
-{
-	CK_ACT_AddFunction("CK5_KorathDraw",&CK5_KorathDraw);
-	CK_ACT_AddFunction("CK5_KorathWalk",&CK5_KorathWalk);
-	CK_ACT_AddColFunction("CK5_KorathColFunc",&CK5_KorathColFunc);
-}
-
-// Korath Actions
-
 
 void CK5_SpawnKorath(int tileX, int tileY)
 {
@@ -85,6 +120,21 @@ void CK5_SpawnKorath(int tileX, int tileY)
 	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_KorathWalk1"));
 
 	printf("Spawning Korath at %d,%d\n", tileX, tileY);
+}
+
+/*
+ * Add the Obj3 functions to the function db
+ */
+void CK5_Obj3_SetupFunctions()
+{
+	// Spirogrip
+	CK_ACT_AddFunction("CK5_SpirogripSpin", &CK5_SpirogripSpin);
+	CK_ACT_AddFunction("CK5_SpirogripFlyDraw", &CK5_SpirogripFlyDraw);
+
+	// Korath
+	CK_ACT_AddFunction("CK5_KorathDraw",&CK5_KorathDraw);
+	CK_ACT_AddFunction("CK5_KorathWalk",&CK5_KorathWalk);
+	CK_ACT_AddColFunction("CK5_KorathColFunc",&CK5_KorathColFunc);
 }
 
 	
