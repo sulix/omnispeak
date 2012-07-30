@@ -1,0 +1,63 @@
+#
+# Action database for Keen 5 (v1.4)
+#
+
+# ck5_misc.c
+
+# Items
+%action CK5_act_item 0 0 UnscaledOnce 0 0 20 0 0 CK5_PointItem NULL CK_BasicDrawFunc1 CK5_act_item2
+%action CK5_act_item2 0 0 UnscaledOnce 0 0 20 0 0 CK5_PointItem NULL CK_BasicDrawFunc1 CK5_act_item
+
+# Platforms
+%action CK5_act_redBlockPlatform 446 446 Frame 0 0 0 0 0 CK5_BlockPlatform NULL CK_BasicDrawFunc1 NULL
+%action CK5_act_purpleBlockPlatform 423 423 UnscaledFrame 0 0 0 0 0 CK5_BlockPlatform NULL CK_BasicDrawFunc1 NULL
+
+
+# ck5_obj1.c
+
+# Turret Shots
+%action CK5_ACT_turretShot1 0xEC 0xEC UnscaledFrame 0 0 8 0 0 CK5_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot2
+%action CK5_ACT_turretShot2 0xED 0xED UnscaledFrame 0 0 8 0 0 CK5_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot3
+%action CK5_ACT_turretShot3 0xEE 0xEE UnscaledFrame 0 0 8 0 0 CK5_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot4
+%action CK5_ACT_turretShot4 0xEF 0xEF UnscaledFrame 0 0 8 0 0 CK5_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot1
+
+%action CK5_ACT_turretShotHit1 0xF0 0xF0 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_turretShotHit2
+%action CK5_ACT_turretShotHit2 0xF1 0xF1 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+
+#Turrets
+%action CK5_ACT_turretWait UnscaledOnce 0 0 0 0 0x78 0 0 NULL NULL NULL CK5_ACT_turretShoot
+%action CK5_ACT_turretShoot UnscaledOnce 0 0 1 0 1 0 0 CK5_TurretShoot NULL NULL CK5_ACT_turretWait
+
+# ck5_obj3.c
+
+# Spirogrip
+%action CK5_ACT_SpirogripSpin1 0x193 0x193 UnscaledOnce 0 0 8 0 0 CK5_SpirogripSpin CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin2
+%action CK5_ACT_SpirogripSpin2 0x18E 0x18E UnscaledOnce 0 0 8 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin3
+%action CK5_ACT_SpirogripSpin3 0x194 0x194 UnscaledOnce 0 0 8 0 0 CK5_SpirogripSpin CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin4
+%action CK5_ACT_SpirogripSpin4 0x18F 0x18F UnscaledOnce 0 0 8 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin5
+%action CK5_ACT_SpirogripSpin5 0x191 0x191 UnscaledOnce 0 0 8 0 0 CK5_SpirogripSpin CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin6
+%action CK5_ACT_SpirogripSpin6 0x190 0x190 UnscaledOnce 0 0 8 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin7
+%action CK5_ACT_SpirogripSpin7 0x192 0x192 UnscaledOnce 0 0 8 0 0 CK5_SpirogripSpin CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin8
+%action CK5_ACT_SpirogripSpin8 0x18D 0x18D UnscaledOnce 0 0 8 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin1
+
+%action CK5_ACT_SpirogripFlyDown 0x189 0x189 ScaledOnce 0 0 0 0 48 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachDown
+%action CK5_ACT_SpirogripFlyRight 0x18C 0x18C ScaledOnce 0 0 0 -48 0 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachRight
+%action CK5_ACT_SpirogripFlyLeft 0x18A 0x18A ScaledOnce 0 0 0 48 0 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachLeft
+%action CK5_ACT_SpirogripFlyUp 0x18B 0x18B ScaledOnce 0 0 0 0 -48 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachUp
+
+%action CK5_ACT_SpirogripAttachDown 0x189 0x189 UnscaledOnce 0 0 150 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripReleaseDown
+%action CK5_ACT_SpirogripAttachRight 0x18C 0x18C UnscaledOnce 0 0 150 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripReleaseRight
+%action CK5_ACT_SpirogripAttachLeft 0x18A 0x18A UnscaledOnce 0 0 150 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripReleaseLeft
+%action CK5_ACT_SpirogripAttachUp 0x18B 0x18B UnscaledOnce 0 0 150 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripReleaseUp
+
+%action CK5_ACT_SpirogripReleaseDown 0x189 0x189 ScaledOnce 0 0 64 0 -16 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin6
+%action CK5_ACT_SpirogripReleaseRight 0x18C 0x18C ScaledOnce 0 0 64 16 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin4
+%action CK5_ACT_SpirogripReleaseLeft 0x18A 0x18A ScaledOnce 0 0 64 -16 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin8
+%action CK5_ACT_SpirogripReleaseUp 0x18B 0x18B ScaledOnce 0 0 64 0 16 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin2
+
+# Koraths
+%action CK5_ACT_KorathWalk1 0x126 0x12A UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK5_KorathDraw CK5_ACT_KorathWalk2
+%action CK5_ACT_KorathWalk2 0x127 0x12B UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK5_KorathDraw CK5_ACT_KorathWalk3
+%action CK5_ACT_KorathWalk3 0x128 0x12C UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK5_KorathDraw CK5_ACT_KorathWalk4
+%action CK5_ACT_KorathWalk4 0x129 0x12D UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK5_KorathDraw CK5_ACT_KorathWalk1
+%action CK5_ACT_KorathWait 0x12E 0x12E UnscaledOnce 0 1 0x1E 0 0 NULL NULL CK5_KorathDraw CK5_ACT_KorathWalk1
