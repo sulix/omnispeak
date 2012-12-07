@@ -7,13 +7,13 @@
 /* String manager, allows objects to be indexed by strings */
 
 // Hash a string using an xor variant of the djb2 hash
-static int STR_HashString(const char *str)
+static unsigned int STR_HashString(const char *str)
 {
 	int slen = strlen(str);
-	int hash = 0;
+	unsigned int hash = 0;
 	for (int i = 0; i < slen; ++i)
 	{
-		hash = ((hash << 5) + hash) ^ (int)(str[i]);
+		hash = ((hash << 5) + hash) ^ (unsigned int)(str[i]);
 	}
 	return hash;
 }
