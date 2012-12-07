@@ -3,6 +3,7 @@
 #include <SDL/SDL.h>
 
 bool in_keyStates[256];
+IN_ScanCode in_lastKeyScanned = IN_SC_None;
 
 // SDLK -> IN_SC
 #define INL_MapKey(sdl,in_sc) case sdl: return in_sc
@@ -100,6 +101,7 @@ static void INL_HandleSDLEvent(SDL_Event *event)
 	case SDL_KEYDOWN:
 		sc = INL_SDLKToScanCode(event->key.keysym.sym);
 		in_keyStates[sc] = 1;
+		in_lastKeyScanned = sc;
 		break;
 	case SDL_KEYUP:
 		sc = INL_SDLKToScanCode(event->key.keysym.sym);
@@ -122,7 +124,7 @@ static void INL_SetupKbdControls()
 void IN_PumpEvents()
 {
 	SDL_Event event;
-
+	in_lastKeyScanned = IN_SC_None;
 	while (SDL_PollEvent(&event))
 		INL_HandleSDLEvent(&event);
 }
@@ -141,6 +143,11 @@ void IN_WaitKey()
 bool IN_GetKeyState(IN_ScanCode scanCode)
 {
 	return in_keyStates[scanCode];
+}
+
+IN_ScanCode IN_GetLastScan()
+{
+	return in_lastKeyScanned;
 }
 
 void IN_Startup()
@@ -174,6 +181,11 @@ void IN_DemoStopPlaying()
 bool IN_DemoIsPlaying()
 {
 	return in_demoState == IN_Demo_Playback;
+}
+
+IN_DemoMode IN_DemoGetMode()
+{
+	return in_demoState;
 }
 
 void IN_ReadControls(int player, IN_ControlFrame *controls)

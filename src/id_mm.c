@@ -158,6 +158,12 @@ void MM_FreePtr(mm_ptr_t *ptr)
 	blk->length = 0;
 	blk->ptr = 0;
 	blk->userptr = 0;
+
+	// Set the pointer to NULL
+	// This is important, as some CA functions check ptr != NULL to see if
+	// things are loaded. Get this wrong and it will try to SetPurge on
+	// nonexistant blocks. Not fun!
+	*ptr = 0;
 }
 
 void MM_SetPurge(mm_ptr_t *ptr, int level)

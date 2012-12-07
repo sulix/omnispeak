@@ -14,6 +14,7 @@ typedef struct RF_SpriteDrawEntry RF_SpriteDrawEntry;
 
 typedef enum CK_Difficulty
 {
+	D_NotPlaying,
 	D_Easy,
 	D_Normal,
 	D_Hard
@@ -21,7 +22,17 @@ typedef enum CK_Difficulty
 
 typedef struct CK_GameState
 {
-	CK_Difficulty difficulty;
+	CK_Difficulty difficulty;		// Difficulty level of current game
+	int levelState;				// Level State (should probably be enum)
+						// Values:
+						// 0 - In Level
+						// 1 - Keen Died
+						// 2 - Level Completed
+						// 3 - Rescued Council Member (Keen 4)
+						// 4 - About to Record Demo
+						// 5 - ???
+						// 6 - ???
+						// 15 - Destroyed QED (Keen 5)
 } CK_GameState;
 
 extern CK_GameState ck_gameState;

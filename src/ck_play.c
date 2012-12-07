@@ -11,6 +11,7 @@
 
 #include <stdio.h> /* For printf() debugging */
 #include <stdlib.h> /* For abs() */
+#include <string.h> /* For memset() */
 
 #define max(a,b) ((a<b)?b:a)
 #define min(a,b) ((a<b)?a:b)
@@ -120,7 +121,7 @@ CK_object *CK_GetNewObj(bool nonCritical)
 	ck_freeObject = ck_freeObject->prev;
 
 	//Clear any old crap out of the struct.
-	//memset(newObj, 0, sizeof(CK_object));
+	memset(newObj, 0, sizeof(CK_object));
 
 
 	if (ck_lastObject)
@@ -476,9 +477,14 @@ void CK_NormalCamera(CK_object *obj)
 }
 
 //TODO: Add some demo number stuff
-void CK_PlayDemo(int demoChunk)
+void CK_PlayDemo(int demoNumber)
 {
 	uint8_t *demoBuf;
+
+	int demoChunk = 4926 + demoNumber;
+
+//	CK_NewGame();
+
 	CA_CacheGrChunk(demoChunk);
 	demoBuf = ca_graphChunks[demoChunk];
 	//MM_SetLock(&CA_CacheGrChunk
@@ -489,37 +495,48 @@ void CK_PlayDemo(int demoChunk)
 	demoBuf += 2;
 
 	ck_currentMapNumber =demoMap;
-	CA_CacheMap(demoMap);
-	RF_NewMap(demoMap);
-	RF_Reposition(0,0);
-	
-	CK_SetupObjArray();
-	
+
+	CK_LoadLevel(true);
+
 	ck_demoEnabled = true;
 
 	ck_gameState.difficulty = D_Normal;
 
 	IN_DemoStartPlaying(demoBuf,demoLen);
 
+
 	CK_PlayLoop();
-	
+
+	// What should we do after playing the demo?
+	CK_HandleDemoKeys();
+
+	// We have to get rid of the demo buffer, as if we want to play it
+	// again, we need a fresh copy. ID_IN modifies the buffer.
+	MM_FreePtr(&ca_graphChunks[demoChunk]);
 }
 
 
+int ck_currentMapNumber;
 // Play a level.
 int CK_PlayLoop()
 {
-	int levelState = 0;
 
-	ck_gameState.difficulty = D_Easy;
-	CK_SetupObjArray();
-	CK5_ScanInfoLayer();
+	// Note that this appears in CK_LoadLevel as well
+	if (ck_demoEnabled)
+		US_InitRndT(false);
+	else
+		US_InitRndT(true);
 	//Hack!
-	ck_numTotalTics = 0;
+	ck_numTotalTics = 3;
+	ck_ticsThisFrame = 3;
 
+	CK_LoadLevel(true);
+
+	// If this is nonzero, the level will quit immediately.
+	ck_gameState.levelState = 0;
 
 	CK_CentreCamera(ck_keenObj);
-	while (levelState == 0)
+	while (ck_gameState.levelState == 0)
 	{
 
 		IN_PumpEvents();
@@ -629,6 +646,19 @@ int CK_PlayLoop()
 		CK_NormalCamera(ck_keenObj);
 		//TODO: Slow-mo, extra VBLs.
 		VL_Present();
+
+		// If we've finished playing back our demo, or the player presses a key,
+		// exit the playloop.
+		if (IN_DemoGetMode() == IN_Demo_Playback && IN_GetLastScan() != IN_SC_None )
+		{
+			ck_gameState.levelState = 2;
+			ck_demoEnabled = false;
+			IN_DemoStopPlaying();
+		}
+		else if (IN_DemoGetMode() == IN_Demo_PlayDone)
+		{
+			ck_gameState.levelState = 2;
+		}
 
 
 	}

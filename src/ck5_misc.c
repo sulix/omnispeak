@@ -80,7 +80,7 @@ void CK5_BlockPlatform(CK_object *obj)
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width*nextPosTile+obj->clipRects.tileX1+obj->user1] == 0x1F)
 		{
-			if (CA_TileAtPos(obj->clipRects.unitX1, nextPosTile-2,2) == 0x1F)
+			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile-2,2) == 0x1F)
 			{
 				//Stop the platform.
 				obj->yDirection = 0;
@@ -101,7 +101,7 @@ void CK5_BlockPlatform(CK_object *obj)
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width*nextPosTile+obj->clipRects.tileX1+obj->user1] == 0x1F)
 		{
-			if (CA_TileAtPos(obj->clipRects.unitX1, nextPosTile+2, 2) == 0x1F)
+			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile+2, 2) == 0x1F)
 			{
 				// Stop the platform.
 				obj->yDirection = 0;

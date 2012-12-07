@@ -5,6 +5,9 @@
 #include <stdint.h>
 
 #include "id_mm.h"
+// -- Common --
+void CA_Startup();
+
 
 // -- File IO --
 

@@ -15,6 +15,7 @@
 
 
 //Begin globals
+
 // CA_ReadFile reads a whole file into the preallocated memory buffer at 'offset'
 // NOTE that this function is deprecated: use CA_SafeReadFile instead.
 //
@@ -500,6 +501,25 @@ void CA_CacheMap(int mapIndex)
 		MM_FreePtr((void**)(&compBuffer));
 		MM_FreePtr((void**)(&rlewBuffer));
 	}
+}
+
+// CA_Startup opens the core CA datafiles
+void CA_Startup()
+{
+	// Load the ?GAGRAPH.EXT file!
+	CAL_SetupGrFile();
+
+	// Read in the graphics headers (from TED's GFXINFOE)
+	CA_CacheGrChunk(ca_gfxInfoE.hdrBitmaps);
+	CA_CacheGrChunk(ca_gfxInfoE.hdrMasked);
+	CA_CacheGrChunk(ca_gfxInfoE.hdrSprites);
+
+	// Load some other chunks needed by the game
+	CA_CacheGrChunk(88);	//TODO: What was this again
+	CA_CacheGrChunk(3);	// Main font
+
+	// Setup the map file
+	CAL_SetupMapFile();
 }
 
 //TODO: Make this less of an ugly hack.
