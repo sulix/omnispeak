@@ -142,7 +142,7 @@ void CK_PhysKeenClipUp(CK_object *obj)
 			return;
 		}
 	}
-	else if (obj->xDirection == -1)
+	else
 	{
 		midTileXOffset = 15;
 		bottomTI = TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1, 1));
