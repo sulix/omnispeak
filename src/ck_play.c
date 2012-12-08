@@ -334,7 +334,7 @@ void CK_RunAction(CK_object *obj)
 	if (obj->currentAction->chunkLeft && obj->xDirection <= 0) obj->gfxChunk = obj->currentAction->chunkLeft;
 	if (obj->currentAction->chunkRight && obj->xDirection > 0) obj->gfxChunk = obj->currentAction->chunkRight;
 
-	if (obj->gfxChunk != oldChunk || obj->nextX || obj->nextY)
+	if (obj->gfxChunk != oldChunk || obj->nextX || obj->nextY || obj->topTI == 0x19)
 	{
 		CK_PhysUpdateNormalObj(obj);
 	}
@@ -580,7 +580,8 @@ int CK_PlayLoop()
 		}
 				
 				
-				
+		if (ck_keenState.platform)
+			CK_KeenRidePlatform(ck_keenObj);
 
 		for(CK_object *currentObj = ck_keenObj; currentObj; currentObj = currentObj->next)
 		{

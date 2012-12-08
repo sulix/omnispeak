@@ -190,6 +190,7 @@ CK_ActionType CK_ACT_GetActionType(CK_ACT_ParserState *ps)
 	else
 	{
 		printf("Warning: Got a bad action type %s on line %d.\n", tok, ps->linecount);
+		at = atoi(tok);
 	}
 	STR_UnPool(tok);
 	return at;

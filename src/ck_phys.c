@@ -294,21 +294,28 @@ void CK_PhysClipHorz(CK_object *obj)
 void CK_PhysUpdateNormalObj(CK_object *obj)
 {
 	int oldUnitX, oldUnitY;
-	bool wasOnPlatform = false;
+	bool wasNotOnPlatform = false;
 	oldUnitX = obj->posX;
 	oldUnitY = obj->posY;
 
 	if (obj->currentAction->stickToGround) //unknown1)
 	{
-		//TODO: Something to do with platforms?
-		
-		if (obj->nextX > 0)
+		// If the object is resting on a platform
+		if (obj->topTI == 0x19)
 		{
-			obj->nextY = (obj->nextX) + 16;
+			obj->velY = 145;
 		}
 		else
 		{
-			obj->nextY = -(obj->nextX) + 16;
+			if (obj->nextX > 0)
+			{
+				obj->nextY = (obj->nextX) + 16;
+			}
+			else
+			{
+				obj->nextY = -(obj->nextX) + 16;
+			}
+			wasNotOnPlatform = true;
 		}
 	}
 
@@ -373,7 +380,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 	
 		//TODO: Something strange about reseting if falling?
 
-		if (!obj->topTI && obj->currentAction->stickToGround)
+		if (!obj->topTI && wasNotOnPlatform)
 		{
 			obj->posX = oldUnitX + obj->nextX;
 			obj->posY = oldUnitY;
@@ -398,6 +405,44 @@ void CK_FullClipToWalls(CK_object *obj)
 	//TODO: Verify object class (need callback to episode struct)
 	// Error msg: "FullClipToWalls: Bad obclass"
 
+}
+
+void CK_PhysUpdateSimpleObj(CK_object *obj)
+{
+	int oldUnitX, oldUnitY;
+	oldUnitX = obj->posX;
+	oldUnitY = obj->posY;
+
+
+	obj->posX += obj->nextX;
+	obj->posY += obj->nextY;
+
+
+	obj->visible = true;
+
+	if (obj->gfxChunk)
+	{
+
+		CK_SetOldClipRects(obj);
+
+		CK_ResetClipRects(obj);
+
+		//Reset the tile clipping vars.
+		obj->topTI = 0;
+		obj->bottomTI = 0;
+		obj->leftTI = 0;
+		obj->rightTI = 0;
+
+		if (obj->clipped)
+		{
+			CK_PhysClipVert(obj);
+			CK_PhysClipHorz(obj);
+		}
+
+		obj->deltaPosX += obj->posX - oldUnitX;
+		obj->deltaPosY += obj->posY - oldUnitY;
+	}
+	
 }
 
 void CK_PhysPushX(CK_object *pushee, CK_object *pusher)
@@ -442,7 +487,10 @@ void CK_PhysPushY(CK_object *pushee, CK_object *pusher)
 
 	if (deltaClipY >= 0 && deltaClipY < deltaDeltaY)
 	{
-		//TODO: If the pushee is keen, set ck_keenState.currentPlatform to pusher
+		//If the pushee is keen, set ck_keenState.currentPlatform to pusher
+		// (I'm not sure I like this)
+		if (pushee == ck_keenObj)
+			ck_keenState.platform = pusher;
 
 		pushee->nextY = -deltaClipY;
 		bool pusheeSticksToGround = pushee->currentAction->stickToGround;
@@ -451,7 +499,7 @@ void CK_PhysPushY(CK_object *pushee, CK_object *pusher)
 		pushee->currentAction->stickToGround = pusheeSticksToGround;
 
 		if (!pushee->bottomTI)
-			pushee->bottomTI = 0x19; // Platform?
+			pushee->topTI = 0x19; // Platform?
 	}
 }
 
@@ -498,8 +546,8 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 	obj->nextY = 0;
 
 
-	//TODO: Handle platforms
-	CK_PhysUpdateNormalObj(obj);
+	if (!obj->topTI == 0x19)
+		CK_PhysUpdateNormalObj(obj);
 
 }
 

@@ -111,6 +111,8 @@ typedef struct CK_keenState
 	bool jumpWasPressed;
 	bool pogoIsPressed;
 	bool pogoWasPressed;
+
+	CK_object *platform;
 } CK_keenState;
 
 extern CK_keenState ck_keenState;

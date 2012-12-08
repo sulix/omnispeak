@@ -44,6 +44,7 @@ void CK_InitGame()
 
 	// Compile the actions
 	CK_ACT_SetupFunctions();
+	CK_KeenSetupFunctions();
 	CK5_SetupFunctions();
 	CK_ACT_LoadActions("ACTION.CK5");
 
