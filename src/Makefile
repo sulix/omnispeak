@@ -16,10 +16,10 @@ clean:
 
 ../obj/%.o: %.c
 	@mkdir -p $(dir $@)
-	$(CC) -g `sdl-config --cflags` -c --std=c99 -MMD -o $@ $<
+	$(CC) $(CFLAGS) -g `sdl-config --cflags` -c --std=c99 -MMD -o $@ $<
 
 $(OUTBIN): $(OBJ)
 	@mkdir -p $(dir $@)
-	$(CC) -g -lm -o $(OUTBIN) $(OBJ) `sdl-config --libs` 
+	$(CC) $(CFLAGS) -g -lm -o $(OUTBIN) $(OBJ) `sdl-config --libs` 
 
 -include $(DEPS)
