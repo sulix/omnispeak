@@ -107,11 +107,12 @@ void CK_PhysKeenClipDown(CK_object *obj)
 		midTileXOffset = 15;
 		deltaX = obj->clipRects.unitX1 - obj->clipRects.unitXmid;
 		topTI = TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2, 1));
-		if (TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-2,1)) || TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-1,1)) || TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2 - 1,1)))
+		if (TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-2,1)) || TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-1,1)) || TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2 - 1,1)))
 		{
 			return;
 		}
 	}
+	
 
 	if (topTI == 1)
 	{
@@ -146,7 +147,7 @@ void CK_PhysKeenClipUp(CK_object *obj)
 	{
 		midTileXOffset = 15;
 		bottomTI = TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1, 1));
-		if (TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+2, 1)) || TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+3,1)) || TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+1,1)))
+		if (TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+2, 1)) || TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+3,1)) || TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+1,1)))
 		{
 			return;
 		}
