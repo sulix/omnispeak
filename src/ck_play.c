@@ -427,9 +427,22 @@ void CK_NormalCamera(CK_object *obj)
 		deltaX = obj->posX - (rf_scrollXUnit+(192 << 4));
 
 
+	// Keen should be able to look down.
+	if (obj->currentAction == CK_GetActionByName("CK_ACT_KeenLookDown2"))
+	{
+		if (screenYpx - CK_GetTicksPerFrame() < 33)
+		{
+			screenYpx = 33;
+			deltaY = ((screenYpx - 33) << 4);
+		}
+		else
+		{
+			deltaY = 0;
+		}
+	}
 	// If we're attached to the ground, or otherwise awesome
 	// do somethink inscrutible.
-	if (obj->topTI || !obj->clipped)
+	else if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_KeenHang1"))
 	{
 		deltaY += obj->deltaPosY;
 
