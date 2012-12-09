@@ -341,7 +341,12 @@ void CK_KeenLookDownThink(CK_object *obj)
 		int deltay = max(CK_GetTicksPerFrame(),4) << 4;
 		printf("dy: %d\n",deltay);
 	
-		//TODO: Moving platforms
+		//Moving platforms
+		if (ck_keenState.platform)
+			deltay += ck_keenState.platform->deltaPosY;
+
+		ck_keenState.platform = 0;
+
 
 		obj->clipRects.unitY2 += deltay;
 		obj->posY += deltay;
@@ -532,12 +537,12 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 		else
 		{
 			//TODO: Check if fuse.
-			if (!ck_keenState.jumpTimer) // Or standing on a platform.
+			if (obj->topTI != 0x19 || !ck_keenState.jumpTimer) // Or standing on a platform.
 			{
 				obj->user1 = obj->user2 = 0;	// Being on the ground is boring.
 	
 				//TODO: Finish these
-				if (IN_GetKeyState(IN_SC_RightArrow) || IN_GetKeyState(IN_SC_LeftArrow))
+				if (ck_inputFrame.xDirection)
 				{
 					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenRun1"));
 				}
@@ -698,11 +703,11 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 	{
 		obj->deltaPosY = 0;
 		//TODO: Deadly surfaces and fuse breakage.
-		if (ck_keenState.jumpTimer == 0)
+		if (obj->topTI != 0x19 || ck_keenState.jumpTimer == 0)
 		{
 			obj->velY = -48;
 			ck_keenState.jumpTimer = 24;
-			CK_SetAction(obj, CK_GetActionByName("CK_ACT_keenPogo2"));
+			CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenPogo2"));
 		}
 	}
 
@@ -711,7 +716,18 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 
 void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 {
-	//TODO: collision with types 14,23,13?
+	//TODO: collision with types 14,23?
+	if (other->type == 6)
+	{
+		obj->clipped = true;
+		CK_PhysUpdateSimpleObj(obj);
+		ck_keenState.jumpTimer = 0;
+		obj->deltaPosX = 0;
+		obj->deltaPosY = 0;
+		CK_PhysPushY(obj,other);
+		return;
+	}
+
 }
 
 void CK_KeenSpecialDrawFunc(CK_object *obj)
