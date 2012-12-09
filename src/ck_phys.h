@@ -24,6 +24,7 @@ typedef struct CK_object CK_object;
 typedef struct CK_action CK_action;
 
 void CK_PhysUpdateNormalObj(CK_object *obj);
+void CK_PhysUpdateSimpleObj(CK_object *obj);
 void CK_PhysPushX(CK_object *pushee, CK_object *pusher);
 void CK_PhysPushY(CK_object *pushee, CK_object *pusher);
 void CK_SetAction(CK_object *obj, CK_action *act);

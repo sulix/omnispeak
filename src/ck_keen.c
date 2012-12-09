@@ -183,6 +183,8 @@ bool CK_KeenTryClimbPole(CK_object *obj)
 	return false;
 }
 
+void CK_HandleInputOnGround(CK_object *obj);
+
 void CK_KeenRunningThink(CK_object *obj)
 {
 	if (!ck_inputFrame.xDirection)
@@ -801,6 +803,8 @@ void CK_KeenPoleHandleInput(CK_object *obj)
 	}
 	return;
 }
+
+void CK_KeenPoleDownThink(CK_object *obj);
 
 void CK_KeenPoleSitThink(CK_object *obj)
 {
