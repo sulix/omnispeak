@@ -33,6 +33,7 @@ typedef struct CK_GameState
 						// 5 - ???
 						// 6 - ???
 						// 15 - Destroyed QED (Keen 5)
+	int numShots;
 } CK_GameState;
 
 extern CK_GameState ck_gameState;
@@ -111,6 +112,8 @@ typedef struct CK_keenState
 	bool jumpWasPressed;
 	bool pogoIsPressed;
 	bool pogoWasPressed;
+	bool shootIsPressed;
+	bool shootWasPressed;
 
 	CK_object *platform;
 } CK_keenState;

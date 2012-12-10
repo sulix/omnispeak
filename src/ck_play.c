@@ -370,12 +370,29 @@ void CK_HandleInput()
 
 	ck_keenState.jumpWasPressed = ck_keenState.jumpIsPressed;
 	ck_keenState.pogoWasPressed = ck_keenState.pogoIsPressed;
+	ck_keenState.shootWasPressed = ck_keenState.shootIsPressed;
 
 	ck_keenState.jumpIsPressed = ck_inputFrame.jump;
 	ck_keenState.pogoIsPressed = ck_inputFrame.pogo;
 
+	if (ck_demoEnabled) // Two-button firing mode.
+	{
+		ck_keenState.shootIsPressed = ck_inputFrame.jump && ck_inputFrame.pogo;
+		if (ck_keenState.shootIsPressed)
+		{
+			ck_keenState.jumpWasPressed = ck_keenState.jumpIsPressed = false;
+			ck_keenState.pogoIsPressed = false;
+		}
+	}
+	else
+	{
+		if (IN_GetKeyState(IN_SC_Space)) ck_keenState.shootIsPressed = true;
+		else ck_keenState.shootIsPressed = false;
+	}
+
 	if (!ck_keenState.jumpIsPressed) ck_keenState.jumpWasPressed = false;
 	if (!ck_keenState.pogoIsPressed) ck_keenState.pogoWasPressed = false;
+	if (!ck_keenState.shootIsPressed) ck_keenState.shootWasPressed = false;
 
 	CK_CheckKeys();
 

@@ -228,6 +228,13 @@ void CK_KeenRunningThink(CK_object *obj)
 		return;
 	}
 
+	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
+	{
+		ck_gameState.numShots++;
+
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenShoot1");
+	}
+
 	obj->nextX += ck_KeenRunXVels[obj->topTI&7] * CK_GetTicksPerFrame();
 }
 
@@ -265,6 +272,13 @@ void CK_HandleInputOnGround(CK_object *obj)
 		return;
 	}
 
+	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
+	{
+		ck_gameState.numShots++;
+
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenShoot1");
+	}
+
 	if (ck_inputFrame.yDirection == -1)
 	{
 		if (CK_KeenTryClimbPole(obj)) return;
@@ -282,7 +296,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 
 void CK_KeenStandingThink(CK_object *obj)
 {
-	if (ck_inputFrame.xDirection || ck_inputFrame.yDirection || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed)
+	if (ck_inputFrame.xDirection || ck_inputFrame.yDirection || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed || IN_GetLastScan(IN_SC_Space))
 	{
 		obj->user1 = obj->user2 = 0;	//Idle Time + Idle State
 		CK_HandleInputOnGround(obj);
@@ -470,6 +484,13 @@ void CK_KeenJumpThink(CK_object *obj)
 	}
 
 	//TODO: Shooting
+	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
+	{
+		ck_keenState.shootWasPressed = true;
+		ck_gameState.numShots = 5;
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShoot1");
+		return;
+	}
 
 	if (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed)
 	{
@@ -942,6 +963,95 @@ void CK_KeenPoleDownDrawFunc(CK_object *obj)
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 }
 
+// Shooting
+
+void CK_SpawnShot(int x, int y, int direction)
+{
+	if (!ck_gameState.numShots)
+	{
+		//TODO: Play out-of-ammo sound
+		return;
+	}
+
+	ck_gameState.numShots--;
+
+	CK_object *shot = CK_GetNewObj(false);
+	shot->posX = x;
+	shot->posY = y;
+	shot->zLayer = 0;
+	shot->type = 4; // TODO: obj_stunner
+	shot->active = true;
+	
+	switch(direction)
+	{
+	case 2:
+		shot->xDirection = 1;
+		shot->yDirection = 0;
+		break;
+	case 6:
+		shot->xDirection = -1;
+		shot->yDirection = 0;
+		break;
+	default:
+		Quit("SpawnShot: bad dir!");
+	}
+
+	CK_SetAction(shot, CK_GetActionByName("CK_ACT_keenShot1"));
+}
+
+void CK_ShotHit(CK_object *obj)
+{
+	//TODO: Implement obj_ classes.
+	CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenShotHit1"));
+}
+
+void CK_ShotColFunc(CK_object *obj, CK_object *other)
+{
+	//TODO: Maybe do something.
+}
+
+void CK_ShotThink(CK_object *obj)
+{
+	//TODO: Kill things which are offscreen.
+}
+
+void CK_ShotDrawFunc(CK_object *obj)
+{
+	//TODO: Force the bullet through pole-holes.
+	
+	if (obj->topTI || obj->bottomTI || obj->leftTI || obj->rightTI)
+	{
+		CK_ShotHit(obj);
+	}
+	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
+}
+
+void CK_SimpleDrawFunc(CK_object *obj)
+{
+	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
+}
+
+void CK_KeenSpawnShot(CK_object *obj)
+{
+	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenShoot1"))
+	{
+		if (obj->xDirection == 1)
+		{
+			CK_SpawnShot(obj->posX + 256, obj->posY + 64, 2);
+		}
+		else
+		{
+			CK_SpawnShot(obj->posX - 128, obj->posY + 64, 6);
+		}
+	}
+}
+
+void CK_KeenFall(CK_object *obj)
+{
+	CK_PhysGravityHigh(obj);
+	obj->nextX = obj->xDirection * CK_GetTicksPerFrame();
+}
+
 void CK_KeenSetupFunctions()
 {
 	CK_ACT_AddFunction("CK_KeenRunningThink",&CK_KeenRunningThink);
@@ -967,4 +1077,11 @@ void CK_KeenSetupFunctions()
 	CK_ACT_AddFunction("CK_KeenPoleDownThink",&CK_KeenPoleDownThink);
 	CK_ACT_AddFunction("CK_KeenPoleDownDrawFunc",&CK_KeenPoleDownDrawFunc);
 	CK_ACT_AddColFunction("CK_KeenColFunc",&CK_KeenColFunc);
+
+	CK_ACT_AddFunction("CK_KeenSpawnShot", &CK_KeenSpawnShot);
+	CK_ACT_AddFunction("CK_ShotThink", &CK_ShotThink);
+	CK_ACT_AddFunction("CK_ShotDrawFunc", &CK_ShotDrawFunc);
+	CK_ACT_AddColFunction("CK_ShotColFunc", &CK_ShotColFunc);
+	CK_ACT_AddFunction("CK_SimpleDrawFunc",&CK_SimpleDrawFunc);
+	CK_ACT_AddFunction("CK_KeenFall",&CK_KeenFall);
 }

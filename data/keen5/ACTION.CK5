@@ -34,12 +34,18 @@
 %action CK_ACT_keenRun3 119 111 ScaledFrame 1 1 6 24 0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun4
 %action CK_ACT_keenRun4 120 112 ScaledFrame 1 1 6 24 0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun1
 
+%action CK_ACT_keenShoot1 146 151 ScaledFrame 0 1 9 0 0x20 CK_KeenSpawnShot CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenShoot2
+%action CK_ACT_keenShoot2 146 151 ScaledFrame 0 1 9 0 0x20 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
 
 %action CK_ACT_keenJump1 121 113 Frame 0 0 0 0 0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJump2
 %action CK_ACT_keenJump2 122 114 Frame 0 0 0 0 0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
 
 %action CK_ACT_keenFall1 123 115 Frame 0 0 0 0 0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall2
 %action CK_ACT_keenFall2 122 114 Frame 0 0 0 0 0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
+
+%action CK_ACT_keenJumpShoot1 147 152 UnscaledFrame 0 0 9 0 0 CK_KeenFall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShoot2
+%action CK_ACT_keenJumpShoot2 147 152 UnscaledFrame 1 0 1 0 0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShoot3
+%action CK_ACT_keenJumpShoot3 147 152 UnscaledFrame 0 0 6 0 0 CK_KeenFall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
 
 %action CK_ACT_keenPogo1 193 191 UnscaledOnce 1 0 1 0 0 CK_KeenPogoBounceThink CK_KeenColFunc CK_KeenPogoDrawFunc CK_ACT_keenPogo2
 %action CK_ACT_keenPogo2 193 191 Frame 1 0 0 0 0 CK_KeenPogoThink CK_KeenColFunc CK_KeenPogoDrawFunc CK_ACT_keenPogo3
@@ -62,6 +68,15 @@
 %action CK_ACT_keenPoleDown2 163 163 ScaledOnce 0 0 8 0 24 CK_KeenPoleDownThink CK_KeenSpecialColFunc CK_KeenPoleDownDrawFunc CK_ACT_keenPoleDown3
 %action CK_ACT_keenPoleDown3 164 164 ScaledOnce 0 0 8 0 24 CK_KeenPoleDownThink CK_KeenSpecialColFunc CK_KeenPoleDownDrawFunc CK_ACT_keenPoleDown4
 %action CK_ACT_keenPoleDown4 165 165 ScaledOnce 0 0 8 0 24 CK_KeenPoleDownThink CK_KeenSpecialColFunc CK_KeenPoleDownDrawFunc CK_ACT_keenPoleDown1
+
+# Keen shots
+%action CK_ACT_keenShot1 153 153 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink CK_ShotColFunc CK_ShotDrawFunc CK_ACT_keenShot2
+%action CK_ACT_keenShot2 154 154 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink CK_ShotColFunc CK_ShotDrawFunc CK_ACT_keenShot3
+%action CK_ACT_keenShot3 155 155 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink CK_ShotColFunc CK_ShotDrawFunc CK_ACT_keenShot4
+%action CK_ACT_keenShot4 156 156 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink CK_ShotColFunc CK_ShotDrawFunc CK_ACT_keenShot1
+
+%action CK_ACT_keenShotHit1 157 157 UnscaledOnce 0 0 0xC 0 0 NULL NULL CK_SimpleDrawFunc CK_ACT_keenShotHit2
+%action CK_ACT_keenShotHit2 158 158 UnscaledOnce 0 0 0xC 0 0 NULL NULL CK_SimpleDrawFunc NULL
 
 # ck5_misc.c
 
