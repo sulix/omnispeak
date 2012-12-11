@@ -975,7 +975,7 @@ void CK_SpawnShot(int x, int y, int direction)
 
 	ck_gameState.numShots--;
 
-	CK_object *shot = CK_GetNewObj(false);
+	CK_object *shot = CK_GetNewObj(true);
 	shot->posX = x;
 	shot->posY = y;
 	shot->zLayer = 0;
@@ -1002,6 +1002,7 @@ void CK_SpawnShot(int x, int y, int direction)
 void CK_ShotHit(CK_object *obj)
 {
 	//TODO: Implement obj_ classes.
+	printf("ShotHit!\n");
 	CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenShotHit1"));
 }
 
@@ -1033,6 +1034,7 @@ void CK_SimpleDrawFunc(CK_object *obj)
 
 void CK_KeenSpawnShot(CK_object *obj)
 {
+	printf("Spawning shot!\n");
 	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenShoot1"))
 	{
 		if (obj->xDirection == 1)
@@ -1042,6 +1044,20 @@ void CK_KeenSpawnShot(CK_object *obj)
 		else
 		{
 			CK_SpawnShot(obj->posX - 128, obj->posY + 64, 6);
+		}
+	}
+	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShoot2"))
+	{
+		if (obj->xDirection == 1)
+		{
+			CK_SpawnShot(obj->posX + 256, obj->posY + 32, 2);
+		}
+		else
+		{
+			//TODO: There's no '-128' in the keen5 binary.
+			//However, there clearly should be one, and for whatever
+			//reason, it's not working without it. (Shot is invisible?)
+			CK_SpawnShot(obj->posX - 128, obj->posY + 32, 6);
 		}
 	}
 }
