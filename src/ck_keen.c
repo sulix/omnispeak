@@ -229,6 +229,17 @@ void CK_KeenRunningThink(CK_object *obj)
 	else obj->xDirection = 1;*/
 	obj->xDirection = ck_inputFrame.xDirection;
 
+	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
+	{
+		//TODO: Remove this, it's there so we can always actually shoot!
+		ck_gameState.numShots++;
+
+		ck_keenState.shootWasPressed = true;
+
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenShoot1");
+		return;
+	}
+
 	if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
 	{
 		ck_keenState.jumpWasPressed = true;
@@ -237,6 +248,8 @@ void CK_KeenRunningThink(CK_object *obj)
 		obj->nextX = obj->nextY = 0;
 		ck_keenState.jumpTimer = 18;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenJump1");
+		// Is this the mystical 'impossible pogo'?
+		// k5disasm has a 'return' here, probably a mistake?
 	}
 
 	if (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed)
@@ -248,13 +261,6 @@ void CK_KeenRunningThink(CK_object *obj)
 		ck_keenState.jumpTimer = 24;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo1");
 		return;
-	}
-
-	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
-	{
-		ck_gameState.numShots++;
-
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenShoot1");
 	}
 
 	obj->nextX += ck_KeenRunXVels[obj->topTI&7] * CK_GetTicksPerFrame();
