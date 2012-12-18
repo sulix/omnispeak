@@ -282,6 +282,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 	if (ck_inputFrame.yDirection == -1)
 	{
 		if (CK_KeenTryClimbPole(obj)) return;
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookUp1");
 	}	
 	else if (ck_inputFrame.yDirection == 1)
 	{
@@ -331,6 +332,19 @@ void CK_KeenStandingThink(CK_object *obj)
 		obj->user1 = 0;
 	}
 
+}
+
+void CK_KeenLookUpThink(CK_object *obj)
+{
+	if (ck_inputFrame.yDirection != -1 ||
+			ck_inputFrame.xDirection != 0 ||
+			(ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed) ||
+			(ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed) ||
+			(ck_keenState.shootIsPressed))
+	{
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
+		CK_HandleInputOnGround(obj);
+	}
 }
 
 void CK_KeenLookDownThink(CK_object *obj)
@@ -824,11 +838,30 @@ void CK_KeenPoleHandleInput(CK_object *obj)
 	if (ck_inputFrame.xDirection)
 		obj->xDirection = ck_inputFrame.xDirection;
 
-	//TODO: Shooting things. *ZAP!*
+	//Shooting things. *ZAP!*
+	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
+	{
+		ck_keenState.shootWasPressed = true;
+
+		printf("Shooting while on pole! Direction %d\n",ck_inputFrame.yDirection);
+		switch (ck_inputFrame.yDirection)
+		{
+		case -1:
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleShootUp1");
+			break;
+		case 0:
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleShoot1");
+			break;
+		case 1:
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleShootDown1");
+			break;
+		}
+	}
+
 	
 	if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
 	{
-		ck_keenState.jumpWasPressed = false;
+		ck_keenState.jumpWasPressed = true;
 		//TODO: Play A sound!
 		obj->velX = ck_KeenPoleOffs[ck_inputFrame.xDirection+1];
 		obj->velY = -20;
@@ -984,9 +1017,17 @@ void CK_SpawnShot(int x, int y, int direction)
 	
 	switch(direction)
 	{
+	case 0:
+		shot->xDirection = 0;
+		shot->yDirection = -1;
+		break;
 	case 2:
 		shot->xDirection = 1;
 		shot->yDirection = 0;
+		break;
+	case 4:
+		shot->xDirection = 0;
+		shot->yDirection = 1;
 		break;
 	case 6:
 		shot->xDirection = -1;
@@ -1060,6 +1101,39 @@ void CK_KeenSpawnShot(CK_object *obj)
 			CK_SpawnShot(obj->posX - 128, obj->posY + 32, 6);
 		}
 	}
+	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShoot1"))
+	{
+		if (obj->xDirection == 1)
+		{
+			CK_SpawnShot(obj->posX + 256, obj->posY + 64, 2);
+		}
+		else
+		{
+			CK_SpawnShot(obj->posX + 128, obj->posY + 64, 6);
+		}
+	}
+	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShootUp1"))
+	{
+		if (obj->xDirection == 1)
+		{
+			CK_SpawnShot(obj->posX + 96, obj->posY + 64, 0);
+		}
+		else
+		{
+			CK_SpawnShot(obj->posX + 192, obj->posY + 64, 0);
+		}
+	}
+	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShootDown1"))
+	{
+		if (obj->xDirection == 1)
+		{
+			CK_SpawnShot(obj->posX + 96, obj->posY + 384, 4);
+		}
+		else
+		{
+			CK_SpawnShot(obj->posX + 192, obj->posY + 384, 4);
+		}
+	}
 }
 
 void CK_KeenFall(CK_object *obj)
@@ -1072,6 +1146,7 @@ void CK_KeenSetupFunctions()
 {
 	CK_ACT_AddFunction("CK_KeenRunningThink",&CK_KeenRunningThink);
 	CK_ACT_AddFunction("CK_KeenStandingThink",&CK_KeenStandingThink);
+	CK_ACT_AddFunction("CK_KeenLookUpThink",&CK_KeenLookUpThink);
 	CK_ACT_AddFunction("CK_KeenLookDownThink",&CK_KeenLookDownThink);
 	CK_ACT_AddFunction("CK_KeenDrawFunc",&CK_KeenDrawFunc);
 	CK_ACT_AddFunction("CK_KeenRunDrawFunc",&CK_KeenRunDrawFunc);

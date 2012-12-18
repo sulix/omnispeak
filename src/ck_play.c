@@ -368,9 +368,10 @@ void CK_HandleInput()
 {
 	IN_ReadControls(0, &ck_inputFrame);
 
-	ck_keenState.jumpWasPressed = ck_keenState.jumpIsPressed;
-	ck_keenState.pogoWasPressed = ck_keenState.pogoIsPressed;
-	ck_keenState.shootWasPressed = ck_keenState.shootIsPressed;
+	// Pretty certain this is actually wrong. Oops!
+	//ck_keenState.jumpWasPressed = ck_keenState.jumpIsPressed;
+	//ck_keenState.pogoWasPressed = ck_keenState.pogoIsPressed;
+	//ck_keenState.shootWasPressed = ck_keenState.shootIsPressed;
 
 	ck_keenState.jumpIsPressed = ck_inputFrame.jump;
 	ck_keenState.pogoIsPressed = ck_inputFrame.pogo;
