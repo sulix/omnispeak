@@ -526,12 +526,23 @@ void CK_KeenJumpThink(CK_object *obj)
 		obj->nextX = 0;
 	}
 
-	//TODO: Shooting
+	//Shooting
 	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
 	{
 		ck_keenState.shootWasPressed = true;
 		ck_gameState.numShots = 5;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShoot1");
+		switch (ck_inputFrame.yDirection)
+		{
+		case -1:
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShootUp1");
+			break;
+		case 0:
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShoot1");
+			break;
+		case 1:
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShootDown1");
+			break;
+		}
 		return;
 	}
 
@@ -720,7 +731,25 @@ void CK_KeenPogoThink(CK_object *obj)
 		obj->velX = 0;
 	}
 
-	//TODO: Shooting
+	//Shooting
+	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
+	{
+		ck_keenState.shootWasPressed = true;
+		ck_gameState.numShots = 5;
+		switch (ck_inputFrame.yDirection)
+		{
+		case -1:
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShootUp1");
+			break;
+		case 0:
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShoot1");
+			break;
+		case 1:
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShootDown1");
+			break;
+		}
+		return;
+	}
 	
 	//Stop pogoing if Alt pressed
 	if (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed)
@@ -1116,10 +1145,6 @@ void CK_KeenSpawnShot(CK_object *obj)
 			CK_SpawnShot(obj->posX - 128, obj->posY + 64, 6);
 		}
 	}
-	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenShootUp1"))
-	{
-		CK_SpawnShot(obj->posX + 80, obj->posY - 160, 0);
-	}
 	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShoot2"))
 	{
 		if (obj->xDirection == 1)
@@ -1133,6 +1158,18 @@ void CK_KeenSpawnShot(CK_object *obj)
 			//reason, it's not working without it. (Shot is invisible?)
 			CK_SpawnShot(obj->posX - 128, obj->posY + 32, 6);
 		}
+	}
+	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShootDown2"))
+	{
+		CK_SpawnShot(obj->posX + 128, obj->posY + 288, 4);
+	}
+	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShootUp2"))
+	{
+		CK_SpawnShot(obj->posX + 80, obj->posY - 160, 0);
+	}
+	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenShootUp1"))
+	{
+		CK_SpawnShot(obj->posX + 80, obj->posY - 160, 0);
 	}
 	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShoot1"))
 	{
