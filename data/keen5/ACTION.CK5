@@ -40,6 +40,9 @@
 %action CK_ACT_keenShoot1 146 151 ScaledOnce 0 1 9 0 0x20 CK_KeenSpawnShot CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenShoot2
 %action CK_ACT_keenShoot2 146 151 ScaledOnce 0 1 9 0 0x20 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
 
+%action CK_ACT_keenShootUp1 150 150 ScaledOnce 0 1 9 0 0x20 CK_KeenSpawnShot CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenShootUp2
+%action CK_ACT_keenShootUp2 150 150 ScaledOnce 0 1 9 0 0x20 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
+
 %action CK_ACT_keenJump1 121 113 Frame 0 0 0 0 0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJump2
 %action CK_ACT_keenJump2 122 114 Frame 0 0 0 0 0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
 
@@ -94,6 +97,12 @@
 # Items
 %action CK5_act_item 0 0 UnscaledOnce 0 0 20 0 0 CK5_PointItem NULL CK_BasicDrawFunc1 CK5_act_item2
 %action CK5_act_item2 0 0 UnscaledOnce 0 0 20 0 0 CK5_PointItem NULL CK_BasicDrawFunc1 CK5_act_item
+
+
+%action CK_ACT_VitalinNotify1 203 203 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_VitalinNotify2
+%action CK_ACT_VitalinNotify2 204 204 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_VitalinNotify3
+%action CK_ACT_VitalinNotify3 205 205 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_VitalinNotify4
+%action CK_ACT_VitalinNotify4 206 206 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
 # Platforms
 %action CK5_act_redBlockPlatform 446 446 Frame 0 0 0 0 0 CK5_BlockPlatform NULL CK_BasicDrawFunc1 NULL

@@ -78,6 +78,25 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 	notify->clipped = false;
 }
 
+void CK_GetVitalin(int tileX, int tileY)
+{
+	CK_object *notify = CK_GetNewObj(true);
+	notify->type = 1;
+	notify->clipped = false;
+	notify->zLayer = 3;
+	notify->posX = tileX << 8;
+	notify->posY = tileY << 8;
+	
+	CK_SetAction(notify, CK_GetActionByName("CK_ACT_VitalinNotify1"));
+}
+
+void CK_KeenGetTileVitalin(int tileX, int tileY)
+{
+	RF_ReplaceTiles(&emptyTile, 1, tileX, tileY, 1, 1);
+
+	CK_GetVitalin(tileX, tileY);
+}
+
 void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 {
 	for (int y = obj->clipRects.tileY1; y <= obj->clipRects.tileY2; ++y)
@@ -88,6 +107,9 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 			switch (specialTileInfo)
 			{
 			case 0: break;
+			case 4:
+				CK_KeenGetTileVitalin(x,y);
+				break;
 			case 21:
 			case 22:
 			case 23:
@@ -250,6 +272,20 @@ void CK_HandleInputOnGround(CK_object *obj)
 		return;
 	}
 
+	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
+	{
+		ck_gameState.numShots++;
+		if (ck_inputFrame.yDirection == -1)
+		{
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenShootUp1");
+		}
+		else
+		{
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenShoot1");
+		}
+		return;
+	}
+
 	if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
 	{
 		ck_keenState.jumpWasPressed = true;
@@ -270,13 +306,6 @@ void CK_HandleInputOnGround(CK_object *obj)
 		obj->nextY = 0;
 		ck_keenState.jumpTimer = 24;
 		return;
-	}
-
-	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
-	{
-		ck_gameState.numShots++;
-
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenShoot1");
 	}
 
 	if (ck_inputFrame.yDirection == -1)
@@ -1086,6 +1115,10 @@ void CK_KeenSpawnShot(CK_object *obj)
 		{
 			CK_SpawnShot(obj->posX - 128, obj->posY + 64, 6);
 		}
+	}
+	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenShootUp1"))
+	{
+		CK_SpawnShot(obj->posX + 80, obj->posY - 160, 0);
 	}
 	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShoot2"))
 	{
