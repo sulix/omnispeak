@@ -435,7 +435,9 @@ void CK_NormalCamera(CK_object *obj)
 
 	int deltaX = 0, deltaY = 0;	// in Units
 
-	int screenYpx = 140 << 4;
+	// The indended y-coordinate of the bottom of the keen sprite
+	// in pixels from the top of the screen.
+	static int screenYpx = 140 << 4;
 
 	// Keep keen's x-coord between 144-192 pixels
 	if (obj->posX < (rf_scrollXUnit + (144 << 4)))
@@ -445,29 +447,53 @@ void CK_NormalCamera(CK_object *obj)
 		deltaX = obj->posX - (rf_scrollXUnit+(192 << 4));
 
 
-	// Keen should be able to look down.
-	if (obj->currentAction == CK_GetActionByName("CK_ACT_KeenLookDown2"))
+	// Keen should be able to look up and down.
+	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookUp2"))
 	{
-		if (screenYpx - CK_GetTicksPerFrame() < 33)
+		int pxToMove;
+		if (screenYpx + CK_GetTicksPerFrame() > 167)
 		{
-			screenYpx = 33;
-			deltaY = ((screenYpx - 33) << 4);
+			// Keen should never be so low on the screen that his
+			// feet are more than 167 px from the top.
+			pxToMove = 167 - screenYpx;
 		}
 		else
 		{
-			deltaY = 0;
+			// Move 1px per tick.
+			pxToMove = CK_GetTicksPerFrame();
 		}
+		screenYpx += pxToMove;
+		deltaY = (-pxToMove) << 4;
+
 	}
+	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookDown2"))
+	{
+		int pxToMove;
+		if (screenYpx - CK_GetTicksPerFrame() < 33)
+		{
+			// Keen should never be so high on the screen that his
+			// feet are fewer than 33 px from the top.
+			pxToMove = screenYpx - 33;
+		}
+		else
+		{
+			// Move 1px/tick.
+			pxToMove = CK_GetTicksPerFrame();
+		}
+		screenYpx -= pxToMove;
+		deltaY = pxToMove << 4;
+	}
+
 	// If we're attached to the ground, or otherwise awesome
 	// do somethink inscrutible.
-	else if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_KeenHang1"))
+	if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_KeenHang1"))
 	{
 		deltaY += obj->deltaPosY;
 
 		//TODO: Something hideous
-		if (screenYpx + rf_scrollYUnit + deltaY !=  (obj->clipRects.unitY2))
+		if ((screenYpx << 4) + rf_scrollYUnit + deltaY !=  (obj->clipRects.unitY2))
 		{
-			int adjAmt = ((screenYpx + rf_scrollYUnit + deltaY - obj->clipRects.unitY2));
+			int adjAmt = (((screenYpx << 4) + rf_scrollYUnit + deltaY - obj->clipRects.unitY2));
 			int adjAmt2 = abs(adjAmt / 8);
 
 			adjAmt2 = (adjAmt2 <= 48)?adjAmt2:48;
@@ -480,8 +506,14 @@ void CK_NormalCamera(CK_object *obj)
 		}
 				
 	}
+	else
+	{
+		// Reset to 140px.
+		screenYpx = 140;
+	}
 	
 
+	// Scroll the screen to keep keen between 33 and 167 px.
 	if (obj->clipRects.unitY2 < (rf_scrollYUnit + deltaY + (32 << 4)))
 		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + (32 << 4));
 
@@ -498,8 +530,10 @@ void CK_NormalCamera(CK_object *obj)
 		if (deltaY > 255) deltaY = 255;
 		else if (deltaY < -255) deltaY = -255;
 
+		// Do the scroll!
 		RF_SmoothScroll(deltaX, deltaY);
 	
+		// Update the rectangle of active objects
 		ck_activeX0Tile = max((rf_scrollXUnit >> 8) - 6, 0);
 		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + 6, 0);
 		ck_activeY0Tile = max((rf_scrollYUnit >> 8) - 6, 0);
