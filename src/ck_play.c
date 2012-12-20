@@ -347,7 +347,22 @@ void hackdraw(CK_object *me)
 
 void CK_DebugKeys()
 {
-	if(IN_GetKeyState(IN_SC_M))
+	if (IN_GetKeyState(IN_SC_J))
+	{
+		ck_gameState.jumpCheat = !ck_gameState.jumpCheat;
+		//TODO: Something here?
+		US_CenterWindow(18,3);
+
+		if (ck_gameState.jumpCheat)
+			US_CPrint("\nJump cheat ON");
+		else
+			US_CPrint("\nJump cheat OFF");
+
+		VL_Present();
+		IN_WaitKey();
+	}
+
+	if (IN_GetKeyState(IN_SC_M))
 	{
 		CK_DebugMemory();
 	}

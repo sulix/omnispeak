@@ -474,6 +474,14 @@ void CK_KeenReadThink(CK_object *obj)
 
 void CK_KeenJumpThink(CK_object *obj)
 {
+	// Handle Jump Cheat
+	if (ck_gameState.jumpCheat && ck_keenState.jumpIsPressed)
+	{
+		obj->velY = -40;
+		ck_keenState.jumpTimer = 18;
+		ck_keenState.jumpWasPressed = true;
+	}	 
+
 	if (ck_keenState.jumpTimer)
 	{
 		if (ck_keenState.jumpTimer <= CK_GetTicksPerFrame())
@@ -484,7 +492,10 @@ void CK_KeenJumpThink(CK_object *obj)
 		else
 		{
 			obj->nextY = obj->velY * CK_GetTicksPerFrame();
-			ck_keenState.jumpTimer -= CK_GetTicksPerFrame();
+			if (!ck_gameState.jumpCheat)
+			{
+				ck_keenState.jumpTimer -= CK_GetTicksPerFrame();
+			}
 		}
 
 		// Stop moving up if we've let go of control.
@@ -579,7 +590,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 	}
 
 	// Did we hit our head on the ceiling?
-	if (obj->bottomTI)
+	if (obj->bottomTI && !ck_gameState.jumpCheat)
 	{
 		//TODO: Something to do with poles (push keen into the centre)
 		if (obj->bottomTI == 17)	//Pole
@@ -782,7 +793,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 			obj->velX = 0;
 			obj->posX = (obj->clipRects.tileXmid << 8) - 32;
 		}
-		else
+		else if (!ck_gameState.jumpCheat)
 		{
 			//TODO: PlaySound
 

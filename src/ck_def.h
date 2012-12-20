@@ -34,6 +34,8 @@ typedef struct CK_GameState
 						// 6 - ???
 						// 15 - Destroyed QED (Keen 5)
 	int numShots;
+
+	bool jumpCheat;				// Is the jump cheat enabled?
 } CK_GameState;
 
 extern CK_GameState ck_gameState;
