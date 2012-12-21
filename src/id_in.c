@@ -205,14 +205,12 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 
 
 
+		printf("[%d] Got a demo ctrl byte %d: xd = %d, yd= %d, jmp = %d, pgo = %d\n",in_demoBuf[in_demoPtr], ctrlByte, controls->xDirection, controls->yDirection, controls->jump, controls->pogo);
 		// Delay for n frames.
-		if (in_demoBuf[in_demoPtr])
-			(in_demoBuf[in_demoPtr])--;
-
+		(in_demoBuf[in_demoPtr])--;
 		if (!in_demoBuf[in_demoPtr])
 		{
 			in_demoPtr += 2;
-			printf("Got a demo ctrl byte %d: xd = %d, yd= %d, jmp = %d, pgo = %d\n", ctrlByte, controls->xDirection, controls->yDirection, controls->jump, controls->pogo);
 			if (in_demoPtr >= in_demoBytes)
 				in_demoState = IN_Demo_PlayDone;
 		}

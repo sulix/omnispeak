@@ -255,11 +255,11 @@ void CK_KeenRunningThink(CK_object *obj)
 	if (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed)
 	{
 		ck_keenState.pogoWasPressed = true;
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo1");
 		obj->velX = obj->xDirection * 16;
 		obj->velY = -48;
 		obj->nextX = 0;
 		ck_keenState.jumpTimer = 24;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo1");
 		return;
 	}
 
@@ -280,6 +280,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 
 	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
 	{
+		ck_keenState.shootWasPressed = true;
 		ck_gameState.numShots++;
 		if (ck_inputFrame.yDirection == -1)
 		{
@@ -306,9 +307,9 @@ void CK_HandleInputOnGround(CK_object *obj)
 	if (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed)
 	{
 		ck_keenState.pogoWasPressed = true;
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo1");
 		obj->velX = 0;
 		obj->velY = -48;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo1");
 		obj->nextY = 0;
 		ck_keenState.jumpTimer = 24;
 		return;
@@ -332,7 +333,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 
 void CK_KeenStandingThink(CK_object *obj)
 {
-	if (ck_inputFrame.xDirection || ck_inputFrame.yDirection || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed || IN_GetLastScan(IN_SC_Space))
+	if (ck_inputFrame.xDirection || ck_inputFrame.yDirection || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed || ck_keenState.shootIsPressed )
 	{
 		obj->user1 = obj->user2 = 0;	//Idle Time + Idle State
 		CK_HandleInputOnGround(obj);
@@ -465,7 +466,7 @@ void CK_KeenRunDrawFunc(CK_object *obj)
 
 void CK_KeenReadThink(CK_object *obj)
 {
-	if (IN_GetKeyState(IN_SC_LeftArrow) || IN_GetKeyState(IN_SC_RightArrow))
+	if (ck_inputFrame.xDirection != 0 || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed)
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenStowBook1");
 		obj->user1 = obj->user2 = 0;
@@ -567,7 +568,7 @@ void CK_KeenJumpThink(CK_object *obj)
 	{
 		ck_keenState.pogoWasPressed = true;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo2");
-		ck_keenState.jumpTimer = 0;
+		//ck_keenState.jumpTimer = 0;
 		return;
 	}
 
@@ -634,7 +635,15 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 				obj->user1 = obj->user2 = 0;	// Being on the ground is boring.
 	
 				//TODO: Finish these
-				if (ck_inputFrame.xDirection)
+				if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShoot1"))
+				{
+					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenShoot1"));
+				}
+				else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShootUp1"))
+				{
+					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenShootUp1"));
+				}	
+				else if (ck_inputFrame.xDirection)
 				{
 					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenRun1"));
 				}
@@ -1226,7 +1235,7 @@ void CK_KeenSpawnShot(CK_object *obj)
 void CK_KeenFall(CK_object *obj)
 {
 	CK_PhysGravityHigh(obj);
-	obj->nextX = obj->xDirection * CK_GetTicksPerFrame();
+	obj->nextX = obj->velX * CK_GetTicksPerFrame();
 }
 
 void CK_KeenSetupFunctions()

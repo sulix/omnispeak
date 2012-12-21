@@ -383,32 +383,63 @@ void CK_HandleInput()
 {
 	IN_ReadControls(0, &ck_inputFrame);
 
-	// Pretty certain this is actually wrong. Oops!
-	//ck_keenState.jumpWasPressed = ck_keenState.jumpIsPressed;
-	//ck_keenState.pogoWasPressed = ck_keenState.pogoIsPressed;
-	//ck_keenState.shootWasPressed = ck_keenState.shootIsPressed;
+	static int pogoTimer = 0;
 
-	ck_keenState.jumpIsPressed = ck_inputFrame.jump;
-	ck_keenState.pogoIsPressed = ck_inputFrame.pogo;
-
-	if (ck_demoEnabled) // Two-button firing mode.
+	if (ck_demoEnabled || true) // Two-button firing mode.
 	{
 		ck_keenState.shootIsPressed = ck_inputFrame.jump && ck_inputFrame.pogo;
 		if (ck_keenState.shootIsPressed)
 		{
 			ck_keenState.jumpWasPressed = ck_keenState.jumpIsPressed = false;
-			ck_keenState.pogoIsPressed = false;
+			ck_keenState.pogoWasPressed = ck_keenState.pogoIsPressed = false;
+		}
+		else
+		{
+			ck_keenState.shootWasPressed = false;
+			ck_keenState.jumpWasPressed = false;
+			ck_keenState.jumpIsPressed = ck_inputFrame.jump;
+			
+			ck_keenState.pogoWasPressed = false;
+			if (ck_inputFrame.pogo)
+			{
+				// Here be dragons!
+				// In order to better emulate the original trilogy's controls, a delay
+				// is introduced when pogoing in two-button firing.
+				if (pogoTimer < 9)
+				{
+					pogoTimer += CK_GetTicksPerFrame();
+				}
+				else
+				{
+					ck_keenState.pogoIsPressed = true;
+				}
+			}
+			else
+			{
+				// If the player lets go of pogo, pogo immediately.
+				if (pogoTimer)
+				{
+					ck_keenState.pogoIsPressed = true;
+				}
+				else
+				{
+					ck_keenState.pogoIsPressed = false;
+				}
+				pogoTimer = 0;
+			}
 		}
 	}
 	else
 	{
+		ck_keenState.jumpIsPressed = ck_inputFrame.jump;
+		ck_keenState.pogoIsPressed = ck_inputFrame.pogo;
 		if (IN_GetKeyState(IN_SC_Space)) ck_keenState.shootIsPressed = true;
 		else ck_keenState.shootIsPressed = false;
+		if (!ck_keenState.jumpIsPressed) ck_keenState.jumpWasPressed = false;
+		if (!ck_keenState.pogoIsPressed) ck_keenState.pogoWasPressed = false;
+		if (!ck_keenState.shootIsPressed) ck_keenState.shootWasPressed = false;
 	}
 
-	if (!ck_keenState.jumpIsPressed) ck_keenState.jumpWasPressed = false;
-	if (!ck_keenState.pogoIsPressed) ck_keenState.pogoWasPressed = false;
-	if (!ck_keenState.shootIsPressed) ck_keenState.shootWasPressed = false;
 
 	CK_CheckKeys();
 
@@ -606,7 +637,8 @@ int CK_PlayLoop()
 		US_InitRndT(false);
 	else
 		US_InitRndT(true);
-	//Hack!
+
+	// Should check this, from k5disasm
 	ck_numTotalTics = 3;
 	ck_ticsThisFrame = 3;
 
@@ -620,8 +652,8 @@ int CK_PlayLoop()
 	{
 
 		IN_PumpEvents();
-		CK_HandleInput();
 		CK_SetTicsPerFrame();
+		CK_HandleInput();
 		//int xd = 0, yd = 0;
 		//if (IN_GetKeyState(IN_SC_LeftArrow)) xd -= 12;
 		//if (IN_GetKeyState(IN_SC_RightArrow)) xd += 12;
