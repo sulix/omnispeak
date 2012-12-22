@@ -2,6 +2,7 @@
 #include "ck_phys.h"
 #include "ck_play.h"
 #include "ck_act.h"
+#include "id_heads.h"
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_ti.h"

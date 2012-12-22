@@ -6,6 +6,7 @@
 #include "id_rf.h"
 #include "ck_def.h"
 #include "ck_play.h"
+#include "ck_game.h"
 #include "ck_act.h"
 #include "ck5_ep.h"
 

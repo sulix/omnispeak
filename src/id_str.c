@@ -52,7 +52,6 @@ void* STR_LookupEntry(STR_Table *tabl, const char* str)
 bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
 {
 	int hash = STR_HashString(str) % tabl->size;
-	if (tabl->arr[hash].str) printf("[DEBUG] WARNING: str %s has hash collision with %s (hash: %x %% %d == %x)\n",str,tabl->arr[hash].str,STR_HashString(str),tabl->size, hash);
 	for (size_t i = hash; ; i = (i+1)%tabl->size)
 	{
 		if (tabl->arr[i].str == 0)

@@ -1,5 +1,6 @@
 //#inclucd "id_heads.h"
 #include "ck_play.h"
+#include "ck_game.h"
 #include "ck_def.h"
 #include "id_ca.h"
 #include "id_in.h"
@@ -7,6 +8,7 @@
 #include "id_rf.h"
 #include "id_vl.h"
 
+#include "ck_act.h"
 #include "ck5_ep.h"
 
 #include <stdio.h> /* For printf() debugging */
@@ -319,10 +321,7 @@ void CK_RunAction(CK_object *obj)
 			prevAction = obj->currentAction;
 		}
 	
-		//TODO: This should not be needed.	
-		if (!obj->currentAction)
-			break;
-	}
+}
 	
 	if (!obj->currentAction)
 	{
@@ -385,7 +384,7 @@ void CK_HandleInput()
 
 	static int pogoTimer = 0;
 
-	if (ck_demoEnabled || true) // Two-button firing mode.
+	if (ck_demoEnabled) // Two-button firing mode.
 	{
 		ck_keenState.shootIsPressed = ck_inputFrame.jump && ck_inputFrame.pogo;
 		if (ck_keenState.shootIsPressed)

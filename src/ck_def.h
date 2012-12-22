@@ -124,4 +124,9 @@ extern CK_keenState ck_keenState;
 extern IN_ControlFrame ck_inputFrame;
 extern int ck_currentMapNumber;
 void CK_SpawnKeen(int tileX, int tileY, int direction);
+
+void CK_HandleDemoKeys();
+void CK_KeenRidePlatform(CK_object *obj);
+void CK_KeenSetupFunctions();
+
 #endif
