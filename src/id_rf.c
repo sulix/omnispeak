@@ -59,12 +59,23 @@ static int rf_scrollYMaxUnit;
 #define RF_MAX_SPRITETABLEENTRIES 48
 #define RF_NUM_SPRITE_Z_LAYERS 4
 
+// Rectangle of previous sprite position.
+typedef struct RF_SpriteEraser
+{
+	int pxX;
+	int pxY;
+	int pxW;
+	int pxH;
+} RF_SpriteEraser;
+
 // Pool from which sprite draw entries are allocated.
 RF_SpriteDrawEntry rf_spriteTable[RF_MAX_SPRITETABLEENTRIES];
 RF_SpriteDrawEntry *rf_freeSpriteTableEntry;
 
 RF_SpriteDrawEntry *rf_firstSpriteTableEntry[RF_NUM_SPRITE_Z_LAYERS];
 
+int rf_freeSpriteEraserIndex = 0;
+RF_SpriteEraser rf_spriteErasers[RF_MAX_SPRITETABLEENTRIES];
 // Animated tile management
 // (This is hairy)
 
@@ -87,7 +98,6 @@ typedef struct RF_OnscreenAnimTile
 	struct RF_OnscreenAnimTile *next;
 	struct RF_OnscreenAnimTile *prev;
 } RF_OnscreenAnimTile;
-
 #define RF_MAX_ANIMTILETIMERS 180
 #define RF_MAX_ONSCREENANIMTILES 90
 
@@ -96,6 +106,7 @@ RF_AnimTileTimer rf_animTileTimers[RF_MAX_ANIMTILETIMERS];
 
 RF_OnscreenAnimTile rf_onscreenAnimTiles[RF_MAX_ONSCREENANIMTILES];
 RF_OnscreenAnimTile *rf_firstOnscreenAnimTile, *rf_freeOnscreenAnimTile;
+
 
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical)
 {
@@ -428,6 +439,8 @@ void RF_NewMap(int mapNum)
 	RFL_SetupSpriteTable();
 	RF_MarkTileGraphics();
 
+	rf_freeSpriteEraserIndex = 0;
+	
 	// Set-up a two-tile wide border
 	RF_SetScrollBlock(0,1,true);
 	RF_SetScrollBlock(0,CA_MapHeaders[mapNum]->height-2,true);
@@ -712,6 +725,20 @@ void RF_SmoothScroll(int scrollXdelta, int scrollYdelta)
 
 static int rf_numSpriteDraws;
 
+void RF_PlaceEraser(int pxX, int pxY, int pxW, int pxH)
+{
+	
+	rf_spriteErasers[rf_freeSpriteEraserIndex].pxX = pxX + rf_scrollXUnit >> 4;
+	rf_spriteErasers[rf_freeSpriteEraserIndex].pxY = pxY + rf_scrollYUnit >> 4;
+	rf_spriteErasers[rf_freeSpriteEraserIndex].pxW = pxW;
+	rf_spriteErasers[rf_freeSpriteEraserIndex].pxH = pxH;
+	rf_freeSpriteEraserIndex++;
+}
+
+void RF_EraseRegion(int pxX, int pxY, int pxW, int pxH)
+{
+	
+}
 
 void RF_FindSpriteCirle(RF_SpriteDrawEntry *de)
 {
@@ -758,6 +785,19 @@ void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
 	RF_FindSpriteCirle(*drawEntry);
 }
 
+void RFL_ProcessSpriteErasers()
+{
+	for (int i = 0; i < rf_freeSpriteEraserIndex; ++i)
+	{
+		int x = rf_spriteErasers[i].pxX - (rf_scrollXUnit >> 4);
+		int y = rf_spriteErasers[i].pxY - (rf_scrollYUnit >> 4);
+		printf("Erasing sprite (what joy!): %d, %d (w:%d,h:%d)\n",x, y, rf_spriteErasers[i].pxW, rf_spriteErasers[i].pxH);
+		VL_SurfaceToScreen(rf_tileBuffer, x, y, x, y, rf_spriteErasers[i].pxW, rf_spriteErasers[i].pxH);
+	}
+	
+	//Reset
+	rf_freeSpriteEraserIndex = 0;
+}
 
 void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int chunk, bool allWhite, int zLayer)
 {
@@ -829,7 +869,17 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	sde->zLayer = zLayer;
 	sde->x = (unitX >> 4);
 	sde->y = (unitY >> 4);
+	sde->sw = VH_GetSpriteTableEntry(sprite_number).width*8;
+	sde->sh = VH_GetSpriteTableEntry(sprite_number).height;
 	
+	//TODO: Work out how to do scrolling before doing this.
+#if 0
+	rf_spriteErasers[rf_freeSpriteEraserIndex].pxX = sde->x;
+	rf_spriteErasers[rf_freeSpriteEraserIndex].pxY = sde->y;
+	rf_spriteErasers[rf_freeSpriteEraserIndex].pxW = sde->sw;
+	rf_spriteErasers[rf_freeSpriteEraserIndex].pxH = sde->sh;
+	rf_freeSpriteEraserIndex++;
+#endif
 	*drawEntry = sde;
 }		
 
@@ -867,6 +917,9 @@ void RF_Refresh()
 
 	VL_SurfaceToScreen(rf_tileBuffer,0,0,scrollXpixeloffset,scrollYpixeloffset,320,200);
 
+	//TODO: Work out how to do scrolling before using this
+	//RFL_ProcessSpriteErasers();
+	
 	RFL_DrawSpriteList();
 
 	CA_CacheGrChunk(ca_gfxInfoE.offTiles8m);
