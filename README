@@ -1,0 +1,41 @@
+Omnispeak: A Commander Keen 5 Reimplementation 
+
+Omnispeak is a re-implementation of the Keen:Galaxy engine which aims for
+almost perfect, bug-for-bug compatibility with the original games. Essentially,
+it is a rewrite of the keen 5 engine in modern-ish c99, based on several
+disassembly/decompilation efforts.
+
+I've been working on this on-and-off for a long time, and it is nowhere near
+complete. It should be pretty interesting to dig through the source code, and
+most of the game physics is implemented.
+
+The source is in the src/ directory. You'll want to run 'make' from within there
+to get it compiling. You'll need gcc or a compatible compiler (set your $CC
+variable if need be), and libSDL 1.2 (http://libsdl.org/). When compiled, a
+'keen5e' binary will appear in 'bin/'. You'll need to run this from a directory
+with all of the game's data files, including some resources extracted from the
+executable.
+
+To run, you'll need to take the following files from Keen 5 v1.4, and place them
+in the data/keen5/ directory:
+	* GAMEMAPS.CK5
+	* EGAGRAPH.CK5
+
+To run the game, simply switch to the directory with the data files, and run:
+../../bin/keen5e
+
+The game should then show the title screen. Press a key to start playing level
+one.
+
+Note that this is still very unfinished, and there are no enemies, keen cannot
+die and there is no way to complete the level. You can try to play a different
+level by modifying the source code.
+
+There's a basic webpage for this at:
+http://davidgow.net/keen/omnispeak.html
+
+Patches are most welcome: either use GitHub's "Pull Request" system, or email me
+at david@ingeniumdigital.com.
+
+Have fun,
+-- David Gow
