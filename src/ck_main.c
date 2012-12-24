@@ -131,19 +131,17 @@ void CK_DemoLoop()
 		switch(demoNumber++)
 		{
 		case 0:		// Terminator scroller and Title Screen
-			printf("Showing title screen! (gamestate %d)\n",ck_gameState.levelState);
 			CK_ShowTitleScreen();	//TODO: Move this to an episode struct.
+#ifdef DEMO_LOOP_ENABLED
 			break;
 		case 1:
 			CK_PlayDemo(0);
-			printf("Finished Playing Demo 0 (gs %d)\n",ck_gameState.levelState);
 			break;
 		case 2:
 			// Star Wars story text
 			break;
 		case 3:
 			CK_PlayDemo(1);
-			printf("Finished Playing Demo 1 (gs %d)\n",ck_gameState.levelState);
 			break;
 		case 4:
 			// High Scores
@@ -151,11 +149,12 @@ void CK_DemoLoop()
 			break;
 		case 5:
 			CK_PlayDemo(2);
-			printf("Finished Playing Demo 2 (gs %d)\n",ck_gameState.levelState);
 			break;
 		case 6:
 			CK_PlayDemo(3);
-			printf("Finished Playing Demo 3 (gs %d)\n",ck_gameState.levelState);
+#else
+			CK_HandleDemoKeys();
+#endif
 			demoNumber = 0;
 			break;
 		}

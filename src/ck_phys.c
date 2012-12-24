@@ -118,7 +118,6 @@ void CK_PhysKeenClipDown(CK_object *obj)
 	{
 		int slope = ck_physSlopeHeight[(topTI & 7)][midTileXOffset];
 		int deltaY = (obj->clipRects.tileY2 << 8) + slope - 1 - obj->clipRects.unitY2;
-			printf("KeenClipDown: dx %d, dy %d\n", deltaX, deltaY);
 		if (deltaY <= 0 && -(obj->clipRects.unitY2 - obj->oldRects.unitY2) <= deltaY)
 		{
 			obj->topTI = topTI;
@@ -203,13 +202,6 @@ void CK_PhysClipVert(CK_object *obj)
 			int objYOffset = obj->clipRects.unitY2 - (y*256);
 
 			int dy = (slopeAmt - objYOffset) - 1;
-			//printf("Clipping top (%d := %d): dy: %i slope: %d objYOffset: %d vertDisplace: %d\n", tile, TI_ForeTop(tile), dy, slopeAmt, objYOffset, vertDisplace);
-
-
-
-
-
-			//if ((objYOffset > (slopeAmt - 1)) && ((slopeAmt - 1 - objYOffset) <= vertDisplace))
 			if ((dy < 0) && (dy >= vertDisplace))
 			{
 				obj->topTI = TI_ForeTop(tile);
@@ -268,7 +260,6 @@ void CK_PhysClipHorz(CK_object *obj)
 		if (obj->rightTI)
 		{
 			// Clipping right
-			printf("Clipping Right (%d := %d)\n", tile, TI_ForeRight(tile));
 			// Push us right until we're no-longer intersecting.
 			CK_PhysUpdateX(obj, ((obj->clipRects.tileX1 + 1) << 8) - obj->clipRects.unitX1);
 			return;
@@ -282,7 +273,6 @@ void CK_PhysClipHorz(CK_object *obj)
 		obj->leftTI = TI_ForeLeft(tile);
 		if (obj->leftTI)
 		{
-			printf("clipping left (%d := %d)\n", tile, TI_ForeLeft(tile));
 			// Push us left until we're no-longer intersecting.
 			CK_PhysUpdateX(obj, (obj->clipRects.tileX2 << 8) - 1 - obj->clipRects.unitX2);
 			return;
@@ -452,14 +442,9 @@ void CK_PhysPushX(CK_object *pushee, CK_object *pusher)
 	int deltaX_1 = pusher->clipRects.unitX2 - pushee->clipRects.unitX1;
 	int deltaX_2 = pushee->clipRects.unitX2 - pusher->clipRects.unitX1;
 
-	printf("%d - %d\n",pusher->deltaPosX, pushee->deltaPosX);
-
-	printf("Pushing: %d, %d, %d\n",deltaX_1, deltaX_2, deltaPosX);
-
 	// Push object to the right
 	if ((deltaX_1 > 0) && (deltaX_1 <= deltaPosX))
 	{
-		printf("Pushing right: %d\n",deltaX_1);
 		pushee->nextX = deltaX_1;
 		if (pushee->currentAction->stickToGround)
 			pushee->nextY = -deltaX_1 + 16;
@@ -471,7 +456,6 @@ void CK_PhysPushX(CK_object *pushee, CK_object *pusher)
 	// Push object to the left
 	if (deltaX_2 > 0 && deltaX_2 >= -deltaPosX)
 	{
-		printf("Pushin' left: %d\n",deltaX_2);
 		pushee->nextX = -deltaX_2;
 		if (pushee->currentAction->stickToGround)
 			pushee->nextY = deltaX_2 + 16;
@@ -508,10 +492,8 @@ void CK_SetAction(CK_object *obj, CK_action *act)
 {
 	obj->currentAction = act;
 
-	// This differs slightly from the original keen code.
 	if (act->chunkRight && obj->xDirection > 0) obj->gfxChunk = act->chunkRight;
 	else if (act->chunkLeft) obj->gfxChunk = act->chunkLeft;
-	//else obj->gfxChunk = 0;
 
 	if (obj->gfxChunk == -1) obj->gfxChunk = 0;
 
@@ -522,8 +504,6 @@ void CK_SetAction(CK_object *obj, CK_action *act)
 	bool oldClipping = obj->clipped;
 	obj->clipped = false;
 	CK_PhysUpdateNormalObj(obj);
-	//CK_ResetClipRects(obj);			// This is PhysUdateNormalObj, but should, in this state, reduce to
-	//obj->visible = true;			// ResetClipRects and visible=true
 	obj->clipped = oldClipping;
 
 	//TODO: Handle platforms
@@ -535,10 +515,8 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 {
 	obj->currentAction = act;
 
-	// This differs slightly from the original keen code.
 	if (act->chunkRight && obj->xDirection > 0) obj->gfxChunk = act->chunkRight;
 	else if (act->chunkLeft) obj->gfxChunk = act->chunkLeft;
-	//else obj->gfxChunk = 0;
 
 	if (obj->gfxChunk == -1) obj->gfxChunk = 0;
 

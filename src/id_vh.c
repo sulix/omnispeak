@@ -85,7 +85,6 @@ void VH_DrawSprite(int x, int y, int chunk)
 	
 	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
 
-	//printf("VH_DrawSprite(%d::%d): originX: %d px , originY: %d px\n",spriteNumber, chunk, spr.originX >> 4, spr.originY >> 4);
 	VL_MaskedBlitToScreen(ca_graphChunks[chunk], x + (spr.originX >> 4), y + (spr.originY >> 4) , spr.width*8, spr.height);
 
 }

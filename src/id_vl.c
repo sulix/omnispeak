@@ -152,13 +152,10 @@ void VL_MaskedBlitClipToRGB(void *src,void *dest, int x, int y, int pitch, int w
 	int finalW = min(max(dw-x,0), w);
 	int finalH = min(max(dh-y,0), h);
 
-	//printf("fw: %d fh: %d\n",finalW, finalH);
-
 	for(int sy = initialY; sy < finalH; ++sy)
 	{
 		for(int sx = initialX; sx < finalW; ++sx)
 		{
-			//if (sy+y < 0 || sy+y >= dh || sx+x < 0 || sx+x >= dw) continue;
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * w + sx) & 7));
 			
@@ -292,8 +289,6 @@ void VL_SurfaceToScreen(void *src, int x, int y, int sx, int sy, int sw, int sh)
 void VL_SurfaceToSelf(void *surf, int x, int y, int sx, int sy, int sw, int sh)
 {
 	SDL_Surface *srf = (SDL_Surface *)surf;
-	//VL_SurfaceToSurface(surf,surf,x,y,sx,sy,sw,sh);
-	//printf("VL_SurfaceToSelf: (%d,%d) -> (%d,%d) w: %d, h:%d\n",sx,sy,x,y,sw,sh);
 	SDL_LockSurface(srf);
 	bool directionX = sx > x;
 	bool directionY = sy > y;
@@ -389,13 +384,11 @@ int VL_GetTics(bool wait)
 	{
 		tics = (SDL_GetTicks() - vl_lastFrameTime)/(1000/70);
 	} while (!tics || !wait);
-	//printf("tics: %d\n",tics);
 	return tics;
 }
 
 void VL_Present()
 {
 	vl_lastFrameTime = SDL_GetTicks();
-	//SDL_Delay(1000/35);
 	SDL_Flip(vl_screen);
 }

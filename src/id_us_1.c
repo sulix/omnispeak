@@ -104,7 +104,6 @@ void US_CPrintLine(const char *str)
 	if (w < us_windowW)
 	{
 		int x = us_windowX + ((us_windowW - w)/2);
-		printf("US_CPrintLine(): Window W: %d, X: %d, x = %d, w = %d.\n",us_windowW, us_windowX, x, w);
 		VH_DrawPropString(str, x, us_printY, 3, 0);
 		us_printY += h;
 	}

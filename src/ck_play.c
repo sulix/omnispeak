@@ -11,7 +11,6 @@
 #include "ck_act.h"
 #include "ck5_ep.h"
 
-#include <stdio.h> /* For printf() debugging */
 #include <stdlib.h> /* For abs() */
 #include <string.h> /* For memset() */
 
@@ -112,7 +111,7 @@ CK_object *CK_GetNewObj(bool nonCritical)
 	{
 		if (nonCritical)
 		{
-			printf("Warning: No free spots in objarray! Using temp object\n");
+			//printf("Warning: No free spots in objarray! Using temp object\n");
 			return &tempObj;
 		}
 		else
@@ -139,7 +138,6 @@ CK_object *CK_GetNewObj(bool nonCritical)
 	ck_lastObject = newObj;
 	ck_numObjects++;
 
-	printf("Added object %d\n",ck_numObjects);
 
 	return newObj;
 }
@@ -147,7 +145,6 @@ CK_object *CK_GetNewObj(bool nonCritical)
 
 void CK_RemoveObj(CK_object *obj)
 {
-	printf("Removing object %d\n",ck_numObjects);
 	if (obj == ck_keenObj)
 	{
 		Quit("RemoveObj: Tried to remove the player!");
@@ -179,7 +176,6 @@ int CK_ActionThink(CK_object *obj, int time)
 		{
 			if (obj->timeUntillThink)
 			{
-				printf("ThinkType = 2 // decrementing timeThink %d\n", obj->timeUntillThink);
 				obj->timeUntillThink--;
 			}
 			else
@@ -189,8 +185,6 @@ int CK_ActionThink(CK_object *obj, int time)
 		}
 		return 0;
 	}
-
-	//printf("CK_ActionThink: type: %d actionDelay: %d actionTimer: %d, timeUntillThink: %d\n", action->type, action->timer, obj->actionTimer, obj->timeUntillThink);
 
 	int newTime = time + obj->actionTimer;
 
@@ -276,7 +270,6 @@ int CK_ActionThink(CK_object *obj, int time)
 		{
 			obj->currentAction = action->next;
 			//obj->actionTimer = obj->currentAction->timer;
-			//printf("Changing action: new timer = %d\n",obj->actionTimer);
 		}
 	}
 	return newTime;
@@ -653,11 +646,6 @@ int CK_PlayLoop()
 		IN_PumpEvents();
 		CK_SetTicsPerFrame();
 		CK_HandleInput();
-		//int xd = 0, yd = 0;
-		//if (IN_GetKeyState(IN_SC_LeftArrow)) xd -= 12;
-		//if (IN_GetKeyState(IN_SC_RightArrow)) xd += 12;
-		//if (IN_GetKeyState(IN_SC_UpArrow)) yd -= 12;
-		//if (IN_GetKeyState(IN_SC_DownArrow)) yd += 12;
 
 		// Set, unset active objects.
 		for (CK_object *currentObj = ck_keenObj; currentObj; currentObj = currentObj->next)
@@ -682,7 +670,6 @@ int CK_PlayLoop()
 				//TODO: Add an Episode callback. Ep 4 requires
 				// type 33 to remove int33 (Andy's decomp)
 				currentObj->active = false;
-				printf("Deactivating an object: (%d, %d), (%d, %d)-(%d,%d)\n", currentObj->clipRects.tileX2, currentObj->clipRects.tileY2, ck_activeX0Tile, ck_activeY0Tile, ck_activeX1Tile, ck_activeY1Tile);
 				continue;
 			}
 
@@ -754,7 +741,6 @@ int CK_PlayLoop()
 		VL_ScreenRect((obj->clipRects.unitX1 >> 4) - (rf_scrollXUnit >> 4), (obj->clipRects.unitY1 >> 4) - (rf_scrollYUnit>>4),(obj->clipRects.unitX2 - obj->clipRects.unitX1) >> 4,(obj->clipRects.unitY2 - obj->clipRects.unitY1) >> 4,8);
 		}
 #endif
-		//RF_SmoothScroll(xd,yd);
 		CK_NormalCamera(ck_keenObj);
 		//TODO: Slow-mo, extra VBLs.
 		VL_Present();

@@ -83,8 +83,6 @@ bool CA_LoadFile(char *filename, mm_ptr_t *ptr, int *memsize)
 
 	int amountRead = fread(*ptr,1, length,f);
 
-	printf("LoadFile: read %d of %d bytes from %s.\n",amountRead,length, filename);
-	
 	fclose(f);	
 
 	if (amountRead != length)
@@ -145,7 +143,6 @@ void CAL_HuffExpand(void *src, void *dest, int expLength, ca_huffnode *table)
 			complen++;
 		}
 	}
-	printf("CAL_HuffExpand() Decompressed %d bytes (bitmask %d) to %d bytes.\n", complen, src_bit, expLength);
 }
 	
 #define CA_CARMACK_NEARTAG 0xA700
@@ -180,7 +177,6 @@ void CAL_CarmackExpand(void *src, void *dest, int expLength)
 				srcptr = (uint16_t*)(((uint8_t*)srcptr) + 1);
 				runptr = dstptr - offset;//(uint16_t*)offset;
 				expLength -= count;
-				printf("CAL_CarmackExpand: Got a near tag: count: %d, offset: %d\n",count,offset);
 				while (count--) *(dstptr++) = *(runptr++);
 			}
 		}
@@ -201,7 +197,6 @@ void CAL_CarmackExpand(void *src, void *dest, int expLength)
 				offset = *(srcptr++);
 				runptr = (uint16_t*)dest + offset;//(uint16_t*)offset;
 				expLength -= count;
-				printf("CAL_CarmackExpand: Got a far tag: count %d, offset %d\n",count,offset);
 				while (count--) *(dstptr++) = *(runptr++);
 			}
 		}
@@ -266,7 +261,6 @@ void CAL_RLEWExpand (void *src, void *dest, int expLength, uint16_t rletag)
 			count = *(srcptr++);
 			value = *(srcptr++);
 			expLength -= count*2;
-			printf("CA_RLEWExpand(): Got a run of %d (length %d)\n",value,count);
 			if(expLength < 0) return;
 			for(int i = 0; i < count; ++i) { *(dstptr++) = value; }
 		}
@@ -347,16 +341,17 @@ int CAL_GetGrChunkCompLength(int chunk)
 void CAL_SetupGrFile()
 {
 	//TODO: Setup cfg mechanism for filenames, chunk data.
-	// Read gfxinfoe for data?
 
 	//Load the ?GADICT
 	CA_LoadFile("EGADICT.CK5", (void**)(&ca_gr_huffdict), 0);
 
+	// We don't need to 'OptimizeNodes'.
 	//CAL_OptimizeNodes(ca_gr_huffdict);
 
 	//Load the ?GAHEAD
 	CA_LoadFile("EGAHEAD.CK5", &ca_graphStarts, 0);
 
+	// Read chunk type info from GFEINFO?
 	FILE *gfxinfoe = fopen("GFXINFOE.CK5","rb");
 	fread(&ca_gfxInfoE, 1, sizeof(ca_gfxinfo), gfxinfoe);
 	fclose(gfxinfoe);
@@ -377,7 +372,6 @@ void CAL_ExpandGrChunk(int chunk, void *source)
 		source = (uint8_t*)source+4;
 	}
 
-	printf("CAL_ExpandGrChunk(%d): Chunk length %d bytes.\n", chunk, length);
 	MM_GetPtr(&ca_graphChunks[chunk],length);
 	CAL_HuffExpand(source,ca_graphChunks[chunk],length,ca_gr_huffdict);
 }
@@ -403,7 +397,6 @@ void CA_CacheGrChunk(int chunk)
 	mm_ptr_t compdata;
 	MM_GetPtr(&compdata,compressedLength);
 	int read  = fread(compdata,1,compressedLength, ca_graphHandle);
-	printf("CA_CacheGrChunk(%d): Read %d of %d bytes.\n",chunk, read, compressedLength);
 	CAL_ExpandGrChunk(chunk, compdata);
 	MM_FreePtr(&compdata);
 }
@@ -484,8 +477,6 @@ void CA_CacheMap(int mapIndex)
 
 		
 		int read = fread(compBuffer, 1, planeCompLength, ca_GameMaps);
-		printf("CA_CacheMap: read %d bytes of compressed map data.\n",read);
-
 
 		uint16_t carmackExpanded = *compBuffer;
 
@@ -515,7 +506,7 @@ void CA_Startup()
 	CA_CacheGrChunk(ca_gfxInfoE.hdrSprites);
 
 	// Load some other chunks needed by the game
-	CA_CacheGrChunk(88);	//TODO: What was this again
+	CA_CacheGrChunk(88);	//TODO: What was this again?
 	CA_CacheGrChunk(3);	// Main font
 
 	// Setup the map file

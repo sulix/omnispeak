@@ -57,7 +57,6 @@ void CK_SpawnKeen(int tileX, int tileY, int direction)
 	ck_keenObj->posY = (tileY << 8) - 241;
 	ck_keenObj->xDirection = direction;
 	ck_keenObj->yDirection = 1;
-	printf ("Keen Spawning!\n");
 	CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_keenStanding"));
 }
 
@@ -181,21 +180,16 @@ void CK_KeenRidePlatform(CK_object *obj)
 
 bool CK_KeenTryClimbPole(CK_object *obj)
 {
-	//TODO: Something strange here? Ticks?
 	if (CK_GetNumTotalTics() > ck_keenState.poleGrabTime && CK_GetNumTotalTics() - ck_keenState.poleGrabTime < 19)
 		return false;
 
 	ck_keenState.poleGrabTime = 0;
 
-	printf ("Trying to climb  a pole\n");
-
 	int candidateTile = CA_TileAtPos(obj->clipRects.tileXmid, ((ck_inputFrame.yDirection==-1)?((obj->clipRects.unitY1+96)>>8):(obj->clipRects.tileY2+1)), 1);
 
-	printf("tile: %d :: %d\n", candidateTile, TI_ForeMisc(candidateTile));	
 
 	if ((TI_ForeMisc(candidateTile) & 0x7F) == 1)
 	{
-		printf("Climbing a pole\n");
 		obj->posX = 128 + ((obj->clipRects.tileXmid - 1) << 8);
 		obj->nextX = 0;
 		obj->nextY = 32 * ck_inputFrame.yDirection;
@@ -226,8 +220,6 @@ void CK_KeenRunningThink(CK_object *obj)
 		if (CK_KeenTryClimbPole(obj)) return;
 	}
 
-	/*if (IN_GetKeyState(IN_SC_LeftArrow)) obj->xDirection = -1;
-	else obj->xDirection = 1;*/
 	obj->xDirection = ck_inputFrame.xDirection;
 
 	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
@@ -391,7 +383,6 @@ void CK_KeenLookDownThink(CK_object *obj)
 	{
 		ck_keenState.jumpWasPressed = true;
 
-		printf("Tryin' to jump down\n");
 		//If the tiles below the player are blocking on any side but the top, they cannot be jumped through
 		int tile1 = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2, 1);
 		int tile2 = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2+1, 1);
@@ -404,7 +395,6 @@ void CK_KeenLookDownThink(CK_object *obj)
 		#define max(a,b) ((a>b)?a:b)
 
 		int deltay = max(CK_GetTicksPerFrame(),4) << 4;
-		printf("dy: %d\n",deltay);
 	
 		//Moving platforms
 		if (ck_keenState.platform)
@@ -664,14 +654,12 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 
 		if (temp6 < temp8 && obj->clipRects.unitY1 >= temp8)
 		{
-			printf("Preparing to hang!\n");
 			if (ck_inputFrame.xDirection == -1)
 			{
 				int tileX = obj->clipRects.tileX1 - ((obj->rightTI)?1:0);
 				int tileY = temp10;
 				int upperTile = CA_TileAtPos(tileX, tileY, 1);
 				int lowerTile = CA_TileAtPos(tileX, tileY+1, 1);
-				printf("[%d,%d]: RightTI: %d, UpperTile = %d [%d], LowerTile = %d, [%d]\n",tileX, tileY, obj->rightTI, upperTile, TI_ForeRight(upperTile), lowerTile, TI_ForeRight(lowerTile));
 				if ( (!TI_ForeLeft(upperTile) && !TI_ForeRight(upperTile) && !TI_ForeTop(upperTile) && !TI_ForeBottom(upperTile)) &&
 					TI_ForeRight(lowerTile) && TI_ForeTop(lowerTile))
 				{
@@ -681,8 +669,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 					obj->posY = (temp8 - 64);
 					obj->velY = obj->deltaPosY = 0;
 					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenHang1"));
-					printf("Hung left!\n");
-				} else printf("Couldn't hang left!\n");
+				}
 			}
 			else if (ck_inputFrame.xDirection == 1)
 			{
@@ -857,10 +844,8 @@ void CK_KeenSpecialDrawFunc(CK_object *obj)
 
 void CK_KeenHangThink(CK_object *obj)
 {
-	printf("Just hangin'...\n");
 	if (ck_inputFrame.yDirection == -1 || ck_inputFrame.xDirection == obj->xDirection)
 	{
-		printf("Goin' up!\n");
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPull1");
 
 		obj->clipped = false;
@@ -882,7 +867,6 @@ void CK_KeenHangThink(CK_object *obj)
 	}
 	else if (ck_inputFrame.yDirection == 1 || (ck_inputFrame.xDirection && ck_inputFrame.xDirection != obj->xDirection))
 	{
-		printf("Goin' Down!\n");
 		// Drop down.
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
 		obj->clipped = true;
@@ -899,21 +883,17 @@ void CK_KeenPullThink1(CK_object *obj)
 
 void CK_KeenPullThink2(CK_object *obj)
 {
-	printf("PullThink2\n");
 	obj->nextX = obj->xDirection * 128;
 	obj->nextY = -128;
 }
 
 void CK_KeenPullThink3(CK_object *obj)
 {
-	printf("PullThink3\n");
 	obj->nextY = -128;
 }
 
 void CK_KeenPullThink4(CK_object *obj)
 {
-	printf("PullThink4\n");
-	obj->nextY = 128;
 	obj->clipped = true;
 	obj->zLayer = 1;
 }
@@ -928,7 +908,6 @@ void CK_KeenPoleHandleInput(CK_object *obj)
 	{
 		ck_keenState.shootWasPressed = true;
 
-		printf("Shooting while on pole! Direction %d\n",ck_inputFrame.yDirection);
 		switch (ck_inputFrame.yDirection)
 		{
 		case -1:
@@ -1035,7 +1014,6 @@ void CK_KeenPoleDownThink(CK_object *obj)
 
 	if ((TI_ForeMisc(tileUnderneath) & 127) != 1)
 	{
-		printf("Leaving pole (tileU = %d : %d)\n",tileUnderneath, TI_ForeMisc(tileUnderneath));
 		// We're no longer on a pole.
 		//TODO: Play sound 20
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
@@ -1128,7 +1106,6 @@ void CK_SpawnShot(int x, int y, int direction)
 void CK_ShotHit(CK_object *obj)
 {
 	//TODO: Implement obj_ classes.
-	printf("ShotHit!\n");
 	CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenShotHit1"));
 }
 
@@ -1160,7 +1137,6 @@ void CK_SimpleDrawFunc(CK_object *obj)
 
 void CK_KeenSpawnShot(CK_object *obj)
 {
-	printf("Spawning shot!\n");
 	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenShoot1"))
 	{
 		if (obj->xDirection == 1)

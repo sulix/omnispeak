@@ -310,8 +310,6 @@ void RFL_RemoveAnimCol(int tileX)
 	prev = 0;
 	ost = rf_firstOnscreenAnimTile;
 
-	//printf("RFL_RemoveAnimCol: %d\n", tileX);
-
 	while (ost)
 	{
 		if (ost->tileX == tileX)
@@ -339,8 +337,6 @@ void RFL_RemoveAnimRow(int tileY)
 	
 	ost = rf_firstOnscreenAnimTile;
 
-	//printf("RFL_RemoveAnimRow: %d\n", tileY);
-	
 	while (ost)
 	{
 		if (ost->tileY == tileY)
@@ -374,7 +370,6 @@ void RFL_AnimateTiles()
 			if (rf_animTileTimers[i].tileNumber & 0x8000)
 			{
 				int tile = rf_animTileTimers[i].tileNumber & ~0x8000;
-				//printf("RFL_AnimateTiles: Updating fore %d to %d\n", tile, tile + TI_ForeAnimTile(tile));
 				tile += TI_ForeAnimTile(tile);
 				rf_animTileTimers[i].timeToSwitch += TI_ForeAnimTime(tile);
 				rf_animTileTimers[i].tileNumber = tile | 0x8000;
@@ -382,7 +377,6 @@ void RFL_AnimateTiles()
 			else
 			{
 				int tile = rf_animTileTimers[i].tileNumber;
-				//printf("RFL_AnimateTiles: Updating back %d to %d\n", tile, tile + TI_BackAnimTile(tile));
 				tile += TI_BackAnimTile(tile);
 				rf_animTileTimers[i].timeToSwitch += TI_BackAnimTime(tile);
 				rf_animTileTimers[i].tileNumber = tile;
@@ -402,8 +396,8 @@ void RFL_AnimateTiles()
 
 			if (screenTileX < 0 || screenTileX > RF_BUFFER_WIDTH_TILES || screenTileY < 0 || screenTileY > RF_BUFFER_HEIGHT_TILES)
 			{
-				printf("Out of bounds: %d, %d (sc: %d,%d) (tl: %d,%d,%d):%d\n", screenTileX, screenTileY,
-					rf_scrollXUnit >> 8, rf_scrollYUnit >> 8, ost->tileX, ost->tileY,ost->plane, ost->tile);
+				//printf("Out of bounds: %d, %d (sc: %d,%d) (tl: %d,%d,%d):%d\n", screenTileX, screenTileY,
+				//	rf_scrollXUnit >> 8, rf_scrollYUnit >> 8, ost->tileX, ost->tileY,ost->plane, ost->tile);
 				Quit("RFL_AnimateTiles: Out of bounds!");
 			}
 
@@ -480,7 +474,6 @@ void RF_ReplaceTiles(int16_t *tilePtr, int plane, int dstX, int dstY, int width,
 			if (oldTile != newTile)
 			{
 				CA_mapPlanes[plane][dstTileY*rf_mapWidthTiles+dstTileX] = newTile;;
-				//tilePtr[y*width+x] = oldTile;
 				if (tileScreenX >= 0 && tileScreenX < RF_BUFFER_WIDTH_TILES &&
 					tileScreenY >= 0 && tileScreenY < RF_BUFFER_HEIGHT_TILES)
 				{
@@ -531,7 +524,7 @@ void RFL_NewRowHorz(bool dir)
 	mapRow = (rf_scrollYUnit >> 8) + bufferRow;
 	int xOffset = (rf_scrollXUnit >> 8);
 
-	// TODO: Add tiles to onscreen animation list
+	// Add tiles to onscreen animation list
 	for (int i = 0; i < RF_BUFFER_WIDTH_TILES; ++i)
 	{
 		RFL_CheckForAnimTile(i+xOffset,mapRow);
@@ -557,7 +550,7 @@ void RFL_NewRowVert(bool dir)
 	mapCol = (rf_scrollXUnit >> 8) + bufferCol;
 	int yOffset = (rf_scrollYUnit >> 8);
 
-	// TODO: Check for animated tiles
+	// Check for animated tiles
 	for (int i = 0; i < RF_BUFFER_HEIGHT_TILES; ++i)
 	{
 		RFL_CheckForAnimTile(mapCol,i+yOffset);
@@ -740,20 +733,6 @@ void RF_EraseRegion(int pxX, int pxY, int pxW, int pxH)
 	
 }
 
-void RF_FindSpriteCirle(RF_SpriteDrawEntry *de)
-{
-	if (!de) return;
-	RF_SpriteDrawEntry *nde = de->next;
-	while (nde)
-	{
-		if (de == nde)
-		{
-			Quit("Sprite list FAIL!");
-		}
-		nde = nde->next;
-	}
-}
-
 
 void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
 {
@@ -761,7 +740,6 @@ void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
 	if (!(*drawEntry)) return;
 
 	rf_numSpriteDraws--;
-	printf("Removing SpriteDraw: %d of %d\n",rf_numSpriteDraws, RF_MAX_SPRITETABLEENTRIES);
 #if 0
 	if (rf_firstSpriteTableEntry[(*drawEntry)->zLayer] == (*drawEntry))
 	{
@@ -781,8 +759,6 @@ void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
 	(*drawEntry)->next = rf_freeSpriteTableEntry;
 	rf_freeSpriteTableEntry = *drawEntry;
 	*drawEntry = 0;
-
-	RF_FindSpriteCirle(*drawEntry);
 }
 
 void RFL_ProcessSpriteErasers()
@@ -791,7 +767,6 @@ void RFL_ProcessSpriteErasers()
 	{
 		int x = rf_spriteErasers[i].pxX - (rf_scrollXUnit >> 4);
 		int y = rf_spriteErasers[i].pxY - (rf_scrollYUnit >> 4);
-		printf("Erasing sprite (what joy!): %d, %d (w:%d,h:%d)\n",x, y, rf_spriteErasers[i].pxW, rf_spriteErasers[i].pxH);
 		VL_SurfaceToScreen(rf_tileBuffer, x, y, x, y, rf_spriteErasers[i].pxW, rf_spriteErasers[i].pxH);
 	}
 	
@@ -804,7 +779,6 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	bool insertNeeded = true;
 	if (chunk <= 0)
 	{
-		//TODO: Implement RemoveSpriteDraw
 		RF_RemoveSpriteDraw(drawEntry);
 		return;
 	}
@@ -835,8 +809,6 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 		sde = rf_freeSpriteTableEntry;
 		rf_freeSpriteTableEntry = rf_freeSpriteTableEntry->next;
 		rf_numSpriteDraws++;
-		RF_FindSpriteCirle(sde);
-		printf("Allocating SpriteDraw: %d of %d\n",rf_numSpriteDraws, RF_MAX_SPRITETABLEENTRIES);
 	}
 	else
 	{

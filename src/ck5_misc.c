@@ -151,11 +151,9 @@ void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
 	obj->user2 = obj->gfxChunk;
 	obj->user3 = obj->gfxChunk + 2;
 	obj->user4 = CK5_ItemNotifyChunks[itemNumber];
-	//obj->currentAction = &CK_act_item;
 	CK_SetAction(obj, CK_GetActionByName("CK5_act_item") );
 	CA_CacheGrChunk(obj->gfxChunk);
 	CA_CacheGrChunk(obj->gfxChunk+1);
-	//printf("Adding item %d at (%d, %d)\n", itemNumber, tileX, tileY);
 }
 
 void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
@@ -205,7 +203,6 @@ void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
 	obj->gfxChunk = obj->currentAction->chunkLeft;
 	CA_CacheGrChunk(obj->gfxChunk);
 	CK_ResetClipRects(obj);
-	printf("Spwaning platform %d at %d %d in dir %d\n", purple, tileX, tileY, direction);
 }
 
 
