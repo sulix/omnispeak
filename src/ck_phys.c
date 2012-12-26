@@ -106,26 +106,37 @@ void CK_PhysUpdateY(CK_object *obj, int deltaUnitY)
 
 void CK_PhysKeenClipDown(CK_object *obj)
 {
+	// Amount we're moving in each direction.
 	int deltaX, deltaY;
+	// The part of the slope we care about (in px)
 	int midTileXOffset;
+	// The top of the tile at Keen's feet.
 	int topTI;
 
+	// Performing some special clipping for Keen.
 	
+	// If we're moving right:
 	if (obj->xDirection == 1)
 	{
+	        // We care about the lefthand-most side of any slope we're about to touch.
 		midTileXOffset = 0;
 		deltaX = obj->clipRects.unitX2 - obj->clipRects.unitXmid;
 		topTI = TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2,1));
+		
+		// If we're being blocked by something, return.
 		if (TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2-2,1)) || TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2-1,1)) || TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2 - 1,1)))
 		{
 			return;
 		}
 	}
-	else
+	else // We're moving left:
 	{
+		// We care about the righthand-most side of the slope
 		midTileXOffset = 15;
 		deltaX = obj->clipRects.unitX1 - obj->clipRects.unitXmid;
 		topTI = TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2, 1));
+		
+		// If we're being blocked, return.
 		if (TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-2,1)) || TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-1,1)) || TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2 - 1,1)))
 		{
 			return;
@@ -133,6 +144,9 @@ void CK_PhysKeenClipDown(CK_object *obj)
 	}
 	
 
+	// If we're about to land on something flat:
+	// TODO: This doesn't make any sense. Why would we make sure we're not
+	// on a slope before doing slope calculations. Something fishy, methinks.
 	if (topTI == 1)
 	{
 		int slope = ck_physSlopeHeight[(topTI & 7)][midTileXOffset];
