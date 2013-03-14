@@ -17,7 +17,7 @@
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_ti.o id_us_1.o id_us_2.o id_vh.o id_vl.o id_str.o
+IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_ti.o id_us_1.o id_us_2.o id_vh.o id_vl_sdl12.o id_vl.o id_str.o
 CKOBJECTS=ck_act.o ck_keen.o ck5_obj1.o ck5_obj3.o ck_phys.o ck_game.o ck_play.o ck5_misc.o ck_main.o
 
 OUTBIN=../bin/keen5e
@@ -25,6 +25,9 @@ OUTBIN=../bin/keen5e
 OBJ := $(IDOBJECTS:%=../obj/%)
 OBJ += $(CKOBJECTS:%=../obj/%)
 DEPS := $(OBJ:%.o=%.d)
+
+#SDL_CONFIG=/home/david/builds/SDL-1.2.15/libs-32/bin/sdl-config
+SDL_CONFIG=sdl-config
 
 .PHONY: all clean
 
@@ -35,10 +38,10 @@ clean:
 
 ../obj/%.o: %.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -g `sdl-config --cflags` -c --std=c99 -MMD -o $@ $<
+	$(CC) $(CFLAGS) -g `$(SDL_CONFIG) --cflags` -c --std=c99 -MMD -o $@ $<
 
 $(OUTBIN): $(OBJ)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -g -lm -o $(OUTBIN) $(OBJ) `sdl-config --libs` 
+	$(CC) $(CFLAGS) -g -lm -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` 
 
 -include $(DEPS)

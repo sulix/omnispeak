@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "id_mm.h"
 #include "id_ca.h"
+#include "id_vl.h"
 
 #include <SDL/SDL.h>
 
@@ -27,15 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 static int vl_memused, vl_numsurfaces;
 
-typedef struct VL_EGAPaletteEntry
-{
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
-} VL_EGAPaletteEntry;
 
-static VL_EGAPaletteEntry VL_EGAPalette[16];
-
+VL_EGAPaletteEntry VL_EGAPalette[16];
 void VL_SetPalEntry(int id, uint8_t r, uint8_t g, uint8_t b)
 {
 	VL_EGAPalette[id].r = r;
@@ -248,7 +242,8 @@ void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 }
 
 
-static SDL_Surface *vl_screen;
+static void *vl_screen;
+static VL_Backend *vl_currentBackend;
 
 int VL_MemUsed()
 {
@@ -262,136 +257,86 @@ int VL_NumSurfaces()
 
 void VL_InitScreen()
 {
-	SDL_Init(SDL_INIT_VIDEO);
+	vl_currentBackend = VL_SDL12_GetBackend();	
 	vl_memused = 0;
 	vl_numsurfaces = 1;
-	vl_screen = SDL_SetVideoMode(320,200,32,0);
-	vl_memused += 320*200*4; //320x200x32bit
+	vl_screen = vl_currentBackend->createSurface(320,200,VL_SurfaceUsage_FrontBuffer);
+	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_screen);
 }
 
 void *VL_CreateSurface(int w, int h)
 {
-	//TODO: Big-endian support and Optimize flags (alpha is rarely needed)
-	SDL_Surface *s = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA, w, h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-	vl_memused += w*h*4;
+	void *s = vl_currentBackend->createSurface(w,h,VL_SurfaceUsage_Default);
+	vl_memused += vl_currentBackend->getSurfaceMemUse(s);
 	vl_numsurfaces++;
 	return s;
 }
 
 void VL_SurfaceRect(void *dst, int x, int y, int w, int h, int colour)
 {
-	SDL_Surface *surf = (SDL_Surface*) dst;
-	SDL_Rect rect = {x,y,w,h};
-	uint32_t sdlcolour = 0xff000000 | (VL_EGAPalette[colour].r << 16) | (VL_EGAPalette[colour].g << 8) | (VL_EGAPalette[colour].b);
-	SDL_FillRect(surf,&rect,sdlcolour);
+	vl_currentBackend->surfaceRect(dst,x,y,w,h,colour);
 }
 
 void VL_ScreenRect(int x, int y, int w, int h, int colour)
 {
-	VL_SurfaceRect(vl_screen,x,y,w,h,colour);
+	vl_currentBackend->surfaceRect(vl_screen,x,y,w,h,colour);
 }
 
 void VL_SurfaceToSurface(void *src, void *dst, int x, int y, int sx, int sy, int sw, int sh)
 {
-	SDL_Surface *surf = (SDL_Surface *)src;
-	SDL_Surface *dest = (SDL_Surface *)dst;
-	SDL_Rect srcr = {sx,sy,sw,sh};
-	SDL_Rect dstr = {x,y,sw,sh};
-	SDL_BlitSurface(surf,&srcr, dest, &dstr);
+	vl_currentBackend->surfaceToSurface(src, dst, x, y, sx, sy, sw, sh);
 }
 
 void VL_SurfaceToScreen(void *src, int x, int y, int sx, int sy, int sw, int sh)
 {
-	VL_SurfaceToSurface(src,vl_screen, x, y, sx, sy, sw, sh);
+	vl_currentBackend->surfaceToSurface(src,vl_screen, x, y, sx, sy, sw, sh);
 }
 
 void VL_SurfaceToSelf(void *surf, int x, int y, int sx, int sy, int sw, int sh)
 {
-	SDL_Surface *srf = (SDL_Surface *)surf;
-	SDL_LockSurface(srf);
-	bool directionX = sx > x;
-	bool directionY = sy > y;
-
-	if (directionY)
-	{
-		for (int yi = 0; yi < sh; ++yi)
-		{
-			memmove(srf->pixels+((yi+y)*srf->pitch+x*4),srf->pixels+((sy+yi)*srf->pitch+sx*4),sw*4);
-		}
-	}
-	else	
-	{
-		for (int yi = sh-1; yi >= 0; --yi)
-		{
-			memmove(srf->pixels+((yi+y)*srf->pitch+x*4),srf->pixels+((sy+yi)*srf->pitch+sx*4),sw*4);
-		}
-	}
-
-
-	SDL_UnlockSurface(srf);
-
+	vl_currentBackend->surfaceToSelf(surf, x, y, sx, sy, sw, sh);
 }
 
-void VL_UnmaskedToSurface(void *src, void *dest, int x, int y, int w, int h) {
-	SDL_Surface *surf = (SDL_Surface *)dest;
-	SDL_LockSurface(vl_screen);
-	VL_UnmaskedToRGB(src, surf->pixels, x, y, surf->pitch, w, h);
-	SDL_UnlockSurface(vl_screen);
+void VL_UnmaskedToSurface(void *src, void *dest, int x, int y, int w, int h)
+{
+	vl_currentBackend->unmaskedToSurface(src, dest, x, y, w, h);
 }
 
-
-
-void VL_UnmaskedToScreen(void *src, int x, int y, int w, int h) {
-	SDL_LockSurface(vl_screen);
-	VL_UnmaskedToRGB(src, vl_screen->pixels, x, y, vl_screen->pitch, w, h);
-	SDL_UnlockSurface(vl_screen);
+void VL_UnmaskedToScreen(void *src, int x, int y, int w, int h)
+{
+	vl_currentBackend->unmaskedToSurface(src, vl_screen, x, y, w, h);
 }
 
 void VL_MaskedToSurface(void *src, void *dest, int x, int y, int w, int h)
 {
-	SDL_Surface *surf = (SDL_Surface *)dest;
-	SDL_LockSurface(surf);
-	VL_MaskedToRGBA(src, surf->pixels, x, y, surf->pitch, w, h);
-	SDL_UnlockSurface(surf);
+	vl_currentBackend->maskedToSurface(src, dest, x, y, w, h);
 }
 
 void VL_MaskedBlitToSurface(void *src, void *dest, int x, int y, int w, int h)
 {
-	SDL_Surface *surf = (SDL_Surface *)dest;
-	SDL_LockSurface(surf);
-	VL_MaskedBlitToRGB(src, surf->pixels, x, y, surf->pitch, w, h);
-	SDL_UnlockSurface(surf);
+	vl_currentBackend->maskedBlitToSurface(src, dest, x, y, w, h);
 }
 
 // This is not the function you are looking for.
 // It does not perform masking, simply overwrites the screen's alpha channel.
 void VL_MaskedToScreen(void *src, int x, int y, int w, int h)
 {
-	SDL_LockSurface(vl_screen);
-	VL_MaskedToRGBA(src, vl_screen->pixels, x, y, vl_screen->pitch, w, h);
-	SDL_UnlockSurface(vl_screen);
+	vl_currentBackend->maskedToSurface(src, vl_screen, x, y, w, h);
 }
 
 void VL_MaskedBlitToScreen(void *src, int x, int y, int w, int h)
 {
-	// Masked blits to screen are clipped.
-	SDL_LockSurface(vl_screen);
-	VL_MaskedBlitClipToRGB(src, vl_screen->pixels, x, y, vl_screen->pitch, w, h,320,200);
-	SDL_UnlockSurface(vl_screen);
+	vl_currentBackend->maskedBlitToSurface(src, vl_screen, x, y, w, h);
 }
 
 void VL_1bppToScreen(void *src, int x, int y, int w, int h, int colour)
 {
-	SDL_LockSurface(vl_screen);
-	VL_1bppToRGBA(src, vl_screen->pixels, x, y, vl_screen->pitch, w, h, colour);
-	SDL_UnlockSurface(vl_screen);
+	vl_currentBackend->bitToSurface(src, vl_screen, x, y, w, h, colour);
 }
 
 void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour)
 {
-	SDL_LockSurface(vl_screen);
-	VL_1bppBlitToRGB(src, vl_screen->pixels, x, y, vl_screen->pitch, w,h, colour);
-	SDL_UnlockSurface(vl_screen);
+	vl_currentBackend->bitBlitToSurface(src, vl_screen, x, y, w, h, colour);
 }
 
 static long vl_lastFrameTime;
@@ -409,5 +354,5 @@ int VL_GetTics(bool wait)
 void VL_Present()
 {
 	vl_lastFrameTime = SDL_GetTicks();
-	SDL_Flip(vl_screen);
+	vl_currentBackend->present(vl_screen);
 }
