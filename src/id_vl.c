@@ -351,8 +351,8 @@ int VL_GetTics(bool wait)
 	return tics;
 }
 
-void VL_Present()
+void VL_Present(int scrollXpx, int scrollYpx)
 {
 	vl_lastFrameTime = SDL_GetTicks();
-	vl_currentBackend->present(vl_screen);
+	vl_currentBackend->present(vl_screen, scrollXpx, scrollYpx);
 }

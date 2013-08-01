@@ -520,8 +520,8 @@ void RFL_RenderForeTiles()
 			int tile = CA_mapPlanes[1][sty*rf_mapWidthTiles+stx];
 			if (!tile) continue;
 			if (!(TI_ForeMisc(tile) & 0x80)) continue;
-			VL_MaskedBlitToScreen(ca_graphChunks[ca_gfxInfoE.offTiles16m+tile],(stx - scrollXtile)*16-scrollOffsetX,
-											(sty - scrollYtile)*16-scrollOffsetY,16,16);
+			VL_MaskedBlitToScreen(ca_graphChunks[ca_gfxInfoE.offTiles16m+tile],(stx - scrollXtile)*16,
+											(sty - scrollYtile)*16,16,16);
 		}
 	}
 }
@@ -884,8 +884,8 @@ void RFL_DrawSpriteList()
 		
 		for (RF_SpriteDrawEntry *sde = rf_firstSpriteTableEntry[zLayer]; sde; sde=sde->next)
 		{
-			int pixelX = sde->x - (rf_scrollXUnit >> 4);
-			int pixelY = sde->y - (rf_scrollYUnit >> 4);
+			int pixelX = sde->x - (rf_scrollXUnit >> 8)*16;
+			int pixelY = sde->y - (rf_scrollYUnit >> 8)*16;
 			
 			VH_DrawSprite(pixelX, pixelY, sde->chunk);
 		}
@@ -906,10 +906,10 @@ void RF_Refresh()
 
 	RFL_AnimateTiles();
 
-	VL_SurfaceToScreen(rf_tileBuffer,0,0,scrollXpixeloffset,scrollYpixeloffset,320,200);
+	VL_SurfaceToScreen(rf_tileBuffer,0,0,0,0,RF_BUFFER_WIDTH_PIXELS,RF_BUFFER_HEIGHT_PIXELS);
 
 	//TODO: Work out how to do scrolling before using this
-	//RFL_ProcessSpriteErasers();
+	RFL_ProcessSpriteErasers();
 	
 	RFL_DrawSpriteList();
 

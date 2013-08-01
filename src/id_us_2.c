@@ -238,7 +238,7 @@ void US_DrawCards()
 		USL_DrawCard();
 	}
 
-	VL_Present();
+	VL_Present(0,0);
 }
 
 void US_SelectItem(US_Card *card, int itemIndex, bool redraw)

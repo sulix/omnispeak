@@ -65,7 +65,7 @@ typedef struct VL_Backend
 	void (*maskedBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h);
 	void (*bitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*bitBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
-	void (*present)(void *surface);
+	void (*present)(void *surface, int scrollXpx, int scrollYpx);
 } VL_Backend;
 
 void VL_InitScreen();
@@ -85,5 +85,5 @@ void VL_1bppToScreen(void *src, int x, int y, int w, int h, int colour);
 void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour);
 
 int VL_GetTics(bool wait);
-void VL_Present();
+void VL_Present(int scrollXpx, int scrollYpx);
 #endif //ID_VL_H

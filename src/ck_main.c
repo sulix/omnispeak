@@ -86,7 +86,7 @@ void CK_ShowTitleScreen()
 {
 	CA_CacheGrChunk(88);
 	VH_DrawBitmap(0,0,88);
-	VL_Present();
+	VL_Present(0,0);
 	IN_WaitKey();
 }
 
@@ -151,7 +151,7 @@ void CK_DemoLoop()
 		{
 		case 0:		// Terminator scroller and Title Screen
 			CK_ShowTitleScreen();	//TODO: Move this to an episode struct.
-#ifdef DEMO_LOOP_ENABLED
+#if 1 //DEMO_LOOP_ENABLED
 			break;
 		case 1:
 			CK_PlayDemo(0);

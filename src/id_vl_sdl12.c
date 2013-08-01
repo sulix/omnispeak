@@ -1,14 +1,15 @@
 #include "id_vl.h"
 #include <SDL/SDL.h>
 
-
+static SDL_Surface *scrn;
 
 static void *VL_SDL12_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 {
 	SDL_Surface *s;
 	if (usage == VL_SurfaceUsage_FrontBuffer)
 	{
-		s = SDL_SetVideoMode(w,h,32,0);
+		scrn = SDL_SetVideoMode(w,h,32,0);
+		return VL_SDL12_CreateSurface(21*16, 14*16, VL_SurfaceUsage_Default);
 	}
 	else
 	{
@@ -111,11 +112,12 @@ static void VL_SDL12_BitBlitToSurface(void *src, void *dst_surface, int x, int y
 	SDL_UnlockSurface(surf);
 }
 
-static void VL_SDL12_Present(void *surface)
+static void VL_SDL12_Present(void *surface, int scrlX, int scrlY)
 {
 	// TODO: Verify this is a VL_SurfaceUsage_FrontBuffer
 	SDL_Surface *surf = (SDL_Surface *)surface;
-	SDL_Flip(surf);
+	VL_SDL12_SurfaceToSurface(surface, scrn, 0, 0, scrlX, scrlY, 320, 200);
+	SDL_Flip(scrn);
 }
 
 VL_Backend vl_sdl12_backend =
