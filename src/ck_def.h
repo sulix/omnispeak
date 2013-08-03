@@ -83,10 +83,18 @@ typedef struct CK_action
 	struct CK_action *next;
 } CK_action;
 
+typedef enum CK_objActive
+{
+	OBJ_INACTIVE = 0,
+	OBJ_ACTIVE = 1,
+	OBJ_ALWAYS_ACTIVE = 2,
+	OBJ_EXISTS_ONLY_ONSCREEN = 3
+} CK_objActive;
+
 typedef struct CK_object
 {
 	int type;
-	bool active;
+	CK_objActive active;
 	bool visible;
 	bool clipped;
 	int timeUntillThink;

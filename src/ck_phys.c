@@ -112,6 +112,8 @@ void CK_PhysKeenClipDown(CK_object *obj)
 	int midTileXOffset;
 	// The top of the tile at Keen's feet.
 	int topTI;
+	// Is there space above the slope?
+	bool spaceAbove = false;
 
 	// Performing some special clipping for Keen.
 	
@@ -121,6 +123,7 @@ void CK_PhysKeenClipDown(CK_object *obj)
 	        // We care about the lefthand-most side of any slope we're about to touch.
 		midTileXOffset = 0;
 		deltaX = obj->clipRects.unitX2 - obj->clipRects.unitXmid;
+		spaceAbove = (TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2-1,1)) == 0);
 		topTI = TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2,1));
 		
 		// If we're being blocked by something, return.
@@ -134,6 +137,7 @@ void CK_PhysKeenClipDown(CK_object *obj)
 		// We care about the righthand-most side of the slope
 		midTileXOffset = 15;
 		deltaX = obj->clipRects.unitX1 - obj->clipRects.unitXmid;
+		spaceAbove = (TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-1,1)) == 0);
 		topTI = TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2, 1));
 		
 		// If we're being blocked, return.
@@ -147,7 +151,7 @@ void CK_PhysKeenClipDown(CK_object *obj)
 	// If we're about to land on something flat:
 	// TODO: This doesn't make any sense. Why would we make sure we're not
 	// on a slope before doing slope calculations. Something fishy, methinks.
-	if (topTI == 1)
+	if (spaceAbove && (topTI == 1))
 	{
 		int slope = ck_physSlopeHeight[(topTI & 7)][midTileXOffset];
 		int deltaY = (obj->clipRects.tileY2 << 8) + slope - 1 - obj->clipRects.unitY2;
@@ -165,11 +169,13 @@ void CK_PhysKeenClipUp(CK_object *obj)
 	int deltaX, deltaY;
 	int midTileXOffset;
 	int bottomTI;
+	bool spaceBelow;
 
 	if (obj->xDirection == 1)
 	{
 		midTileXOffset = 0;
 		bottomTI = TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1, 1));
+		spaceBelow = (TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1+1,1)) == 0);
 		if (TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1+2, 1)) || TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1+3,1)) || TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1+1,1)))
 		{
 			return;
@@ -179,13 +185,14 @@ void CK_PhysKeenClipUp(CK_object *obj)
 	{
 		midTileXOffset = 15;
 		bottomTI = TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1, 1));
+		spaceBelow = (TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+1,1)) == 0);
 		if (TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+2, 1)) || TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+3,1)) || TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+1,1)))
 		{
 			return;
 		}
 	}
 
-	if (bottomTI)
+	if (spaceBelow && bottomTI)
 	{
 		int slopeAmt = ck_physSlopeHeight[bottomTI & 0x07][midTileXOffset];
 		deltaY = ((obj->clipRects.tileY1+1) << 8) - slopeAmt - obj->clipRects.unitY1;

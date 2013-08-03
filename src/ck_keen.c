@@ -68,7 +68,7 @@ int ck_KeenPoleOffs[3] = {-8, 0, 8};
 void CK_SpawnKeen(int tileX, int tileY, int direction)
 {
 	ck_keenObj->type = 0; //TODO: obj_keen
-	ck_keenObj->active = true; // always
+	ck_keenObj->active = OBJ_ALWAYS_ACTIVE; 
 	ck_keenObj->visible = true;
 	ck_keenObj->zLayer = 1;
 	ck_keenObj->clipped = true;

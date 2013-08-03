@@ -50,7 +50,7 @@ void CK5_TurretShoot(CK_object *obj)
 	CK_object *shot = CK_GetNewObj(true);
 
 	shot->type = 0;	//TurretShot
-	shot->active = true;	//3
+	shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	//shot->clipped = true;
 	shot->posX = obj->posX;
 	shot->posY = obj->posY;

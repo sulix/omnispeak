@@ -676,7 +676,7 @@ int CK_PlayLoop()
 				(currentObj->clipRects.tileY1 <= (rf_scrollYUnit >> 8) + (200 >> 4) + 1) &&
 				(currentObj->clipRects.tileY2 >= (rf_scrollYUnit >> 8) - 1))
 			{
-				currentObj->active = true;
+				currentObj->active = OBJ_ACTIVE;
 				currentObj->visible = true;
 			}
 			else if (currentObj->active && currentObj != ck_keenObj && (
@@ -688,8 +688,20 @@ int CK_PlayLoop()
 				RF_RemoveSpriteDraw(&currentObj->sde);
 				//TODO: Add an Episode callback. Ep 4 requires
 				// type 33 to remove int33 (Andy's decomp)
-				currentObj->active = false;
-				continue;
+				if (currentObj->active == OBJ_EXISTS_ONLY_ONSCREEN)
+				{
+					CK_RemoveObj(currentObj);
+					continue;
+				}
+				else if (currentObj->active != OBJ_ALWAYS_ACTIVE)
+				{
+					if (US_RndT() < ck_numTotalTics * 2)
+					{
+						currentObj->active = OBJ_INACTIVE;
+						continue;
+					}
+				}
+
 			}
 
 			if (currentObj->active)

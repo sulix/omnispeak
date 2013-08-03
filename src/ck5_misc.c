@@ -180,7 +180,7 @@ void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
 	CK_object *obj = CK_GetNewObj(false);
 
 	obj->type = 6;
-	obj->active = true;
+	obj->active = OBJ_ALWAYS_ACTIVE;
 	obj->visible = true;
 	obj->zLayer = 0;
 	obj->posX = tileX << 8;
