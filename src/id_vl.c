@@ -260,7 +260,8 @@ void VL_InitScreen()
 	vl_currentBackend = VL_SDL12_GetBackend();	
 	vl_memused = 0;
 	vl_numsurfaces = 1;
-	vl_screen = vl_currentBackend->createSurface(320,200,VL_SurfaceUsage_FrontBuffer);
+	vl_currentBackend->setVideoMode(320,200);
+	vl_screen = vl_currentBackend->createSurface(24*16,18*16,VL_SurfaceUsage_FrontBuffer);
 	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_screen);
 }
 
@@ -351,8 +352,17 @@ int VL_GetTics(bool wait)
 	return tics;
 }
 
-void VL_Present(int scrollXpx, int scrollYpx)
+static int vl_scrollXpixels;
+static int vl_scrollYpixels;
+
+void VL_SetScrollCoords(int x, int y)
+{
+	vl_scrollXpixels = x;
+	vl_scrollYpixels = y;
+}
+
+void VL_Present()
 {
 	vl_lastFrameTime = SDL_GetTicks();
-	vl_currentBackend->present(vl_screen, scrollXpx, scrollYpx);
+	vl_currentBackend->present(vl_screen, vl_scrollXpixels, vl_scrollYpixels);
 }

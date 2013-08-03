@@ -1,20 +1,21 @@
 #include "id_vl.h"
 #include <SDL/SDL.h>
 
-static SDL_Surface *scrn;
+static SDL_Surface *vl_sdl12_screenSurface;
+static int vl_sdl12_screenWidth;
+static int vl_sdl12_screenHeight;
+
+static void VL_SDL12_SetVideoMode(int w, int h)
+{
+	vl_sdl12_screenSurface = SDL_SetVideoMode(w,h,32,0);
+	vl_sdl12_screenWidth = w;
+	vl_sdl12_screenHeight = h;
+}
 
 static void *VL_SDL12_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 {
 	SDL_Surface *s;
-	if (usage == VL_SurfaceUsage_FrontBuffer)
-	{
-		scrn = SDL_SetVideoMode(w,h,32,0);
-		return VL_SDL12_CreateSurface(21*16, 14*16, VL_SurfaceUsage_Default);
-	}
-	else
-	{
-		s = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA, w, h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-	}
+	s = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA, w, h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
 	return s;
 }
 
@@ -116,12 +117,13 @@ static void VL_SDL12_Present(void *surface, int scrlX, int scrlY)
 {
 	// TODO: Verify this is a VL_SurfaceUsage_FrontBuffer
 	SDL_Surface *surf = (SDL_Surface *)surface;
-	VL_SDL12_SurfaceToSurface(surface, scrn, 0, 0, scrlX, scrlY, 320, 200);
-	SDL_Flip(scrn);
+	VL_SDL12_SurfaceToSurface(surface, vl_sdl12_screenSurface, 0, 0, scrlX, scrlY, vl_sdl12_screenWidth, vl_sdl12_screenHeight);
+	SDL_Flip(vl_sdl12_screenSurface);
 }
 
 VL_Backend vl_sdl12_backend =
 {
+	.setVideoMode = &VL_SDL12_SetVideoMode,
 	.createSurface = &VL_SDL12_CreateSurface,
 	.destroySurface = &VL_SDL12_DestroySurface,
 	.getSurfaceMemUse = &VL_SDL12_GetSurfaceMemUse,

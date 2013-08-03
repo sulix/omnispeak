@@ -45,7 +45,7 @@ void CK_GameOver()
 {
 	US_CenterWindow(16, 3);
 	US_CPrint("Game Over!");
-	VL_Present(0,0);
+	VL_Present();
 	//TODO: Wait 4*70 tics
 	IN_WaitKey();
 }

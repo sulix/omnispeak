@@ -54,6 +54,7 @@ typedef enum VL_SurfaceUsage
 
 typedef struct VL_Backend
 {
+	void (*setVideoMode)(int w, int h);
 	void* (*createSurface)(int w, int h, VL_SurfaceUsage usage);
 	void (*destroySurface)(void *surface);
 	long (*getSurfaceMemUse)(void *surface);
@@ -85,5 +86,6 @@ void VL_1bppToScreen(void *src, int x, int y, int w, int h, int colour);
 void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour);
 
 int VL_GetTics(bool wait);
-void VL_Present(int scrollXpx, int scrollYpx);
+void VL_SetScrollCoords(int x, int y);
+void VL_Present();
 #endif //ID_VL_H

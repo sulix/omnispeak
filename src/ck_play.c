@@ -74,7 +74,7 @@ void CK_DebugMemory()
 	US_PrintF("Purgable    : %d", MM_PurgableBlocks());
 	US_PrintF("GFX Mem Used: %dk", VL_MemUsed()/1024);
 	US_PrintF("GFX Surfaces: %d", VL_NumSurfaces());
-	VL_Present(0,0);
+	VL_Present();
 	IN_WaitKey();
 	//MM_ShowMemory();
 }
@@ -369,7 +369,7 @@ void CK_DebugKeys()
 		else
 			US_CPrint("\nJump cheat OFF");
 
-		VL_Present(0,0);
+		VL_Present();
 		IN_WaitKey();
 	}
 
@@ -760,10 +760,10 @@ int CK_PlayLoop()
 		VL_ScreenRect((obj->clipRects.unitX1 >> 4) - (rf_scrollXUnit >> 4), (obj->clipRects.unitY1 >> 4) - (rf_scrollYUnit>>4),(obj->clipRects.unitX2 - obj->clipRects.unitX1) >> 4,(obj->clipRects.unitY2 - obj->clipRects.unitY1) >> 4,8);
 		}
 #endif
-		VL_Present((rf_scrollXUnit & 0xff) >> 4,(rf_scrollYUnit & 0xff) >> 4);
+		VL_SetScrollCoords((rf_scrollXUnit & 0xff) >> 4,(rf_scrollYUnit & 0xff) >> 4);
 		CK_NormalCamera(ck_keenObj);
 		//TODO: Slow-mo, extra VBLs.
-
+		VL_Present();
 		// If we've finished playing back our demo, or the player presses a key,
 		// exit the playloop.
 		if (IN_DemoGetMode() == IN_Demo_Playback && IN_GetLastScan() != IN_SC_None )

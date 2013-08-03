@@ -238,7 +238,8 @@ void US_DrawCards()
 		USL_DrawCard();
 	}
 
-	VL_Present(0,0);
+	VL_SetScrollCoords(0,0);
+	VL_Present();
 }
 
 void US_SelectItem(US_Card *card, int itemIndex, bool redraw)
