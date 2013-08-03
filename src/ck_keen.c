@@ -247,8 +247,15 @@ void CK_KeenRunningThink(CK_object *obj)
 		ck_gameState.numShots++;
 
 		ck_keenState.shootWasPressed = true;
-
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenShoot1");
+		
+		if (ck_inputFrame.yDirection == -1)
+		{
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenShootUp1");
+		}
+		else
+		{
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenShoot1");
+		}
 		return;
 	}
 
@@ -270,11 +277,13 @@ void CK_KeenRunningThink(CK_object *obj)
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo1");
 		obj->velX = obj->xDirection * 16;
 		obj->velY = -48;
+		// Should this be nextY? Andy seems to think so, but lemm thinks that X is right...
 		obj->nextX = 0;
 		ck_keenState.jumpTimer = 24;
 		return;
 	}
 
+	// Andy seems to think this is Y as well. Need to do some more disasm.
 	obj->nextX += ck_KeenRunXVels[obj->topTI&7] * CK_GetTicksPerFrame();
 }
 
@@ -348,6 +357,7 @@ void CK_KeenStandingThink(CK_object *obj)
 	if (ck_inputFrame.xDirection || ck_inputFrame.yDirection || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed || ck_keenState.shootIsPressed )
 	{
 		obj->user1 = obj->user2 = 0;	//Idle Time + Idle State
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
 		CK_HandleInputOnGround(obj);
 
 		return;
@@ -578,7 +588,7 @@ void CK_KeenJumpThink(CK_object *obj)
 	{
 		ck_keenState.pogoWasPressed = true;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo2");
-		//ck_keenState.jumpTimer = 0;
+		ck_keenState.jumpTimer = 0;
 		return;
 	}
 

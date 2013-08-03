@@ -695,7 +695,7 @@ int CK_PlayLoop()
 				}
 				else if (currentObj->active != OBJ_ALWAYS_ACTIVE)
 				{
-					if (US_RndT() < ck_numTotalTics * 2)
+					if (US_RndT() < CK_GetTicksPerFrame() * 2)
 					{
 						currentObj->active = OBJ_INACTIVE;
 						continue;
