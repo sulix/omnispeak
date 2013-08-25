@@ -658,6 +658,7 @@ void RF_Reposition(int scrollXunit, int scrollYunit)
 {
 	//TODO: Implement scrolling properly
 	//NOTE: This should work now.
+	RFL_RemoveAnimRect(rf_scrollXUnit >> 8, rf_scrollXUnit >> 8, RF_BUFFER_WIDTH_TILES, RF_BUFFER_HEIGHT_TILES);
 	RF_RepositionLimit(scrollXunit, scrollYunit);
 	int scrollXtile = rf_scrollXUnit >> 8;
 	int scrollYtile = rf_scrollYUnit >> 8;
@@ -909,7 +910,7 @@ void RF_Refresh()
 	VL_SurfaceToScreen(rf_tileBuffer,0,0,0,0,RF_BUFFER_WIDTH_PIXELS,RF_BUFFER_HEIGHT_PIXELS);
 
 	//TODO: Work out how to do scrolling before using this
-	RFL_ProcessSpriteErasers();
+	//RFL_ProcessSpriteErasers();
 	
 	RFL_DrawSpriteList();
 

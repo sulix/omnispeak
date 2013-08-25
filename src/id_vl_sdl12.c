@@ -12,10 +12,12 @@ static void VL_SDL12_SetVideoMode(int w, int h)
 	vl_sdl12_screenHeight = h;
 }
 
+static void VL_SDL12_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
 static void *VL_SDL12_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 {
 	SDL_Surface *s;
-	s = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA, w, h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+	s = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000);
+	//VL_SDL12_SurfaceRect(s, 0, 0, w, h, 0);
 	return s;
 }
 

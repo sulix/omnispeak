@@ -88,6 +88,31 @@ void VL_UnmaskedToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 	}		
 }
 
+void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr_b = (uint8_t*)src;
+	uint8_t *srcptr_g = srcptr_b + (w/8)*h;
+	uint8_t *srcptr_r = srcptr_g + (w/8)*h;
+	uint8_t *srcptr_i = srcptr_r + (w/8)*h;
+
+	for(int sy = 0; sy < h; ++sy)
+	{
+		for(int sx = 0; sx < w; ++sx)
+		{
+			int plane_off = (sy * w + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			
+			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
+					((srcptr_r[plane_off] & plane_bit)?4:0) |
+					((srcptr_g[plane_off] & plane_bit)?2:0) |
+					((srcptr_b[plane_off] & plane_bit)?1:0);
+
+			dstptr[(sy+y)*pitch+(sx+x)*4+0] = pixel;
+		}
+	}		
+}
+
 void VL_MaskedToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h)
 {
 	uint8_t *dstptr = (uint8_t*)dest;
@@ -114,6 +139,32 @@ void VL_MaskedToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h
 			dstptr[(sy+y)*pitch+(sx+x)*4+1] = VL_EGAPalette[pixel].g;
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] = VL_EGAPalette[pixel].r;
 			dstptr[(sy+y)*pitch+(sx+x)*4+3] = ((srcptr_a[plane_off] & plane_bit)?0xFF:0x00);
+		}
+	}		
+}
+
+void VL_MaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr_a = (uint8_t*)src;
+	uint8_t *srcptr_b = srcptr_a + (w/8)*h;
+	uint8_t *srcptr_g = srcptr_b + (w/8)*h;
+	uint8_t *srcptr_r = srcptr_g + (w/8)*h;
+	uint8_t *srcptr_i = srcptr_r + (w/8)*h;
+
+	for(int sy = 0; sy < h; ++sy)
+	{
+		for(int sx = 0; sx < w; ++sx)
+		{
+			int plane_off = (sy * w + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			
+			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
+					((srcptr_r[plane_off] & plane_bit)?4:0) |
+					((srcptr_g[plane_off] & plane_bit)?2:0) |
+					((srcptr_b[plane_off] & plane_bit)?1:0);
+
+			dstptr[(sy+y)*pitch+(sx+x)] = pixel & ((srcptr_a[plane_off] & plane_bit)?0xF0:0x00);
 		}
 	}		
 }
@@ -148,6 +199,36 @@ void VL_MaskedBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, in
 			dstptr[(sy+y)*pitch+(sx+x)*4+1] = VL_EGAPalette[pixel].g;
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] = VL_EGAPalette[pixel].r;
 			dstptr[(sy+y)*pitch+(sx+x)*4+3] = 0xFF;
+		}
+	}		
+}
+
+void VL_MaskedBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr_a = (uint8_t*)src;
+	uint8_t *srcptr_b = srcptr_a + (w/8)*h;
+	uint8_t *srcptr_g = srcptr_b + (w/8)*h;
+	uint8_t *srcptr_r = srcptr_g + (w/8)*h;
+	uint8_t *srcptr_i = srcptr_r + (w/8)*h;
+
+	for(int sy = 0; sy < h; ++sy)
+	{
+		for(int sx = 0; sx < w; ++sx)
+		{
+			int plane_off = (sy * w + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			
+			
+			if ((srcptr_a[plane_off] & plane_bit) != 0) {
+				continue;
+			}
+			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
+					((srcptr_r[plane_off] & plane_bit)?4:0) |
+					((srcptr_g[plane_off] & plane_bit)?2:0) |
+					((srcptr_b[plane_off] & plane_bit)?1:0);
+
+			dstptr[(sy+y)*pitch+(sx+x)*4+0] = pixel;
 		}
 	}		
 }
@@ -190,6 +271,40 @@ void VL_MaskedBlitClipToRGB(void *src,void *dest, int x, int y, int pitch, int w
 	}		
 }
 
+void VL_MaskedBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr_a = (uint8_t*)src;
+	uint8_t *srcptr_b = srcptr_a + (w/8)*h;
+	uint8_t *srcptr_g = srcptr_b + (w/8)*h;
+	uint8_t *srcptr_r = srcptr_g + (w/8)*h;
+	uint8_t *srcptr_i = srcptr_r + (w/8)*h;
+	int initialX = max(-x,0);
+	int initialY = max(-y,0);
+	int finalW = min(max(dw-x,0), w);
+	int finalH = min(max(dh-y,0), h);
+
+	for(int sy = initialY; sy < finalH; ++sy)
+	{
+		for(int sx = initialX; sx < finalW; ++sx)
+		{
+			int plane_off = (sy * w + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			
+			
+			if ((srcptr_a[plane_off] & plane_bit) != 0) {
+				continue;
+			}
+			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
+					((srcptr_r[plane_off] & plane_bit)?4:0) |
+					((srcptr_g[plane_off] & plane_bit)?2:0) |
+					((srcptr_b[plane_off] & plane_bit)?1:0);
+
+			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
+		}
+	}		
+}
+
 
 void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
@@ -210,6 +325,25 @@ void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, 
 			dstptr[(sy+y)*pitch+(sx+x)*4+1] = VL_EGAPalette[pixel].g;
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] = VL_EGAPalette[pixel].r;
 			dstptr[(sy+y)*pitch+(sx+x)*4+3] = ((srcptr[plane_off] & plane_bit)?0xFF:0x00);
+		}
+	}		
+}
+
+void VL_1bppToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr= (uint8_t*)src;
+
+	for(int sy = 0; sy < h; ++sy)
+	{
+		for(int sx = 0; sx < w; ++sx)
+		{
+			int plane_off = (sy * w + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			
+			int pixel = ((srcptr[plane_off] & plane_bit)?colour:colour&0xF0);
+
+			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
 		}
 	}		
 }
@@ -241,6 +375,26 @@ void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 	}		
 }
 
+void VL_1bppBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr= (uint8_t*)src;
+
+	int spitch = ((w + 7)/8)*8;
+
+	for(int sy = 0; sy < h; ++sy)
+	{
+		for(int sx = 0; sx < w; ++sx)
+		{
+			int plane_off = (sy * spitch + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
+			
+			if (!(srcptr[plane_off] & plane_bit)) continue;
+			
+			dstptr[(sy+y)*pitch+(sx+x)] = colour;
+		}
+	}		
+}
 
 static void *vl_screen;
 static VL_Backend *vl_currentBackend;
@@ -261,7 +415,7 @@ void VL_InitScreen()
 	vl_memused = 0;
 	vl_numsurfaces = 1;
 	vl_currentBackend->setVideoMode(320,200);
-	vl_screen = vl_currentBackend->createSurface(24*16,18*16,VL_SurfaceUsage_FrontBuffer);
+	vl_screen = vl_currentBackend->createSurface(21*16,14*16,VL_SurfaceUsage_FrontBuffer);
 	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_screen);
 }
 
