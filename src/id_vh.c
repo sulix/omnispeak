@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vl.h"
 #include "id_mm.h"
 #include "id_ca.h"
+#include "id_rf.h"
 
 
 typedef struct VH_BitmapTableEntry
@@ -36,7 +37,7 @@ typedef struct VH_Font
 	uint8_t width[256];
 } __attribute((__packed__)) VH_Font;
 
-
+bool vh_dirtyBlocks[RF_BUFFER_WIDTH_TILES*RF_BUFFER_HEIGHT_TILES]; 
 
 //TODO: Should these functions cache the bitmap tables?
 static VH_BitmapTableEntry VH_GetBitmapTableEntry(int bitmapNumber)
@@ -144,3 +145,37 @@ void VH_DrawPropString(const char *string,int x, int y, int chunk, int colour)
 	}
 }
 
+// "Buffer" drawing routines.
+// These routines (VHB_*) mark the tiles they draw over as 'dirty', so that
+// id_rf can redraw them next frame.
+
+// Mark a block (in pixels) as dirty. Returns true if any tiles were dirtied, false otherwise.
+bool VH_MarkUpdateBlock(int x1px, int y1px, int x2px, int y2px)
+{
+	// Convert pixel coords to tile coords.
+	int x1tile = x1px >> 4;
+	int y1tile = y1px >> 4;
+	int x2tile = x2px >> 4;
+	int y2tile = y2px >> 4;
+
+	if (x1tile >= RF_BUFFER_WIDTH_TILES) return false;
+	x1tile = (x1tile<0)?0:x1tile;
+
+	if (y1tile >= RF_BUFFER_HEIGHT_TILES) return false;
+	y1tile = (y1tile<0)?0:y1tile;
+
+	if (x2tile < 0) return false;
+	x2tile = (x2tile>=RF_BUFFER_WIDTH_TILES)?x2tile:(RF_BUFFER_WIDTH_TILES-1);
+
+	if (y2tile < 0) return false;
+	y2tile = (y2tile>=RF_BUFFER_HEIGHT_TILES)?y2tile:(RF_BUFFER_HEIGHT_TILES-1);
+
+	for (int y = y1tile; y <= y2tile; y++)
+	{
+		for (int x = x1tile; x <= x2tile; x++)
+		{
+			vh_dirtyBlocks[y*RF_BUFFER_WIDTH_TILES+x] = true;
+		}
+	}
+	return true;
+}

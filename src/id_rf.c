@@ -38,18 +38,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // tile-by-tile, not pixel by pixel. The smooth-scrolling effect
 // is implemented by changing which part of the buffer is displayed.
 
-#define RF_BUFFER_WIDTH_TILES 21
-#define RF_BUFFER_HEIGHT_TILES 14
-
-#define RF_BUFFER_WIDTH_PIXELS (RF_BUFFER_WIDTH_TILES << 4)
-#define RF_BUFFER_HEIGHT_PIXELS (RF_BUFFER_HEIGHT_TILES << 4)
-
-#define RF_BUFFER_WIDTH_UNITS (RF_BUFFER_WIDTH_TILES << 8)
-#define RF_BUFFER_HEIGHT_UNITS (RF_BUFFER_HEIGHT_TILES << 8)
-
-
-#define RF_SCREEN_WIDTH_TILES 20
-#define RF_SCREEN_HEIGHT_TILES 13
 
 // Scroll blocks prevent the camera from moving beyond a certain row/column
 #define RF_MAX_SCROLLBLOCKS 6

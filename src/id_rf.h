@@ -35,6 +35,19 @@ typedef struct RF_SpriteDrawEntry
 	struct RF_SpriteDrawEntry *next;
 } RF_SpriteDrawEntry;
 
+// Width/Height of the screen buffers in-game.
+#define RF_BUFFER_WIDTH_TILES 21
+#define RF_BUFFER_HEIGHT_TILES 14
+
+#define RF_BUFFER_WIDTH_PIXELS (RF_BUFFER_WIDTH_TILES << 4)
+#define RF_BUFFER_HEIGHT_PIXELS (RF_BUFFER_HEIGHT_TILES << 4)
+
+#define RF_BUFFER_WIDTH_UNITS (RF_BUFFER_WIDTH_TILES << 8)
+#define RF_BUFFER_HEIGHT_UNITS (RF_BUFFER_HEIGHT_TILES << 8)
+
+// Width/Height of the visible screen in tiles.
+#define RF_SCREEN_WIDTH_TILES 20
+#define RF_SCREEN_HEIGHT_TILES 13
 
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical);
 void RF_MarkTileGraphics();
