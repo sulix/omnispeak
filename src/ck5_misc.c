@@ -27,6 +27,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck5_ep.h"
 #include <stdio.h>
 
+CK_Episode ck5_episode = {
+	"CK5",
+	&CK5_SetupFunctions,
+	&CK5_ScanInfoLayer
+};
+
+
 // Contains some keen-5 specific functions.
 
 //StartSprites + 

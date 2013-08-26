@@ -21,10 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CK5_EP_H
 
 #include <stdbool.h>
+#include "ck_ep.h"
 
 /*
  * Contains definitions relevent only to Keen 5
  */
+extern CK_Episode ck5_episode;
 
 /* Action functions setup */
 void CK5_Obj1_SetupFunctions();

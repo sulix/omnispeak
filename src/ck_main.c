@@ -33,6 +33,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 
 /*
+ * The 'episode' we're playing.
+ */
+CK_Episode *ck_currentEpisode;
+
+
+/*
  * Shutdown all of the 'ID Engine' components
  */
 void CK_ShutdownID()
@@ -66,7 +72,7 @@ void CK_InitGame()
 	CK_ACT_SetupFunctions();
 	CK_KeenSetupFunctions();
 	CK5_SetupFunctions();
-	CK_ACT_LoadActions("ACTION.CK5");
+	CK_ACT_LoadActions(CAL_AdjustExtension("ACTION.EXT"));
 
 	// Setup the screen
 	VL_InitScreen();
@@ -189,6 +195,7 @@ void CK_DemoLoop()
 
 int main()
 {
+	ck_currentEpisode = &ck5_episode;
 	CK_InitGame();
 	CK_DemoLoop();
 	CK_ShutdownID();

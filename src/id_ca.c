@@ -27,7 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "id_ca.h"
 #include "id_us.h"
+#include "ck_ep.h"
 
+#include <string.h>
 #include <stdio.h>
 
 #define CA_THREEBYTEHEADERS
@@ -35,12 +37,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Begin globals
 
+// Adjusts the extension on a filename to match the current episode.
+// This function is NOT thread safe, and the string returned is only
+// valid until the NEXT invocation of this function.
+char* CAL_AdjustExtension(char *filename)
+{
+	static char newname[16];
+	strcpy(newname,filename);
+	size_t fnamelen = strlen(filename);
+	newname[fnamelen-3] = ck_currentEpisode->ext[0];
+	newname[fnamelen-2] = ck_currentEpisode->ext[1];
+	newname[fnamelen-1] = ck_currentEpisode->ext[2];
+	return newname;
+}
+
 // CA_ReadFile reads a whole file into the preallocated memory buffer at 'offset'
 // NOTE that this function is deprecated: use CA_SafeReadFile instead.
 //
 bool CA_ReadFile(char *filename, void *offset)
 {
-	FILE *f = fopen(filename, "rb");
+	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
 	
 	//Find the length of the file.
 	fseek(f,0,SEEK_END);
@@ -57,7 +73,7 @@ bool CA_ReadFile(char *filename, void *offset)
 // Reads a file into a buffer of length bufLength
 bool CA_SafeReadFile(char *filename, void *offset, int bufLength)
 {
-	FILE *f = fopen(filename, "rb");
+	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
 
 	//Find length of the file.
 	fseek(f,0,SEEK_END);
@@ -75,7 +91,7 @@ bool CA_SafeReadFile(char *filename, void *offset, int bufLength)
 
 bool CA_WriteFile(char *filename, void *offset, int bufLength)
 {
-	FILE *f = fopen(filename, "wb");
+	FILE *f = fopen(CAL_AdjustExtension(filename), "wb");
 
 	if (!f) return false;
 
@@ -88,7 +104,7 @@ bool CA_WriteFile(char *filename, void *offset, int bufLength)
 
 bool CA_LoadFile(char *filename, mm_ptr_t *ptr, int *memsize)
 {
-	FILE *f = fopen(filename, "rb");
+	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
 
 	//Get length of file
 	fseek(f,0,SEEK_END);
@@ -439,7 +455,7 @@ extern uint8_t *ti_tileInfo;
 void CAL_SetupMapFile()
 {
 	CA_LoadFile("MAPHEAD.CK5", (void**)(&ca_MapHead), 0);
-	ca_GameMaps = fopen("GAMEMAPS.CK5", "rb");
+	ca_GameMaps = fopen(CAL_AdjustExtension("GAMEMAPS.EXT"), "rb");
 	CA_LoadFile("TILEINFO.CK5",(void**)(&ti_tileInfo), 0);
 }
 

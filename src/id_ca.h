@@ -30,6 +30,7 @@ void CA_Startup();
 
 // -- File IO --
 
+char* CAL_AdjustExtension(char *filename);
 bool CA_ReadFile(char *filename, void *offset);
 bool CA_SafeReadFile(char *filename, void *offset, int bufLength);
 bool CA_WriteFile(char *filename, void *offset, int bufLength);
