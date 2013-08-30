@@ -5,6 +5,9 @@
 static SDL_Window *vl_sdl2gl_window;
 static SDL_GLContext *vl_sdl2gl_context;
 static GLuint vl_sdl2gl_program;
+static GLuint vl_sdl2gl_framebufferTexture;
+static GLuint vl_sdl2gl_framebufferObject;
+static int vl_sdl2gl_framebufferWidth, vl_sdl2gl_framebufferHeight;
 static int vl_sdl2gl_screenWidth;
 static int vl_sdl2gl_screenHeight;
 
@@ -19,16 +22,16 @@ typedef struct VL_SDL2GL_Surface
 const char *pxprog = 	"#version 110\n"\
 			"\n"\
 			"uniform sampler2D screenBuf;\n"\
-			"uniform sampler2D palette;\n"\
+			"uniform sampler1D palette;\n"\
 			"\n"\
 			"void main() {\n"\
-			"\tgl_FragColor = texture2D(palette,vec2(texture2D(screenBuf, gl_TexCoord[0].xy).r,0.0));\n"\
+			"\tgl_FragColor = texture1D(palette,texture2D(screenBuf, gl_TexCoord[0].xy).r);\n"\
 			"}\n";
 
 
 static void VL_SDL2GL_SetVideoMode(int w, int h)
 {
-	vl_sdl2gl_window = SDL_CreateWindow("Commander Keen",SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,w*4,h*4,SDL_WINDOW_OPENGL);
+	vl_sdl2gl_window = SDL_CreateWindow("Commander Keen",SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,w*4,h*4,SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
 	vl_sdl2gl_context = SDL_GL_CreateContext(vl_sdl2gl_window);
 	vl_sdl2gl_screenWidth = w;
 	vl_sdl2gl_screenHeight = h;
@@ -36,21 +39,45 @@ static void VL_SDL2GL_SetVideoMode(int w, int h)
 	gladLoadGLLoader(&SDL_GL_GetProcAddress);
 
 	// Compile the shader we use to emulate EGA palettes.
+	int compileStatus = 0;
 	GLuint ps = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(ps, 1, &pxprog, 0);
 	glCompileShader(ps);
+	glGetShaderiv(ps, GL_COMPILE_STATUS, &compileStatus);
+	if (!compileStatus)
+	{
+		glDeleteShader(ps);
+		Quit("Could not compile palette conversion fragment shader!");
+	}
+
 	vl_sdl2gl_program = glCreateProgram();
 	glAttachShader(vl_sdl2gl_program, ps);
 	glLinkProgram(vl_sdl2gl_program);
+	glDeleteShader(ps);
+	compileStatus = 0;
+	glGetProgramiv(vl_sdl2gl_program, GL_LINK_STATUS, &compileStatus);
+	if (!compileStatus)
+	{
+		glDeleteProgram(vl_sdl2gl_program);
+		Quit("Could not link palette conversion program!");
+	}
 
+	// Load the palette into a texture.
+	// TODO: Redo the palette API so we don't need to hack this and read invalid memory. :/
 	GLuint palTex;
 	glGenTextures(1, &palTex);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, palTex);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, VL_EGAPalette);
+	glBindTexture(GL_TEXTURE_1D, palTex);
+	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, VL_EGAPalette);
 	glActiveTexture(GL_TEXTURE0);
+
+	// Setup framebuffer stuff, just in case.
+	vl_sdl2gl_framebufferWidth = w;
+	vl_sdl2gl_framebufferHeight = h;
+	vl_sdl2gl_framebufferTexture = 0;
+	vl_sdl2gl_framebufferObject = 0;
 }
 
 static void VL_SDL2GL_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
@@ -159,6 +186,62 @@ static void VL_SDL2GL_BitBlitToSurface(void *src, void *dst_surface, int x, int 
 
 static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 {
+	// Get the real window size
+	int realWinX, realWinY;
+	SDL_GetWindowSize(vl_sdl2gl_window, &realWinX, &realWinY);
+
+	int integerScaleX = (realWinX/vl_sdl2gl_screenWidth)*vl_sdl2gl_screenWidth;
+	int integerScaleY = (realWinY/vl_sdl2gl_screenHeight)*vl_sdl2gl_screenHeight;
+
+	// If our gfx hardware supports it, render into an offscreen framebuffer for the final linear phase of scaling.
+	if (GLAD_GL_EXT_framebuffer_object)
+	{
+		// Reset the framebuffer object if we can do a better integer scale.
+		if (vl_sdl2gl_framebufferWidth != integerScaleX || vl_sdl2gl_framebufferHeight != integerScaleY)
+		{
+			glDeleteTextures(1, &vl_sdl2gl_framebufferTexture);
+			glDeleteFramebuffersEXT(1, &vl_sdl2gl_framebufferObject);
+			vl_sdl2gl_framebufferWidth = integerScaleX;
+			vl_sdl2gl_framebufferHeight = integerScaleY;
+			vl_sdl2gl_framebufferTexture = 0;
+			vl_sdl2gl_framebufferObject = 0;
+		}
+
+		if (!vl_sdl2gl_framebufferTexture)
+		{
+			glGenTextures(1, &vl_sdl2gl_framebufferTexture);
+			glBindTexture(GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, integerScaleX, integerScaleY, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+		}
+
+		if (!vl_sdl2gl_framebufferObject)
+		{
+			glGenFramebuffersEXT(1, &vl_sdl2gl_framebufferObject);
+			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
+			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture, 0);
+
+			GLenum framebufferStatus = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+			if (framebufferStatus != GL_FRAMEBUFFER_COMPLETE_EXT)
+			{
+				Quit("FBO was not complete!");
+			}
+		}
+		else
+		{
+			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
+		}
+		
+		glViewport(0, 0, integerScaleX, integerScaleY);
+		
+	}
+	else
+	{
+		// Otherwise do nearest-neighbour scaling the whole time.
+		glViewport(0, 0, realWinX, realWinY);
+	}
+
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)surface;
 	glBindTexture(GL_TEXTURE_2D, surf->textureHandle);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -176,18 +259,46 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	glUseProgram(vl_sdl2gl_program);
 	glUniform1i(glGetUniformLocation(vl_sdl2gl_program, "screenBuf"),0);
 	glUniform1i(glGetUniformLocation(vl_sdl2gl_program, "palette"),1);
-	//TODO: All of the shader stuff.
+
+	float vtxCoords[] = {-1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f};
+	float texCoords[] = {offX, endY, endX, endY, endX, offY, offX, offY};
+
 	glEnable(GL_TEXTURE_2D);
-	glBegin(GL_QUADS);
-	glTexCoord2f(offX,endY);
-	glVertex2f(-1,-1);
-	glTexCoord2f(endX,endY);
-	glVertex2f(1,-1);
-	glTexCoord2f(endX,offY);
-	glVertex2f(1,1);
-	glTexCoord2f(offX,offY);
-	glVertex2f(-1,1);
-	glEnd();
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glVertexPointer(2, GL_FLOAT, 0, vtxCoords);
+	glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+
+	glDrawArrays(GL_QUADS, 0, 4);
+
+	glViewport(0, 0, realWinX, realWinY);
+	// If we're using framebuffers, linearly scale it to the screen.
+	if (GLAD_GL_EXT_framebuffer_object)
+	{
+		// Use EXT_framebuffer_blit if available, otherwise draw a quad.
+		if (GLAD_GL_EXT_framebuffer_blit)
+		{
+			glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
+			glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
+			
+			glBlitFramebufferEXT(	0, 0, integerScaleX, integerScaleY,
+						0, 0, realWinX, realWinY,
+						GL_COLOR_BUFFER_BIT,
+						GL_LINEAR);
+		}
+		else
+		{
+			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+			float fboCoords[] = {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f};
+			glVertexPointer(2, GL_FLOAT, 0, vtxCoords);
+			glTexCoordPointer(2, GL_FLOAT, 0, fboCoords);
+			glUseProgram(0);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture);
+			glDrawArrays(GL_QUADS, 0, 4);
+		}
+	}
+
 	SDL_GL_SwapWindow(vl_sdl2gl_window);
 }
 
