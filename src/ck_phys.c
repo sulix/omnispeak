@@ -646,19 +646,21 @@ void CK_PhysDampHorz(CK_object *obj)
 	long numTics = CK_GetNumTotalTics();
 	int tics = CK_GetTicksPerFrame();
 	bool movingLeft = (obj->velX < 0);
+	int xAdj;
+	if (obj->velX > 0)
+		xAdj = -1;
+	else if (obj->velX < 0)
+		xAdj = 1;
+	else
+		xAdj = 0;
+
+
 	for (long ticCount = numTics-tics; ticCount < numTics; ++ticCount)
 	{
 		// Every odd tic...
 		if (ticCount & 1)
 		{
-			if (movingLeft)
-			{
-				obj->velX++;
-			}
-			else
-			{
-				obj->velX--;
-			}
+			obj->velX += xAdj;
 			if ((obj->velX < 0) != movingLeft)
 			{
 				obj->velX = 0;

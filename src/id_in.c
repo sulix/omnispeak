@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "id_in.h"
 #include "id_us.h"
-#include <SDL/SDL.h>
+//#include <SDL/SDL.h>
+#include <SDL.h>
 
 bool in_keyStates[256];
 IN_ScanCode in_lastKeyScanned = IN_SC_None;

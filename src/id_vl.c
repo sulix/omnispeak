@@ -108,7 +108,7 @@ void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int
 					((srcptr_g[plane_off] & plane_bit)?2:0) |
 					((srcptr_b[plane_off] & plane_bit)?1:0);
 
-			dstptr[(sy+y)*pitch+(sx+x)*4+0] = pixel;
+			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
 		}
 	}		
 }
@@ -228,7 +228,7 @@ void VL_MaskedBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, i
 					((srcptr_g[plane_off] & plane_bit)?2:0) |
 					((srcptr_b[plane_off] & plane_bit)?1:0);
 
-			dstptr[(sy+y)*pitch+(sx+x)*4+0] = pixel;
+			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
 		}
 	}		
 }
@@ -411,7 +411,8 @@ int VL_NumSurfaces()
 
 void VL_InitScreen()
 {
-	vl_currentBackend = VL_SDL12_GetBackend();	
+	VL_SetDefaultPalette();
+	vl_currentBackend = VL_SDL2GL_GetBackend();	
 	vl_memused = 0;
 	vl_numsurfaces = 1;
 	vl_currentBackend->setVideoMode(320,200);
@@ -519,4 +520,5 @@ void VL_Present()
 {
 	vl_lastFrameTime = SDL_GetTicks();
 	vl_currentBackend->present(vl_screen, vl_scrollXpixels, vl_scrollYpixels);
+	//SDL_Delay(250);
 }
