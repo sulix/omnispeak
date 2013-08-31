@@ -97,6 +97,52 @@ void CK5_TurretShotDraw(CK_object *obj)
 
 }
 
+
+/*
+ * Spawn a "Sneak Plat".
+ */
+void CK5_SneakPlatSpawn(int tileX, int tileY)
+{
+	CK_object *obj = CK_GetNewObj(false);
+
+	obj->type = 6;
+	obj->active = OBJ_ALWAYS_ACTIVE;
+	obj->zLayer = 0;
+	obj->posX = tileX << 8;
+	obj->posY = tileY << 8;
+	obj->xDirection = 0;
+	obj->yDirection = 1;
+	obj->clipped = false;
+
+	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_sneakPlatWait"));
+	CA_CacheGrChunk(obj->gfxChunk);
+}
+
+void CK5_SneakPlatThink(CK_object *obj)
+{
+	obj->visible = true;
+	if (ck_keenObj->currentAction == CK_GetActionByName("CK_ACT_keenJump1"))
+	{
+		if (ck_keenObj->xDirection == 1)
+		{
+			int dist = obj->clipRects.unitX1 - ck_keenObj->clipRects.unitX2;
+			if (dist > 0x400 || dist < 0) return;
+		}
+		else
+		{
+			int dist = ck_keenObj->clipRects.unitX1 - obj->clipRects.unitX2;
+			if (dist > 0x400 || dist < 0) return;
+		}
+
+		int vertDist = ck_keenObj->posY - obj->posY;
+		if (vertDist < -0x600 || vertDist > 0x600) return;
+
+		obj->xDirection = ck_keenObj->xDirection;
+		obj->currentAction = CK_GetActionByName("CK5_ACT_sneakPlatSneak");
+	}
+}
+
+
 /*
  * Setup all of the functions in this file.
  */
@@ -106,4 +152,5 @@ void CK5_Obj1_SetupFunctions()
 	CK_ACT_AddFunction("CK5_Glide",&CK5_Glide);
 	CK_ACT_AddColFunction("CK5_TurretShotCol",&CK5_TurretShotCol);
 	CK_ACT_AddFunction("CK5_TurretShotDraw",&CK5_TurretShotDraw);
+	CK_ACT_AddFunction("CK5_SneakPlatThink",&CK5_SneakPlatThink);
 }

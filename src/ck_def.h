@@ -156,4 +156,6 @@ void CK_HandleDemoKeys();
 void CK_KeenRidePlatform(CK_object *obj);
 void CK_KeenSetupFunctions();
 
+extern CK_object *ck_keenObj;
+
 #endif

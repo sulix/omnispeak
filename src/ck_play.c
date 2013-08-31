@@ -756,7 +756,6 @@ int CK_PlayLoop()
 
 		CK_KeenCheckSpecialTileInfo(ck_keenObj);
 
-		RF_Refresh();
 
 
 		for(CK_object *currentObj = ck_keenObj; currentObj; currentObj = currentObj->next)
@@ -776,7 +775,7 @@ int CK_PlayLoop()
 
 		//TODO: Follow player with camera.
 
-		//RF_Refresh();
+		RF_Refresh();
 #if 0
 		for (CK_object *obj = ck_keenObj; obj; obj = obj->next){
 		VL_ScreenRect((obj->clipRects.tileX1 << 4) - (rf_scrollXUnit >> 4), (obj->clipRects.tileY1 << 4) - (rf_scrollYUnit>>4),

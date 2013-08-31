@@ -271,6 +271,9 @@ void CK5_ScanInfoLayer()
 			case 30:
 				CK5_SpawnRedBlockPlatform(x,y,infoValue - 27, false);
 				break;
+			case 40:
+				CK5_SneakPlatSpawn(x, y);
+				break;
 			case 45:
 			case 46:
 			case 47:
