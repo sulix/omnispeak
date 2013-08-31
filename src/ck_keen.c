@@ -295,7 +295,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenRun1");
 		CK_KeenRunningThink(obj);
-		obj->nextX = obj->xDirection * obj->currentAction->velX * (CK_GetTicksPerFrame())/4;
+		obj->nextX = (obj->xDirection * obj->currentAction->velX * CK_GetTicksPerFrame())/4;
 		return;
 	}
 
@@ -599,6 +599,8 @@ void CK_KeenJumpThink(CK_object *obj)
 	
 }
 
+extern int rf_scrollXUnit, rf_scrollYUnit;
+
 void CK_KeenJumpDrawFunc(CK_object *obj)
 {
 	if (obj->rightTI && obj->xDirection == -1)
@@ -677,16 +679,22 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 	}
 	else if (obj->deltaPosY > 0)
 	{
+		// temp6 = Keen's previous upper y coord
 		int temp6 = obj->clipRects.unitY1 - obj->deltaPosY;
+		// temp8 = Keen's current upper y coord - 1.5 tiles, rounded to nearest tile, + 1.5 tiles
 		int temp8 = ((obj->clipRects.unitY1 - 64) & 0xFF00) + 64;
-		int temp10 = (temp8 >> 8) -1;
+		// temp10 = temp8 in tile coords, - 1
+		int temp10 = (temp8 >> 8) - 1 ;
 
-		if (temp6 < temp8 && obj->clipRects.unitY1 >= temp8)
+		// If we're moving past a tile boundary.
+		if (obj->clipRects.unitY1 >= temp8)//(temp6 < temp8 && obj->clipRects.unitY1 >= temp8)
 		{
+			// Moving left...
 			if (ck_inputFrame.xDirection == -1)
 			{
 				int tileX = obj->clipRects.tileX1 - ((obj->rightTI)?1:0);
 				int tileY = temp10;
+				//VL_ScreenRect((tileX << 4) - (rf_scrollXUnit >> 4), (tileY << 4) - (rf_scrollYUnit >> 4), 16, 16, 1);
 				int upperTile = CA_TileAtPos(tileX, tileY, 1);
 				int lowerTile = CA_TileAtPos(tileX, tileY+1, 1);
 				if ( (!TI_ForeLeft(upperTile) && !TI_ForeRight(upperTile) && !TI_ForeTop(upperTile) && !TI_ForeBottom(upperTile)) &&
@@ -791,7 +799,6 @@ void CK_KeenPogoThink(CK_object *obj)
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShootDown1");
 			break;
 		}
-		return;
 	}
 	
 	//Stop pogoing if Alt pressed

@@ -497,14 +497,19 @@ void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour)
 
 static long vl_lastFrameTime;
 
-int VL_GetTics(bool wait)
+int VL_GetTics(int wait)
 {
 	int tics;
 	do
 	{
 		tics = (SDL_GetTicks() - vl_lastFrameTime)/(1000/70);
-	} while (!tics || !wait);
+	} while (tics < wait);
 	return tics;
+}
+
+void VL_DelayTics(int tics)
+{
+	SDL_Delay(tics*1000/70);
 }
 
 static int vl_scrollXpixels;
@@ -520,5 +525,4 @@ void VL_Present()
 {
 	vl_lastFrameTime = SDL_GetTicks();
 	vl_currentBackend->present(vl_screen, vl_scrollXpixels, vl_scrollYpixels);
-	//SDL_Delay(250);
 }

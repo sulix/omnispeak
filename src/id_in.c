@@ -224,8 +224,7 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 		controls->pogo = (ctrlByte >> 5) & 1;
 		
 		// Delay for n frames.
-		(in_demoBuf[in_demoPtr])--;
-		if (!in_demoBuf[in_demoPtr])
+		if ((--in_demoBuf[in_demoPtr]) == 0 )
 		{
 			in_demoPtr += 2;
 			if (in_demoPtr >= in_demoBytes)

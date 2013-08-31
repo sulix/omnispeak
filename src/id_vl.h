@@ -92,7 +92,8 @@ void VL_MaskedBlitToScreen(void *src, int x, int y, int w, int h);
 void VL_1bppToScreen(void *src, int x, int y, int w, int h, int colour);
 void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour);
 
-int VL_GetTics(bool wait);
+void VL_DelayTics(int tics);
+int VL_GetTics(int wait);
 void VL_SetScrollCoords(int x, int y);
 void VL_Present();
 #endif //ID_VL_H

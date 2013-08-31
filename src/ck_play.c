@@ -62,6 +62,7 @@ bool ck_demoEnabled;
 
 CK_GameState ck_gameState;
 
+static bool ck_slowMotionEnabled = false;
 
 void CK_DebugMemory()
 {
@@ -85,11 +86,11 @@ void CK_DebugMemory()
 void CK_SetTicsPerFrame()
 {
 	if (!ck_demoEnabled)
-		ck_ticsThisFrame = VL_GetTics(true);
+		ck_ticsThisFrame = VL_GetTics(1);
 	else
 	{
-		VL_GetTics(true);
-		ck_ticsThisFrame = 2;
+		VL_GetTics(3);
+		ck_ticsThisFrame = 3;
 	}
 	ck_numTotalTics += ck_ticsThisFrame;
 }
@@ -376,6 +377,19 @@ void CK_DebugKeys()
 	if (IN_GetKeyState(IN_SC_M))
 	{
 		CK_DebugMemory();
+	}
+
+	if (IN_GetKeyState(IN_SC_S))
+	{
+		ck_slowMotionEnabled = !ck_slowMotionEnabled;
+		US_CenterWindow(18,3);
+
+		if (ck_slowMotionEnabled)
+			US_CPrint("Slow motion ON");
+		else
+			US_CPrint("Slow motion OFF");
+		VL_Present();
+		IN_WaitKey();
 	}
 }
 
@@ -742,6 +756,7 @@ int CK_PlayLoop()
 
 		CK_KeenCheckSpecialTileInfo(ck_keenObj);
 
+		RF_Refresh();
 
 
 		for(CK_object *currentObj = ck_keenObj; currentObj; currentObj = currentObj->next)
@@ -761,7 +776,7 @@ int CK_PlayLoop()
 
 		//TODO: Follow player with camera.
 
-		RF_Refresh();
+		//RF_Refresh();
 #if 0
 		for (CK_object *obj = ck_keenObj; obj; obj = obj->next){
 		VL_ScreenRect((obj->clipRects.tileX1 << 4) - (rf_scrollXUnit >> 4), (obj->clipRects.tileY1 << 4) - (rf_scrollYUnit>>4),
@@ -774,7 +789,10 @@ int CK_PlayLoop()
 #endif
 		VL_SetScrollCoords((rf_scrollXUnit & 0xff) >> 4,(rf_scrollYUnit & 0xff) >> 4);
 		CK_NormalCamera(ck_keenObj);
+
 		//TODO: Slow-mo, extra VBLs.
+		if (ck_slowMotionEnabled)
+			VL_DelayTics(14);
 		VL_Present();
 		// If we've finished playing back our demo, or the player presses a key,
 		// exit the playloop.

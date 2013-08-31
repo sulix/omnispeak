@@ -199,8 +199,10 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 		// Reset the framebuffer object if we can do a better integer scale.
 		if (vl_sdl2gl_framebufferWidth != integerScaleX || vl_sdl2gl_framebufferHeight != integerScaleY)
 		{
-			glDeleteTextures(1, &vl_sdl2gl_framebufferTexture);
-			glDeleteFramebuffersEXT(1, &vl_sdl2gl_framebufferObject);
+			if (vl_sdl2gl_framebufferTexture)
+				glDeleteTextures(1, &vl_sdl2gl_framebufferTexture);
+			if (vl_sdl2gl_framebufferObject)
+				glDeleteFramebuffersEXT(1, &vl_sdl2gl_framebufferObject);
 			vl_sdl2gl_framebufferWidth = integerScaleX;
 			vl_sdl2gl_framebufferHeight = integerScaleY;
 			vl_sdl2gl_framebufferTexture = 0;
@@ -213,7 +215,8 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 			glBindTexture(GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, integerScaleX, integerScaleY, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+			// Use GL_RGBA as GL_RGB causes problems on Mesa/Intel.
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, integerScaleX, integerScaleY, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 		}
 
 		if (!vl_sdl2gl_framebufferObject)
