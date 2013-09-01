@@ -115,6 +115,22 @@ void US_PrintF(const char *str, ...)
 	US_Print(buf);
 }
 
+void USL_PrintInCenter(const char *str, int x1, int y1, int x2, int y2)
+{
+	int w,h,rw,rh,px,py;
+	VH_MeasurePropString(str, &w, &h, 3);
+	rw = x2 - x1;
+	rh = y2 - y2;
+	px = x1 + (rw-w)/2;
+	py = y1 + (rh-h)/2 + h;
+	VH_DrawPropString(str, px, py, 3, 0);
+}
+
+void US_PrintCentered(const char *str)
+{
+	USL_PrintInCenter(str, us_windowX, us_windowY, us_windowX+us_windowW, us_windowY+us_windowH);
+}
+
 void US_CPrintLine(const char *str)
 {
 	int w, h;

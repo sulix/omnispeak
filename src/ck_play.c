@@ -366,9 +366,9 @@ void CK_DebugKeys()
 		US_CenterWindow(18,3);
 
 		if (ck_gameState.jumpCheat)
-			US_CPrint("\nJump cheat ON");
+			US_PrintCentered("\nJump cheat ON");
 		else
-			US_CPrint("\nJump cheat OFF");
+			US_PrintCentered("\nJump cheat OFF");
 
 		VL_Present();
 		IN_WaitKey();
@@ -385,9 +385,26 @@ void CK_DebugKeys()
 		US_CenterWindow(18,3);
 
 		if (ck_slowMotionEnabled)
-			US_CPrint("Slow motion ON");
+			US_PrintCentered("Slow motion ON");
 		else
-			US_CPrint("Slow motion OFF");
+			US_PrintCentered("Slow motion OFF");
+		VL_Present();
+		IN_WaitKey();
+	}
+
+	if (IN_GetKeyState(IN_SC_N))
+	{
+		US_CenterWindow(18,3);
+		if (ck_keenObj->clipped)
+		{
+			US_PrintCentered("No clipping ON");
+			ck_keenObj->clipped = false;
+		}
+		else
+		{
+			US_PrintCentered("No clipping OFF");
+			ck_keenObj->clipped = true;
+		}
 		VL_Present();
 		IN_WaitKey();
 	}

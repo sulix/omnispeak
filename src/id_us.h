@@ -38,6 +38,7 @@ int US_CheckParm(const char *parm, char **strings);
 // UI functions
 void US_Print(const char *str);
 void US_PrintF(const char *str, ...);
+void US_PrintCentered(const char *str);
 void US_CPrintLine(const char *str);
 void US_CPrint(const char *str);
 void US_CPrintF(const char *str, ...);
