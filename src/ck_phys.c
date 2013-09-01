@@ -510,7 +510,7 @@ void CK_PhysPushY(CK_object *pushee, CK_object *pusher)
 	int deltaDeltaY = pushee->deltaPosY - pusher->deltaPosY;
 	int deltaClipY = pushee->clipRects.unitY2 - pusher->clipRects.unitY1;
 
-	if (deltaClipY >= 0 && deltaClipY < deltaDeltaY)
+	if (deltaClipY >= 0 && deltaClipY <= deltaDeltaY)
 	{
 		//If the pushee is keen, set ck_keenState.currentPlatform to pusher
 		// (I'm not sure I like this)

@@ -78,6 +78,13 @@ void CK_LoadLevel(bool unknown)
 
 	CK_SetupObjArray();
 	CK5_ScanInfoLayer();
+	
+	// Deactivate all objects
+	for (CK_object *player = ck_keenObj; player; player = player->next)
+	{
+		if (player->active != OBJ_ALWAYS_ACTIVE)
+			player->active = OBJ_INACTIVE;
+	}
 }
 
 

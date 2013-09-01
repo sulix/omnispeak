@@ -166,10 +166,9 @@ void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
 	CK_object *obj = CK_GetNewObj(false);
 
 	obj->clipped = false;
-	obj->visible = true;
-	obj->active = true;
+	obj->active = OBJ_ACTIVE;
 	obj->type = 4;	//OBJ_ITEM
-	obj->zLayer = 3;
+	obj->zLayer = 2;
 	obj->posX = tileX << 8;
 	obj->posY = tileY << 8;
 	obj->user1 = itemNumber;
@@ -188,7 +187,6 @@ void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
 
 	obj->type = 6;
 	obj->active = OBJ_ALWAYS_ACTIVE;
-	obj->visible = true;
 	obj->zLayer = 0;
 	obj->posX = tileX << 8;
 	obj->posY = tileY << 8;
@@ -271,6 +269,12 @@ void CK5_ScanInfoLayer()
 			case 30:
 				CK5_SpawnRedBlockPlatform(x,y,infoValue - 27, false);
 				break;
+			case 36:
+			case 37:
+			case 38:
+			case 39:
+				CK5_GoPlatSpawn(x,y,infoValue-36, false);
+				break;
 			case 40:
 				CK5_SneakPlatSpawn(x, y);
 				break;
@@ -298,7 +302,12 @@ void CK5_ScanInfoLayer()
 				CK5_SpawnItem(x,y, infoValue - 58); // Omegamatic Keycard
 				break;
 
-
+			case 80:
+			case 81:
+			case 82:
+			case 83:
+				CK5_GoPlatSpawn(x,y, infoValue-80, true);
+				break;
 			case 84:
 			case 85:
 			case 86:

@@ -80,6 +80,7 @@ RF_SpriteDrawEntry rf_spriteTable[RF_MAX_SPRITETABLEENTRIES];
 RF_SpriteDrawEntry *rf_freeSpriteTableEntry;
 
 RF_SpriteDrawEntry *rf_firstSpriteTableEntry[RF_NUM_SPRITE_Z_LAYERS];
+static int rf_numSpriteDraws;
 
 int rf_freeSpriteEraserIndex = 0;
 RF_SpriteEraser rf_spriteErasers[RF_MAX_SPRITETABLEENTRIES];
@@ -150,10 +151,12 @@ void RFL_SetupOnscreenAnimList()
 void RFL_SetupSpriteTable()
 {
 	rf_freeSpriteTableEntry = rf_spriteTable;
+	rf_numSpriteDraws = 0;
 
 	for (int i = 0; i < RF_MAX_SPRITETABLEENTRIES - 1; ++i)
 	{
 		rf_spriteTable[i].next = &rf_spriteTable[i+1];
+		rf_spriteTable[i+1].prevNextPtr = &(rf_spriteTable[i].next);
 	}
 
 	rf_spriteTable[RF_MAX_SPRITETABLEENTRIES - 1].next = 0;
@@ -724,7 +727,6 @@ void RF_SmoothScroll(int scrollXdelta, int scrollYdelta)
 	}
 }
 
-static int rf_numSpriteDraws;
 
 void RF_PlaceEraser(int pxX, int pxY, int pxW, int pxH)
 {

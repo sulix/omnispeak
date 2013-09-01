@@ -687,7 +687,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 		int temp10 = (temp8 >> 8) - 1 ;
 
 		// If we're moving past a tile boundary.
-		if (obj->clipRects.unitY1 >= temp8)//(temp6 < temp8 && obj->clipRects.unitY1 >= temp8)
+		if (temp6 < temp8 && obj->clipRects.unitY1 >= temp8)
 		{
 			// Moving left...
 			if (ck_inputFrame.xDirection == -1)

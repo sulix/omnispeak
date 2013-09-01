@@ -64,6 +64,29 @@ CK_GameState ck_gameState;
 
 static bool ck_slowMotionEnabled = false;
 
+void CK_CountActiveObjects()
+{
+	int active = 0;
+	int inactive = 0;
+
+	CK_object *current = ck_keenObj;
+
+	while (current)
+	{
+		if (current->active)
+			active++;
+		else
+			inactive++;
+		current = current->next;
+	}
+
+	US_CenterWindow(18,4);
+	US_PrintF("Active Objects : %d",active);
+	US_PrintF("Inactive Object : %d",inactive);
+	VL_Present();
+	IN_WaitKey();
+}
+
 void CK_DebugMemory()
 {
 	US_CenterWindow(16,10);
@@ -359,6 +382,11 @@ void hackdraw(CK_object *me)
 
 void CK_DebugKeys()
 {
+	if (IN_GetKeyState(IN_SC_C))
+	{
+		CK_CountActiveObjects();
+	}
+
 	if (IN_GetKeyState(IN_SC_J))
 	{
 		ck_gameState.jumpCheat = !ck_gameState.jumpCheat;
@@ -716,7 +744,6 @@ int CK_PlayLoop()
 				(currentObj->clipRects.tileY1 >= ck_activeY1Tile) ||
 				(currentObj->clipRects.tileY2 <= ck_activeY0Tile)))
 			{
-				RF_RemoveSpriteDraw(&currentObj->sde);
 				//TODO: Add an Episode callback. Ep 4 requires
 				// type 33 to remove int33 (Andy's decomp)
 				if (currentObj->active == OBJ_EXISTS_ONLY_ONSCREEN)
@@ -728,6 +755,7 @@ int CK_PlayLoop()
 				{
 					if (US_RndT() < CK_GetTicksPerFrame() * 2)
 					{
+						RF_RemoveSpriteDraw(&currentObj->sde);
 						currentObj->active = OBJ_INACTIVE;
 						continue;
 					}

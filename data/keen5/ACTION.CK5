@@ -120,6 +120,9 @@
 %action CK5_ACT_sneakPlatSneak 0x1BE 0x1BE ScaledOnce 0 0 48 32 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_sneakPlatReturn
 %action CK5_ACT_sneakPlatReturn 446 446 ScaledOnce 0 0 96 -16 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_sneakPlatWait
 
+%action CK5_ACT_redGoPlat 446 446 Frame 0 0 0 0 0 CK5_RedGoPlatThink NULL CK_BasicDrawFunc1 NULL
+%action CK5_ACT_purpleGoPlat 423 423 UnscaledFrame 0 0 0 0 0 CK5_PurpleGoPlatThink NULL CK_BasicDrawFunc1 NULL
+
 # ck5_obj1.c
 
 # Turret Shots

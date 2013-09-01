@@ -120,7 +120,6 @@ void CK5_SneakPlatSpawn(int tileX, int tileY)
 
 void CK5_SneakPlatThink(CK_object *obj)
 {
-	obj->visible = true;
 	if (ck_keenObj->currentAction == CK_GetActionByName("CK_ACT_keenJump1"))
 	{
 		if (ck_keenObj->xDirection == 1)
@@ -142,6 +141,253 @@ void CK5_SneakPlatThink(CK_object *obj)
 	}
 }
 
+/*
+ * Spawn a GoPlat
+ */
+void CK5_GoPlatSpawn(int tileX, int tileY, int direction, bool purple)
+{
+	CK_object *obj = CK_GetNewObj(false);
+
+	obj->type = 6;
+	obj->active = OBJ_ALWAYS_ACTIVE;
+	obj->zLayer = 0;
+	obj->posX = tileX << 8;
+	obj->posY = tileY << 8;
+	obj->xDirection = 0;
+	obj->yDirection = 0;
+	obj->clipped = false;
+
+	if (purple)
+	{
+		obj->posX += 0x40;
+		obj->posY += 0x40;
+		CK_SetAction(obj, CK_GetActionByName("CK5_ACT_purpleGoPlat"));
+	}
+	else
+	{
+		CK_SetAction(obj, CK_GetActionByName("CK5_ACT_redGoPlat"));
+	}
+
+
+	int mapW = CA_MapHeaders[ck_currentMapNumber]->width;
+	int mapH = CA_MapHeaders[ck_currentMapNumber]->height;
+	CA_mapPlanes[2][tileY*mapW+tileX] = direction + 0x5B;
+
+	obj->user1 = direction;
+	obj->user2 = 256;
+
+}
+
+static int ck5_infoplaneArrowsX[8] = {0,1,0,-1,1,1,-1,-1};
+static int ck5_infoplaneArrowsY[8] = {-1,0,1,0,-1,1,1,-1};
+
+void CK5_RedGoPlatThink(CK_object *obj)
+{
+
+	if (obj->nextX || obj->nextY) return;
+
+	int delta = CK_GetTicksPerFrame()*12;
+
+	// Will we reach a new tile?
+	if (obj->user2 > delta)
+	{
+		// No... keep moving in the same direction.
+		obj->user2 -= delta;
+
+		int dirX = ck5_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			obj->nextX += delta;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			obj->nextX -= delta;
+		}
+
+		int dirY = ck5_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			obj->nextY += delta;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			obj->nextY -= delta;
+		}
+	}
+	else
+	{
+		// Move to next tile.
+		int dirX = ck5_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			obj->nextX += obj->user2;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			obj->nextX -= obj->user2;
+		}
+
+		int dirY = ck5_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			obj->nextY += obj->user2;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			obj->nextY -= obj->user2;
+		}
+
+		int tileX = (obj->posX + obj->nextX) >> 8;
+		int tileY = (obj->posY + obj->nextY) >> 8;
+
+		obj->user1 = CA_TileAtPos(tileX, tileY, 2) - 0x5B;
+
+		if ((obj->user1 < 0) || (obj->user1 > 8))
+		{
+			Quit("Goplat moved to a bad spot.");
+		}
+
+		delta -= obj->user2;
+		obj->user2 = 256 - delta;
+
+		// Move in the new direction.
+		dirX = ck5_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			obj->nextX += delta;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			obj->nextX -= delta;
+		}
+
+		dirY = ck5_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			obj->nextY += delta;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			obj->nextY -= delta;
+		}
+	}
+}
+
+void CK5_PurpleGoPlatThink(CK_object *obj)
+{
+
+	if (obj->nextX || obj->nextY) return;
+
+	int delta = CK_GetTicksPerFrame()*12;
+
+	// Will we reach a new tile?
+	if (obj->user2 > delta)
+	{
+		// No... keep moving in the same direction.
+		obj->user2 -= delta;
+
+		int dirX = ck5_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			obj->nextX += delta;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			obj->nextX -= delta;
+		}
+
+		int dirY = ck5_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			obj->nextY += delta;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			obj->nextY -= delta;
+		}
+	}
+	else
+	{
+		// Move to next tile.
+		int dirX = ck5_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			obj->nextX += obj->user2;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			obj->nextX -= obj->user2;
+		}
+
+		int dirY = ck5_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			obj->nextY += obj->user2;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			obj->nextY -= obj->user2;
+		}
+
+		int tileX = (obj->posX + obj->nextX + 0x40) >> 8;
+		int tileY = (obj->posY + obj->nextY + 0x40) >> 8;
+
+		obj->user1 = CA_TileAtPos(tileX, tileY, 2) - 0x5B;
+
+		if ((obj->user1 < 0) || (obj->user1 > 8))
+		{
+			Quit("Goplat moved to a bad spot.");
+		}
+
+		delta -= obj->user2;
+		obj->user2 = 256 - delta;
+
+		// Move in the new direction.
+		dirX = ck5_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			obj->nextX += delta;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			obj->nextX -= delta;
+		}
+
+		dirY = ck5_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			obj->nextY += delta;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			obj->nextY -= delta;
+		}
+	}
+}
 
 /*
  * Setup all of the functions in this file.
@@ -153,4 +399,6 @@ void CK5_Obj1_SetupFunctions()
 	CK_ACT_AddColFunction("CK5_TurretShotCol",&CK5_TurretShotCol);
 	CK_ACT_AddFunction("CK5_TurretShotDraw",&CK5_TurretShotDraw);
 	CK_ACT_AddFunction("CK5_SneakPlatThink",&CK5_SneakPlatThink);
+	CK_ACT_AddFunction("CK5_RedGoPlatThink",&CK5_RedGoPlatThink);
+	CK_ACT_AddFunction("CK5_PurpleGoPlatThink",&CK5_PurpleGoPlatThink);
 }
