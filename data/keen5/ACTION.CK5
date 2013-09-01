@@ -7,6 +7,8 @@
 
 %action CK_ACT_keenStanding 116 108 UnscaledFrame 0 1 4 0 32 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
 
+%action CK_ACT_keenRidePlatform 0x8B 0x8B UnscaledFrame 0 1 4 0 32 CK_HandleInputOnGround CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenRidePlatform
+
 %action CK_ACT_keenLookUp1 124 124 UnscaledFrame 0 1 30 0 32 CK_KeenLookUpThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenLookUp2
 %action CK_ACT_keenLookUp2 124 124 Frame 0 1 4 0 32 CK_KeenLookUpThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenLookUp2
 

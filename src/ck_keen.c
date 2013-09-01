@@ -294,6 +294,16 @@ void CK_KeenRunningThink(CK_object *obj)
 
 void CK_HandleInputOnGround(CK_object *obj)
 {
+	// If we're riding a platform, do it surfin' style!
+	if (obj->topTI == 0x19)
+	{
+		// But only if such an action exists in this episode. :/
+		if (CK_GetActionByName("CK_ACT_keenRidePlatform"))
+		{
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenRidePlatform");
+		}
+	}
+
 	if (ck_inputFrame.xDirection)
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenRun1");
@@ -357,6 +367,16 @@ void CK_HandleInputOnGround(CK_object *obj)
 
 void CK_KeenStandingThink(CK_object *obj)
 {
+	// If we're riding a platform, do it surfin' style!
+	if (obj->topTI == 0x19)
+	{
+		// But only if such an action exists in this episode. :/
+		if (CK_GetActionByName("CK_ACT_keenRidePlatform"))
+		{
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenRidePlatform");
+		}
+	}
+
 	if (ck_inputFrame.xDirection || ck_inputFrame.yDirection || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed || ck_keenState.shootIsPressed )
 	{
 		obj->user1 = obj->user2 = 0;	//Idle Time + Idle State
@@ -1258,6 +1278,7 @@ void CK_KeenSetupFunctions()
 {
 	CK_ACT_AddFunction("CK_KeenRunningThink",&CK_KeenRunningThink);
 	CK_ACT_AddFunction("CK_KeenStandingThink",&CK_KeenStandingThink);
+	CK_ACT_AddFunction("CK_HandleInputOnGround",&CK_HandleInputOnGround);
 	CK_ACT_AddFunction("CK_KeenLookUpThink",&CK_KeenLookUpThink);
 	CK_ACT_AddFunction("CK_KeenLookDownThink",&CK_KeenLookDownThink);
 	CK_ACT_AddFunction("CK_KeenDrawFunc",&CK_KeenDrawFunc);
