@@ -227,6 +227,8 @@ void CK_KeenRunningThink(CK_object *obj)
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
 		CK_HandleInputOnGround(obj);
+		//NOTE: HAXXX! I just added this to get demos working.
+		//obj->nextX = (obj->xDirection * obj->currentAction->velX * CK_GetTicksPerFrame())/4;
 		return;
 	}
 	
@@ -284,6 +286,7 @@ void CK_KeenRunningThink(CK_object *obj)
 	}
 
 	// Andy seems to think this is Y as well. Need to do some more disasm.
+	// If this is an X vel, then surely we'd want to multiply it by the direction?
 	obj->nextX += ck_KeenRunXVels[obj->topTI&7] * CK_GetTicksPerFrame();
 }
 
@@ -554,7 +557,7 @@ void CK_KeenJumpThink(CK_object *obj)
 	{
 
 		obj->xDirection = ck_inputFrame.xDirection;
-		CK_PhysAccelHorz(obj, obj->xDirection*2, 24);
+		CK_PhysAccelHorz(obj, ck_inputFrame.xDirection*2, 24);
 	}
 	else CK_PhysDampHorz(obj);
 

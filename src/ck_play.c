@@ -312,7 +312,6 @@ int CK_ActionThink(CK_object *obj, int time)
 		else
 		{
 			obj->currentAction = action->next;
-			//obj->actionTimer = obj->currentAction->timer;
 		}
 	}
 	return newTime;
@@ -357,7 +356,7 @@ void CK_RunAction(CK_object *obj)
 			prevAction = obj->currentAction;
 		}
 	
-}
+	}
 	
 	if (!obj->currentAction)
 	{
@@ -722,7 +721,6 @@ int CK_PlayLoop()
 	{
 
 		IN_PumpEvents();
-		CK_SetTicsPerFrame();
 		CK_HandleInput();
 
 		// Set, unset active objects.
@@ -837,6 +835,7 @@ int CK_PlayLoop()
 		//TODO: Slow-mo, extra VBLs.
 		if (ck_slowMotionEnabled)
 			VL_DelayTics(14);
+		CK_SetTicsPerFrame();
 		VL_Present();
 		// If we've finished playing back our demo, or the player presses a key,
 		// exit the playloop.

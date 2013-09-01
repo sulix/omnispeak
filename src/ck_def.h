@@ -73,7 +73,6 @@ typedef struct CK_action
 	int chunkLeft;
 	int chunkRight;
 	CK_ActionType type;
-	//int unknown1, unknown2;
 	int protectAnimation, stickToGround; 	// See KeenWiki: Galaxy Action Parameters (lemm/levelass)
 	int timer;
 	int velX, velY;
@@ -114,6 +113,8 @@ typedef struct CK_object
 	CK_objPhysData clipRects;
 
 	CK_objPhysData oldRects;
+
+	CK_objPhysData deltaRects;
 
 	int nextX;
 	int nextY;

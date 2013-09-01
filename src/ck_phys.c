@@ -80,6 +80,18 @@ void CK_SetOldClipRects(CK_object *obj)
 	obj->oldRects.tileXmid = obj->clipRects.tileXmid;
 }
 
+void CK_SetDeltaClipRects(CK_object *obj)
+{
+	obj->deltaRects.unitX1 = obj->clipRects.unitX1 - obj->oldRects.unitX1;
+	obj->deltaRects.unitY1 = obj->clipRects.unitY1 - obj->oldRects.unitY1;
+	obj->deltaRects.unitX2 = obj->clipRects.unitX2 - obj->oldRects.unitX2;
+	obj->deltaRects.unitY2 = obj->clipRects.unitY2 - obj->oldRects.unitY2;
+	
+	obj->deltaRects.unitXmid = obj->clipRects.unitXmid - obj->oldRects.unitXmid;
+
+	// We don't calculate tile deltas.
+}
+
 void CK_PhysUpdateX(CK_object *obj, int deltaUnitX)
 {
 	obj->posX += deltaUnitX;
@@ -155,7 +167,7 @@ void CK_PhysKeenClipDown(CK_object *obj)
 	{
 		int slope = ck_physSlopeHeight[(topTI & 7)][midTileXOffset];
 		int deltaY = (obj->clipRects.tileY2 << 8) + slope - 1 - obj->clipRects.unitY2;
-		if (deltaY <= 0 && -(obj->clipRects.unitY2 - obj->oldRects.unitY2) <= deltaY)
+		if (deltaY <= 0 && -(obj->deltaRects.unitY2) <= deltaY)
 		{
 			obj->topTI = topTI;
 			CK_PhysUpdateY(obj, deltaY);
@@ -196,7 +208,7 @@ void CK_PhysKeenClipUp(CK_object *obj)
 	{
 		int slopeAmt = ck_physSlopeHeight[bottomTI & 0x07][midTileXOffset];
 		deltaY = ((obj->clipRects.tileY1+1) << 8) - slopeAmt - obj->clipRects.unitY1;
-		if (deltaY >= 0 && (obj->oldRects.unitY1 - obj->clipRects.unitY1) >= deltaY)
+		if (deltaY >= 0 && (-obj->deltaRects.unitY1) >= deltaY)
 		{
 			obj->bottomTI = bottomTI;
 			CK_PhysUpdateY(obj, deltaY);
@@ -227,7 +239,7 @@ void CK_PhysClipVert(CK_object *obj)
 
 
 	
-	int vertDisplace = -abs(obj->clipRects.unitXmid - obj->oldRects.unitXmid) - obj->clipRects.unitY2 + obj->oldRects.unitY2 - 16;	// Move above slope first.
+	int vertDisplace = -abs(obj->deltaRects.unitXmid) - obj->deltaRects.unitY2 - 16;	// Move above slope first.
 
 
 
@@ -253,7 +265,7 @@ void CK_PhysClipVert(CK_object *obj)
 	}
 	//TODO: Ceiling collision.
 
-	vertDisplace = abs(obj->clipRects.unitXmid - obj->oldRects.unitXmid) + obj->oldRects.unitY1 - obj->clipRects.unitY1 + 16;
+	vertDisplace = abs(obj->deltaRects.unitXmid) - obj->deltaRects.unitY1 + 16;
 
 	for (int y = obj->oldRects.tileY1+1; y >= obj->clipRects.tileY1; --y)
 	{
@@ -391,16 +403,18 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 		{
 			//NOTE: Keen calculates a clip-rect delta here.
 
+			CK_SetDeltaClipRects(obj);
+
 			CK_PhysClipVert(obj);
 
 			//TODO: Handle keen NOT being pushed.
 			if (obj == ck_keenObj)
 			{
-				if (!obj->topTI && obj->clipRects.unitY2 > obj->oldRects.unitY2)
+				if (!obj->topTI && obj->deltaRects.unitY2 > 0)
 				{
 					CK_PhysKeenClipDown(obj);
 				}
-				if (!obj->bottomTI && obj->clipRects.unitY1 < obj->oldRects.unitY1)
+				if (!obj->bottomTI && obj->deltaRects.unitY1 < 0)
 				{
 					CK_PhysKeenClipUp(obj);
 				}
@@ -466,6 +480,7 @@ void CK_PhysUpdateSimpleObj(CK_object *obj)
 
 		if (obj->clipped)
 		{
+			CK_SetDeltaClipRects(obj);
 			CK_PhysClipVert(obj);
 			CK_PhysClipHorz(obj);
 		}
@@ -554,6 +569,7 @@ void CK_SetAction(CK_object *obj, CK_action *act)
 void CK_SetAction2(CK_object *obj, CK_action *act)
 {
 	obj->currentAction = act;
+	obj->actionTimer = 0;
 
 	if (act->chunkRight && obj->xDirection > 0) obj->gfxChunk = act->chunkRight;
 	else if (act->chunkLeft) obj->gfxChunk = act->chunkLeft;
@@ -580,7 +596,7 @@ void CK_PhysGravityHigh(CK_object *obj)
 		// Every odd tic...
 		if (ticCount & 1)
 		{
-			if (obj->velY < 0 && obj->velY > -4)
+			if (obj->velY < 0 && obj->velY >= -4)
 			{
 				obj->nextY += obj->velY;
 				obj->velY = 0;
@@ -605,7 +621,7 @@ void CK_PhysGravityMid(CK_object *obj)
 		// Every odd tic...
 		if (ticCount & 1)
 		{
-			if (obj->velY < 0 && obj->velY > -3)
+			if (obj->velY < 0 && obj->velY >= -3)
 			{
 				obj->nextY += obj->velY;
 				obj->velY = 0;
@@ -629,7 +645,8 @@ void CK_PhysGravityLow(CK_object *obj)
 	{
 		// TODO: recheck this condition
 		//if ((ticCount & 3) == 1)
-		if ((ticCount?0:1) & 3)
+		//if ((ticCount?0:1) & 3)
+		if (ticCount == 0)	// This condition is seriously fucked up.
 		{
 			obj->velY += 1;
 			if (obj->velY > 70)
