@@ -47,6 +47,11 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 {
 	if (b->type == 4)
 	{
+		if (b->user1 == 7)
+		{
+			ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
+		}
+
 		b->type = 1;
 		b->zLayer = 3;
 		b->gfxChunk = b->user4;
@@ -84,6 +89,13 @@ static int16_t emptyTile = 0;
 void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 {
 	RF_ReplaceTiles(&emptyTile, 1, tileX, tileY, 1, 1);
+
+	//TODO: Points
+	
+	if (itemNumber == 7)
+	{
+		ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
+	}
 
 	CK_object *notify = CK_GetNewObj(true);
 	notify->type = 1;
@@ -245,9 +257,6 @@ void CK_KeenRunningThink(CK_object *obj)
 
 	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
 	{
-		//TODO: Remove this, it's there so we can always actually shoot!
-		ck_gameState.numShots++;
-
 		ck_keenState.shootWasPressed = true;
 		
 		if (ck_inputFrame.yDirection == -1)
@@ -315,7 +324,6 @@ void CK_HandleInputOnGround(CK_object *obj)
 	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
 	{
 		ck_keenState.shootWasPressed = true;
-		ck_gameState.numShots++;
 		if (ck_inputFrame.yDirection == -1)
 		{
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenShootUp1");
@@ -591,7 +599,6 @@ void CK_KeenJumpThink(CK_object *obj)
 	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
 	{
 		ck_keenState.shootWasPressed = true;
-		ck_gameState.numShots = 5;
 		switch (ck_inputFrame.yDirection)
 		{
 		case -1:
@@ -809,7 +816,6 @@ void CK_KeenPogoThink(CK_object *obj)
 	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
 	{
 		ck_keenState.shootWasPressed = true;
-		ck_gameState.numShots = 5;
 		switch (ck_inputFrame.yDirection)
 		{
 		case -1:
@@ -1241,7 +1247,7 @@ void CK_KeenSpawnShot(CK_object *obj)
 		}
 		else
 		{
-			CK_SpawnShot(obj->posX + 128, obj->posY + 64, 6);
+			CK_SpawnShot(obj->posX - 128, obj->posY + 64, 6);
 		}
 	}
 	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShootUp1"))

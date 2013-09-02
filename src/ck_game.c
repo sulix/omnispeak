@@ -72,6 +72,8 @@ void CK_LoadLevel(bool unknown)
 		US_InitRndT(true);
 	}
 
+	//TODO: Put this in the right place.
+	ck_gameState.numShots = 5;
 	
 	CA_CacheMap(ck_currentMapNumber);
 	RF_NewMap(ck_currentMapNumber);
