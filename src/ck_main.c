@@ -63,6 +63,7 @@ void CK_InitGame()
 	// Can't do much without memory!
 	MM_Startup();
 
+	US_Startup();
 	//TODO: Get filenames/etc from config/episode
 
 	// Load the core datafiles
@@ -71,7 +72,7 @@ void CK_InitGame()
 	// Compile the actions
 	CK_ACT_SetupFunctions();
 	CK_KeenSetupFunctions();
-	CK5_SetupFunctions();
+	ck_currentEpisode->setupFunctions();
 	CK_ACT_LoadActions(CAL_AdjustExtension("ACTION.EXT"));
 
 	// Setup the screen
@@ -119,9 +120,6 @@ void CK_HandleDemoKeys()
 }
 
 
-bool ck_tedlaunched = false;
-bool ck_nowait = false;
-
 /*
  * The Demo Loop
  * Keen (and indeed Wolf3D) have this function as the core of the game.
@@ -137,13 +135,12 @@ void CK_DemoLoop()
 	 * parameter, where xx is the level number.
 	 */
 
-	//TODO: Work out where these vars come from
-	if (ck_tedlaunched)
+	if (us_tedLevel)
 	{
-		ck_nowait = true;
-		//ck_currentMapNumber = ck_tedlevel;
+		us_noWait = true;
+		ck_currentMapNumber = us_tedLevelNumber;
 
-		//CK_GameLoop();
+		CK_GameLoop();
 		Quit(0);
 	}
 
@@ -193,9 +190,15 @@ void CK_DemoLoop()
 
 }
 
-int main()
+int main(int argc, const char **argv)
 {
+	// Send the cmd-line args to the User Manager.
+	us_argc = argc;
+	us_argv = argv;
+
+	// We want Keen 5 (for now!)
 	ck_currentEpisode = &ck5_episode;
+
 	CK_InitGame();
 	CK_DemoLoop();
 	CK_ShutdownID();

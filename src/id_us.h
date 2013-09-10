@@ -51,6 +51,15 @@ int US_RndT();
 void US_SetRndI(int index);
 int US_GetRndI();
 
+// Common
+extern bool us_noWait; // Debug mode enabled.
+extern bool us_tedLevel; // Launching a level from TED
+extern int us_tedLevelNumber; // Number of level to launch from TED
 
+// We need to steal these from main().
+extern char **us_argv;
+extern int us_argc;
+
+void US_Startup();
 
 #endif //ID_US_H

@@ -115,6 +115,9 @@ void CK_SetTicsPerFrame()
 		VL_GetTics(3);
 		ck_ticsThisFrame = 3;
 	}
+
+	// We don't want to get physics bugs if the game runs too slowly.
+	if (ck_ticsThisFrame > 5) ck_ticsThisFrame = 5;
 	ck_numTotalTics += ck_ticsThisFrame;
 }
 

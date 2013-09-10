@@ -1,5 +1,5 @@
 #include "id_vl.h"
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 static SDL_Surface *vl_sdl12_screenSurface;
 static int vl_sdl12_screenWidth;

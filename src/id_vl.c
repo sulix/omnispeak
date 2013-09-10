@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_ca.h"
 #include "id_vl.h"
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 #define max(a,b) (((a) < (b))?(b):(a))
 #define min(a,b) (((a) < (b))?(a):(b))

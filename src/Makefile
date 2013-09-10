@@ -42,6 +42,6 @@ clean:
 
 $(OUTBIN): $(OBJ)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -g -lm -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` -lGL 
+	$(CC) $(CFLAGS) -g -lm -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` 
 
 -include $(DEPS)

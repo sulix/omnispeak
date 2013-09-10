@@ -37,7 +37,8 @@ int US_CheckParm(const char *parm, char **strings)
 	// Strip any non-alphabetic characters from 'parm'
 	while (*parm)
 	{
-		if (isalpha(*(parm++))) break;
+		if (isalpha(*(parm))) break;
+		parm++;
 	}
 
 	// For every string in 'strings'
@@ -217,9 +218,6 @@ void US_CenterWindow(int w, int h)
 	US_DrawWindow((maxXtile - w)/2, (maxYtile - h)/2, w, h);
 }
 
-
-
-
 // Random Number Generator
 
 /*
@@ -280,4 +278,44 @@ int US_GetRndI()
 {
 	return us_randomIndex;
 }
-	
+
+
+// Common
+
+/*
+ * US_Startup
+ * Startup routine for the 'User Manager'
+ */
+
+static const char *us_parmStrings[] = {"TEDLEVEL", "NOWAIT", "\0", NULL};
+
+bool us_noWait; // Debug mode enabled.
+bool us_tedLevel; // Launching a level from TED
+int us_tedLevelNumber; // Number of level to launch from TED
+
+// We need to steal these from main().
+char **us_argv;
+int us_argc;
+
+void US_Startup()
+{
+	// Initialize the random number generator (to the current time).
+	US_InitRndT(true);
+
+	// Check command line args.
+	for (int i = 1; i < us_argc; ++i)
+	{
+		int parmIdx = US_CheckParm(us_argv[i], us_parmStrings);
+		switch(parmIdx)
+		{
+		case 0:
+			us_tedLevelNumber = atoi(us_argv[i+1]);
+			if (us_tedLevelNumber > 0) us_tedLevel = true;
+			break;
+		case 1:
+			us_noWait = true;
+			break;
+		}
+	}
+
+}
