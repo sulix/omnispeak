@@ -19,7 +19,14 @@
 IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_ti.o id_us_1.o id_us_2.o id_vh.o id_vl_sdl2gl.o id_vl.o id_str.o glad.o
 CKOBJECTS=ck_act.o ck_keen.o ck5_obj1.o ck5_obj3.o ck_phys.o ck_game.o ck_play.o ck5_misc.o ck_main.o
 
-OUTBIN=../bin/keen5e
+ifeq ($(PLATFORM), WINDOWS)
+	EXE_EXT=.exe
+endif
+
+BINPREFIX=
+CC=$(BINPREFIX)gcc
+
+OUTBIN=../bin/omnispeak5e$(EXE_EXT)
 
 OBJ := $(IDOBJECTS:%=../obj/%)
 OBJ += $(CKOBJECTS:%=../obj/%)

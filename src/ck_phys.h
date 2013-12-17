@@ -39,20 +39,20 @@ typedef struct CK_objPhysData
 } CK_objPhysData;
 
 
-typedef struct CK_object CK_object;
-typedef struct CK_action CK_action;
+struct CK_object;
+struct CK_action;
 
-void CK_PhysUpdateNormalObj(CK_object *obj);
-void CK_PhysUpdateSimpleObj(CK_object *obj);
-void CK_PhysPushX(CK_object *pushee, CK_object *pusher);
-void CK_PhysPushY(CK_object *pushee, CK_object *pusher);
-void CK_SetAction(CK_object *obj, CK_action *act);
-void CK_SetAction2(CK_object *obj, CK_action *act);
-void CK_PhysGravityHigh(CK_object *obj);
-void CK_PhysGravityMid(CK_object *obj);
-void CK_PhysGravityLow(CK_object *obj);
-void CK_PhysDampHorz(CK_object *obj);
-void CK_PhysAccelHorz(CK_object *obj, int accX, int velLimit);
+void CK_PhysUpdateNormalObj(struct CK_object *obj);
+void CK_PhysUpdateSimpleObj(struct CK_object *obj);
+void CK_PhysPushX(struct CK_object *pushee, struct CK_object *pusher);
+void CK_PhysPushY(struct CK_object *pushee, struct CK_object *pusher);
+void CK_SetAction(struct CK_object *obj, struct CK_action *act);
+void CK_SetAction2(struct CK_object *obj, struct CK_action *act);
+void CK_PhysGravityHigh(struct CK_object *obj);
+void CK_PhysGravityMid(struct CK_object *obj);
+void CK_PhysGravityLow(struct CK_object *obj);
+void CK_PhysDampHorz(struct CK_object *obj);
+void CK_PhysAccelHorz(struct CK_object *obj, int accX, int velLimit);
 
-void CK_ResetClipRects(CK_object *obj);
+void CK_ResetClipRects(struct CK_object *obj);
 #endif

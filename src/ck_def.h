@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 struct CK_object;
 
-typedef struct RF_SpriteDrawEntry RF_SpriteDrawEntry;
+struct RF_SpriteDrawEntry;
 
 typedef enum CK_Difficulty
 {
@@ -123,7 +123,7 @@ typedef struct CK_object
 	int topTI, bottomTI, leftTI, rightTI;
 
 
-	RF_SpriteDrawEntry *sde;
+	struct RF_SpriteDrawEntry *sde;
 
 	int user1;
 	int user2;

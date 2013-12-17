@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdbool.h>
 
-typedef struct CK_object CK_object;
+struct CK_object;
 
 // Timing
 void CK_SetTicsPerFrame();
@@ -30,14 +30,14 @@ int CK_GetTicksPerFrame();
 long CK_GetNumTotalTics();
 
 // Object Mgmt
-CK_object *CK_GetNewObj(bool nonCritical);
+struct CK_object *CK_GetNewObj(bool nonCritical);
 void CK_SetupObjArray();
-void CK_RemoveObj(CK_object *obj);
+void CK_RemoveObj(struct CK_object *obj);
 
 // Actions/Camera
-void CK_RunAction(CK_object *obj);
-void CK_CentreCamera(CK_object *obj);
-void CK_NormalCamera(CK_object *obj);
+void CK_RunAction(struct CK_object *obj);
+void CK_CentreCamera(struct CK_object *obj);
+void CK_NormalCamera(struct CK_object *obj);
 
 // Playing
 void CK_PlayDemo(int demoChunk);
