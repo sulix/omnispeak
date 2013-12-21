@@ -18,7 +18,74 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "id_us.h"
+#include "id_in.h"
 
+
+
+bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_US_SaveGameMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_US_ScoreBoxMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_US_TwoButtonFiringMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_US_FixJerkyMotionMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_US_SVGACompatibilityMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_US_KeyboardMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_US_Joystick1MenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_US_Joystick2MenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_US_GamepadMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_US_ConfigureMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
+
+bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
 
 // A debug menu which doesn't seem to ever appear in the game.
 US_CardItem ck_us_debugMenuItems[] = {
@@ -60,12 +127,12 @@ US_Card ck_us_newGameMenu = { 8, 0, 89, 0, &ck_us_newGameMenuItems, 0, 1, 0, 0, 
 
 // Load/Save Game Menus
 US_CardItem ck_us_loadSaveMenuItems[] = {
-	{ US_ITEM_Normal, 0, IN_SC_1, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_2, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_3, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_4, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_5, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_6, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_One, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_Two, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_Three, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_Four, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_Five, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_Six, 0, US_Comm_None, 0, 0, 0 },
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
@@ -137,11 +204,11 @@ US_CardItem ck_us_configureMenuItems[] = {
 	{ US_ITEM_Submenu, 0, IN_SC_M, "MENU", US_Comm_None, &ck_us_musicMenu, 0, 0 },
 	{ US_ITEM_Submenu, 0, IN_SC_O, "OPTIONS", US_Comm_None, &ck_us_optionsMenu, 0, 0 },
 	{ US_ITEM_Submenu, US_IS_Gap, IN_SC_K, "KEYBOARD", US_Comm_None, &ck_us_keyboardMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_1, "USE JOYSTICK #1", US_Comm_None, &ck_us_joystick1Menu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_2, "USE JOYSTICK #2", US_Comm_None, &ck_us_joystick2Menu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_One, "USE JOYSTICK #1", US_Comm_None, &ck_us_joystick1Menu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_Two, "USE JOYSTICK #2", US_Comm_None, &ck_us_joystick2Menu, 0, 0 },
 	{ US_ITEM_Submenu, 0, IN_SC_G, "", US_Comm_None, &ck_us_gamepadMenu, 0, 0 },
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-}
+};
 
 US_Card ck_us_configureMenu = { 0, 0, 92, 0, &ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0 };
 

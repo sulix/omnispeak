@@ -34,81 +34,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Card stack can have at most 7 cards
 #define US_MAX_CARDSTACK 7
 
-// Messages passed to the callback.
-typedef enum US_CardMsg
-{
-	US_MSG_CardEntered,	//The card has become the active card
-	US_MSG_Draw,		//Allows the callback to draw the card
-	US_MSG_PostDraw,	//Called after the card is drawn, for overlays
-	US_MSG_DrawItemIcon,	//Draws the icon of a single CardItem
-	US_MSG_DrawItem,	//Draws an item
-	US_MSG_ItemEntered	//An item was triggered
-} US_CardMsg;
-
-typedef enum US_CardItemType
-{
-	US_ITEM_None,		//An empty CardItem to end the list
-	US_ITEM_Normal,		//A normal item
-	US_ITEM_Radio,		//A 'radio' item, only one can be selected in a given card
-	US_ITEM_Submenu		//The item triggers a submenu when activated
-} US_CardItemType;
-
-typedef enum US_CardItemState
-{
-	US_IS_Checked = 0x01,
-	US_IS_Selected = 0x02,
-	US_IS_Disabled = 0x04,
-	US_IS_Gap = 0x08
-} US_CardItemState;
-
-
-/*
- * Menu items can have 'commands', which cause the menu to quit, and something
- * to happen in the game.
- */
-typedef enum US_CardCommand
-{
-	US_Comm_None = 0,
-	US_Comm_ReturnToGame = 1,
-	US_Comm_EndGame = 2,
-	US_Comm_Quit = 3,
-	US_Comm_NewEasyGame = 5,
-	US_Comm_NewNormalGame = 6,
-	US_Comm_NewHardGame = 7
-} US_CardCommand;
 
 // The last selected command.
 US_CardCommand us_currentCommand = US_Comm_None;
-
-
-struct US_Card;
-
-typedef struct US_CardItem
-{
-	US_CardItemType type;
-	US_CardItemState state;
-	IN_ScanCode shortcutKey;
-	int unknown;
-	const char *caption;
-	US_CardCommand command;
-	struct US_Card *subMenu;
-	int x;
-	int y;
-} US_CardItem;
-
-typedef bool (*US_CardCallbackFunc) (US_CardMsg, US_CardItem*);
-
-typedef struct US_Card
-{
-	int x;
-	int y;
-	int gfxChunk;
-	// An unknown int
-	struct US_CardItem *items;	//Pointer to item array.
-	US_CardCallbackFunc msgCallback;
-	int selectedItem;		//Index of selected item.
-} US_Card;
-
 
 static int us_cardStackIndex;
 US_Card *us_currentCard;
