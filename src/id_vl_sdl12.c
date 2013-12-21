@@ -7,7 +7,7 @@ static int vl_sdl12_screenHeight;
 
 static void VL_SDL12_SetVideoMode(int w, int h)
 {
-	vl_sdl12_screenSurface = SDL_SetVideoMode(w,h,32,0);
+	vl_sdl12_screenSurface = SDL_SetVideoMode(w,h,32,SDL_DOUBLEBUF|SDL_HWSURFACE);
 	vl_sdl12_screenWidth = w;
 	vl_sdl12_screenHeight = h;
 }

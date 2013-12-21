@@ -116,7 +116,8 @@
 
 # Platforms
 %action CK5_act_redBlockPlatform 446 446 Frame 0 0 0 0 0 CK5_BlockPlatform NULL CK_BasicDrawFunc1 NULL
-%action CK5_act_purpleBlockPlatform 423 423 UnscaledFrame 0 0 0 0 0 CK5_BlockPlatform NULL CK_BasicDrawFunc1 NULL
+%action CK5_act_purpleBlockPlatform 423 423 UnscaledFrame 0 0 0 0 0 CK5_BlockPlatform NULL CK_BasicDrawFunc1 CK5_act_purpleBlockPlatform2
+%action CK5_act_purpleBlockPlatform2 424 424 UnscaledFrame 0 0 0 0 0 CK5_BlockPlatform NULL CK_BasicDrawFunc1 CK5_act_purpleBlockPlatform
 
 %action CK5_ACT_sneakPlatWait 0x1BE 0x1BE Frame 0 0 0 0 0 CK5_SneakPlatThink NULL CK_BasicDrawFunc1 NULL
 %action CK5_ACT_sneakPlatSneak 0x1BE 0x1BE ScaledOnce 0 0 48 32 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_sneakPlatReturn

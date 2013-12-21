@@ -372,7 +372,7 @@ void RFL_AnimateTiles()
 
 	for (int i = 0; i < rf_numAnimTileTimers; ++i)
 	{
-		rf_animTileTimers[i].timeToSwitch--;
+		rf_animTileTimers[i].timeToSwitch-=CK_GetTicksPerFrame();
 
 
 		if (rf_animTileTimers[i].timeToSwitch <= 0)

@@ -36,6 +36,8 @@ static void VL_SDL2GL_SetVideoMode(int w, int h)
 	vl_sdl2gl_screenWidth = w;
 	vl_sdl2gl_screenHeight = h;
 
+	SDL_GL_SetSwapInterval(1);
+
 	gladLoadGLLoader(&SDL_GL_GetProcAddress);
 
 	// Compile the shader we use to emulate EGA palettes.

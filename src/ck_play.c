@@ -109,7 +109,9 @@ void CK_DebugMemory()
 void CK_SetTicsPerFrame()
 {
 	if (!ck_demoEnabled)
-		ck_ticsThisFrame = VL_GetTics(1);
+	{
+		ck_ticsThisFrame = VL_GetTics(2);
+	}
 	else
 	{
 		VL_GetTics(3);

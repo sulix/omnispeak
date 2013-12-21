@@ -72,14 +72,12 @@ void CK5_BlockPlatform(CK_object *obj)
 		return;
 	}
 	//TODO: Implement properly.
-	obj->nextX = obj->xDirection * 12;
-	obj->nextY = obj->yDirection * 12;
+	obj->nextX = obj->xDirection * 12 * CK_GetTicksPerFrame();
+	obj->nextY = obj->yDirection * 12 * CK_GetTicksPerFrame();
 
-	CK_ResetClipRects(obj);
-	
 	if (obj->xDirection == 1)
 	{
-		nextPosUnit = obj->clipRects.unitX2 + 12;
+		nextPosUnit = obj->clipRects.unitX2 + obj->nextX;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width*obj->clipRects.tileY1+nextPosTile] == 0x1F)
 		{
@@ -90,7 +88,7 @@ void CK5_BlockPlatform(CK_object *obj)
 	}
 	else if (obj->xDirection == -1)
 	{
-		nextPosUnit = obj->clipRects.unitX1 - 12;
+		nextPosUnit = obj->clipRects.unitX1 + obj->nextX;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width*obj->clipRects.tileY1+nextPosTile] == 0x1F)
 		{
@@ -102,14 +100,13 @@ void CK5_BlockPlatform(CK_object *obj)
 	}
 	else if (obj->yDirection == 1)
 	{
-		nextPosUnit = obj->clipRects.unitY2 + 12;
+		nextPosUnit = obj->clipRects.unitY2 + obj->nextY;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width*nextPosTile+obj->clipRects.tileX1+obj->user1] == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile-2,2) == 0x1F)
 			{
 				//Stop the platform.
-				obj->yDirection = 0;
 				obj->visible = true;
 				obj->nextY = 0;
 			}
@@ -123,14 +120,13 @@ void CK5_BlockPlatform(CK_object *obj)
 	}
 	else if (obj->yDirection == -1)
 	{
-		nextPosUnit = obj->clipRects.unitY1 - 12;
+		nextPosUnit = obj->clipRects.unitY1 + obj->nextY;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width*nextPosTile+obj->clipRects.tileX1+obj->user1] == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile+2, 2) == 0x1F)
 			{
 				// Stop the platform.
-				obj->yDirection = 0;
 				obj->visible = true;
 				obj->nextY = 0;
 			}
@@ -142,7 +138,6 @@ void CK5_BlockPlatform(CK_object *obj)
 			}
 		}
 	}
-	obj->visible = true;
 }
 
 void CK_DeadlyCol(CK_object *o1, CK_object *o2)
@@ -167,7 +162,7 @@ void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
 
 	obj->clipped = false;
 	obj->active = OBJ_ACTIVE;
-	obj->type = 4;	//OBJ_ITEM
+	obj->type = 5;	//OBJ_ITEM
 	obj->zLayer = 2;
 	obj->posX = tileX << 8;
 	obj->posY = tileY << 8;
@@ -190,7 +185,6 @@ void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
 	obj->zLayer = 0;
 	obj->posX = tileX << 8;
 	obj->posY = tileY << 8;
-	obj->user1 = obj->user2 = 0;
 
 	switch(direction)
 	{
@@ -221,7 +215,7 @@ void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
 	}
 	else
 	{
-		obj->user1 = 0;	
+		obj->user1 = 0;
 		CK_SetAction(obj,CK_GetActionByName("CK5_act_redBlockPlatform"));
 	}
 	obj->gfxChunk = obj->currentAction->chunkLeft;

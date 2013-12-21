@@ -45,7 +45,7 @@ CK_action CK_ACT_itemNotify = {0, 0, 1, 0, 0, 40, 0, 8, 0, 0, CK_BasicDrawFunc1,
 
 void CK_KeenColFunc(CK_object *a, CK_object *b)
 {
-	if (b->type == 4)
+	if (b->type == 5)
 	{
 		if (b->user1 == 7)
 		{

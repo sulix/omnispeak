@@ -412,7 +412,11 @@ int VL_NumSurfaces()
 void VL_InitScreen()
 {
 	VL_SetDefaultPalette();
-	vl_currentBackend = VL_SDL2GL_GetBackend();	
+#if SDL_VERSION_ATLEAST(1,3,0)
+	vl_currentBackend = VL_SDL2GL_GetBackend();
+#else
+	vl_currentBackend = VL_SDL12_GetBackend();
+#endif
 	vl_memused = 0;
 	vl_numsurfaces = 1;
 	vl_currentBackend->setVideoMode(320,200);
@@ -503,12 +507,15 @@ int VL_GetTics(int wait)
 	do
 	{
 		tics = (SDL_GetTicks() - vl_lastFrameTime)/(1000/70);
+		// NOTE: This may be imprecise - can even take 10ms
+		SDL_Delay(1);
 	} while (tics < wait);
 	return tics;
 }
 
 void VL_DelayTics(int tics)
 {
+	// NOTE: This may be imprecise and take up to 10ms more than desired.
 	SDL_Delay(tics*1000/70);
 }
 
