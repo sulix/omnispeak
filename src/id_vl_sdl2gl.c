@@ -72,7 +72,8 @@ static void VL_SDL2GL_SetVideoMode(int w, int h)
 	glBindTexture(GL_TEXTURE_1D, palTex);
 	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, VL_EGAPalette);
+	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 16, GL_RGB, GL_UNSIGNED_BYTE, VL_EGAPalette);
 	glActiveTexture(GL_TEXTURE0);
 
 	// Setup framebuffer stuff, just in case.
@@ -256,8 +257,8 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	
 	float scaleX = (float)vl_sdl2gl_screenWidth/((float)surf->w);
 	float scaleY = (float)vl_sdl2gl_screenHeight/((float)surf->h);
-	float offX = (float)(scrlX)/(float)(vl_sdl2gl_screenWidth);
-	float offY = (float)(scrlY)/(float)(vl_sdl2gl_screenHeight);
+	float offX = (float)(scrlX)/(float)(surf->w);
+	float offY = (float)(scrlY)/(float)(surf->h);
 	float endX = offX + scaleX;
 	float endY = offY + scaleY;
 
