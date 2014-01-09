@@ -1,21 +1,21 @@
 /*
-Omnispeak: A Commander Keen Reimplementation
-Copyright (C) 2012 David Gow <david@ingeniumdigital.com>
+ Omnispeak: A Commander Keen Reimplementation
+ Copyright (C) 2012 David Gow <david@ingeniumdigital.com>
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 
 #ifndef ID_IN_H
 #define ID_IN_H
@@ -25,8 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // These scancodes match keen (and wolf3d)'s numbering, such that
 // patches and config files may be compatible.
-typedef enum IN_ScanCode
-{
+typedef enum IN_ScanCode {
 	IN_SC_None = 0x00,
 	IN_SC_Invalid = 0xff,
 	IN_SC_Escape = 0x01,
@@ -61,7 +60,7 @@ typedef enum IN_ScanCode
 	IN_SC_PgDown = 0x51,
 	IN_SC_Insert = 0x52,
 	IN_SC_Delete = 0x53,
-	
+
 	IN_SC_F1 = 0x3b,
 	IN_SC_F2 = 0x3c,
 	IN_SC_F3 = 0x3d,
@@ -102,23 +101,38 @@ typedef enum IN_ScanCode
 	IN_SC_Y = 0x15,
 	IN_SC_Z = 0x2c
 
-	//IN_KP_Enter = 0x0d,
-	//IN_KP_Escape = 0x1b,
-	//IN_KP_Space = 0x20,
-	//IN_KP_Backspace = 0x
+//IN_KP_Enter = 0x0d,
+//IN_KP_Escape = 0x1b,
+//IN_KP_Space = 0x20,
+//IN_KP_Backspace = 0x
 } IN_ScanCode;
 
 // See wolf3d ID_IN.H
-typedef enum IN_DemoMode
-{
-	IN_Demo_Off,
-	IN_Demo_Record,
-	IN_Demo_Playback,
-	IN_Demo_PlayDone
+typedef enum IN_DemoMode {
+	IN_Demo_Off, IN_Demo_Record, IN_Demo_Playback, IN_Demo_PlayDone
 } IN_DemoMode;
 
-typedef struct IN_KeyMapping
-{
+typedef enum {
+	IN_motion_Left = -1,
+	IN_motion_Up = -1,
+	IN_motion_None = 0,
+	IN_motion_Right = 1,
+	IN_motion_Down = 1
+} IN_Motion;
+
+typedef enum {
+	IN_dir_North,
+	IN_dir_NorthEast,
+	IN_dir_East,
+	IN_dir_SouthEast,
+	IN_dir_South,
+	IN_dir_SouthWest,
+	IN_dir_West,
+	IN_dir_NorthWest,
+	IN_dir_None
+} IN_Direction;
+
+typedef struct IN_KeyMapping {
 	IN_ScanCode jump;
 	IN_ScanCode pogo;
 	IN_ScanCode upLeft;
@@ -131,8 +145,7 @@ typedef struct IN_KeyMapping
 	IN_ScanCode downRight;
 } IN_KeyMapping;
 
-typedef struct IN_ControlFrame
-{
+typedef struct IN_ControlFrame {
 	bool jump, pogo;
 	int xDirection;
 	int yDirection;

@@ -51,6 +51,14 @@ int CK5_ItemNotifyChunks[] =
 	201, 202, 209
 };
 
+
+// Think function for adding gravity
+void CK_Fall(CK_object *obj)
+{
+	CK_PhysGravityHigh(obj);
+	obj->nextX = obj->velX * CK_GetTicksPerFrame();
+}
+
 void CK_BasicDrawFunc1(CK_object *obj)
 {
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer); 
