@@ -137,8 +137,9 @@ int CK5_Walk(CK_object *obj, CK_Controldir dir)
   Quit("CK5_Walk: Bad Dir");
 }
 
-//sub_21E3fo
-
+/*
+ * Pick direction to chase keen
+ */
 void CK5_SeekKeen(CK_object *obj)
 {
 
@@ -294,13 +295,13 @@ void CK5_MineShrapSprCol(CK_object *o1, CK_object *o2)
   {
     // TODO: implement this
     /*
-    FuseExplosionSpawn(o2->clipRects.tileX1, o2->clipRects.tileY1);
-    FuseExplosionSpawn(o2->clipRects.tileX2, o2->clipRects.tileY1);
-    FuseExplosionSpawn(o2->clipRects.tileX1, o2->clipRects.tileY2);
-    FuseExplosionSpawn(o2->clipRects.tileX2, o2->clipRects.tileY2);
-    RF_ReplaceTileBlock(0, 0, 0x10, 0xB, 4, 2);
-    RF_ReplaceTileBlock(4, 0, 0x10, 0xD, 4, 2);
-    LevelEndSpawn();
+       FuseExplosionSpawn(o2->clipRects.tileX1, o2->clipRects.tileY1);
+       FuseExplosionSpawn(o2->clipRects.tileX2, o2->clipRects.tileY1);
+       FuseExplosionSpawn(o2->clipRects.tileX1, o2->clipRects.tileY2);
+       FuseExplosionSpawn(o2->clipRects.tileX2, o2->clipRects.tileY2);
+       RF_ReplaceTileBlock(0, 0, 0x10, 0xB, 4, 2);
+       RF_ReplaceTileBlock(4, 0, 0x10, 0xD, 4, 2);
+       LevelEndSpawn();
      *
      */
     CK_RemoveObj(o2);
