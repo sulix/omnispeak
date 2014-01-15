@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="90">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <in>ck5_ep.h</in>
+      <in>ck5_misc.c</in>
+      <in>ck5_obj1.c</in>
+      <in>ck5_obj3.c</in>
+      <in>ck_act.c</in>
+      <in>ck_act.h</in>
+      <in>ck_decode.c</in>
+      <in>ck_def.h</in>
+      <in>ck_ep.h</in>
+      <in>ck_game.c</in>
+      <in>ck_game.h</in>
+      <in>ck_keen.c</in>
+      <in>ck_main.c</in>
+      <in>ck_phys.c</in>
+      <in>ck_phys.h</in>
+      <in>ck_play.c</in>
+      <in>ck_play.h</in>
+      <in>ck_quit.c</in>
+      <in>ck_us_2.c</in>
+      <in>glad.c</in>
+      <in>glad.h</in>
+      <in>id_ca.c</in>
+      <in>id_ca.h</in>
+      <in>id_heads.h</in>
+      <in>id_in.c</in>
+      <in>id_in.h</in>
+      <in>id_mm.c</in>
+      <in>id_mm.h</in>
+      <in>id_rf.c</in>
+      <in>id_rf.h</in>
+      <in>id_str.c</in>
+      <in>id_str.h</in>
+      <in>id_ti.c</in>
+      <in>id_ti.h</in>
+      <in>id_us.h</in>
+      <in>id_us_1.c</in>
+      <in>id_us_2.c</in>
+      <in>id_vh.c</in>
+      <in>id_vh.h</in>
+      <in>id_vl.c</in>
+      <in>id_vl.h</in>
+      <in>id_vl_sdl12.c</in>
+      <in>id_vl_sdl2gl.c</in>
+      <in>khrplatform.h</in>
+    </df>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <platform>3</platform>
+      </toolsSet>
+      <compile>
+        <compiledirpicklist>
+          <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
+          <compiledirpicklistitem>.</compiledirpicklistitem>
+        </compiledirpicklist>
+        <compiledir>${AUTO_FOLDER}</compiledir>
+        <compilecommandpicklist>
+          <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
+          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
+        </compilecommandpicklist>
+        <compilecommand>${AUTO_COMPILE}</compilecommand>
+      </compile>
+      <dbx_gdbdebugger version="1">
+        <gdb_pathmaps>
+        </gdb_pathmaps>
+        <gdb_interceptlist>
+          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
+        </gdb_interceptlist>
+        <gdb_options>
+          <DebugOptions>
+          </DebugOptions>
+        </gdb_options>
+        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
+      </dbx_gdbdebugger>
+      <nativedebugger version="1">
+        <engine>gdb</engine>
+      </nativedebugger>
+      <runprofile version="9">
+        <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+        </runcommandpicklist>
+        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <rundir>.</rundir>
+        <buildfirst>true</buildfirst>
+        <terminal-type>0</terminal-type>
+        <remove-instrumentation>0</remove-instrumentation>
+        <environment>
+        </environment>
+      </runprofile>
+    </conf>
+  </confs>
+</configurationDescriptor>

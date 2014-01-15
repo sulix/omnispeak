@@ -28,7 +28,7 @@ CC=$(BINPREFIX)gcc
 
 OUTBIN=../bin/omnispeak5e$(EXE_EXT)
 
-WITH_SDL2=1
+WITH_SDL2=0
 ifeq ($(WITH_SDL2), 1)
 	IDOBJECTS+= id_vl_sdl2gl.o
 	SDLCONFIGBIN=sdl2-config
@@ -42,8 +42,8 @@ OBJ += $(CKOBJECTS:%=../obj/%)
 DEPS := $(OBJ:%.o=%.d)
 
 #SDL_CONFIG=/home/david/builds/SDL-1.2.15/libs-32/bin/$(SDLCONFIGBIN)
-SDL_CONFIG=/home/david/builds/libs/bin/$(SDLCONFIGBIN)
-#SDL_CONFIG=$(SDLCONFIGBIN)
+#SDL_CONFIG=/home/david/builds/libs/bin/$(SDLCONFIGBIN)
+SDL_CONFIG=$(SDLCONFIGBIN)
 
 .PHONY: all clean
 

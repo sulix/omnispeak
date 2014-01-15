@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="90">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <in>ck_ep.h</in>
+      <in>ck_quit.c</in>
+      <in>id_ca.c</in>
+      <in>id_ca.h</in>
+      <in>id_in.c</in>
+      <in>id_in.h</in>
+      <in>id_mm.c</in>
+      <in>id_mm.h</in>
+      <in>id_us.h</in>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath>../bin/omnispeak5e.exe</executablePath>
+          <cTool>
+            <incDir>
+              <pElem></pElem>
+            </incDir>
+          </cTool>
+        </makeTool>
+      </makefileType>
+      <item path="ck_ep.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ck_quit.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="id_ca.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="id_ca.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="id_in.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="id_in.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="id_mm.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="id_mm.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="id_us.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
