@@ -158,6 +158,7 @@ void CK5_SetupFunctions()
 	CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
 	CK5_Obj1_SetupFunctions();
 	CK5_Obj3_SetupFunctions();
+	CK_ACT_AddFunction("CK_Fall", &CK_Fall);
 	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
 	CK_ACT_AddFunction("CK5_PointItem", &CK5_PointItem);
 	CK_ACT_AddFunction("CK5_BlockPlatform",&CK5_BlockPlatform);

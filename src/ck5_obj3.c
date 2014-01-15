@@ -816,6 +816,7 @@ void CK5_Obj3_SetupFunctions()
 	CK_ACT_AddFunction("CK5_MineExplode", &CK5_MineExplode);
 	CK_ACT_AddFunction("CK5_MineSprCol", &CK5_MineSprCol);
 	CK_ACT_AddFunction("CK5_MineShrapSprCol", &CK5_MineShrapSprCol);
+	CK_ACT_AddFunction("CK5_MineTileCol", &CK5_MineTileCol);
 	CK_ACT_AddFunction("CK5_ShrapnelTileCol", &CK5_ShrapnelTileCol);
 
 	// Spirogrip
