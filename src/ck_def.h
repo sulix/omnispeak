@@ -157,7 +157,7 @@ typedef struct CK_object
 	int user1;
 	int user2;
 	int user3;
-	int user4;
+	intptr_t user4;
 
 	struct CK_object *next;
 	struct CK_object *prev;

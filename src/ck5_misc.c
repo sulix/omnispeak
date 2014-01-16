@@ -255,6 +255,12 @@ void CK5_ScanInfoLayer()
 			case 2:
 				CK_SpawnKeen(x,y,-1);
 				break;
+			case 9:
+			case 8:
+			case 7:
+				CK5_SpawnMine(x,y);
+				break;
+						
 			case 18:	//TODO: Difficulty hard
 			case 17:	//TODO: Difficulty normal
 			case 16:

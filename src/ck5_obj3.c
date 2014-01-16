@@ -82,8 +82,8 @@ int CK5_Walk(CK_object *obj, CK_Controldir dir)
 	ty = MU2TILE(o->ypos + KeenYVel);
 #endif
 
-	tx = (obj->posX + obj->nextX);
-	ty = (obj->posY + obj->nextY);
+	tx = (obj->posX + obj->nextX) >> 8;
+	ty = (obj->posY + obj->nextY) >> 8;
 
 	switch (dir)
 	{
@@ -345,7 +345,7 @@ void CK5_MineMoveDotsToCenter(CK_object *obj)
 	}
 	else if (obj->user2 > dotOffsetX)
 	{
-		obj -= CK_GetTicksPerFrame() * 4;
+		obj->user2 -= CK_GetTicksPerFrame() * 4;
 		if (obj->user2 <= dotOffsetX)
 		{
 			obj->user2 = dotOffsetX;
@@ -365,7 +365,7 @@ void CK5_MineMoveDotsToCenter(CK_object *obj)
 	}
 	else if (obj->user3 > dotOffsetY)
 	{
-		obj -= CK_GetTicksPerFrame() * 4;
+		obj->user3 -= CK_GetTicksPerFrame() * 4;
 		if (obj->user3 <= dotOffsetY)
 		{
 			obj->user3 = dotOffsetY;
@@ -441,7 +441,7 @@ void CK5_MineMoveDotsToSides(CK_object *obj)
 	}
 	else if (obj->user2 > dotOffsetX)
 	{
-		obj -= CK_GetTicksPerFrame() * 4;
+		obj->user2 -= CK_GetTicksPerFrame() * 4;
 		if (obj->user2 <= dotOffsetX)
 		{
 			obj->user2 = dotOffsetX;
@@ -461,7 +461,7 @@ void CK5_MineMoveDotsToSides(CK_object *obj)
 	}
 	else if (obj->user3 > dotOffsetY)
 	{
-		obj -= CK_GetTicksPerFrame() * 4;
+		obj->user3 -= CK_GetTicksPerFrame() * 4;
 		if (obj->user3 <= dotOffsetY)
 		{
 			obj->user3 = dotOffsetY;
@@ -530,7 +530,7 @@ void CK5_MineTileCol(CK_object *obj)
 
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0,
 									obj->zLayer); //mine
-	RF_AddSpriteDraw(&obj->user4, obj->posX + obj->user2,
+	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user4, obj->posX + obj->user2,
 									obj->posY + obj->user3, 0x17B, 0, 2); //dot
 	return;
 }
@@ -683,7 +683,11 @@ void CK5_ShrapnelTileCol(CK_object *obj)
 
 	// if speed is lower than threshhold, then disappear
 	if (bouncePower < 0x1000)
-		CK_SetAction2(obj, obj->currentAction->next);
+		// CK_SetAction2(obj, obj->currentAction->next);
+		// This is a mistake in the .exe... we can't advance to a NULL
+		// action, because omnispeak will segfault (Keen5 wouldn't)
+		// Just remove it instead
+		CK_RemoveObj(obj);
 
 }
 
