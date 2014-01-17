@@ -143,6 +143,18 @@
 
 # ck5_obj3.c
 
+# ShikadiMine
+%action CK5_ACT_Mine0 0x17A 0x17A Frame 0x0 0x0 0x8 0x0 0x0 CK5_MineMove CK5_MineSprCol CK5_MineTileCol NULL
+%action CK5_ACT_Mine1 0x17A 0x17A Frame 0x0 0x0 0x0 0x0 0x0 CK5_MineMoveDotsToCenter CK5_MineSprCol CK5_MineTileCol CK5_ACT_Mine2
+%action CK5_ACT_Mine2 0x17A 0x17A Frame 0x0 0x0 0x0 0x0 0x0 CK5_MineMoveDotsToSides CK5_MineSprCol CK5_MineTileCol CK5_ACT_Mine0
+%action CK5_ACT_MineExplode0 0x17C 0x17C UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineSprCol CK_BasicDrawFunc1 CK5_ACT_MineExplode1
+%action CK5_ACT_MineExplode1 0x17D 0x17D UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineSprCol CK_BasicDrawFunc1 CK5_ACT_MineExplode2
+%action CK5_ACT_MineExplode2 0x17C 0x17C UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineSprCol CK_BasicDrawFunc1 CK5_ACT_MineExplode3
+%action CK5_ACT_MineExplode3 0x17D 0x17D UnscaledOnce 0x0 0x0 0xa 0x0 0x0 CK5_MineExplode CK5_MineSprCol CK_BasicDrawFunc1 CK5_ACT_MineExplode4
+%action CK5_ACT_MineExplode4 0x17E 0x17E UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_MineExplode5
+%action CK5_ACT_MineExplode5 0x17F 0x17F UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 NULL
+%action CK5_ACT_MineShrap0 0x180 0x180 Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK5_MineShrapSprCol CK5_ShrapnelTileCol NULL
+
 # Spirogrip
 %action CK5_ACT_SpirogripSpin1 0x193 0x193 UnscaledOnce 0 0 8 0 0 CK5_SpirogripSpin CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin2
 %action CK5_ACT_SpirogripSpin2 0x18E 0x18E UnscaledOnce 0 0 8 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin3

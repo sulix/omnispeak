@@ -39,6 +39,35 @@ typedef enum CK_Difficulty
 	D_Hard
 } CK_Difficulty;
 
+// see WL_DEF.H
+typedef enum CK_Controldir {
+        CD_north,
+        CD_east,
+        CD_south,
+        CD_west
+} CK_Controldir;
+
+typedef enum CK_Dir {
+        Dir_east,
+        Dir_northeast,
+        Dir_north,
+        Dir_northwest,
+        Dir_west,
+        Dir_southwest,
+        Dir_south,
+        Dir_southeast,
+        Dir_nodir
+} CK_Dir;
+
+typedef enum CK_ClassType {
+
+	CT_nothing,
+	CT_Player = 2,
+	CT_Stunner = 3,
+	CT_Mine = 10,
+
+} CK_ClassType;
+
 typedef struct CK_GameState
 {
 	CK_Difficulty difficulty;		// Difficulty level of current game
@@ -128,7 +157,7 @@ typedef struct CK_object
 	int user1;
 	int user2;
 	int user3;
-	int user4;
+	intptr_t user4;
 
 	struct CK_object *next;
 	struct CK_object *prev;

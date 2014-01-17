@@ -39,7 +39,7 @@ void CK5_TurretSpawn(int tileX, int tileY, int direction)
 	obj->posY = tileY << 8;
 	obj->clipRects.unitX1 = obj->clipRects.unitX2 = tileX << 8;
 	obj->clipRects.unitX2 = obj->clipRects.unitY2 = tileY << 8;
-	
+
 	obj->user1 = direction;
 
 	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_turretWait"));
@@ -56,16 +56,24 @@ void CK5_TurretShoot(CK_object *obj)
 	shot->posY = obj->posY;
 
 	printf("Shooting!\n");
-	switch(obj->user1)
+	switch (obj->user1)
 	{
-	case 0:
-		shot->velX = 0; shot->velY = -64; break;
-	case 1:
-		shot->velX = 64; shot->velY = 0; break;
-	case 2:
-		shot->velX = 0; shot->velY = 64; break;
-	case 3:
-		shot->velX = -64; shot->velY = 0; break;
+		case 0:
+			shot->velX = 0;
+			shot->velY = -64;
+			break;
+		case 1:
+			shot->velX = 64;
+			shot->velY = 0;
+			break;
+		case 2:
+			shot->velX = 0;
+			shot->velY = 64;
+			break;
+		case 3:
+			shot->velX = -64;
+			shot->velY = 0;
+			break;
 	}
 
 	CK_SetAction(shot, CK_GetActionByName("CK5_ACT_turretShot1"));
@@ -93,10 +101,9 @@ void CK5_TurretShotDraw(CK_object *obj)
 		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_turretShotHit1"));
 	}
 
-	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->currentAction->chunkLeft,false, 0);
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->currentAction->chunkLeft, false, 0);
 
 }
-
 
 /*
  * Spawn a "Sneak Plat".
@@ -171,15 +178,15 @@ void CK5_GoPlatSpawn(int tileX, int tileY, int direction, bool purple)
 
 	int mapW = CA_MapHeaders[ck_currentMapNumber]->width;
 	int mapH = CA_MapHeaders[ck_currentMapNumber]->height;
-	CA_mapPlanes[2][tileY*mapW+tileX] = direction + 0x5B;
+	CA_mapPlanes[2][tileY * mapW + tileX] = direction + 0x5B;
 
 	obj->user1 = direction;
 	obj->user2 = 256;
 
 }
 
-static int ck5_infoplaneArrowsX[8] = {0,1,0,-1,1,1,-1,-1};
-static int ck5_infoplaneArrowsY[8] = {-1,0,1,0,-1,1,1,-1};
+static int ck5_infoplaneArrowsX[8] ={0, 1, 0, -1, 1, 1, -1, -1};
+static int ck5_infoplaneArrowsY[8] ={-1, 0, 1, 0, -1, 1, 1, -1};
 
 void CK5_RedGoPlatThink(CK_object *obj)
 {
@@ -394,11 +401,11 @@ void CK5_PurpleGoPlatThink(CK_object *obj)
  */
 void CK5_Obj1_SetupFunctions()
 {
-	CK_ACT_AddFunction("CK5_TurretShoot",&CK5_TurretShoot);
-	CK_ACT_AddFunction("CK5_Glide",&CK5_Glide);
-	CK_ACT_AddColFunction("CK5_TurretShotCol",&CK5_TurretShotCol);
-	CK_ACT_AddFunction("CK5_TurretShotDraw",&CK5_TurretShotDraw);
-	CK_ACT_AddFunction("CK5_SneakPlatThink",&CK5_SneakPlatThink);
-	CK_ACT_AddFunction("CK5_RedGoPlatThink",&CK5_RedGoPlatThink);
-	CK_ACT_AddFunction("CK5_PurpleGoPlatThink",&CK5_PurpleGoPlatThink);
+	CK_ACT_AddFunction("CK5_TurretShoot", &CK5_TurretShoot);
+	CK_ACT_AddFunction("CK5_Glide", &CK5_Glide);
+	CK_ACT_AddColFunction("CK5_TurretShotCol", &CK5_TurretShotCol);
+	CK_ACT_AddFunction("CK5_TurretShotDraw", &CK5_TurretShotDraw);
+	CK_ACT_AddFunction("CK5_SneakPlatThink", &CK5_SneakPlatThink);
+	CK_ACT_AddFunction("CK5_RedGoPlatThink", &CK5_RedGoPlatThink);
+	CK_ACT_AddFunction("CK5_PurpleGoPlatThink", &CK5_PurpleGoPlatThink);
 }
