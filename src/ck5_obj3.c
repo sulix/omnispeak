@@ -55,32 +55,32 @@ void CK5_SpawnMine(int tileX, int tileY)
 	return;
 }
 
-// return 1 if path clear, 0 if path blocked
-
+/* Check a 3 x 2 square originating from (tileX, tileY)
+ * If blocked, then return false
+ */
 int CK5_MinePathClear(int tileX, int tileY)
 {
 
 	int t, x, y;
 
-	t = CA_TileAtPos(tileX, tileY, 1);
 	for (y = 0; y < 2; y++)
+	{
 		for (x = 0; x < 3; x++)
+		{
+			t = CA_TileAtPos(tileX + x, tileY + y, 1);
 			if (TI_ForeTop(t) || TI_ForeBottom(t) || TI_ForeLeft(t)
 					|| TI_ForeRight(t))
 				return 0; //path is blocked
-
+		}
+	}
 	return 1; // didn't hit anything
+
 }
 
 int CK5_Walk(CK_object *obj, CK_Controldir dir)
 {
 
 	int tx, ty;
-
-#if 0
-	tx = MU2TILE(o->xpos + KeenXVel);
-	ty = MU2TILE(o->ypos + KeenYVel);
-#endif
 
 	tx = (obj->posX + obj->nextX) >> 8;
 	ty = (obj->posY + obj->nextY) >> 8;
@@ -143,6 +143,9 @@ int CK5_Walk(CK_object *obj, CK_Controldir dir)
 void CK5_SeekKeen(CK_object *obj)
 {
 
+// What is the point of the ordinal directions?
+// The mine only ever moves in cardinal directions.
+// Perhaps it was supposed to move in all eight?
 	int mine_dirs[9] ={Dir_north, Dir_northwest, Dir_east, Dir_northeast,
 		Dir_south, Dir_southeast, Dir_west, Dir_southwest, Dir_nodir};
 
@@ -157,6 +160,8 @@ void CK5_SeekKeen(CK_object *obj)
 		cardinalDir = CD_north;
 	else if (obj->yDirection == IN_motion_Down)
 		cardinalDir = CD_south;
+	
+	// Should this not be cardinalDir * 2?
 	principalDir = mine_dirs[cardinalDir];
 
 	// Determine which component (x or y) has the greatest absolute difference from keen
@@ -242,14 +247,20 @@ void CK5_MineMove(CK_object *obj)
 		return;
 	}
 
+	// Move the mine to the next tile boundary
+	// obj->velX is used as a ticker
+	// When the ticker reaches zero, check if directional change needed
 	delta = CK_GetTicksPerFrame() * 10;
 	if (obj->velX <= delta)
 	{
+		// Move up to the tile boundary
 		obj->nextX = obj->xDirection * obj->velX;
-		obj->nextY = obj->yDirection * obj->velY;
+		obj->nextY = obj->yDirection * obj->velX;
 		delta -= obj->velX;
 		xDir = obj->xDirection;
 		yDir = obj->yDirection;
+		
+		// Switch to the changing direction action if necessary
 		CK5_SeekKeen(obj);
 		obj->velX = 0x100;
 		if (obj->xDirection != xDir || obj->yDirection != yDir)
@@ -259,6 +270,7 @@ void CK5_MineMove(CK_object *obj)
 		}
 	}
 
+	// Tick down velX and move mine
 	obj->velX -= delta;
 	obj->nextX += delta * obj->xDirection;
 	obj->nextY += delta * obj->yDirection;
@@ -475,14 +487,15 @@ void CK5_MineMoveDotsToSides(CK_object *obj)
 void CK5_MineExplode(CK_object *obj)
 {
 
+	CK_object *new_object; 
 	//SD_PlaySound(SOUND_MINEEXPLODE);
 
 	// upleft
-	CK_object *new_object = CK_GetNewObj(true);
+	new_object = CK_GetNewObj(true);
 	new_object->posX = obj->posX;
 	new_object->posY = obj->posY;
 	new_object->velX = -US_RndT() / 8;
-	new_object->velY = -0x48;
+	new_object->velY = -48;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
 
 	// upright
@@ -490,35 +503,35 @@ void CK5_MineExplode(CK_object *obj)
 	new_object->posX = obj->posX + 0x100;
 	new_object->posY = obj->posY;
 	new_object->velX = US_RndT() / 8;
-	new_object->velY = -0x48;
+	new_object->velY = -48;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
 
 	new_object = CK_GetNewObj(true);
 	new_object->posX = obj->posX;
 	new_object->posY = obj->posY;
-	new_object->velX = US_RndT() / 16 + 0x28;
-	new_object->velY = -0x18;
+	new_object->velX = US_RndT() / 16 + 40;
+	new_object->velY = -24;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
 
 	new_object = CK_GetNewObj(true);
 	new_object->posX = obj->posX + 0x100;
 	new_object->posY = obj->posY;
-	new_object->velX = -0x28 - US_RndT() / 16;
-	new_object->velY = -0x18;
+	new_object->velX = -40 - US_RndT() / 16;
+	new_object->velY = -24;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
 
 	new_object = CK_GetNewObj(true);
 	new_object->posX = obj->posX;
 	new_object->posY = obj->posY;
-	new_object->velX = 0x18;
-	new_object->velY = 0x10;
+	new_object->velX = 24;
+	new_object->velY = 16;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
 
 	new_object = CK_GetNewObj(true);
 	new_object->posX = obj->posX + 0x100;
 	new_object->posY = obj->posY;
-	new_object->velX = 0x18;
-	new_object->velY = 0x10;
+	new_object->velX = 24;
+	new_object->velY = 16;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
 
 	return;
@@ -530,7 +543,7 @@ void CK5_MineTileCol(CK_object *obj)
 
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0,
 									obj->zLayer); //mine
-	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user4, obj->posX + obj->user2,
+	RF_AddSpriteDraw((RF_SpriteDrawEntry **) & obj->user4, obj->posX + obj->user2,
 									obj->posY + obj->user3, 0x17B, 0, 2); //dot
 	return;
 }
@@ -559,9 +572,10 @@ void CK5_ShrapnelTileCol(CK_object *obj)
 	};
 
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
-
+	
 
 	// Bounce backwards if a side wall is hit
+	if (obj->leftTI || obj->rightTI)
 	{
 		obj->velX = -obj->velX / 2;
 	}
@@ -575,7 +589,7 @@ void CK5_ShrapnelTileCol(CK_object *obj)
 
 	// Bounce sideways if a slope floor is hit
 	topflags_0 = obj->topTI;
-	if (topflags_0)
+	if (!topflags_0)
 		return;
 
 	if (obj->velY < 0)
@@ -586,7 +600,7 @@ void CK5_ShrapnelTileCol(CK_object *obj)
 
 	if (absvelX > velY)
 	{
-		if (velY * 2 < absvelX)
+		if (absvelX > velY * 2)
 		{
 			d = 0;
 			bouncePower = absvelX * 286;
@@ -599,7 +613,7 @@ void CK5_ShrapnelTileCol(CK_object *obj)
 	}
 	else
 	{
-		if (absvelX * 2 < velY)
+		if (velY > absvelX * 2)
 		{
 			d = 3;
 			bouncePower = velY * 256;
@@ -680,14 +694,17 @@ void CK5_ShrapnelTileCol(CK_object *obj)
 		break;
 	default: break;
 	}
-
+	
 	// if speed is lower than threshhold, then disappear
 	if (bouncePower < 0x1000)
+	{
 		// CK_SetAction2(obj, obj->currentAction->next);
 		// This is a mistake in the .exe... we can't advance to a NULL
 		// action, because omnispeak will segfault (Keen5 wouldn't)
 		// Just remove it instead
+		RF_RemoveSpriteDraw(&obj->sde);
 		CK_RemoveObj(obj);
+	}
 
 }
 
