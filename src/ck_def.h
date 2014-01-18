@@ -62,10 +62,11 @@ typedef enum CK_Dir {
 typedef enum CK_ClassType {
 
 	CT_nothing,
-	CT_Player = 2,
-	CT_Stunner = 3,
-	CT_Mine = 10,
-
+  CT_Player = 2,
+  CT_Stunner,
+  CT_EnemyShot,
+  CT_Mine = 10,
+  CT_Robo = 12,
 } CK_ClassType;
 
 typedef struct CK_GameState

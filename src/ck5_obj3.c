@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_phys.h"
 #include "ck_play.h"
 #include "ck_act.h"
+#include "ck5_ep.h"
 #include "id_rf.h"
 #include "id_us.h"
 
@@ -31,6 +32,7 @@ extern int ck_ticsThisFrame;
 #define ABS(x) ((x)>0?(x):(-(x)))
 
 // Shikadi Mine Funcs
+int CK5_Walk(CK_object *obj, CK_Controldir dir);
 
 void CK5_SpawnMine(int tileX, int tileY)
 {
@@ -143,9 +145,9 @@ int CK5_Walk(CK_object *obj, CK_Controldir dir)
 void CK5_SeekKeen(CK_object *obj)
 {
 
-// What is the point of the ordinal directions?
-// The mine only ever moves in cardinal directions.
-// Perhaps it was supposed to move in all eight?
+	// What is the point of the ordinal directions?
+	// The mine only ever moves in cardinal directions.
+	// Perhaps it was supposed to move in all eight?
 	int mine_dirs[9] ={Dir_north, Dir_northwest, Dir_east, Dir_northeast,
 		Dir_south, Dir_southeast, Dir_west, Dir_southwest, Dir_nodir};
 
@@ -160,7 +162,7 @@ void CK5_SeekKeen(CK_object *obj)
 		cardinalDir = CD_north;
 	else if (obj->yDirection == IN_motion_Down)
 		cardinalDir = CD_south;
-	
+
 	// Should this not be cardinalDir * 2?
 	principalDir = mine_dirs[cardinalDir];
 
@@ -259,7 +261,7 @@ void CK5_MineMove(CK_object *obj)
 		delta -= obj->velX;
 		xDir = obj->xDirection;
 		yDir = obj->yDirection;
-		
+
 		// Switch to the changing direction action if necessary
 		CK5_SeekKeen(obj);
 		obj->velX = 0x100;
@@ -487,7 +489,7 @@ void CK5_MineMoveDotsToSides(CK_object *obj)
 void CK5_MineExplode(CK_object *obj)
 {
 
-	CK_object *new_object; 
+	CK_object *new_object;
 	//SD_PlaySound(SOUND_MINEEXPLODE);
 
 	// upleft
@@ -572,7 +574,7 @@ void CK5_ShrapnelTileCol(CK_object *obj)
 	};
 
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
-	
+
 
 	// Bounce backwards if a side wall is hit
 	if (obj->leftTI || obj->rightTI)
@@ -694,7 +696,7 @@ void CK5_ShrapnelTileCol(CK_object *obj)
 		break;
 	default: break;
 	}
-	
+
 	// if speed is lower than threshhold, then disappear
 	if (bouncePower < 0x1000)
 	{
@@ -706,6 +708,94 @@ void CK5_ShrapnelTileCol(CK_object *obj)
 		CK_RemoveObj(obj);
 	}
 
+}
+
+void CK5_SpawnRobo(int tileX, int tileY)
+{
+
+	CK_object *obj = CK_GetNewObj(false);
+	obj->type = CT_Robo;
+	obj->active = OBJ_ACTIVE;
+	obj->posX = tileX << 8;
+	obj->posY = (tileY << 8) - 0x400;
+	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+	obj->yDirection = IN_motion_Down;
+	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_Robo0"));
+}
+
+void CK5_RoboMove(CK_object *obj)
+{
+
+	// Check for shot opportunity
+	if ((obj->posX & 0x40) && ck_keenObj->clipRects.unitY2 > obj->clipRects.unitY1 && ck_keenObj->clipRects.unitY1 < obj->clipRects.unitY2 &&
+			US_RndT() < 0x10)
+	{
+		obj->xDirection = obj->posX > ck_keenObj->posX ? IN_motion_Left : IN_motion_Right;
+		obj->user1 = 10;
+		obj->currentAction = CK_GetActionByName("CK5_ACT_RoboShoot0");
+	}
+}
+// time is number of shots
+
+void CK5_RoboCol(CK_object *o1, CK_object *o2)
+{
+
+	if (o2-> type == CT_Stunner)
+	{
+		CK_ShotHit(o2);
+		o1->xDirection = o1->posX > ck_keenObj->posX ? IN_motion_Left : IN_motion_Right;
+		o1->user1 = 10;
+		CK_SetAction2(o1, CK_GetActionByName("CK5_ACT_RoboShoot0"));
+		return;
+	}
+	if (o2->type == CT_Player)
+		; //KeenDie(o2);
+}
+
+#define SOUND_ROBOSHOOT 0x1D
+
+void CK5_RoboShoot(CK_object *obj)
+{
+
+	CK_object *new_object;
+	int shotSpawnX;
+
+	if (--obj->user1 == 0)
+		obj->currentAction = CK_GetActionByName("CK5_ACT_Robo0");
+
+	shotSpawnX = obj->xDirection == IN_motion_Right ? obj->posX + 0x380 : obj->posX;
+
+	if (new_object = CK5_SpawnEnemyShot(shotSpawnX, obj->posY + 0x200, CK_GetActionByName("CK5_ACT_RoboShot0")))
+	{
+		new_object->velX = obj->xDirection * 60;
+		new_object->velY = obj->user1 & 1 ? -8 : 8;
+		//SD_PlaySound(SOUND_ROBOSHOOT);
+		obj->nextX = obj->xDirection == IN_motion_Right ? -0x40 : 0x40;
+	}
+}
+
+void CK5_RoboShotCol(CK_object *o1, CK_object *o2)
+{
+
+	if (o2->type == CT_Player)
+	{
+		//KeenDie();
+		CK_SetAction2(o1, CK_GetActionByName("CK5_ACT_RoboShotHit0"));
+	}
+}
+
+#define SOUND_ROBOSHOTHIT 0x1E
+
+void CK5_RoboShotTileCol(CK_object *obj)
+{
+
+	if (obj->topTI || obj->rightTI || obj->bottomTI || obj->leftTI)
+	{
+		//SD_PlaySound(SOUND_ROBOSHOTHIT);
+		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_RoboShotHit0"));
+	}
+
+	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
 // Spirogrip Funcs
@@ -839,6 +929,13 @@ void CK5_Obj3_SetupFunctions()
 	CK_ACT_AddFunction("CK5_MineShrapSprCol", &CK5_MineShrapSprCol);
 	CK_ACT_AddFunction("CK5_MineTileCol", &CK5_MineTileCol);
 	CK_ACT_AddFunction("CK5_ShrapnelTileCol", &CK5_ShrapnelTileCol);
+
+	// Robo Red
+	CK_ACT_AddFunction("CK5_RoboMove",  &CK5_RoboMove);
+	CK_ACT_AddFunction("CK5_RoboCol",  &CK5_RoboCol);
+	CK_ACT_AddFunction("CK5_RoboShoot",  &CK5_RoboShoot);
+	CK_ACT_AddFunction("CK5_RoboShotCol",  &CK5_RoboShotCol);
+	CK_ACT_AddFunction("CK5_RoboShotTileCol",  &CK5_RoboShotTileCol);
 
 	// Spirogrip
 	CK_ACT_AddFunction("CK5_SpirogripSpin", &CK5_SpirogripSpin);

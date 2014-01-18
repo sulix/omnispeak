@@ -198,6 +198,10 @@ void CK_RemoveObj(CK_object *obj)
 		Quit("RemoveObj: Tried to remove the player!");
 	}
 
+  // TODO: Make a better spritedraw handler that
+  // replaces the user int variables
+  RF_RemoveSpriteDraw(&obj->sde);
+
 	if (obj == ck_lastObject)
 		ck_lastObject = obj->prev;
 	else
