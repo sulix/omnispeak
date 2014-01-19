@@ -102,6 +102,66 @@ void CK_BasicDrawFunc2(CK_object *obj)
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
+/*
+ * Think function for stunned creatures
+ */
+void CK_BasicDrawFunc4(CK_object *obj)
+{
+	int starsX, starsY;
+
+	// Handle physics
+	if (obj->leftTI || obj->rightTI)
+	{
+		obj->velX = 0;
+	}
+
+	if (obj->bottomTI)
+	{
+		obj->velY = 0;
+	}
+
+	if (obj->topTI)
+	{
+		obj->velX = obj->velY = 0;
+		if (obj->currentAction->next)
+		{
+			CK_SetAction2(obj, obj->currentAction->next);
+		}
+	}
+
+	// Draw the primary chunk
+	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+
+
+	// Draw the stunner stars
+
+	starsX = starsY = 0;
+
+	switch (obj->type)
+	{
+	case CT_Sparky:
+		starsX += 0x40;
+		break;
+	case 14:
+		starsY -= 0x80;
+		break;
+	case 0x17:
+		starsY -= 0x80;
+		break;
+	}
+
+	// Tick the star 3-frame animation forward
+	if (obj->user1 += CK_GetTicksPerFrame() > 10)
+	{
+		obj->user1 -= 10;
+		if (++obj->user2 > 3)
+			obj->user2 = 0;
+	}
+
+	// FIXME: Will cause problems on 64-bit systems
+	RF_AddSpriteDraw((RF_SpriteDrawEntry**) (&obj->user3), obj->posX + starsX, obj->posY + starsY, obj->user2 + 143, false, 3);
+}
+
 void CK5_PointItem(CK_object *obj)
 {
 	//	obj->timeUntillThink = 20;
@@ -196,11 +256,13 @@ void CK5_SetupFunctions()
 	//Quick hack as we haven't got a deadly function yet
 	CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
 	CK5_Obj1_SetupFunctions();
+	CK5_Obj2_SetupFunctions();
 	CK5_Obj3_SetupFunctions();
 	CK_ACT_AddFunction("CK_Fall", &CK_Fall);
 	CK_ACT_AddFunction("CK_Glide", &CK_Glide);
 	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
 	CK_ACT_AddFunction("CK_BasicDrawFunc2", &CK_BasicDrawFunc2);
+	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
 	CK_ACT_AddFunction("CK5_PointItem", &CK5_PointItem);
 	CK_ACT_AddFunction("CK5_BlockPlatform", &CK5_BlockPlatform);
 }
@@ -325,10 +387,22 @@ void CK5_ScanInfoLayer()
 			case 2:
 				CK_SpawnKeen(x, y, -1);
 				break;
+			case 6:
+			case 5:
+			case 4:
+				CK5_SpawnSparky(x, y);
+				break;
+
 			case 9:
 			case 8:
 			case 7:
 				CK5_SpawnMine(x, y);
+				break;
+
+			case 12:
+			case 11:
+			case 10:
+				CK5_SpawnSlice(x, y, CD_north);
 				break;
 
 			case 15:
@@ -342,6 +416,19 @@ void CK5_ScanInfoLayer()
 			case 16:
 				CK5_SpawnSpirogrip(x, y);
 				break;
+
+			case 21:
+			case 20:
+			case 19:
+				CK5_SpawnSliceDiag(x, y);
+				break;
+
+			case 24:
+			case 23:
+			case 22:
+				CK5_SpawnSlice(x, y, CD_east);
+				break;
+
 			case 25:
 				RF_SetScrollBlock(x, y, true);
 				break;
@@ -362,6 +449,11 @@ void CK5_ScanInfoLayer()
 				break;
 			case 40:
 				CK5_SneakPlatSpawn(x, y);
+				break;
+			case 44:
+			case 43:
+			case 42:
+				CK5_SpawnAmpton(x, y);
 				break;
 			case 45:
 			case 46:
@@ -385,6 +477,13 @@ void CK5_ScanInfoLayer()
 				break;
 			case 70:
 				CK5_SpawnItem(x, y, infoValue - 58); // Omegamatic Keycard
+				break;
+
+
+			case 76:
+			case 75:
+			case 74:
+				CK5_SpawnShelly(x, y);
 				break;
 
 			case 80:

@@ -1,0 +1,666 @@
+/*
+Omnispeak: A Commander Keen Reimplementation
+Copyright (C) 2012 David Gow <david@ingeniumdigital.com>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
+#include "ck_def.h"
+#include "ck_phys.h"
+#include "ck_play.h"
+#include "ck_act.h"
+#include "ck5_ep.h"
+#include "id_heads.h"
+#include "id_rf.h"
+#include "id_us.h"
+
+#include <stdio.h>
+
+void CK5_SpawnSparky(int tileX, int tileY)
+{
+
+	CK_object *new_object = CK_GetNewObj(false);
+	new_object->type = CT_Sparky;
+	new_object->active = OBJ_ACTIVE;
+	new_object->zLayer = 0;
+	new_object->posX = tileX << 8;
+	new_object->posY = (tileY << 8) - 0x100;
+	new_object->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+	new_object->yDirection = IN_motion_Down;
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Sparky0"));
+}
+
+void CK5_SparkyWait(CK_object *obj)
+{
+
+	if (US_RndT() < 0x40)
+	{
+		obj->currentAction = CK_GetActionByName("CK5_ACT_SparkySearch0");
+		obj->nextX = 0;
+	}
+}
+
+void CK5_SparkyPrepareCharge(CK_object *obj)
+{
+	if (--obj->user1 == 0)
+		obj->currentAction= CK_GetActionByName("CK5_ACT_SparkyCharge0");
+}
+
+void CK5_SparkySearchLeft(CK_object *obj)
+{
+
+	unsigned int delY = ck_keenObj->clipRects.unitY2 + 0x100 - obj->clipRects.unitY2;
+
+	if (delY < 0x200 && ck_keenObj->posX < obj->posX)
+	{
+		obj->xDirection = IN_motion_Left;
+		//SD_PlaySound(SOUND_SPARKYPREPCHARGE);
+		obj->currentAction = CK_GetActionByName("CK5_ACT_SparkyPrepCharge0");
+		obj->user1 = 3; //should this counter be multiplied by spritesync?
+	}
+}
+
+void CK5_SparkySearchRight(CK_object *obj)
+{
+
+	unsigned int delY = ck_keenObj->clipRects.unitY2 + 0x100 - obj->clipRects.unitY2;
+
+	if (delY < 0x200 && ck_keenObj->posX > obj->posX)
+	{
+		obj->xDirection = IN_motion_Right;
+		//SD_PlaySound(SOUND_SPARKYPREPCHARGE);
+		obj->currentAction = CK_GetActionByName("CK5_ACT_SparkyPrepCharge0");
+		obj->user1 = 3; //should this counter be multiplied by spritesync?
+	}
+}
+
+void CK5_SparkyCharge0(CK_object *obj)
+{
+
+	//SD_PlaySound(0);
+}
+
+void CK5_SparkyCharge1(CK_object *obj)
+{
+
+	//SD_PlaySound(0);
+}
+
+void CK5_SparkyCol(CK_object *obj1, CK_object *obj2)
+{
+
+	if (obj2->type == CT_Player)
+	{
+		//KeenDie();
+	}
+	else if (obj2->type == CT_Stunner)
+	{
+		//StunCreature(obj1, obj2, CK_GetActionByName("CK5_ACT_SparkyStunned0"));
+	}
+}
+
+void CK5_SparkyTileCol(CK_object *obj)
+{
+
+	if (obj->xDirection == IN_motion_Right && obj->leftTI)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Left;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_SparkyTurn0"));
+	}
+	else if (obj->xDirection == IN_motion_Left && obj->rightTI)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Right;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_SparkyTurn0"));
+	}
+	else if (obj->topTI == 0)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = -obj->xDirection;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_SparkyTurn0"));
+	}
+
+	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
+}
+
+void CK5_SpawnAmpton(int tileX, int tileY)
+{
+
+	CK_object *new_object = CK_GetNewObj(false);
+	new_object->type = CT_Ampton;
+	new_object->active = OBJ_ACTIVE;
+	new_object->zLayer = 0;
+	new_object->posX = (tileX << 8);
+	new_object->posY = (tileY << 8) - 0x80;
+	new_object->xDirection = (US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left);
+	new_object->yDirection = IN_motion_Down;
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Ampton0"));
+}
+
+#define SOUND_AMPTONWALK0 0x1F
+#define SOUND_AMPTONWALK1 0x20
+#define MISCFLAG_COMPUTER 0x1F
+#define MISCFLAG_POLE 0x1
+
+void CK5_AmptonWalk(CK_object *obj)
+{
+
+	//play tic toc sound
+	if (obj->currentAction == CK_GetActionByName("CK5_ACT_Ampton0"))
+	{
+		//SD_PlaySound(SOUND_AMPTONWALK0);
+	}
+	else if (obj->currentAction == CK_GetActionByName("CK5_ACT_Ampton2"))
+	{
+		//SD_PlaySound(SOUND_AMPTONWALK1);
+	}
+
+	// if on tile boundary (i.e. sliding or computer) then skip 
+	// the check for a pole or a computer
+	if (obj->posX & 0xFF)
+	{
+		int tileX = obj->clipRects.tileX1 + 1;
+		int tileY = obj->clipRects.tileY1;
+		int miscflags = TI_ForeMisc(CA_TileAtPos(tileX, tileY, 1)) & 0x7F;
+		if (miscflags == MISCFLAG_COMPUTER)
+		{
+			obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonComp0");
+			return;
+		}
+
+		// Check for a pole
+		if (miscflags == MISCFLAG_POLE)
+		{
+			if (US_RndT() < 0xC4)
+			{
+				int polebelow = (TI_ForeMisc(CA_TileAtPos(tileX, tileY + 2, 1))&0x7F) == MISCFLAG_POLE ? 1 : 0;
+				int poleabove = (TI_ForeMisc(CA_TileAtPos(tileX, tileY - 2, 1))&0x7F) == MISCFLAG_POLE ? 1 : 0;
+
+				// Don't always climb the pole
+				if (US_RndT() < 0x80)
+					poleabove = 0;
+				else
+					polebelow = 0;
+
+				//climb up
+				if (poleabove)
+				{
+					obj->yDirection = IN_motion_Up;
+					obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonPole0");
+					obj->clipped = false;
+					obj->timeUntillThink = 6;
+					obj->nextX = 0;
+					return;
+				}
+
+				// slide down
+				if (polebelow)
+				{
+					obj->yDirection = IN_motion_Down;
+					obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonPole0");
+					obj->clipped = false;
+					obj->timeUntillThink = 6;
+					obj->nextX = 0;
+					return;
+				}
+			}
+		}
+	}
+}
+
+void CK5_AmptonPoleClimb(CK_object *obj)
+{
+
+	int newYT;
+
+	// Check if ampton is moving into new tile
+	newYT = (obj->clipRects.unitY2 + obj->nextY) >> 8;
+
+	if (obj->clipRects.tileY2 == newYT)
+		return;
+
+	if (obj->yDirection == IN_motion_Up)
+	{
+		// Going Up
+		// Check if coming up through a pole hole
+		int tileX = obj->clipRects.tileX1 + 1;
+		int tileY = newYT;
+
+		if (!TI_ForeTop(CA_TileAtPos(tileX, tileY, 1)) && TI_ForeTop(CA_TileAtPos(tileX, tileY + 1, 1)))
+		{
+			// Dismount if there are fewer than 4 pole tiles above the hole
+			// or randomly, if there are more than 4 
+			if (((TI_ForeMisc(CA_TileAtPos(tileX, tileY - 4, 1)) & 0x7F) != MISCFLAG_POLE) ||
+					US_RndT() >= 0x80)
+			{
+
+				// Set the ampton on the ground
+				int delY = (obj->clipRects.unitY2 & 0xFF) + 1;
+				obj->posY -= delY;
+				obj->clipRects.unitY2 -= delY;
+				obj->clipped = true;
+				obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonDismount0");
+				obj->nextY = 0x10;
+				obj->yDirection = IN_motion_Down;
+				CK_PhysUpdateNormalObj(obj);
+				obj->timeUntillThink = 4;
+				return;
+			}
+		}
+		else if ((TI_ForeMisc(CA_TileAtPos(tileX, tileY - 1, 1)) & 0x7F) != MISCFLAG_POLE)
+		{
+			// Hit the top of a pole; go back down
+			obj->nextY = 0;
+			obj->yDirection = IN_motion_Down;
+			return;
+		}
+	}
+	else
+	{
+		// Ampton is sliding down a pole
+		int tileX = obj->clipRects.tileX1 + 1;
+		int tileY = newYT;
+
+		if (TI_ForeTop(CA_TileAtPos(tileX, tileY, 1)) && !TI_ForeTop(CA_TileAtPos(tileX, tileY - 1, 1)))
+		{
+			// Dismount if not landing on pole hole
+			// If pole hole, randomly dismount
+			if ((TI_ForeMisc(CA_TileAtPos(tileX, tileY, 1)) & 0x7F) != MISCFLAG_POLE ||
+					US_RndT() >= 0x80)
+			{
+
+				// Set ampton on the ground
+				int delY = 0xFF - (obj->clipRects.unitY2 & 0xFF);
+				obj->posY += delY;
+				obj->clipRects.unitX2 += delY;
+				obj->clipped = true;
+				obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonDismount0");
+				obj->nextY = 0x10;
+				CK_PhysUpdateNormalObj(obj);
+				obj->timeUntillThink = 4;
+				return;
+			}
+		}
+		else if ((TI_ForeMisc(CA_TileAtPos(tileX, tileY, 1)) & 0x7F) != MISCFLAG_POLE)
+		{
+			obj->nextY = 0;
+			obj->yDirection = IN_motion_Up;
+			return;
+		}
+	}
+}
+
+void CK5_AmptonSwitch(CK_object *obj)
+{
+	obj->timeUntillThink = 4;
+}
+
+void CK5_AmptonCol(CK_object *obj1, CK_object *obj2)
+{
+
+#if 0
+	if (obj2->type == 2 && obj1->currentAction == CK_GetActionByName("CK5_ACT_AMPTONPOLE2"))
+	{
+		KeenDie();
+		return;
+	}
+	else if (obj2->type == 3)
+	{
+		obj1->clipped = 1;
+		obj1->yDirection = IN_motion_Down;
+		obj1->velY = 0;
+		//SD_PlaySound(SOUND_AMPTONSTUN);
+		StunCreature(obj1, CK_GetActionByName("CK5_ACT_AMPTONSTUN0"));
+	}
+	return;
+#endif
+}
+
+void CK5_AmptonTileCol(CK_object *obj)
+{
+
+	if (obj->xDirection == IN_motion_Right && obj->leftTI)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Left;
+		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_AmptonTurn0"));
+	}
+
+	if (obj->xDirection == IN_motion_Left && obj->rightTI)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Right;
+		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_AmptonTurn0"));
+	}
+
+	if (!obj->topTI)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = -obj->xDirection;
+		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_AmptonTurn0"));
+	}
+
+	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
+}
+
+void CK5_SpawnSlice(int tileX, int tileY, int dir)
+{
+
+
+	CK_object *new_object = CK_GetNewObj(false);
+
+	new_object->type = CT_SliceStar;
+	new_object->active = OBJ_ACTIVE;
+	new_object->zLayer = 2;
+	new_object->posX = (tileX << 8);
+	new_object->posY = (tileY << 8);
+	new_object->user4 = 18;
+
+	switch (dir)
+	{
+
+	case 0:
+		new_object->xDirection = IN_motion_None;
+		new_object->yDirection = IN_motion_Up;
+		break;
+	case 1:
+		new_object->xDirection = IN_motion_Right;
+		new_object->yDirection = IN_motion_None;
+		break;
+	case 2:
+		new_object->xDirection = IN_motion_None;
+		new_object->yDirection = IN_motion_Down;
+		break;
+	case 3:
+		new_object->xDirection = IN_motion_Left;
+		new_object->yDirection = IN_motion_None;
+		break;
+	}
+
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Slice0"));
+	return;
+}
+
+void CK5_SpawnSliceDiag(int tileX, int tileY)
+{
+
+
+	CK_object *new_object = CK_GetNewObj(false);
+
+	new_object->type = CT_SliceStar;
+	new_object->active = true;
+	new_object->zLayer = 2;
+	new_object->posX = (tileX << 8);
+	new_object->posY = (tileY << 8);
+	new_object->user4 = 50; // strength
+
+	switch (US_RndT() / 0x40)
+	{
+
+	case 0:
+		new_object->xDirection = IN_motion_Left;
+		new_object->yDirection = IN_motion_Up;
+		break;
+	case 1:
+		new_object->xDirection = IN_motion_Right;
+		new_object->yDirection = IN_motion_Down;
+		break;
+	case 2:
+		new_object->xDirection = IN_motion_Left;
+		new_object->yDirection = IN_motion_Down;
+		break;
+	case 3:
+		new_object->xDirection = IN_motion_Left;
+		new_object->yDirection = IN_motion_Up;
+		break;
+	}
+
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_SliceDiag0"));
+}
+
+void CK5_SliceCol(CK_object *obj1, CK_object *obj2)
+{
+
+	if (obj2->type == CT_SliceStar)
+	{
+		//KeenDie();
+		return;
+	}
+
+	if (obj2->type == CT_Stunner)
+	{
+		//StunnerHits(obj1);
+		if (--obj1->user4 == 0)
+			CK_SetAction(obj1, CK_GetActionByName("CK5_ACT_SliceDie0"));
+	}
+}
+
+#define SOUND_SLICEBUMP 6
+
+void CK5_SliceDiagTileCol(CK_object *obj)
+{
+
+	if (obj->topTI)
+	{
+		obj->yDirection = IN_motion_Up;
+		//SD_PlaySound(SOUND_SLICEBUMP);
+	}
+	else if (obj->bottomTI)
+	{
+		obj->yDirection = IN_motion_Down;
+		//SD_PlaySound(SOUND_SLICEBUMP);
+	}
+
+	if (obj->leftTI)
+	{
+		obj->xDirection = IN_motion_Left;
+		//SD_PlaySound(SOUND_SLICEBUMP);
+	}
+	else if (obj->rightTI)
+	{
+		obj->xDirection = IN_motion_Right;
+		//SD_PlaySound(SOUND_SLICEBUMP);
+	}
+
+	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+void CK5_SpawnShelly(int tileX, int tileY)
+{
+
+	CK_object *new_object = CK_GetNewObj(false);
+	new_object->type = CT_Sparky; // Apparently, the same type as a sparky
+	new_object->active = OBJ_ACTIVE;
+	new_object->zLayer = 0;
+	new_object->posX = (tileX << 8);
+	new_object->posY = (tileY << 8);
+	new_object->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+	new_object->yDirection = IN_motion_Down;
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Shelly0"));
+}
+
+void CK5_ShellyWait(CK_object *obj)
+{
+
+	if (ck_keenObj->clipRects.unitY1 >= obj->clipRects.unitY2)
+	{
+		// Jump off of ledge if Keen is a ledge below
+		int xDel = ck_keenObj->clipRects.unitXmid - obj->clipRects.unitXmid;
+		if (obj->xDirection == IN_motion_Right)
+		{
+			if (xDel > 0x100 && xDel < 0x300)
+			{
+				obj->velX = 0x10;
+				obj->velY = -0x18;
+				obj->currentAction = CK_GetActionByName("CK5_ACT_ShellyDive0");
+				obj->nextY = obj->nextX = 0;
+			}
+		}
+		else
+		{
+			if (xDel < -0x100 && xDel > -0x300)
+			{
+				obj->velX = -0x10;
+				obj->velY = -0x18;
+				obj->currentAction = CK_GetActionByName("CK5_ACT_ShellyDive0");
+				obj->nextY = obj->nextX = 0;
+			}
+		}
+	}
+}
+
+void CK5_ShellyStartJump(CK_object *obj)
+{
+
+	obj->xDirection = -obj->xDirection;
+}
+
+void CK5_SpawnShellyBits(CK_object *obj)
+{
+
+	CK_object *new_object;
+	if (new_object = CK_GetNewObj(true))
+	{
+		new_object->posX = obj->posX;
+		new_object->posY = obj->posY;
+		new_object->velX = 0x20;
+		new_object->velY = -0x18;
+		CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_ShellyBits0"));
+	}
+
+	if (new_object = CK_GetNewObj(true))
+	{
+		new_object->posX = obj->posX;
+		new_object->posY = obj->posY;
+		new_object->velX = -0x20;
+		new_object->velY = -0x18;
+		CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_ShellyBits1"));
+	}
+}
+
+void CK5_ShellyCol(CK_object *obj1, CK_object *obj2)
+{
+
+#if 0
+	if (obj2->type == OBJ_KEEN)
+	{
+		CK_PhysPushX(obj1, obj2)
+			//don't detonate if not inside shelley
+		if (ck_keenObj->clipRects.unitXmid < obj1->clipRects.unitX1 || ck_keenObj->clipRects.unitXmid > obj1->clipRects.unitX2) return;
+	}
+	else if (obj2->type == OBJ_STUNNER)
+	{
+		StunnerHits(obj2);
+	}
+	else if (obj2->type == 4)
+	{
+		CK_RemoveObj(obj2);
+	}
+	else
+	{
+		return;
+	}
+	// destroy old shelly and spawn explosion
+	//SD_PlaySound(SOUND_SHELLYEXPLODE);
+	if (!obj->topTI) CK_SetAction2(o, CK_GetActionByName("CK5_ACT_SHELLYDIEAIR"));
+	else CK_SetAction2(o, CK_GetActionByName("CK5_ACT_SHELLYDIEGROUND"));
+	CK_GetNewObj(1);
+	new_object->posX = obj->posX;
+	new_object->posY = obj->posY;
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_SHELLYEXPLODE0"));
+	return;
+#endif
+}
+
+void CK5_ShellyGroundTileCol(CK_object *obj)
+{
+
+	if (obj->xDirection == IN_motion_Right && obj->leftTI)
+	{
+		obj->posX -=obj->deltaPosX;
+		obj->xDirection = IN_motion_Left;
+	}
+	else if (obj->xDirection == IN_motion_Left && obj->rightTI)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Right;
+	}
+	else if (!obj->topTI)
+	{
+		obj->posX -= obj->deltaPosX;
+		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_ShellyWait0"));
+	}
+
+	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
+	return;
+}
+
+void CK5_ShellyAirTileCol(CK_object *obj)
+{
+
+	if (obj->rightTI || obj->leftTI)
+	{
+		obj->velX = 0;
+	}
+
+	if (obj->topTI)
+	{
+		CK_object *new_object;
+		//SD_PlaySound(SOUND_SHELLYEXPLODE);
+		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_ShellyDieAir"));
+		if (new_object = CK_GetNewObj(true))
+		{
+			new_object->posX = obj->posX;
+			new_object->posY = obj->posY;
+			CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_ShellyExplode0"));
+		}
+	}
+
+	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
+}
+
+void CK5_Obj2_SetupFunctions()
+{
+
+	// Sparky
+	CK_ACT_AddFunction("CK5_SparkyWait", &CK5_SparkyWait);
+	CK_ACT_AddFunction("CK5_SparkyPrepareCharge", &CK5_SparkyPrepareCharge);
+	CK_ACT_AddFunction("CK5_SparkySearchLeft", &CK5_SparkySearchLeft);
+	CK_ACT_AddFunction("CK5_SparkySearchRight", &CK5_SparkySearchRight);
+	CK_ACT_AddFunction("CK5_SparkyCharge0", &CK5_SparkyCharge0);
+	CK_ACT_AddFunction("CK5_SparkyCharge1", &CK5_SparkyCharge1);
+	CK_ACT_AddFunction("CK5_SparkyCol", &CK5_SparkyCol);
+	CK_ACT_AddFunction("CK5_SparkyTileCol", &CK5_SparkyTileCol);
+
+	CK_ACT_AddFunction("CK5_AmptonWalk", &CK5_AmptonWalk);
+	CK_ACT_AddFunction("CK5_AmptonPoleClimb", &CK5_AmptonPoleClimb);
+	CK_ACT_AddFunction("CK5_AmptonSwitch", &CK5_AmptonSwitch);
+	CK_ACT_AddFunction("CK5_AmptonCol", &CK5_AmptonCol);
+	CK_ACT_AddFunction("CK5_AmptonTileCol", &CK5_AmptonTileCol);
+
+	CK_ACT_AddFunction("CK5_SliceCol", &CK5_SliceCol);
+	CK_ACT_AddFunction("CK5_SliceDiagTileCol", &CK5_SliceDiagTileCol);
+
+	CK_ACT_AddFunction("CK5_ShellyWait", &CK5_ShellyWait);
+	CK_ACT_AddFunction("CK5_ShellyStartJump", &CK5_ShellyStartJump);
+	CK_ACT_AddFunction("CK5_SpawnShellyBits", &CK5_SpawnShellyBits);
+	CK_ACT_AddFunction("CK5_ShellyCol", &CK5_ShellyCol);
+	CK_ACT_AddFunction("CK5_ShellyGroundTileCol", &CK5_ShellyGroundTileCol);
+	CK_ACT_AddFunction("CK5_ShellyAirTileCol", &CK5_ShellyAirTileCol);
+}

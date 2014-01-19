@@ -202,6 +202,12 @@ void CK_RemoveObj(CK_object *obj)
   // replaces the user int variables
   RF_RemoveSpriteDraw(&obj->sde);
 
+  if (obj->type == CT_StunnedCreature)
+  {
+	  // FIXME: This cast is bad on 64-bit platforms
+	  RF_RemoveSpriteDraw(&obj->user3);
+	}
+
 	if (obj == ck_lastObject)
 		ck_lastObject = obj->prev;
 	else
@@ -369,7 +375,6 @@ void CK_RunAction(CK_object *obj)
 	
 	if (!obj->currentAction)
 	{
-		RF_RemoveSpriteDraw(&obj->sde);
 		CK_RemoveObj(obj);
 		return;
 	}

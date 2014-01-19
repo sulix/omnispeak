@@ -65,8 +65,12 @@ typedef enum CK_ClassType {
   CT_Player = 2,
   CT_Stunner,
   CT_EnemyShot,
+  CT_StunnedCreature = 7,
+  CT_Sparky = 9,
   CT_Mine = 10,
+  CT_SliceStar = 11,
   CT_Robo = 12,
+  CT_Ampton = 15,
 } CK_ClassType;
 
 typedef struct CK_GameState

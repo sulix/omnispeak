@@ -40,7 +40,7 @@ CK_keenState ck_keenState;
 
 void CK_BasicDrawFunc1(CK_object *obj);
 
-CK_action CK_ACT_itemNotify = {0, 0, 1, 0, 0, 40, 0, 8, 0, 0, CK_BasicDrawFunc1, 0};
+CK_action CK_ACT_itemNotify = {0, 0, AT_ScaledOnce, 0, 0, 40, 0, 8, 0, 0, CK_BasicDrawFunc1, 0};
 
 
 void CK_KeenColFunc(CK_object *a, CK_object *b)
