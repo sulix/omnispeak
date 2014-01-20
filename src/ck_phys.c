@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ */
 
 #include "ck_phys.h"
 #include "ck_play.h"
@@ -27,16 +27,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdio.h>
 #include <stdlib.h> /* For abs() */
 
-static int ck_physSlopeHeight[8][16] = 
-{
+static int ck_physSlopeHeight[8][16] ={
 	{ 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100 },
 	{   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0 },
-    {   0x0,   0x8,  0x10,  0x18,  0x20,  0x28,  0x30,  0x38,  0x40,  0x48,  0x50,  0x58,  0x60,  0x68,  0x70,  0x78 },
-    {  0x80,  0x88,  0x90,  0x98,  0xa0,  0xa8,  0xb0,  0xb8,  0xc0,  0xc8,  0xd0,  0xd8,  0xe0,  0xe8,  0xf0,  0xf8 },
-    {   0x0,  0x10,  0x20,  0x30,  0x40,  0x50,  0x60,  0x70,  0x80,  0x90,  0xa0,  0xb0,  0xc0,  0xd0,  0xe0,  0xf0 },
-    {  0x78,  0x70,  0x68,  0x60,  0x58,  0x50,  0x48,  0x40,  0x38,  0x30,  0x28,  0x20,  0x18,  0x10,  0x08,  0x0  },
-    {  0xF8,  0xF0,  0xE8,  0xE0,  0xD8,  0xD0,  0xC8,  0xC0,  0xB8,  0xB0,  0xA8,  0xA0,  0x98,  0x90,  0x88,  0x80 },
-    {  0xF0,  0xE0,  0xD0,  0xC0,  0xB0,  0xA0,  0x90,  0x80,  0x70,  0x60,  0x50,  0x40,  0x30,  0x20,  0x10,  0x0  }
+	{   0x0,   0x8,  0x10,  0x18,  0x20,  0x28,  0x30,  0x38,  0x40,  0x48,  0x50,  0x58,  0x60,  0x68,  0x70,  0x78 },
+	{  0x80,  0x88,  0x90,  0x98,  0xa0,  0xa8,  0xb0,  0xb8,  0xc0,  0xc8,  0xd0,  0xd8,  0xe0,  0xe8,  0xf0,  0xf8 },
+	{   0x0,  0x10,  0x20,  0x30,  0x40,  0x50,  0x60,  0x70,  0x80,  0x90,  0xa0,  0xb0,  0xc0,  0xd0,  0xe0,  0xf0 },
+	{  0x78,  0x70,  0x68,  0x60,  0x58,  0x50,  0x48,  0x40,  0x38,  0x30,  0x28,  0x20,  0x18,  0x10,  0x08,  0x0  },
+	{  0xF8,  0xF0,  0xE8,  0xE0,  0xD8,  0xD0,  0xC8,  0xC0,  0xB8,  0xB0,  0xA8,  0xA0,  0x98,  0x90,  0x88,  0x80 },
+	{  0xF0,  0xE0,  0xD0,  0xC0,  0xB0,  0xA0,  0x90,  0x80,  0x70,  0x60,  0x50,  0x40,  0x30,  0x20,  0x10,  0x0  }
 };
 
 extern CK_object *ck_keenObj;
@@ -53,7 +52,7 @@ void CK_ResetClipRects(CK_object *obj)
 	obj->clipRects.unitY1 = obj->posY + ste.yl;
 	obj->clipRects.unitY2 = obj->posY + ste.yh;
 
-	obj->clipRects.unitXmid = (obj->clipRects.unitX2 - obj->clipRects.unitX1)/2 + obj->clipRects.unitX1;
+	obj->clipRects.unitXmid = (obj->clipRects.unitX2 - obj->clipRects.unitX1) / 2 + obj->clipRects.unitX1;
 
 	obj->clipRects.tileX1 = obj->clipRects.unitX1 >> 8;
 	obj->clipRects.tileX2 = obj->clipRects.unitX2 >> 8;
@@ -86,7 +85,7 @@ void CK_SetDeltaClipRects(CK_object *obj)
 	obj->deltaRects.unitY1 = obj->clipRects.unitY1 - obj->oldRects.unitY1;
 	obj->deltaRects.unitX2 = obj->clipRects.unitX2 - obj->oldRects.unitX2;
 	obj->deltaRects.unitY2 = obj->clipRects.unitY2 - obj->oldRects.unitY2;
-	
+
 	obj->deltaRects.unitXmid = obj->clipRects.unitXmid - obj->oldRects.unitXmid;
 
 	// We don't calculate tile deltas.
@@ -111,7 +110,7 @@ void CK_PhysUpdateY(CK_object *obj, int deltaUnitY)
 	obj->posY += deltaUnitY;
 	obj->clipRects.unitY1 += deltaUnitY;
 	obj->clipRects.unitY2 += deltaUnitY;
-	
+
 	obj->clipRects.tileY1 = obj->clipRects.unitY1 >> 8;
 	obj->clipRects.tileY2 = obj->clipRects.unitY2 >> 8;
 }
@@ -128,18 +127,18 @@ void CK_PhysKeenClipDown(CK_object *obj)
 	bool spaceAbove = false;
 
 	// Performing some special clipping for Keen.
-	
+
 	// If we're moving right:
 	if (obj->xDirection == 1)
 	{
-	        // We care about the lefthand-most side of any slope we're about to touch.
+		// We care about the lefthand-most side of any slope we're about to touch.
 		midTileXOffset = 0;
 		deltaX = obj->clipRects.unitX2 - obj->clipRects.unitXmid;
-		spaceAbove = (TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2-1,1)) == 0);
-		topTI = TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2,1));
-		
+		spaceAbove = (TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2 - 1, 1)) == 0);
+		topTI = TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2, 1));
+
 		// If we're being blocked by something, return.
-		if (TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2-2,1)) || TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2-1,1)) || TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2 - 1,1)))
+		if (TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2 - 2, 1)) || TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2 - 1, 1)) || TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2 - 1, 1)))
 		{
 			return;
 		}
@@ -149,16 +148,16 @@ void CK_PhysKeenClipDown(CK_object *obj)
 		// We care about the righthand-most side of the slope
 		midTileXOffset = 15;
 		deltaX = obj->clipRects.unitX1 - obj->clipRects.unitXmid;
-		spaceAbove = (TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-1,1)) == 0);
+		spaceAbove = (TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2 - 1, 1)) == 0);
 		topTI = TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2, 1));
-		
+
 		// If we're being blocked, return.
-		if (TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-2,1)) || TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-1,1)) || TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2 - 1,1)))
+		if (TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2 - 2, 1)) || TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2 - 1, 1)) || TI_ForeTop(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2 - 1, 1)))
 		{
 			return;
 		}
 	}
-	
+
 
 	// If we're about to land on something flat:
 	// TODO: This doesn't make any sense. Why would we make sure we're not
@@ -187,8 +186,8 @@ void CK_PhysKeenClipUp(CK_object *obj)
 	{
 		midTileXOffset = 0;
 		bottomTI = TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1, 1));
-		spaceBelow = (TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1+1,1)) == 0);
-		if (TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1+2, 1)) || TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1+3,1)) || TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1+1,1)))
+		spaceBelow = (TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1 + 1, 1)) == 0);
+		if (TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1 + 2, 1)) || TI_ForeLeft(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1 + 3, 1)) || TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1 + 1, 1)))
 		{
 			return;
 		}
@@ -197,8 +196,8 @@ void CK_PhysKeenClipUp(CK_object *obj)
 	{
 		midTileXOffset = 15;
 		bottomTI = TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1, 1));
-		spaceBelow = (TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+1,1)) == 0);
-		if (TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+2, 1)) || TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+3,1)) || TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1+1,1)))
+		spaceBelow = (TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1 + 1, 1)) == 0);
+		if (TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1 + 2, 1)) || TI_ForeRight(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1 + 3, 1)) || TI_ForeBottom(CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1 + 1, 1)))
 		{
 			return;
 		}
@@ -207,7 +206,7 @@ void CK_PhysKeenClipUp(CK_object *obj)
 	if (spaceBelow && bottomTI)
 	{
 		int slopeAmt = ck_physSlopeHeight[bottomTI & 0x07][midTileXOffset];
-		deltaY = ((obj->clipRects.tileY1+1) << 8) - slopeAmt - obj->clipRects.unitY1;
+		deltaY = ((obj->clipRects.tileY1 + 1) << 8) - slopeAmt - obj->clipRects.unitY1;
 		if (deltaY >= 0 && (-obj->deltaRects.unitY1) >= deltaY)
 		{
 			obj->bottomTI = bottomTI;
@@ -219,11 +218,11 @@ void CK_PhysKeenClipUp(CK_object *obj)
 
 bool CK_NotStuckInWall(CK_object *obj)
 {
-	for(int y = obj->clipRects.tileY1; y <= obj->clipRects.tileY2; ++y)
+	for (int y = obj->clipRects.tileY1; y <= obj->clipRects.tileY2; ++y)
 	{
-		for(int x = obj->clipRects.tileX1; x <= obj->clipRects.tileX2; ++x)
+		for (int x = obj->clipRects.tileX1; x <= obj->clipRects.tileX2; ++x)
 		{
-			int tile = CA_TileAtPos(x,y,1);
+			int tile = CA_TileAtPos(x, y, 1);
 			//TODO: Bottom and left.
 			if (TI_ForeTop(tile) || TI_ForeRight(tile))
 				return false;
@@ -238,12 +237,12 @@ void CK_PhysClipVert(CK_object *obj)
 
 
 
-	
+
 	int vertDisplace = -abs(obj->deltaRects.unitXmid) - obj->deltaRects.unitY2 - 16;	// Move above slope first.
 
 
 
-	for (int y = obj->oldRects.tileY2-1; obj->clipRects.tileY2 >= y; ++y)
+	for (int y = obj->oldRects.tileY2 - 1; obj->clipRects.tileY2 >= y; ++y)
 	{
 		int tile = CA_TileAtPos(obj->clipRects.tileXmid, y, 1);
 		if (TI_ForeTop(tile))
@@ -251,14 +250,14 @@ void CK_PhysClipVert(CK_object *obj)
 
 			int slopeAmt = ck_physSlopeHeight[TI_ForeTop(tile)&0x07][midTileXOffset];
 
-			int objYOffset = obj->clipRects.unitY2 - (y*256);
+			int objYOffset = obj->clipRects.unitY2 - (y * 256);
 
 			int dy = (slopeAmt - objYOffset) - 1;
 			if ((dy < 0) && (dy >= vertDisplace))
 			{
 				obj->topTI = TI_ForeTop(tile);
 
-				CK_PhysUpdateY(obj,dy);//-objYOffset+slopeAmt-1);
+				CK_PhysUpdateY(obj, dy); //-objYOffset+slopeAmt-1);
 				return;
 			}
 		}
@@ -267,26 +266,25 @@ void CK_PhysClipVert(CK_object *obj)
 
 	vertDisplace = abs(obj->deltaRects.unitXmid) - obj->deltaRects.unitY1 + 16;
 
-	for (int y = obj->oldRects.tileY1+1; y >= obj->clipRects.tileY1; --y)
+	for (int y = obj->oldRects.tileY1 + 1; y >= obj->clipRects.tileY1; --y)
 	{
-		int tile = CA_TileAtPos(obj->clipRects.tileXmid,y,1);
-		
+		int tile = CA_TileAtPos(obj->clipRects.tileXmid, y, 1);
+
 		if (TI_ForeBottom(tile))
 		{
 
-			int objYOffset = obj->clipRects.unitY1 - ((y+1) << 8);
+			int objYOffset = obj->clipRects.unitY1 - ((y + 1) << 8);
 
 			int slopeAmt = -ck_physSlopeHeight[TI_ForeBottom(tile)&0x07][midTileXOffset];
 
-			if ((slopeAmt - objYOffset > 0) && ((slopeAmt - objYOffset) <= vertDisplace) && ((obj->nextY +slopeAmt-objYOffset) < 256) && ((obj->nextY + slopeAmt - objYOffset) > -256))
+			if ((slopeAmt - objYOffset > 0) && ((slopeAmt - objYOffset) <= vertDisplace) && ((obj->nextY + slopeAmt - objYOffset) < 256) && ((obj->nextY + slopeAmt - objYOffset) > -256))
 			{
 				obj->bottomTI = TI_ForeBottom(tile);
-				CK_PhysUpdateY(obj,-objYOffset+slopeAmt);
+				CK_PhysUpdateY(obj, -objYOffset + slopeAmt);
 			}
 		}
 	}
 }
-	
 
 void CK_PhysClipHorz(CK_object *obj)
 {
@@ -307,7 +305,7 @@ void CK_PhysClipHorz(CK_object *obj)
 	//Check if our left side is intersecting with a wall.
 	for (int y = tileY1; y <= tileY2; ++y)
 	{
-		int tile = CA_TileAtPos(obj->clipRects.tileX1,y,1);
+		int tile = CA_TileAtPos(obj->clipRects.tileX1, y, 1);
 		obj->rightTI = TI_ForeRight(tile);
 		if (obj->rightTI)
 		{
@@ -321,19 +319,20 @@ void CK_PhysClipHorz(CK_object *obj)
 	//Similarly for the right side (left side of instersecting tile).
 	for (int y = tileY1; y <= tileY2; ++y)
 	{
-		int tile = CA_TileAtPos(obj->clipRects.tileX2,y,1);
+		int tile = CA_TileAtPos(obj->clipRects.tileX2, y, 1);
 		obj->leftTI = TI_ForeLeft(tile);
 		if (obj->leftTI)
 		{
 			// Push us left until we're no-longer intersecting.
 			CK_PhysUpdateX(obj, (obj->clipRects.tileX2 << 8) - 1 - obj->clipRects.unitX2);
 			return;
-		
+
 		}
 	}
 }
 
 //TODO: Finish
+
 void CK_PhysUpdateNormalObj(CK_object *obj)
 {
 	int oldUnitX, oldUnitY;
@@ -362,13 +361,13 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 		}
 	}
 
-	if (obj->nextX > 240-1)
+	if (obj->nextX > 240 - 1)
 	{
-		obj->nextX = 240-1;
+		obj->nextX = 240 - 1;
 	}
-	else if (obj->nextX < -240+1)
+	else if (obj->nextX < -240 + 1)
 	{
-		obj->nextX = -240+1;
+		obj->nextX = -240 + 1;
 	}
 
 	if (obj->nextY > 255)
@@ -422,7 +421,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 
 			CK_PhysClipHorz(obj);
 		}
-	
+
 		//TODO: Something strange about reseting if falling?
 
 		if (!obj->topTI && wasNotOnPlatform)
@@ -435,11 +434,12 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 		obj->deltaPosX += obj->posX - oldUnitX;
 		obj->deltaPosY += obj->posY - oldUnitY;
 	}
-	
+
 }
 
 
 //TODO: Finish Implementing!!!!
+
 void CK_FullClipToWalls(CK_object *obj)
 {
 	int oldUnitX = obj->posX;
@@ -488,7 +488,7 @@ void CK_PhysUpdateSimpleObj(CK_object *obj)
 		obj->deltaPosX += obj->posX - oldUnitX;
 		obj->deltaPosY += obj->posY - oldUnitY;
 	}
-	
+
 }
 
 void CK_PhysPushX(CK_object *pushee, CK_object *pusher)
@@ -571,9 +571,14 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 	obj->currentAction = act;
 	obj->actionTimer = 0;
 
+	if (act->chunkRight)
+	{
+		obj->gfxChunk = (obj->xDirection > 0) ? act->chunkRight : act->chunkLeft;
+	}
+#if 0
 	if (act->chunkRight && obj->xDirection > 0) obj->gfxChunk = act->chunkRight;
 	else if (act->chunkLeft) obj->gfxChunk = act->chunkLeft;
-
+#endif
 	if (obj->gfxChunk == -1) obj->gfxChunk = 0;
 
 	obj->visible = true;
@@ -581,17 +586,26 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 	obj->nextY = 0;
 
 
-	if (!obj->topTI == 0x19)
+	if (obj->topTI != 0x19)
 		CK_PhysUpdateNormalObj(obj);
 
 }
 
+bool CK_ObjectVisible(CK_object *obj)
+{
+	if (obj->clipRects.tileX2 < ck_activeX0Tile && obj->clipRects.tileY2 < ck_activeY0Tile && obj->clipRects.tileX1 > ck_activeX1Tile && obj->clipRects.tileY1 > ck_activeY1Tile)
+	{
+		return true;
+	}
+
+	return false;
+}
 
 void CK_PhysGravityHigh(CK_object *obj)
 {
 	long numTics = CK_GetNumTotalTics();
 	int tics = CK_GetTicksPerFrame();
-	for (long ticCount = numTics-tics; ticCount < numTics; ++ticCount)
+	for (long ticCount = numTics - tics; ticCount < numTics; ++ticCount)
 	{
 		// Every odd tic...
 		if (ticCount & 1)
@@ -616,7 +630,7 @@ void CK_PhysGravityMid(CK_object *obj)
 {
 	long numTics = CK_GetNumTotalTics();
 	int tics = CK_GetTicksPerFrame();
-	for (long ticCount = numTics-tics; ticCount < numTics; ++ticCount)
+	for (long ticCount = numTics - tics; ticCount < numTics; ++ticCount)
 	{
 		// Every odd tic...
 		if (ticCount & 1)
@@ -641,7 +655,7 @@ void CK_PhysGravityLow(CK_object *obj)
 {
 	long numTics = CK_GetNumTotalTics();
 	int tics = CK_GetTicksPerFrame();
-	for (long ticCount = numTics-tics; ticCount < numTics; ++ticCount)
+	for (long ticCount = numTics - tics; ticCount < numTics; ++ticCount)
 	{
 		// TODO: recheck this condition
 		//if ((ticCount & 3) == 1)
@@ -672,7 +686,7 @@ void CK_PhysDampHorz(CK_object *obj)
 		xAdj = 0;
 
 
-	for (long ticCount = numTics-tics; ticCount < numTics; ++ticCount)
+	for (long ticCount = numTics - tics; ticCount < numTics; ++ticCount)
 	{
 		// Every odd tic...
 		if (ticCount & 1)
@@ -692,7 +706,7 @@ void CK_PhysAccelHorz(CK_object *obj, int accX, int velLimit)
 	long numTics = CK_GetNumTotalTics();
 	int tics = CK_GetTicksPerFrame();
 	bool isNegative = (obj->velX < 0);
-	for (long ticCount = numTics-tics; ticCount < numTics; ++ticCount)
+	for (long ticCount = numTics - tics; ticCount < numTics; ++ticCount)
 	{
 		// Every odd tic...
 		if (ticCount & 1)
@@ -701,7 +715,7 @@ void CK_PhysAccelHorz(CK_object *obj, int accX, int velLimit)
 			if ((obj->velX < 0) != isNegative)
 			{
 				isNegative = (obj->velX < 0);
-				obj->xDirection = isNegative?-1:1;
+				obj->xDirection = isNegative ? -1 : 1;
 			}
 
 			if (obj->velX > velLimit)

@@ -50,10 +50,10 @@ static long ck_numTotalTics;
 static int ck_ticsThisFrame;
 
 // The rectangle within which objects are active.
-static int ck_activeX0Tile;
-static int ck_activeY0Tile;
-static int ck_activeX1Tile;
-static int ck_activeY1Tile;
+int ck_activeX0Tile;
+int ck_activeY0Tile;
+int ck_activeX1Tile;
+int ck_activeY1Tile;
 
 
 void CK_KeenCheckSpecialTileInfo(CK_object *obj);
@@ -214,11 +214,11 @@ void CK_RemoveObj(CK_object *obj)
 		obj->next->prev = obj->prev;
 	
 	obj->prev->next = obj->next;
-	obj->next = 0;
+	//obj->next = 0;
 
 	obj->prev = ck_freeObject;
 	ck_freeObject = obj;
-	ck_numObjects--;
+	//ck_numObjects--;
 }
 
 
@@ -256,11 +256,11 @@ int CK_ActionThink(CK_object *obj, int time)
 			if (obj->xDirection)
 			{
 				//TODO: Work out what to do with the nextVelocity stuff.
-				obj->nextX += action->velX * time * obj->xDirection;
+				obj->nextX += action->velX * (time * obj->xDirection);
 			}
 			if (obj->yDirection)
 			{
-				obj->nextY += action->velY * time * obj->yDirection;
+				obj->nextY += action->velY * (time * obj->yDirection);
 			}
 		}
 
@@ -278,56 +278,54 @@ int CK_ActionThink(CK_object *obj, int time)
 		}
 		return 0;
 	}
+
+	int remainingTime = action->timer - obj->actionTimer;
+	newTime -= action->timer;
+	obj->actionTimer = 0;
+
+	if (action->type == AT_ScaledOnce || action->type == AT_ScaledFrame)
+	{
+		if (obj->xDirection)
+		{
+			obj->nextX += action->velX * (remainingTime * obj->xDirection);
+		}
+		if (obj->yDirection)
+		{
+			obj->nextY += action->velY * (remainingTime * obj->yDirection);
+		}
+	}
+	else /*if (action->type == AT_UnscaledOnce || action->type == AT_UnscaledFrame)*/
+	{
+		if (obj->xDirection)
+		{
+			obj->nextX += action->velX * obj->xDirection;
+		}
+		if (obj->yDirection)
+		{
+			obj->nextY += action->velY * obj->yDirection;
+		}
+	}
+
+	if (action->think)
+	{
+			if (obj->timeUntillThink)
+				obj->timeUntillThink--;
+			else
+			{
+				obj->currentAction->think(obj);
+			}
+	}
+
+	if (action != obj->currentAction)
+	{
+		if (!obj->currentAction)
+		{
+			return 0;
+		}
+	}
 	else
 	{
-		int remainingTime = action->timer - obj->actionTimer;
-		newTime -= action->timer;
-		obj->actionTimer = 0;
-
-		if (action->type == AT_ScaledOnce || action->type == AT_ScaledFrame)
-		{
-			if (obj->xDirection)
-			{
-				obj->nextX += action->velX * remainingTime * obj->xDirection;
-			}
-			if (obj->yDirection)
-			{
-				obj->nextY += action->velY * remainingTime * obj->yDirection;
-			}
-		}
-		else if (action->type == AT_UnscaledOnce || action->type == AT_UnscaledFrame)
-		{
-			if (obj->xDirection)
-			{
-				obj->nextX += action->velX * obj->xDirection;
-			}
-			if (obj->yDirection)
-			{
-				obj->nextY += action->velY * obj->yDirection;
-			}
-		}
-
-		if (action->think)
-		{
-				if (obj->timeUntillThink)
-					obj->timeUntillThink--;
-				else
-				{
-					obj->currentAction->think(obj);
-				}
-		}
-
-		if (action != obj->currentAction)
-		{
-			if (!obj->currentAction)
-			{
-				return 0;
-			}
-		}
-		else
-		{
-			obj->currentAction = action->next;
-		}
+		obj->currentAction = action->next;
 	}
 	return newTime;
 }
@@ -353,16 +351,17 @@ void CK_RunAction(CK_object *obj)
 		obj->actionTimer = 0;
 		prevAction = obj->currentAction;
 	}
-
-	while (obj->currentAction && ticsLeft)
+	// TODO/FIXME(?): Vanilla code doesn't check if prevAction is non-NULL,
+	// but the new code may crash as a consequence (try no-clip cheat).
+	while (prevAction && ticsLeft)
 	{
-		if (obj->currentAction->protectAnimation || obj->currentAction->timer > ticsLeft)
+		if (prevAction->protectAnimation || prevAction->timer > ticsLeft)
 		{
 			ticsLeft = CK_ActionThink(obj, ticsLeft);
 		}
 		else
 		{
-			ticsLeft = CK_ActionThink(obj, obj->currentAction->timer - 1);
+			ticsLeft = CK_ActionThink(obj, prevAction->timer - 1);
 		}
 
 		if (obj->currentAction != prevAction)
@@ -373,15 +372,23 @@ void CK_RunAction(CK_object *obj)
 	
 	}
 	
-	if (!obj->currentAction)
+	if (!prevAction)
 	{
 		CK_RemoveObj(obj);
 		return;
 	}
-
+	if (prevAction->chunkRight)
+	{
+		obj->gfxChunk = (obj->xDirection > 0) ? prevAction->chunkRight : prevAction->chunkLeft;
+	}
+	if (obj->gfxChunk == -1)
+	{
+		obj->gfxChunk = 0;
+	}
+#if 0
 	if (obj->currentAction->chunkLeft && obj->xDirection <= 0) obj->gfxChunk = obj->currentAction->chunkLeft;
 	if (obj->currentAction->chunkRight && obj->xDirection > 0) obj->gfxChunk = obj->currentAction->chunkRight;
-
+#endif
 	if (obj->gfxChunk != oldChunk || obj->nextX || obj->nextY || obj->topTI == 0x19)
 	{
 		CK_PhysUpdateNormalObj(obj);

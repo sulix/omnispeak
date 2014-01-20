@@ -71,6 +71,9 @@ typedef enum CK_ClassType {
   CT_SliceStar = 11,
   CT_Robo = 12,
   CT_Ampton = 15,
+	CT_Spindred = 18,
+	CT_Shikadi = 20,
+	CT_Shocksund = 21,
 } CK_ClassType;
 
 typedef struct CK_GameState

@@ -486,6 +486,12 @@ void CK5_ScanInfoLayer()
 				CK5_SpawnShelly(x, y);
 				break;
 
+			case 79:
+			case 78:
+			case 77:
+				CK5_SpawnSpindred(x, y);
+				break;
+
 			case 80:
 			case 81:
 			case 82:
@@ -497,6 +503,18 @@ void CK5_ScanInfoLayer()
 			case 86:
 			case 87:
 				CK5_SpawnRedBlockPlatform(x, y, infoValue - 84, true);
+				break;
+
+			case 101:
+			case 100:
+			case 99:
+				CK5_SpawnShikadi(x, y);
+				break;
+
+			case 104:
+			case 103:
+			case 102:
+				CK5_SpawnShocksund(x, y);
 				break;
 
 			case 124:
