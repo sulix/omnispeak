@@ -58,6 +58,14 @@ void CK_Fall(CK_object *obj)
 	obj->nextX = obj->velX * CK_GetTicksPerFrame();
 }
 
+// Think function for adding a slightly lower amount of gravity
+
+void CK_Fall2(CK_object *obj)
+{
+	CK_PhysGravityMid(obj);
+	obj->nextX = obj->velX * CK_GetTicksPerFrame();
+}
+
 void CK_Glide(CK_object *obj)
 {
 	obj->nextX = obj->velX * CK_GetTicksPerFrame();
@@ -259,6 +267,7 @@ void CK5_SetupFunctions()
 	CK5_Obj2_SetupFunctions();
 	CK5_Obj3_SetupFunctions();
 	CK_ACT_AddFunction("CK_Fall", &CK_Fall);
+	CK_ACT_AddFunction("CK_Fall2", &CK_Fall2);
 	CK_ACT_AddFunction("CK_Glide", &CK_Glide);
 	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
 	CK_ACT_AddFunction("CK_BasicDrawFunc2", &CK_BasicDrawFunc2);
@@ -505,6 +514,12 @@ void CK5_ScanInfoLayer()
 				CK5_SpawnRedBlockPlatform(x, y, infoValue - 84, true);
 				break;
 
+			case 90:
+			case 89:
+			case 88:
+				CK5_SpawnMaster(x, y);
+				break;
+
 			case 101:
 			case 100:
 			case 99:
@@ -515,6 +530,12 @@ void CK5_ScanInfoLayer()
 			case 103:
 			case 102:
 				CK5_SpawnShocksund(x, y);
+				break;
+
+			case 107:
+			case 106:
+			case 105:
+				CK5_SpawnSphereful(x, y);
 				break;
 
 			case 124:

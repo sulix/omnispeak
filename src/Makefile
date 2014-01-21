@@ -52,7 +52,7 @@ all: $(OUTBIN) binfiles
 clean:
 	rm -f $(OUTBIN) $(OBJ) $(DEPS)
 
-binfiles: ../bin/ACTION.CK5
+binfiles: ../data/keen5/ACTION.CK5
 	cp -f ../data/keen5/ACTION.CK5 ../bin/ACTION.CK5
 
 ../obj/%.o: %.c

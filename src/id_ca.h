@@ -80,6 +80,8 @@ extern uint16_t *CA_mapPlanes[3];
 
 void CA_CacheMap(int mapIndex);
 uint16_t CA_TileAtPos(int x, int y, int plane);
+uint16_t CA_GetMapHeight();
+uint16_t CA_GetMapWidth(); 
 
 
 #endif

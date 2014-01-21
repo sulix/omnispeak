@@ -72,8 +72,12 @@ typedef enum CK_ClassType {
   CT_Robo = 12,
   CT_Ampton = 15,
 	CT_Spindred = 18,
+	CT_Master = 19,
 	CT_Shikadi = 20,
 	CT_Shocksund = 21,
+	CT_Sphereful = 22, 
+	CT_Korath = 23,
+	CT_QED = 25,
 } CK_ClassType;
 
 typedef struct CK_GameState
@@ -127,12 +131,19 @@ typedef enum CK_objActive
 	OBJ_EXISTS_ONLY_ONSCREEN = 3
 } CK_objActive;
 
+typedef enum CK_clipped
+{
+	CLIP_not,
+	CLIP_normal,
+	CLIP_simple,
+} CK_ClipType;
+
 typedef struct CK_object
 {
 	int type;
 	CK_objActive active;
 	bool visible;
-	bool clipped;
+	CK_ClipType clipped;
 	int timeUntillThink;
 	int posX;
 	int posY;
@@ -162,9 +173,9 @@ typedef struct CK_object
 
 	struct RF_SpriteDrawEntry *sde;
 
-	int user1;
-	int user2;
-	int user3;
+	intptr_t user1;
+	intptr_t user2;
+	intptr_t user3;
 	intptr_t user4;
 
 	struct CK_object *next;

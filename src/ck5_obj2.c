@@ -400,12 +400,11 @@ void CK5_SpawnSlice(int tileX, int tileY, int dir)
 void CK5_SpawnSliceDiag(int tileX, int tileY)
 {
 
-
 	CK_object *new_object = CK_GetNewObj(false);
-
 	new_object->type = CT_SliceStar;
 	new_object->active = true;
 	new_object->zLayer = 2;
+	new_object->clipped = CLIP_simple;
 	new_object->posX = (tileX << 8);
 	new_object->posY = (tileY << 8);
 	new_object->user4 = 50; // strength
