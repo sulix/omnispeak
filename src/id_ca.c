@@ -31,11 +31,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string.h>
 #include <stdio.h>
+#include <SDL2/SDL.h>
 
 #define CA_THREEBYTEHEADERS
 
 
 //Begin globals
+
+/* These functions read a little-endian value. */
+
+uint8_t CAL_ReadByte(void *offset)
+{
+	return *((uint8_t*)(offset));
+}
+
+int16_t CAL_ReadWord(void *offset)
+{
+	return (int16_t)SDL_SwapLE16(*((uint16_t*)(offset)));
+}
+
+int32_t CAL_ReadLong(void *offset)
+{
+	return (int32_t)SDL_SwapLE32(*((uint32_t*)(offset)));
+}
+
+int8_t CAL_ReadSByte(void *offset)
+{
+	return *((int8_t*)(offset));
+}
+
+uint16_t CAL_ReadUWord(void *offset)
+{
+	return SDL_SwapLE16(*((uint16_t*)(offset)));
+}
+
+uint32_t CAL_ReadULong(void *offset)
+{
+	return SDL_SwapLE32(*((uint32_t*)(offset)));
+}
 
 // Adjusts the extension on a filename to match the current episode.
 // This function is NOT thread safe, and the string returned is only
@@ -193,7 +226,7 @@ void CAL_CarmackExpand(void *src, void *dest, int expLength)
 
 	while (expLength > 0)
 	{
-		ch = *(srcptr++);
+		ch = CAL_ReadWord(srcptr++);
 		if ((ch & 0xff00) == CA_CARMACK_NEARTAG)
 		{
 			count = ch & 0xff;
@@ -201,14 +234,14 @@ void CAL_CarmackExpand(void *src, void *dest, int expLength)
 			{
 				//Read a byte and output a7xx
 				ch &= 0xff00;
-				ch |= *((uint8_t*)srcptr);
+				ch |= CAL_ReadByte(srcptr);
 				srcptr = (uint16_t*)(((uint8_t*)srcptr) + 1);
 				*(dstptr++) = ch;
 				expLength--;
 			}
 			else
 			{
-				offset = *((uint8_t*)srcptr);
+				offset = CAL_ReadByte(srcptr);
 				srcptr = (uint16_t*)(((uint8_t*)srcptr) + 1);
 				runptr = dstptr - offset;//(uint16_t*)offset;
 				expLength -= count;
@@ -222,14 +255,14 @@ void CAL_CarmackExpand(void *src, void *dest, int expLength)
 			{
 				//Read a byte and output a8xx
 				ch &= 0xff00;
-				ch |= *((uint8_t*)srcptr);
+				ch |= CAL_ReadByte(srcptr);
 				srcptr = (uint16_t*)(((uint8_t*)srcptr) + 1);
 				*(dstptr++) = ch;
 				expLength--;
 			}
 			else
 			{
-				offset = *(srcptr++);
+				offset = CAL_ReadWord(srcptr++);
 				runptr = (uint16_t*)dest + offset;//(uint16_t*)offset;
 				expLength -= count;
 				while (count--) *(dstptr++) = *(runptr++);
@@ -285,7 +318,7 @@ void CAL_RLEWExpand (void *src, void *dest, int expLength, uint16_t rletag)
 
 	while (expLength > 0)
 	{
-		value = *(srcptr++);
+		value = CAL_ReadWord(srcptr++);
 		if (value != rletag)
 		{
 			*(dstptr++) = value;
@@ -403,7 +436,7 @@ void CAL_ExpandGrChunk(int chunk, void *source)
 	
 	if (!length)
 	{
-		length = *(uint32_t*)source;
+		length = CAL_ReadLong(source);
 		source = (uint8_t*)source+4;
 	}
 
