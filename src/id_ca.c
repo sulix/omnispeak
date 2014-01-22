@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string.h>
 #include <stdio.h>
-#include <SDL2/SDL.h>
+#include "SDL.h"
 
 #define CA_THREEBYTEHEADERS
 
@@ -636,8 +636,8 @@ void CA_CacheAudioChunk(int16_t chunk)
 	// load the chunk into a buffer, either the miscbuffer if it fits, or allocate
 	// a larger buffer
 	//
-	pos = ca_audiostarts[chunk];
-	compressed = ca_audiostarts[chunk+1]-pos; //+1 is not in keen...
+	pos = SDL_SwapLE32(ca_audiostarts[chunk]);
+	compressed = SDL_SwapLE32(ca_audiostarts[chunk+1])-pos; //+1 is not in keen...
 
 	fseek(ca_audiohandle,pos,SEEK_SET);
 
@@ -659,7 +659,7 @@ void CA_CacheAudioChunk(int16_t chunk)
 		source = bigbuffer;
 	}
 
-	expanded = *((int32_t *)source);
+	expanded = CAL_ReadLong(source);
 	source = (mm_ptr_t)((uint8_t *)source + 4); // skip over length
 	MM_GetPtr((void**)(&CA_audio[chunk]),expanded);
 	// TODO: Check for mmerror
