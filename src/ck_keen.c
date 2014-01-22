@@ -30,7 +30,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // For all the shitty debug stuff  I have.
 #include <stdio.h>
 
-
+#define MISCFLAG_POLE		 1
+#define MISCFLAG_DOOR		 2
+#define MISCFLAG_SWITCHPLATON	 5
+#define MISCFLAG_SWITCHPLATOFF	 6
+#define MISCFLAG_SWITCHBRIDGE	15
+#define MISCFLAG_SECURITYDOOR	32
 
 
 void CK_SpawnKeen(int tileX, int tileY, int direction);
@@ -186,11 +191,32 @@ bool CK_KeenPressUp(CK_object *obj)
 	uint8_t tileMiscFlag = TI_ForeMisc(CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY1, 1));
 
 	// Are we pressing a switch?
-	// TODO: Implement	
+	if (tileMiscFlag == MISCFLAG_SWITCHPLATON || tileMiscFlag == MISCFLAG_SWITCHPLATOFF || tileMiscFlag == MISCFLAG_SWITCHBRIDGE)
+	{
+		int16_t destXunit = (obj->clipRects.tileXmid << 8) - 64;
+		if (obj->posX == destXunit)
+		{
+			// Flip that switch!
+			// TODO: Actually implement.
+			return false;
+		}
+		else
+		{
+			obj->user1 = destXunit;
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenSlide");
+		}
+		ck_keenState.keenSliding = true;
+		return true;
+	}
+
 	// Are we enterting a door?
-	// TODO: Implement
+	if (tileMiscFlag == MISCFLAG_DOOR || tileMiscFlag == MISCFLAG_SECURITYDOOR )
+	{
+		// TODO: Implement
+	}
+
+
 	// No? Return to our caller, who will handle poles/looking up.
-	
 	return false;
 }
 	
@@ -305,21 +331,21 @@ void CK_KeenRunningThink(CK_object *obj)
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
 		CK_HandleInputOnGround(obj);
-		//NOTE: HAXXX! I just added this to get demos working.
-		//obj->nextX = (obj->xDirection * obj->currentAction->velX * CK_GetTicksPerFrame())/4;
 		return;
 	}
+
+	obj->xDirection = ck_inputFrame.xDirection;
 	
 	if (ck_inputFrame.yDirection == -1)
 	{
 		if (CK_KeenTryClimbPole(obj)) return;
+		if (ck_keenState.keenSliding || CK_KeenPressUp(obj))
+			return;
 	}
 	else if (ck_inputFrame.yDirection == 1)
 	{
 		if (CK_KeenTryClimbPole(obj)) return;
 	}
-
-	obj->xDirection = ck_inputFrame.xDirection;
 
 	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
 	{
@@ -448,6 +474,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 	if (ck_inputFrame.yDirection == -1)
 	{
 		if (CK_KeenTryClimbPole(obj)) return;
+		if (!ck_keenState.keenSliding && CK_KeenPressUp(obj)) return;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookUp1");
 	}	
 	else if (ck_inputFrame.yDirection == 1)

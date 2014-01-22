@@ -475,6 +475,9 @@ void CK_HandleInput()
 
 	static int pogoTimer = 0;
 
+	if (ck_inputFrame.yDirection != -1)
+		ck_keenState.keenSliding = false;
+
 	if (ck_demoEnabled) // Two-button firing mode.
 	{
 		ck_keenState.shootIsPressed = ck_inputFrame.jump && ck_inputFrame.pogo;

@@ -102,6 +102,9 @@
 %action CK_ACT_keenShotHit1 157 157 UnscaledOnce 0 0 0xC 0 0 NULL NULL CK_SimpleDrawFunc CK_ACT_keenShotHit2
 %action CK_ACT_keenShotHit2 158 158 UnscaledOnce 0 0 0xC 0 0 NULL NULL CK_SimpleDrawFunc NULL
 
+%action CK_ACT_keenSlide 175 175 Frame 0 0 0 0 0 CK_KeenSlide NULL CK_SimpleDrawFunc NULL
+
+
 # ck5_misc.c
 
 # Items

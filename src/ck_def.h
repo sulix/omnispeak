@@ -195,6 +195,7 @@ typedef struct CK_keenState
 	bool shootIsPressed;
 	bool shootWasPressed;
 
+	bool keenSliding;
 	CK_object *platform;
 } CK_keenState;
 
