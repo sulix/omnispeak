@@ -407,43 +407,57 @@ void CK5_ScanInfoLayer()
 				CK_SpawnKeen(x, y, -1);
 				break;
 			case 6:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 5:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 4:
 				CK5_SpawnSparky(x, y);
 				break;
 
 			case 9:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 8:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 7:
 				CK5_SpawnMine(x, y);
 				break;
 
 			case 12:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 11:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 10:
 				CK5_SpawnSlice(x, y, CD_north);
 				break;
 
 			case 15:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 14:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 13:
 				CK5_SpawnRobo(x, y);
 				break;
 
-			case 18:	//TODO: Difficulty hard
-			case 17:	//TODO: Difficulty normal
+			case 18:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 17:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 16:
 				CK5_SpawnSpirogrip(x, y);
 				break;
 
 			case 21:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 20:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 19:
 				CK5_SpawnSliceDiag(x, y);
 				break;
 
 			case 24:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 23:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 22:
 				CK5_SpawnSlice(x, y, CD_east);
 				break;
@@ -470,7 +484,9 @@ void CK5_ScanInfoLayer()
 				CK5_SneakPlatSpawn(x, y);
 				break;
 			case 44:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 43:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 42:
 				CK5_SpawnAmpton(x, y);
 				break;
@@ -500,13 +516,17 @@ void CK5_ScanInfoLayer()
 
 
 			case 76:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 75:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 74:
 				CK5_SpawnShelly(x, y);
 				break;
 
 			case 79:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 78:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 77:
 				CK5_SpawnSpindred(x, y);
 				break;
@@ -525,25 +545,33 @@ void CK5_ScanInfoLayer()
 				break;
 
 			case 90:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 89:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 88:
 				CK5_SpawnMaster(x, y);
 				break;
 
 			case 101:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 100:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 99:
 				CK5_SpawnShikadi(x, y);
 				break;
 
 			case 104:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 103:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 102:
 				CK5_SpawnShocksund(x, y);
 				break;
 
 			case 107:
+				if (ck_gameState.difficulty < D_Hard) break;
 			case 106:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 105:
 				CK5_SpawnSphereful(x, y);
 				break;
