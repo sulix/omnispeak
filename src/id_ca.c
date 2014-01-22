@@ -70,6 +70,9 @@ uint32_t CAL_ReadULong(void *offset)
 	return SDL_SwapLE32(*((uint32_t*)(offset)));
 }
 
+//Begin locals
+SDMode oldsoundmode;
+
 // Adjusts the extension on a filename to match the current episode.
 // This function is NOT thread safe, and the string returned is only
 // valid until the NEXT invocation of this function.
@@ -480,16 +483,42 @@ CA_MapHead *ca_MapHead;
 
 FILE *ca_GameMaps;
 
-CA_MapHeader *CA_MapHeaders[100];
+CA_MapHeader *CA_MapHeaders[CA_NUMMAPS];
 
 uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
 
 extern uint8_t *ti_tileInfo;
-void CAL_SetupMapFile()
+void CAL_SetupMapFile(void)
 {
 	CA_LoadFile("MAPHEAD.CK5", (void**)(&ca_MapHead), 0);
 	ca_GameMaps = fopen(CAL_AdjustExtension("GAMEMAPS.EXT"), "rb");
 	CA_LoadFile("TILEINFO.CK5",(void**)(&ti_tileInfo), 0);
+}
+
+static ca_huffnode *ca_audiohuffman;
+
+static FILE *ca_audiohandle;	//File Pointer for AUDIO file.
+int32_t *ca_audiostarts;
+
+void CAL_SetupAudioFile(void)
+{
+	//TODO: Setup cfg mechanism for filenames, chunk data.
+
+	//Load the AUDIODCT
+	CA_LoadFile("AUDIODCT.CK5", (void**)(&ca_audiohuffman), 0);
+
+	// We don't need to 'OptimizeNodes'.
+	//CAL_OptimizeNodes(ca_audiohuffman);
+
+	//Load the AUDIOHED
+	CA_LoadFile("AUDIOHED.CK5", (void **)(&ca_audiostarts), 0);
+
+	//Load the sound data --- we will keep the file open for the duration of the game.
+	ca_audiohandle = fopen("AUDIO.CK5","rb");
+	if (!ca_audiohandle)
+	{
+		Quit("Can't open AUDIO.CK5!");
+	}
 }
 
 void CA_CacheMap(int mapIndex)
@@ -563,7 +592,7 @@ void CA_CacheMap(int mapIndex)
 }
 
 // CA_Startup opens the core CA datafiles
-void CA_Startup()
+void CA_Startup(void)
 {
 	// Load the ?GAGRAPH.EXT file!
 	CAL_SetupGrFile();
@@ -579,6 +608,112 @@ void CA_Startup()
 
 	// Setup the map file
 	CAL_SetupMapFile();
+
+	// Load the audio file
+	CAL_SetupAudioFile();
+}
+
+void CA_Shutdown(void)
+{
+	fclose(ca_GameMaps);
+	fclose(ca_graphHandle);
+	fclose(ca_audiohandle);
+}
+
+uint8_t *CA_audio[206];
+
+void CA_CacheAudioChunk(int16_t chunk)
+{
+	int32_t pos, compressed, expanded;
+	mm_ptr_t bigbuffer, source, expaned;
+	if (CA_audio[chunk])
+	{
+		MM_SetPurge((void**)(&CA_audio[chunk]), 0);
+		return;
+	}
+
+	//
+	// load the chunk into a buffer, either the miscbuffer if it fits, or allocate
+	// a larger buffer
+	//
+	pos = ca_audiostarts[chunk];
+	compressed = ca_audiostarts[chunk+1]-pos; //+1 is not in keen...
+
+	fseek(ca_audiohandle,pos,SEEK_SET);
+
+	if (compressed<=BUFFERSIZE)
+	{
+		fread(buffer,compressed,1,ca_audiohandle);
+		source = buffer;
+	}
+	else
+	{
+		MM_GetPtr(&bigbuffer,compressed);
+		// TODO: Check for mmerror
+#if 0
+		if (mmerror)
+			return;
+#endif
+		MM_SetLock(&bigbuffer,true);
+		fread(bigbuffer,compressed,1,ca_audiohandle);
+		source = bigbuffer;
+	}
+
+	expanded = *((int32_t *)source);
+	source = (mm_ptr_t)((uint8_t *)source + 4); // skip over length
+	MM_GetPtr((void**)(&CA_audio[chunk]),expanded);
+	// TODO: Check for mmerror
+#if 0
+	if (mmerror)
+		goto done;
+#endif
+	CAL_HuffExpand (source,CA_audio[chunk],expanded,ca_audiohuffman);
+
+done:
+	if (compressed>BUFFERSIZE)
+		MM_FreePtr(&bigbuffer);
+}
+
+
+void CA_LoadAllSounds(void)
+{
+	int16_t offset; // FIXME: What about a mode differing from 1 or 2?
+	uint16_t loopvar;
+	if (oldsoundmode != sdm_Off)
+	{
+		switch (oldsoundmode)
+		{
+		case sdm_PC:
+			offset = STARTPCSOUNDS;
+			break;
+		case sdm_AdLib:
+			offset = STARTADLIBSOUNDS;
+			break;
+		}
+		for (loopvar = 0; loopvar < NUMSOUNDS; loopvar++, offset++)
+		{
+			if (CA_audio[offset])
+			{
+				MM_SetPurge((void**)(&CA_audio[offset]), 3);
+			}
+		}
+	}
+	if (SoundMode != sdm_Off)
+	{
+		switch (SoundMode)
+		{
+		case sdm_PC:
+			offset = STARTPCSOUNDS;
+			break;
+		case sdm_AdLib:
+			offset = STARTADLIBSOUNDS;
+			break;
+		}
+		for (loopvar = 0; loopvar < NUMSOUNDS; loopvar++, offset++)
+		{
+			CA_CacheAudioChunk(offset);
+		}
+	}
 }
 
 //TODO: Make this less of an ugly hack.

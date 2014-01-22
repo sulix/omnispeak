@@ -49,7 +49,7 @@ void CK5_TurretShoot(CK_object *obj)
 {
 	CK_object *shot = CK_GetNewObj(true);
 
-	shot->type = 0;	//TurretShot
+	shot->type = 4;	//TurretShot
 	shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	//shot->clipped = true;
 	shot->posX = obj->posX;
@@ -77,6 +77,7 @@ void CK5_TurretShoot(CK_object *obj)
 	}
 
 	CK_SetAction(shot, CK_GetActionByName("CK5_ACT_turretShot1"));
+	SD_PlaySound(SOUND_ENEMYSHOOT);
 
 	//CK_SetAction(obj, &CK5_ACT_turretWait);
 }
@@ -97,6 +98,7 @@ void CK5_TurretShotDraw(CK_object *obj)
 	if (obj->topTI || obj->bottomTI || obj->leftTI || obj->rightTI)
 	{
 		printf("Shot Hit\n");
+		SD_PlaySound(SOUND_ENEMYSHOTHIT);
 		//obj->clipped=false;
 		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_turretShotHit1"));
 	}

@@ -16,7 +16,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_ti.o id_us_1.o id_us_2.o id_vh.o id_vl.o id_str.o glad.o
+IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id_us_2.o id_vh.o id_vl.o id_str.o glad.o
 CKOBJECTS=ck_act.o ck_keen.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck_phys.o ck_game.o ck_play.o ck5_misc.o ck_main.o
 
 ifeq ($(PLATFORM), WINDOWS)
@@ -31,7 +31,7 @@ OUTBIN=../bin/omnispeak5e$(EXE_EXT)
 WITH_SDL2=1
 ifeq ($(WITH_SDL2), 1)
 	IDOBJECTS+= id_vl_sdl2gl.o
-	SDLCONFIGBIN=/local/cross-tools/x86_64-w64-mingw32/bin/sdl2-config
+	SDLCONFIGBIN=sdl2-config #/local/cross-tools/x86_64-w64-mingw32/bin/sdl2-config
 else
 	IDOBJECTS+= id_vl_sdl12.o
 	SDLCONFIGBIN=sdl-config

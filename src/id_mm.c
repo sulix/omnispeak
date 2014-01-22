@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdlib.h>
 
+mm_ptr_t buffer; // Misc buffer
+
 #define MM_MAXBLOCKS	2048 	//1200 in Keen5
 
 typedef struct ID_MM_MemBlock
@@ -114,6 +116,8 @@ void MM_Startup(void)
 	}
 	mm_free = &(mm_blocks[0]);
 	mm_purgeable = 0;
+	// Misc buffer
+	MM_GetPtr(&buffer,BUFFERSIZE);
 }
 
 void MM_Shutdown(void)

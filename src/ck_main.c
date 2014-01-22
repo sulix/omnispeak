@@ -45,7 +45,7 @@ void CK_ShutdownID()
 {
 	//TODO: Some managers don't have shutdown implemented yet
 	//US
-	//SD
+	SD_Shutdown();
 	//IN
 	//RF
 	//VH
@@ -81,6 +81,9 @@ void CK_InitGame()
 
 	// Setup input
 	IN_Startup();
+
+	// Setup audio
+	SD_Startup();
 
 	//TODO: Read game config
 	
@@ -129,6 +132,8 @@ void CK_HandleDemoKeys()
 
 void CK_DemoLoop()
 {
+	/* FIXME: Should be called from load_config with the correct settings */
+	SD_Default(false, sdm_PC, smm_Off);
 	/*
 	 * Commander Keen could be 'launched' from the map editor TED to test a map.
 	 * This was implemented by having TED launch keen with the /TEDLEVEL xx
@@ -140,6 +145,8 @@ void CK_DemoLoop()
 		us_noWait = true;
 		ck_currentMapNumber = us_tedLevelNumber;
 
+		CA_LoadAllSounds();
+
 		CK_GameLoop();
 		Quit(0);
 	}
@@ -150,6 +157,9 @@ void CK_DemoLoop()
 
 	while (true)
 	{
+		// TODO: This should really be called in SetupGameLevel
+		CA_LoadAllSounds();
+
 		switch(demoNumber++)
 		{
 		case 0:		// Terminator scroller and Title Screen

@@ -42,11 +42,20 @@ void CK_BasicDrawFunc1(CK_object *obj);
 
 CK_action CK_ACT_itemNotify = {0, 0, AT_ScaledOnce, 0, 0, 40, 0, 8, 0, 0, CK_BasicDrawFunc1, 0};
 
+uint16_t CK5_ItemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM,
+                               SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,
+                               SOUND_GOTEXTRALIFE, SOUND_GOTSTUNNER, SOUND_GOTKEYCARD
+};
+uint16_t CK5_ItemPoints[]  = {  0,   0,   0,   0, 100, 200, 500, 1000, 2000, 5000,   0,   0,   0};
+uint16_t CK5_ItemShadows[] = {232, 232, 232, 232, 195, 196, 197,  198,  199,  200, 201, 202, 209};
 
 void CK_KeenColFunc(CK_object *a, CK_object *b)
 {
 	if (b->type == 5)
 	{
+		if (b->user1 > 12)
+			return;
+		SD_PlaySound(CK5_ItemSounds[b->user1]);
 		if (b->user1 == 7)
 		{
 			ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
@@ -54,7 +63,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 
 		b->type = 1;
 		b->zLayer = 3;
-		b->gfxChunk = b->user4;
+		b->gfxChunk = CK5_ItemShadows[b->user1];
 		b->yDirection = -1;
 		CK_SetAction(b, &CK_ACT_itemNotify);
 	}
@@ -89,10 +98,11 @@ static int16_t emptyTile = 0;
 void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 {
 	RF_ReplaceTiles(&emptyTile, 1, tileX, tileY, 1, 1);
+	SD_PlaySound(CK5_ItemSounds[itemNumber]);
 
 	//TODO: Points
 	
-	if (itemNumber == 7)
+	if (itemNumber == 11)
 	{
 		ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
 	}
@@ -103,7 +113,7 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 	notify->posX = tileX << 8;
 	notify->posY = tileY << 8;
 	notify->yDirection = -1;
-	notify->user2 = 195 + itemNumber;
+	notify->user2 = CK5_ItemShadows[itemNumber];
 	notify->gfxChunk = notify->user2;
 	CK_SetAction(notify, &CK_ACT_itemNotify);
 	notify->clipped = false;
@@ -124,8 +134,9 @@ void CK_GetVitalin(int tileX, int tileY)
 void CK_KeenGetTileVitalin(int tileX, int tileY)
 {
 	RF_ReplaceTiles(&emptyTile, 1, tileX, tileY, 1, 1);
-
+	SD_PlaySound(SOUND_GOTVITALIN);
 	CK_GetVitalin(tileX, tileY);
+	// TODO: Complete this
 }
 
 void CK_KeenCheckSpecialTileInfo(CK_object *obj)
@@ -150,7 +161,8 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 			case 27:
 			case 28:
 			case 29:
-				CK_KeenGetTileItem(x,y,specialTileInfo - 21);
+				CK_KeenGetTileItem(x,y,specialTileInfo - 17);
+				/*CK_KeenGetTileItem(x,y,specialTileInfo - 21 + 4);*/
 				break;
 			}
 		}
@@ -273,6 +285,7 @@ void CK_KeenRunningThink(CK_object *obj)
 	if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
 	{
 		ck_keenState.jumpWasPressed = true;
+		SD_PlaySound(SOUND_KEENJUMP);
 		obj->velX = obj->xDirection * 16;
 		obj->velY = -40;
 		obj->nextX = obj->nextY = 0;
@@ -286,6 +299,7 @@ void CK_KeenRunningThink(CK_object *obj)
 	{
 		ck_keenState.pogoWasPressed = true;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo1");
+		SD_PlaySound(SOUND_KEENJUMP);
 		obj->velX = obj->xDirection * 16;
 		obj->velY = -48;
 		// Should this be nextY? Andy seems to think so, but lemm thinks that X is right...
@@ -297,6 +311,24 @@ void CK_KeenRunningThink(CK_object *obj)
 	// Andy seems to think this is Y as well. Need to do some more disasm.
 	// If this is an X vel, then surely we'd want to multiply it by the direction?
 	obj->nextX += ck_KeenRunXVels[obj->topTI&7] * CK_GetTicksPerFrame();
+
+	if ((obj->currentAction->chunkLeft == CK_GetActionByName("CK_ACT_keenRun1")->chunkLeft) && !(obj->user3))
+	{
+		SD_PlaySound(SOUND_KEENWALK0);
+		obj->user3 = 1;
+		return;
+	}
+
+	if ((obj->currentAction->chunkLeft == CK_GetActionByName("CK_ACT_keenRun3")->chunkLeft) && !(obj->user3))
+	{
+		SD_PlaySound(SOUND_KEENWALK1);
+		obj->user3 = 1;
+		return;
+	}
+	if ((obj->currentAction->chunkLeft == CK_GetActionByName("CK_ACT_keenRun2")->chunkLeft) || (obj->currentAction->chunkLeft == CK_GetActionByName("CK_ACT_keenRun4")->chunkLeft))
+	{
+		obj->user3 = 0;
+	}
 }
 
 
@@ -338,6 +370,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 	if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
 	{
 		ck_keenState.jumpWasPressed = true;
+		SD_PlaySound(SOUND_KEENJUMP);
 		obj->velX = 0;
 		obj->velY = -40;
 		obj->nextY = 0;
@@ -349,6 +382,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 	if (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed)
 	{
 		ck_keenState.pogoWasPressed = true;
+		SD_PlaySound(SOUND_KEENJUMP);
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo1");
 		obj->velX = 0;
 		obj->velY = -48;
@@ -469,7 +503,7 @@ void CK_KeenLookDownThink(CK_object *obj)
 		obj->nextY = 0;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
 		obj->velX = obj->velY = 0;
-		//TODO: Sound
+		SD_PlaySound(SOUND_KEENFALL);
 		return;
 	}
 	
@@ -486,6 +520,7 @@ void CK_KeenDrawFunc(CK_object *obj)
 {
 	if (!obj->topTI)
 	{
+		SD_PlaySound(SOUND_KEENFALL);
 		obj->velX = obj->xDirection * 8;
 		obj->velY = 0;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
@@ -499,6 +534,7 @@ void CK_KeenRunDrawFunc(CK_object *obj)
 
 	if (!obj->topTI)
 	{
+		SD_PlaySound(SOUND_KEENFALL);
 		obj->velX = obj->xDirection * 8;
 		obj->velY = 0;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
@@ -637,13 +673,13 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 	{
 		obj->velX = 0;
 	}
-	if (obj->leftTI && obj->xDirection == 1)
+	else if (obj->leftTI && obj->xDirection == 1)
 	{
 		obj->velX = 0;
 	}
 
 	// Did we hit our head on the ceiling?
-	if (obj->bottomTI && !ck_gameState.jumpCheat)
+	if (obj->bottomTI)
 	{
 		//TODO: Something to do with poles (push keen into the centre)
 		if (obj->bottomTI == 17)	//Pole
@@ -653,9 +689,9 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 			obj->velX = 0;
 			obj->posX = (obj->clipRects.tileXmid << 8) - 32;
 		}
-		else
+		else if (!ck_gameState.jumpCheat)
 		{
-			//TODO: sounds
+			SD_PlaySound(SOUND_KEENHITCEILING);
 			if (obj->bottomTI > 1)
 			{
 				obj->velY += 16;
@@ -681,7 +717,10 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 		}
 		else
 		{
-			//TODO: Check if fuse.
+			if (obj->topTI == 0x39) // Fuse
+			{
+				SD_PlaySound(SOUND_KEENLANDONFUSE);
+			}
 			if (obj->topTI != 0x19 || !ck_keenState.jumpTimer) // Or standing on a platform.
 			{
 				obj->user1 = obj->user2 = 0;	// Being on the ground is boring.
@@ -703,7 +742,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 				{
 					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenStanding"));
 				}
-
+				SD_PlaySound(SOUND_KEENLAND);
 			}
 		}
 	}
@@ -767,6 +806,7 @@ void CK_KeenPogoBounceThink(CK_object *obj)
 	obj->velY = -48;
 	obj->nextY = 6 * obj->velY;
 	ck_keenState.jumpTimer = 24;
+	SD_PlaySound(SOUND_KEENPOGO);
 }
 
 void CK_KeenPogoThink(CK_object *obj)
@@ -841,9 +881,13 @@ void CK_KeenPogoThink(CK_object *obj)
 void CK_KeenPogoDrawFunc(CK_object *obj)
 {
 	if (obj->rightTI && obj->xDirection == -1)
+	{
 		obj->velX = 0;
-	if (obj->leftTI && obj->xDirection == 1)
+	}
+	else if (obj->leftTI && obj->xDirection == 1)
+	{
 		obj->velX = 0;
+	}
 
 	if (obj->bottomTI)
 	{
@@ -857,7 +901,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 		}
 		else if (!ck_gameState.jumpCheat)
 		{
-			//TODO: PlaySound
+			SD_PlaySound(SOUND_KEENHITCEILING);
 
 			if (obj->bottomTI > 1)
 			{
@@ -874,12 +918,30 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 	if (obj->topTI)
 	{
 		obj->deltaPosY = 0;
-		//TODO: Deadly surfaces and fuse breakage.
-		if (obj->topTI != 0x19 || ck_keenState.jumpTimer == 0)
+		//Check if deadly.
+		if ((obj->topTI & ~7) == 8)
 		{
-			obj->velY = -48;
-			ck_keenState.jumpTimer = 24;
-			CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenPogo2"));
+			//TODO: Kill Keen
+		}
+		else
+		{
+			if (obj->topTI == 0x39) // Fuse
+			{
+				if (obj->velY >= 0x30)
+				{
+					// TODO: Handle fuse breakage
+					RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
+					return;
+				}
+				SD_PlaySound(SOUND_KEENLANDONFUSE);
+			}
+			if (obj->topTI != 0x19 || ck_keenState.jumpTimer == 0)
+			{
+				obj->velY = -48;
+				ck_keenState.jumpTimer = 24;
+				SD_PlaySound(SOUND_KEENPOGO);
+				CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenPogo2"));
+			}
 		}
 	}
 
@@ -991,7 +1053,7 @@ void CK_KeenPoleHandleInput(CK_object *obj)
 	if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
 	{
 		ck_keenState.jumpWasPressed = true;
-		//TODO: Play A sound!
+		SD_PlaySound(SOUND_KEENJUMP);
 		obj->velX = ck_KeenPoleOffs[ck_inputFrame.xDirection+1];
 		obj->velY = -20;
 		obj->clipped = true;
@@ -1023,7 +1085,7 @@ void CK_KeenPoleSitThink(CK_object *obj)
 		return;
 	}
 
-	// Whenn keen is at ground level, allow dismounting using left/right.
+	// When keen is at ground level, allow dismounting using left/right.
 	if (ck_inputFrame.xDirection)
 	{
 		int groundTile = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2+1, 1);
@@ -1035,7 +1097,7 @@ void CK_KeenPoleSitThink(CK_object *obj)
 			ck_keenState.jumpTimer = 0;
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
 			obj->yDirection = 1;
-			//TODO: Sound
+			SD_PlaySound(SOUND_KEENFALL);
 			return;
 		}
 	}
@@ -1080,7 +1142,7 @@ void CK_KeenPoleDownThink(CK_object *obj)
 	if ((TI_ForeMisc(tileUnderneath) & 127) != 1)
 	{
 		// We're no longer on a pole.
-		//TODO: Play sound 20
+		SD_PlaySound(SOUND_KEENFALL);
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
 		ck_keenState.jumpTimer = 0;
 		obj->velX = ck_KeenPoleOffs[ck_inputFrame.xDirection + 1];
@@ -1130,7 +1192,7 @@ void CK_SpawnShot(int x, int y, int direction)
 {
 	if (!ck_gameState.numShots)
 	{
-		//TODO: Play out-of-ammo sound
+		SD_PlaySound(SOUND_KEENOUTOFAMMO);
 		return;
 	}
 
@@ -1142,6 +1204,8 @@ void CK_SpawnShot(int x, int y, int direction)
 	shot->zLayer = 0;
 	shot->type = 4; // TODO: obj_stunner
 	shot->active = true;
+
+	SD_PlaySound(SOUND_KEENSHOOT);
 	
 	switch(direction)
 	{
@@ -1172,6 +1236,7 @@ void CK_ShotHit(CK_object *obj)
 {
 	//TODO: Implement obj_ classes.
 	CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenShotHit1"));
+	SD_PlaySound(SOUND_KEENSHOTHIT);
 }
 
 void CK_ShotColFunc(CK_object *obj, CK_object *other)

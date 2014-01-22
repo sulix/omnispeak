@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdint.h>
 
 #include "id_mm.h"
+#include "id_sd.h"
 // -- Common --
 void CA_Startup();
 
@@ -73,9 +74,11 @@ typedef struct CA_MapHeader
 	char signature[4];
 } __attribute__((__packed__)) CA_MapHeader;
 
-extern CA_MapHeader *CA_MapHeaders[100];
+extern CA_MapHeader *CA_MapHeaders[CA_NUMMAPS];
 
-extern uint16_t *CA_mapPlanes[3];
+extern uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
+
+extern uint8_t *CA_audio[NUMSNDCHUNKS];
 
 
 void CA_CacheMap(int mapIndex);

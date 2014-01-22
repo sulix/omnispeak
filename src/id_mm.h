@@ -23,7 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
+#define	BUFFERSIZE 0x1000 // Miscellaneous, always available buffer
+
 typedef void *mm_ptr_t;
+
+extern mm_ptr_t buffer; // Misc buffer
 
 void MM_Startup (void);
 void MM_Shutdown (void);

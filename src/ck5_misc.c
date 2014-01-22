@@ -43,12 +43,6 @@ int CK5_ItemSpriteChunks[] ={
 	120, 131, 105
 };
 
-int CK5_ItemNotifyChunks[] ={
-	232, 232, 232, 232,
-	195, 196, 197, 198, 199, 200,
-	201, 202, 209
-};
-
 
 // Think function for adding gravity
 
@@ -322,7 +316,6 @@ void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
 	obj->gfxChunk = CK5_ItemSpriteChunks[itemNumber] + ca_gfxInfoE.offSprites;
 	obj->user2 = obj->gfxChunk;
 	obj->user3 = obj->gfxChunk + 2;
-	obj->user4 = CK5_ItemNotifyChunks[itemNumber];
 	CK_SetAction(obj, CK_GetActionByName("CK5_act_item") );
 	CA_CacheGrChunk(obj->gfxChunk);
 	CA_CacheGrChunk(obj->gfxChunk + 1);
