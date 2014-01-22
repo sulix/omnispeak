@@ -83,7 +83,7 @@ CK_ACT_ColFunction CK_ACT_GetColFunction(const char *fnName)
 	return fnPtr;
 }
 
-#define CK_ACT_MAXACTIONS 128
+#define CK_ACT_MAXACTIONS 512
 
 STR_Table *ck_actionTable;
 CK_action *ck_actionData;

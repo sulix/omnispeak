@@ -40,7 +40,7 @@ CK_keenState ck_keenState;
 
 void CK_BasicDrawFunc1(CK_object *obj);
 
-CK_action CK_ACT_itemNotify = {0, 0, 1, 0, 0, 40, 0, 8, 0, 0, CK_BasicDrawFunc1, 0};
+CK_action CK_ACT_itemNotify = {0, 0, AT_ScaledOnce, 0, 0, 40, 0, 8, 0, 0, CK_BasicDrawFunc1, 0};
 
 
 void CK_KeenColFunc(CK_object *a, CK_object *b)
@@ -395,7 +395,7 @@ void CK_KeenStandingThink(CK_object *obj)
 	}
 
 	//If not on platform
-	if (!obj->topTI & ~7 == 0x19)
+	if ((obj->topTI & ~7) == 0x18)
 		obj->user1 += CK_GetTicksPerFrame();
 
 	if (obj->user2 == 0 && obj->user1 > 200)
@@ -675,7 +675,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 	{
 		obj->deltaPosY = 0;
 		//Check if deadly.
-		if (obj->topTI & ~7 == 8)
+		if ((obj->topTI & ~7) == 8)
 		{
 			//TODO: Kill Keen
 		}

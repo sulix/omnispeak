@@ -141,19 +141,97 @@
 %action CK5_ACT_turretWait 0 0 UnscaledOnce 0 0 0x78 0 0 NULL NULL NULL CK5_ACT_turretShoot
 %action CK5_ACT_turretShoot 0 0 UnscaledOnce 1 0 1 0 0 CK5_TurretShoot NULL NULL CK5_ACT_turretWait
 
+# ck5_obj2.c
+
+%action CK5_ACT_Sparky0 0x16e 0x175 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_SparkyWait CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_Sparky1
+%action CK5_ACT_Sparky1 0x16f 0x176 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_Sparky2
+%action CK5_ACT_Sparky2 0x170 0x177 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_Sparky3
+%action CK5_ACT_Sparky3 0x171 0x178 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_Sparky0
+%action CK5_ACT_SparkySearch0 0x172 0x172 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch1
+%action CK5_ACT_SparkySearch1 0x173 0x173 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch2
+%action CK5_ACT_SparkySearch2 0x174 0x174 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch3
+%action CK5_ACT_SparkySearch3 0x175 0x175 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 CK5_SparkySearchLeft CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkySearch4
+%action CK5_ACT_SparkySearch4 0x174 0x174 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch5
+%action CK5_ACT_SparkySearch5 0x173 0x174 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch6
+%action CK5_ACT_SparkySearch6 0x172 0x174 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch7
+%action CK5_ACT_SparkySearch7 0x16e 0x175 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 CK5_SparkySearchRight CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_Sparky1
+%action CK5_ACT_SparkyPrepCharge0 0x16e 0x175 UnscaledOnce 0x1 0x1 0x4 0x0 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyPrepCharge1
+%action CK5_ACT_SparkyPrepCharge1 0x16f 0x176 UnscaledOnce 0x1 0x1 0x4 0x0 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyPrepCharge2
+%action CK5_ACT_SparkyPrepCharge2 0x170 0x177 UnscaledOnce 0x1 0x1 0x4 0x0 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyPrepCharge3
+%action CK5_ACT_SparkyPrepCharge3 0x171 0x178 UnscaledOnce 0x1 0x1 0x4 0x0 0x0 CK5_SparkyPrepareCharge CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyPrepCharge0
+%action CK5_ACT_SparkyCharge0 0x16e 0x175 UnscaledOnce 0x1 0x1 0x4 0x80 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyCharge1
+%action CK5_ACT_SparkyCharge1 0x16f 0x176 UnscaledOnce 0x1 0x1 0x4 0x80 0x0 CK5_SparkyCharge0 CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyCharge2
+%action CK5_ACT_SparkyCharge2 0x170 0x177 UnscaledOnce 0x1 0x1 0x4 0x80 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyCharge3
+%action CK5_ACT_SparkyCharge3 0x171 0x178 UnscaledOnce 0x1 0x1 0x4 0x80 0x0 CK5_SparkyCharge1 CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyCharge0
+%action CK5_ACT_SparkyTurn0 0x174 0x172 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkyTurn1
+%action CK5_ACT_SparkyTurn1 0x173 0x173 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkyTurn2
+%action CK5_ACT_SparkyTurn2 0x172 0x174 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_Sparky0
+%action CK5_ACT_SparkyStunned0 0x179 0x179 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+
+# Little Ampton
+%action CK5_ACT_Ampton0 0x19c 0x195 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_AmptonWalk CK5_AmptonCol CK5_AmptonTileCol CK5_ACT_Ampton1
+%action CK5_ACT_Ampton1 0x19d 0x196 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_AmptonWalk CK5_AmptonCol CK5_AmptonTileCol CK5_ACT_Ampton2
+%action CK5_ACT_Ampton2 0x19e 0x197 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_AmptonWalk CK5_AmptonCol CK5_AmptonTileCol CK5_ACT_Ampton3
+%action CK5_ACT_Ampton3 0x19f 0x198 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_AmptonWalk CK5_AmptonCol CK5_AmptonTileCol CK5_ACT_Ampton0
+%action CK5_ACT_AmptonTurn0 0x199 0x199 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_Ampton0
+%action CK5_ACT_AmptonPole0 0x19a 0x19a UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonPole1
+%action CK5_ACT_AmptonPole1 0x19b 0x19b UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonPole2
+%action CK5_ACT_AmptonPole2 0x19b 0x19b ScaledFrame 0x0 0x0 0x0 0x0 0x20 CK5_AmptonPoleClimb CK5_AmptonCol CK_BasicDrawFunc1 NULL
+%action CK5_ACT_AmptonDismount0 0x19b 0x19b UnscaledOnce 0x0 0x0 0x8 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonDismount1
+%action CK5_ACT_AmptonDismount1 0x19a 0x19a UnscaledOnce 0x0 0x0 0x8 0x0 0x0 CK5_AmptonSwitch CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_Ampton0
+%action CK5_ACT_AmptonComp0 0x19a 0x19a UnscaledOnce 0x0 0x1 0xc 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonComp1
+%action CK5_ACT_AmptonComp1 0x19b 0x19b UnscaledOnce 0x0 0x1 0xc 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonComp2
+%action CK5_ACT_AmptonComp2 0x19a 0x19a UnscaledOnce 0x0 0x1 0xc 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonComp3
+%action CK5_ACT_AmptonComp3 0x19b 0x19b UnscaledOnce 0x0 0x1 0xc 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonComp4
+%action CK5_ACT_AmptonComp4 0x19a 0x19a UnscaledOnce 0x0 0x1 0xc 0x0 0x0 CK5_AmptonSwitch CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_Ampton0
+%action CK5_ACT_AmptonStunned0 0x1a0 0x1a0 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+
+# Slice Star
+%action CK5_ACT_Slice0 0x181 0x181 Frame 0x0 0x0 0x0 0x0 0x0 CK5_BlockPlatform CK5_SliceCol CK_BasicDrawFunc1 NULL
+%action CK5_ACT_SliceDiag0 0x181 0x181 ScaledOnce 0x0 0x0 0x0 0x18 0x18 NULL CK5_SliceCol CK5_SliceDiagTileCol CK5_ACT_SliceDiag0
+%action CK5_ACT_SliceDie0 0x182 0x182 UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+
+# Shelly
+%action CK5_ACT_Shelly0 0x1b0 0x1ac UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShellyCol CK5_ShellyGroundTileCol CK5_ACT_Shelly1
+%action CK5_ACT_Shelly1 0x1b1 0x1ad UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShellyCol CK5_ShellyGroundTileCol CK5_ACT_Shelly2
+%action CK5_ACT_Shelly2 0x1b2 0x1ae UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShellyCol CK5_ShellyGroundTileCol CK5_ACT_Shelly3
+%action CK5_ACT_Shelly3 0x1b3 0x1af UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShellyCol CK5_ShellyGroundTileCol CK5_ACT_Shelly0
+%action CK5_ACT_ShellyWait0 0x1b1 0x1ad UnscaledFrame 0x0 0x1 0x64 0x0 0x0 CK5_ShellyWait CK5_ShellyCol CK_BasicDrawFunc1 CK5_ACT_ShellyWait1
+%action CK5_ACT_ShellyWait1 0x1b1 0x1ad UnscaledOnce 0x1 0x1 0x1 0x0 0x0 CK5_ShellyStartJump CK5_ShellyCol CK_BasicDrawFunc1 CK5_ACT_Shelly0
+%action CK5_ACT_ShellyDive0 0x1b6 0x1b4 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK5_ShellyCol CK5_ShellyAirTileCol CK5_ACT_ShellyDive1
+%action CK5_ACT_ShellyDive1 0x1b7 0x1b5 Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK5_ShellyCol CK5_ShellyAirTileCol NULL
+%action CK5_ACT_ShellyDieAir 0x1b7 0x1b5 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 CK5_SpawnShellyBits NULL CK5_ShellyAirTileCol NULL
+%action CK5_ACT_ShellyDieGround 0x1b1 0x1ad UnscaledOnce 0x0 0x0 0x8 0x0 0x0 CK5_SpawnShellyBits NULL CK5_ShellyAirTileCol NULL
+%action CK5_ACT_ShellyExplode0 0x1b8 0x1b8 UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_ShellyExplode1
+%action CK5_ACT_ShellyExplode1 0x1b9 0x1b9 UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_ShellyExplode2
+%action CK5_ACT_ShellyExplode2 0x1ba 0x1ba UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_ShellyExplode3
+%action CK5_ACT_ShellyExplode3 0x1bb 0x1bb UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 NULL
+%action CK5_ACT_ShellyBits0 0x1bc 0x1bc Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK_DeadlyCol CK5_ShrapnelTileCol NULL
+%action CK5_ACT_ShellyBits1 0x1bd 0x1bd Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK_DeadlyCol CK5_ShrapnelTileCol NULL
+
 # ck5_obj3.c
 
-# ShikadiMine
-%action CK5_ACT_Mine0 0x17A 0x17A Frame 0x0 0x0 0x8 0x0 0x0 CK5_MineMove CK5_MineSprCol CK5_MineTileCol NULL
-%action CK5_ACT_Mine1 0x17A 0x17A Frame 0x0 0x0 0x0 0x0 0x0 CK5_MineMoveDotsToCenter CK5_MineSprCol CK5_MineTileCol CK5_ACT_Mine2
-%action CK5_ACT_Mine2 0x17A 0x17A Frame 0x0 0x0 0x0 0x0 0x0 CK5_MineMoveDotsToSides CK5_MineSprCol CK5_MineTileCol CK5_ACT_Mine0
-%action CK5_ACT_MineExplode0 0x17C 0x17C UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineSprCol CK_BasicDrawFunc1 CK5_ACT_MineExplode1
-%action CK5_ACT_MineExplode1 0x17D 0x17D UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineSprCol CK_BasicDrawFunc1 CK5_ACT_MineExplode2
-%action CK5_ACT_MineExplode2 0x17C 0x17C UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineSprCol CK_BasicDrawFunc1 CK5_ACT_MineExplode3
-%action CK5_ACT_MineExplode3 0x17D 0x17D UnscaledOnce 0x0 0x0 0xa 0x0 0x0 CK5_MineExplode CK5_MineSprCol CK_BasicDrawFunc1 CK5_ACT_MineExplode4
+# Shikadi Mine
+%action CK5_ACT_Mine0 0x17A 0x17A Frame 0x0 0x0 0x8 0x0 0x0 CK5_MineMove CK5_MineCol CK5_MineTileCol NULL
+%action CK5_ACT_Mine1 0x17A 0x17A Frame 0x0 0x0 0x0 0x0 0x0 CK5_MineMoveDotsToCenter CK5_MineCol CK5_MineTileCol CK5_ACT_Mine2
+%action CK5_ACT_Mine2 0x17A 0x17A Frame 0x0 0x0 0x0 0x0 0x0 CK5_MineMoveDotsToSides CK5_MineCol CK5_MineTileCol CK5_ACT_Mine0
+%action CK5_ACT_MineExplode0 0x17C 0x17C UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineCol CK_BasicDrawFunc1 CK5_ACT_MineExplode1
+%action CK5_ACT_MineExplode1 0x17D 0x17D UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineCol CK_BasicDrawFunc1 CK5_ACT_MineExplode2
+%action CK5_ACT_MineExplode2 0x17C 0x17C UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineCol CK_BasicDrawFunc1 CK5_ACT_MineExplode3
+%action CK5_ACT_MineExplode3 0x17D 0x17D UnscaledOnce 0x0 0x0 0xa 0x0 0x0 CK5_MineExplode CK5_MineCol CK_BasicDrawFunc1 CK5_ACT_MineExplode4
 %action CK5_ACT_MineExplode4 0x17E 0x17E UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_MineExplode5
 %action CK5_ACT_MineExplode5 0x17F 0x17F UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 NULL
-%action CK5_ACT_MineShrap0 0x180 0x180 Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK5_MineShrapSprCol CK5_ShrapnelTileCol NULL
+%action CK5_ACT_MineShrap0 0x180 0x180 Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK5_MineShrapCol CK5_ShrapnelTileCol NULL
+
+#Robo Red
+%action CK5_ACT_Robo0 0x184 0x183 UnscaledOnce 0x0 0x1 0x6 0x40 0x0 CK5_RoboMove CK5_RoboCol CK_BasicDrawFunc2 CK5_ACT_Robo0
+%action CK5_ACT_RoboShoot0 0x184 0x183 UnscaledOnce 0x1 0x1 0x28 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_RoboShoot1
+%action CK5_ACT_RoboShoot1 0x184 0x183 UnscaledOnce 0x1 0x1 0x4 0x40 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_RoboShoot2
+%action CK5_ACT_RoboShoot2 0x184 0x183 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 CK5_RoboShoot CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_RoboShoot1
+%action CK5_ACT_RoboShot0 0x185 0x185 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Glide CK5_RoboShotCol CK5_RoboShotTileCol CK5_ACT_RoboShot1
+%action CK5_ACT_RoboShot1 0x186 0x186 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Glide CK5_RoboShotCol CK5_RoboShotTileCol CK5_ACT_RoboShot0
+%action CK5_ACT_RoboShotHit0 0x187 0x187 UnscaledOnce 0x0 0x0 0xA 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_RoboShotHit1
+%action CK5_ACT_RoboShotHit1 0x188 0x188 UnscaledOnce 0x0 0x0 0xA 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
 
 # Spirogrip
 %action CK5_ACT_SpirogripSpin1 0x193 0x193 UnscaledOnce 0 0 8 0 0 CK5_SpirogripSpin CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin2
@@ -180,9 +258,77 @@
 %action CK5_ACT_SpirogripReleaseLeft 0x18A 0x18A ScaledOnce 0 0 64 -16 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin8
 %action CK5_ACT_SpirogripReleaseUp 0x18B 0x18B ScaledOnce 0 0 64 0 16 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin2
 
+
+
+# Spindred
+%action CK5_ACT_Spindred0 0x1a8 0x1a8 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_SpindredBounce CK_DeadlyCol CK5_SpindredTileCol CK5_ACT_Spindred1
+%action CK5_ACT_Spindred1 0x1a9 0x1a9 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_SpindredBounce CK_DeadlyCol CK5_SpindredTileCol CK5_ACT_Spindred2
+%action CK5_ACT_Spindred2 0x1aa 0x1aa UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_SpindredBounce CK_DeadlyCol CK5_SpindredTileCol CK5_ACT_Spindred3
+%action CK5_ACT_Spindred3 0x1ab 0x1ab UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_SpindredBounce CK_DeadlyCol CK5_SpindredTileCol CK5_ACT_Spindred0
+
+# Shikadi Master
+%action CK5_ACT_Master0 0x130 0x130 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 NULL CK5_MasterCol CK_BasicDrawFunc1 CK5_ACT_Master1
+%action CK5_ACT_Master1 0x131 0x131 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 NULL CK5_MasterCol CK_BasicDrawFunc1 CK5_ACT_Master2
+%action CK5_ACT_Master2 0x132 0x132 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 NULL CK5_MasterCol CK_BasicDrawFunc1 CK5_ACT_Master3
+%action CK5_ACT_Master3 0x133 0x133 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 CK5_MasterStand CK5_MasterCol CK_BasicDrawFunc1 CK5_ACT_Master0
+%action CK5_ACT_MasterShoot0 0x137 0x136 UnscaledOnce 0x0 0x0 0x1e 0x0 0x0 CK5_MasterShoot CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_MasterShoot1
+%action CK5_ACT_MasterShoot1 0x137 0x136 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_Master0
+%action CK5_ACT_MasterTele0 0x134 0x134 UnscaledOnce 0x0 0x1 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_MasterTele1
+%action CK5_ACT_MasterTele1 0x135 0x135 UnscaledOnce 0x0 0x1 0x14 0x0 0x0 CK5_MasterTele CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_MasterTele2
+%action CK5_ACT_MasterTele2 0x135 0x135 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK5_MasterTeleTileCol CK5_ACT_MasterTele3
+%action CK5_ACT_MasterTele3 0x135 0x135 UnscaledOnce 0x0 0x0 0x3c 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_Master0
+%action CK5_ACT_MasterBall0 0x13f 0x13c UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Fall2 CK5_MasterBallCol CK5_MasterBallTileCol CK5_ACT_MasterBall1
+%action CK5_ACT_MasterBall1 0x13e 0x13d UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Fall2 CK5_MasterBallCol CK5_MasterBallTileCol CK5_ACT_MasterBall2
+%action CK5_ACT_MasterBall2 0x13d 0x13e UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Fall2 CK5_MasterBallCol CK5_MasterBallTileCol CK5_ACT_MasterBall3
+%action CK5_ACT_MasterBall3 0x13c 0x13f UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Fall2 CK5_MasterBallCol CK5_MasterBallTileCol CK5_ACT_MasterBall0
+%action CK5_ACT_MasterSparks0 0x138 0x138 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK_Fall CK5_MasterBallCol CK5_MasterSparksTileCol CK5_ACT_MasterSparks1
+%action CK5_ACT_MasterSparks1 0x139 0x139 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK_Fall CK5_MasterBallCol CK5_MasterSparksTileCol CK5_ACT_MasterSparks2
+%action CK5_ACT_MasterSparks2 0x13a 0x13a UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK_Fall CK5_MasterBallCol CK5_MasterSparksTileCol CK5_ACT_MasterSparks3
+%action CK5_ACT_MasterSparks3 0x13b 0x13b UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK_Fall CK5_MasterBallCol CK5_MasterSparksTileCol CK5_ACT_MasterSparks0
+
+# Shikadi
+%action CK5_ACT_ShikadiStand0 0x140 0x140 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiStand1
+%action CK5_ACT_ShikadiStand1 0x141 0x141 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiStand2
+%action CK5_ACT_ShikadiStand2 0x142 0x142 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiStand3
+%action CK5_ACT_ShikadiStand3 0x143 0x143 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk0
+%action CK5_ACT_ShikadiWalk0 0x14c 0x148 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_ShikadiWalk CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk1
+%action CK5_ACT_ShikadiWalk1 0x14d 0x149 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_ShikadiWalk CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk2
+%action CK5_ACT_ShikadiWalk2 0x14e 0x14a UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_ShikadiWalk CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk3
+%action CK5_ACT_ShikadiWalk3 0x14f 0x14b UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_ShikadiWalk CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk0
+%action CK5_ACT_ShikadiPole0 0x145 0x144 UnscaledOnce 0x0 0x1 0x14 0x0 0x0 CK5_ShikadiPole CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiPole1
+%action CK5_ACT_ShikadiPole1 0x145 0x144 UnscaledOnce 0x0 0x1 0x14 0x0 0x0 NULL CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk0
+%action CK5_ACT_ShikadiStun0 0x150 0x150 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+%action CK5_ACT_PoleZap0 0x146 0x146 UnscaledFrame 0x0 0x0 0x0 0x0 0x0 CK5_PoleZap CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_PoleZap1
+%action CK5_ACT_PoleZap1 0x146 0x146 UnscaledFrame 0x0 0x0 0x0 0x0 0x0 CK5_PoleZap CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_PoleZap0
+
+# Shocksund
+%action CK5_ACT_ShocksundStand0 0x151 0x151 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_ShocksundStand1
+%action CK5_ACT_ShocksundStand1 0x152 0x152 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 CK5_ShocksundStand CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_ShocksundStand0
+%action CK5_ACT_ShocksundShoot0 0x15f 0x15d UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_ShocksundShoot1
+%action CK5_ACT_ShocksundShoot1 0x160 0x15e UnscaledOnce 0x0 0x1 0x8 0x0 0x0 CK5_ShocksundShoot CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund0
+%action CK5_ACT_Shocksund0 0x157 0x153 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund1
+%action CK5_ACT_Shocksund1 0x158 0x154 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund2
+%action CK5_ACT_Shocksund2 0x159 0x155 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund3
+%action CK5_ACT_Shocksund3 0x15a 0x156 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_ShocksundSearch CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund0
+%action CK5_ACT_ShocksundJump0 0x15b 0x15c Frame 0x0 0x0 0x8 0x80 0x0 CK_Fall CK5_ShocksundCol CK5_ShocksundJumpTileCol CK5_ACT_Shocksund1
+%action CK5_ACT_BarkShot0 0x162 0x162 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_Glide CK5_BarkShotCol CK5_BarkShotTileCol CK5_ACT_BarkShot1
+%action CK5_ACT_BarkShot1 0x163 0x163 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_Glide CK5_BarkShotCol CK5_BarkShotTileCol CK5_ACT_BarkShot0
+%action CK5_ACT_BarkShotDie0 0x164 0x164 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_BarkShotDie1
+%action CK5_ACT_BarkShotDie1 0x165 0x165 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+%action CK5_ACT_Shocksundstun0 0x161 0x161 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+
+# Sphereful
+%action CK5_ACT_Sphereful0 0x166 0x166 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK5_SpherefulBounce CK_DeadlyCol CK5_SpherefulTileCol CK5_ACT_Sphereful1
+%action CK5_ACT_Sphereful1 0x167 0x167 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK5_SpherefulBounce CK_DeadlyCol CK5_SpherefulTileCol CK5_ACT_Sphereful2
+%action CK5_ACT_Sphereful2 0x168 0x168 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK5_SpherefulBounce CK_DeadlyCol CK5_SpherefulTileCol CK5_ACT_Sphereful3
+%action CK5_ACT_Sphereful3 0x169 0x169 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK5_SpherefulBounce CK_DeadlyCol CK5_SpherefulTileCol CK5_ACT_Sphereful0
+
 # Koraths
 %action CK5_ACT_KorathWalk1 0x126 0x12A UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK5_KorathDraw CK5_ACT_KorathWalk2
 %action CK5_ACT_KorathWalk2 0x127 0x12B UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK5_KorathDraw CK5_ACT_KorathWalk3
 %action CK5_ACT_KorathWalk3 0x128 0x12C UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK5_KorathDraw CK5_ACT_KorathWalk4
 %action CK5_ACT_KorathWalk4 0x129 0x12D UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK5_KorathDraw CK5_ACT_KorathWalk1
 %action CK5_ACT_KorathWait 0x12E 0x12E UnscaledOnce 0 1 0x1E 0 0 NULL NULL CK5_KorathDraw CK5_ACT_KorathWalk1
+
+#QED
+%action CK5_ACT_QED -1 -1 UnscaledOnce 0 1 8 0x80 0 NULL NULL NULL CK5_ACT_QED

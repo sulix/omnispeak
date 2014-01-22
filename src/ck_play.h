@@ -22,6 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdbool.h>
 
+extern int ck_activeX0Tile;
+extern int ck_activeY0Tile;
+extern int ck_activeX1Tile;
+extern int ck_activeY1Tile;
+
 struct CK_object;
 
 // Timing

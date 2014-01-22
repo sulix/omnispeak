@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_ep.h"
 
 /*
- * Contains definitions relevent only to Keen 5
+ * Contains definitions relevant only to Keen 5
  */
 extern CK_Episode ck5_episode;
 
@@ -39,6 +39,7 @@ void CK5_ScanInfoLayer();
 /* Spawning functions */
 
 /* ck5_misc.c */
+CK_object *CK5_SpawnEnemyShot(int posX, int posY, CK_action *action);
 void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple);
 void CK5_SpawnItem(int tileX, int tileY, int itemNumber);
 
@@ -46,6 +47,8 @@ void CK5_SpawnItem(int tileX, int tileY, int itemNumber);
 void CK5_TurretSpawn(int tileX, int tileY, int direction);
 
 /* ck5_obj3.c */
+void CK5_SpawnMine(int tileX, int tileY);
+void CK5_SpawnRobo(int tileX, int tileY);
 void CK5_SpawnSpirogrip(int tileX, int tileY);
 void CK5_SpawnKorath(int tileX, int tileY);
 #endif
