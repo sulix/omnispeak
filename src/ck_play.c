@@ -625,23 +625,29 @@ void CK_NormalCamera(CK_object *obj)
 
 	// If we're attached to the ground, or otherwise awesome
 	// do somethink inscrutible.
-	if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_KeenHang1"))
+	if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_keenHang1"))
 	{
-		deltaY += obj->deltaPosY;
-
-		//TODO: Something hideous
-		if ((screenYpx << 4) + rf_scrollYUnit + deltaY !=  (obj->clipRects.unitY2))
+		if (obj->currentAction != CK_GetActionByName("CK_ACT_keenPull1") &&
+			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull2") &&
+			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull3") &&
+			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull4"))
 		{
-			int adjAmt = (((screenYpx << 4) + rf_scrollYUnit + deltaY - obj->clipRects.unitY2));
-			int adjAmt2 = abs(adjAmt / 8);
+			deltaY += obj->deltaPosY;
 
-			adjAmt2 = (adjAmt2 <= 48)?adjAmt2:48;
-			
-			if (adjAmt > 0)
-				deltaY -= adjAmt2;
-			else
-				deltaY += adjAmt2;
-			
+			//TODO: Something hideous
+			if ((screenYpx << 4) + rf_scrollYUnit + deltaY !=  (obj->clipRects.unitY2))
+			{
+				int adjAmt = (((screenYpx << 4) + rf_scrollYUnit + deltaY - obj->clipRects.unitY2));
+				int adjAmt2 = abs(adjAmt / 8);
+
+				adjAmt2 = (adjAmt2 <= 48)?adjAmt2:48;
+				
+				if (adjAmt > 0)
+					deltaY -= adjAmt2;
+				else
+					deltaY += adjAmt2;
+				
+			}
 		}
 				
 	}
