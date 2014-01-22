@@ -26,54 +26,54 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //TODO: Split this up into several arrays? That would probably be _very_ smart.
 uint8_t *ti_tileInfo;
 
-int8_t TI_BackAnimTile(int tile)
+int8_t TI_BackAnimTile(uint16_t tile)
 {
 	const int index = tile + ca_gfxInfoE.numTiles16;
 	return ti_tileInfo[index];
 }
 
-uint8_t TI_BackAnimTime(int tile)
+uint8_t TI_BackAnimTime(uint16_t tile)
 {
 	return ti_tileInfo[tile];
 }
 
-uint8_t TI_ForeTop(int tile)
+uint8_t TI_ForeTop(uint16_t tile)
 {
 	const int index = tile + ca_gfxInfoE.numTiles16*2;
 	return ti_tileInfo[index];
 }
 
-uint8_t TI_ForeBottom(int tile)
+uint8_t TI_ForeBottom(uint16_t tile)
 {
 	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m*2;
 	return ti_tileInfo[index];
 }
 
-uint8_t TI_ForeLeft(int tile)
+uint8_t TI_ForeLeft(uint16_t tile)
 {
 	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m*3;
 	return ti_tileInfo[index];
 }
 
-uint8_t TI_ForeRight(int tile)
+uint8_t TI_ForeRight(uint16_t tile)
 {
 	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m;
 	return ti_tileInfo[index];
 }
 
-uint8_t TI_ForeMisc(int tile)
+uint8_t TI_ForeMisc(uint16_t tile)
 {
 	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m*5;
 	return ti_tileInfo[index];
 }
 
-int8_t TI_ForeAnimTile(int tile)
+int8_t TI_ForeAnimTile(uint16_t tile)
 {
 	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m*4;
 	return ti_tileInfo[index];
 }
 
-uint8_t TI_ForeAnimTime(int tile)
+uint8_t TI_ForeAnimTime(uint16_t tile)
 {
 	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m*6;
 	return ti_tileInfo[index];

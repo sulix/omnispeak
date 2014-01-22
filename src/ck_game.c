@@ -72,7 +72,9 @@ void CK_LoadLevel(bool unknown)
 		US_InitRndT(true);
 	}
 
-	//TODO: Put this in the right place.
+	//TODO: Put these in the right place.
+	ck_gameState.nextKeenAt = 20000;
+	ck_gameState.numLives = 3;
 	ck_gameState.numShots = 5;
 	
 	CA_CacheMap(ck_currentMapNumber);

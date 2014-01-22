@@ -93,8 +93,10 @@ typedef struct CK_GameState
 						// 5 - ???
 						// 6 - ???
 						// 15 - Destroyed QED (Keen 5)
-	int numShots;
-
+	int16_t numShots;
+	int32_t keenScore;			// Keen's score. (This _is_ signed, by the looks of all the 'jl' instructions)
+	int32_t nextKeenAt;			// Score keen will get a new life at.
+	int16_t numLives;			// Number of lives keen has.
 	bool jumpCheat;				// Is the jump cheat enabled?
 } CK_GameState;
 

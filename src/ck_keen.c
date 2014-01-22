@@ -79,6 +79,18 @@ int ck_KeenRunXVels[8] = {0, 0, 4, 4, 8, -4, -4, -8};
 int ck_KeenPoleOffs[3] = {-8, 0, 8};
 
 
+void CK_IncreaseScore(int score)
+{
+	ck_gameState.keenScore += score;
+	if (ck_demoEnabled) return;
+	if (ck_gameState.keenScore > ck_gameState.nextKeenAt)
+	{
+		SD_PlaySound(SOUND_GOTEXTRALIFE);
+		ck_gameState.numLives++;
+		ck_gameState.nextKeenAt *= 2;
+	}	
+}
+
 void CK_SpawnKeen(int tileX, int tileY, int direction)
 {
 	ck_keenObj->type = 0; //TODO: obj_keen
@@ -100,7 +112,7 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 	RF_ReplaceTiles(&emptyTile, 1, tileX, tileY, 1, 1);
 	SD_PlaySound(CK5_ItemSounds[itemNumber]);
 
-	//TODO: Points
+	CK_IncreaseScore(CK5_ItemPoints[itemNumber]);
 	
 	if (itemNumber == 11)
 	{
@@ -168,6 +180,48 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 		}
 	}
 }
+
+bool CK_KeenPressUp(CK_object *obj)
+{
+	uint8_t tileMiscFlag = TI_ForeMisc(CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY1, 1));
+
+	// Are we pressing a switch?
+	// TODO: Implement	
+	// Are we enterting a door?
+	// TODO: Implement
+	// No? Return to our caller, who will handle poles/looking up.
+	
+	return false;
+}
+	
+// Think function for keen "sliding" towards a switch, keygem or door.
+void CK_KeenSlide(CK_object *obj)
+{
+	int16_t deltaX = obj->user1 - obj->posX;
+	if (deltaX < 0)
+	{
+		// Move left one px per tick.
+		obj->nextX -= CK_GetTicksPerFrame() * 16;
+		// If we're not at our target yet, return.
+		if (obj->nextX > deltaX) return;
+	}
+	else
+	{
+		// Move right one px per tick.
+		obj->nextX += CK_GetTicksPerFrame() * 16;
+		// If we're not at our target yet, return.
+		if (obj->nextX < deltaX) return;
+	}
+
+	// We're at our target.
+	obj->nextX = deltaX;
+	obj->user1 = 0;
+	if (!CK_KeenPressUp(obj))
+	{
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
+	}
+}
+
 
 void CK_KeenRidePlatform(CK_object *obj)
 {
@@ -1347,6 +1401,7 @@ void CK_KeenFall(CK_object *obj)
 
 void CK_KeenSetupFunctions()
 {
+	CK_ACT_AddFunction("CK_KeenSlide",&CK_KeenSlide);
 	CK_ACT_AddFunction("CK_KeenRunningThink",&CK_KeenRunningThink);
 	CK_ACT_AddFunction("CK_KeenStandingThink",&CK_KeenStandingThink);
 	CK_ACT_AddFunction("CK_HandleInputOnGround",&CK_HandleInputOnGround);
