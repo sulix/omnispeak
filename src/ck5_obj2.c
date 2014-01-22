@@ -105,7 +105,7 @@ void CK5_SparkyCol(CK_object *obj1, CK_object *obj2)
 	}
 	else if (obj2->type == CT_Stunner)
 	{
-		//StunCreature(obj1, obj2, CK_GetActionByName("CK5_ACT_SparkyStunned0"));
+		CK_StunCreature(obj1, obj2, CK_GetActionByName("CK5_ACT_SparkyStunned0"));
 	}
 }
 
