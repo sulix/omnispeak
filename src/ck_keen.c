@@ -1202,7 +1202,7 @@ void CK_SpawnShot(int x, int y, int direction)
 	shot->posX = x;
 	shot->posY = y;
 	shot->zLayer = 0;
-	shot->type = 4; // TODO: obj_stunner
+	shot->type = CT_Stunner; // TODO: obj_stunner
 	shot->active = true;
 
 	SD_PlaySound(SOUND_KEENSHOOT);

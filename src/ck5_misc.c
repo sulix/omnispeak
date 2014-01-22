@@ -135,11 +135,12 @@ void CK_BasicDrawFunc4(CK_object *obj)
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 
 
-	// Draw the stunner stars
+	// Draw the stunner stars, offset based on the initial type of the stunned
+	// critter
 
 	starsX = starsY = 0;
 
-	switch (obj->type)
+	switch (obj->user4)
 	{
 	case CT_Sparky:
 		starsX += 0x40;
@@ -153,15 +154,31 @@ void CK_BasicDrawFunc4(CK_object *obj)
 	}
 
 	// Tick the star 3-frame animation forward
-	if (obj->user1 += CK_GetTicksPerFrame() > 10)
+	if ((obj->user1 += CK_GetTicksPerFrame()) > 10)
 	{
 		obj->user1 -= 10;
-		if (++obj->user2 > 3)
+		if (++obj->user2 >= 3)
 			obj->user2 = 0;
 	}
 
 	// FIXME: Will cause problems on 64-bit systems
 	RF_AddSpriteDraw((RF_SpriteDrawEntry**) (&obj->user3), obj->posX + starsX, obj->posY + starsY, obj->user2 + 143, false, 3);
+}
+
+void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act) 
+{
+	// Kill the stunner shot
+	CK_ShotHit(stunner);
+
+	// Set stunned creature action
+	creature->user1 = creature->user2 = creature->user3 = 0;
+	creature->user4 = creature->type;
+	CK_SetAction2(creature, new_creature_act);
+	creature->type = CT_StunnedCreature;
+
+	// Make the creature jump up a bit
+	if ((creature->velY -= 0x18) < -0x30)
+		creature->velY = -0x30;
 }
 
 void CK5_PointItem(CK_object *obj)
