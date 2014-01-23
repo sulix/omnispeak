@@ -724,6 +724,11 @@ uint16_t CA_TileAtPos(int x, int y, int plane)
 	return CA_mapPlanes[plane][y*CA_MapHeaders[ck_currentMapNumber]->width+x];
 }
 
+void CA_SetTileAtPos(int x, int y, int plane, int value)
+{
+	CA_mapPlanes[plane][y*CA_MapHeaders[ck_currentMapNumber]->width+x] = value;
+}
+
 uint16_t CA_GetMapWidth() 
 {
 	return CA_MapHeaders[ck_currentMapNumber]->width;

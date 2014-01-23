@@ -514,6 +514,13 @@ void CK5_ScanInfoLayer()
 				CK5_SpawnItem(x, y, infoValue - 58); // Omegamatic Keycard
 				break;
 
+			case 73:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 72:
+				if (ck_gameState.difficulty < D_Normal) break;
+			case 71:
+				CK5_SpawnVolte(x, y);
+				break;
 
 			case 76:
 				if (ck_gameState.difficulty < D_Hard) break;

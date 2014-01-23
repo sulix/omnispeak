@@ -131,6 +131,14 @@
 
 # ck5_obj1.c
 
+# VolteFaces
+%action	CK5_ACT_Volte0 0x1A1 0x1A1 UnscaledFrame 0 0 6	0 0 CK5_VolteMove CK5_VolteCol CK_BasicDrawFunc1 CK5_ACT_Volte1 
+%action	CK5_ACT_Volte1 0x1A2 0x1A2 UnscaledFrame 0 0 6	0 0 CK5_VolteMove CK5_VolteCol CK_BasicDrawFunc1 CK5_ACT_Volte2
+%action	CK5_ACT_Volte2 0x1A3 0x1A3 UnscaledFrame 0 0 6	0 0 CK5_VolteMove CK5_VolteCol CK_BasicDrawFunc1 CK5_ACT_Volte3
+%action	CK5_ACT_Volte3 0x1A4 0x1A4 UnscaledFrame 0 0 6	0 0 CK5_VolteMove CK5_VolteCol CK_BasicDrawFunc1 CK5_ACT_Volte0
+%action	CK5_ACT_VolteStunned  0x1A5 0x1A5	UnscaledOnce 0 0 0x12C 0 0 NULL	NULL CK_BasicDrawFunc1 CK5_ACT_Volte0
+
+
 # Turret Shots
 %action CK5_ACT_turretShot1 0xEC 0xEC UnscaledFrame 0 0 8 0 0 CK5_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot2
 %action CK5_ACT_turretShot2 0xED 0xED UnscaledFrame 0 0 8 0 0 CK5_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot3

@@ -398,6 +398,161 @@ void CK5_PurpleGoPlatThink(CK_object *obj)
 	}
 }
 
+void CK5_SpawnVolte(int tileX, int tileY) 
+{
+
+	int dir;
+
+	CK_object *new_object = CK_GetNewObj(false);
+	new_object->type = CT_Volte;
+	new_object->active = OBJ_ALWAYS_ACTIVE;
+	new_object->zLayer = 0;
+	new_object->posX = tileX << 8;
+	new_object->posY = tileY << 8;
+	new_object->clipped = CLIP_not;
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Volte0"));
+
+	// Initialize Volte Direction
+	// (Vanilla keen does this with far pointer arithmetic)
+	if (CA_TileAtPos(tileX-1, tileY, 2) == 0x5C)
+		dir = 1;
+	else if (CA_TileAtPos(tileX+1, tileY, 2) == 0x5E)
+		dir = 3;
+	else if (CA_TileAtPos(tileX, tileY-1, 2) == 0x5D)
+		dir = 2;
+	else if (CA_TileAtPos(tileX, tileY+1, 2) == 0x5B)
+		dir = 0;
+	else
+		Quit ("Volte spawned at bad spot!");  // Not present in vanilla keen
+
+	CA_SetTileAtPos(tileX, tileY, 2, dir + 0x5B);
+	new_object->user1 = dir;
+	new_object->user2 = 0x100;
+}
+
+
+// This is very similar to the GoPlat function
+// The only difference is the increased speed and the error message
+void CK5_VolteMove(CK_object *obj) 
+{
+
+	if (obj->nextX || obj->nextY) return;
+
+	int delta = CK_GetTicksPerFrame()*32;
+
+	// Will we reach a new tile?
+	if (obj->user2 > delta)
+	{
+		// No... keep moving in the same direction.
+		obj->user2 -= delta;
+
+		int dirX = ck5_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			obj->nextX += delta;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			obj->nextX -= delta;
+		}
+
+		int dirY = ck5_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			obj->nextY += delta;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			obj->nextY -= delta;
+		}
+	}
+	else
+	{
+		// Move to next tile.
+		int dirX = ck5_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			obj->nextX += obj->user2;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			obj->nextX -= obj->user2;
+		}
+
+		int dirY = ck5_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			obj->nextY += obj->user2;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			obj->nextY -= obj->user2;
+		}
+
+		int tileX = (obj->posX + obj->nextX) >> 8;
+		int tileY = (obj->posY + obj->nextY) >> 8;
+
+		obj->user1 = CA_TileAtPos(tileX, tileY, 2) - 0x5B;
+
+		if ((obj->user1 < 0) || (obj->user1 > 8))
+		{
+			// TODO: Add printf style variable arg list to Quit()
+			// and add the offending tile here
+			Quit("Volte moved to a bad spot");
+		}
+
+		delta -= obj->user2;
+		obj->user2 = 256 - delta;
+
+		// Move in the new direction.
+		dirX = ck5_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			obj->nextX += delta;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			obj->nextX -= delta;
+		}
+
+		dirY = ck5_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			obj->nextY += delta;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			obj->nextY -= delta;
+		}
+	}
+}
+
+void CK5_VolteCol(CK_object *volte, CK_object *other) 
+{
+
+	if (other->type == CT_Player) 
+	{
+		//KeenDie();
+	}
+	else if (other->type == CT_Stunner) 
+	{ //stunner
+		CK_ShotHit(other);
+		CK_SetAction2(volte, CK_GetActionByName("CK5_ACT_VolteStunned"));
+	}
+}
+
 /*
  * Setup all of the functions in this file.
  */
@@ -410,4 +565,8 @@ void CK5_Obj1_SetupFunctions()
 	CK_ACT_AddFunction("CK5_SneakPlatThink", &CK5_SneakPlatThink);
 	CK_ACT_AddFunction("CK5_RedGoPlatThink", &CK5_RedGoPlatThink);
 	CK_ACT_AddFunction("CK5_PurpleGoPlatThink", &CK5_PurpleGoPlatThink);
+	
+	// VolteFace
+	CK_ACT_AddFunction("CK5_VolteMove", &CK5_VolteMove);
+	CK_ACT_AddColFunction("CK5_VolteCol", &CK5_VolteCol);
 }

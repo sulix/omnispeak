@@ -72,6 +72,7 @@ typedef enum CK_ClassType {
   CT_SliceStar = 11,
   CT_Robo = 12,
   CT_Ampton = 14,
+	CT_Volte = 16,
 	CT_Spindred = 18,
 	CT_Master = 19,
 	CT_Shikadi = 20,
