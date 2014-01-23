@@ -310,22 +310,18 @@ void CK5_AmptonSwitch(CK_object *obj)
 void CK5_AmptonCol(CK_object *obj1, CK_object *obj2)
 {
 
-#if 0
-	if (obj2->type == 2 && obj1->currentAction == CK_GetActionByName("CK5_ACT_AMPTONPOLE2"))
+	if (obj2->type == CT_Player && obj1->currentAction == CK_GetActionByName("CK5_ACT_AmptonPole2"))
 	{
-		KeenDie();
-		return;
+		//KeenDie();
 	}
-	else if (obj2->type == 3)
+	else if (obj2->type == CT_Stunner)
 	{
-		obj1->clipped = 1;
+		obj1->clipped = CLIP_normal;
 		obj1->yDirection = IN_motion_Down;
 		obj1->velY = 0;
 		SD_PlaySound(SOUND_AMPTONSTUN);
-		StunCreature(obj1, CK_GetActionByName("CK5_ACT_AMPTONSTUN0"));
+		CK_StunCreature(obj1, obj2, CK_GetActionByName("CK5_ACT_AmptonStunned0"));
 	}
-	return;
-#endif
 }
 
 void CK5_AmptonTileCol(CK_object *obj)
@@ -550,18 +546,23 @@ void CK5_SpawnShellyBits(CK_object *obj)
 void CK5_ShellyCol(CK_object *obj1, CK_object *obj2)
 {
 
-#if 0
-	if (obj2->type == OBJ_KEEN)
+	CK_object *new_object;
+
+	// Player, Stunners, and Enemy shots destroy shelly
+	if (obj2->type == CT_Player)
 	{
-		CK_PhysPushX(obj1, obj2)
-			//don't detonate if not inside shelley
-		if (ck_keenObj->clipRects.unitXmid < obj1->clipRects.unitX1 || ck_keenObj->clipRects.unitXmid > obj1->clipRects.unitX2) return;
+		CK_PhysPushX(obj2, obj1);
+		//don't detonate if not inside shelley
+		if (ck_keenObj->clipRects.unitXmid < obj1->clipRects.unitX1 || ck_keenObj->clipRects.unitXmid > obj1->clipRects.unitX2) 
+		{
+			return;
+		}
 	}
-	else if (obj2->type == OBJ_STUNNER)
+	else if (obj2->type == CT_Stunner)
 	{
-		StunnerHits(obj2);
+		CK_ShotHit(obj2);
 	}
-	else if (obj2->type == 4)
+	else if (obj2->type == CT_EnemyShot)
 	{
 		CK_RemoveObj(obj2);
 	}
@@ -569,16 +570,20 @@ void CK5_ShellyCol(CK_object *obj1, CK_object *obj2)
 	{
 		return;
 	}
+
 	// destroy old shelly and spawn explosion
 	SD_PlaySound(SOUND_SHELLYEXPLODE);
-	if (!obj->topTI) CK_SetAction2(o, CK_GetActionByName("CK5_ACT_SHELLYDIEAIR"));
-	else CK_SetAction2(o, CK_GetActionByName("CK5_ACT_SHELLYDIEGROUND"));
-	CK_GetNewObj(1);
-	new_object->posX = obj->posX;
-	new_object->posY = obj->posY;
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_SHELLYEXPLODE0"));
-	return;
-#endif
+	if (!obj1->topTI)
+		CK_SetAction2(obj1, CK_GetActionByName("CK5_ACT_ShellyDieAir"));
+	else
+		CK_SetAction2(obj1, CK_GetActionByName("CK5_ACT_ShellyDieGround"));
+
+	if (new_object = CK_GetNewObj(true))
+	{
+		new_object->posX = obj1->posX;
+		new_object->posY = obj1->posY;
+		CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_ShellyExplode0"));
+	}
 }
 
 void CK5_ShellyGroundTileCol(CK_object *obj)

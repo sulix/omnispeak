@@ -98,7 +98,7 @@ void CK_IncreaseScore(int score)
 
 void CK_SpawnKeen(int tileX, int tileY, int direction)
 {
-	ck_keenObj->type = 0; //TODO: obj_keen
+	ck_keenObj->type = CT_Player; //TODO: obj_keen
 	ck_keenObj->active = OBJ_ALWAYS_ACTIVE; 
 	ck_keenObj->visible = true;
 	ck_keenObj->zLayer = 1;
@@ -1316,6 +1316,7 @@ void CK_SpawnShot(int x, int y, int direction)
 void CK_ShotHit(CK_object *obj)
 {
 	//TODO: Implement obj_ classes.
+	obj->type = CT_Friendly;
 	CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenShotHit1"));
 	SD_PlaySound(SOUND_KEENSHOTHIT);
 }

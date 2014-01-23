@@ -1256,7 +1256,7 @@ void CK5_ShikadiCol(CK_object *o1, CK_object *o2)
 
 	if (o2->type == CT_Stunner)
 	{
-		if (--o1->user2 == 0)
+		if (--o1->user2)
 		{
 			o1->user3 = 2;
 			o1->visible = true;
@@ -1266,7 +1266,7 @@ void CK5_ShikadiCol(CK_object *o1, CK_object *o2)
 		{
 
 			o1->velX = o1->velY = 0;
-			//StunCreature(o1, o2, CK_GetActionByName("CK5_ACT_SHIKADISTUN0"));
+			CK_StunCreature(o1, o2, CK_GetActionByName("CK5_ACT_ShikadiStun0"));
 		}
 	}
 }
@@ -1341,7 +1341,6 @@ void CK5_ShikadiTileCol(CK_object *obj)
 
 		RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 	}
-	return;
 }
 
 void CK5_SpawnShocksund(int tileX, int tileY)
@@ -1418,7 +1417,7 @@ void CK5_ShocksundCol(CK_object *o1, CK_object *o2)
 
 	if (o2->type == CT_Stunner)
 	{
-		if (--o1->user2 == 0)
+		if (--o1->user2)
 		{
 			o1->user3 = 2;
 			o1->visible = true;
@@ -1426,12 +1425,10 @@ void CK5_ShocksundCol(CK_object *o1, CK_object *o2)
 		}
 		else
 		{
-
 			o1->velX = o1->velY = 0;
-			//StunCreature(o1, o2, CK_GetActionByName("CK5_ACT_SHOCKSUNDSTUN0"));
+			CK_StunCreature(o1, o2, CK_GetActionByName("CK5_ACT_ShocksundStun0"));
 		}
 	}
-	return;
 }
 
 void CK5_ShocksundGroundTileCol(CK_object *obj)
@@ -1472,7 +1469,7 @@ void CK5_ShocksundGroundTileCol(CK_object *obj)
 	}
 
 	//if flashing white
-	if (obj->user3 != 0)
+	if (obj->user3)
 	{
 		obj->user3--; //flash counter
 		RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 1, obj->zLayer);
@@ -1492,7 +1489,7 @@ void CK5_ShocksundJumpTileCol(CK_object *obj)
 		obj->timeUntillThink = US_RndT() / 32;
 		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_Shocksund0"));
 	}
-	if (obj->user3 != 0)
+	if (obj->user3)
 	{
 		obj->user3--; //flash counter
 		RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 1, obj->zLayer);
@@ -1688,12 +1685,15 @@ void CK5_KorathWalk(CK_object *obj)
 
 void CK5_KorathColFunc(CK_object *obj, CK_object *other)
 {
-	//todo: if keen
-	if (other->currentAction->collide)
+	//if keen and pushable
+	if (other->type == CT_Player && other->currentAction->collide)
 	{
 
 		CK_PhysPushX(other, obj);
-		return;
+	}
+	else if (other->type == CT_Stunner)
+	{
+		CK_StunCreature(obj, other, CK_GetActionByName("CK5_ACT_KorathStun0"));
 	}
 }
 

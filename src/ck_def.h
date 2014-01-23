@@ -62,6 +62,7 @@ typedef enum CK_Dir {
 typedef enum CK_ClassType {
 
 	CT_nothing,
+	CT_Friendly,
   CT_Player = 2,
   CT_Stunner,
   CT_EnemyShot,
@@ -70,7 +71,7 @@ typedef enum CK_ClassType {
   CT_Mine = 10,
   CT_SliceStar = 11,
   CT_Robo = 12,
-  CT_Ampton = 15,
+  CT_Ampton = 14,
 	CT_Spindred = 18,
 	CT_Master = 19,
 	CT_Shikadi = 20,

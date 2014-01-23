@@ -47,7 +47,7 @@ typedef enum {
 		SOUND_ENEMYSHOTHIT,      // 30
 		SOUND_AMPTONWALK0,       // 31
 		SOUND_AMPTONWALK1,       // 32
-		SOUND_AMPTONSTIN,        // 33
+		SOUND_AMPTONSTUN,        // 33
 		SOUND_UNKNOWN34,         // 34
 		SOUND_UNKNOWN35,         // 35
 		SOUND_SHELLYEXPLODE,     // 36

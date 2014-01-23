@@ -318,7 +318,7 @@
 %action CK5_ACT_BarkShot1 0x163 0x163 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_Glide CK5_BarkShotCol CK5_BarkShotTileCol CK5_ACT_BarkShot0
 %action CK5_ACT_BarkShotDie0 0x164 0x164 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_BarkShotDie1
 %action CK5_ACT_BarkShotDie1 0x165 0x165 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
-%action CK5_ACT_Shocksundstun0 0x161 0x161 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+%action CK5_ACT_ShocksundStun0 0x161 0x161 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
 
 # Sphereful
 %action CK5_ACT_Sphereful0 0x166 0x166 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK5_SpherefulBounce CK_DeadlyCol CK5_SpherefulTileCol CK5_ACT_Sphereful1
@@ -332,6 +332,7 @@
 %action CK5_ACT_KorathWalk3 0x128 0x12C UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK5_KorathDraw CK5_ACT_KorathWalk4
 %action CK5_ACT_KorathWalk4 0x129 0x12D UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK5_KorathDraw CK5_ACT_KorathWalk1
 %action CK5_ACT_KorathWait 0x12E 0x12E UnscaledOnce 0 1 0x1E 0 0 NULL NULL CK5_KorathDraw CK5_ACT_KorathWalk1
+%action CK5_ACT_KorathStun0 0x12f 0x12f Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
 
 #QED
 %action CK5_ACT_QED -1 -1 UnscaledOnce 0 1 8 0x80 0 NULL NULL NULL CK5_ACT_QED
