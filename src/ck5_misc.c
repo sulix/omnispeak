@@ -165,7 +165,7 @@ void CK_BasicDrawFunc4(CK_object *obj)
 	RF_AddSpriteDraw((RF_SpriteDrawEntry**) (&obj->user3), obj->posX + starsX, obj->posY + starsY, obj->user2 + 143, false, 3);
 }
 
-void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act) 
+void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act)
 {
 	// Kill the stunner shot
 	CK_ShotHit(stunner);
@@ -270,6 +270,64 @@ void CK_DeadlyCol(CK_object *o1, CK_object *o2)
 {
 }
 
+void CK5_SpawnFallPlat(int tileX, int tileY)
+{
+	CK_object *new_object = CK_GetNewObj(false);
+	new_object->type = CT_Platform;
+	new_object->active = OBJ_ALWAYS_ACTIVE;
+	new_object->zLayer = 0;
+	new_object->posX = tileX << 8;
+	new_object->user1 = new_object->posY = tileY << 8;
+	new_object->xDirection = IN_motion_None;
+	new_object->yDirection = IN_motion_Down;
+	new_object->clipped = CLIP_not;
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_FallPlat0"));
+}
+
+void CK5_FallPlatSit (CK_object *obj)
+{
+
+	if (obj == ck_keenState.platform)
+	{
+		obj->nextY = CK_GetTicksPerFrame() * 16;
+		obj->velY = 0;
+		if (obj->posY + obj->nextY - obj->user1 <= 0x80)
+			obj->currentAction = CK_GetActionByName("CK5_ACT_FallPlat1");
+	}
+}
+
+void CK5_FallPlatFall (CK_object *obj)
+{
+
+	int newY, newYT;
+
+	CK_PhysGravityHigh(obj);
+	newY = obj->clipRects.unitY2 + obj->nextY;
+	newYT = newY >> 8;
+
+	// Stop falling if platform hits a block
+	if (obj->clipRects.tileY2 != newYT && CA_TileAtPos(obj->clipRects.tileX1, newYT, 2) == 0x1F)
+	{
+		obj->nextY = 0xFF - (obj->clipRects.unitY2 & 0xFF);
+		if (ck_keenState.platform != obj)
+			obj->currentAction = CK_GetActionByName("CK5_ACT_FallPlat2");
+	}
+}
+
+void CK5_FallPlatRise (CK_object *obj)
+{
+	if (ck_keenState.platform == obj)
+	{
+		obj->velY = 0;
+		obj->currentAction = CK_GetActionByName("CK5_ACT_FallPlat1");
+	}
+	else if ((unsigned) obj->posY <= (unsigned) obj->user1)
+	{
+		obj->nextY = obj->user1 - obj->posY;
+		obj->currentAction = CK_GetActionByName("CK5_ACT_FallPlat0");
+	}
+}
+
 void CK5_SetupFunctions()
 {
 	//Quick hack as we haven't got a deadly function yet
@@ -285,6 +343,9 @@ void CK5_SetupFunctions()
 	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
 	CK_ACT_AddFunction("CK5_PointItem", &CK5_PointItem);
 	CK_ACT_AddFunction("CK5_BlockPlatform", &CK5_BlockPlatform);
+	CK_ACT_AddFunction("CK5_FallPlatSit", &CK5_FallPlatSit);
+	CK_ACT_AddFunction("CK5_FallPlatFall", &CK5_FallPlatFall);
+	CK_ACT_AddFunction("CK5_FallPlatRise", &CK5_FallPlatRise);
 }
 
 /*
@@ -473,6 +534,9 @@ void CK5_ScanInfoLayer()
 			case 29:
 			case 30:
 				CK5_SpawnRedBlockPlatform(x, y, infoValue - 27, false);
+				break;
+			case 32:
+				CK5_SpawnFallPlat(x, y);
 				break;
 			case 36:
 			case 37:

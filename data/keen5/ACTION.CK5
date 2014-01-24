@@ -129,6 +129,10 @@
 %action CK5_ACT_redGoPlat 446 446 Frame 0 0 0 0 0 CK5_RedGoPlatThink NULL CK_BasicDrawFunc1 NULL
 %action CK5_ACT_purpleGoPlat 423 423 UnscaledFrame 0 0 0 0 0 CK5_PurpleGoPlatThink NULL CK_BasicDrawFunc1 NULL
 
+%action CK5_ACT_FallPlat0 0x1be 0x1be Frame 0x0 0x0 0x0 0x0 0x0 CK5_FallPlatSit NULL CK_BasicDrawFunc1 NULL
+%action CK5_ACT_FallPlat1 0x1be 0x1be Frame 0x0 0x0 0x0 0x0 0x0 CK5_FallPlatFall NULL CK_BasicDrawFunc1 NULL
+%action CK5_ACT_FallPlat2 0x1be 0x1be ScaledFrame 0x0 0x0 0x0 0x0 -32 CK5_FallPlatRise NULL CK_BasicDrawFunc1 NULL
+
 # ck5_obj1.c
 
 # VolteFaces
