@@ -148,9 +148,10 @@ typedef struct IN_KeyMapping {
 } IN_KeyMapping;
 
 typedef struct IN_ControlFrame {
-	bool jump, pogo;
-	int xDirection;
-	int yDirection;
+	bool jump, pogo, button2, button3;
+	int x, y;
+	IN_Motion xDirection, yDirection;
+	IN_Direction dir;		
 } IN_ControlFrame;
 
 void IN_PumpEvents();

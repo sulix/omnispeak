@@ -104,6 +104,17 @@
 
 %action CK_ACT_keenSlide 175 175 Frame 0 0 0 0 0 CK_KeenSlide NULL CK_SimpleDrawFunc NULL
 
+# ck5_map.c
+
+# Mapkeen
+%action CK5_ACT_MapKeenStart 0x0 0x0 UnscaledFrame 0x0 0x0 0x168 0x0 0x0 CK5_MapKeenStill NULL CK_BasicDrawFunc1 CK5_ACT_MapKeenWave0
+%action CK5_ACT_MapKeenWave0 0x10A 0x10A UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK5_MapKeenStill NULL CK_BasicDrawFunc1 CK5_ACT_MapKeenWave1
+%action CK5_ACT_MapKeenWave1 0x10B 0x10B UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK5_MapKeenStill NULL CK_BasicDrawFunc1 CK5_ACT_MapKeenWave2
+%action CK5_ACT_MapKeenWave2 0x10A 0x10A UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK5_MapKeenStill NULL CK_BasicDrawFunc1 CK5_ACT_MapKeenWave3
+%action CK5_ACT_MapKeenWave3 0x10B 0x10B UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK5_MapKeenStill NULL CK_BasicDrawFunc1 CK5_ACT_MapKeenWave4
+%action CK5_ACT_MapKeenWave4 0x10A 0x10A UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK5_MapKeenWalk NULL CK_BasicDrawFunc1 CK5_ACT_MapKeenStart
+%action CK5_ACT_MapKeenWalk0 0x0 0x0 ScaledOnce 0x1 0x0 0x4 0x18 0x18 CK5_MapKeenWalk NULL CK_BasicDrawFunc1 CK5_ACT_MapKeenWalk0
+
 
 # ck5_misc.c
 

@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ */
 
 #include "id_in.h"
 #include "id_us.h"
@@ -30,7 +30,7 @@ IN_ScanCode in_lastKeyScanned = IN_SC_None;
 
 IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 {
-	switch(sdlKey)
+	switch (sdlKey)
 	{
 		INL_MapKey(SDLK_RETURN, IN_SC_Enter);
 		INL_MapKey(SDLK_ESCAPE, IN_SC_Escape);
@@ -61,7 +61,7 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 		INL_MapKey(SDLK_F5, IN_SC_F5);
 		INL_MapKey(SDLK_F6, IN_SC_F6);
 		INL_MapKey(SDLK_F7, IN_SC_F7);
-		
+
 		INL_MapKey(SDLK_F9, IN_SC_F9);
 		INL_MapKey(SDLK_F10, IN_SC_F10);
 		INL_MapKey(SDLK_F11, IN_SC_F11);
@@ -102,7 +102,7 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 		INL_MapKey(SDLK_x, IN_SC_X);
 		INL_MapKey(SDLK_y, IN_SC_Y);
 		INL_MapKey(SDLK_z, IN_SC_Z);
-		default: return IN_SC_Invalid;
+	default: return IN_SC_Invalid;
 	}
 }
 
@@ -110,8 +110,16 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 
 static IN_KeyMapping in_kbdControls;
 
+static IN_Direction	in_dirTable[] =		// Quick lookup for total direction
+{
+	IN_dir_NorthWest,	IN_dir_North,	IN_dir_NorthEast,
+	IN_dir_West,		IN_dir_None,	IN_dir_East,
+	IN_dir_SouthWest,	IN_dir_South,	IN_dir_SouthEast
+};
+
 static void INL_HandleSDLEvent(SDL_Event *event)
 {
+
 	IN_ScanCode sc;
 	switch (event->type)
 	{
@@ -155,7 +163,7 @@ void IN_WaitKey()
 	while (SDL_WaitEvent(&event))
 	{
 		INL_HandleSDLEvent(&event);
-		if(event.type == SDL_KEYDOWN)
+		if (event.type == SDL_KEYDOWN)
 			break;
 	}
 }
@@ -183,7 +191,6 @@ uint8_t *in_demoBuf;
 int in_demoPtr;
 int in_demoBytes;
 IN_DemoMode in_demoState;
-
 
 void IN_DemoStartPlaying(uint8_t *data, int len)
 {
@@ -222,7 +229,7 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 		controls->xDirection = ((ctrlByte >> 2) & 3) - 1;
 		controls->jump = (ctrlByte >> 4) & 1;
 		controls->pogo = (ctrlByte >> 5) & 1;
-		
+
 		// Delay for n frames.
 		if ((--in_demoBuf[in_demoPtr]) == 0 )
 		{
@@ -245,6 +252,8 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 
 		if (IN_GetKeyState(in_kbdControls.left)) controls->xDirection = -1;
 		else if (IN_GetKeyState(in_kbdControls.right)) controls->xDirection = 1;
+
+		controls->dir = in_dirTable[3 * (controls->yDirection + 1) + controls->xDirection + 1];
 	}
 
 	//TODO: Record this inputFrame

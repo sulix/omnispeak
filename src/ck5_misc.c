@@ -335,6 +335,7 @@ void CK5_SetupFunctions()
 	CK5_Obj1_SetupFunctions();
 	CK5_Obj2_SetupFunctions();
 	CK5_Obj3_SetupFunctions();
+	CK5_Map_SetupFunctions();
 	CK_ACT_AddFunction("CK_Fall", &CK_Fall);
 	CK_ACT_AddFunction("CK_Fall2", &CK_Fall2);
 	CK_ACT_AddFunction("CK_Glide", &CK_Glide);
@@ -467,6 +468,10 @@ void CK5_ScanInfoLayer()
 			case 2:
 				CK_SpawnKeen(x, y, -1);
 				break;
+			case 3:
+				CK_SpawnMapKeen(x,y);
+				break;
+
 			case 6:
 				if (ck_gameState.difficulty < D_Hard) break;
 			case 5:

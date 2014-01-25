@@ -310,7 +310,8 @@ void US_Startup()
 		{
 		case 0:
 			us_tedLevelNumber = atoi(us_argv[i+1]);
-			if (us_tedLevelNumber > 0) us_tedLevel = true;
+			if (us_tedLevelNumber > -1) 
+				us_tedLevel = true;
 			break;
 		case 1:
 			us_noWait = true;
