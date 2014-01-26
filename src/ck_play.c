@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ */
 
 //#inclucd "id_heads.h"
 #include "ck_play.h"
@@ -64,6 +64,9 @@ CK_GameState ck_gameState;
 
 static bool ck_slowMotionEnabled = false;
 
+// Switch to toggle Camera following keen.
+bool ck_scrollDisabled = false;
+
 void CK_CountActiveObjects()
 {
 	int active = 0;
@@ -80,31 +83,28 @@ void CK_CountActiveObjects()
 		current = current->next;
 	}
 
-	US_CenterWindow(18,4);
-	US_PrintF("Active Objects : %d",active);
-	US_PrintF("Inactive Object : %d",inactive);
+	US_CenterWindow(18, 4);
+	US_PrintF("Active Objects : %d", active);
+	US_PrintF("Inactive Object : %d", inactive);
 	VL_Present();
 	IN_WaitKey();
 }
 
 void CK_DebugMemory()
 {
-	US_CenterWindow(16,10);
+	US_CenterWindow(16, 10);
 
 	US_CPrint("Memory Usage:");
 	US_CPrint("-------------");
-	US_PrintF("In Use      : %dk", MM_UsedMemory()/1024);
+	US_PrintF("In Use      : %dk", MM_UsedMemory() / 1024);
 	US_PrintF("Blocks      : %d", MM_UsedBlocks());
 	US_PrintF("Purgable    : %d", MM_PurgableBlocks());
-	US_PrintF("GFX Mem Used: %dk", VL_MemUsed()/1024);
+	US_PrintF("GFX Mem Used: %dk", VL_MemUsed() / 1024);
 	US_PrintF("GFX Surfaces: %d", VL_NumSurfaces());
 	VL_Present();
 	IN_WaitKey();
 	//MM_ShowMemory();
 }
-
-
-
 
 void CK_SetTicsPerFrame()
 {
@@ -133,16 +133,15 @@ long CK_GetNumTotalTics()
 	return ck_numTotalTics;
 }
 
-
 void CK_SetupObjArray()
 {
 	for (int i = 0; i < CK_MAX_OBJECTS; ++i)
 	{
-		ck_objArray[i].prev = &(ck_objArray[i+1]);
+		ck_objArray[i].prev = &(ck_objArray[i + 1]);
 		ck_objArray[i].next = 0;
 	}
 
-	ck_objArray[CK_MAX_OBJECTS-1].prev = 0;
+	ck_objArray[CK_MAX_OBJECTS - 1].prev = 0;
 
 	ck_freeObject = &ck_objArray[0];
 	ck_lastObject = 0;
@@ -170,7 +169,7 @@ CK_object *CK_GetNewObj(bool nonCritical)
 	ck_freeObject = ck_freeObject->prev;
 
 	//Clear any old crap out of the struct.
-	memset(newObj, 0, sizeof(CK_object));
+	memset(newObj, 0, sizeof (CK_object));
 
 
 	if (ck_lastObject)
@@ -178,7 +177,7 @@ CK_object *CK_GetNewObj(bool nonCritical)
 		ck_lastObject->next = newObj;
 	}
 	newObj->prev = ck_lastObject;
-	
+
 
 	newObj->active = true;
 	newObj->clipped = true;
@@ -190,7 +189,6 @@ CK_object *CK_GetNewObj(bool nonCritical)
 	return newObj;
 }
 
-
 void CK_RemoveObj(CK_object *obj)
 {
 	if (obj == ck_keenObj)
@@ -198,21 +196,21 @@ void CK_RemoveObj(CK_object *obj)
 		Quit("RemoveObj: Tried to remove the player!");
 	}
 
-  // TODO: Make a better spritedraw handler that
-  // replaces the user int variables
-  RF_RemoveSpriteDraw(&obj->sde);
+	// TODO: Make a better spritedraw handler that
+	// replaces the user int variables
+	RF_RemoveSpriteDraw(&obj->sde);
 
-  if (obj->type == CT_StunnedCreature)
-  {
-	  // FIXME: This cast is bad on 64-bit platforms
-	  RF_RemoveSpriteDraw(&obj->user3);
+	if (obj->type == CT_StunnedCreature)
+	{
+		// FIXME: This cast is bad on 64-bit platforms
+		RF_RemoveSpriteDraw(&obj->user3);
 	}
 
 	if (obj == ck_lastObject)
 		ck_lastObject = obj->prev;
 	else
 		obj->next->prev = obj->prev;
-	
+
 	obj->prev->next = obj->next;
 	//obj->next = 0;
 
@@ -220,7 +218,6 @@ void CK_RemoveObj(CK_object *obj)
 	ck_freeObject = obj;
 	//ck_numObjects--;
 }
-
 
 int CK_ActionThink(CK_object *obj, int time)
 {
@@ -308,12 +305,12 @@ int CK_ActionThink(CK_object *obj, int time)
 
 	if (action->think)
 	{
-			if (obj->timeUntillThink)
-				obj->timeUntillThink--;
-			else
-			{
-				obj->currentAction->think(obj);
-			}
+		if (obj->timeUntillThink)
+			obj->timeUntillThink--;
+		else
+		{
+			obj->currentAction->think(obj);
+		}
 	}
 
 	if (action != obj->currentAction)
@@ -369,9 +366,9 @@ void CK_RunAction(CK_object *obj)
 			obj->actionTimer = 0;
 			prevAction = obj->currentAction;
 		}
-	
+
 	}
-	
+
 	if (!prevAction)
 	{
 		CK_RemoveObj(obj);
@@ -397,7 +394,7 @@ void CK_RunAction(CK_object *obj)
 
 void hackdraw(CK_object *me)
 {
-	RF_AddSpriteDraw(&(me->sde),(150 << 4),(100 << 4),121,false,0);
+	RF_AddSpriteDraw(&(me->sde), (150 << 4), (100 << 4), 121, false, 0);
 }
 
 void CK_DebugKeys()
@@ -411,7 +408,7 @@ void CK_DebugKeys()
 	{
 		ck_gameState.jumpCheat = !ck_gameState.jumpCheat;
 		//TODO: Something here?
-		US_CenterWindow(18,3);
+		US_CenterWindow(18, 3);
 
 		if (ck_gameState.jumpCheat)
 			US_PrintCentered("\nJump cheat ON");
@@ -430,7 +427,7 @@ void CK_DebugKeys()
 	if (IN_GetKeyState(IN_SC_S))
 	{
 		ck_slowMotionEnabled = !ck_slowMotionEnabled;
-		US_CenterWindow(18,3);
+		US_CenterWindow(18, 3);
 
 		if (ck_slowMotionEnabled)
 			US_PrintCentered("Slow motion ON");
@@ -442,7 +439,7 @@ void CK_DebugKeys()
 
 	if (IN_GetKeyState(IN_SC_N))
 	{
-		US_CenterWindow(18,3);
+		US_CenterWindow(18, 3);
 		if (ck_keenObj->clipped)
 		{
 			US_PrintCentered("No clipping ON");
@@ -459,9 +456,10 @@ void CK_DebugKeys()
 }
 
 // Check non-game keys
+
 void CK_CheckKeys()
 {
-	if(IN_GetKeyState(IN_SC_F10))
+	if (IN_GetKeyState(IN_SC_F10))
 	{
 		CK_DebugKeys();
 	}
@@ -491,7 +489,7 @@ void CK_HandleInput()
 			ck_keenState.shootWasPressed = false;
 			ck_keenState.jumpWasPressed = false;
 			ck_keenState.jumpIsPressed = ck_inputFrame.jump;
-			
+
 			ck_keenState.pogoWasPressed = false;
 			if (ck_inputFrame.pogo)
 			{
@@ -542,6 +540,7 @@ extern int rf_scrollXUnit;
 extern int rf_scrollYUnit;
 
 // Centre the camera on the given object.
+
 void CK_CentreCamera(CK_object *obj)
 {
 	int screenX, screenY;
@@ -551,10 +550,22 @@ void CK_CentreCamera(CK_object *obj)
 	else
 		screenX = obj->posX - (152 << 4);
 
-	if (obj->clipRects.unitY2 < (140 << 4))
-		screenY = 0;
+	if (ck_currentMapNumber == 0)
+	{
+		// World Map
+		if (obj->posY < (80 << 4))
+			screenY = 0;
+		else
+			screenY = obj->posY - (80 << 4);
+	}
 	else
-		screenY = obj->posY - (140 << 4);
+	{
+		// In Level
+		if (obj->clipRects.unitY2 < (140 << 4))
+			screenY = 0;
+		else
+			screenY = obj->posY - (140 << 4);
+	}
 
 	RF_Reposition(screenX, screenY);
 
@@ -565,25 +576,81 @@ void CK_CentreCamera(CK_object *obj)
 	ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (200 >> 4) + 6, 0);
 }
 
+/*
+ * Move the camera that follows keen on the world map
+ */
+void CK_MapCamera( CK_object *keen )
+{
+	int scr_y, scr_x;
+
+	if (ck_scrollDisabled)
+		return;
+
+	// Scroll Left, Right, or nowhere
+	if ( keen->clipRects.unitX1 < rf_scrollXUnit + (144 << 4) )
+		scr_x = keen->clipRects.unitX1 - (rf_scrollXUnit + (144 << 4));
+	else if ( keen->clipRects.unitX2 > rf_scrollXUnit + (192 << 4) )
+		scr_x = keen->clipRects.unitX2 + 16 - (rf_scrollXUnit + (192 << 4));
+	else
+		scr_x = 0;
+
+	// Scroll Up, Down, or nowhere
+	if ( keen->clipRects.unitY1 < rf_scrollYUnit + (80 << 4) )
+		scr_y = keen->clipRects.unitY1 - (rf_scrollYUnit + (80 << 4));
+	else if ( keen->clipRects.unitY2 > rf_scrollYUnit + (112 << 4) )
+		scr_y = keen->clipRects.unitY2 - (rf_scrollYUnit + (112 << 4));
+	else
+		scr_y = 0;
+
+	// Limit scrolling to 256 map units (1 tile)
+	// And update the active boundaries of the map
+	if ( scr_x != 0 || scr_y != 0 )
+	{
+		if ( scr_x >= 256 )
+			scr_x = 255;
+		else if ( scr_x <= -256 )
+			scr_x = -255;
+
+		if ( scr_y >= 256 )
+			scr_y = 255;
+		else if ( scr_y <= -256 )
+			scr_y = -255;
+
+		RF_SmoothScroll( scr_x, scr_y );
+
+		/*
+		 * No ScrollX1_T in omnispeak; it's computed whenever it's needed
+		 * ScrollX1_T = ScrollX0_T + VIRTUAL_SCREEN_W_T;
+		 * ScrollY1_T = ScrollY0_T + VIRTUAL_SCREEN_H_T;
+		 */
+	}
+}
+
 // Run the normal camera which follows keen
+
 void CK_NormalCamera(CK_object *obj)
 {
-	//TODO: some unknown var must be 0
-	
+
 	//TODO: Check if keen is outside map bounds.
 
 	int deltaX = 0, deltaY = 0;	// in Units
 
-	// The indended y-coordinate of the bottom of the keen sprite
+	// The intended y-coordinate of the bottom of the keen sprite
 	// in pixels from the top of the screen.
 	static int screenYpx = 140 << 4;
 
+	//TODO: some unknown var must be 0
+	//This var is a "ScrollDisabled flag." If keen dies, it's set so he 
+	// can fall out the bottom
+	if (ck_scrollDisabled)
+		return;
+
 	// Keep keen's x-coord between 144-192 pixels
 	if (obj->posX < (rf_scrollXUnit + (144 << 4)))
-		deltaX = obj->posX - (rf_scrollXUnit+(144 << 4));
-	
+		deltaX = obj->posX - (rf_scrollXUnit + (144 << 4));
+
 	if (obj->posX > (rf_scrollXUnit + (192 << 4)))
-		deltaX = obj->posX - (rf_scrollXUnit+(192 << 4));
+		deltaX = obj->posX - (rf_scrollXUnit + (192 << 4));
 
 
 	// Keen should be able to look up and down.
@@ -628,9 +695,9 @@ void CK_NormalCamera(CK_object *obj)
 	if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_keenHang1"))
 	{
 		if (obj->currentAction != CK_GetActionByName("CK_ACT_keenPull1") &&
-			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull2") &&
-			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull3") &&
-			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull4"))
+				obj->currentAction != CK_GetActionByName("CK_ACT_keenPull2") &&
+				obj->currentAction != CK_GetActionByName("CK_ACT_keenPull3") &&
+				obj->currentAction != CK_GetActionByName("CK_ACT_keenPull4"))
 		{
 			deltaY += obj->deltaPosY;
 
@@ -640,29 +707,29 @@ void CK_NormalCamera(CK_object *obj)
 				int adjAmt = (((screenYpx << 4) + rf_scrollYUnit + deltaY - obj->clipRects.unitY2));
 				int adjAmt2 = abs(adjAmt / 8);
 
-				adjAmt2 = (adjAmt2 <= 48)?adjAmt2:48;
-				
+				adjAmt2 = (adjAmt2 <= 48) ? adjAmt2 : 48;
+
 				if (adjAmt > 0)
 					deltaY -= adjAmt2;
 				else
 					deltaY += adjAmt2;
-				
+
 			}
 		}
-				
+
 	}
 	else
 	{
 		// Reset to 140px.
 		screenYpx = 140;
 	}
-	
+
 
 	// Scroll the screen to keep keen between 33 and 167 px.
 	if (obj->clipRects.unitY2 < (rf_scrollYUnit + deltaY + (32 << 4)))
 		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + (32 << 4));
 
-	
+
 	if (obj->clipRects.unitY2 > (rf_scrollYUnit + deltaY + (168 << 4)))
 		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + (168 << 4));
 
@@ -677,7 +744,7 @@ void CK_NormalCamera(CK_object *obj)
 
 		// Do the scroll!
 		RF_SmoothScroll(deltaX, deltaY);
-	
+
 		// Update the rectangle of active objects
 		ck_activeX0Tile = max((rf_scrollXUnit >> 8) - 6, 0);
 		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + 6, 0);
@@ -687,21 +754,22 @@ void CK_NormalCamera(CK_object *obj)
 }
 
 //TODO: Add some demo number stuff
+
 void CK_PlayDemo(int demoNumber)
 {
 	uint8_t *demoBuf;
 
 	int demoChunk = 4926 + demoNumber;
 
-//	CK_NewGame();
+	//	CK_NewGame();
 
 	CA_CacheGrChunk(demoChunk);
 	demoBuf = ca_graphChunks[demoChunk];
 	//MM_SetLock(&CA_CacheGrChunk
-	
+
 	uint16_t demoMap = *demoBuf;
 	demoBuf += 2;
-	uint16_t demoLen = *((uint16_t *)demoBuf);
+	uint16_t demoLen = *((uint16_t *) demoBuf);
 	demoBuf += 2;
 
 	ck_currentMapNumber =demoMap;
@@ -712,7 +780,7 @@ void CK_PlayDemo(int demoNumber)
 
 	ck_gameState.difficulty = D_Normal;
 
-	IN_DemoStartPlaying(demoBuf,demoLen);
+	IN_DemoStartPlaying(demoBuf, demoLen);
 
 
 	CK_PlayLoop();
@@ -728,6 +796,7 @@ void CK_PlayDemo(int demoNumber)
 
 int ck_currentMapNumber;
 // Play a level.
+
 int CK_PlayLoop()
 {
 
@@ -758,19 +827,19 @@ int CK_PlayLoop()
 		{
 
 			if (!currentObj->active &&
-				(currentObj->clipRects.tileX2 >= (rf_scrollXUnit >> 8) - 1) &&
-				(currentObj->clipRects.tileX1 <= (rf_scrollXUnit >> 8) + (320 >> 4) + 1) &&
-				(currentObj->clipRects.tileY1 <= (rf_scrollYUnit >> 8) + (200 >> 4) + 1) &&
-				(currentObj->clipRects.tileY2 >= (rf_scrollYUnit >> 8) - 1))
+					(currentObj->clipRects.tileX2 >= (rf_scrollXUnit >> 8) - 1) &&
+					(currentObj->clipRects.tileX1 <= (rf_scrollXUnit >> 8) + (320 >> 4) + 1) &&
+					(currentObj->clipRects.tileY1 <= (rf_scrollYUnit >> 8) + (200 >> 4) + 1) &&
+					(currentObj->clipRects.tileY2 >= (rf_scrollYUnit >> 8) - 1))
 			{
 				currentObj->active = OBJ_ACTIVE;
 				currentObj->visible = true;
 			}
 			else if (currentObj->active && currentObj != ck_keenObj && (
-				(currentObj->clipRects.tileX2 <= ck_activeX0Tile) ||
-				(currentObj->clipRects.tileX1 >= ck_activeX1Tile) ||
-				(currentObj->clipRects.tileY1 >= ck_activeY1Tile) ||
-				(currentObj->clipRects.tileY2 <= ck_activeY0Tile)))
+							 (currentObj->clipRects.tileX2 <= ck_activeX0Tile) ||
+							 (currentObj->clipRects.tileX1 >= ck_activeX1Tile) ||
+							 (currentObj->clipRects.tileY1 >= ck_activeY1Tile) ||
+							 (currentObj->clipRects.tileY2 <= ck_activeY0Tile)))
 			{
 				//TODO: Add an Episode callback. Ep 4 requires
 				// type 33 to remove int33 (Andy's decomp)
@@ -794,12 +863,12 @@ int CK_PlayLoop()
 			if (currentObj->active)
 				CK_RunAction(currentObj);
 		}
-				
-				
+
+
 		if (ck_keenState.platform)
 			CK_KeenRidePlatform(ck_keenObj);
 
-		for(CK_object *currentObj = ck_keenObj; currentObj; currentObj = currentObj->next)
+		for (CK_object *currentObj = ck_keenObj; currentObj; currentObj = currentObj->next)
 		{
 			// Some strange Keen4 stuff here. Ignoring for now.
 
@@ -811,14 +880,14 @@ int CK_PlayLoop()
 					continue;
 
 				if (	(currentObj->clipRects.unitX2 > collideObj->clipRects.unitX1) &&
-					(currentObj->clipRects.unitX1 < collideObj->clipRects.unitX2) &&
-					(currentObj->clipRects.unitY1 < collideObj->clipRects.unitY2) &&
-					(currentObj->clipRects.unitY2 > collideObj->clipRects.unitY1) )
+						(currentObj->clipRects.unitX1 < collideObj->clipRects.unitX2) &&
+						(currentObj->clipRects.unitY1 < collideObj->clipRects.unitY2) &&
+						(currentObj->clipRects.unitY2 > collideObj->clipRects.unitY1) )
 				{
 					if (currentObj->currentAction->collide)
-						currentObj->currentAction->collide(currentObj,collideObj);
+						currentObj->currentAction->collide(currentObj, collideObj);
 					if (collideObj->currentAction->collide)
-						collideObj->currentAction->collide(collideObj,currentObj);
+						collideObj->currentAction->collide(collideObj, currentObj);
 				}
 			}
 		}
@@ -827,11 +896,15 @@ int CK_PlayLoop()
 
 		//TODO: If not world map, check keen -> item-tile collision.
 
-		CK_KeenCheckSpecialTileInfo(ck_keenObj);
+		if (ck_currentMapNumber == 0)
+			CK_MapMiscFlagsCheck(ck_keenObj);
+		else
+			CK_KeenCheckSpecialTileInfo(ck_keenObj);
 
 
 
-		for(CK_object *currentObj = ck_keenObj; currentObj; currentObj = currentObj->next)
+
+		for (CK_object *currentObj = ck_keenObj; currentObj; currentObj = currentObj->next)
 		{
 			if (currentObj->active)
 			{
@@ -850,17 +923,22 @@ int CK_PlayLoop()
 
 		RF_Refresh();
 #if 0
-		for (CK_object *obj = ck_keenObj; obj; obj = obj->next){
-		VL_ScreenRect((obj->clipRects.tileX1 << 4) - (rf_scrollXUnit >> 4), (obj->clipRects.tileY1 << 4) - (rf_scrollYUnit>>4),
-			(obj->clipRects.tileX2 - obj->clipRects.tileX1 + 1) << 4,
-			(obj->clipRects.tileY2 - obj->clipRects.tileY1 + 1) << 4, 10);
+		for (CK_object *obj = ck_keenObj; obj; obj = obj->next)
+		{
+			VL_ScreenRect((obj->clipRects.tileX1 << 4) - (rf_scrollXUnit >> 4), (obj->clipRects.tileY1 << 4) - (rf_scrollYUnit >> 4),
+										(obj->clipRects.tileX2 - obj->clipRects.tileX1 + 1) << 4,
+										(obj->clipRects.tileY2 - obj->clipRects.tileY1 + 1) << 4, 10);
 
-		VL_ScreenRect((obj->clipRects.tileXmid << 4) - (rf_scrollXUnit >> 4), (obj->clipRects.tileY2 << 4) - (rf_scrollYUnit>>4),16,16,9);
-		VL_ScreenRect((obj->clipRects.unitX1 >> 4) - (rf_scrollXUnit >> 4), (obj->clipRects.unitY1 >> 4) - (rf_scrollYUnit>>4),(obj->clipRects.unitX2 - obj->clipRects.unitX1) >> 4,(obj->clipRects.unitY2 - obj->clipRects.unitY1) >> 4,8);
+			VL_ScreenRect((obj->clipRects.tileXmid << 4) - (rf_scrollXUnit >> 4), (obj->clipRects.tileY2 << 4) - (rf_scrollYUnit >> 4), 16, 16, 9);
+			VL_ScreenRect((obj->clipRects.unitX1 >> 4) - (rf_scrollXUnit >> 4), (obj->clipRects.unitY1 >> 4) - (rf_scrollYUnit >> 4), (obj->clipRects.unitX2 - obj->clipRects.unitX1) >> 4, (obj->clipRects.unitY2 - obj->clipRects.unitY1) >> 4, 8);
 		}
 #endif
-		VL_SetScrollCoords((rf_scrollXUnit & 0xff) >> 4,(rf_scrollYUnit & 0xff) >> 4);
-		CK_NormalCamera(ck_keenObj);
+		VL_SetScrollCoords((rf_scrollXUnit & 0xff) >> 4, (rf_scrollYUnit & 0xff) >> 4);
+
+		if (ck_currentMapNumber == 0)
+			CK_MapCamera(ck_keenObj);
+		else
+			CK_NormalCamera(ck_keenObj);
 
 		//TODO: Slow-mo, extra VBLs.
 		if (ck_slowMotionEnabled)

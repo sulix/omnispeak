@@ -49,12 +49,16 @@ typedef struct RF_SpriteDrawEntry
 #define RF_SCREEN_WIDTH_TILES 20
 #define RF_SCREEN_HEIGHT_TILES 13
 
+
+extern int rf_scrollXUnit, rf_scrollYUnit;
+
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical);
 void RF_MarkTileGraphics();
 void RF_Startup();
 void RF_NewMap(int mapNum);
 void RF_RenderTile16(int x, int y, int tile);
 void RF_RenderTile16m(int x, int y, int tile);
+void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, int height);
 void RF_ReplaceTiles(int16_t *tilePtr, int plane, int dstX, int dstY, int width, int height);
 void RF_Reposition(int scrollXunit, int scrollYunit);
 void RF_SmoothScroll(int scrollXdelta, int scrollYdelta);

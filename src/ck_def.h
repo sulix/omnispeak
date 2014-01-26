@@ -101,6 +101,7 @@ typedef struct CK_GameState
 	int32_t nextKeenAt;			// Score keen will get a new life at.
 	int16_t numLives;			// Number of lives keen has.
 	bool jumpCheat;				// Is the jump cheat enabled?
+	int levelsDone[32];  // Number of levels complete
 } CK_GameState;
 
 extern CK_GameState ck_gameState;

@@ -466,6 +466,76 @@ void RF_RenderTile16m(int x, int y, int tile)
 	VL_MaskedBlitToSurface(ca_graphChunks[ca_gfxInfoE.offTiles16m+tile],rf_tileBuffer,x*16,y*16,16,16);
 }
 
+/*
+ * Copy a rectangle of tiles, in all planes, from one source coordinate on the map
+ * to another destination coordinate 
+ */
+void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, int height)
+{
+
+	int *tile_p, newrowdist, tx, ty, bgtile, fgtile, infotile;
+	uint16_t *src_bgtile_ptr, *src_fgtile_ptr, *src_infotile_ptr;
+	uint16_t *dst_bgtile_ptr, *dst_fgtile_ptr, *dst_infotile_ptr;
+	int src_offset, dst_offset,offset_delta,new_row_offset;
+
+	RFL_RemoveAnimRect(destx, desty, width, height);
+
+	// 
+	src_offset = srcy * rf_mapWidthTiles + srcx;
+	dst_offset = desty * rf_mapWidthTiles + desty;
+	src_bgtile_ptr = CA_mapPlanes[0] + src_offset;
+	src_fgtile_ptr = CA_mapPlanes[1] + src_offset;
+	src_infotile_ptr = CA_mapPlanes[2] + src_offset;
+	offset_delta = dst_offset - src_offset;
+	new_row_offset = width - rf_mapWidthTiles;
+
+	for (ty = 0; ty < height; ty++)
+	{
+		for (tx = 0; tx < width; tx++)
+		{
+			bool different;
+			int screenX, screenY;
+
+			dst_bgtile_ptr = src_bgtile_ptr + offset_delta;
+			dst_fgtile_ptr = src_fgtile_ptr + offset_delta;
+			dst_infotile_ptr = src_infotile_ptr + offset_delta;
+
+			// Check if there is a different tile being copied
+			if (*dst_bgtile_ptr != *src_bgtile_ptr || *dst_fgtile_ptr != *src_fgtile_ptr ||
+					*dst_infotile_ptr != *src_infotile_ptr)
+			{
+				*dst_bgtile_ptr = *src_bgtile_ptr;
+				*dst_fgtile_ptr = *src_fgtile_ptr;
+				*dst_infotile_ptr = *src_infotile_ptr;
+				different = true;
+			}
+			else
+			{
+				different = false;
+			}
+
+			// Mark tile to be redrawn if there's a change
+			screenX = destx + tx - (rf_scrollXUnit >> 8);
+			screenY = desty + ty - (rf_scrollYUnit >> 8);
+			if (screenX >= 0 && screenY >= 0 && screenY < RF_BUFFER_HEIGHT_TILES && screenX < RF_BUFFER_WIDTH_TILES && different)
+			{
+				RF_RenderTile16(screenX, screenY, *dst_bgtile_ptr);
+				RF_RenderTile16m(screenX, screenY, *dst_fgtile_ptr);
+			}
+
+			RFL_CheckForAnimTile(destx + tx, desty + ty);
+			src_bgtile_ptr++;
+			src_fgtile_ptr++;
+			src_infotile_ptr++;
+		}
+
+		src_bgtile_ptr += new_row_offset;
+		src_fgtile_ptr += new_row_offset;
+		src_infotile_ptr += new_row_offset;
+	}
+}
+
+
 void RF_ReplaceTiles(int16_t *tilePtr, int plane, int dstX, int dstY, int width, int height)
 {
 	RFL_RemoveAnimRect(dstX, dstY, width, height);
@@ -483,7 +553,7 @@ void RF_ReplaceTiles(int16_t *tilePtr, int plane, int dstX, int dstY, int width,
 			int newTile = tilePtr[y*width+x];
 			if (oldTile != newTile)
 			{
-				CA_mapPlanes[plane][dstTileY*rf_mapWidthTiles+dstTileX] = newTile;;
+				CA_mapPlanes[plane][dstTileY*rf_mapWidthTiles+dstTileX] = newTile;
 				if (tileScreenX >= 0 && tileScreenX < RF_BUFFER_WIDTH_TILES &&
 					tileScreenY >= 0 && tileScreenY < RF_BUFFER_HEIGHT_TILES)
 				{

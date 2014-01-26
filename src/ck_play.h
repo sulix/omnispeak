@@ -29,6 +29,8 @@ extern int ck_activeY1Tile;
 
 extern bool ck_demoEnabled;
 
+extern bool ck_scrollDisabled;
+
 struct CK_object;
 
 // Timing
