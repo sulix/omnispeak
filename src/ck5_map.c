@@ -227,11 +227,12 @@ void CK5_MapKeenWalk(CK_object * obj)
 }
 
 // FIXME: Keen teleports, but animation doesn't work
+
 void CK5_AnimateMapTeleporter(int tileX, int tileY)
 {
 
 	int unitX, unitY;
-	int var8;
+	int timer;
 	uint16_t animTile;
 
 	SD_PlaySound(0x29);
@@ -240,9 +241,9 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 	unitY = (tileY << 8);
 
 	// Teleport Out
-	for (var8 = 0; var8 < 130; )
+	for (timer = 0; timer < 130; )
 	{
-		int spritesyncx2;
+		int ticsx2;
 
 		// NOTE: I think that the original keen game used
 		// RF_Refresh() to delay this loop
@@ -253,38 +254,39 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 		CK_SetTicsPerFrame();
 		VL_Present();
 
-		spritesyncx2 = CK_GetTicksPerFrame() * 2;
-		var8 += CK_GetTicksPerFrame();
+		ticsx2 = CK_GetTicksPerFrame() * 2;
+		timer += CK_GetTicksPerFrame();
 		if (ck_keenObj->posX == unitX && ck_keenObj->posY == unitY)
 			break;
 
 		// Move Keen closer to the target on every loop
 		if (ck_keenObj->posY < unitY)
 		{
-			ck_keenObj->posY += spritesyncx2;
+			ck_keenObj->posY += ticsx2;
 			if (ck_keenObj->posY > unitY)
 				ck_keenObj->posY = unitY;
 		}
 		else if (ck_keenObj->posY > unitY)
 		{
-			ck_keenObj->posY -= spritesyncx2;
+			ck_keenObj->posY -= ticsx2;
 			if (ck_keenObj->posY < unitY)
 				ck_keenObj->posY = unitY;
 		}
 
 		if (ck_keenObj->posX < unitX)
 		{
-			ck_keenObj->posX += spritesyncx2;
+			ck_keenObj->posX += ticsx2;
 			if (ck_keenObj->posX > unitX)
 				ck_keenObj->posX = unitX;
 		}
 		else if (ck_keenObj->posX > unitX)
 		{
-			ck_keenObj->posX -= spritesyncx2;
+			ck_keenObj->posX -= ticsx2;
 			if (ck_keenObj->posX < unitX)
 				ck_keenObj->posX = unitX;
 		}
 
+		// Draw Keen walking into target
 		ck_keenObj->gfxChunk = ((CK_GetNumTotalTics() >> 3) % 3) + 0xF8;
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
 
@@ -329,7 +331,7 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 	RF_Refresh();
 	SD_PlaySound(0x29);
 
-	for (var8 = 0; var8 < 90; )
+	for (timer = 0; timer < 90; )
 	{
 
 		//NOTE: Same delay tactic used here too
@@ -338,7 +340,7 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 		CK_SetTicsPerFrame();
 		VL_Present();
 
-		var8 += CK_GetTicksPerFrame();
+		timer += CK_GetTicksPerFrame();
 		ck_keenObj->posY += CK_GetTicksPerFrame() * 3;
 		ck_keenObj->gfxChunk = (CK_GetNumTotalTics() >> 3) % 3 + 0xFB;
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
@@ -400,10 +402,222 @@ MapKeenElevator(CK_object * obj)
 }
 #endif
 
+void CK5_MapKeenElevator(CK_object *keen)
+{
+	int tileX, tileY;
+
+	// Move keen in the Y direction
+	keen->nextY = keen->yDirection * 64 * CK_GetTicksPerFrame();
+
+	if (keen->posX != keen->user1)
+	{
+		keen->nextX = keen->xDirection * 12 * CK_GetTicksPerFrame();
+		if (keen->xDirection == IN_motion_Right && keen->nextX + keen->posX > keen->user1 ||
+				keen->xDirection == IN_motion_Left && keen->nextX + keen->posX < keen->user1)
+		{
+			keen->nextX = keen->user1 - keen->posX;
+		}
+	}
+
+	//1D776
+	// Update hitbox
+	keen->clipRects.unitX1 = keen->posX + keen->nextX;
+	keen->clipRects.unitX2 = keen->clipRects.unitX2 + 0xFF;
+
+	keen->clipRects.unitY1 = keen->posY + keen->nextY;
+	keen->clipRects.unitY2 = keen->clipRects.unitY2 + 0xFF;
+
+	// If keen has not yet hit the Y destination, keep moving
+	if (keen->yDirection == IN_motion_Down)
+	{
+		if ((uint16_t) (keen->posY + keen->nextY)<(uint16_t) keen->user2)
+			return;
+	}
+	else
+	{
+		if ((uint16_t) (keen->posY + keen->nextY)>(uint16_t) keen->user2)
+			return;
+	}
+
+	// 1D7C5
+	// Arrived at destination; turn travelling keen back into normal map keen
+	keen->nextX = keen->nextY = 0;
+	keen->posX = keen->user1;
+	keen->posY = keen->user2;
+	keen->zLayer = 1;
+	keen->user1 = 4;  // Keen faces south
+	keen->user2 = 3;
+	keen->user3 = 0;
+	ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None;
+	keen->currentAction = CK_GetActionByName("CK5_ACT_MapKeenStart");
+	keen->gfxChunk = 0xFD;
+	keen->clipped = CLIP_normal;
+	tileX = keen->posX >> 8;
+	tileY = keen->posY >> 8;
+	CK_MapCamera(keen);
+
+	// TODO: Draw Scorebox
+
+	RF_Refresh();
+	RF_Refresh();
+
+	keen->posY -= 0x100;
+	RF_AddSpriteDraw(&keen->sde, keen->posX, keen->posY, keen->gfxChunk, false, keen->zLayer);
+	SD_PlaySound(0x3F);
+
+	// Animate the elevator operation
+	uint16_t tile_array[4];
+	for (int frame = 0; frame <= 5; frame++)
+	{
+		for (int y = 0; y < 2; y++)
+		{
+			for (int x = 0; x < 2; x++)
+			{
+				tile_array[y * 2 + x] = CA_TileAtPos(frame * 2 + x, y, 1);
+			}
+		}
+		RF_ReplaceTiles(tile_array, 1, tileX, tileY-2, 2, 2);
+		RF_Refresh();
+		VL_DelayTics(2);
+		VL_DelayTics(8*2); // Simulate 8 calls to VL_WaitVBL();
+		CK_SetTicsPerFrame();
+		VL_Present();
+	}
+
+	// Draw keen walking out of elevator
+	for (int frame = 0; frame < 32; frame++)
+	{
+		keen->posY += 8;
+		keen->gfxChunk = 0xFB + (frame/4)%3;
+		RF_AddSpriteDraw(&keen->sde, keen->posX, keen->posY, keen->gfxChunk, false, keen->zLayer);
+		RF_Refresh();
+		VL_DelayTics(2);
+		CK_SetTicsPerFrame();
+		VL_Present();
+		
+	}
+
+	keen->clipped = CLIP_normal;
+}
+
+/*
+ * Keen enters an elevator
+ */
+void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
+{
+	int unitX, unitY;
+	int timer;
+	int ticsx2;
+
+	unitX = tileX << 8;
+	unitY = tileY << 8;
+
+	for (timer = 0; timer < 130; )
+	{
+		// NOTE: this function in omnispeak will calculate the new tile clipRects
+		// Here, Vanilla keen calls a function which does not calculate new clipRects
+		// But this is the only time that function is ever called, 
+		// so we can just call CK_ResetClipRects in this spot
+
+		CK_ResetClipRects(ck_keenObj);
+		CK_MapCamera(ck_keenObj);
+		// TODO: Draw The Scorebox
+
+		// Draw screen and delay 1/35th of a second
+		RF_Refresh();
+		VL_DelayTics(2);
+		CK_SetTicsPerFrame();
+		VL_Present();
+
+		ticsx2 = CK_GetTicksPerFrame() * 2;
+		timer += CK_GetTicksPerFrame();
 
 
-//sub_1D959
-void AnimateMapElevator(int tileX, int tileY, int dir);
+		// If keen arrives at the target, then he's done walking
+		if (ck_keenObj->posX == unitX && ck_keenObj->posY == unitY)
+			break;
+
+		// Move Keen closer to the target on every loop
+		if (ck_keenObj->posY < unitY)
+		{
+			ck_keenObj->posY += ticsx2;
+			if (ck_keenObj->posY > unitY)
+				ck_keenObj->posY = unitY;
+		}
+		else if (ck_keenObj->posY > unitY)
+		{
+			ck_keenObj->posY -= ticsx2;
+			if (ck_keenObj->posY < unitY)
+				ck_keenObj->posY = unitY;
+		}
+
+		if (ck_keenObj->posX < unitX)
+		{
+			ck_keenObj->posX += ticsx2;
+			if (ck_keenObj->posX > unitX)
+				ck_keenObj->posX = unitX;
+		}
+		else if (ck_keenObj->posX > unitX)
+		{
+			ck_keenObj->posX -= ticsx2;
+			if (ck_keenObj->posX < unitX)
+				ck_keenObj->posX = unitX;
+		}
+
+		// Draw Keen walking into target
+		ck_keenObj->gfxChunk = ((CK_GetNumTotalTics() >> 3) % 3) + 0xF8;
+		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
+	}
+
+	SD_PlaySound(0x3F);
+
+
+	// Draw the elevator operation
+	uint16_t tile_array[4];
+	for (int frame = 5; frame >= 0; frame--)
+	{
+		for (int y = 0; y < 2; y++)
+		{
+			for (int x = 0; x < 2; x++)
+			{
+				tile_array[y * 2 + x] = CA_TileAtPos(frame * 2 + x, y, 1);
+			}
+		}
+		RF_ReplaceTiles(tile_array, 1, tileX+dir, tileY-1, 2, 2);
+		RF_Refresh();
+		VL_DelayTics(2);
+		VL_DelayTics(8*2); // Simulate 8 calls to VL_WaitVBL();
+		CK_SetTicsPerFrame();
+		VL_Present();
+	}
+
+	// Keen is now behind the elevator door, so don't draw him
+	RF_RemoveSpriteDraw(&ck_keenObj->sde);
+
+	// Get the destination stored in the info plane 
+	// and store X in map units in user1; Y in user 2
+	int dest_tile = CA_TileAtPos(tileX, tileY, 2);
+	ck_keenObj->user1 = dest_tile / 256 * 256;
+	ck_keenObj->user2 = ((dest_tile & 0x00FF)+1 << 8);
+
+	// Move keen based on the relative location of the target
+	if ((uint16_t) ck_keenObj->user2 < (uint16_t) ck_keenObj->posY)
+		ck_keenObj->yDirection = IN_motion_Up;
+	else
+		ck_keenObj->yDirection = IN_motion_Down;
+
+	if ((uint16_t) ck_keenObj->user1 < (uint16_t) ck_keenObj->posX)
+		ck_keenObj->xDirection = IN_motion_Left;
+	else
+		ck_keenObj->xDirection = IN_motion_Right;
+
+	// Keen is going to become invisible and "fly" to the destination
+	ck_keenObj->clipped = CLIP_not;
+	ck_keenObj->currentAction = CK_GetActionByName("CK5_ACT_MapKeenElevator");
+
+	// Note: This should have been added 
+	// ck_keenObj->user3 = 1;
+}
 
 //Thisis called from playloop
 
@@ -429,15 +643,13 @@ void CK_MapMiscFlagsCheck(CK_object *keen)
 		CK5_AnimateMapTeleporter(midTileX, midTileY);
 		break;
 
-		/*
 	case MISCFLAG_LEFTELEVATOR:
-		AnimateMapElevator(midTileX, midTileY, 0);
+		CK5_AnimateMapElevator(midTileX, midTileY, 0);
 		break;
 
 	case MISCFLAG_RIGHTELEVATOR:
-		AnimateMapElevator(midTileX, midTileY, -1);
+		CK5_AnimateMapElevator(midTileX, midTileY, -1);
 		break;
-		 */
 	}
 }
 
@@ -524,4 +736,5 @@ void CK5_Map_SetupFunctions()
 {
 	CK_ACT_AddFunction("CK5_MapKeenStill", &CK5_MapKeenStill);
 	CK_ACT_AddFunction("CK5_MapKeenWalk", &CK5_MapKeenWalk);
+	CK_ACT_AddFunction("CK5_MapKeenElevator", &CK5_MapKeenElevator);
 }

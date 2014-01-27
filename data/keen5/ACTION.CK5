@@ -107,6 +107,7 @@
 # ck5_map.c
 
 # Mapkeen
+%action CK5_ACT_MapKeenElevator -1 -1 Frame 1 0 6 16 16 CK5_MapKeenElevator NULL CK_BasicDrawFunc1 NULL 
 %action CK5_ACT_MapKeenStart 0x0 0x0 UnscaledFrame 0x0 0x0 0x168 0x0 0x0 CK5_MapKeenStill NULL CK_BasicDrawFunc1 CK5_ACT_MapKeenWave0
 %action CK5_ACT_MapKeenWave0 0x10A 0x10A UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK5_MapKeenStill NULL CK_BasicDrawFunc1 CK5_ACT_MapKeenWave1
 %action CK5_ACT_MapKeenWave1 0x10B 0x10B UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK5_MapKeenStill NULL CK_BasicDrawFunc1 CK5_ACT_MapKeenWave2
