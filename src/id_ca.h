@@ -57,6 +57,7 @@ ca_gfxinfo ca_gfxInfoE;
 
 mm_ptr_t ca_graphChunks[CA_MAX_GRAPH_CHUNKS];
 
+void CA_MarkGrChunk(int chunk);
 void CA_CacheGrChunk(int chunk);
 
 // -- Maps --

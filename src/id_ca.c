@@ -73,6 +73,9 @@ uint32_t CAL_ReadULong(void *offset)
 //Begin locals
 SDMode oldsoundmode;
 
+uint8_t ca_levelnum = 0, ca_levelbit = 1;
+uint8_t ca_graphChunkNeeded[CA_MAX_GRAPH_CHUNKS] = {0};
+
 // Adjusts the extension on a filename to match the current episode.
 // This function is NOT thread safe, and the string returned is only
 // valid until the NEXT invocation of this function.
@@ -470,6 +473,113 @@ void CA_CacheGrChunk(int chunk)
 	int read  = fread(compdata,1,compressedLength, ca_graphHandle);
 	CAL_ExpandGrChunk(chunk, compdata);
 	MM_FreePtr(&compdata);
+}
+
+// CA_ClearMarks:
+// Marks all graphics as unused in the current level.
+void CA_ClearMarks()
+{
+	for (int i = 0; i < CA_MAX_GRAPH_CHUNKS; ++i)
+	{
+		ca_graphChunkNeeded[i] &= ~ca_levelbit;
+	}
+}
+
+void CA_SetGrPurge()
+{
+	for (int i = 0; i < CA_MAX_GRAPH_CHUNKS; ++i)
+	{
+		if (ca_graphChunks[i])
+		{
+			MM_SetPurge((mm_ptr_t*)(&ca_graphChunks[i]),3);
+		}
+	}
+}
+
+void CA_MarkGrChunk(int chunk)
+{
+	ca_graphChunkNeeded[chunk] |= ca_levelbit;
+}
+
+void CA_CacheMarks(const char *msg)
+{
+	int numChunksToCache = 0;
+
+	// Mark all unused chunks as purgeable, needed chunks as unpurgeable,
+	// and count number of chunks to cache.
+	for (int i = 0; i < CA_MAX_GRAPH_CHUNKS; ++i)
+	{
+		if (ca_graphChunkNeeded[i] & ca_levelbit)
+		{
+			if (ca_graphChunks[i])
+			{
+				MM_SetPurge(&ca_graphChunks[i], 0);
+			}
+			else
+			{
+				numChunksToCache++;
+			}
+		}
+		else
+		{
+			if (ca_graphChunks[i])
+			{
+				MM_SetPurge(&ca_graphChunks[i],3);
+			}
+		}
+	}
+
+	if (!numChunksToCache) return;
+
+	//TODO: Loading screen.
+
+	// Cache all of the chunks we'll need.
+	for (int i = 0; i < CA_MAX_GRAPH_CHUNKS; ++i)
+	{
+		if ( (ca_graphChunkNeeded[i] & ca_levelbit) && (!ca_graphChunks[i]) )
+		{
+			//TODO: Update loading screen.
+
+			// In the original keen code, a lot of work here went into coalescing reads.
+			// The C standard library does this sort of thing for us, particularly
+			// given that we'll be loading things in file order anyway, so we just
+			// use CA_CacheGrChunk instead.
+
+
+			CA_CacheGrChunk(i);
+		}
+	}
+
+	//TODO: Finish Loading Screen
+
+}
+
+// CA_UpLevel:
+// Pushes a new level onto the resource stack.
+void CA_UpLevel()
+{
+	if (ca_levelnum == 7)
+	{
+		Quit("CA_UpLevel: Up past level 7!");
+	}
+
+	ca_levelbit <<= 1;
+	ca_levelnum++;
+}
+
+// CA_DownLevel:
+// Uncaches everything in the current level and pops it from the rsrc stack.
+void CA_DownLevel()
+{
+	if (ca_levelnum == 0)
+	{
+		Quit("CA_DownLevel: Down past level 0!");
+	}
+
+	ca_levelbit >>= 1;
+	ca_levelnum--;
+
+	CA_CacheMarks(0);
 }
 
 // Map loading fns

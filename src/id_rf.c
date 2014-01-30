@@ -108,6 +108,7 @@ typedef struct RF_OnscreenAnimTile
 } RF_OnscreenAnimTile;
 #define RF_MAX_ANIMTILETIMERS 180
 #define RF_MAX_ONSCREENANIMTILES 90
+#define RF_MAX_ANIM_LOOP 20
 
 int rf_numAnimTileTimers;
 RF_AnimTileTimer rf_animTileTimers[RF_MAX_ANIMTILETIMERS];
@@ -177,61 +178,98 @@ void RF_MarkTileGraphics()
 			bool needNewTimer = true;
 			int backTile = CA_mapPlanes[0][tileY*rf_mapWidthTiles+tileX];
 			int foreTile = CA_mapPlanes[1][tileY*rf_mapWidthTiles+tileX];
+
+			CA_MarkGrChunk(ca_gfxInfoE.offTiles16 + backTile);
+			CA_MarkGrChunk(ca_gfxInfoE.offTiles16m + foreTile);
 			if (TI_BackAnimTile(backTile))
 			{
-				// Is the info-plane free?
-				if (CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX])
-					Quit("RF_MarkTileGraphics: Info plane above animated bg tile in use.");
-
-		
-				for (int i = 0; i < rf_numAnimTileTimers; ++i)
+				if (TI_BackAnimTime(backTile))
 				{
-					if (rf_animTileTimers[i].tileNumber == backTile)
+					// Is the info-plane free?
+					if (CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX])
+						Quit("RF_MarkTileGraphics: Info plane above animated bg tile in use.");
+
+			
+					for (int i = 0; i < rf_numAnimTileTimers; ++i)
 					{
-						// Add the timer index to the info-plane
-						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = i | 0xfe00;
-						needNewTimer = false;
-						break;
+						if (rf_animTileTimers[i].tileNumber == backTile)
+						{
+							// Add the timer index to the info-plane
+							CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = i | 0xfe00;
+							needNewTimer = false;
+							break;
+						}
+					}
+
+					if (needNewTimer) 
+					{
+						if (rf_numAnimTileTimers >= RF_MAX_ANIMTILETIMERS)
+							Quit("RF_MarkTileGraphics: Too many unique animations");
+						rf_animTileTimers[rf_numAnimTileTimers].tileNumber = backTile;
+						rf_animTileTimers[rf_numAnimTileTimers].timeToSwitch = TI_BackAnimTime(backTile);
+						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = rf_numAnimTileTimers | 0xfe00;
+						rf_numAnimTileTimers++;
 					}
 				}
 
-				if (needNewTimer) 
+				// Mark all tiles in the animation loop to be cached.
+				int animLength = 0;
+				int nextTile = backTile;
+				do
 				{
-					if (rf_numAnimTileTimers >= RF_MAX_ANIMTILETIMERS)
-						Quit("RF_MarkTileGraphics: Too many unique animations");
-					rf_animTileTimers[rf_numAnimTileTimers].tileNumber = backTile;
-					rf_animTileTimers[rf_numAnimTileTimers].timeToSwitch = TI_BackAnimTime(backTile);
-					CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = rf_numAnimTileTimers | 0xfe00;
-					rf_numAnimTileTimers++;
-				}
+					nextTile += TI_BackAnimTile(nextTile);
+					animLength++;
+					CA_MarkGrChunk(ca_gfxInfoE.offTiles16 + nextTile);
+					if (animLength > RF_MAX_ANIM_LOOP)
+					{
+						Quit("RF_MarkTileGraphics: Unending background animation");
+					}
+				} while (TI_BackAnimTile(nextTile) && nextTile != backTile);
 			}
 			else if (TI_ForeAnimTile(foreTile))
 			{
-				// Is the info-plane free?
-				//if (CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX])
-				//	Quit("RF_MarkTileGraphics: Info plane above animated fg tile in use.");
-
-				for (int i = 0; i < rf_numAnimTileTimers; ++i)
+				if (TI_ForeAnimTime(foreTile))
 				{
-					if (rf_animTileTimers[i].tileNumber == (foreTile | 0x8000))
+					// Is the info-plane free?
+					//if (CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX])
+					//	Quit("RF_MarkTileGraphics: Info plane above animated fg tile in use.");
+
+					for (int i = 0; i < rf_numAnimTileTimers; ++i)
 					{
-						// Add the timer index to the info-plane
-						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = i | 0xfe00;
-						needNewTimer = false;
-						break;
+						if (rf_animTileTimers[i].tileNumber == (foreTile | 0x8000))
+						{
+							// Add the timer index to the info-plane
+							CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = i | 0xfe00;
+							needNewTimer = false;
+							break;
+						}
+					}
+
+					if (needNewTimer) 
+					{
+						if (rf_numAnimTileTimers >= RF_MAX_ANIMTILETIMERS)
+							Quit("RF_MarkTileGraphics: Too many unique animations");
+				
+						rf_animTileTimers[rf_numAnimTileTimers].tileNumber = foreTile | 0x8000;
+						rf_animTileTimers[rf_numAnimTileTimers].timeToSwitch = TI_ForeAnimTime(foreTile);
+						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = rf_numAnimTileTimers | 0xfe00;
+						rf_numAnimTileTimers++;
 					}
 				}
 
-				if (needNewTimer) 
+				// Mark all tiles in the animation loop to be cached.
+				int animLength = 0;
+				int nextTile = foreTile;
+				do
 				{
-					if (rf_numAnimTileTimers >= RF_MAX_ANIMTILETIMERS)
-						Quit("RF_MarkTileGraphics: Too many unique animations");
-			
-					rf_animTileTimers[rf_numAnimTileTimers].tileNumber = foreTile | 0x8000;
-					rf_animTileTimers[rf_numAnimTileTimers].timeToSwitch = TI_ForeAnimTime(foreTile);
-					CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = rf_numAnimTileTimers | 0xfe00;
-					rf_numAnimTileTimers++;
-				}
+					nextTile += TI_ForeAnimTile(nextTile);
+					animLength++;
+					CA_MarkGrChunk(ca_gfxInfoE.offTiles16m + nextTile);
+					if (animLength > RF_MAX_ANIM_LOOP)
+					{
+						Quit("RF_MarkTileGraphics: Unending foreground animation");
+					}
+				} while (TI_ForeAnimTile(nextTile) && nextTile != foreTile);
 
 			}
 
@@ -441,7 +479,7 @@ void RF_NewMap(int mapNum)
 
 	RFL_SetupOnscreenAnimList();
 	RFL_SetupSpriteTable();
-	RF_MarkTileGraphics();
+	//RF_MarkTileGraphics();
 
 	rf_freeSpriteEraserIndex = 0;
 	

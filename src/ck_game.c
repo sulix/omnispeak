@@ -79,10 +79,13 @@ void CK_LoadLevel(bool unknown)
 
 	CA_CacheMap(ck_currentMapNumber);
 	RF_NewMap(ck_currentMapNumber);
+	CA_ClearMarks();
 
 	CK_SetupObjArray();
 	CK5_ScanInfoLayer();
 
+	RF_MarkTileGraphics();
+	CA_CacheMarks(0);
 	// Deactivate all objects
 	for (CK_object *player = ck_keenObj; player; player = player->next)
 	{
