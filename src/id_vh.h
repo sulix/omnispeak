@@ -34,6 +34,10 @@ typedef struct VH_SpriteTableEntry
 
 VH_SpriteTableEntry VH_GetSpriteTableEntry(int spriteNumber);
 
+void VH_Plot(int x, int y, int colour);
+void VH_HLine(int x1, int x2, int y, int colour);
+void VH_VLine(int y1, int y2, int x, int colour);
+void VH_Bar(int x, int y, int w, int h, int colour);
 void VH_DrawTile8(int x, int y, int tile);
 void VH_DrawTile8M(int x, int y, int tile);
 void VH_DrawTile16(int x, int y, int tile);

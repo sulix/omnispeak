@@ -39,7 +39,10 @@ int ck_nextMapNumber;
 
 void CK_NewGame()
 {
-	//TODO: Implement
+	// TODO: Zero the ck_gameState
+	ck_gameState.nextKeenAt = 20000;
+	ck_gameState.numLives = 3;
+	ck_gameState.numShots = 5;
 }
 
 void CK_GameOver()
@@ -91,14 +94,15 @@ void CK_LoadLevel(bool unknown)
 	}
 }
 
+extern int ck_startingDifficulty;
 void CK_GameLoop()
 {
 	do
 	{
 		if (ck_gameState.levelState != 6)
 		{
-			// difficulty level = word_440A6
-			// word_440A6 = 0;
+			ck_gameState.difficulty = ck_startingDifficulty;
+			ck_startingDifficulty = 0;
 			CK_LoadLevel(true);
 
 			//TODO: If this didn't succeed, return to level 0.

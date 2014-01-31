@@ -67,6 +67,14 @@ static bool ck_slowMotionEnabled = false;
 // Switch to toggle Camera following keen.
 bool ck_scrollDisabled = false;
 
+// Set if game started with /DEMO parm
+int ck_demoParm;
+
+// A bunch of global variables from other modules that should be 
+// handled better, but are just defined here for now
+
+extern int load_game_error, ck_startingSavedGame, ck_startingDifficulty; 
+
 void CK_CountActiveObjects()
 {
 	int active = 0;
@@ -104,6 +112,34 @@ void CK_DebugMemory()
 	VL_Present();
 	IN_WaitKey();
 	//MM_ShowMemory();
+}
+
+void CK_ItemCheat()
+{
+	int i;
+
+	for (i = IN_SC_A; i <= IN_SC_Z; i++)
+	{
+		if (i != IN_SC_B && i != IN_SC_A && i != IN_SC_Z)
+		{
+			if (IN_GetKeyState(i))
+				return;
+		}
+	}
+
+	US_CenterWindow(20, 7);
+	// TODO: PrintY+=2;
+	US_PrintF("Cheat Option!\n\nYou just got all\nthe keys, 99 shots,\nand an extra keen!");
+	VL_Present();
+	IN_WaitKey();
+	//RF_Reset();
+	ck_gameState.numShots = 99;
+	ck_gameState.numLives++;
+	ck_gameState.securityCard = 1;
+	ck_gameState.keyGems[0] =
+		ck_gameState.keyGems[1] =
+		ck_gameState.keyGems[2] =
+		ck_gameState.keyGems[3] = 1;
 }
 
 void CK_SetTicsPerFrame()
@@ -459,9 +495,89 @@ void CK_DebugKeys()
 
 void CK_CheckKeys()
 {
+
+
+	// if (screen_faded)
+	// 	return;
+
+	// Drop down status
+	if (IN_GetKeyState(IN_SC_Enter))
+	{
+
+	}
+
+	// TODO: If Paused
+
+	// HELP
+	if (IN_GetLastScan() == IN_SC_F1)
+	{
+
+	}
+
+
+	if (!ck_demoParm)
+	{
+	// Go back to wristwatch
+		if (IN_GetLastScan() >= IN_SC_F2 && IN_GetLastScan() <= IN_SC_F7 || IN_GetLastScan() == IN_SC_Escape)
+		{
+
+			// VW_SyncPages();
+			// StopMusic();
+			US_RunCards();
+
+			// RF_Reset();
+			// StartMusic(current_level);
+
+			// Handle the scorebox if it got toggled
+			
+			IN_ClearKeysDown();
+			
+			if (ck_startingDifficulty)
+				ck_gameState.levelState = 5;
+			else if (!ck_startingSavedGame)
+				; // RF_ResetScreen();
+
+			if (load_game_error)
+			{
+				load_game_error = 0;
+				ck_gameState.levelState = 8;
+			}
+
+			if (ck_startingSavedGame)
+				ck_gameState.levelState = 6;
+
+			// gameticks_2 = TimeCount
+			// FIXME: Is this the right way to handle this?
+			CK_SetTicsPerFrame();
+		}
+
+		// Do Boss Key
+		if (IN_GetLastScan() == IN_SC_F9)
+		{
+
+		}
+	}
+
+
+	// BAT ITEM CHEAT
+	if (IN_GetKeyState(IN_SC_B) && IN_GetKeyState(IN_SC_A) && IN_GetKeyState(IN_SC_T))
+	{
+		CK_ItemCheat();
+	}
+
+	// Debug Keys
 	if (IN_GetKeyState(IN_SC_F10))
 	{
 		CK_DebugKeys();
+	}
+
+	// TODO: CTRL+S sound
+
+	// CTRL + Q
+	if (IN_GetKeyState(IN_SC_Control) && IN_GetLastScan() == IN_SC_Q)
+	{
+		IN_ClearKeysDown();
+		Quit(NULL);
 	}
 }
 
@@ -753,45 +869,6 @@ void CK_NormalCamera(CK_object *obj)
 	}
 }
 
-//TODO: Add some demo number stuff
-
-void CK_PlayDemo(int demoNumber)
-{
-	uint8_t *demoBuf;
-
-	int demoChunk = 4926 + demoNumber;
-
-	//	CK_NewGame();
-
-	CA_CacheGrChunk(demoChunk);
-	demoBuf = ca_graphChunks[demoChunk];
-	//MM_SetLock(&CA_CacheGrChunk
-
-	uint16_t demoMap = *demoBuf;
-	demoBuf += 2;
-	uint16_t demoLen = *((uint16_t *) demoBuf);
-	demoBuf += 2;
-
-	ck_currentMapNumber =demoMap;
-
-	CK_LoadLevel(true);
-
-	ck_demoEnabled = true;
-
-	ck_gameState.difficulty = D_Normal;
-
-	IN_DemoStartPlaying(demoBuf, demoLen);
-
-
-	CK_PlayLoop();
-
-	// What should we do after playing the demo?
-	CK_HandleDemoKeys();
-
-	// We have to get rid of the demo buffer, as if we want to play it
-	// again, we need a fresh copy. ID_IN modifies the buffer.
-	MM_FreePtr(&ca_graphChunks[demoChunk]);
-}
 
 
 int ck_currentMapNumber;

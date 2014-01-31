@@ -92,37 +92,6 @@ void CK_InitGame()
 	RF_Startup();
 }
 
-void CK_ShowTitleScreen()
-{
-	CA_CacheGrChunk(88);
-	VH_DrawBitmap(0,0,88);
-	VL_Present(0,0);
-	IN_WaitKey();
-}
-
-void CK_HandleDemoKeys()
-{
-	// If a button has been pressed
-	if (IN_GetLastScan() != IN_SC_None)
-	{
-		// Before the menu is implemented, make any key start the game.
-
-		ck_gameState.levelState = 5;
-		ck_currentMapNumber = 1;
-
-		//TODO: If LastScan == F1, show help
-
-		//TODO: When we have menus, handle them here
-
-		// If we've started a game...
-		if (ck_gameState.difficulty != D_NotPlaying)
-		{
-			ck_gameState.levelState = 5;
-		}
-	}
-}
-
-
 /*
  * The Demo Loop
  * Keen (and indeed Wolf3D) have this function as the core of the game.
@@ -130,6 +99,7 @@ void CK_HandleDemoKeys()
  * main menu and game loops when they are required.
  */
 
+static int ck_startingLevel = 0;
 void CK_DemoLoop()
 {
 	/* FIXME: Should be called from load_config with the correct settings */
@@ -151,6 +121,10 @@ void CK_DemoLoop()
 		Quit(0);
 	}
 
+	/*
+	 * Handle "easy" "normal" and "hard" parameters here
+	 */
+
 	// Given we're not coming from TED, run through the demos.
 	
 	int demoNumber = 0;
@@ -163,7 +137,7 @@ void CK_DemoLoop()
 		switch(demoNumber++)
 		{
 		case 0:		// Terminator scroller and Title Screen
-			CK_ShowTitleScreen();	//TODO: Move this to an episode struct.
+			CK_DrawTerminator();	//TODO: Move this to an episode struct.
 #if 1 //DEMO_LOOP_ENABLED
 			break;
 		case 1:
@@ -192,7 +166,16 @@ void CK_DemoLoop()
 		}
 		if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
 		{
+tryagain:
 			CK_GameLoop();
+			// DoHighScores();
+			if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
+				goto tryagain;
+
+			// draw_title();
+
+			// Disasm: Useless comparison of levelstate to 5 or 6 again
+			goto tryagain;
 		}
 	}
 	
@@ -210,6 +193,8 @@ int main(int argc, const char **argv)
 	ck_currentEpisode = &ck5_episode;
 
 	CK_InitGame();
+
+	// Draw the ANSI "Press Key When Ready Screen" here
 	CK_DemoLoop();
 	CK_ShutdownID();
 }
