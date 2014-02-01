@@ -129,6 +129,33 @@ void CK_ShowTitleScreen()
 
 //TODO: Add some demo number stuff
 
+void CK_PlayDemoFile(const char *demoName)
+{
+	uint8_t *demoBuf;
+	unsigned int demoFileLength;
+
+	CA_LoadFile(demoName, &demoBuf, &demoFileLength);
+
+	uint16_t demoMap = *demoBuf;
+	demoBuf += 2;
+	uint16_t demoLen = *((uint16_t *) demoBuf);
+
+	ck_currentMapNumber =demoMap;
+
+	CK_LoadLevel(true);
+
+	ck_demoEnabled = true;
+
+	ck_gameState.difficulty = D_Normal;
+
+	IN_DemoStartPlaying(demoBuf, demoLen);
+
+
+	CK_PlayLoop();
+
+	MM_FreePtr(&demoBuf);
+}
+
 void CK_PlayDemo(int demoNumber)
 {
 	uint8_t *demoBuf;
