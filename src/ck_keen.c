@@ -212,7 +212,63 @@ bool CK_KeenPressUp(CK_object *obj)
 	// Are we enterting a door?
 	if (tileMiscFlag == MISCFLAG_DOOR || tileMiscFlag == MISCFLAG_SECURITYDOOR )
 	{
-		// TODO: Implement
+		uint16_t destUnitX = (obj->clipRects.tileXmid << 8) + 96;
+
+		// If the door is two tiles wide, we want to be in the centre.
+		uint8_t miscFlagLeft = TI_ForeMisc(CA_TileAtPos(obj->clipRects.tileXmid - 1, obj->clipRects.tileY1, 1));
+		if (miscFlagLeft == MISCFLAG_DOOR || miscFlagLeft == MISCFLAG_SECURITYDOOR)
+		{
+			destUnitX -= 256;
+		}
+
+		printf("posX: %d, destUnitX: %d\n",obj->posX, destUnitX);
+		if (obj->posX == destUnitX)
+		{
+			//We're at the door.
+			
+			// Is it a security door?
+			if (tileMiscFlag == MISCFLAG_SECURITYDOOR)
+			{
+				if (ck_gameState.securityCard)
+				{
+					ck_gameState.securityCard = 0;
+					SD_PlaySound(SOUND_OPENSECURITYDOOR);
+/*					CK_object *newObj = CK_GetNewObj(false);
+					newObj->posX = obj->clipRects.tileXmid - 2;
+					newObj->posY = obj->clipRects.tileY2 - 4;
+					newObj->active = OBJ_ALWAYS_ACTIVE;
+					newObj->type = 1;
+					CK_SetAction(newObj, CK_GetActionByName("CK_ACT_SecurityDoorOpen"));*/
+					obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor1");
+					obj->zLayer = 0;
+					ck_keenState.keenSliding = true;
+					return true;
+				}
+				else
+				{
+					SD_PlaySound(SOUND_NEEDKEYCARD);
+					obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor2");
+					ck_keenState.keenSliding = true;
+					return false;
+				}
+			}
+			else
+			{
+				obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor2");
+				obj->zLayer = 0;
+
+				//TODO: Korath lightning?
+			}
+		}
+		else
+		{
+			obj->user1 = destUnitX;
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenSlide");
+		}
+
+		ck_keenState.keenSliding = true;
+
+		return true;
 	}
 
 
@@ -248,6 +304,44 @@ void CK_KeenSlide(CK_object *obj)
 	}
 }
 
+void CK_KeenEnterDoor0(CK_object *obj)
+{
+	SD_PlaySound(SOUND_KEENWALK0);
+}
+
+void CK_KeenEnterDoor1(CK_object *obj)
+{
+	SD_PlaySound(SOUND_KEENWALK1);
+}
+
+// Think function for entering a door.
+void CK_KeenEnterDoor(CK_object *obj)
+{
+	uint16_t destination = CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2, 2);
+	printf("Destination %X, at (%d, %d) (up 1 == %X)\n", destination, obj->clipRects.tileX1, obj->clipRects.tileY2, CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-1, 2));
+
+	if (destination == 0x0000)
+	{
+		ck_gameState.levelState = 13;
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenEnteredDoor");
+		return;
+	}
+
+	if (destination == 0xB1B1)
+	{
+		ck_gameState.levelState = 2;
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenEnteredDoor");
+		return;
+	}
+
+	obj->posY = ((destination&0xFF) << 8) - 256 + 15;
+	obj->posX = ((destination >> 8) << 8);
+	obj->zLayer = 1;
+	obj->clipped = CLIP_not;
+	CK_SetAction2(obj, obj->currentAction->next);
+	obj->clipped = CLIP_normal;
+	CK_CentreCamera(obj);
+}
 
 void CK_KeenRidePlatform(CK_object *obj)
 {
@@ -1430,6 +1524,9 @@ void CK_KeenFall(CK_object *obj)
 void CK_KeenSetupFunctions()
 {
 	CK_ACT_AddFunction("CK_KeenSlide",&CK_KeenSlide);
+	CK_ACT_AddFunction("CK_KeenEnterDoor0",&CK_KeenEnterDoor0);
+	CK_ACT_AddFunction("CK_KeenEnterDoor1",&CK_KeenEnterDoor1);
+	CK_ACT_AddFunction("CK_KeenEnterDoor",&CK_KeenEnterDoor);
 	CK_ACT_AddFunction("CK_KeenRunningThink",&CK_KeenRunningThink);
 	CK_ACT_AddFunction("CK_KeenStandingThink",&CK_KeenStandingThink);
 	CK_ACT_AddFunction("CK_HandleInputOnGround",&CK_HandleInputOnGround);

@@ -28,11 +28,11 @@ typedef enum {
 		SOUND_UNKNOWN11,         // 11
 		SOUND_UNKNOWN12,         // 12
 		SOUND_LEVELEXIT,         // 13
-		SOUND_UNKNOWN14,         // 14
+		SOUND_NEEDKEYCARD,       // 14
 		SOUND_KEENHITCEILING,    // 15
 		SOUND_SPINDREDFLYUP,     // 16
 		SOUND_GOTEXTRALIFE,      // 17
-		SOUND_UNKNOWN18,         // 18
+		SOUND_OPENSECURITYDOOR,  // 18
 		SOUND_GOTGEM,            // 19
 		SOUND_KEENFALL,          // 20
 		SOUND_KEENOUTOFAMMO,     // 21

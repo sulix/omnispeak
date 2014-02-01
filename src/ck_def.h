@@ -130,12 +130,12 @@ typedef enum CK_ActionType
 
 typedef struct CK_action
 {
-	int chunkLeft;
-	int chunkRight;
+	int16_t chunkLeft;
+	int16_t chunkRight;
 	CK_ActionType type;
-	int protectAnimation, stickToGround; 	// See KeenWiki: Galaxy Action Parameters (lemm/levelass)
-	int timer;
-	int velX, velY;
+	int16_t protectAnimation, stickToGround; 	// See KeenWiki: Galaxy Action Parameters (lemm/levelass)
+	int16_t timer;
+	int16_t velX, velY;
 	void (*think)(struct CK_object *obj);
 	void (*collide)(struct CK_object *obj, struct CK_object *other);
 	void (*draw)(struct CK_object *obj);
