@@ -58,6 +58,26 @@ VH_SpriteTableEntry VH_GetSpriteTableEntry(int spriteNumber)
 	return spriteTable[spriteNumber];
 }
 
+void VH_Plot(int x, int y, int colour)
+{
+	VL_ScreenRect(x, y, 1, 1, colour);
+}
+
+void VH_HLine(int x1, int x2, int y, int colour)
+{
+	VL_ScreenRect(x1, y, x2-x1, 1, colour);
+}
+
+void VH_VLine(int y1, int y2, int x, int colour)
+{
+	VL_ScreenRect(x, y1, 1, y2-y1, colour);
+}
+
+void VH_Bar(int x, int y, int w, int h, int colour)
+{
+	VL_ScreenRect(x, y, w, h, colour);
+}
+
 void VH_DrawTile8(int x, int y, int tile)
 {
 	char *ptr = (char*)(ca_graphChunks[ca_gfxInfoE.offTiles8]) + (tile * 32);

@@ -83,9 +83,27 @@ typedef enum CK_ClassType {
 	CT_QED = 25,
 } CK_ClassType;
 
+// This struct is 0x58 bytes big in Keen5
+// It must be preserved if omnispeak savegames are to be compatible 
+// with those of vanilla keen
 typedef struct CK_GameState
 {
+	uint16_t mapPosX;
+	uint16_t mapPosY;
+	uint16_t levelsDone[25];  // Number of levels complete
+	int32_t keenScore;			// Keen's score. (This _is_ signed, by the looks of all the 'jl' instructions)
+	int32_t nextKeenAt;			// Score keen will get a new life at.
+	int16_t numShots;
+	int16_t numVitalin;
+	int16_t securityCard;
+	int16_t word_4729C;
+	int16_t fusesRemaining;
+	int16_t keyGems[4];
+	int16_t currentLevel; // this is currently stored as ck_currentMapNumber
+	int16_t numLives;			// Number of lives keen has.
 	CK_Difficulty difficulty;		// Difficulty level of current game
+	//struct CK_object *platform;  // This was a 16-bit pointer in DOS Keen5.exe
+
 	int levelState;				// Level State (should probably be enum)
 						// Values:
 						// 0 - In Level
@@ -96,12 +114,7 @@ typedef struct CK_GameState
 						// 5 - ???
 						// 6 - ???
 						// 15 - Destroyed QED (Keen 5)
-	int16_t numShots;
-	int32_t keenScore;			// Keen's score. (This _is_ signed, by the looks of all the 'jl' instructions)
-	int32_t nextKeenAt;			// Score keen will get a new life at.
-	int16_t numLives;			// Number of lives keen has.
-	bool jumpCheat;				// Is the jump cheat enabled?
-	int levelsDone[32];  // Number of levels complete
+	bool jumpCheat;				// Is the jump cheat enabled? (Not in Keen5 gamestate struct)
 } CK_GameState;
 
 extern CK_GameState ck_gameState;

@@ -215,6 +215,14 @@ IN_DemoMode IN_DemoGetMode()
 	return in_demoState;
 }
 
+void IN_ClearKeysDown()
+{
+	int i;
+	in_lastKeyScanned = IN_SC_None;
+	// in_lastASCII = key_None;
+	memset (in_keyStates, 0, sizeof(in_keyStates));
+}
+
 void IN_ReadControls(int player, IN_ControlFrame *controls)
 {
 	controls->xDirection = 0;
