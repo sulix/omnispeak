@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #include <stdbool.h>
+// Need this for NULL
+#include <stddef.h>
 
 #include "id_heads.h"
 #include "id_us.h"
