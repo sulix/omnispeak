@@ -872,6 +872,7 @@ void CK_NormalCamera(CK_object *obj)
 
 
 int ck_currentMapNumber;
+extern int game_in_progress;
 // Play a level.
 
 int CK_PlayLoop()
@@ -889,8 +890,13 @@ int CK_PlayLoop()
 
 	CK_LoadLevel(true);
 
+	//ck_keenState.EnterDoorAttempt = 0;
+	ck_keenState.jumpWasPressed = ck_keenState.pogoWasPressed = ck_keenState.shootWasPressed = 0;
+	game_in_progress = 1;
 	// If this is nonzero, the level will quit immediately.
 	ck_gameState.levelState = 0;
+
+	//ck_keenState.pogoTimer = ck_scrollDisabled = ck_keenState.invincibilityTimer = 0;
 
 	CK_CentreCamera(ck_keenObj);
 	while (ck_gameState.levelState == 0)

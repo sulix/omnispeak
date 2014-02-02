@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ */
 
 #include "id_vh.h"
 #include "id_vl.h"
@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Check for a parameter in a list of strings
 // Returns index of string found, or -1 if none
+
 int US_CheckParm(const char *parm, char **strings)
 {
 	// Strip any non-alphabetic characters from 'parm'
@@ -47,7 +48,7 @@ int US_CheckParm(const char *parm, char **strings)
 
 		if (strings[i][0] == '\0') continue;
 
-		if (!strcasecmp(parm,strings[i])) return i;
+		if (!strcasecmp(parm, strings[i])) return i;
 	}
 	return -1;
 }
@@ -62,13 +63,16 @@ static int us_windowH;
 static int us_printX;
 static int us_printY;
 
+static int us_printFont = 3;
+static int us_printColour = 0;
+
 #define US_WINDOW_MAX_X 320
 #define US_WINDOW_MAX_Y 200
 
 void US_Print(const char *str)
 {
 	char strbuf[256];
-	int sboff = 0;	
+	int sboff = 0;
 
 	while (*str)
 	{
@@ -89,8 +93,8 @@ void US_Print(const char *str)
 
 		int w, h;
 		CA_CacheGrChunk(3);
-		VH_MeasurePropString(strbuf, &w, &h, 3);
-		VH_DrawPropString(strbuf, us_printX, us_printY, 3, 0);
+		VH_MeasurePropString(strbuf, &w, &h, us_printFont);
+		VH_DrawPropString(strbuf, us_printX, us_printY, us_printFont, us_printColour);
 
 
 		if (ch)
@@ -118,29 +122,29 @@ void US_PrintF(const char *str, ...)
 
 void USL_PrintInCenter(const char *str, int x1, int y1, int x2, int y2)
 {
-	int w,h,rw,rh,px,py;
-	VH_MeasurePropString(str, &w, &h, 3);
+	int w, h, rw, rh, px, py;
+	VH_MeasurePropString(str, &w, &h, us_printFont);
 	rw = x2 - x1;
 	rh = y2 - y2;
-	px = x1 + (rw-w)/2;
-	py = y1 + (rh-h)/2 + h;
-	VH_DrawPropString(str, px, py, 3, 0);
+	px = x1 + (rw - w) / 2;
+	py = y1 + (rh - h) / 2 + h;
+	VH_DrawPropString(str, px, py, us_printFont, us_printColour);
 }
 
 void US_PrintCentered(const char *str)
 {
-	USL_PrintInCenter(str, us_windowX, us_windowY, us_windowX+us_windowW, us_windowY+us_windowH);
+	USL_PrintInCenter(str, us_windowX, us_windowY, us_windowX + us_windowW, us_windowY + us_windowH);
 }
 
 void US_CPrintLine(const char *str)
 {
 	int w, h;
 	CA_CacheGrChunk(3);
-	VH_MeasurePropString(str, &w, &h, 3);
+	VH_MeasurePropString(str, &w, &h, us_printFont);
 	if (w < us_windowW)
 	{
-		int x = us_windowX + ((us_windowW - w)/2);
-		VH_DrawPropString(str, x, us_printY, 3, 0);
+		int x = us_windowX + ((us_windowW - w) / 2);
+		VH_DrawPropString(str, x, us_printY, us_printFont, us_printColour);
 		us_printY += h;
 	}
 	else
@@ -173,6 +177,7 @@ void US_ClearWindow()
 }
 
 // Coords in tile8s
+
 void US_DrawWindow(int x, int y, int w, int h)
 {
 	us_windowX = x * 8;
@@ -193,20 +198,20 @@ void US_DrawWindow(int x, int y, int w, int h)
 	US_ClearWindow();
 
 	VH_DrawTile8M(borderX, borderY, 0); //Top Left Corner
-	VH_DrawTile8M(borderX, borderY+borderH, 6); //Bottom Left Corner
-	VH_DrawTile8M(borderX+borderW, borderY,2); //Top Right Corner
-	VH_DrawTile8M(borderX+borderW, borderY+borderH,8); //Bottom Right Corner
+	VH_DrawTile8M(borderX, borderY + borderH, 6); //Bottom Left Corner
+	VH_DrawTile8M(borderX + borderW, borderY, 2); //Top Right Corner
+	VH_DrawTile8M(borderX + borderW, borderY + borderH, 8); //Bottom Right Corner
 	// Draw Horizontal sides
-	for (int i = borderX+8; i <= borderX + borderW - 8; i += 8)
+	for (int i = borderX + 8; i <= borderX + borderW - 8; i += 8)
 	{
 		VH_DrawTile8M(i, borderY, 1); //Top row
-		VH_DrawTile8M(i, borderY+borderH, 7); //Bottom Row
+		VH_DrawTile8M(i, borderY + borderH, 7); //Bottom Row
 	}
 	//Draw Vertical sides
-	for (int i = borderY+8; i <= borderY + borderH - 8; i += 8)
+	for (int i = borderY + 8; i <= borderY + borderH - 8; i += 8)
 	{
 		VH_DrawTile8M(borderX, i, 3); //Left col
-		VH_DrawTile8M(borderX+borderW, i, 5); //Right col
+		VH_DrawTile8M(borderX + borderW, i, 5); //Right col
 	}
 }
 
@@ -215,7 +220,7 @@ void US_CenterWindow(int w, int h)
 	const int maxXtile = US_WINDOW_MAX_X / 8;
 	const int maxYtile = US_WINDOW_MAX_Y / 8;
 
-	US_DrawWindow((maxXtile - w)/2, (maxYtile - h)/2, w, h);
+	US_DrawWindow((maxXtile - w) / 2, (maxYtile - h) / 2, w, h);
 }
 
 // Random Number Generator
@@ -225,7 +230,7 @@ void US_CenterWindow(int w, int h)
  * from a random index. This makes behaviour predictable during demos, and
  * ensures a uniform (enough) distribution.
  */
-uint8_t us_RandomTable[256] = {
+uint8_t us_RandomTable[256] ={
 	0,   8, 109, 220, 222, 241, 149, 107,  75, 248, 254, 140,  16,  66,
 	74,  21, 211,  47,  80, 242, 154,  27, 205, 128, 161,  89,  77,  36,
 	95, 110,  85,  48, 212, 140, 211, 249,  22,  79, 200,  50,  28, 188,
@@ -244,11 +249,13 @@ uint8_t us_RandomTable[256] = {
 	71,  17, 161,  93, 186,  87, 244, 138,  20,  52, 123, 251,  26,  36,
 	17,  46,  52, 231, 232,  76,  31, 221,  84,  37, 216, 165, 212, 106,
 	197, 242,  98,  43,  39, 175, 254, 145, 190,  84, 118, 222, 187, 136,
-	120, 163, 236, 249 };
+	120, 163, 236, 249
+};
 
 static int us_randomIndex;
 
 // Seed the random number generator.
+
 void US_InitRndT(bool randomize)
 {
 	if (randomize)
@@ -262,18 +269,21 @@ void US_InitRndT(bool randomize)
 }
 
 // Get a random integer in the range 0-255
+
 int US_RndT()
 {
 	return us_RandomTable[(us_randomIndex++)&0xff];
 }
 
 // Set the random seed (index)
+
 void US_SetRndI(int index)
 {
 	us_randomIndex = index;
 }
 
 // Get the random seed (index)
+
 int US_GetRndI()
 {
 	return us_randomIndex;
@@ -287,7 +297,7 @@ int US_GetRndI()
  * Startup routine for the 'User Manager'
  */
 
-static const char *us_parmStrings[] = {"TEDLEVEL", "NOWAIT", "\0", NULL};
+static const char *us_parmStrings[] ={"TEDLEVEL", "NOWAIT", "\0", NULL};
 
 bool us_noWait; // Debug mode enabled.
 bool us_tedLevel; // Launching a level from TED
@@ -306,11 +316,11 @@ void US_Startup()
 	for (int i = 1; i < us_argc; ++i)
 	{
 		int parmIdx = US_CheckParm(us_argv[i], us_parmStrings);
-		switch(parmIdx)
+		switch (parmIdx)
 		{
 		case 0:
-			us_tedLevelNumber = atoi(us_argv[i+1]);
-			if (us_tedLevelNumber > -1) 
+			us_tedLevelNumber = atoi(us_argv[i + 1]);
+			if (us_tedLevelNumber > -1)
 				us_tedLevel = true;
 			break;
 		case 1:
@@ -319,4 +329,84 @@ void US_Startup()
 		}
 	}
 
+}
+
+// Getter and setter functions for print variables
+int US_GetWindowX()
+{
+	return us_windowX;
+}
+
+int US_GetWindowY()
+{
+	return us_windowY;
+}
+
+int US_GetWindowW()
+{
+	return us_windowW;
+}
+
+int US_GetWindowH()
+{
+	return us_windowH;
+}
+
+int US_GetPrintX()
+{
+	return us_printX;
+}
+
+int US_GetPrintY()
+{
+	return us_printY;
+}
+int US_GetPrintFont()
+{
+	return us_printFont;
+}
+
+int US_GetPrintColour()
+{
+	return us_printColour;
+}
+
+int US_SetWindowX(int parm)
+{
+	us_windowX = parm;
+}
+
+int US_SetWindowY(int parm)
+{
+	us_windowY = parm;
+}
+
+int US_SetWindowW(int parm)
+{
+	us_windowW = parm;
+}
+
+int US_SetWindowH(int parm)
+{
+	us_windowH = parm;
+}
+
+int US_SetPrintX(int parm)
+{
+	us_printX = parm;
+}
+
+int US_SetPrintY(int parm)
+{
+	us_printY = parm;
+}
+
+int US_SetPrintFont(int parm)
+{
+	us_printFont = parm;
+}
+
+int US_SetPrintColour(int parm)
+{
+	us_printColour = parm;
 }

@@ -38,6 +38,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vh.h"
 #include "id_vl.h"
 
+#include "ck_us_2.c"
+
 // Card stack can have at most 7 cards
 #define US_MAX_CARDSTACK 7
 
@@ -1511,6 +1513,8 @@ void USL_EnableMenuItems( US_Card *card )
 		while ( item->type != US_ITEM_None )
 		{
 			item->state &= ~US_IS_Disabled;
+			item->state &= ~US_IS_Selected;
+			item->state &= ~US_IS_Checked;
 
 			if ( item->subMenu  )
 				USL_EnableMenuItems( item->subMenu );
@@ -1712,16 +1716,16 @@ void USL_UpdateCards( void )
 		configure_menu_items[6].state |= US_IS_Disabled;
 
 #endif
-	main_menu_items[4].caption = (game_in_progress) ? "RETURN TO GAME" : "RETURN TO DEMO";
+	ck_us_mainMenuItems[4].caption = (game_in_progress) ? "RETURN TO GAME" : "RETURN TO DEMO";
 	/* Save game and end game items */
 	if ( !game_in_progress )
 	{
-		main_menu_items[2].state |= US_IS_Disabled;
-		main_menu_items[5].state |= US_IS_Disabled;
+		ck_us_mainMenuItems[2].state |= US_IS_Disabled;
+		ck_us_mainMenuItems[5].state |= US_IS_Disabled;
 	}
 
 	/* Hilite 'return to game' or 'new game' option */
-	main_menu.selectedItem = (game_in_progress) ? 4 : 0;
+	ck_us_mainMenu.selectedItem = (game_in_progress) ? 4 : 0;
 
 	/* Update the options menu */
 	//update_options_menus();
@@ -1729,6 +1733,8 @@ void USL_UpdateCards( void )
 
 void USL_BeginCards()
 {
+
+	// NOTE: I'm caching more stuff here than is necessary
 
 	// Cache all bitmaps 
 	for (int i = ca_gfxInfoE.offBitmaps; i < (ca_gfxInfoE.offBitmaps + ca_gfxInfoE.numBitmaps); ++i)
@@ -1746,6 +1752,12 @@ void USL_BeginCards()
 	CA_CacheGrChunk(ca_gfxInfoE.offTiles8);
 	CA_CacheGrChunk(ca_gfxInfoE.offTiles8m);
 
+	// Cache the first few sprites for paddlewar
+	for (int i = ca_gfxInfoE.offSprites; i < (ca_gfxInfoE.offSprites + 10); ++i)
+	{
+		CA_CacheGrChunk(i);
+	}
+
 	CA_LoadAllSounds();
 
 	// fontnumber = 1;
@@ -1757,11 +1769,11 @@ void USL_BeginCards()
 
 	us_currentCommand = US_Comm_None;
 
-	USL_EnableMenuItems(&main_menu);
+	USL_EnableMenuItems(&ck_us_mainMenu);
 
 	USL_UpdateCards();
 
-	US_SetupCards(&main_menu);
+	US_SetupCards(&ck_us_mainMenu);
 
 	USL_SetMenuFooter();
 
@@ -1841,7 +1853,10 @@ void USL_EndCards()
 	fontnumber = 0;
 	fontcolour = 15;
 
-	if (!p_exit_menu && quit_to_dos)
+	if (ck_startingDifficulty && p_exit_menu)
+		p_exit_menu();
+
+	if (quit_to_dos)
 	{
 		US_CenterWindow(0x14, 3);
 		fontcolour = 3;
@@ -1864,7 +1879,7 @@ void USL_EnterCurrentItem()
 
 	if ( item->state & US_IS_Disabled )
 	{
-		// Play sound 14
+		SD_PlaySound(14);
 		return;
 	}
 
@@ -1880,7 +1895,7 @@ void USL_EnterCurrentItem()
 		}
 
 		//TODO: Implement USL_ConfirmComm
-		//USL_ConfirmComm( item->command );
+		USL_ConfirmComm( item->command );
 		return;
 	case US_ITEM_Radio:
 		// US_SelectItem
