@@ -221,7 +221,6 @@ bool CK_KeenPressUp(CK_object *obj)
 			destUnitX -= 256;
 		}
 
-		printf("posX: %d, destUnitX: %d\n",obj->posX, destUnitX);
 		if (obj->posX == destUnitX)
 		{
 			//We're at the door.
@@ -318,7 +317,6 @@ void CK_KeenEnterDoor1(CK_object *obj)
 void CK_KeenEnterDoor(CK_object *obj)
 {
 	uint16_t destination = CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2, 2);
-	printf("Destination %X, at (%d, %d) (up 1 == %X)\n", destination, obj->clipRects.tileX1, obj->clipRects.tileY2, CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2-1, 2));
 
 	if (destination == 0x0000)
 	{

@@ -194,6 +194,15 @@ int main(int argc, const char **argv)
 
 	CK_InitGame();
 
+	for (int i = 1; i < argc; ++i)
+	{
+		if (!strcmp(argv[i],"/DEMOFILE"))
+		{
+			CK_PlayDemoFile(argv[i+1]);
+			Quit(0);
+		}
+	}	
+
 	// Draw the ANSI "Press Key When Ready Screen" here
 	CK_DemoLoop();
 	CK_ShutdownID();
