@@ -240,7 +240,7 @@ void paddlewar( void )
 				show_paddlewar_score( keen_score, comp_score );
 				if ( comp_score == 21 )
 				{
-					//green_message_box( "You lost!", "Press any key", NULL );
+					green_message_box( "You lost!", "Press any key", NULL );
 					done = 1;
 					continue;
 				}
@@ -255,7 +255,7 @@ void paddlewar( void )
 				show_paddlewar_score( keen_score, comp_score );
 				if ( keen_score == 21 )
 				{
-					//green_message_box( "You won!", "Press any key" );
+					green_message_box( "You won!", "Press any key" );
 					done = 1;
 					continue;
 				}
