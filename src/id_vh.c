@@ -65,12 +65,12 @@ void VH_Plot(int x, int y, int colour)
 
 void VH_HLine(int x1, int x2, int y, int colour)
 {
-	VL_ScreenRect(x1, y, x2-x1, 1, colour);
+	VL_ScreenRect(x1, y, x2-x1+1, 1, colour);
 }
 
 void VH_VLine(int y1, int y2, int x, int colour)
 {
-	VL_ScreenRect(x, y1, 1, y2-y1, colour);
+	VL_ScreenRect(x, y1, 1, y2-y1+1, colour);
 }
 
 void VH_Bar(int x, int y, int w, int h, int colour)

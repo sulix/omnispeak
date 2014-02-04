@@ -245,11 +245,9 @@ void US_DrawCards()
 	VL_Present();
 }
 
-#if 0
-
 void center_watch_window( int w, int h, int *x, int *y )
 {
-	sub_662( 74, 48, 121 );
+	VH_DrawMaskedBitmap( 74, 48, 99 );
 
 	/* Calculate the position */
 	*x = 74 + (160 - w) / 2;
@@ -260,15 +258,16 @@ void center_watch_window( int w, int h, int *x, int *y )
 
 	/* Draw the border */
 	VH_HLine( *x - 1, *x + w + 1, *y - 1, 10 );
-	VH_HLine( *x - 1, *x + w + 1, *y + h + 2, 10 );
+	VH_HLine( *x - 1, *x + w + 1, *y + h + 1, 10 );
 	VH_VLine( *y - 1, *y + h + 1, *x - 1, 10 );
-	VH_VLine( *y - 1, *y + h + 1, *x + w + 1m 10 );
+	VH_VLine( *y - 1, *y + h + 1, *x + w + 1, 10 );
 }
 
 void load_save_message( char *s1, char *s2 )
 {
 	int x, y, w2, h, w1;
 	int window_w;
+	int print_x, print_y;
 	char *buf[36];
 
 
@@ -276,8 +275,8 @@ void load_save_message( char *s1, char *s2 )
 	strcat( buf, s2 );
 	strcat( buf, "'" );
 
-	VH_MeasurePropString( s1, &w1, &h );
-	VH_MeasurePropString( buf, &w2, &h );
+	VH_MeasurePropString( s1, &w1, &h, 4 );
+	VH_MeasurePropString( buf, &w2, &h, 4 );
 
 	window_w = (w1 > w2) ? w1 : w2;
 	window_w += 6;
@@ -285,27 +284,30 @@ void load_save_message( char *s1, char *s2 )
 
 	print_y = y + 2;
 	print_x = x + (window_w - w1) / 2;
-	VH_DrawPropString( s1 );
+	VH_DrawPropString( s1, print_x, print_y, 4, 10 );
 
 	print_y += h;
 	print_x = x + (window_w - w2) / 2;
-	VH_DrawPropString( buf );
+	VH_DrawPropString( buf, print_x, print_y, 4, 10 );
 
-	sub_658();
+	// VW_UpdateScreen();
+	VL_Present();
 }
 
 int green_message_box( char *s1, char *s2, char *s3 )
 {
-	int w1, w2, w3, h, sh
-		int window_w, x, y;
-	CONTROLLER_STATUS state;
-	byte k;
+	int w1, w2, w3, h, sh;
+	int window_w, x, y;
+	IN_ControlFrame state;
+	char k;
+
+	int print_x, print_y;
 
 	/* Find the lengths of the strings */
-	VH_MeasurePropString( s1, &w1, &h );
-	VH_MeasurePropString( s2, &w2, &h );
+	VH_MeasurePropString( s1, &w1, &h, 4 );
+	VH_MeasurePropString( s2, &w2, &h, 4 );
 	if ( s3 )
-		VH_MeasurePropString( s3, &w3, &h );
+		VH_MeasurePropString( s3, &w3, &h, 4 );
 	else
 		w3 = 0;
 
@@ -317,65 +319,65 @@ int green_message_box( char *s1, char *s2, char *s3 )
 	center_watch_window( window_w, h, &x, &y );
 
 	/* Print the message */
-	fontcolour = 2;
+	// fontcolour = 2;
 	print_x = x + (window_w - w1) / 2;
 	print_y = y + sh + 1;
-	VH_DrawPropString( s1 );
+	VH_DrawPropString( s1, print_x, print_y, 4, 10 );
+	
 	print_y += (sh * 2) - 1;
-
-	VH_HLine( x + 3, x + _SI + 3, _DX, 10 );
+	VH_HLine( x + 3, x + window_w - 3, print_y, 10 );
 
 	/* Print the OK prompt */
 	print_y += 2;
-	fontcolour = 10;
-	print_x = x + (_SI - w2) / 2;
-	VH_DrawPropString( s2 );
+	//fontcolour = 10;
+	print_x = x + (window_w - w2) / 2;
+	VH_DrawPropString( s2, print_x, print_y, 4, 2 );
 
 	/* Print the third string ( if any ) */
 	print_y += sh;
 	if ( s3 )
 	{
 		print_x = x + (window_w - w3) / 2;
-		VH_DrawPropString( s3 );
+		VH_DrawPropString( s3, print_x, print_y, 4, 2 );
 	}
 
-	sub_648();
+	// VW_UpdateScreen();
+	VL_Present();
 
 	/* Wait for button1 or a key to be pressed */
-	clear_keybuf();
+	IN_ClearKeysDown();
 	do
 	{
-		get_controller_status( &state );
-		if ( state->button1 )
+		IN_ReadControls(0,  &state );
+		if ( state.jump )
 		{
-			k = KEY_Y;
+			k = IN_SC_Y;
 		}
 		else
 		{
 			if ( w2 != 0 )	/* If there's no OK prompt */
-				k = KEY_ESC;
+				k = IN_SC_Escape;
 			else
-				k = last_scan;
+				k = IN_GetLastScan();
 		}
 	} while ( !k );
 
 	/* Wait for the button to be released */
 	do
 	{
-		get_controller_status( &state );
-	} while ( state->button1 || w2 );
-	clear_keybuf();
+		IN_ReadControls(0, &state );
+	} while ( state.jump || w2 );
+	IN_ClearKeysDown();
 
 	US_DrawCards();
 
 	/* Return true or false based on the user's choice */
-	if ( k == KEY_Y )
+	if ( k == IN_SC_Y )
 		return 1;
 	else
 		return 0;
 }
 
-#endif
 
 int USL_ConfirmComm( int command )
 {
