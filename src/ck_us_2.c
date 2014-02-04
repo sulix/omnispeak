@@ -238,7 +238,7 @@ void paddlewar( void )
 				comp_score++;
 				SD_PlaySound( 49 );
 				show_paddlewar_score( keen_score, comp_score );
-				if ( comp_score == 21 )
+				if ( comp_score == 3 )
 				{
 					green_message_box( "You lost!", "Press any key", NULL );
 					done = 1;
@@ -253,7 +253,7 @@ void paddlewar( void )
 				keen_score++;
 				SD_PlaySound( 50 );	/* play_sound */
 				show_paddlewar_score( keen_score, comp_score );
-				if ( keen_score == 21 )
+				if ( keen_score == 3 )
 				{
 					green_message_box( "You won!", "Press any key" );
 					done = 1;

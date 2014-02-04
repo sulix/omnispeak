@@ -323,7 +323,6 @@ int green_message_box( char *s1, char *s2, char *s3 )
 	print_x = x + (window_w - w1) / 2;
 	print_y = y + sh + 1;
 	VH_DrawPropString( s1, print_x, print_y, 4, 10 );
-
 	print_y += (sh * 2) - 1;
 	VH_HLine( x + 3, x + window_w - 3, print_y, 10 );
 
