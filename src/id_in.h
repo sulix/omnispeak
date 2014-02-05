@@ -134,9 +134,12 @@ typedef enum {
 	IN_dir_None
 } IN_Direction;
 
+// NOTE: fire is stored separate from this struct in Keen 5 disasm
+
 typedef struct IN_KeyMapping {
 	IN_ScanCode jump;
 	IN_ScanCode pogo;
+	IN_ScanCode fire;
 	IN_ScanCode upLeft;
 	IN_ScanCode up;
 	IN_ScanCode upRight;

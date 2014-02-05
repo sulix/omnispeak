@@ -640,8 +640,7 @@ void CK_HandleInput()
 	{
 		ck_keenState.jumpIsPressed = ck_inputFrame.jump;
 		ck_keenState.pogoIsPressed = ck_inputFrame.pogo;
-		if (IN_GetKeyState(IN_SC_Space)) ck_keenState.shootIsPressed = true;
-		else ck_keenState.shootIsPressed = false;
+		ck_keenState.shootIsPressed = ck_inputFrame.button2;
 		if (!ck_keenState.jumpIsPressed) ck_keenState.jumpWasPressed = false;
 		if (!ck_keenState.pogoIsPressed) ck_keenState.pogoWasPressed = false;
 		if (!ck_keenState.shootIsPressed) ck_keenState.shootWasPressed = false;

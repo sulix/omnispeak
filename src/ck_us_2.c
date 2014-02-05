@@ -50,13 +50,158 @@ bool CK_US_SVGACompatibilityMenuProc(US_CardMsg msg, US_CardItem *item)
 	return false;
 }
 
+extern US_Card *us_currentCard;
+extern char *key_controls[];
+US_Card ck_us_movementMenu;
+US_CardItem ck_us_movementMenuItems[];
+US_CardItem ck_us_buttonsMenuItems[];
+
 bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	return false;
+	int which_control;
+	int result = 0;
+	int print_x, print_y;
+	int fontcolour;
+
+	which_control = (us_currentCard == &ck_us_movementMenu) ?
+		(item - ck_us_movementMenuItems) + 3 : (item - ck_us_buttonsMenuItems);
+
+	switch ( msg )
+	{
+	case US_MSG_CardEntered:
+		// game_controller[0] = CTRL_KEYBOARD;
+		break;
+
+	case US_MSG_DrawItem:
+
+		// Draw the item Icon and the key's name
+		VH_Bar( 75, item->y, 159, 8, 8 );
+		USL_DrawCardItemIcon( item );
+
+		fontcolour = (item->state & US_IS_Selected) ? 10 : 2;
+		print_x = item->x + 8;
+		print_y = item->y + 1;
+		VH_DrawPropString( item->caption, print_x, print_y, 4, fontcolour );
+
+		// Draw the outer green box
+		VH_Bar( item->x + 90, item->y, 40, 8, fontcolour);
+		VH_Bar( item->x + 91, item->y + 1, 38, 6, 8 );
+
+		print_x = item->x + 96;
+		print_y = item->y + 1;
+		VH_DrawPropString( IN_GetScanName( *key_controls[which_control] ), print_x, print_y, 4, fontcolour );
+		result = 1;
+		break;
+
+	case US_MSG_ItemEntered:
+		CK_US_ControlsMenuProc( US_MSG_DrawItem, item );
+		set_key_control( item, which_control );
+		US_DrawCards();
+		result = 1;
+		break;
+	}
+
+	return result;
+}
+
+void set_key_control( US_CardItem *item, int which_control )
+{
+	long lasttime;
+	int cursor;
+	IN_ControlFrame state;
+	char k;
+	int i, used;
+
+	cursor = 0;
+	lasttime = 0;
+	char last_scan = 0;
+	int fontcolour = 2;
+
+	IN_ClearKeysDown();
+
+	/* Prompt the user to press a key */
+	do
+	{
+		CK_SetTicsPerFrame();
+		IN_PumpEvents();
+
+		/* Flicker the cursor */
+		if ( CK_GetNumTotalTics() >= lasttime )
+		{
+			/* time_count */
+			cursor = !cursor;
+
+			/* Draw the rectangle */
+			VH_Bar( item->x + 90, item->y, 40, 8, fontcolour ^ 8 );
+			VH_Bar( item->x + 91, item->y + 1, 38, 6, 8 );
+
+			/* Draw the cursor */
+			if ( cursor )
+				VH_DrawTile8( item->x + 106, item->y, 100 );
+
+			//VW_UpdateScreen();
+			lasttime = CK_GetNumTotalTics() + 35;	/* time_count */
+			VL_Present();
+		}
+
+		/* A button push will cancel the key selection */
+		IN_ReadControls(0, &state );
+		last_scan = IN_GetLastScan();
+		while ( state.jump || state.pogo )
+		{
+			IN_ReadControls(0, &state );
+			last_scan = IN_SC_Escape;
+		}
+
+		/* Disallow left shift for some reason */
+		// disable();
+		if ( IN_GetLastScan() == IN_SC_LeftShift )
+			last_scan = 0;
+		// enable();
+
+	} while ( (k = last_scan) == 0 );
+
+	/* If they didn't cancel the process with ESC */
+	if ( last_scan != IN_SC_Escape )
+	{
+		used = 0;
+		i = 0;
+
+		/* Make sure the key they chose is not already used */
+		for ( i = 0; i < 11; i++ )
+		{
+			/* Don't check the one we're setting */
+			if ( i != which_control )
+			{
+				if ( *(key_controls[i]) == k )
+				{
+					used = 1;
+					break;
+				}
+			}
+		}
+
+		if ( used )
+			green_message_box( "Key already used", "Press any key", NULL );
+		else
+			*(key_controls[ which_control ]) = k;
+	}
+
+	IN_ClearKeysDown();
 }
 
 bool CK_US_KeyboardMenuProc(US_CardMsg msg, US_CardItem *item)
 {
+	// Set keyboard as game controller if this menu is entered
+	if ( msg == US_MSG_CardEntered )
+	{
+		// TODO: Implement gamepad and joystick support
+#if 0
+		game_controller[0] = CTRL_KEYBOARD;
+		gamepad = 0;
+		update_options_menus();
+#endif 
+	}
 	return false;
 }
 
@@ -238,14 +383,14 @@ void paddlewar( void )
 				comp_score++;
 				SD_PlaySound( 49 );
 				show_paddlewar_score( keen_score, comp_score );
-				if ( comp_score == 3 )
+				if ( comp_score == 21 )
 				{
 					green_message_box( "You lost!", "Press any key", NULL );
 					done = 1;
 					continue;
 				}
 			}
-			// Check if Keen scores a point
+				// Check if Keen scores a point
 			else if ( (ball_real_y + ball_y_speed) / 4 < 62 )
 			{
 				new_round = 1;
@@ -253,7 +398,7 @@ void paddlewar( void )
 				keen_score++;
 				SD_PlaySound( 50 );	/* play_sound */
 				show_paddlewar_score( keen_score, comp_score );
-				if ( keen_score == 3 )
+				if ( keen_score == 21 )
 				{
 					green_message_box( "You won!", "Press any key" );
 					done = 1;
@@ -368,7 +513,7 @@ US_CardItem ck_us_soundMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_soundMenu ={ 8, 0, 92, 0, &ck_us_soundMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_soundMenu ={ 8, 0, 72, 0, &ck_us_soundMenuItems, 0, 0, 0, 0 };
 
 // Music Menu
 US_CardItem ck_us_musicMenuItems[] ={
@@ -377,7 +522,7 @@ US_CardItem ck_us_musicMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_musicMenu ={ 8, 0, 94, 0, &ck_us_musicMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_musicMenu ={ 8, 0, 73, 0, &ck_us_musicMenuItems, 0, 0, 0, 0 };
 
 // New Game Menu
 US_CardItem ck_us_newGameMenuItems[] ={
@@ -400,8 +545,8 @@ US_CardItem ck_us_loadSaveMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_loadGameMenu ={ 4, 3, 90, 0, &ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0 };
-US_Card ck_us_saveGameMenu ={ 4, 3, 90, 0, &ck_us_loadSaveMenuItems, &CK_US_SaveGameMenuProc, 0, 0, 0 };
+US_Card ck_us_loadGameMenu ={ 4, 3, 69, 0, &ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0 };
+US_Card ck_us_saveGameMenu ={ 4, 3, 70, 0, &ck_us_loadSaveMenuItems, &CK_US_SaveGameMenuProc, 0, 0, 0 };
 
 // Dummy Menus
 
@@ -420,7 +565,7 @@ US_CardItem ck_us_optionsMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_optionsMenu ={ 8, 0, 99, 0, &ck_us_optionsMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_optionsMenu ={ 8, 0, 78, 0, &ck_us_optionsMenuItems, 0, 0, 0, 0 };
 
 // Movement Kbd Controls Menu
 US_CardItem ck_us_movementMenuItems[] ={
@@ -435,7 +580,7 @@ US_CardItem ck_us_movementMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_movementMenu ={ 0, 0, 96, 0, &ck_us_movementMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
+US_Card ck_us_movementMenu ={ 0, 0, 75, 0, &ck_us_movementMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
 
 // Buttons Kbd Controls Menu
 US_CardItem ck_us_buttonsMenuItems[] ={
@@ -445,7 +590,7 @@ US_CardItem ck_us_buttonsMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_buttonsMenu ={ 0, 0, 97, 0, &ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0 };
+US_Card ck_us_buttonsMenu ={ 0, 0, 76, 0, &ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0 };
 
 // Keyboard Menu
 US_CardItem ck_us_keyboardMenuItems[] ={
@@ -454,13 +599,13 @@ US_CardItem ck_us_keyboardMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_keyboardMenu ={ 8, 0, 95, 0, &ck_us_keyboardMenuItems, &CK_US_KeyboardMenuProc, 0, 0, 0 };
+US_Card ck_us_keyboardMenu ={ 8, 0, 74, 0, &ck_us_keyboardMenuItems, &CK_US_KeyboardMenuProc, 0, 0, 0 };
 
 // Custom Menus
 
-US_Card ck_us_joystick1Menu ={ 0, 0, 98, 0, 0, &CK_US_Joystick1MenuProc, 0, 0, 0 };
-US_Card ck_us_joystick2Menu ={ 0, 0, 98, 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0 };
-US_Card ck_us_gamepadMenu ={ 0, 0, 98, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0 };
+US_Card ck_us_joystick1Menu ={ 0, 0, 77, 0, 0, &CK_US_Joystick1MenuProc, 0, 0, 0 };
+US_Card ck_us_joystick2Menu ={ 0, 0, 77, 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0 };
+US_Card ck_us_gamepadMenu ={ 0, 0, 77, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0 };
 
 // Configure Menu
 US_CardItem ck_us_configureMenuItems[] ={
@@ -474,7 +619,7 @@ US_CardItem ck_us_configureMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_configureMenu ={ 0, 0, 92, 0, &ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0 };
+US_Card ck_us_configureMenu ={ 0, 0, 71, 0, &ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0 };
 
 // Paddle War!
 

@@ -22,6 +22,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <SDL.h>
 
+char nonchar_keys[] ={
+	0x01, 0x0E, 0x0F, 0x1D,
+	0x2A, 0x39, 0x3A, 0x3B,
+	0x3C, 0x3D, 0x3E, 0x3F,
+	0x40, 0x41, 0x42, 0x43,
+	0x44, 0x57, 0x59, 0x46,
+	0x1C, 0x36, 0x37, 0x38,
+	0x47, 0x49, 0x4F, 0x51,
+	0x52, 0x53, 0x45, 0x48,
+	0x50, 0x4B, 0x4D, 0x00
+};
+char *nonchar_key_strings[] ={
+	"Esc",		"Bksp",		"Tab",		"Ctrl",
+	"LShft",	"Space",	"CapsLk",	"F1",
+	"F2",		"F3",		"F4",		"F5",
+	"F6",		"F7", 		"F8", 		"F9",
+	"F10",		"F11",		"F12",		"ScrlLk",
+	"Enter",	"RShft",	"PrtSc",	"Alt",
+	"Home",		"PgUp",		"End",		"PgDn",
+	"Ins",		"Del",		"NumLk",	"Up",
+	"Down",		"Left",		"Right",	""
+};
+char *char_key_strings[] ={
+	/*	 0	 	 1	 	 2	 	 3		 4	     5	 	 6	 	7	     */
+	/*	 8	 	 9	 	 A	 	 B		 C		 D 		 E		 F	     */
+	"?",	"?",	"1",	"2",	"3",	"4",	"5",	"6",	/* 0 */
+	"7",	"8",	"9",	"0",	"-",	"+",	"?",	"?",
+	"Q",	"W",	"E",	"R",	"T",	"Y",	"U",	"I",	/* 1 */
+	"O",	"P",	"[",	"]",	"|",	"?",	"A",	"S",
+	"D",	"F",	"G",	"H",	"J",	"K",	"L",	";",	/* 2 */
+	"\"",	"?",	"?",	"?",	"Z",	"X",	"C",	"V",
+	"B",	"N",	"M",	",",	".",	"/",	"?",	"?",	/* 3 */
+	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",
+	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",	/* 4 */
+	"\x0F",	"?",	"-",	"\x15",	"5",	"\x11",	"+",	"?",
+	"\x13",	"?",	"?",	"?",	"?",	"?",	"?",	"?",	/* 5 */
+	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",
+	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",	/* 6 */
+	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",
+	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",	/* 7 */
+	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?"
+};
+
 bool in_keyStates[256];
 IN_ScanCode in_lastKeyScanned = IN_SC_None;
 
@@ -110,6 +153,13 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 
 static IN_KeyMapping in_kbdControls;
 
+char *key_controls[] ={
+	&in_kbdControls.jump, &in_kbdControls.pogo, &in_kbdControls.fire,
+	&in_kbdControls.upLeft, &in_kbdControls.up, &in_kbdControls.upRight,
+	&in_kbdControls.right, &in_kbdControls.downRight, &in_kbdControls.down,
+	&in_kbdControls.downLeft, &in_kbdControls.left
+};
+
 static IN_Direction	in_dirTable[] =		// Quick lookup for total direction
 {
 	IN_dir_NorthWest,	IN_dir_North,	IN_dir_NorthEast,
@@ -142,11 +192,15 @@ static void INL_SetupKbdControls()
 {
 	in_kbdControls.jump = IN_SC_Control;
 	in_kbdControls.pogo = IN_SC_Alt;
+	in_kbdControls.fire = IN_SC_Space;
 	in_kbdControls.up = IN_SC_UpArrow;
 	in_kbdControls.down = IN_SC_DownArrow;
 	in_kbdControls.left = IN_SC_LeftArrow;
 	in_kbdControls.right = IN_SC_RightArrow;
-	//TODO: Diagonals
+	in_kbdControls.upLeft = IN_SC_Home;
+	in_kbdControls.upRight = IN_SC_PgUp;
+	in_kbdControls.downRight = IN_SC_PgDown;
+	in_kbdControls.downLeft = IN_SC_End;
 }
 
 void IN_PumpEvents()
@@ -155,6 +209,25 @@ void IN_PumpEvents()
 	in_lastKeyScanned = IN_SC_None;
 	while (SDL_PollEvent(&event))
 		INL_HandleSDLEvent(&event);
+}
+
+const char *IN_GetScanName ( IN_ScanCode scan)
+{
+	char *p;
+	char **ps;
+
+	p = nonchar_keys;
+	ps = nonchar_key_strings;
+
+	while ( *p)
+	{
+		if ( *p == scan )
+			return *ps;
+
+		ps++;
+		p++;
+	}
+	return char_key_strings [scan];
 }
 
 void IN_WaitKey()
@@ -220,7 +293,7 @@ void IN_ClearKeysDown()
 	int i;
 	in_lastKeyScanned = IN_SC_None;
 	// in_lastASCII = key_None;
-	memset (in_keyStates, 0, sizeof(in_keyStates));
+	memset (in_keyStates, 0, sizeof (in_keyStates));
 }
 
 void IN_ReadControls(int player, IN_ControlFrame *controls)
@@ -229,6 +302,7 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	controls->yDirection = 0;
 	controls->jump = false;
 	controls->pogo = false;
+	controls->button2 = false;
 
 	if (in_demoState == IN_Demo_Playback)
 	{
@@ -254,6 +328,7 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	{
 		if (IN_GetKeyState(in_kbdControls.jump)) controls->jump = true;
 		if (IN_GetKeyState(in_kbdControls.pogo)) controls->pogo = true;
+		if (IN_GetKeyState(in_kbdControls.fire)) controls->button2 = true;
 
 		if (IN_GetKeyState(in_kbdControls.up)) controls->yDirection = -1;
 		else if (IN_GetKeyState(in_kbdControls.down)) controls->yDirection = 1;
