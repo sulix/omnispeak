@@ -323,7 +323,7 @@ int green_message_box( char *s1, char *s2, char *s3 )
 	print_x = x + (window_w - w1) / 2;
 	print_y = y + sh + 1;
 	VH_DrawPropString( s1, print_x, print_y, 4, 10 );
-	
+
 	print_y += (sh * 2) - 1;
 	VH_HLine( x + 3, x + window_w - 3, print_y, 10 );
 
@@ -1590,6 +1590,45 @@ void US_SelectItem(US_Card *card, int itemIndex, bool redraw)
 		USL_DrawCardItem(item);
 }
 
+void USL_CheckCardItem(US_Card *card, int itemIndex, bool redraw)
+{
+	int i;
+	US_CardItem *cardItem;
+
+	US_SelectItem(card, itemIndex, redraw);
+	cardItem = card->items;
+
+	i = 0;
+
+	while (cardItem->type != US_ITEM_None)
+	{
+		if (cardItem->type == US_ITEM_Radio)
+		{
+			if (i == itemIndex)
+			{
+				// Check the item that needs to be checked
+				cardItem->state |= US_IS_Checked;
+				if (redraw)
+				{
+					USL_DrawCardItem(cardItem);
+				}
+			}
+			else if (cardItem->state & US_IS_Checked)
+			{
+				// Uncheck the previously checked item
+				cardItem->state &= ~US_IS_Checked;
+				if (redraw)
+				{
+					USL_DrawCardItem(cardItem);
+				}
+			}
+		}
+		cardItem++;
+		i++;
+	}
+}
+
+
 void US_SelectNextItem()
 {
 	if (us_currentCard->items[ us_currentCard->selectedItem + 1 ].type != US_ITEM_None )
@@ -1683,7 +1722,7 @@ void US_SelectCurrentItem()
 		USL_ConfirmComm( item->command );
 		return;
 	case US_ITEM_Radio:
-		US_SelectItem( us_currentCard, us_currentCard->selectedItem, 1 );
+		USL_CheckCardItem( us_currentCard, us_currentCard->selectedItem, 1 );
 		return;
 	case US_ITEM_Submenu:
 		USL_DownLevel( item->subMenu );
@@ -1696,14 +1735,17 @@ void USL_UpdateCards( void )
 	int i;
 
 	/* SFX and Music menus */
+	i = SoundMode;
+
 #if 0
-	i = sfx_device;
-	if ( i == SD_ADLIBSB && quiet_sfx )
+	if ( i == sdm_AdLib && quiet_sfx )
 		i++;
+#endif
 
-	US_SelectItem( sfx_menu, i, 0 );
-	US_SelectItem( music_menu, music_device, 0 );
+	USL_CheckCardItem( &ck_us_soundMenu, i, 0 );
+	//USL_CheckCardItem( music_menu, music_device, 0 );
 
+#if 0
 	if ( !adlib_present )
 	{
 		/* Disable adlib & sb menu items */
@@ -1823,13 +1865,13 @@ void USL_HandleComm( int command )
 	}
 }
 
-#if 0
-
-void set_sfx_and_music_devices( void )
+void USL_SetSoundAndMusic()
 {
 	int i;
 
-	i = get_checked_item( sfx_menu );
+	i = USL_GetCheckedItem( &ck_us_soundMenu );
+	//TODO: Quiet AdLib
+#if 0
 	if ( i == 3 )
 	{
 		quiet_sfx = 1;
@@ -1839,17 +1881,22 @@ void set_sfx_and_music_devices( void )
 	{
 		quiet_sfx = 0;
 	}
-	if ( i != sfx_device )
-		sub_538( i );
+#endif 
+	if ( i != SoundMode )
+		SD_SetSoundMode( i );
 
-	i = get_checked_item( music_menu );
+#if 0
+	i = USL_GetCheckedItem( &ck_us_musicMenu );
 	if ( i != music_device )
 		sub_539( i );
+#endif 
 }
-#endif
 
 void USL_EndCards()
 {
+
+	USL_SetSoundAndMusic();
+
 	if (us_currentCommand != US_Comm_None)
 	{
 		USL_HandleComm(us_currentCommand);
@@ -1878,6 +1925,7 @@ void USL_EndCards()
 	// CA_LoadAllSounds();
 }
 
+// What is this function for?
 void USL_EnterCurrentItem()
 {
 	US_CardItem *item = &us_currentCard->items[us_currentCard->selectedItem];
@@ -1899,11 +1947,10 @@ void USL_EnterCurrentItem()
 			}
 		}
 
-		//TODO: Implement USL_ConfirmComm
 		USL_ConfirmComm( item->command );
 		return;
 	case US_ITEM_Radio:
-		// US_SelectItem
+		USL_CheckCardItem(us_currentCard, us_currentCard->selectedItem, 1);
 		return;
 	case US_ITEM_Submenu:
 		USL_PushCard( item->subMenu );

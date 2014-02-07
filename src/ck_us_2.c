@@ -610,7 +610,7 @@ US_Card ck_us_gamepadMenu ={ 0, 0, 77, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0 };
 // Configure Menu
 US_CardItem ck_us_configureMenuItems[] ={
 	{ US_ITEM_Submenu, 0, IN_SC_S, "SOUND", US_Comm_None, &ck_us_soundMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_M, "MENU", US_Comm_None, &ck_us_musicMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_M, "MUSIC", US_Comm_None, &ck_us_musicMenu, 0, 0 },
 	{ US_ITEM_Submenu, 0, IN_SC_O, "OPTIONS", US_Comm_None, &ck_us_optionsMenu, 0, 0 },
 	{ US_ITEM_Submenu, US_IS_Gap, IN_SC_K, "KEYBOARD", US_Comm_None, &ck_us_keyboardMenu, 0, 0 },
 	{ US_ITEM_Submenu, 0, IN_SC_One, "USE JOYSTICK #1", US_Comm_None, &ck_us_joystick1Menu, 0, 0 },
