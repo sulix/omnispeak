@@ -511,6 +511,11 @@ void CK_CheckKeys()
 	// HELP
 	if (IN_GetLastScan() == IN_SC_F1)
 	{
+		// StopMusic();
+		HelpScreens();
+		// StartMusic(ck_currentMapNumber);
+
+		// TODO: Draw Scorebox here if it's enabled
 
 	}
 

@@ -24,11 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_rf.h"
 
 
-typedef struct VH_BitmapTableEntry
-{
-	uint16_t width;
-	uint16_t height;
-} __attribute((__packed__)) VH_BitmapTableEntry; 
 
 typedef struct VH_Font
 {
@@ -40,7 +35,7 @@ typedef struct VH_Font
 bool vh_dirtyBlocks[RF_BUFFER_WIDTH_TILES*RF_BUFFER_HEIGHT_TILES]; 
 
 //TODO: Should these functions cache the bitmap tables?
-static VH_BitmapTableEntry VH_GetBitmapTableEntry(int bitmapNumber)
+VH_BitmapTableEntry VH_GetBitmapTableEntry(int bitmapNumber)
 {
 	VH_BitmapTableEntry *bitmapTable = (VH_BitmapTableEntry*)(ca_graphChunks[ca_gfxInfoE.hdrBitmaps]);
 	return bitmapTable[bitmapNumber];

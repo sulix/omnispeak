@@ -23,6 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
+typedef struct VH_BitmapTableEntry
+{
+	uint16_t width;
+	uint16_t height;
+} __attribute((__packed__)) VH_BitmapTableEntry; 
+
 typedef struct VH_SpriteTableEntry
 {
 	uint16_t width, height;
@@ -32,6 +38,7 @@ typedef struct VH_SpriteTableEntry
 } __attribute((__packed__)) VH_SpriteTableEntry;
 
 
+VH_BitmapTableEntry VH_GetBitmapTableEntry(int bitmapNumber);
 VH_SpriteTableEntry VH_GetSpriteTableEntry(int spriteNumber);
 
 void VH_Plot(int x, int y, int colour);

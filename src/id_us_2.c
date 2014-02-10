@@ -2031,7 +2031,8 @@ void US_RunCards()
 				action_taken = 1;
 				break;
 			case IN_SC_F1:
-				//HELP SCREEN
+				HelpScreens();
+				US_DrawCards();
 				action_taken = 1;
 				break;
 			default:
