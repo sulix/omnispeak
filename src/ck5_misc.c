@@ -328,6 +328,68 @@ void CK5_FallPlatRise (CK_object *obj)
 	}
 }
 
+// MISC Keen 5 functions
+
+// Teleporter Lightning Spawn
+
+void CK5_SpawnLightning ()
+{
+	CK_object *new_object;
+
+	// Spawn the top lightning
+	new_object = CK_GetNewObj(true);
+	new_object->zLayer = 3;
+	new_object->clipped = 0;
+	new_object->type = 24;
+	new_object->posX = (ck_keenObj->clipRects.tileX1 << 8) - 0x80;
+	new_object->posY = (ck_keenObj->clipRects.tileY2 << 8) - 0x500;
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_LightningH0"));
+
+	// Spawn the vertical lightning that covers keen
+	new_object = CK_GetNewObj(true);
+	new_object->zLayer = 3;
+	new_object->clipped = 0;
+	new_object->type = 24;
+	new_object->posX = (ck_keenObj->clipRects.tileX1 << 8);
+	new_object->posY = (ck_keenObj->clipRects.tileY1 << 8) - 0x80;
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_LightningV0"));
+
+	SD_PlaySound(0x29);
+}
+
+// Fuse Explosion Spawn
+
+void CK5_SpawnFuseExplosion(int tileX, int tileY)
+{
+	CK_object *new_object = CK_GetNewObj(true);
+	new_object->zLayer = 3;
+	new_object->clipped = CLIP_not;
+	new_object->type = 24;
+	new_object->posX = tileX << 8;
+	new_object->posY = tileY << 8;
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_FuseExplosion0"));
+	SD_PlaySound(0x34);
+}
+
+// Level Ending Object Spawn
+
+void CK5_SpawnLevelEnd()
+{
+	CK_object *new_object = CK_GetNewObj(false);
+	new_object->active = OBJ_ALWAYS_ACTIVE;
+	new_object->clipped = CLIP_not;
+	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_LevelEnd"));
+}
+
+// LevelEnd Behaviour
+// If in the QED, end the game
+// Otherwise, do the Korath Fuse message
+
+void CK5_LevelEnd(CK_object *obj)
+{
+	ck_gameState.levelState = ck_currentMapNumber == 12 ? 15 : 14;
+}
+
 void CK5_SetupFunctions()
 {
 	//Quick hack as we haven't got a deadly function yet
@@ -347,6 +409,7 @@ void CK5_SetupFunctions()
 	CK_ACT_AddFunction("CK5_FallPlatSit", &CK5_FallPlatSit);
 	CK_ACT_AddFunction("CK5_FallPlatFall", &CK5_FallPlatFall);
 	CK_ACT_AddFunction("CK5_FallPlatRise", &CK5_FallPlatRise);
+	CK_ACT_AddFunction("CK5_LevelEnd", &CK5_LevelEnd);
 }
 
 /*
@@ -469,7 +532,7 @@ void CK5_ScanInfoLayer()
 				CK_SpawnKeen(x, y, -1);
 				break;
 			case 3:
-				CK_SpawnMapKeen(x,y);
+				CK_SpawnMapKeen(x, y);
 				break;
 
 			case 6:
@@ -659,3 +722,53 @@ void CK5_ScanInfoLayer()
 		}
 	}
 }
+
+// TODO: Galaxy Explosion Stuff
+
+// Fuse Explosion Message
+
+extern uint8_t ca_levelbit;
+extern uint8_t ca_graphChunkNeeded[CA_MAX_GRAPH_CHUNKS];
+
+void FuseMessage()
+{
+	SD_WaitSoundDone();
+
+	// Cache the Keen thumbs up pic
+	CA_UpLevel();
+	ca_graphChunkNeeded[0x5A] |= ca_levelbit;
+	ca_graphChunkNeeded[0x5B] |= ca_levelbit;
+	CA_CacheMarks();
+
+	// VW_SyncPages();
+
+	// Draw Keen Talking
+	US_CenterWindow(0x1A, 8);
+	US_SetWindowW(US_GetWindowW() - 0x30);
+	VH_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x5A);
+	US_SetPrintY(US_GetPrintY() + 0xC);
+
+	if (ck_currentMapNumber == 0xD)
+		US_Print("I wonder what that\nfuse was for....\n");
+	else
+		US_Print("One of the four\nmachines protecting the\nmain elevator shaft--\ntoast!\n");
+
+	// VW_UpdateScreen();
+	VL_Present();
+	// VW_WaitVBL(30);
+
+	IN_ClearKeysDown();
+	// TODO: Add Joystick compatability here
+	// IN_WaitForButton();
+	IN_WaitKey();
+
+	// Draw the Keen Thumbs Up Pic
+	VH_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x5B);
+	VL_Present();
+	// VW_WaitVBL(30);
+	IN_ClearKeysDown();
+	IN_WaitKey();
+	CA_DownLevel();
+	// StopMusic();
+}
+

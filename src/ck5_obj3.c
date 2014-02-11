@@ -305,17 +305,13 @@ void CK5_MineShrapCol(CK_object *o1, CK_object *o2)
 	//blow up QED
 	if (o2->type == 0x19)
 	{
-		// TODO: implement this
-		/*
-			 FuseExplosionSpawn(o2->clipRects.tileX1, o2->clipRects.tileY1);
-			 FuseExplosionSpawn(o2->clipRects.tileX2, o2->clipRects.tileY1);
-			 FuseExplosionSpawn(o2->clipRects.tileX1, o2->clipRects.tileY2);
-			 FuseExplosionSpawn(o2->clipRects.tileX2, o2->clipRects.tileY2);
-			 RF_ReplaceTileBlock(0, 0, 0x10, 0xB, 4, 2);
-			 RF_ReplaceTileBlock(4, 0, 0x10, 0xD, 4, 2);
-			 LevelEndSpawn();
-		 *
-		 */
+		CK5_SpawnFuseExplosion(o2->clipRects.tileX1, o2->clipRects.tileY1);
+		CK5_SpawnFuseExplosion(o2->clipRects.tileX2, o2->clipRects.tileY1);
+		CK5_SpawnFuseExplosion(o2->clipRects.tileX1, o2->clipRects.tileY2);
+		CK5_SpawnFuseExplosion(o2->clipRects.tileX2, o2->clipRects.tileY2);
+		RF_ReplaceTileBlock(0, 0, 0x10, 0xB, 4, 2);
+		RF_ReplaceTileBlock(4, 0, 0x10, 0xD, 4, 2);
+		CK5_SpawnLevelEnd();
 		CK_RemoveObj(o2);
 	}
 
