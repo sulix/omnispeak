@@ -350,10 +350,12 @@ PageLayout( int show_status )
 	{
 		char buf[64], buf2[64];
 		strcpy( buf, "pg " );
-		itoa( help_cur_page, buf2, 10 );
+		// itoa( help_cur_page, buf2, 10 );
+		sprintf(buf2, "%d", help_cur_page); 
 		strcat( buf, buf2);
 		strcat( buf, " of " );
-		itoa( help_num_pages, buf2, 10 );
+		// itoa( help_num_pages, buf2, 10 );
+		sprintf(buf2, "%d", help_num_pages); 
 		strcat( buf, buf2);
 
 		//US_SetPrintColour(8);
