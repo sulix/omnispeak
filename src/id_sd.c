@@ -273,8 +273,8 @@ void SD_SDL_CallBack(void *unused, Uint8 *stream, int len)
 				PCSpeakerUpdateOne(currSamplePtr, len/2);
 
 			currSamplePtr += len/2;
-			len = 0;
 			SD_SDL_SampleOffsetInSound += len/2;
+			len = 0;
 		}
 		// End of part
 		if (SD_SDL_SampleOffsetInSound >= SD_SDL_SamplesPerPart)
@@ -779,13 +779,6 @@ void SD_Startup(void)
 		SD_SDL_AudioSpec.freq = 49716; // OPL rate
 		SD_SDL_AudioSpec.format = AUDIO_S16;
 		SD_SDL_AudioSpec.channels = 1;
-		/* BIG FIXME: Having 1024 samples buffer (or less) is better in
-		 * terms of latency. Unfortunately, in its current state the
-		 * mixer callback would take too long to execute, and sound
-		 * skipping is a possibility.
-		 * Even with 4096 samples it appears to occur in one
-		 * environment, just in a less significant manner.
-		 */
 		SD_SDL_AudioSpec.samples = 512;
 		SD_SDL_AudioSpec.callback = SD_SDL_CallBack;
 		SD_SDL_AudioSpec.userdata = NULL;
