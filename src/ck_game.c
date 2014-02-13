@@ -149,6 +149,7 @@ replayLevel:
 				//We've won, return to main map.
 				SD_PlaySound(13);
 				ck_gameState.levelsDone[ck_currentMapNumber] = 0;
+				ck_nextMapNumber = 0;
 				ck_currentMapNumber = ck_nextMapNumber;
 				//word_4A16A = ck_currentMapNumber;
 				// TODO: If Keen launched with /Demo switch
