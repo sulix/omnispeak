@@ -104,7 +104,8 @@ typedef enum {
 		TIGHTER_MUS,             // 10
 		ROBOREDROCK_MUS,         // 11
 		FANFARE_MUS,             // 12
-		BRINGEROFWAR_MUS         // 13
+		BRINGEROFWAR_MUS,        // 13
+		LASTMUSTRACK
 } musicnames;
 
 /////////////////////////////////////////////////

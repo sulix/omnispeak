@@ -511,9 +511,9 @@ void CK_CheckKeys()
 	// HELP
 	if (IN_GetLastScan() == IN_SC_F1)
 	{
-		// StopMusic();
+		StopMusic();
 		HelpScreens();
-		// StartMusic(ck_currentMapNumber);
+		StartMusic(ck_currentMapNumber);
 
 		// TODO: Draw Scorebox here if it's enabled
 
@@ -527,11 +527,11 @@ void CK_CheckKeys()
 		{
 
 			// VW_SyncPages();
-			// StopMusic();
+			StopMusic();
 			US_RunCards();
 
 			// RF_Reset();
-			// StartMusic(current_level);
+			StartMusic(ck_currentMapNumber);
 
 			// Handle the scorebox if it got toggled
 			
@@ -654,6 +654,55 @@ void CK_HandleInput()
 
 	CK_CheckKeys();
 
+}
+
+void StopMusic(void)
+{
+	int16_t i;
+	SD_MusicOff();
+	for (i = 0; i < LASTMUSTRACK; i++)
+		if (CA_audio[STARTMUSIC + i])
+			MM_SetPurge((void **)&CA_audio[STARTMUSIC + i], 3);
+}
+
+const uint16_t level_music[] = {11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
+
+void StartMusic(uint16_t level)
+{
+	if ((level >= 20) && (level != 0xFFFF))
+	{
+		Quit("StartMusic() - bad level number");
+	}
+	SD_MusicOff();
+	if (level_music[level] == 0xFFFF)
+		return;
+	if (MusicMode != smm_AdLib)
+		return;
+	MM_BombOnError(false);
+	CA_CacheAudioChunk(STARTMUSIC + level_music[level]);
+	MM_BombOnError(true);
+	// TODO: FINISH THIS!
+#if 0
+	if (mmerror)
+	{
+		int16_t faded;
+		mmerror = false;
+		if (DemoMode)
+			return;
+		US_CenterWindow(20, 8);
+		window_print_y += 20;
+		window_print("Insufficient memory\nfor background music!");
+		VM_UpdateScreen();
+		faded = screen_faded;
+		if (faded)
+			VM_SetDefaultPalette();
+		IN_ClearKeysDown();
+		IN_UserInput(210, 0, 0);
+		if (faded)
+			VW_FadeToBlack();
+	}
+#endif
+	SD_StartMusic((MusicGroup *)CA_audio[STARTMUSIC + level_music[level]]);
 }
 
 extern int rf_scrollXUnit;
@@ -881,6 +930,7 @@ extern int game_in_progress;
 
 int CK_PlayLoop()
 {
+	StartMusic(ck_currentMapNumber);
 
 	// Note that this appears in CK_LoadLevel as well
 	if (ck_demoEnabled)
@@ -1047,4 +1097,5 @@ int CK_PlayLoop()
 
 
 	}
+	StopMusic();
 }

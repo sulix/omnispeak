@@ -103,7 +103,7 @@ static int ck_startingLevel = 0;
 void CK_DemoLoop()
 {
 	/* FIXME: Should be called from load_config with the correct settings */
-	SD_Default(false, sdm_PC, smm_Off);
+	SD_Default(true, sdm_AdLib, smm_AdLib);
 	/*
 	 * Commander Keen could be 'launched' from the map editor TED to test a map.
 	 * This was implemented by having TED launch keen with the /TEDLEVEL xx

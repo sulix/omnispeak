@@ -575,6 +575,8 @@ AZ:
 
 	US_SetPrintFont(3);
 
+	StartMusic(19);
+
 	while ( 1 )
 	{
 		n = ShowHelp();
@@ -595,7 +597,7 @@ AZ:
 			// VW_ClearVideo( 4 );
 			VH_Bar( 0, 0, 320, 200, 4 );
 			// RF_Reset();
-			// StopMusic();
+			StopMusic();
 			return;
 		}
 

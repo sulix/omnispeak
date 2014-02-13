@@ -18,6 +18,7 @@
 
 IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id_us_2.o id_vh.o id_vl.o id_str.o glad.o
 CKOBJECTS=ck_act.o ck_inter.o ck_keen.o ck5_map.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck_phys.o ck_game.o ck_play.o ck5_misc.o ck_main.o ck_text.o
+OPLOBJECTS=opl/dbopl.o
 
 ifeq ($(PLATFORM), WINDOWS)
 	EXE_EXT=.exe
@@ -39,6 +40,7 @@ endif
 
 OBJ := $(IDOBJECTS:%=../obj/%)
 OBJ += $(CKOBJECTS:%=../obj/%)
+OBJ += $(OPLOBJECTS:%=../obj/%)
 DEPS := $(OBJ:%.o=%.d)
 
 #SDL_CONFIG=/home/david/builds/SDL-1.2.15/libs-32/bin/$(SDLCONFIGBIN)
@@ -61,6 +63,6 @@ binfiles: ../data/keen5/ACTION.CK5
 
 $(OUTBIN): $(OBJ)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -g -lm -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` 
+	$(CC) $(CFLAGS) -g -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` -lm
 
 -include $(DEPS)

@@ -1,26 +1,15 @@
-/*
-Omnispeak: A Commander Keen Reimplementation
-Copyright (C) 2012 David Gow <david@ingeniumdigital.com>
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+//
+//	ID Engine
+//	ID_SD.h - Sound Manager Header
+//	Version for Wolfenstein
+//	By Jason Blochowiak
+//
 
 #ifndef	ID_SD_H
 #define	ID_SD_H
 
 #include "audiock5.h"
+#include "opl/dbopl.h"
 
 typedef	enum
 {
@@ -33,25 +22,114 @@ typedef	enum
 	smm_Off,smm_AdLib
 } SMMode;
 
-/* We do NOT use PCSound here as done in the original code
- * since it may fail to work as expected after compilation
- * with a different development environment.
- */
-
-#if 0
 typedef	struct
 {
 	uint32_t length;
 	uint16_t priority;
-} SoundCommon;
+} __attribute__((__packed__)) SoundCommon;
 
 typedef	struct
 {
 	SoundCommon common;
-	byte *data;
-} PCSound;
+	uint8_t data[1];
+} __attribute__((__packed__)) PCSound;
+
+// 	Registers for the AdLib card
+#define	alFMStatus	0x388	// R
+#define	alFMAddr	0x388	// W
+#define	alFMData	0x389	// W
+
+//	Register addresses
+// Operator stuff
+#define	alChar		0x20
+#define	alScale		0x40
+#define	alAttack	0x60
+#define	alSus		0x80
+#define	alWave		0xe0
+// Channel stuff
+#define	alFreqL		0xa0
+#define	alFreqH		0xb0
+#define	alFeedCon	0xc0
+// Global stuff
+#define	alEffects	0xbd
+
+typedef	struct
+		{
+			uint8_t	mChar,cChar,
+					mScale,cScale,
+					mAttack,cAttack,
+					mSus,cSus,
+					mWave,cWave,
+					nConn,
+
+					// These are only for Muse - these bytes are really unused
+					voice,
+					mode,
+					unused[3];
+		} __attribute__((__packed__)) Instrument;
+
+typedef	struct
+		{
+			SoundCommon	common;
+			Instrument	inst;
+			uint8_t		block,
+						data[1];
+		} __attribute__((__packed__)) AdLibSound;
+
+//
+//	Sequencing stuff
+//
+#define	sqMaxTracks	10
+#define	sqMaxMoods	1	// DEBUG
+
+#define	sev_Null		0	// Does nothing
+#define	sev_NoteOff		1	// Turns a note off
+#define	sev_NoteOn		2	// Turns a note on
+#define	sev_NotePitch	3	// Sets the pitch of a currently playing note
+#define	sev_NewInst		4	// Installs a new instrument
+#define	sev_NewPerc		5	// Installs a new percussive instrument
+#define	sev_PercOn		6	// Turns a percussive note on
+#define	sev_PercOff		7	// Turns a percussive note off
+#define	sev_SeqEnd		-1	// Terminates a sequence
+
+// 	Flags for MusicGroup.flags
+#define	sf_Melodic		0
+#define	sf_Percussive	1
+
+#if 1
+typedef	struct
+		{
+			uint16_t length,
+			         values[1];
+		} __attribute__((__packed__)) MusicGroup;
+#else
+typedef	struct
+		{
+			uint16_t flags,
+			         count,
+			         offsets[1];
+		} __attribute__((__packed__)) MusicGroup;
 #endif
 
+typedef	struct
+		{
+			/* This part needs to be set up by the user */
+			uint16_t mood, *moods[sqMaxMoods];
+
+			/* The rest is set up by the code */
+			Instrument inst;
+			bool percussive;
+			uint16_t *seq;
+			uint32_t nextevent;
+		} __attribute__((__packed__)) ActiveTrack;
+
+#define	sqmode_Normal		0
+#define	sqmode_FadeIn		1
+#define	sqmode_FadeOut		2
+
+#define	sqMaxFade		64	// DEBUG
+
 extern SDMode SoundMode;
+extern SMMode MusicMode;
 
 #endif
