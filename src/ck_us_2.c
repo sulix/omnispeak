@@ -400,7 +400,7 @@ void paddlewar( void )
 				show_paddlewar_score( keen_score, comp_score );
 				if ( keen_score == 21 )
 				{
-					green_message_box( "You won!", "Press any key" );
+					green_message_box( "You won!", "Press any key", NULL );
 					done = 1;
 					continue;
 				}
@@ -453,7 +453,11 @@ void paddlewar( void )
 			old_ball_y = ball_y;
 
 			/* draw_sprite? */
-			VH_DrawSprite( ball_x, ball_y, (ball_x & 1) ? 104 : 103 );
+			// Omnispeak doesn't emulate sprite shifts properly, so paddle war
+			// (which works around this by having two sprites, one shifted one
+			// pixel over) ends up shifted an extra pixel sometimes. By ignoring
+			// the lower bit of ball_x here, we emulate the shift behaviour we need.
+			VH_DrawSprite( ball_x & ~1, ball_y, (ball_x & 1) ? 104 : 103 );
 		}
 
 		// Draw Computer Paddle
