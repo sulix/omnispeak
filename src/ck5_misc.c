@@ -518,6 +518,8 @@ void CK5_ScanInfoLayer()
 	int mapW = CA_MapHeaders[ck_currentMapNumber]->width;
 	int mapH = CA_MapHeaders[ck_currentMapNumber]->height;
 
+	ck_gameState.fusesRemaining = 0;
+
 	for (int y = 0; y < mapH; ++y)
 	{
 		for (int x = 0; x < mapW; ++x)
@@ -615,6 +617,17 @@ void CK5_ScanInfoLayer()
 			case 40:
 				CK5_SneakPlatSpawn(x, y);
 				break;
+			case 41:
+				if (ck_currentMapNumber == 12)
+				{
+					ck_gameState.fusesRemaining = 4;
+					//TODO: Spawn QED
+				}
+				else
+				{
+					ck_gameState.fusesRemaining++;
+				}
+				break;	
 			case 44:
 				if (ck_gameState.difficulty < D_Hard) break;
 			case 43:

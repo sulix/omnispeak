@@ -1051,6 +1051,19 @@ void CK_KeenPogoThink(CK_object *obj)
 	}
 }
 
+void CK_KeenBreakFuse(int x, int y)
+{
+	CK5_SpawnFuseExplosion(x,y);
+	if (!(--ck_gameState.fusesRemaining))
+	{
+		CK5_SpawnLevelEnd();
+	}
+
+	uint16_t brokenFuseTiles[] = {0, 0};
+
+	RF_ReplaceTiles(brokenFuseTiles, 1, x, y, 1, 2);
+}
+
 void CK_KeenPogoDrawFunc(CK_object *obj)
 {
 	if (obj->rightTI && obj->xDirection == -1)
@@ -1102,7 +1115,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 			{
 				if (obj->velY >= 0x30)
 				{
-					// TODO: Handle fuse breakage
+					CK_KeenBreakFuse(obj->clipRects.tileXmid, obj->clipRects.tileY2);
 					RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 					return;
 				}
