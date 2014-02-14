@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck5_ep.h"
 #include <stdio.h>
 
+void CK5_MapKeenWalk(CK_object * obj);
 #if 0
 
 /*

@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_rf.h"
 #include "id_vl.h"
+#include "id_sd.h"
 
 #include "ck_act.h"
 #include "ck5_ep.h"
@@ -57,6 +58,8 @@ int ck_activeY1Tile;
 
 
 void CK_KeenCheckSpecialTileInfo(CK_object *obj);
+void StartMusic(uint16_t level);
+void StopMusic(void);
 
 bool ck_demoEnabled;
 

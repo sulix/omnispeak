@@ -138,4 +138,5 @@ typedef struct US_Card
 	int unk1, unk2;
 } US_Card;
 
+void US_DrawCards();
 #endif //ID_US_H

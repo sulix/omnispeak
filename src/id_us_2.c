@@ -38,6 +38,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vh.h"
 #include "id_vl.h"
 
+void USL_DrawCardItemIcon(US_CardItem *item);
+void set_key_control( US_CardItem *item, int which_control );
 #include "ck_us_2.c"
 
 // Card stack can have at most 7 cards
@@ -661,7 +663,7 @@ int keyboard_menu_proc( MENU_PROC_MSG msg, US_CardItem far *item )
 	return 0;
 }
 
-int controls_menu_proc( MENU_PROC_MSG msg, US_CardItem far *item )
+int controls_menu_proc( MENU_PROC_MSG msg, US_CardItem *item )
 {
 	int which_control;
 	int result = 0;
