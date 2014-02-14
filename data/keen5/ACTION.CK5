@@ -104,6 +104,9 @@
 
 %action CK_ACT_keenSlide 175 175 Frame 0 0 0 0 0 CK_KeenSlide NULL CK_SimpleDrawFunc NULL
 
+%action CK_ACT_keenPressSwitch1 175 175 UnscaledOnce 0 1 8 0 0 CK_KeenPressSwitchThink NULL CK_KeenDrawFunc CK_ACT_keenPressSwitch2
+%action CK_ACT_keenPressSwitch2 175 175 UnscaledOnce 0 1 8 0 0 NULL NULL CK_KeenDrawFunc CK_ACT_keenStanding
+
 %action CK_ACT_keenEnterDoor1 175 175 UnscaledOnce 0 0 0x2D 0 0xFFC0 NULL NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor2
 %action CK_ACT_keenEnterDoor2 175 175 UnscaledOnce 0 0 9 0 0xFFC0 CK_KeenEnterDoor0 NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor3
 %action CK_ACT_keenEnterDoor3 176 176 UnscaledOnce 0 0 9 0 0xFFC0 CK_KeenEnterDoor1 NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor4

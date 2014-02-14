@@ -186,6 +186,52 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 	}
 }
 
+void CK_KeenPressSwitchThink(CK_object *obj)
+{
+	uint16_t switchTarget = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY1, 2);
+	int switchTargetX = (switchTarget >> 8);
+	int switchTargetY = (switchTarget & 0xFF);
+	uint16_t switchTile = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY1, 1);
+	uint8_t switchMisc = TI_ForeMisc(switchTile);
+
+	// Toggle the switch.
+	uint16_t switchNextTile = switchTile + TI_ForeAnimTile(switchTile);
+	RF_ReplaceTiles(&switchNextTile, 1, obj->clipRects.tileXmid, obj->clipRects.tileY1, 1, 1);
+	SD_PlaySound(SOUND_KEENOUTOFAMMO);
+
+	if (switchMisc == MISCFLAG_SWITCHBRIDGE)
+	{
+		for (int tileY = switchTargetY; tileY < switchTargetY + 2; ++tileY)
+		{
+			for (int tileX = switchTargetX - ((tileY == switchTargetY)? 0 : 1); tileX < CA_GetMapWidth(); ++tileX)
+			{
+				uint16_t currentTile = CA_TileAtPos(tileX, tileY, 1);
+				if (!TI_ForeAnimTile(currentTile)) break;
+				uint16_t newTile = currentTile + TI_ForeAnimTile(currentTile);
+				RF_ReplaceTiles(&newTile, 1, tileX, tileY, 1, 1);
+			} 
+		}
+	}
+	else
+	{
+		int infoPlaneInverses[8] = {2,3,0,1,6,7,4,5};
+		uint16_t infoPlaneValue = CA_TileAtPos(switchTargetX, switchTargetY, 2);
+		if (infoPlaneValue >= 91 && infoPlaneValue < 99)
+		{
+			// Invert the direction of the goplat arrow.
+			infoPlaneValue = infoPlaneInverses[infoPlaneValue - 91] + 91;
+		}
+		else
+		{
+			// Insert or remove a [B] block.
+			infoPlaneValue ^= 0x1F;
+		}
+		
+		CA_mapPlanes[2][switchTargetY*CA_GetMapWidth() + switchTargetX] = infoPlaneValue;
+	}
+}
+
+
 bool CK_KeenPressUp(CK_object *obj)
 {
 	uint8_t tileMiscFlag = TI_ForeMisc(CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY1, 1));
@@ -197,8 +243,7 @@ bool CK_KeenPressUp(CK_object *obj)
 		if (obj->posX == destXunit)
 		{
 			// Flip that switch!
-			// TODO: Actually implement.
-			return false;
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenPressSwitch1");
 		}
 		else
 		{
@@ -1543,6 +1588,7 @@ void CK_KeenSetupFunctions()
 	CK_ACT_AddFunction("CK_HandleInputOnGround",&CK_HandleInputOnGround);
 	CK_ACT_AddFunction("CK_KeenLookUpThink",&CK_KeenLookUpThink);
 	CK_ACT_AddFunction("CK_KeenLookDownThink",&CK_KeenLookDownThink);
+	CK_ACT_AddFunction("CK_KeenPressSwitchThink",&CK_KeenPressSwitchThink);
 	CK_ACT_AddFunction("CK_KeenDrawFunc",&CK_KeenDrawFunc);
 	CK_ACT_AddFunction("CK_KeenRunDrawFunc",&CK_KeenRunDrawFunc);
 	CK_ACT_AddFunction("CK_KeenReadThink",&CK_KeenReadThink);
