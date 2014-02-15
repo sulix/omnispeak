@@ -33,7 +33,7 @@ char nonchar_keys[] ={
 	0x52, 0x53, 0x45, 0x48,
 	0x50, 0x4B, 0x4D, 0x00
 };
-char *nonchar_key_strings[] ={
+const char *nonchar_key_strings[] ={
 	"Esc",		"Bksp",		"Tab",		"Ctrl",
 	"LShft",	"Space",	"CapsLk",	"F1",
 	"F2",		"F3",		"F4",		"F5",
@@ -44,7 +44,7 @@ char *nonchar_key_strings[] ={
 	"Ins",		"Del",		"NumLk",	"Up",
 	"Down",		"Left",		"Right",	""
 };
-char *char_key_strings[] ={
+const char *char_key_strings[] ={
 	/*	 0	 	 1	 	 2	 	 3		 4	     5	 	 6	 	7	     */
 	/*	 8	 	 9	 	 A	 	 B		 C		 D 		 E		 F	     */
 	"?",	"?",	"1",	"2",	"3",	"4",	"5",	"6",	/* 0 */
@@ -214,7 +214,7 @@ void IN_PumpEvents()
 const char *IN_GetScanName ( IN_ScanCode scan)
 {
 	char *p;
-	char **ps;
+	const char **ps;
 
 	p = nonchar_keys;
 	ps = nonchar_key_strings;

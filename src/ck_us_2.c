@@ -394,7 +394,7 @@ void show_paddlewar_score( int keen_score, int comp_score )
 	// Draw keen's score
 	int print_x = 80;
 	VH_Bar(print_x, print_y, 42, 6, 8);
-	char *keenString = "KEEN:";
+	const char *keenString = "KEEN:";
 	VH_MeasurePropString(keenString, &w, &h, 4);
 	VH_DrawPropString(keenString, print_x, print_y, 4, print_color);
 	US_SetPrintX(print_x + w);
@@ -404,7 +404,7 @@ void show_paddlewar_score( int keen_score, int comp_score )
 	// Draw Comp score
 	print_x = 182;
 	VH_Bar( print_x, print_y, 50, 6, 8 );
-	char *compString = "COMP:";
+	const char *compString = "COMP:";
 	VH_MeasurePropString(compString, &w, &h, 4);
 	VH_DrawPropString(compString, print_x, print_y, 4, print_color );
 

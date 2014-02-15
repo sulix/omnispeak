@@ -161,6 +161,6 @@ void US_DrawCards();
 void US_RunCards();
 
 // Related
-int green_message_box( char *s1, char *s2, char *s3 );
+int green_message_box( const char *s1, const char *s2, const char *s3 );
 
 #endif //ID_US_H

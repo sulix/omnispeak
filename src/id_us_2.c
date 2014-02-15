@@ -270,7 +270,7 @@ void center_watch_window( int w, int h, int *x, int *y )
 	VH_VLine( *y - 1, *y + h + 1, *x + w + 1, 10 );
 }
 
-void load_save_message( char *s1, char *s2 )
+void load_save_message( const char *s1, const char *s2 )
 {
 	int x, y, w2, h, w1;
 	int window_w;
@@ -301,7 +301,7 @@ void load_save_message( char *s1, char *s2 )
 	VL_Present();
 }
 
-int green_message_box( char *s1, char *s2, char *s3 )
+int green_message_box( const char *s1, const char *s2, const char *s3 )
 {
 	int w1, w2, w3, h, sh;
 	int window_w, x, y;
@@ -392,7 +392,7 @@ int green_message_box( char *s1, char *s2, char *s3 )
 int USL_ConfirmComm( US_CardCommand command )
 {
 	int result;
-	char *s1, *s2, *s3;
+	const char *s1, *s2, *s3;
 	int ask_user;
 
 	if ( command == US_Comm_None )
