@@ -24,7 +24,7 @@ ifeq ($(PLATFORM), WINDOWS)
 	EXE_EXT=.exe
 endif
 
-BUILDASCPP=0
+BUILDASCPP=1
 BINPREFIX=
 
 ifeq ($(BUILDASCPP), 1)
@@ -41,8 +41,10 @@ endif
 
 OUTBIN=../bin/omnispeak5e$(EXE_EXT)
 
+LIBS=
 WITH_SDL2=1
 ifeq ($(WITH_SDL2), 1)
+	LIBS+= -lGL
 	IDOBJECTS+= id_vl_sdl2gl.o 
 	SDLCONFIGBIN=sdl2-config #/local/cross-tools/x86_64-w64-mingw32/bin/sdl2-config
 else
@@ -75,6 +77,6 @@ binfiles: ../data/keen5/ACTION.CK5
 
 $(OUTBIN): $(OBJ)
 	@mkdir -p $(dir $@)
-	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` -lm -lGL
+	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` -lm $(LIBS)
 
 -include $(DEPS)

@@ -59,7 +59,7 @@ void RF_NewMap(int mapNum);
 void RF_RenderTile16(int x, int y, int tile);
 void RF_RenderTile16m(int x, int y, int tile);
 void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, int height);
-void RF_ReplaceTiles(int16_t *tilePtr, int plane, int dstX, int dstY, int width, int height);
+void RF_ReplaceTiles(uint16_t *tilePtr, int plane, int dstX, int dstY, int width, int height);
 void RF_Reposition(int scrollXunit, int scrollYunit);
 void RF_SmoothScroll(int scrollXdelta, int scrollYdelta);
 void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry);

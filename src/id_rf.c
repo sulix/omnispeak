@@ -575,7 +575,7 @@ void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, in
 }
 
 
-void RF_ReplaceTiles(int16_t *tilePtr, int plane, int dstX, int dstY, int width, int height)
+void RF_ReplaceTiles(uint16_t *tilePtr, int plane, int dstX, int dstY, int width, int height)
 {
 	RFL_RemoveAnimRect(dstX, dstY, width, height);
 

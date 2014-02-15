@@ -235,7 +235,7 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 
 	int unitX, unitY;
 	int timer;
-	int16_t animTile;
+	uint16_t animTile;
 
 	SD_PlaySound(SOUND_UNKNOWN41);
 
@@ -468,7 +468,7 @@ void CK5_MapKeenElevator(CK_object *keen)
 	SD_PlaySound(SOUND_UNKNOWN63);
 
 	// Animate the elevator operation
-	int16_t tile_array[4];
+	uint16_t tile_array[4];
 	for (int frame = 0; frame <= 5; frame++)
 	{
 		for (int y = 0; y < 2; y++)
@@ -575,7 +575,7 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 
 
 	// Draw the elevator operation
-	int16_t tile_array[4];
+	uint16_t tile_array[4];
 	for (int frame = 5; frame >= 0; frame--)
 	{
 		for (int y = 0; y < 2; y++)

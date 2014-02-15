@@ -115,7 +115,7 @@ void CK_SpawnKeen(int tileX, int tileY, int direction)
 	CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_keenStanding"));
 }
 
-static int16_t emptyTile = 0;
+static uint16_t emptyTile = 0;
 
 void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 {
@@ -1109,7 +1109,7 @@ void CK_KeenBreakFuse(int x, int y)
 		CK5_SpawnLevelEnd();
 	}
 
-	int16_t brokenFuseTiles[] = {0, 0};
+	uint16_t brokenFuseTiles[] = {0, 0};
 
 	RF_ReplaceTiles(brokenFuseTiles, 1, x, y, 1, 2);
 }

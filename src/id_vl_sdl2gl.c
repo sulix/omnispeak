@@ -90,7 +90,7 @@ static bool VL_SDL2GL_LoadGLProcs()
 }
 
 static SDL_Window *vl_sdl2gl_window;
-static SDL_GLContext *vl_sdl2gl_context;
+static SDL_GLContext vl_sdl2gl_context;
 static GLuint vl_sdl2gl_program;
 static GLuint vl_sdl2gl_framebufferTexture;
 static GLuint vl_sdl2gl_framebufferObject;
@@ -176,7 +176,7 @@ static void VL_SDL2GL_SetVideoMode(int w, int h)
 static void VL_SDL2GL_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
 static void *VL_SDL2GL_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 {
-	VL_SDL2GL_Surface *surf = malloc(sizeof(VL_SDL2GL_Surface));
+	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface*)malloc(sizeof(VL_SDL2GL_Surface));
 	surf->w = w;
 	surf->h = h;
 	surf->textureHandle = 0;
