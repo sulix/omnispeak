@@ -123,24 +123,25 @@ static void VL_SDL12_Present(void *surface, int scrlX, int scrlY)
 	SDL_Flip(vl_sdl12_screenSurface);
 }
 
+// Unfortunately, we can't take advantage of designated initializers in C++.
 VL_Backend vl_sdl12_backend =
 {
-	.setVideoMode = &VL_SDL12_SetVideoMode,
-	.createSurface = &VL_SDL12_CreateSurface,
-	.destroySurface = &VL_SDL12_DestroySurface,
-	.getSurfaceMemUse = &VL_SDL12_GetSurfaceMemUse,
-	.surfaceRect = &VL_SDL12_SurfaceRect,
-	.surfaceToSurface = &VL_SDL12_SurfaceToSurface,
-	.surfaceToSelf = &VL_SDL12_SurfaceToSelf,
-	.unmaskedToSurface = &VL_SDL12_UnmaskedToSurface,
-	.maskedToSurface = &VL_SDL12_MaskedToSurface,
-	.maskedBlitToSurface = &VL_SDL12_MaskedBlitToSurface,
-	.bitToSurface = &VL_SDL12_BitToSurface,
-	.bitBlitToSurface = &VL_SDL12_BitBlitToSurface,
-	.present = &VL_SDL12_Present
+	/*.setVideoMode =*/ &VL_SDL12_SetVideoMode,
+	/*.createSurface =*/ &VL_SDL12_CreateSurface,
+	/*.destroySurface =*/ &VL_SDL12_DestroySurface,
+	/*.getSurfaceMemUse =*/ &VL_SDL12_GetSurfaceMemUse,
+	/*.surfaceRect =*/ &VL_SDL12_SurfaceRect,
+	/*.surfaceToSurface =*/ &VL_SDL12_SurfaceToSurface,
+	/*.surfaceToSelf =*/ &VL_SDL12_SurfaceToSelf,
+	/*.unmaskedToSurface =*/ &VL_SDL12_UnmaskedToSurface,
+	/*.maskedToSurface =*/ &VL_SDL12_MaskedToSurface,
+	/*.maskedBlitToSurface =*/ &VL_SDL12_MaskedBlitToSurface,
+	/*.bitToSurface =*/ &VL_SDL12_BitToSurface,
+	/*.bitBlitToSurface =*/ &VL_SDL12_BitBlitToSurface,
+	/*.present =*/ &VL_SDL12_Present
 };
 
-VL_Backend *VL_SDL12_GetBackend()
+VL_Backend *VL_Impl_GetBackend()
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	return &vl_sdl12_backend;

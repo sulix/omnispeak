@@ -146,7 +146,7 @@ void VH_MeasureString(const char *string, int *width, int *height, VH_Font *fnt)
 
 void VH_MeasurePropString(const char *string, int *width, int *height, int chunk)
 {
-	VH_MeasureString(string,width,height,ca_graphChunks[chunk]);
+	VH_MeasureString(string,width,height,(VH_Font *)(ca_graphChunks[chunk]));
 }
 
 void VH_DrawPropString(const char *string,int x, int y, int chunk, int colour)

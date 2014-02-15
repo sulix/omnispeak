@@ -76,10 +76,14 @@ SDMode oldsoundmode;
 uint8_t ca_levelnum = 0, ca_levelbit = 1;
 uint8_t ca_graphChunkNeeded[CA_MAX_GRAPH_CHUNKS] = {0};
 
+ca_gfxinfo ca_gfxInfoE;
+mm_ptr_t ca_graphChunks[CA_MAX_GRAPH_CHUNKS];
+
+
 // Adjusts the extension on a filename to match the current episode.
 // This function is NOT thread safe, and the string returned is only
 // valid until the NEXT invocation of this function.
-char* CAL_AdjustExtension(char *filename)
+char* CAL_AdjustExtension(const char *filename)
 {
 	static char newname[16];
 	strcpy(newname,filename);
@@ -93,7 +97,7 @@ char* CAL_AdjustExtension(char *filename)
 // CA_ReadFile reads a whole file into the preallocated memory buffer at 'offset'
 // NOTE that this function is deprecated: use CA_SafeReadFile instead.
 //
-bool CA_ReadFile(char *filename, void *offset)
+bool CA_ReadFile(const char *filename, void *offset)
 {
 	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
 	
@@ -110,7 +114,7 @@ bool CA_ReadFile(char *filename, void *offset)
 }
 
 // Reads a file into a buffer of length bufLength
-bool CA_SafeReadFile(char *filename, void *offset, int bufLength)
+bool CA_SafeReadFile(const char *filename, void *offset, int bufLength)
 {
 	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
 
@@ -128,7 +132,7 @@ bool CA_SafeReadFile(char *filename, void *offset, int bufLength)
 	return (totalRead == amountToRead);
 }
 
-bool CA_WriteFile(char *filename, void *offset, int bufLength)
+bool CA_WriteFile(const char *filename, void *offset, int bufLength)
 {
 	FILE *f = fopen(CAL_AdjustExtension(filename), "wb");
 
@@ -141,7 +145,7 @@ bool CA_WriteFile(char *filename, void *offset, int bufLength)
 	return (amountWritten == bufLength);
 }
 
-bool CA_LoadFile(char *filename, mm_ptr_t *ptr, int *memsize)
+bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 {
 	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
 
@@ -477,7 +481,7 @@ void CA_CacheGrChunk(int chunk)
 
 // CA_ClearMarks:
 // Marks all graphics as unused in the current level.
-void CA_ClearMarks()
+void CA_ClearMarks(void)
 {
 	for (int i = 0; i < CA_MAX_GRAPH_CHUNKS; ++i)
 	{
@@ -485,7 +489,7 @@ void CA_ClearMarks()
 	}
 }
 
-void CA_SetGrPurge()
+void CA_SetGrPurge(void)
 {
 	for (int i = 0; i < CA_MAX_GRAPH_CHUNKS; ++i)
 	{
@@ -556,7 +560,7 @@ void CA_CacheMarks(const char *msg)
 
 // CA_UpLevel:
 // Pushes a new level onto the resource stack.
-void CA_UpLevel()
+void CA_UpLevel(void)
 {
 	if (ca_levelnum == 7)
 	{
@@ -569,7 +573,7 @@ void CA_UpLevel()
 
 // CA_DownLevel:
 // Uncaches everything in the current level and pops it from the rsrc stack.
-void CA_DownLevel()
+void CA_DownLevel(void)
 {
 	if (ca_levelnum == 0)
 	{

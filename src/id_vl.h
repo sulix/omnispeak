@@ -96,4 +96,7 @@ void VL_DelayTics(int tics);
 int VL_GetTics(int wait);
 void VL_SetScrollCoords(int x, int y);
 void VL_Present();
+
+VL_Backend *VL_Impl_GetBackend(void);
+
 #endif //ID_VL_H

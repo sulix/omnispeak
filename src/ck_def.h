@@ -33,30 +33,30 @@ struct RF_SpriteDrawEntry;
 
 typedef enum CK_Difficulty
 {
-	D_NotPlaying,
-	D_Easy,
-	D_Normal,
-	D_Hard
+	D_NotPlaying = 0,
+	D_Easy = 1,
+	D_Normal = 2,
+	D_Hard = 3
 } CK_Difficulty;
 
 // see WL_DEF.H
 typedef enum CK_Controldir {
-        CD_north,
-        CD_east,
-        CD_south,
-        CD_west
+        CD_north = 0,
+        CD_east = 1,
+        CD_south = 2,
+        CD_west = 3
 } CK_Controldir;
 
 typedef enum CK_Dir {
-        Dir_east,
-        Dir_northeast,
-        Dir_north,
-        Dir_northwest,
-        Dir_west,
-        Dir_southwest,
-        Dir_south,
-        Dir_southeast,
-        Dir_nodir
+        Dir_east = 0,
+        Dir_northeast = 1,
+        Dir_north = 2,
+        Dir_northwest = 3,
+        Dir_west = 4,
+        Dir_southwest = 5,
+        Dir_south = 6,
+        Dir_southeast = 7,
+        Dir_nodir = 8
 } CK_Dir;
 
 typedef enum CK_ClassType {
@@ -152,7 +152,7 @@ typedef enum CK_objActive
 
 typedef enum CK_clipped
 {
-	CLIP_not,
+	CLIP_not = 0,
 	CLIP_normal,
 	CLIP_simple,
 } CK_ClipType;
@@ -220,10 +220,20 @@ extern CK_keenState ck_keenState;
 extern IN_ControlFrame ck_inputFrame;
 extern int ck_currentMapNumber;
 void CK_SpawnKeen(int tileX, int tileY, int direction);
+void CK_ShotHit(CK_object *obj);
 
 void CK_HandleDemoKeys();
 void CK_KeenRidePlatform(CK_object *obj);
 void CK_KeenSetupFunctions();
+
+void StartMusic(uint16_t level);
+void StopMusic(void);
+
+/* ck_inter.c */
+void CK_DrawTerminator(void);
+void CK_PlayDemoFile(const char *demoName);
+
+
 
 extern CK_object *ck_keenObj;
 

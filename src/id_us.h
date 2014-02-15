@@ -35,7 +35,7 @@ void Quit(const char *msg) _NORETURN;
 
 // id_us_1.c:
 // Parameter Checking
-int US_CheckParm(const char *parm, char **strings);
+int US_CheckParm(const char *parm, const char **strings);
 // UI functions
 void US_Print(const char *str);
 void US_PrintF(const char *str, ...);
@@ -51,6 +51,23 @@ void US_InitRndT(bool randomize);
 int US_RndT();
 void US_SetRndI(int index);
 int US_GetRndI();
+// Getter and setter functions for print variables
+int US_GetWindowX();
+int US_GetWindowY();
+int US_GetWindowW();
+int US_GetWindowH();
+int US_GetPrintX();
+int US_GetPrintY();
+int US_GetPrintFont();
+int US_GetPrintColour();
+int US_SetWindowX(int parm);
+int US_SetWindowY(int parm);
+int US_SetWindowW(int parm);
+int US_SetWindowH(int parm);
+int US_SetPrintX(int parm);
+int US_SetPrintY(int parm);
+int US_SetPrintFont(int parm);
+int US_SetPrintColour(int parm);
 
 // Common
 extern bool us_noWait; // Debug mode enabled.
@@ -58,7 +75,7 @@ extern bool us_tedLevel; // Launching a level from TED
 extern int us_tedLevelNumber; // Number of level to launch from TED
 
 // We need to steal these from main().
-extern char **us_argv;
+extern const char **us_argv;
 extern int us_argc;
 
 void US_Startup();
@@ -84,13 +101,15 @@ typedef enum US_CardItemType
 	US_ITEM_Submenu		//The item triggers a submenu when activated
 } US_CardItemType;
 
-typedef enum US_CardItemState
+// Used for storing flags, so not an enum (C++ doesn't like that)
+typedef uint16_t US_CardItemState;
+/*typedef*/ enum /*US_CardItemState*/
 {
 	US_IS_Checked = 0x01,
 	US_IS_Selected = 0x02,
 	US_IS_Disabled = 0x04,
 	US_IS_Gap = 0x08
-} US_CardItemState;
+} /*US_CardItemState*/;
 
 
 /*
@@ -139,4 +158,9 @@ typedef struct US_Card
 } US_Card;
 
 void US_DrawCards();
+void US_RunCards();
+
+// Related
+int green_message_box( char *s1, char *s2, char *s3 );
+
 #endif //ID_US_H

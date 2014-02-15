@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_phys.h"
 #include "ck_play.h"
 #include "ck_act.h"
+#include "id_ca.h"
 #include "id_rf.h"
 
 #include <stdio.h>
@@ -31,7 +32,7 @@ void CK5_TurretSpawn(int tileX, int tileY, int direction)
 
 	obj->type = 0;
 	obj->gfxChunk = 0;
-	obj->active = true;
+	obj->active = OBJ_ACTIVE;
 	obj->clipRects.tileX1 = obj->clipRects.tileX2 = tileX;
 	obj->clipRects.tileY1 = obj->clipRects.tileY2 = tileY;
 
@@ -121,7 +122,7 @@ void CK5_SneakPlatSpawn(int tileX, int tileY)
 	obj->posY = tileY << 8;
 	obj->xDirection = 0;
 	obj->yDirection = 1;
-	obj->clipped = false;
+	obj->clipped = CLIP_not;
 
 	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_sneakPlatWait"));
 	CA_CacheGrChunk(obj->gfxChunk);
@@ -164,7 +165,7 @@ void CK5_GoPlatSpawn(int tileX, int tileY, int direction, bool purple)
 	obj->posY = tileY << 8;
 	obj->xDirection = 0;
 	obj->yDirection = 0;
-	obj->clipped = false;
+	obj->clipped = CLIP_not;
 
 	if (purple)
 	{

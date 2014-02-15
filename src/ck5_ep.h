@@ -29,26 +29,56 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 extern CK_Episode ck5_episode;
 
 /* Action functions setup */
-void CK5_Obj1_SetupFunctions();
-void CK5_Obj3_SetupFunctions();
-void CK5_SetupFunctions();
+void CK5_Obj1_SetupFunctions(void);
+void CK5_Obj2_SetupFunctions(void);
+void CK5_Obj3_SetupFunctions(void);
+void CK5_Map_SetupFunctions(void);
+void CK5_SetupFunctions(void);
 
 void CK5_ScanInfoLayer();
-
 
 /* Spawning functions */
 
 /* ck5_misc.c */
+void CK5_SpawnFuseExplosion(int tileX, int tileY);
+void CK5_SpawnLevelEnd(void);
 CK_object *CK5_SpawnEnemyShot(int posX, int posY, CK_action *action);
 void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple);
 void CK5_SpawnItem(int tileX, int tileY, int itemNumber);
 
 /* ck5_obj1.c */
 void CK5_TurretSpawn(int tileX, int tileY, int direction);
+void CK5_SneakPlatSpawn(int tileX, int tileY);
+void CK5_GoPlatSpawn(int tileX, int tileY, int direction, bool purple);
+void CK5_SpawnVolte(int tileX, int tileY);
+
+/* ck5_obj2.c */
+void CK5_SpawnSparky(int tileX, int tileY);
+void CK5_SpawnAmpton(int tileX, int tileY);
+void CK5_SpawnSlice(int tileX, int tileY, int dir);
+void CK5_SpawnSliceDiag(int tileX, int tileY);
+void CK5_SpawnShelly(int tileX, int tileY);
 
 /* ck5_obj3.c */
 void CK5_SpawnMine(int tileX, int tileY);
 void CK5_SpawnRobo(int tileX, int tileY);
 void CK5_SpawnSpirogrip(int tileX, int tileY);
+void CK5_SpawnSpindred(int tileX, int tileY);
+void CK5_SpawnMaster(int tileX, int tileY);
+void CK5_SpawnShikadi(int tileX, int tileY);
+void CK5_SpawnShocksund(int tileX, int tileY);
+void CK5_SpawnSphereful(int tileX, int tileY);
 void CK5_SpawnKorath(int tileX, int tileY);
+
+/* ck5_map.c */
+void CK_SpawnMapKeen(int tileX, int tileY);
+
+/* Map functions */
+void CK_MapMiscFlagsCheck(CK_object *keen);
+
+/* Misc functions */
+
+/* ck5_misc.c */
+void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act);
+
 #endif

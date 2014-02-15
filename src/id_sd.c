@@ -33,6 +33,9 @@
 
 #include "id_sd.h"
 #include "id_ca.h"
+#include "id_us.h"
+
+#define	SDL_SoundFinished() {SoundNumber = (soundnames)0; SoundPriority = 0;}
 
 #define alOut(n,b) YM3812Write(&oplChip, n, b)
 
@@ -123,7 +126,7 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 	// so 512 is sufficient for a sample rate of 358.4 kHz (default 44.1 kHz)
 	if(length > 512)
 		length = 512;
-
+#if 0
 	if(which->opl3Active)
 	{
 		Chip__GenerateBlock3(which, length, buffer);
@@ -140,10 +143,11 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 		}
 	}
 	else
+#endif
 	{
 		Chip__GenerateBlock2(which, length, buffer);
 
-		// GenerateBlock3 generates a number of "length" 32-bit mono samples
+		// GenerateBlock2 generates a number of "length" 32-bit mono samples
 		// so we only need to convert them to 16-bit mono samples
 		for(i = 0; i < length; i++)
 		{
@@ -251,9 +255,7 @@ void SD_SDL_CallBack(void *unused, Uint8 *stream, int len)
 		if (len >= 2*(SD_SDL_SamplesPerPart-SD_SDL_SampleOffsetInSound))
 		{
 			// AdLib
-			uint32_t time = SDL_GetTicks();
 			YM3812UpdateOne(&oplChip, currSamplePtr, SD_SDL_SamplesPerPart-SD_SDL_SampleOffsetInSound);
-			printf("Time to update: %u\n", SDL_GetTicks()-time);
 			// PC Speaker
 			if (SD_PC_Speaker_On)
 				PCSpeakerUpdateOne(currSamplePtr, SD_SDL_SamplesPerPart-SD_SDL_SampleOffsetInSound);
@@ -265,9 +267,7 @@ void SD_SDL_CallBack(void *unused, Uint8 *stream, int len)
 		else
 		{
 			// AdLib
-			uint32_t time = SDL_GetTicks();
 			YM3812UpdateOne(&oplChip, currSamplePtr, len/2);
-			printf("Time to update: %u\n", SDL_GetTicks()-time);
 			// PC Speaker
 			if (SD_PC_Speaker_On)
 				PCSpeakerUpdateOne(currSamplePtr, len/2);
@@ -385,7 +385,7 @@ void SDL_PCService(void)
 		if (!(--pcLengthLeft))
 		{
 			SDL_PCStopSound();
-			SoundNumber = SoundPriority = 0;
+			SDL_SoundFinished();
 		}
 	}
 }
@@ -505,7 +505,7 @@ void SDL_ALSoundService(void)
 		{
 			alSound = 0;
 			alOut(alFreqH + 0,0);
-			SoundNumber = SoundPriority = 0;
+			SDL_SoundFinished();
 		}
 	}
 }
@@ -675,7 +675,7 @@ void SDL_StartDevice(void)
 	{
 		SDL_StartAL();
 	}
-	SoundNumber = SoundPriority = 0;
+	SoundNumber = (soundnames)0; SoundPriority = 0;
 }
 
 void SDL_SetTimerSpeed(void)
@@ -948,8 +948,7 @@ void SD_StopSound(void)
 		case sdm_PC: SDL_PCStopSound(); break;
 		case sdm_AdLib: SDL_ALStopSound(); break;
 	}
-	SoundPriority = 0;
-	SoundNumber = 0;
+	SDL_SoundFinished();
 }
 
 void SD_WaitSoundDone(void)

@@ -21,11 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_phys.h"
 #include "ck_play.h"
 #include "ck_act.h"
+
+// TODO: Handle multiple episodes in some way
+#include "ck5_ep.h"
+
 #include "id_heads.h"
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_ti.h"
 #include "id_ca.h"
+#include "id_sd.h"
 
 // For all the shitty debug stuff  I have.
 #include <stdio.h>
@@ -47,7 +52,7 @@ void CK_BasicDrawFunc1(CK_object *obj);
 
 CK_action CK_ACT_itemNotify = {0, 0, AT_ScaledOnce, 0, 0, 40, 0, 8, 0, 0, CK_BasicDrawFunc1, 0};
 
-uint16_t CK5_ItemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM,
+soundnames CK5_ItemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM,
                                SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,
                                SOUND_GOTEXTRALIFE, SOUND_GOTSTUNNER, SOUND_GOTKEYCARD
 };
@@ -102,7 +107,7 @@ void CK_SpawnKeen(int tileX, int tileY, int direction)
 	ck_keenObj->active = OBJ_ALWAYS_ACTIVE; 
 	ck_keenObj->visible = true;
 	ck_keenObj->zLayer = 1;
-	ck_keenObj->clipped = true;
+	ck_keenObj->clipped = CLIP_normal;
 	ck_keenObj->posX = (tileX << 8);
 	ck_keenObj->posY = (tileY << 8) - 241;
 	ck_keenObj->xDirection = direction;
@@ -133,14 +138,14 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 	notify->user2 = CK5_ItemShadows[itemNumber];
 	notify->gfxChunk = notify->user2;
 	CK_SetAction(notify, &CK_ACT_itemNotify);
-	notify->clipped = false;
+	notify->clipped = CLIP_not;
 }
 
 void CK_GetVitalin(int tileX, int tileY)
 {
 	CK_object *notify = CK_GetNewObj(true);
 	notify->type = 1;
-	notify->clipped = false;
+	notify->clipped = CLIP_not;
 	notify->zLayer = 3;
 	notify->posX = tileX << 8;
 	notify->posY = tileY << 8;
@@ -453,7 +458,7 @@ bool CK_KeenTryClimbPole(CK_object *obj)
 		obj->posX = 128 + ((obj->clipRects.tileXmid - 1) << 8);
 		obj->nextX = 0;
 		obj->nextY = 32 * ck_inputFrame.yDirection;
-		obj->clipped = false;
+		obj->clipped = CLIP_not;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleSit");
 		return true;
 	}
@@ -988,7 +993,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 					TI_ForeRight(lowerTile) && TI_ForeTop(lowerTile))
 				{
 					obj->xDirection = -1;
-					obj->clipped = false;
+					obj->clipped = CLIP_not;
 					obj->posX = (obj->posX & 0xFF00) + 128;
 					obj->posY = (temp8 - 64);
 					obj->velY = obj->deltaPosY = 0;
@@ -1006,7 +1011,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 					TI_ForeLeft(lowerTile) && TI_ForeTop(lowerTile))
 				{
 					obj->xDirection = 1;
-					obj->clipped = false;
+					obj->clipped = CLIP_not;
 					obj->posX = (obj->posX & 0xFF00) + 256;
 					obj->posY = (temp8 - 64);
 					obj->velY = obj->deltaPosY = 0;
@@ -1104,7 +1109,7 @@ void CK_KeenBreakFuse(int x, int y)
 		CK5_SpawnLevelEnd();
 	}
 
-	uint16_t brokenFuseTiles[] = {0, 0};
+	int16_t brokenFuseTiles[] = {0, 0};
 
 	RF_ReplaceTiles(brokenFuseTiles, 1, x, y, 1, 2);
 }
@@ -1184,7 +1189,7 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 	//TODO: collision with types 14,23?
 	if (other->type == 6)
 	{
-		obj->clipped = true;
+		obj->clipped = CLIP_normal;
 		CK_PhysUpdateSimpleObj(obj);
 		ck_keenState.jumpTimer = 0;
 		obj->deltaPosX = 0;
@@ -1206,7 +1211,7 @@ void CK_KeenHangThink(CK_object *obj)
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPull1");
 
-		obj->clipped = false;
+		obj->clipped = CLIP_not;
 
 		if(obj->xDirection == 1)
 		{
@@ -1227,7 +1232,7 @@ void CK_KeenHangThink(CK_object *obj)
 	{
 		// Drop down.
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
-		obj->clipped = true;
+		obj->clipped = CLIP_normal;
 	}
 }
 
@@ -1252,7 +1257,7 @@ void CK_KeenPullThink3(CK_object *obj)
 
 void CK_KeenPullThink4(CK_object *obj)
 {
-	obj->clipped = true;
+	obj->clipped = CLIP_normal;
 	obj->zLayer = 1;
 }
 
@@ -1287,7 +1292,7 @@ void CK_KeenPoleHandleInput(CK_object *obj)
 		SD_PlaySound(SOUND_KEENJUMP);
 		obj->velX = ck_KeenPoleOffs[ck_inputFrame.xDirection+1];
 		obj->velY = -20;
-		obj->clipped = true;
+		obj->clipped = CLIP_normal;
 		ck_keenState.jumpTimer = 10;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenJump1");
 		obj->yDirection = 1;
@@ -1324,7 +1329,7 @@ void CK_KeenPoleSitThink(CK_object *obj)
 		{
 			obj->velX = 0;
 			obj->velY = 0;
-			obj->clipped = true;
+			obj->clipped = CLIP_normal;
 			ck_keenState.jumpTimer = 0;
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
 			obj->yDirection = 1;
@@ -1378,7 +1383,7 @@ void CK_KeenPoleDownThink(CK_object *obj)
 		ck_keenState.jumpTimer = 0;
 		obj->velX = ck_KeenPoleOffs[ck_inputFrame.xDirection + 1];
 		obj->velY = 0;
-		obj->clipped = true;
+		obj->clipped = CLIP_normal;
 		obj->clipRects.tileY2 -= 1;	//WTF?
 		return;
 	}
@@ -1410,7 +1415,7 @@ void CK_KeenPoleDownDrawFunc(CK_object *obj)
 		obj->posY += yReset;
 		obj->clipRects.unitY2 += yReset;
 		obj->clipRects.tileY2 += -1;
-		obj->clipped = true;
+		obj->clipped = CLIP_normal;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenLookDown1"));
 	}
 
@@ -1434,7 +1439,7 @@ void CK_SpawnShot(int x, int y, int direction)
 	shot->posY = y;
 	shot->zLayer = 0;
 	shot->type = CT_Stunner; // TODO: obj_stunner
-	shot->active = true;
+	shot->active = OBJ_ACTIVE;
 
 	SD_PlaySound(SOUND_KEENSHOOT);
 	

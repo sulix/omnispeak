@@ -22,23 +22,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdint.h>
 
-int8_t TI_BackAnimTile(int tile);
+int8_t TI_BackAnimTile(uint16_t tile);
 
-uint8_t TI_BackAnimTime(int tile);
+uint8_t TI_BackAnimTime(uint16_t tile);
 
-uint8_t TI_ForeTop(int tile);
+uint8_t TI_ForeTop(uint16_t tile);
 
-uint8_t TI_ForeLeft(int tile);
+uint8_t TI_ForeLeft(uint16_t tile);
 
-uint8_t TI_ForeBottom(int tile);
+uint8_t TI_ForeBottom(uint16_t tile);
 
-uint8_t TI_ForeRight(int tile);
+uint8_t TI_ForeRight(uint16_t tile);
 
-uint8_t TI_ForeMisc(int tile);
+uint8_t TI_ForeMisc(uint16_t tile);
 
-int8_t TI_ForeAnimTile(int tile);
+int8_t TI_ForeAnimTile(uint16_t tile);
 
-uint8_t TI_ForeAnimTime(int tile);
+uint8_t TI_ForeAnimTime(uint16_t tile);
 
 
 

@@ -31,12 +31,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 // Need this for NULL
 #include <stddef.h>
+// For strcpy, strcat
+#include <string.h>
 
 #include "id_heads.h"
 #include "id_us.h"
 #include "id_in.h"
 #include "id_vh.h"
 #include "id_vl.h"
+#include "id_sd.h"
+#include "ck_def.h"
+#include "ck_text.h"
 
 void USL_DrawCardItemIcon(US_CardItem *item);
 void set_key_control( US_CardItem *item, int which_control );
@@ -45,7 +50,7 @@ void set_key_control( US_CardItem *item, int which_control );
 // Card stack can have at most 7 cards
 #define US_MAX_CARDSTACK 7
 
-extern int ck_startingDifficulty;
+extern CK_Difficulty ck_startingDifficulty;
 int game_unsaved, game_in_progress, quit_to_dos, load_game_error;
 int fontnumber, fontcolour;
 
@@ -63,21 +68,21 @@ US_CardItem new_game_menu_items[] ={
 	{ US_ITEM_Normal, 0, IN_SC_E, "BEGIN EASY GAME", US_Comm_NewEasyGame, NULL, 0, 0 },
 	{ US_ITEM_Normal, 0, IN_SC_N, "BEGIN NORMAL GAME", US_Comm_NewNormalGame, NULL, 0, 0 },
 	{ US_ITEM_Normal, 0, IN_SC_H, "BEGIN HARD GAME", US_Comm_NewHardGame, NULL, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, NULL, 0,  NULL, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, NULL,             US_Comm_None,  NULL, 0, 0 },
 };
 
 US_Card new_game_menu ={ 8, 0, 68, 0, new_game_menu_items, NULL, 0, 0, 0 };
 
 US_CardItem main_menu_items[] ={
-	{ US_ITEM_Submenu, 0, IN_SC_N, "NEW GAME", 0, &new_game_menu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_L,    "LOAD GAME",  0, /*load_game_menu*/NULL,  0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_S,    "SAVE GAME",  0, /*save_game_menu*/NULL,  0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_C,    "CONFIGURE",  0, /*&configure_menu*/NULL,  0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_N,    "NEW GAME",   US_Comm_None, &new_game_menu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_L,    "LOAD GAME",  US_Comm_None, /*load_game_menu*/NULL,  0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_S,    "SAVE GAME",  US_Comm_None, /*save_game_menu*/NULL,  0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_C,    "CONFIGURE",  US_Comm_None, /*&configure_menu*/NULL,  0, 0 },
 	{ US_ITEM_Normal,  0, IN_SC_R,    NULL,         US_Comm_ReturnToGame, NULL, 0, 0 },
 	{ US_ITEM_Normal,  0, IN_SC_E,    "END GAME",   US_Comm_EndGame, NULL,            0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_P,    "PADDLE WAR", 0, /*paddlewar_menu*/NULL, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_P,    "PADDLE WAR", US_Comm_None, /*paddlewar_menu*/NULL, 0, 0 },
 	{ US_ITEM_Normal,  0, IN_SC_Q,    "QUIT",       US_Comm_Quit, NULL,  0, 0 },
-	{ US_ITEM_None,    0, IN_SC_None, NULL,         0,  NULL,            0, 0 }
+	{ US_ITEM_None,    0, IN_SC_None, NULL,         US_Comm_None,  NULL,            0, 0 }
 };
 
 //AS:00A2
@@ -166,7 +171,7 @@ void USL_DrawCardItem(US_CardItem *item)
 	VH_DrawPropString(item->caption, item->x + 8, item->y + 1, 4, fontcolour);
 }
 
-char *footer_str[3];
+const char *footer_str[3];
 
 void USL_DrawMenuFooter( void )
 {
@@ -270,7 +275,7 @@ void load_save_message( char *s1, char *s2 )
 	int x, y, w2, h, w1;
 	int window_w;
 	int print_x, print_y;
-	char *buf[36];
+	char buf[36];
 
 
 	strcpy( buf, "'" );
@@ -384,13 +389,13 @@ int green_message_box( char *s1, char *s2, char *s3 )
 		return 0;
 }
 
-int USL_ConfirmComm( int command )
+int USL_ConfirmComm( US_CardCommand command )
 {
 	int result;
 	char *s1, *s2, *s3;
 	int ask_user;
 
-	if ( command == 0 )
+	if ( command == US_Comm_None )
 		Quit( "USL_ConfirmComm() - empty comm" );	/* quit */
 
 	result = 1;
@@ -398,14 +403,14 @@ int USL_ConfirmComm( int command )
 	s3 = "ESC TO BACK OUT";
 	switch ( command )
 	{
-	case 2:
+	case US_Comm_EndGame:
 		s1 = "REALLY END CURRENT GAME?";
 		s2 = "PRESS Y TO END IT";
 		if ( game_in_progress && game_unsaved )
 			ask_user = 1;
 		break;
 
-	case 3:
+	case US_Comm_Quit:
 		s1 = "REALLY QUIT?";
 		s2 = "PRESS Y TO QUIT";
 		ask_user = 1;
@@ -418,7 +423,9 @@ int USL_ConfirmComm( int command )
 			ask_user = 1;
 		break;
 
-	case 5: case 6: case 7:
+	case US_Comm_NewEasyGame:
+	case US_Comm_NewNormalGame:
+	case US_Comm_NewHardGame:
 		s1 = "YOU'RE IN A GAME";
 		s2 = "PRESS Y FOR NEW GAME";
 		if ( game_in_progress && game_unsaved )
@@ -1651,7 +1658,6 @@ void US_SelectPrevItem()
 
 void USL_SetMenuFooter( void )
 {
-
 	footer_str[2] = "Arrows move";
 	footer_str[1] = "Enter selects";
 	footer_str[0] = (us_cardStackIndex != 0) ? "ESC to back out" : "ESC to quit";
@@ -1708,7 +1714,7 @@ void US_SelectCurrentItem()
 	// Play disallowed sound if menu item is disabled
 	if ( item->state & US_IS_Disabled )
 	{
-		SD_PlaySound( 14 );
+		SD_PlaySound(SOUND_NEEDKEYCARD);
 		return;
 	}
 
@@ -1739,23 +1745,20 @@ void USL_UpdateCards( void )
 	/* SFX and Music menus */
 	i = SoundMode;
 
-#if 0
-	if ( i == sdm_AdLib && quiet_sfx )
+	if ( (i == sdm_AdLib) && quiet_sfx )
 		i++;
-#endif
 
 	USL_CheckCardItem( &ck_us_soundMenu, i, 0 );
-	//USL_CheckCardItem( music_menu, music_device, 0 );
+	USL_CheckCardItem( &ck_us_musicMenu, MusicMode, 0 );
 
-#if 0
-	if ( !adlib_present )
+	if ( !AdLibPresent )
 	{
 		/* Disable adlib & sb menu items */
-		sfx_menu_items[2].state |= US_IS_Disabled;
-		sfx_menu_items[3].state |= US_IS_Disabled;
-		music_menu_items[1].state |= US_IS_Disabled;
+		ck_us_soundMenuItems[2].state |= US_IS_Disabled;
+		ck_us_soundMenuItems[3].state |= US_IS_Disabled;
+		ck_us_musicMenuItems[1].state |= US_IS_Disabled;
 	}
-
+#if 0
 	/* Joystick and gamepad menu items*/
 	if ( !joystick_present[0] )
 		configure_menu_items[4].state |= US_IS_Disabled;
@@ -1847,15 +1850,15 @@ void USL_HandleComm( int command )
 		return;
 
 	case US_Comm_NewEasyGame:	/* easy game */
-		ck_startingDifficulty = 1;
+		ck_startingDifficulty = D_Easy;
 		return;
 
 	case US_Comm_NewNormalGame:	/* normal game */
-		ck_startingDifficulty = 2;
+		ck_startingDifficulty = D_Normal;
 		return;
 
 	case US_Comm_NewHardGame:	/* hard game */
-		ck_startingDifficulty = 3;
+		ck_startingDifficulty = D_Hard;
 		return;
 
 	case US_Comm_ReturnToGame:
@@ -1872,26 +1875,21 @@ void USL_SetSoundAndMusic()
 	int i;
 
 	i = USL_GetCheckedItem( &ck_us_soundMenu );
-	//TODO: Quiet AdLib
-#if 0
+	// Quiet AdLib sound effects
 	if ( i == 3 )
 	{
-		quiet_sfx = 1;
+		quiet_sfx = true;
 		i--;
 	}
 	else
 	{
-		quiet_sfx = 0;
+		quiet_sfx = false;
 	}
-#endif 
-	if ( i != SoundMode )
-		SD_SetSoundMode( i );
-
-#if 0
+	if ( i != (int)SoundMode )
+		SD_SetSoundMode( (SDMode)i );
 	i = USL_GetCheckedItem( &ck_us_musicMenu );
-	if ( i != music_device )
-		sub_539( i );
-#endif 
+	if ( i != (int)MusicMode )
+		SD_SetMusicMode( (SMMode)i );
 }
 
 void USL_EndCards()
@@ -1924,7 +1922,7 @@ void USL_EndCards()
 	// SD_WaitSoundDone();
 	// VW_ClearVideo(3); // Draw Cyan)
 	// CA_DownLevel();
-	// CA_LoadAllSounds();
+	CA_LoadAllSounds();
 }
 
 // What is this function for?
@@ -1934,7 +1932,7 @@ void USL_EnterCurrentItem()
 
 	if ( item->state & US_IS_Disabled )
 	{
-		SD_PlaySound(14);
+		SD_PlaySound(SOUND_NEEDKEYCARD);
 		return;
 	}
 

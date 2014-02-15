@@ -129,7 +129,24 @@ typedef	struct
 
 #define	sqMaxFade		64	// DEBUG
 
+extern bool AdLibPresent;
 extern SDMode SoundMode;
 extern SMMode MusicMode;
+extern bool quiet_sfx;
+
+bool SD_SetSoundMode(SDMode mode);
+bool SD_SetMusicMode(SMMode mode);
+void SD_Startup(void);
+void SD_Default(bool gotit,SDMode sd,SMMode sm);
+void SD_Shutdown(void);
+void SD_PlaySound(soundnames sound);
+uint16_t SD_SoundPlaying(void);
+void SD_StopSound(void);
+void SD_WaitSoundDone(void);
+void SD_MusicOn(void);
+void SD_MusicOff(void);
+void SD_StartMusic(MusicGroup *music);
+void SD_FadeOutMusic(void);
+bool SD_MusicPlaying(void); // Actually return false for all time
 
 #endif

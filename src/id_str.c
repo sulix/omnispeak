@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /* String manager, allows objects to be indexed by strings */
 
@@ -89,7 +90,11 @@ bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
  */
 const char *STR_Pool(const char *str)
 {
-	return strdup(str);
+	//return strdup(str);
+	//strdup is non-standard... (and strcopy is a bad name for a variable)
+	char *ourcopyofstr = (char *)malloc(strlen(str)+1);
+	strncpy(ourcopyofstr, str, strlen(str)+1);
+	return ourcopyofstr;
 }
 
 void STR_UnPool(const char *pooled_str)

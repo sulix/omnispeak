@@ -62,7 +62,7 @@ void CK_GameOver()
 
 void CK_LoadLevel(bool unknown)
 {
-	if (IN_DemoGetMode != IN_Demo_Off)
+	if (IN_DemoGetMode() != IN_Demo_Off)
 	{
 		// If we're recording or playing back a demo, the game needs
 		// to be deterministic. Seed the RNG at 0 and set difficulty
@@ -97,7 +97,7 @@ void CK_LoadLevel(bool unknown)
 	}
 }
 
-extern int ck_startingDifficulty;
+extern CK_Difficulty ck_startingDifficulty;
 void CK_GameLoop()
 {
 	do
@@ -105,7 +105,7 @@ void CK_GameLoop()
 		if (ck_gameState.levelState != 6)
 		{
 			ck_gameState.difficulty = ck_startingDifficulty;
-			ck_startingDifficulty = 0;
+			ck_startingDifficulty = D_NotPlaying;
 			CK_LoadLevel(true);
 
 			//TODO: If this didn't succeed, return to level 0.
@@ -147,7 +147,7 @@ replayLevel:
 			else
 			{
 				//We've won, return to main map.
-				SD_PlaySound(13);
+				SD_PlaySound(SOUND_LEVELEXIT);
 				ck_gameState.levelsDone[ck_currentMapNumber] = 0;
 				ck_nextMapNumber = 0;
 				ck_currentMapNumber = ck_nextMapNumber;
@@ -167,7 +167,7 @@ replayLevel:
 
 		case 14:
 			// The Korath fuse was broken
-			SD_PlaySound(13);
+			SD_PlaySound(SOUND_LEVELEXIT);
 			//word_4A16A = ck_currentMapNumber;
 			ck_gameState.levelsDone[ck_currentMapNumber] = 14;
 			// TODO: Fuse Message goes here

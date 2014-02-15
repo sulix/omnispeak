@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CK_PHYS_H
 #define CK_PHYS_H
 
+#include <stdbool.h>
+
 typedef struct CK_objPhysData
 {
 	// Unit cliping box
@@ -42,12 +44,15 @@ typedef struct CK_objPhysData
 struct CK_object;
 struct CK_action;
 
+bool CK_NotStuckInWall(struct CK_object *obj);
+
 void CK_PhysUpdateNormalObj(struct CK_object *obj);
 void CK_PhysUpdateSimpleObj(struct CK_object *obj);
 void CK_PhysPushX(struct CK_object *pushee, struct CK_object *pusher);
 void CK_PhysPushY(struct CK_object *pushee, struct CK_object *pusher);
 void CK_SetAction(struct CK_object *obj, struct CK_action *act);
 void CK_SetAction2(struct CK_object *obj, struct CK_action *act);
+bool CK_ObjectVisible(struct CK_object *obj);
 void CK_PhysGravityHigh(struct CK_object *obj);
 void CK_PhysGravityMid(struct CK_object *obj);
 void CK_PhysGravityLow(struct CK_object *obj);

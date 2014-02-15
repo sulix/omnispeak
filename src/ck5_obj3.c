@@ -42,7 +42,7 @@ void CK5_SpawnMine(int tileX, int tileY)
 
 	obj->type = 10; // ShikadiMine
 	obj->active = OBJ_ACTIVE;
-	obj->clipped = false;
+	obj->clipped = CLIP_not;
 	obj->posX = tileX * 0x100;
 	obj->posY = tileY * 0x100 - 0x1F1;
 
@@ -53,7 +53,7 @@ void CK5_SpawnMine(int tileX, int tileY)
 	obj->velX = 0x100;
 
 	for (i = 0; i < 4; i++)
-		if (CK5_Walk(obj, i))
+		if (CK5_Walk(obj, (CK_Controldir)i))
 			break;
 	return;
 }
@@ -145,14 +145,20 @@ int CK5_Walk(CK_object *obj, CK_Controldir dir)
  */
 void CK5_SeekKeen(CK_object *obj)
 {
-
 	// What is the point of the ordinal directions?
 	// The mine only ever moves in cardinal directions.
 	// Perhaps it was supposed to move in all eight?
-	int mine_dirs[9] ={Dir_north, Dir_northwest, Dir_east, Dir_northeast,
-		Dir_south, Dir_southeast, Dir_west, Dir_southwest, Dir_nodir};
 
-	int i, deltaX, deltaY, principalDir, closestAxis, farthestAxis, cardinalDir;
+	// EDIT: principalDir is lated passed as a CK_Controldir anyway
+	CK_Dir mine_dirs[9] ={Dir_north, Dir_northwest, Dir_east, Dir_northeast,
+		Dir_south, Dir_southeast, Dir_west, Dir_southwest, Dir_nodir};
+	//CK_Dir mine_dirs[9] ={CD_south, CD_west, CD_north, CD_east, 6, 7, 4, 5, 8};
+
+	int i, deltaX, deltaY;
+	// These values should store CK_Controldir values (0 to 3), but 8
+	// is stored in the axes (same as Dir_nodir from the CK_Dir enum).
+	// Maybe there were different plans at some point.
+	int closestAxis, farthestAxis, cardinalDir, principalDir;
 
 	// Convert x and y motions into current controldirection
 	if (obj->xDirection == IN_motion_Right)
@@ -201,11 +207,11 @@ void CK5_SeekKeen(CK_object *obj)
 
 	// Check if there's free space ahead first in the desired directions
 	// and then finally in the current direction
-	if (closestAxis != Dir_nodir && CK5_Walk(obj, closestAxis))
+	if (closestAxis != Dir_nodir && CK5_Walk(obj, (CK_Controldir)closestAxis))
 		return;
-	if (farthestAxis != Dir_nodir && CK5_Walk(obj, farthestAxis))
+	if (farthestAxis != Dir_nodir && CK5_Walk(obj, (CK_Controldir)farthestAxis))
 		return;
-	if (CK5_Walk(obj, cardinalDir))
+	if (CK5_Walk(obj, (CK_Controldir)cardinalDir))
 		return;
 
 	// Otherwise, look for some free space
@@ -213,19 +219,19 @@ void CK5_SeekKeen(CK_object *obj)
 	{
 		for (i = 0; i <= 3; i++)
 			if (i != principalDir)
-				if (CK5_Walk(obj, i))
+				if (CK5_Walk(obj, (CK_Controldir)i))
 					return;
 	}
 	else
 	{
 		for (i = 3; i >= 0; i--)
 			if (i != principalDir)
-				if (CK5_Walk(obj, i))
+				if (CK5_Walk(obj, (CK_Controldir)i))
 					return;
 	}
 
 	// Finally, just keep going forward
-	CK5_Walk(obj, principalDir);
+	CK5_Walk(obj, (CK_Controldir)principalDir);
 	return;
 }
 
@@ -795,7 +801,7 @@ void CK5_SpawnSpirogrip(int tileX, int tileY)
 	CK_object *obj = CK_GetNewObj(false);
 
 	obj->type = 13; // Spirogrip
-	obj->active = true;
+	obj->active = OBJ_ACTIVE;
 	obj->posX = (tileX << 8);
 	obj->posY = (tileY << 8) - 256;
 
@@ -1280,7 +1286,7 @@ void CK5_ShikadiPole(CK_object *obj)
 	new_object->posY = obj->posY + 0x80;
 	new_object->type = CT_EnemyShot;
 	new_object->active = OBJ_EXISTS_ONLY_ONSCREEN;
-	new_object->clipped = false;
+	new_object->clipped = CLIP_not;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_PoleZap0"));
 	new_object->yDirection = obj->posY > ck_keenObj->posY ? IN_motion_Up : IN_motion_Down;
 	SD_PlaySound(SOUND_POLEZAP);
@@ -1618,19 +1624,19 @@ void CK5_SpherefulTileCol(CK_object *obj)
 	zLayer = time >= 8 ? 2 : 0;
 
 	//topleft
-	RF_AddSpriteDraw(&obj->user1, obj->posX + diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
+	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user1, obj->posX + diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
 
 	//topright
-	RF_AddSpriteDraw(&obj->user2, obj->posX + 0x180 - diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
+	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user2, obj->posX + 0x180 - diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
 
 	time = time + 8 & 0xF;
 	zLayer = time >= 8 ? 2 : 0;
 
 	//botleft
-	RF_AddSpriteDraw(&obj->user3, obj->posX + diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
+	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user3, obj->posX + diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
 
 	//botright
-	RF_AddSpriteDraw(&obj->user4, obj->posX + 0x180 - diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
+	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user4, obj->posX + 0x180 - diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
 }
 
 
@@ -1699,7 +1705,7 @@ void CK5_SpawnKorath(int tileX, int tileY)
 	CK_object *obj = CK_GetNewObj(false);
 
 	obj->type = 23;
-	obj->active = true;
+	obj->active = OBJ_ACTIVE;
 	obj->posX = tileX << 8;
 	obj->posY = (tileY << 8) - 128;
 	obj->xDirection = US_RndT() < 128 ? 1 : -1;
@@ -1708,7 +1714,7 @@ void CK5_SpawnKorath(int tileX, int tileY)
 	printf("Spawning Korath at %d,%d\n", tileX, tileY);
 }
 
-QEDSpawn(int tileX, int tileY)
+void QEDSpawn(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);
@@ -1763,7 +1769,7 @@ void CK5_Obj3_SetupFunctions()
 	CK_ACT_AddFunction("CK5_MasterTeleTileCol", &CK5_MasterTeleTileCol);
 	CK_ACT_AddColFunction("CK5_MasterBallCol", &CK5_MasterBallCol);
 	CK_ACT_AddFunction("CK5_MasterBallTileCol", &CK5_MasterBallTileCol);
-	CK_ACT_AddColFunction("CK5_MasterSparksTileCol", &CK5_MasterSparksTileCol);
+	CK_ACT_AddFunction("CK5_MasterSparksTileCol", &CK5_MasterSparksTileCol);
 
 	// Shikadi
 	CK_ACT_AddFunction("CK5_ShikadiWalk", &CK5_ShikadiWalk);

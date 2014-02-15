@@ -199,7 +199,7 @@ void CK5_AmptonWalk(CK_object *obj)
 				{
 					obj->yDirection = IN_motion_Up;
 					obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonPole0");
-					obj->clipped = false;
+					obj->clipped = CLIP_not;
 					obj->timeUntillThink = 6;
 					obj->nextX = 0;
 					return;
@@ -210,7 +210,7 @@ void CK5_AmptonWalk(CK_object *obj)
 				{
 					obj->yDirection = IN_motion_Down;
 					obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonPole0");
-					obj->clipped = false;
+					obj->clipped = CLIP_not;
 					obj->timeUntillThink = 6;
 					obj->nextX = 0;
 					return;
@@ -250,7 +250,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 				int delY = (obj->clipRects.unitY2 & 0xFF) + 1;
 				obj->posY -= delY;
 				obj->clipRects.unitY2 -= delY;
-				obj->clipped = true;
+				obj->clipped = CLIP_normal;
 				obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonDismount0");
 				obj->nextY = 0x10;
 				obj->yDirection = IN_motion_Down;
@@ -285,7 +285,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 				int delY = 0xFF - (obj->clipRects.unitY2 & 0xFF);
 				obj->posY += delY;
 				obj->clipRects.unitX2 += delY;
-				obj->clipped = true;
+				obj->clipped = CLIP_normal;
 				obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonDismount0");
 				obj->nextY = 0x10;
 				CK_PhysUpdateNormalObj(obj);
@@ -394,7 +394,7 @@ void CK5_SpawnSliceDiag(int tileX, int tileY)
 
 	CK_object *new_object = CK_GetNewObj(false);
 	new_object->type = CT_SliceStar;
-	new_object->active = true;
+	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 2;
 	new_object->clipped = CLIP_simple;
 	new_object->posX = (tileX << 8);
@@ -633,7 +633,7 @@ void CK5_ShellyAirTileCol(CK_object *obj)
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 }
 
-void CK5_Obj2_SetupFunctions()
+void CK5_Obj2_SetupFunctions(void)
 {
 
 	// Sparky
@@ -643,22 +643,22 @@ void CK5_Obj2_SetupFunctions()
 	CK_ACT_AddFunction("CK5_SparkySearchRight", &CK5_SparkySearchRight);
 	CK_ACT_AddFunction("CK5_SparkyCharge0", &CK5_SparkyCharge0);
 	CK_ACT_AddFunction("CK5_SparkyCharge1", &CK5_SparkyCharge1);
-	CK_ACT_AddFunction("CK5_SparkyCol", &CK5_SparkyCol);
+	CK_ACT_AddColFunction("CK5_SparkyCol", &CK5_SparkyCol);
 	CK_ACT_AddFunction("CK5_SparkyTileCol", &CK5_SparkyTileCol);
 
 	CK_ACT_AddFunction("CK5_AmptonWalk", &CK5_AmptonWalk);
 	CK_ACT_AddFunction("CK5_AmptonPoleClimb", &CK5_AmptonPoleClimb);
 	CK_ACT_AddFunction("CK5_AmptonSwitch", &CK5_AmptonSwitch);
-	CK_ACT_AddFunction("CK5_AmptonCol", &CK5_AmptonCol);
+	CK_ACT_AddColFunction("CK5_AmptonCol", &CK5_AmptonCol);
 	CK_ACT_AddFunction("CK5_AmptonTileCol", &CK5_AmptonTileCol);
 
-	CK_ACT_AddFunction("CK5_SliceCol", &CK5_SliceCol);
+	CK_ACT_AddColFunction("CK5_SliceCol", &CK5_SliceCol);
 	CK_ACT_AddFunction("CK5_SliceDiagTileCol", &CK5_SliceDiagTileCol);
 
 	CK_ACT_AddFunction("CK5_ShellyWait", &CK5_ShellyWait);
 	CK_ACT_AddFunction("CK5_ShellyStartJump", &CK5_ShellyStartJump);
 	CK_ACT_AddFunction("CK5_SpawnShellyBits", &CK5_SpawnShellyBits);
-	CK_ACT_AddFunction("CK5_ShellyCol", &CK5_ShellyCol);
+	CK_ACT_AddColFunction("CK5_ShellyCol", &CK5_ShellyCol);
 	CK_ACT_AddFunction("CK5_ShellyGroundTileCol", &CK5_ShellyGroundTileCol);
 	CK_ACT_AddFunction("CK5_ShellyAirTileCol", &CK5_ShellyAirTileCol);
 }

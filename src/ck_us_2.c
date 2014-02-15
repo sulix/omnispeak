@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "id_us.h"
 #include "id_in.h"
+#include "id_sd.h"
+#include "ck_play.h"
 
 bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 {
@@ -50,11 +52,160 @@ bool CK_US_SVGACompatibilityMenuProc(US_CardMsg msg, US_CardItem *item)
 	return false;
 }
 
+bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item);
+bool CK_US_KeyboardMenuProc(US_CardMsg msg, US_CardItem *item);
+bool CK_US_Joystick1MenuProc(US_CardMsg msg, US_CardItem *item);
+bool CK_US_Joystick2MenuProc(US_CardMsg msg, US_CardItem *item);
+bool CK_US_GamepadMenuProc(US_CardMsg msg, US_CardItem *item);
+bool CK_US_ConfigureMenuProc(US_CardMsg msg, US_CardItem *item);
+bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item);
+
+// A debug menu which doesn't seem to ever appear in the game.
+US_CardItem ck_us_debugMenuItems[] ={
+	{ US_ITEM_Normal, 0, IN_SC_None, "DEBUG", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
+};
+
+US_Card ck_us_debugMenu ={ 0, 0, 88, 0, ck_us_debugMenuItems, 0, 0, 0, 0 };
+
+// Sound Menu
+US_CardItem ck_us_soundMenuItems[] ={
+	{ US_ITEM_Radio, 0, IN_SC_N, "NO SOUND EFFECTS", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Radio, 0, IN_SC_P, "PC SPEAKER", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Radio, 0, IN_SC_A, "ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Radio, 0, IN_SC_Q, "QUIET ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
+};
+
+US_Card ck_us_soundMenu ={ 8, 0, 72, 0, ck_us_soundMenuItems, 0, 0, 0, 0 };
+
+// Music Menu
+US_CardItem ck_us_musicMenuItems[] ={
+	{ US_ITEM_Radio, 0, IN_SC_N, "NO MUSIC", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Radio, 0, IN_SC_A, "ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
+};
+
+US_Card ck_us_musicMenu ={ 8, 0, 73, 0, ck_us_musicMenuItems, 0, 0, 0, 0 };
+
+// New Game Menu
+US_CardItem ck_us_newGameMenuItems[] ={
+	{ US_ITEM_Normal, 0, IN_SC_E, "BEGIN EASY GAME", US_Comm_NewEasyGame, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_N, "BEGIN NORMAL GAME", US_Comm_NewNormalGame, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_H, "BEGIN HARD GAME", US_Comm_NewHardGame, 0, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
+};
+
+US_Card ck_us_newGameMenu ={ 8, 0, 68, 0, ck_us_newGameMenuItems, 0, 1, 0, 0/*, 0*/ };
+
+// Load/Save Game Menus
+US_CardItem ck_us_loadSaveMenuItems[] ={
+	{ US_ITEM_Normal, 0, IN_SC_One, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_Two, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_Three, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_Four, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_Five, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_Six, 0, US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
+};
+
+US_Card ck_us_loadGameMenu ={ 4, 3, 69, 0, ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0 };
+US_Card ck_us_saveGameMenu ={ 4, 3, 70, 0, ck_us_loadSaveMenuItems, &CK_US_SaveGameMenuProc, 0, 0, 0 };
+
+// Dummy Menus
+
+US_Card ck_us_scoreBoxMenu ={ 0, 0, 0, 0, 0, &CK_US_ScoreBoxMenuProc, 0, 0, 0 };
+US_Card ck_us_twoButtonFiringMenu ={0, 0, 0, 0, 0, &CK_US_TwoButtonFiringMenuProc, 0, 0, 0 };
+US_Card ck_us_fixJerkyMotionMenu ={ 0, 0, 0, 0, 0, &CK_US_FixJerkyMotionMenuProc, 0, 0, 0 };
+US_Card ck_us_svgaCompatibilityMenu ={ 0, 0, 0, 0, 0, &CK_US_SVGACompatibilityMenuProc, 0, 0, 0 };
+
+
+// Options menu
+US_CardItem ck_us_optionsMenuItems[] ={
+	{ US_ITEM_Submenu, 0, IN_SC_S, "", US_Comm_None, &ck_us_scoreBoxMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_T, "", US_Comm_None, &ck_us_twoButtonFiringMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_M, "", US_Comm_None, &ck_us_fixJerkyMotionMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_C, "", US_Comm_None, &ck_us_svgaCompatibilityMenu, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
+};
+
+US_Card ck_us_optionsMenu ={ 8, 0, 78, 0, ck_us_optionsMenuItems, 0, 0, 0, 0 };
+
+// Movement Kbd Controls Menu
+US_CardItem ck_us_movementMenuItems[] ={
+	{ US_ITEM_Normal, 0, IN_SC_None, "UP & LEFT", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_None, "UP", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_None, "UP & RIGHT", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_None, "RIGHT", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_None, "DOWN & RIGHT", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_None, "DOWN", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_None, "DOWN & LEFT", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_None, "LEFT", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
+};
+
+US_Card ck_us_movementMenu ={ 0, 0, 75, 0, ck_us_movementMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
+
+// Buttons Kbd Controls Menu
+US_CardItem ck_us_buttonsMenuItems[] ={
+	{ US_ITEM_Normal, 0, IN_SC_J, "JUMP", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_P, "POGO", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_F, "FIRE", US_Comm_None, 0, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
+};
+
+US_Card ck_us_buttonsMenu ={ 0, 0, 76, 0, ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0 };
+
+// Keyboard Menu
+US_CardItem ck_us_keyboardMenuItems[] ={
+	{ US_ITEM_Submenu, 0, IN_SC_M, "MOVEMENT", US_Comm_None, &ck_us_movementMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_M, "BUTTONS", US_Comm_None, &ck_us_buttonsMenu, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
+};
+
+US_Card ck_us_keyboardMenu ={ 8, 0, 74, 0, ck_us_keyboardMenuItems, &CK_US_KeyboardMenuProc, 0, 0, 0 };
+
+// Custom Menus
+
+US_Card ck_us_joystick1Menu ={ 0, 0, 77, 0, 0, &CK_US_Joystick1MenuProc, 0, 0, 0 };
+US_Card ck_us_joystick2Menu ={ 0, 0, 77, 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0 };
+US_Card ck_us_gamepadMenu ={ 0, 0, 77, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0 };
+
+// Configure Menu
+US_CardItem ck_us_configureMenuItems[] ={
+	{ US_ITEM_Submenu, 0, IN_SC_S, "SOUND", US_Comm_None, &ck_us_soundMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_M, "MUSIC", US_Comm_None, &ck_us_musicMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_O, "OPTIONS", US_Comm_None, &ck_us_optionsMenu, 0, 0 },
+	{ US_ITEM_Submenu, US_IS_Gap, IN_SC_K, "KEYBOARD", US_Comm_None, &ck_us_keyboardMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_One, "USE JOYSTICK #1", US_Comm_None, &ck_us_joystick1Menu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_Two, "USE JOYSTICK #2", US_Comm_None, &ck_us_joystick2Menu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_G, "", US_Comm_None, &ck_us_gamepadMenu, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
+};
+
+US_Card ck_us_configureMenu ={ 0, 0, 71, 0, ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0 };
+
+// Paddle War!
+
+US_Card ck_us_paddleWarMenu ={ 0, 0, 0, 0, 0, &CK_PaddleWar, 0, 0, 0 };
+
+// Main Menu
+US_CardItem ck_us_mainMenuItems[] ={
+	{ US_ITEM_Submenu, 0, IN_SC_N, "NEW GAME", US_Comm_None, &ck_us_newGameMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_L, "LOAD GAME", US_Comm_None, &ck_us_loadGameMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_S, "SAVE GAME", US_Comm_None, &ck_us_saveGameMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_C, "CONFIGURE", US_Comm_None, &ck_us_configureMenu, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_R, NULL, US_Comm_ReturnToGame, 0, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_E, "END GAME", US_Comm_EndGame, 0, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_P, "PADDLE WAR", US_Comm_None, &ck_us_paddleWarMenu, 0, 0 },
+	{ US_ITEM_Normal, 0, IN_SC_Q, "QUIT", US_Comm_Quit, 0, 0, 0 },
+	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
+};
+
+US_Card ck_us_mainMenu ={ 32, 4, 67, 0, ck_us_mainMenuItems, 0, 0, 0, 0 };
+
 extern US_Card *us_currentCard;
-extern char *key_controls[];
-US_Card ck_us_movementMenu;
-US_CardItem ck_us_movementMenuItems[];
-US_CardItem ck_us_buttonsMenuItems[];
+extern IN_ScanCode *key_controls[];
 
 bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 {
@@ -368,7 +519,7 @@ void paddlewar( void )
 			// Bounce ball off of side wall
 			if ( (ball_real_x + ball_x_speed) / 4 > 228 || (ball_real_x + ball_x_speed) / 4 < 78 )
 			{
-				SD_PlaySound( 47 );
+				SD_PlaySound(SOUND_UNKNOWN47);
 				ball_x_speed = -ball_x_speed;
 			}
 
@@ -381,7 +532,7 @@ void paddlewar( void )
 				new_round = 1;
 				keen_won_last = 0;
 				comp_score++;
-				SD_PlaySound( 49 );
+				SD_PlaySound(SOUND_UNKNOWN49);
 				show_paddlewar_score( keen_score, comp_score );
 				if ( comp_score == 21 )
 				{
@@ -396,7 +547,7 @@ void paddlewar( void )
 				new_round = 1;
 				keen_won_last = 1;
 				keen_score++;
-				SD_PlaySound( 50 );	/* play_sound */
+				SD_PlaySound(SOUND_UNKNOWN50);	/* play_sound */
 				show_paddlewar_score( keen_score, comp_score );
 				if ( keen_score == 21 )
 				{
@@ -417,7 +568,7 @@ void paddlewar( void )
 				{
 					bounce_point = comp_x;
 					y_bounce = 1;
-					SD_PlaySound( 48 );
+					SD_PlaySound(SOUND_UNKNOWN48);
 				}
 				else if ( ball_y_speed > 0 && ball_y >= 132 && ball_y < 135 && (keen_x - 5) <= ball_x && (keen_x + 11) > ball_x )
 				{
@@ -431,7 +582,7 @@ void paddlewar( void )
 					}
 					bounce_point = keen_x;
 					y_bounce = 1;
-					SD_PlaySound( 46 );
+					SD_PlaySound(SOUND_UNKNOWN46);
 				}
 
 				if ( y_bounce )
@@ -499,147 +650,3 @@ bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item)
 	paddlewar();
 	return 1;
 }
-
-// A debug menu which doesn't seem to ever appear in the game.
-US_CardItem ck_us_debugMenuItems[] ={
-	{ US_ITEM_Normal, 0, IN_SC_None, "DEBUG", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
-
-US_Card ck_us_debugMenu ={ 0, 0, 88, 0, &ck_us_debugMenuItems, 0, 0, 0, 0 };
-
-// Sound Menu
-US_CardItem ck_us_soundMenuItems[] ={
-	{ US_ITEM_Radio, 0, IN_SC_N, "NO SOUND EFFECTS", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Radio, 0, IN_SC_P, "PC SPEAKER", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Radio, 0, IN_SC_A, "ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Radio, 0, IN_SC_Q, "QUIET ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
-
-US_Card ck_us_soundMenu ={ 8, 0, 72, 0, &ck_us_soundMenuItems, 0, 0, 0, 0 };
-
-// Music Menu
-US_CardItem ck_us_musicMenuItems[] ={
-	{ US_ITEM_Radio, 0, IN_SC_N, "NO MUSIC", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Radio, 0, IN_SC_A, "ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
-
-US_Card ck_us_musicMenu ={ 8, 0, 73, 0, &ck_us_musicMenuItems, 0, 0, 0, 0 };
-
-// New Game Menu
-US_CardItem ck_us_newGameMenuItems[] ={
-	{ US_ITEM_Normal, 0, IN_SC_E, "BEGIN EASY GAME", US_Comm_NewEasyGame, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_N, "BEGIN NORMAL GAME", US_Comm_NewNormalGame, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_H, "BEGIN HARD GAME", US_Comm_NewHardGame, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
-
-US_Card ck_us_newGameMenu ={ 8, 0, 68, 0, &ck_us_newGameMenuItems, 0, 1, 0, 0, 0 };
-
-// Load/Save Game Menus
-US_CardItem ck_us_loadSaveMenuItems[] ={
-	{ US_ITEM_Normal, 0, IN_SC_One, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Two, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Three, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Four, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Five, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Six, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
-
-US_Card ck_us_loadGameMenu ={ 4, 3, 69, 0, &ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0 };
-US_Card ck_us_saveGameMenu ={ 4, 3, 70, 0, &ck_us_loadSaveMenuItems, &CK_US_SaveGameMenuProc, 0, 0, 0 };
-
-// Dummy Menus
-
-US_Card ck_us_scoreBoxMenu ={ 0, 0, 0, 0, 0, &CK_US_ScoreBoxMenuProc, 0, 0, 0 };
-US_Card ck_us_twoButtonFiringMenu ={0, 0, 0, 0, 0, &CK_US_TwoButtonFiringMenuProc, 0, 0, 0 };
-US_Card ck_us_fixJerkyMotionMenu ={ 0, 0, 0, 0, 0, &CK_US_FixJerkyMotionMenuProc, 0, 0, 0 };
-US_Card ck_us_svgaCompatibilityMenu ={ 0, 0, 0, 0, 0, &CK_US_SVGACompatibilityMenuProc, 0, 0, 0 };
-
-
-// Options menu
-US_CardItem ck_us_optionsMenuItems[] ={
-	{ US_ITEM_Submenu, 0, IN_SC_S, "", US_Comm_None, &ck_us_scoreBoxMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_T, "", US_Comm_None, &ck_us_twoButtonFiringMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_M, "", US_Comm_None, &ck_us_fixJerkyMotionMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_C, "", US_Comm_None, &ck_us_svgaCompatibilityMenu, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
-
-US_Card ck_us_optionsMenu ={ 8, 0, 78, 0, &ck_us_optionsMenuItems, 0, 0, 0, 0 };
-
-// Movement Kbd Controls Menu
-US_CardItem ck_us_movementMenuItems[] ={
-	{ US_ITEM_Normal, 0, IN_SC_None, "UP & LEFT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "UP", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "UP & RIGHT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "RIGHT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "DOWN & RIGHT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "DOWN", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "DOWN & LEFT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "LEFT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
-
-US_Card ck_us_movementMenu ={ 0, 0, 75, 0, &ck_us_movementMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
-
-// Buttons Kbd Controls Menu
-US_CardItem ck_us_buttonsMenuItems[] ={
-	{ US_ITEM_Normal, 0, IN_SC_J, "JUMP", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_P, "POGO", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_F, "FIRE", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
-
-US_Card ck_us_buttonsMenu ={ 0, 0, 76, 0, &ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0 };
-
-// Keyboard Menu
-US_CardItem ck_us_keyboardMenuItems[] ={
-	{ US_ITEM_Submenu, 0, IN_SC_M, "MOVEMENT", US_Comm_None, &ck_us_movementMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_M, "BUTTONS", US_Comm_None, &ck_us_buttonsMenu, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
-
-US_Card ck_us_keyboardMenu ={ 8, 0, 74, 0, &ck_us_keyboardMenuItems, &CK_US_KeyboardMenuProc, 0, 0, 0 };
-
-// Custom Menus
-
-US_Card ck_us_joystick1Menu ={ 0, 0, 77, 0, 0, &CK_US_Joystick1MenuProc, 0, 0, 0 };
-US_Card ck_us_joystick2Menu ={ 0, 0, 77, 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0 };
-US_Card ck_us_gamepadMenu ={ 0, 0, 77, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0 };
-
-// Configure Menu
-US_CardItem ck_us_configureMenuItems[] ={
-	{ US_ITEM_Submenu, 0, IN_SC_S, "SOUND", US_Comm_None, &ck_us_soundMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_M, "MUSIC", US_Comm_None, &ck_us_musicMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_O, "OPTIONS", US_Comm_None, &ck_us_optionsMenu, 0, 0 },
-	{ US_ITEM_Submenu, US_IS_Gap, IN_SC_K, "KEYBOARD", US_Comm_None, &ck_us_keyboardMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_One, "USE JOYSTICK #1", US_Comm_None, &ck_us_joystick1Menu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_Two, "USE JOYSTICK #2", US_Comm_None, &ck_us_joystick2Menu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_G, "", US_Comm_None, &ck_us_gamepadMenu, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
-
-US_Card ck_us_configureMenu ={ 0, 0, 71, 0, &ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0 };
-
-// Paddle War!
-
-US_Card ck_us_paddleWarMenu ={ 0, 0, 0, 0, 0, &CK_PaddleWar, 0, 0, 0 };
-
-// Main Menu
-US_CardItem ck_us_mainMenuItems[] ={
-	{ US_ITEM_Submenu, 0, IN_SC_N, "NEW GAME", US_Comm_None, &ck_us_newGameMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_L, "LOAD GAME", US_Comm_None, &ck_us_loadGameMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_S, "SAVE GAME", US_Comm_None, &ck_us_saveGameMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_C, "CONFIGURE", US_Comm_None, &ck_us_configureMenu, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_R, NULL, US_Comm_ReturnToGame, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_E, "END GAME", US_Comm_EndGame, 0, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_P, "PADDLE WAR", US_Comm_None, &ck_us_paddleWarMenu, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Q, "QUIT", US_Comm_Quit, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
-
-US_Card ck_us_mainMenu ={ 32, 4, 67, 0, &ck_us_mainMenuItems, 0, 0, 0, 0 };

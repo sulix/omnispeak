@@ -76,6 +76,8 @@ typedef enum {
 		SOUND_SPHEREFULCEILING,  // 59
 		SOUND_UNKNOWN60,         // 60
 		SOUND_SPIROFLY,          // 61
+		SOUND_UNKNOWN62,         // 62
+		SOUND_UNKNOWN63,         // 63
 		LASTSOUND
 } soundnames;
 

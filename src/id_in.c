@@ -153,7 +153,7 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 
 static IN_KeyMapping in_kbdControls;
 
-char *key_controls[] ={
+IN_ScanCode *key_controls[] ={
 	&in_kbdControls.jump, &in_kbdControls.pogo, &in_kbdControls.fire,
 	&in_kbdControls.upLeft, &in_kbdControls.up, &in_kbdControls.upRight,
 	&in_kbdControls.right, &in_kbdControls.downRight, &in_kbdControls.down,
@@ -298,8 +298,8 @@ void IN_ClearKeysDown()
 
 void IN_ReadControls(int player, IN_ControlFrame *controls)
 {
-	controls->xDirection = 0;
-	controls->yDirection = 0;
+	controls->xDirection = IN_motion_None;
+	controls->yDirection = IN_motion_None;
 	controls->jump = false;
 	controls->pogo = false;
 	controls->button2 = false;
@@ -307,8 +307,8 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	if (in_demoState == IN_Demo_Playback)
 	{
 		uint8_t ctrlByte = in_demoBuf[in_demoPtr + 1];
-		controls->yDirection = (ctrlByte & 3) - 1;
-		controls->xDirection = ((ctrlByte >> 2) & 3) - 1;
+		controls->yDirection = (IN_Motion)((ctrlByte & 3) - 1);
+		controls->xDirection = (IN_Motion)(((ctrlByte >> 2) & 3) - 1);
 		controls->jump = (ctrlByte >> 4) & 1;
 		controls->pogo = (ctrlByte >> 5) & 1;
 
@@ -330,11 +330,11 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 		if (IN_GetKeyState(in_kbdControls.pogo)) controls->pogo = true;
 		if (IN_GetKeyState(in_kbdControls.fire)) controls->button2 = true;
 
-		if (IN_GetKeyState(in_kbdControls.up)) controls->yDirection = -1;
-		else if (IN_GetKeyState(in_kbdControls.down)) controls->yDirection = 1;
+		if (IN_GetKeyState(in_kbdControls.up)) controls->yDirection = IN_motion_Up;
+		else if (IN_GetKeyState(in_kbdControls.down)) controls->yDirection = IN_motion_Down;
 
-		if (IN_GetKeyState(in_kbdControls.left)) controls->xDirection = -1;
-		else if (IN_GetKeyState(in_kbdControls.right)) controls->xDirection = 1;
+		if (IN_GetKeyState(in_kbdControls.left)) controls->xDirection = IN_motion_Left;
+		else if (IN_GetKeyState(in_kbdControls.right)) controls->xDirection = IN_motion_Right;
 
 		controls->dir = in_dirTable[3 * (controls->yDirection + 1) + controls->xDirection + 1];
 	}

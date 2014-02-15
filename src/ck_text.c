@@ -17,13 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "ck_def.h"
 #include "id_ca.h"
 #include "id_in.h"
+#include "id_us.h"
 #include "id_vh.h"
-
+#include "id_vl.h"
 
 int help_delay, help_pic, help_y, help_x;
 char *help_ptr;
@@ -99,7 +103,7 @@ void TimedPicCommand( void )
 	// VWL_ScreenToScreen( AZ : A7B4, AZ : A7B2, 40, 200 );
 	// (long) TimeCount = 0;
 
-	while ( timeCount+=VL_GetTics() < help_delay )
+	while ( timeCount+=VL_GetTics(1) < help_delay )
 		;
 	VH_DrawBitmap( help_x & 0xFFF8, help_y, help_pic );
 }
@@ -286,7 +290,7 @@ void HandleWord( void )
 	}
 }
 
-PageLayout( int show_status )
+void PageLayout( int show_status )
 {
 	int old_print_color, i;
 	char c;
@@ -548,7 +552,7 @@ int ShowHelp( void )
 	}
 }
 
-void HelpScreens()
+void HelpScreens(void)
 {
 	int local1, local2, oldfont, page_changed, n;
 
@@ -676,7 +680,7 @@ void help_endgame( void )
 	CA_CacheGrChunk( 4743 );	/* End-game story -- extern 8 */
 
 	/* Initialise the parser */
-	ptext = ca_graphChunks[4743];
+	ptext = (char *)ca_graphChunks[4743];
 	help_ptr = (char *) ptext;
 	CacheLayoutGraphics();
 

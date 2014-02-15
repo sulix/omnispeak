@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "id_ca.h"
 #include "id_in.h"
+#include "id_vl.h"
 #include "id_rf.h"
 #include "id_sd.h"
 #include "ck_play.h"
@@ -160,7 +161,7 @@ void CK5_ScanForLevelEntry(CK_object * obj)
 				// would have been changed here.
 				ck_nextMapNumber = infotile - 0xC000;
 				ck_gameState.levelState = 2;
-				SD_PlaySound(12);
+				SD_PlaySound(SOUND_UNKNOWN12);
 				return;
 			}
 		}
@@ -234,9 +235,9 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 
 	int unitX, unitY;
 	int timer;
-	uint16_t animTile;
+	int16_t animTile;
 
-	SD_PlaySound(0x29);
+	SD_PlaySound(SOUND_UNKNOWN41);
 
 	unitX = (tileX << 8);
 	unitY = (tileY << 8);
@@ -330,7 +331,7 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 
 	RF_Refresh();
 	RF_Refresh();
-	SD_PlaySound(0x29);
+	SD_PlaySound(SOUND_UNKNOWN41);
 
 	for (timer = 0; timer < 90; )
 	{
@@ -464,10 +465,10 @@ void CK5_MapKeenElevator(CK_object *keen)
 
 	keen->posY -= 0x100;
 	RF_AddSpriteDraw(&keen->sde, keen->posX, keen->posY, keen->gfxChunk, false, keen->zLayer);
-	SD_PlaySound(0x3F);
+	SD_PlaySound(SOUND_UNKNOWN63);
 
 	// Animate the elevator operation
-	uint16_t tile_array[4];
+	int16_t tile_array[4];
 	for (int frame = 0; frame <= 5; frame++)
 	{
 		for (int y = 0; y < 2; y++)
@@ -570,11 +571,11 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
 	}
 
-	SD_PlaySound(0x3F);
+	SD_PlaySound(SOUND_UNKNOWN63);
 
 
 	// Draw the elevator operation
-	uint16_t tile_array[4];
+	int16_t tile_array[4];
 	for (int frame = 5; frame >= 0; frame--)
 	{
 		for (int y = 0; y < 2; y++)

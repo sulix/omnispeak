@@ -25,7 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ctype.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <string.h>
+#include <strings.h> // For strcasecmp
+#include <stdlib.h>
 #include <stdbool.h>
 
 #include <time.h>
@@ -33,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Check for a parameter in a list of strings
 // Returns index of string found, or -1 if none
 
-int US_CheckParm(const char *parm, char **strings)
+int US_CheckParm(const char *parm, const char **strings)
 {
 	// Strip any non-alphabetic characters from 'parm'
 	while (*parm)
@@ -47,7 +48,13 @@ int US_CheckParm(const char *parm, char **strings)
 	{
 
 		if (strings[i][0] == '\0') continue;
-
+		/* BIG FIXME FIXME FIXME
+		 *
+		 * strcasecmp may function differently than expected.
+		 * For instance, with the Turkish locale in mind, it is
+		 * possible that strcasecmp("i", "I") is non-zero.
+		 * Furthermore, strcasecmp is not a part of the C99 standard.
+		 */
 		if (!strcasecmp(parm, strings[i])) return i;
 	}
 	return -1;
@@ -304,7 +311,7 @@ bool us_tedLevel; // Launching a level from TED
 int us_tedLevelNumber; // Number of level to launch from TED
 
 // We need to steal these from main().
-char **us_argv;
+const char **us_argv;
 int us_argc;
 
 void US_Startup()

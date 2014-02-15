@@ -46,6 +46,7 @@ void CK_RemoveObj(struct CK_object *obj);
 // Actions/Camera
 void CK_RunAction(struct CK_object *obj);
 void CK_CentreCamera(struct CK_object *obj);
+void CK_MapCamera(struct CK_object *keen);
 void CK_NormalCamera(struct CK_object *obj);
 
 // Playing

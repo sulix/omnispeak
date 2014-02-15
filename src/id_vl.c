@@ -412,11 +412,7 @@ int VL_NumSurfaces()
 void VL_InitScreen()
 {
 	VL_SetDefaultPalette();
-#if SDL_VERSION_ATLEAST(1,3,0)
-	vl_currentBackend = VL_SDL2GL_GetBackend();
-#else
-	vl_currentBackend = VL_SDL12_GetBackend();
-#endif
+	vl_currentBackend = VL_Impl_GetBackend();
 	vl_memused = 0;
 	vl_numsurfaces = 1;
 	vl_currentBackend->setVideoMode(320,200);

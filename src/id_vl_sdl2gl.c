@@ -1,4 +1,5 @@
 #include "id_vl.h"
+#include "id_us.h"
 #include <SDL.h>
 #include "glad.h" 
 
@@ -308,24 +309,25 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	SDL_GL_SwapWindow(vl_sdl2gl_window);
 }
 
+// Unfortunately, we can't take advantage of designated initializers in C++.
 VL_Backend vl_sdl2gl_backend =
 {
-	.setVideoMode = &VL_SDL2GL_SetVideoMode,
-	.createSurface = &VL_SDL2GL_CreateSurface,
-	.destroySurface = &VL_SDL2GL_DestroySurface,
-	.getSurfaceMemUse = &VL_SDL2GL_GetSurfaceMemUse,
-	.surfaceRect = &VL_SDL2GL_SurfaceRect,
-	.surfaceToSurface = &VL_SDL2GL_SurfaceToSurface,
-	.surfaceToSelf = &VL_SDL2GL_SurfaceToSelf,
-	.unmaskedToSurface = &VL_SDL2GL_UnmaskedToSurface,
-	.maskedToSurface = &VL_SDL2GL_MaskedToSurface,
-	.maskedBlitToSurface = &VL_SDL2GL_MaskedBlitToSurface,
-	.bitToSurface = &VL_SDL2GL_BitToSurface,
-	.bitBlitToSurface = &VL_SDL2GL_BitBlitToSurface,
-	.present = &VL_SDL2GL_Present
+	/*.setVideoMode =*/ &VL_SDL2GL_SetVideoMode,
+	/*.createSurface =*/ &VL_SDL2GL_CreateSurface,
+	/*.destroySurface =*/ &VL_SDL2GL_DestroySurface,
+	/*.getSurfaceMemUse =*/ &VL_SDL2GL_GetSurfaceMemUse,
+	/*.surfaceRect =*/ &VL_SDL2GL_SurfaceRect,
+	/*.surfaceToSurface =*/ &VL_SDL2GL_SurfaceToSurface,
+	/*.surfaceToSelf =*/ &VL_SDL2GL_SurfaceToSelf,
+	/*.unmaskedToSurface =*/ &VL_SDL2GL_UnmaskedToSurface,
+	/*.maskedToSurface =*/ &VL_SDL2GL_MaskedToSurface,
+	/*.maskedBlitToSurface =*/ &VL_SDL2GL_MaskedBlitToSurface,
+	/*.bitToSurface =*/ &VL_SDL2GL_BitToSurface,
+	/*.bitBlitToSurface =*/ &VL_SDL2GL_BitBlitToSurface,
+	/*.present =*/ &VL_SDL2GL_Present
 };
 
-VL_Backend *VL_SDL2GL_GetBackend()
+VL_Backend *VL_Impl_GetBackend()
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	return &vl_sdl2gl_backend;

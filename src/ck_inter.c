@@ -18,10 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #include "ck_def.h"
+#include "ck_game.h"
 #include "ck_play.h"
 #include "id_us.h"
 #include "id_vh.h"
-
+#include "id_vl.h"
+#include "id_in.h"
 
 /*
  * CK_INTER: Holds an assortment of screen drawing and state switching routines
@@ -29,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 int ck_startingSavedGame = 0;
-int ck_startingDifficulty = 0;
+CK_Difficulty ck_startingDifficulty = D_NotPlaying;
 
 void CK_HandleDemoKeys()
 {
@@ -45,7 +47,7 @@ void CK_HandleDemoKeys()
 	 * return;
 	 */
 
-	if (IN_GetLastScan == IN_SC_F1)
+	if (IN_GetLastScan() == IN_SC_F1)
 	{
 		// DoHelp();
 		return;
@@ -69,7 +71,7 @@ void CK_HandleDemoKeys()
  * Terminator Intro Text
  */
 
-void CK_DrawTerminator()
+void CK_DrawTerminator(void)
 {
 	// TODO: Implement all terminator functions
 
@@ -123,7 +125,7 @@ void CK_ShowTitleScreen()
 	// TODO: Make this fizzle in 
 	CA_CacheGrChunk(88);
 	VH_DrawBitmap(0,0,88);
-	VL_Present(0,0);
+	VL_Present();
 	IN_WaitKey();
 }
 
@@ -132,9 +134,9 @@ void CK_ShowTitleScreen()
 void CK_PlayDemoFile(const char *demoName)
 {
 	uint8_t *demoBuf;
-	unsigned int demoFileLength;
+	int demoFileLength;
 
-	CA_LoadFile(demoName, &demoBuf, &demoFileLength);
+	CA_LoadFile(demoName, (void **)&demoBuf, &demoFileLength);
 
 	uint16_t demoMap = *demoBuf;
 	demoBuf += 2;
@@ -153,7 +155,7 @@ void CK_PlayDemoFile(const char *demoName)
 
 	CK_PlayLoop();
 
-	MM_FreePtr(&demoBuf);
+	MM_FreePtr((void **)&demoBuf);
 }
 
 void CK_PlayDemo(int demoNumber)
@@ -165,7 +167,7 @@ void CK_PlayDemo(int demoNumber)
 	//	CK_NewGame();
 
 	CA_CacheGrChunk(demoChunk);
-	demoBuf = ca_graphChunks[demoChunk];
+	demoBuf = (uint8_t *)(ca_graphChunks[demoChunk]);
 	//MM_SetLock(&CA_CacheGrChunk
 
 	uint16_t demoMap = *demoBuf;

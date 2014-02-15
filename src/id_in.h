@@ -22,11 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdint.h>
 #include <stdbool.h>
+
+// This is how it's done in Wolf3D, even if it's bad practice in modern C++ code
+typedef uint8_t IN_ScanCode;
+
 //
 // These scancodes match keen (and wolf3d)'s numbering, such that
 // patches and config files may be compatible.
 
-typedef enum IN_ScanCode {
+/*typedef*/ enum /*IN_ScanCode*/ {
 	IN_SC_None = 0x00,
 	IN_SC_Invalid = 0xff,
 	IN_SC_Escape = 0x01,
@@ -106,7 +110,7 @@ typedef enum IN_ScanCode {
 		//IN_KP_Escape = 0x1b,
 		//IN_KP_Space = 0x20,
 		//IN_KP_Backspace = 0x
-} IN_ScanCode;
+} /*IN_ScanCode*/;
 
 // See wolf3d ID_IN.H
 
@@ -159,6 +163,7 @@ typedef struct IN_ControlFrame {
 
 void IN_PumpEvents();
 void IN_WaitKey();
+const char *IN_GetScanName(IN_ScanCode scan);
 bool IN_GetKeyState(IN_ScanCode scanCode);
 IN_ScanCode IN_GetLastScan();
 void IN_Startup();

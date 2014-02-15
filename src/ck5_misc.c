@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_ca.h"
 #include "id_in.h"
 #include "id_rf.h"
+#include "id_vl.h"
 #include "ck_play.h"
 #include "ck_phys.h"
 #include "ck_def.h"
@@ -339,7 +340,7 @@ void CK5_SpawnLightning ()
 	// Spawn the top lightning
 	new_object = CK_GetNewObj(true);
 	new_object->zLayer = 3;
-	new_object->clipped = 0;
+	new_object->clipped = CLIP_not;
 	new_object->type = 24;
 	new_object->posX = (ck_keenObj->clipRects.tileX1 << 8) - 0x80;
 	new_object->posY = (ck_keenObj->clipRects.tileY2 << 8) - 0x500;
@@ -348,13 +349,13 @@ void CK5_SpawnLightning ()
 	// Spawn the vertical lightning that covers keen
 	new_object = CK_GetNewObj(true);
 	new_object->zLayer = 3;
-	new_object->clipped = 0;
+	new_object->clipped = CLIP_not;
 	new_object->type = 24;
 	new_object->posX = (ck_keenObj->clipRects.tileX1 << 8);
 	new_object->posY = (ck_keenObj->clipRects.tileY1 << 8) - 0x80;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_LightningV0"));
 
-	SD_PlaySound(0x29);
+	SD_PlaySound(SOUND_UNKNOWN41);
 }
 
 // Fuse Explosion Spawn
@@ -368,12 +369,12 @@ void CK5_SpawnFuseExplosion(int tileX, int tileY)
 	new_object->posX = tileX << 8;
 	new_object->posY = tileY << 8;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_FuseExplosion0"));
-	SD_PlaySound(0x34);
+	SD_PlaySound(SOUND_UNKNOWN52);
 }
 
 // Level Ending Object Spawn
 
-void CK5_SpawnLevelEnd()
+void CK5_SpawnLevelEnd(void)
 {
 	CK_object *new_object = CK_GetNewObj(false);
 	new_object->active = OBJ_ALWAYS_ACTIVE;
@@ -448,7 +449,7 @@ void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
 
 	CK_object *obj = CK_GetNewObj(false);
 
-	obj->clipped = false;
+	obj->clipped = CLIP_not;
 	obj->active = OBJ_ACTIVE;
 	obj->type = 5;	//OBJ_ITEM
 	obj->zLayer = 2;
@@ -751,7 +752,7 @@ void FuseMessage()
 	CA_UpLevel();
 	ca_graphChunkNeeded[0x5A] |= ca_levelbit;
 	ca_graphChunkNeeded[0x5B] |= ca_levelbit;
-	CA_CacheMarks();
+	CA_CacheMarks(0);
 
 	// VW_SyncPages();
 

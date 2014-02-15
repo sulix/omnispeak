@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_sd.h"
 
 #include "ck_act.h"
+#include "ck_text.h"
 #include "ck5_ep.h"
 
 #include <stdlib.h> /* For abs() */
@@ -76,7 +77,8 @@ int ck_demoParm;
 // A bunch of global variables from other modules that should be 
 // handled better, but are just defined here for now
 
-extern int load_game_error, ck_startingSavedGame, ck_startingDifficulty; 
+extern int load_game_error, ck_startingSavedGame;
+extern CK_Difficulty ck_startingDifficulty; 
 
 void CK_CountActiveObjects()
 {
@@ -218,8 +220,8 @@ CK_object *CK_GetNewObj(bool nonCritical)
 	newObj->prev = ck_lastObject;
 
 
-	newObj->active = true;
-	newObj->clipped = true;
+	newObj->active = OBJ_ACTIVE;
+	newObj->clipped = CLIP_normal;
 
 	ck_lastObject = newObj;
 	ck_numObjects++;
@@ -242,7 +244,7 @@ void CK_RemoveObj(CK_object *obj)
 	if (obj->type == CT_StunnedCreature)
 	{
 		// FIXME: This cast is bad on 64-bit platforms
-		RF_RemoveSpriteDraw(&obj->user3);
+		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **)&obj->user3);
 	}
 
 	if (obj == ck_lastObject)
@@ -482,12 +484,12 @@ void CK_DebugKeys()
 		if (ck_keenObj->clipped)
 		{
 			US_PrintCentered("No clipping ON");
-			ck_keenObj->clipped = false;
+			ck_keenObj->clipped = CLIP_not;
 		}
 		else
 		{
 			US_PrintCentered("No clipping OFF");
-			ck_keenObj->clipped = true;
+			ck_keenObj->clipped = CLIP_normal;
 		}
 		VL_Present();
 		IN_WaitKey();

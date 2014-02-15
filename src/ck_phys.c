@@ -556,8 +556,8 @@ void CK_SetAction(CK_object *obj, CK_action *act)
 	obj->nextY = 0;
 
 	//TODO: Support clipped enums.
-	bool oldClipping = obj->clipped;
-	obj->clipped = false;
+	CK_ClipType oldClipping = obj->clipped;
+	obj->clipped = CLIP_not;
 	CK_PhysUpdateNormalObj(obj);
 	obj->clipped = oldClipping;
 

@@ -26,16 +26,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_mm.h"
 #include "id_sd.h"
 // -- Common --
-void CA_Startup();
+void CA_Startup(void);
+void CA_Shutdown(void);
 
+// -- Audio --
+void CA_CacheAudioChunk(int16_t chunk);
+void CA_LoadAllSounds(void);
 
 // -- File IO --
 
-char* CAL_AdjustExtension(char *filename);
-bool CA_ReadFile(char *filename, void *offset);
-bool CA_SafeReadFile(char *filename, void *offset, int bufLength);
-bool CA_WriteFile(char *filename, void *offset, int bufLength);
-bool CA_LoadFile(char *filename, mm_ptr_t *ptr, int *memsize);
+char* CAL_AdjustExtension(const char *filename);
+bool CA_ReadFile(const char *filename, void *offset);
+bool CA_SafeReadFile(const char *filename, void *offset, int bufLength);
+bool CA_WriteFile(const char *filename, void *offset, int bufLength);
+bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize);
 
 
 
@@ -53,12 +57,18 @@ typedef struct ca_gfxinfo
 	uint16_t numBinaries, offBinaries;
 } ca_gfxinfo;
 
-ca_gfxinfo ca_gfxInfoE;
+extern ca_gfxinfo ca_gfxInfoE;
 
-mm_ptr_t ca_graphChunks[CA_MAX_GRAPH_CHUNKS];
+extern mm_ptr_t ca_graphChunks[CA_MAX_GRAPH_CHUNKS];
 
-void CA_MarkGrChunk(int chunk);
 void CA_CacheGrChunk(int chunk);
+void CA_ClearMarks(void);
+void CA_SetGrPurge(void);
+void CA_MarkGrChunk(int chunk);
+
+void CA_CacheMarks(const char *msg);
+void CA_UpLevel(void);
+void CA_DownLevel(void);
 
 // -- Maps --
 
@@ -84,6 +94,7 @@ extern uint8_t *CA_audio[NUMSNDCHUNKS];
 
 void CA_CacheMap(int mapIndex);
 uint16_t CA_TileAtPos(int x, int y, int plane);
+void CA_SetTileAtPos(int x, int y, int plane, int value);
 uint16_t CA_GetMapHeight();
 uint16_t CA_GetMapWidth(); 
 

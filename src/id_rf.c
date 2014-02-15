@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 //TODO: id_heads.h
+#include "ck_play.h"
 #include "id_rf.h"
 #include "id_vl.h"
 #include "id_vh.h"
