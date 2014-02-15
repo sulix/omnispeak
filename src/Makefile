@@ -43,7 +43,7 @@ OUTBIN=../bin/omnispeak5e$(EXE_EXT)
 
 WITH_SDL2=1
 ifeq ($(WITH_SDL2), 1)
-	IDOBJECTS+= glad.o id_vl_sdl2gl.o
+	IDOBJECTS+= id_vl_sdl2gl.o 
 	SDLCONFIGBIN=sdl2-config #/local/cross-tools/x86_64-w64-mingw32/bin/sdl2-config
 else
 	IDOBJECTS+= id_vl_sdl12.o
@@ -75,6 +75,6 @@ binfiles: ../data/keen5/ACTION.CK5
 
 $(OUTBIN): $(OBJ)
 	@mkdir -p $(dir $@)
-	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` -lm
+	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` -lm -lGL
 
 -include $(DEPS)
