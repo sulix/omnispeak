@@ -109,12 +109,13 @@
 %action CK_ACT_keenPressSwitch1 175 175 UnscaledOnce 0 1 8 0 0 CK_KeenPressSwitchThink NULL CK_KeenDrawFunc CK_ACT_keenPressSwitch2
 %action CK_ACT_keenPressSwitch2 175 175 UnscaledOnce 0 1 8 0 0 NULL NULL CK_KeenDrawFunc CK_ACT_keenStanding
 
-%action CK_ACT_keenEnterDoor1 175 175 UnscaledOnce 0 0 0x2D 0 0xFFC0 NULL NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor2
-%action CK_ACT_keenEnterDoor2 175 175 UnscaledOnce 0 0 9 0 0xFFC0 CK_KeenEnterDoor0 NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor3
-%action CK_ACT_keenEnterDoor3 176 176 UnscaledOnce 0 0 9 0 0xFFC0 CK_KeenEnterDoor1 NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor4
-%action CK_ACT_keenEnterDoor4 177 177 UnscaledOnce 0 0 9 0 0xFFC0 CK_KeenEnterDoor0 NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor5
-%action CK_ACT_keenEnterDoor5 178 178 UnscaledOnce 0 0 9 0 0xFFC0 CK_KeenEnterDoor NULL CK_SimpleDrawFunc CK_ACT_keenStanding
-%action CK_ACT_keenEnteredDoor -1 -1 UnscaledOnce 0 0 9 0 0xFFC0 CK_KeenEnterDoor NULL CK_SimpleDrawFunc CK_ACT_keenStanding
+%action CK_ACT_keenEnterDoor1 175 175 UnscaledOnce 0 0 0x2D 0 -64 NULL NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor2
+%action CK_ACT_keenEnterDoor2 175 175 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor0 NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor3
+%action CK_ACT_keenEnterDoor3 176 176 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor1 NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor4
+%action CK_ACT_keenEnterDoor4 177 177 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor0 NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor5
+%action CK_ACT_keenEnterDoor5 178 178 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor1 NULL CK_SimpleDrawFunc CK_ACT_keenEnterDoor6
+%action CK_ACT_keenEnterDoor6 179 179 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor NULL CK_SimpleDrawFunc CK_ACT_keenStanding
+%action CK_ACT_keenEnteredDoor -1 -1 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor NULL CK_SimpleDrawFunc CK_ACT_keenStanding
 
 # ck_misc.c
 %action CK_ACT_DoorOpen1 0 0 UnscaledOnce 0 0 10 0 0 CK_DoorOpen NULL NULL CK_ACT_DoorOpen2
