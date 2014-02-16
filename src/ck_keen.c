@@ -39,6 +39,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MISCFLAG_DOOR		 2
 #define MISCFLAG_SWITCHPLATON	 5
 #define MISCFLAG_SWITCHPLATOFF	 6
+#define MISCFLAG_GEMHOLDER0	 7
+#define MISCFLAG_GEMHOLDER1	 8
+#define MISCFLAG_GEMHOLDER2	 9
+#define MISCFLAG_GEMHOLDER3	10
 #define MISCFLAG_SWITCHBRIDGE	15
 #define MISCFLAG_SECURITYDOOR	32
 
@@ -65,11 +69,23 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 	{
 		if (b->user1 > 12)
 			return;
-		SD_PlaySound(CK5_ItemSounds[b->user1]);
-		if (b->user1 == 7)
+		if (b->user1 < 4)
+		{
+			ck_gameState.keyGems[b->user1]++;
+		}
+		else if (b->user1 == 10)
+		{
+			ck_gameState.numLives++;
+		}
+		else if (b->user1 == 11)
 		{
 			ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
 		}
+		else if (b->user1 == 13)
+		{
+			ck_gameState.securityCard = 1;
+		}
+		SD_PlaySound(CK5_ItemSounds[b->user1]);
 
 		b->type = 1;
 		b->zLayer = 3;
@@ -174,6 +190,26 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 			case 4:
 				CK_KeenGetTileVitalin(x,y);
 				break;
+			case MISCFLAG_GEMHOLDER0:
+			case MISCFLAG_GEMHOLDER1:
+			case MISCFLAG_GEMHOLDER2:
+			case MISCFLAG_GEMHOLDER3:
+				if (y == obj->clipRects.tileY2 && obj->topTI && obj->currentAction != CK_GetActionByName("CK_ACT_keenPlaceGem")
+					&& ck_gameState.keyGems[specialTileInfo - MISCFLAG_GEMHOLDER0])
+				{
+					int targetXUnit = (x << 8) - 64;
+					if (obj->posX == targetXUnit)
+					{
+						ck_gameState.keyGems[specialTileInfo - MISCFLAG_GEMHOLDER0]--;
+						CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenPlaceGem"));
+					}
+					else
+					{
+						obj->user1 = targetXUnit;
+						obj->currentAction = CK_GetActionByName("CK_ACT_keenSlide");
+					}
+				}
+				return;
 			case 21:
 			case 22:
 			case 23:
@@ -389,6 +425,46 @@ void CK_KeenEnterDoor(CK_object *obj)
 	CK_SetAction2(obj, obj->currentAction->next);
 	obj->clipped = CLIP_normal;
 	CK_CentreCamera(obj);
+}
+
+void CK_KeenPlaceGem(CK_object *obj)
+{
+	uint16_t oldFGTile = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2, 1);
+	uint16_t newFGTile = oldFGTile + 18;
+	uint16_t target = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2, 2);
+
+	int targetX = target >> 8;
+	int targetY = target & 0xFF;
+
+	RF_ReplaceTiles(&newFGTile, 1, obj->clipRects.tileXmid, obj->clipRects.tileY2, 1, 1);
+
+	SD_PlaySound(SOUND_OPENGEMDOOR);
+	
+	CK_object *newObj = CK_GetNewObj(false);
+
+	newObj->posX = targetX;
+	newObj->posY = targetY;
+
+	if (targetX > CA_GetMapWidth() || targetX < 2 || targetY > CA_GetMapHeight() || targetY < 2)
+	{
+		Quit("Keyholder points to a bad spot!");
+	}
+
+	// Calculate the height of the door.
+	int doorHeight = 0;
+	int doorY = targetY;
+	uint16_t doorTile = CA_TileAtPos(targetX, doorY, 1);
+	do
+	{
+		doorHeight++;
+		doorY++;
+	} while (CA_TileAtPos(targetX, doorY, 1) == doorTile);
+
+	newObj->user1 = doorHeight;
+	newObj->clipped = CLIP_not;
+	newObj->type = CT_Friendly;
+	newObj->active = OBJ_ALWAYS_ACTIVE;
+	CK_SetAction(newObj, CK_GetActionByName("CK_ACT_DoorOpen1"));
 }
 
 void CK_KeenRidePlatform(CK_object *obj)
@@ -1588,6 +1664,7 @@ void CK_KeenSetupFunctions()
 	CK_ACT_AddFunction("CK_KeenEnterDoor0",&CK_KeenEnterDoor0);
 	CK_ACT_AddFunction("CK_KeenEnterDoor1",&CK_KeenEnterDoor1);
 	CK_ACT_AddFunction("CK_KeenEnterDoor",&CK_KeenEnterDoor);
+	CK_ACT_AddFunction("CK_KeenPlaceGem",&CK_KeenPlaceGem);
 	CK_ACT_AddFunction("CK_KeenRunningThink",&CK_KeenRunningThink);
 	CK_ACT_AddFunction("CK_KeenStandingThink",&CK_KeenStandingThink);
 	CK_ACT_AddFunction("CK_HandleInputOnGround",&CK_HandleInputOnGround);

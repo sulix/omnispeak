@@ -73,6 +73,7 @@ void CK_InitGame()
 	// Compile the actions
 	CK_ACT_SetupFunctions();
 	CK_KeenSetupFunctions();
+	CK_OBJ_SetupFunctions();
 	ck_currentEpisode->setupFunctions();
 	CK_ACT_LoadActions(CAL_AdjustExtension("ACTION.EXT"));
 

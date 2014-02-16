@@ -237,4 +237,5 @@ void CK_PlayDemoFile(const char *demoName);
 
 extern CK_object *ck_keenObj;
 
+void CK_OBJ_SetupFunctions();
 #endif
