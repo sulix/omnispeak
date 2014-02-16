@@ -1,90 +1,96 @@
 #include "id_vl.h"
 #include "id_us.h"
+#include <stdlib.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
 
 
+// OpenGL 1.3 Function Pointers:
+typedef void (APIENTRYP PFN_ID_GLACTIVETEXTUREPROC) (GLenum texture);
+PFN_ID_GLACTIVETEXTUREPROC id_glActiveTexture = 0;
 // OpenGL 2.0 Function Pointers:
-typedef void (APIENTRYP PFNGLATTACHSHADERPROC) (GLuint program, GLuint shader);
-PFNGLATTACHSHADERPROC id_glAttachShader = 0;
-typedef void (APIENTRYP PFNGLCOMPILESHADERPROC) (GLuint shader);
-PFNGLCOMPILESHADERPROC id_glCompileShader = 0;
-typedef GLuint (APIENTRYP PFNGLCREATEPROGRAMPROC) (void);
-PFNGLCREATEPROGRAMPROC id_glCreateProgram = 0;
-typedef GLuint (APIENTRYP PFNGLCREATESHADERPROC) (GLenum type);
-PFNGLCREATESHADERPROC id_glCreateShader = 0;
-typedef void (APIENTRYP PFNGLDELETEPROGRAMPROC) (GLuint program);
-PFNGLDELETEPROGRAMPROC id_glDeleteProgram = 0;
-typedef void (APIENTRYP PFNGLDELETESHADERPROC) (GLuint shader);
-PFNGLDELETESHADERPROC id_glDeleteShader = 0;
-typedef void (APIENTRYP PFNGLDETACHSHADERPROC) (GLuint program, GLuint shader);
-PFNGLDETACHSHADERPROC id_glDetachShader = 0;
-typedef void (APIENTRYP PFNGLGETPROGRAMIVPROC) (GLuint program, GLenum pname, GLint *params);
-PFNGLGETPROGRAMIVPROC id_glGetProgramiv = 0;
-typedef void (APIENTRYP PFNGLGETPROGRAMINFOLOGPROC) (GLuint program, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
-PFNGLGETPROGRAMINFOLOGPROC id_glGetProgramInfoLog = 0;
-typedef void (APIENTRYP PFNGLGETSHADERIVPROC) (GLuint shader, GLenum pname, GLint *params);
-PFNGLGETSHADERIVPROC id_glGetShaderiv = 0;
-typedef void (APIENTRYP PFNGLGETSHADERINFOLOGPROC) (GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
-PFNGLGETSHADERINFOLOGPROC id_glGetShaderInfoLog = 0;
-typedef GLint (APIENTRYP PFNGLGETUNIFORMLOCATIONPROC) (GLuint program, const GLchar *name);
-PFNGLGETUNIFORMLOCATIONPROC id_glGetUniformLocation = 0;
-typedef void (APIENTRYP PFNGLLINKPROGRAMPROC) (GLuint program);
-PFNGLLINKPROGRAMPROC id_glLinkProgram = 0;
-//typedef void (APIENTRYP PFNGLSHADERSOURCEPROC) (GLuint shader, GLsizei count, const GLchar* const *string, const GLint *length);
-PFNGLSHADERSOURCEPROC id_glShaderSource = 0;
-typedef void (APIENTRYP PFNGLUSEPROGRAMPROC) (GLuint program);
-PFNGLUSEPROGRAMPROC id_glUseProgram = 0;
-typedef void (APIENTRYP PFNGLUNIFORM1IPROC) (GLint location, GLint v0);
-PFNGLUNIFORM1IPROC id_glUniform1i = 0;
+typedef void (APIENTRYP PFN_ID_GLATTACHSHADERPROC) (GLuint program, GLuint shader);
+PFN_ID_GLATTACHSHADERPROC id_glAttachShader = 0;
+typedef void (APIENTRYP PFN_ID_GLCOMPILESHADERPROC) (GLuint shader);
+PFN_ID_GLCOMPILESHADERPROC id_glCompileShader = 0;
+typedef GLuint (APIENTRYP PFN_ID_GLCREATEPROGRAMPROC) (void);
+PFN_ID_GLCREATEPROGRAMPROC id_glCreateProgram = 0;
+typedef GLuint (APIENTRYP PFN_ID_GLCREATESHADERPROC) (GLenum type);
+PFN_ID_GLCREATESHADERPROC id_glCreateShader = 0;
+typedef void (APIENTRYP PFN_ID_GLDELETEPROGRAMPROC) (GLuint program);
+PFN_ID_GLDELETEPROGRAMPROC id_glDeleteProgram = 0;
+typedef void (APIENTRYP PFN_ID_GLDELETESHADERPROC) (GLuint shader);
+PFN_ID_GLDELETESHADERPROC id_glDeleteShader = 0;
+typedef void (APIENTRYP PFN_ID_GLDETACHSHADERPROC) (GLuint program, GLuint shader);
+PFN_ID_GLDETACHSHADERPROC id_glDetachShader = 0;
+typedef void (APIENTRYP PFN_ID_GLGETPROGRAMIVPROC) (GLuint program, GLenum pname, GLint *params);
+PFN_ID_GLGETPROGRAMIVPROC id_glGetProgramiv = 0;
+typedef void (APIENTRYP PFN_ID_GLGETPROGRAMINFOLOGPROC) (GLuint program, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
+PFN_ID_GLGETPROGRAMINFOLOGPROC id_glGetProgramInfoLog = 0;
+typedef void (APIENTRYP PFN_ID_GLGETSHADERIVPROC) (GLuint shader, GLenum pname, GLint *params);
+PFN_ID_GLGETSHADERIVPROC id_glGetShaderiv = 0;
+typedef void (APIENTRYP PFN_ID_GLGETSHADERINFOLOGPROC) (GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
+PFN_ID_GLGETSHADERINFOLOGPROC id_glGetShaderInfoLog = 0;
+typedef GLint (APIENTRYP PFN_ID_GLGETUNIFORMLOCATIONPROC) (GLuint program, const GLchar *name);
+PFN_ID_GLGETUNIFORMLOCATIONPROC id_glGetUniformLocation = 0;
+typedef void (APIENTRYP PFN_ID_GLLINKPROGRAMPROC) (GLuint program);
+PFN_ID_GLLINKPROGRAMPROC id_glLinkProgram = 0;
+typedef void (APIENTRYP PFN_ID_GLSHADERSOURCEPROC) (GLuint shader, GLsizei count, const GLchar* const *string, const GLint *length);
+PFN_ID_GLSHADERSOURCEPROC id_glShaderSource = 0;
+typedef void (APIENTRYP PFN_ID_GLUSEPROGRAMPROC) (GLuint program);
+PFN_ID_GLUSEPROGRAMPROC id_glUseProgram = 0;
+typedef void (APIENTRYP PFN_ID_GLUNIFORM1IPROC) (GLint location, GLint v0);
+PFN_ID_GLUNIFORM1IPROC id_glUniform1i = 0;
 // EXT_framebuffer_object
-typedef GLboolean (APIENTRYP PFNGLISFRAMEBUFFEREXTPROC) (GLuint framebuffer);
-PFNGLISFRAMEBUFFEREXTPROC id_glIsFramebufferEXT = 0;
-typedef void (APIENTRYP PFNGLBINDFRAMEBUFFEREXTPROC) (GLenum target, GLuint framebuffer);
-PFNGLBINDFRAMEBUFFEREXTPROC id_glBindFramebufferEXT = 0;
-typedef void (APIENTRYP PFNGLDELETEFRAMEBUFFERSEXTPROC) (GLsizei n, const GLuint *framebuffers);
-PFNGLDELETEFRAMEBUFFERSEXTPROC id_glDeleteFramebuffersEXT = 0;
-typedef void (APIENTRYP PFNGLGENFRAMEBUFFERSEXTPROC) (GLsizei n, GLuint *framebuffers);
-PFNGLGENFRAMEBUFFERSEXTPROC id_glGenFramebuffersEXT = 0;
-typedef GLenum (APIENTRYP PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC) (GLenum target);
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC id_glCheckFramebufferStatusEXT = 0;
-typedef void (APIENTRYP PFNGLFRAMEBUFFERTEXTURE2DEXTPROC) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC id_glFramebufferTexture2DEXT = 0;
+typedef GLboolean (APIENTRYP PFN_ID_GLISFRAMEBUFFEREXTPROC) (GLuint framebuffer);
+PFN_ID_GLISFRAMEBUFFEREXTPROC id_glIsFramebufferEXT = 0;
+typedef void (APIENTRYP PFN_ID_GLBINDFRAMEBUFFEREXTPROC) (GLenum target, GLuint framebuffer);
+PFN_ID_GLBINDFRAMEBUFFEREXTPROC id_glBindFramebufferEXT = 0;
+typedef void (APIENTRYP PFN_ID_GLDELETEFRAMEBUFFERSEXTPROC) (GLsizei n, const GLuint *framebuffers);
+PFN_ID_GLDELETEFRAMEBUFFERSEXTPROC id_glDeleteFramebuffersEXT = 0;
+typedef void (APIENTRYP PFN_ID_GLGENFRAMEBUFFERSEXTPROC) (GLsizei n, GLuint *framebuffers);
+PFN_ID_GLGENFRAMEBUFFERSEXTPROC id_glGenFramebuffersEXT = 0;
+typedef GLenum (APIENTRYP PFN_ID_GLCHECKFRAMEBUFFERSTATUSEXTPROC) (GLenum target);
+PFN_ID_GLCHECKFRAMEBUFFERSTATUSEXTPROC id_glCheckFramebufferStatusEXT = 0;
+typedef void (APIENTRYP PFN_ID_GLFRAMEBUFFERTEXTURE2DEXTPROC) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+PFN_ID_GLFRAMEBUFFERTEXTURE2DEXTPROC id_glFramebufferTexture2DEXT = 0;
 // EXT_framebuffer_blit
-typedef void (APIENTRYP PFNGLBLITFRAMEBUFFEREXTPROC) (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
-PFNGLBLITFRAMEBUFFEREXTPROC id_glBlitFramebufferEXT = 0;
+typedef void (APIENTRYP PFN_ID_GLBLITFRAMEBUFFEREXTPROC) (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+PFN_ID_GLBLITFRAMEBUFFEREXTPROC id_glBlitFramebufferEXT = 0;
 
 
 static bool VL_SDL2GL_LoadGLProcs()
 {
+	// OpenGL 1.3
+	id_glActiveTexture = (PFN_ID_GLACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glActiveTexture");
 	// OpenGL 2.0
-	id_glAttachShader = (PFNGLATTACHSHADERPROC)SDL_GL_GetProcAddress("glAttachShader");
-	id_glCompileShader = (PFNGLCOMPILESHADERPROC)SDL_GL_GetProcAddress("glCompileShader");
-	id_glCreateProgram = (PFNGLCREATEPROGRAMPROC)SDL_GL_GetProcAddress("glCreateProgram");
-	id_glCreateShader = (PFNGLCREATESHADERPROC)SDL_GL_GetProcAddress("glCreateShader");
-	id_glDeleteProgram = (PFNGLDELETEPROGRAMPROC)SDL_GL_GetProcAddress("glDeleteProgram");
-	id_glDeleteShader = (PFNGLDELETESHADERPROC)SDL_GL_GetProcAddress("glDeleteShader");
-	id_glGetProgramiv = (PFNGLGETPROGRAMIVPROC)SDL_GL_GetProcAddress("glGetProgramiv");
-	id_glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)SDL_GL_GetProcAddress("glGetProgramInfoLog");
-	id_glGetShaderiv = (PFNGLGETSHADERIVPROC)SDL_GL_GetProcAddress("glGetShaderiv");
-	id_glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)SDL_GL_GetProcAddress("glGetShaderInfoLog");
-	id_glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)SDL_GL_GetProcAddress("glGetUniformLocation");
-	id_glLinkProgram = (PFNGLLINKPROGRAMPROC)SDL_GL_GetProcAddress("glLinkProgram");
-	id_glShaderSource = (PFNGLSHADERSOURCEPROC)SDL_GL_GetProcAddress("glShaderSource");
-	id_glUseProgram = (PFNGLUSEPROGRAMPROC)SDL_GL_GetProcAddress("glUseProgram");
-	id_glUniform1i = (PFNGLUNIFORM1IPROC)SDL_GL_GetProcAddress("glUniform1i");
+	id_glAttachShader = (PFN_ID_GLATTACHSHADERPROC)SDL_GL_GetProcAddress("glAttachShader");
+	id_glCompileShader = (PFN_ID_GLCOMPILESHADERPROC)SDL_GL_GetProcAddress("glCompileShader");
+	id_glCreateProgram = (PFN_ID_GLCREATEPROGRAMPROC)SDL_GL_GetProcAddress("glCreateProgram");
+	id_glCreateShader = (PFN_ID_GLCREATESHADERPROC)SDL_GL_GetProcAddress("glCreateShader");
+	id_glDeleteProgram = (PFN_ID_GLDELETEPROGRAMPROC)SDL_GL_GetProcAddress("glDeleteProgram");
+	id_glDeleteShader = (PFN_ID_GLDELETESHADERPROC)SDL_GL_GetProcAddress("glDeleteShader");
+	id_glGetProgramiv = (PFN_ID_GLGETPROGRAMIVPROC)SDL_GL_GetProcAddress("glGetProgramiv");
+	id_glGetProgramInfoLog = (PFN_ID_GLGETPROGRAMINFOLOGPROC)SDL_GL_GetProcAddress("glGetProgramInfoLog");
+	id_glGetShaderiv = (PFN_ID_GLGETSHADERIVPROC)SDL_GL_GetProcAddress("glGetShaderiv");
+	id_glGetShaderInfoLog = (PFN_ID_GLGETSHADERINFOLOGPROC)SDL_GL_GetProcAddress("glGetShaderInfoLog");
+	id_glGetUniformLocation = (PFN_ID_GLGETUNIFORMLOCATIONPROC)SDL_GL_GetProcAddress("glGetUniformLocation");
+	id_glLinkProgram = (PFN_ID_GLLINKPROGRAMPROC)SDL_GL_GetProcAddress("glLinkProgram");
+	id_glShaderSource = (PFN_ID_GLSHADERSOURCEPROC)SDL_GL_GetProcAddress("glShaderSource");
+	id_glUseProgram = (PFN_ID_GLUSEPROGRAMPROC)SDL_GL_GetProcAddress("glUseProgram");
+	id_glUniform1i = (PFN_ID_GLUNIFORM1IPROC)SDL_GL_GetProcAddress("glUniform1i");
 	// EXT_framebuffer_object
 	if (!SDL_GL_ExtensionSupported("GL_EXT_framebuffer_object")) return false;
-	id_glIsFramebufferEXT = (PFNGLISFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glIsFramebufferEXT");
-	id_glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glBindFramebufferEXT");
-	id_glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC)SDL_GL_GetProcAddress("glDeleteFramebuffersEXT");
-	id_glGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC)SDL_GL_GetProcAddress("glGenFramebuffersEXT");
-	id_glCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)SDL_GL_GetProcAddress("glCheckFramebufferStatusEXT");
-	id_glFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)SDL_GL_GetProcAddress("glFramebufferTexture2DEXT");
+	id_glIsFramebufferEXT = (PFN_ID_GLISFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glIsFramebufferEXT");
+	id_glBindFramebufferEXT = (PFN_ID_GLBINDFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glBindFramebufferEXT");
+	id_glDeleteFramebuffersEXT = (PFN_ID_GLDELETEFRAMEBUFFERSEXTPROC)SDL_GL_GetProcAddress("glDeleteFramebuffersEXT");
+	id_glGenFramebuffersEXT = (PFN_ID_GLGENFRAMEBUFFERSEXTPROC)SDL_GL_GetProcAddress("glGenFramebuffersEXT");
+	id_glCheckFramebufferStatusEXT = (PFN_ID_GLCHECKFRAMEBUFFERSTATUSEXTPROC)SDL_GL_GetProcAddress("glCheckFramebufferStatusEXT");
+	id_glFramebufferTexture2DEXT = (PFN_ID_GLFRAMEBUFFERTEXTURE2DEXTPROC)SDL_GL_GetProcAddress("glFramebufferTexture2DEXT");
 	// EXT_framebuffer_blit)
 	if (SDL_GL_ExtensionSupported("GL_EXT_framebuffer_blit"))
 	{
-		id_glBlitFramebufferEXT = (PFNGLBLITFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glBlitFramebufferEXT");
+		id_glBlitFramebufferEXT = (PFN_ID_GLBLITFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glBlitFramebufferEXT");
 	}
 	return true;
 }
@@ -158,13 +164,13 @@ static void VL_SDL2GL_SetVideoMode(int w, int h)
 	// TODO: Redo the palette API so we don't need to hack this and read invalid memory. :/
 	GLuint palTex;
 	glGenTextures(1, &palTex);
-	glActiveTexture(GL_TEXTURE1);
+	id_glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_1D, palTex);
 	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 16, GL_RGB, GL_UNSIGNED_BYTE, VL_EGAPalette);
-	glActiveTexture(GL_TEXTURE0);
+	id_glActiveTexture(GL_TEXTURE0);
 
 	// Setup framebuffer stuff, just in case.
 	vl_sdl2gl_framebufferWidth = w;
