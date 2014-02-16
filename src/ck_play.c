@@ -465,6 +465,24 @@ bool CK_DebugKeys()
 		return true;
 	}
 
+	// Free Item Cheat
+	if (IN_GetKeyState(IN_SC_I))
+	{
+		// VW_SyncPages();
+		US_CenterWindow(12, 3);
+		US_PrintCentered("Free Items!");
+
+		for (int i = 0; i < 4; i++)
+			ck_gameState.keyGems[i]++;
+
+		ck_gameState.numShots = 99;
+		ck_gameState.securityCard = 1;
+		VL_Present();
+		IN_WaitKey(); // TODO: WaitButton();
+		CK_IncreaseScore(3000);
+		return true;
+	}
+
 	if (IN_GetKeyState(IN_SC_J))
 	{
 		ck_gameState.jumpCheat = !ck_gameState.jumpCheat;
