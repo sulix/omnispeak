@@ -51,6 +51,10 @@ typedef struct RF_SpriteDrawEntry
 
 
 extern int rf_scrollXUnit, rf_scrollYUnit;
+extern int rf_scrollXMinUnit;
+extern int rf_scrollYMinUnit;
+extern int rf_scrollXMaxUnit;
+extern int rf_scrollYMaxUnit;
 
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical);
 void RF_MarkTileGraphics();

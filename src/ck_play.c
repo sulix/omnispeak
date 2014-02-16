@@ -74,6 +74,9 @@ bool ck_scrollDisabled = false;
 // Set if game started with /DEMO parm
 int ck_demoParm;
 
+// invincibility switch
+bool ck_godMode;
+
 // A bunch of global variables from other modules that should be 
 // handled better, but are just defined here for now
 
@@ -438,11 +441,28 @@ void hackdraw(CK_object *me)
 	RF_AddSpriteDraw(&(me->sde), (150 << 4), (100 << 4), 121, false, 0);
 }
 
-void CK_DebugKeys()
+bool CK_DebugKeys()
 {
 	if (IN_GetKeyState(IN_SC_C))
 	{
 		CK_CountActiveObjects();
+	}
+
+	// God Mode
+	if (IN_GetKeyState(IN_SC_G))
+	{
+		// VW_SyncPages();
+		US_CenterWindow(12, 2);
+
+		if (ck_godMode)
+			US_PrintCentered("God Mode OFF");
+		else
+			US_PrintCentered("God Mode ON");
+
+		VL_Present();
+		IN_WaitKey(); // TODO: Wait for button
+		ck_godMode = !ck_godMode;
+		return true;
 	}
 
 	if (IN_GetKeyState(IN_SC_J))
@@ -463,6 +483,7 @@ void CK_DebugKeys()
 	if (IN_GetKeyState(IN_SC_M))
 	{
 		CK_DebugMemory();
+		return true;
 	}
 
 	if (IN_GetKeyState(IN_SC_S))
@@ -476,6 +497,7 @@ void CK_DebugKeys()
 			US_PrintCentered("Slow motion OFF");
 		VL_Present();
 		IN_WaitKey();
+		return true;
 	}
 
 	if (IN_GetKeyState(IN_SC_N))
@@ -494,6 +516,8 @@ void CK_DebugKeys()
 		VL_Present();
 		IN_WaitKey();
 	}
+
+	return false;
 }
 
 // Check non-game keys
@@ -805,8 +829,6 @@ void CK_MapCamera( CK_object *keen )
 void CK_NormalCamera(CK_object *obj)
 {
 
-	//TODO: Check if keen is outside map bounds.
-
 	int deltaX = 0, deltaY = 0;	// in Units
 
 	// The intended y-coordinate of the bottom of the keen sprite
@@ -818,6 +840,24 @@ void CK_NormalCamera(CK_object *obj)
 	// can fall out the bottom
 	if (ck_scrollDisabled)
 		return;
+
+	// End level if keen makes it out either side
+	if (obj->clipRects.unitX1 < rf_scrollXMinUnit || obj->clipRects.unitX2 > rf_scrollXMaxUnit + (320 << 4))
+	{
+		ck_gameState.levelState = 2;
+		return;
+	}
+
+	// Kill keen if he falls out the bottom
+	if (obj->clipRects.unitY2 > (rf_scrollYMaxUnit + (208 << 4)))
+	{
+		obj->posY = obj->clipRects.unitY2 - (rf_scrollYMaxUnit + (208 << 4));
+		SD_PlaySound(0x14);
+		ck_godMode = false;
+		// KeenDie();
+		return; 
+	}
+	
 
 	// Keep keen's x-coord between 144-192 pixels
 	if (obj->posX < (rf_scrollXUnit + (144 << 4)))

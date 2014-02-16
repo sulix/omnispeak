@@ -58,10 +58,10 @@ static int rf_mapHeightTiles;
 int rf_scrollXUnit;
 int rf_scrollYUnit;
 //static int rf_scrollX
-static int rf_scrollXMinUnit;
-static int rf_scrollYMinUnit;
-static int rf_scrollXMaxUnit;
-static int rf_scrollYMaxUnit;
+int rf_scrollXMinUnit;
+int rf_scrollYMinUnit;
+int rf_scrollXMaxUnit;
+int rf_scrollYMaxUnit;
 
 
 #define RF_MAX_SPRITETABLEENTRIES 48

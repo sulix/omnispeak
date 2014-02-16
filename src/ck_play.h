@@ -31,6 +31,8 @@ extern bool ck_demoEnabled;
 
 extern bool ck_scrollDisabled;
 
+extern bool ck_godMode;
+
 struct CK_object;
 
 // Timing
