@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include <string.h>
 
+#include <SDL.h> // For main (SDL_main) function prototype
 /*
  * The 'episode' we're playing.
  */
@@ -185,11 +186,11 @@ tryagain:
 
 }
 
-int main(int argc, const char **argv)
+int main(int argc, char *argv[])
 {
 	// Send the cmd-line args to the User Manager.
 	us_argc = argc;
-	us_argv = argv;
+	us_argv = (const char **)argv;
 
 	// We want Keen 5 (for now!)
 	ck_currentEpisode = &ck5_episode;
