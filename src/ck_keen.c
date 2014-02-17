@@ -81,7 +81,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		{
 			ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
 		}
-		else if (b->user1 == 13)
+		else if (b->user1 == 12)
 		{
 			ck_gameState.securityCard = 1;
 		}
@@ -318,12 +318,12 @@ bool CK_KeenPressUp(CK_object *obj)
 				{
 					ck_gameState.securityCard = 0;
 					SD_PlaySound(SOUND_OPENSECURITYDOOR);
-/*					CK_object *newObj = CK_GetNewObj(false);
+					CK_object *newObj = CK_GetNewObj(false);
 					newObj->posX = obj->clipRects.tileXmid - 2;
 					newObj->posY = obj->clipRects.tileY2 - 4;
 					newObj->active = OBJ_ALWAYS_ACTIVE;
 					newObj->type = 1;
-					CK_SetAction(newObj, CK_GetActionByName("CK_ACT_SecurityDoorOpen"));*/
+					CK_SetAction(newObj, CK_GetActionByName("CK_ACT_SecurityDoorOpen"));
 					obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor1");
 					obj->zLayer = 0;
 					ck_keenState.keenSliding = true;

@@ -122,6 +122,8 @@
 %action CK_ACT_DoorOpen2 0 0 UnscaledOnce 0 0 10 0 0 CK_DoorOpen NULL NULL CK_ACT_DoorOpen3
 %action CK_ACT_DoorOpen3 0 0 UnscaledOnce 0 0 10 0 0 CK_DoorOpen NULL NULL NULL
 
+%action CK_ACT_SecurityDoorOpen 0 0 UnscaledOnce 0 0 15 0 0 CK_SecurityDoorOpen NULL NULL CK_ACT_SecurityDoorOpen
+
 # ck5_map.c
 
 # Mapkeen

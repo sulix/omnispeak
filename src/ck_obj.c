@@ -45,7 +45,27 @@ void CK_DoorOpen(CK_object *obj)
 	RF_ReplaceTiles(tilesToReplace, 1, obj->posX, obj->posY, 1, obj->user1 + 2);
 }
 
+void CK_SecurityDoorOpen(CK_object *obj)
+{
+	uint16_t tilesToReplace[0x30];
+	for (int y = 0; y < 4; ++y)
+	{
+		for (int x = 0; x < 4; ++x)
+		{
+			tilesToReplace[y*4+x] = CA_TileAtPos(obj->posX+x, obj->posY+y, 1) - 4;
+		}
+	}
+
+	RF_ReplaceTiles(tilesToReplace, 1, obj->posX, obj->posY, 4, 4);
+	obj->user1++;
+	if (obj->user1 == 3)
+	{
+		obj->currentAction = 0;
+	}
+}
+
 void CK_OBJ_SetupFunctions()
 {
 	CK_ACT_AddFunction("CK_DoorOpen", &CK_DoorOpen);
+	CK_ACT_AddFunction("CK_SecurityDoorOpen", &CK_SecurityDoorOpen);
 }
