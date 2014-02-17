@@ -72,6 +72,7 @@ static int us_printY;
 
 static int us_printFont = 3;
 static int us_printColour = 0;
+static int us_backColour = 0;
 
 #define US_WINDOW_MAX_X 320
 #define US_WINDOW_MAX_Y 200
@@ -230,6 +231,265 @@ void US_CenterWindow(int w, int h)
 	US_DrawWindow((maxXtile - w) / 2, (maxYtile - h) / 2, w, h);
 }
 
+//	US_SaveWindow() - Saves the current window parms into a record for later restoration 
+void US_SaveWindow(US_WindowRec *win)
+{
+	win->x = US_GetWindowX();
+	win->y = US_GetWindowY();
+	win->w = US_GetWindowW();
+	win->h = US_GetWindowH();
+
+	win->px = US_GetPrintX();
+	win->py = US_GetPrintY();
+}
+
+//	US_RestoreWindow() - Sets the current window parms to those held in the record
+
+void US_RestoreWindow(US_WindowRec *win)
+{
+	US_SetWindowX(win->x);
+	US_SetWindowY(win->y);
+	US_SetWindowW(win->w);
+	US_SetWindowH(win->h);
+
+	US_SetPrintX(win->px);
+	US_SetPrintY(win->py);
+}
+
+//	Input routines
+
+//	USL_XORICursor() - XORs the I-bar text cursor. Used by US_LineInput()
+
+static void USL_XORICursor(int x, int y, char *s, uint16_t cursor)
+{
+	static	bool	status;		// VGA doesn't XOR...
+	char	buf[256];
+	int		temp;
+	uint16_t	w, h;
+
+	strcpy(buf, s);
+	buf[cursor] = '\0';
+	VH_MeasurePropString(buf, &w, &h, us_printFont);
+
+	US_SetPrintX(x + w - 1);
+	US_SetPrintY(y);
+
+	if (status^=1)
+		VH_DrawPropString("\x80", US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
+	else
+	{
+		temp = us_printColour;
+		us_printColour = us_backColour;
+		VH_DrawPropString("\x80", US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
+		us_printColour = temp;
+	}
+
+}
+
+//	US_LineInput() - Gets a line of user input at (x,y), the string defaults
+//		to whatever is pointed at by def. Input is restricted to maxchars
+//		chars or maxwidth pixels wide. If the user hits escape (and escok is
+//		true), nothing is copied into buf, and false is returned. If the
+//		user hits return, the current string is copied into buf, and true is
+//		returned
+
+bool US_LineInput(int x, int y, char *buf, char *def, bool escok, int maxchars, int maxwidth)
+{
+	bool		redraw,
+		cursorvis, cursormoved,
+		done, result;
+	IN_ScanCode	sc;
+	uint8_t		c,
+		s[128], olds[128];
+	int		i,
+		cursor,
+		w, h,
+		len, temp;
+	int	lasttime;
+
+	if (def)
+		strcpy(s, def);
+	else
+		*s = '\0';
+	*olds = '\0';
+	cursor = strlen(s);
+	cursormoved = redraw = true;
+
+	cursorvis = done = false;
+	lasttime = CK_GetNumTotalTics();
+
+	/*
+	LastASCII = key_None;
+	LastScan = sc_None;
+	 */
+	IN_ClearKeysDown();
+
+	while (!done)
+	{
+		IN_PumpEvents();
+		CK_SetTicsPerFrame();
+
+		if (cursorvis)
+			USL_XORICursor(x, y, s, cursor);
+
+		/*
+		sc = LastScan;
+		LastScan = sc_None;
+		c = LastASCII;
+		LastASCII = key_None;
+		*/
+		sc = IN_GetLastScan();
+		c = IN_GetLastASCII();
+		IN_ClearKeysDown();
+		
+		switch (sc)
+		{
+		case IN_SC_LeftArrow:
+			if (cursor)
+				cursor--;
+			c = 0;
+			cursormoved = true;
+			break;
+		case IN_SC_RightArrow:
+			if (s[cursor])
+				cursor++;
+			c = 0;
+			cursormoved = true;
+			break;
+		case IN_SC_Home:
+			cursor = 0;
+			c = 0;
+			cursormoved = true;
+			break;
+		case IN_SC_End:
+			cursor = strlen(s);
+			c = 0;
+			cursormoved = true;
+			break;
+
+		case IN_SC_Enter:
+			strcpy(buf, s);
+			done = true;
+			result = true;
+			c = 0;
+			break;
+		case IN_SC_Escape:
+			if (escok)
+			{
+				done = true;
+				result = false;
+			}
+			c = 0;
+			break;
+
+		case IN_SC_Backspace:
+			if (cursor)
+			{
+				strcpy(s + cursor - 1, s + cursor);
+				cursor--;
+				redraw = true;
+			}
+			c = 0;
+			cursormoved = true;
+			break;
+		case IN_SC_Delete:
+			if (s[cursor])
+			{
+				strcpy(s + cursor, s + cursor + 1);
+				redraw = true;
+			}
+			c = 0;
+			cursormoved = true;
+			break;
+
+		case 0x4c:	// Keypad 5
+		case IN_SC_UpArrow:
+		case IN_SC_DownArrow:
+		case IN_SC_PgUp:
+		case IN_SC_PgDown:
+		case IN_SC_Insert:
+			c = 0;
+			break;
+		}
+
+		if (c)
+		{
+			len = strlen(s);
+			VH_MeasurePropString(s, &w, &h, US_GetPrintFont());
+
+			if
+				(
+				 isprint(c)
+				 &&	(len < 128 - 1)
+				 &&	((!maxchars) || (len < maxchars))
+				 &&	((!maxwidth) || (w < maxwidth))
+				 )
+			{
+				for (i = len + 1; i > cursor; i--)
+					s[i] = s[i - 1];
+				s[cursor++] = c;
+				redraw = true;
+			}
+		}
+
+		if (redraw)
+		{
+			/*
+			px = x;
+			py = y;
+			 */
+			temp = us_printColour;
+			us_printColour = us_backColour;
+			VH_DrawPropString(olds, x, y, us_printFont, us_printColour);
+			us_printColour = temp;
+			strcpy(olds, s);
+
+			/*
+			px = x;
+			py = y;
+			 */
+			VH_DrawPropString(s, x, y, us_printFont, us_printColour);
+
+			redraw = false;
+		}
+
+		if (cursormoved)
+		{
+			cursorvis = false;
+			lasttime = CK_GetNumTotalTics() - 70 /*TimeCount - TickBase*/;
+
+			cursormoved = false;
+		}
+		if (CK_GetNumTotalTics()-lasttime > 35 /*TimeCount - lasttime > TickBase / 2*/)
+		{
+			lasttime = CK_GetNumTotalTics();//TimeCount;
+
+			cursorvis ^= true;
+		}
+		if (cursorvis)
+			USL_XORICursor(x, y, s, cursor);
+
+		//VW_UpdateScreen();
+		VL_Present();
+	}
+
+	if (cursorvis)
+		USL_XORICursor(x, y, s, cursor);
+	if (!result)
+	{
+		/*
+		px = x;
+		py = y;
+		*/
+		VH_DrawPropString(olds, x, y, us_printFont, us_printColour);
+	}
+
+	//VW_UpdateScreen();
+	VL_Present();
+
+	IN_ClearKeysDown();
+	return (result);
+}
 // Random Number Generator
 
 /*
@@ -339,6 +599,7 @@ void US_Startup()
 }
 
 // Getter and setter functions for print variables
+
 int US_GetWindowX()
 {
 	return us_windowX;
@@ -368,6 +629,7 @@ int US_GetPrintY()
 {
 	return us_printY;
 }
+
 int US_GetPrintFont()
 {
 	return us_printFont;

@@ -81,7 +81,7 @@ bool ck_godMode;
 // handled better, but are just defined here for now
 
 extern int load_game_error, ck_startingSavedGame;
-extern CK_Difficulty ck_startingDifficulty; 
+extern CK_Difficulty ck_startingDifficulty;
 
 void CK_CountActiveObjects()
 {
@@ -247,7 +247,7 @@ void CK_RemoveObj(CK_object *obj)
 	if (obj->type == CT_StunnedCreature)
 	{
 		// FIXME: This cast is bad on 64-bit platforms
-		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **)&obj->user3);
+		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & obj->user3);
 	}
 
 	if (obj == ck_lastObject)
@@ -535,6 +535,39 @@ bool CK_DebugKeys()
 		IN_WaitKey();
 	}
 
+	// Extra Vibbles
+
+	// Level Warp
+	if (IN_GetKeyState(IN_SC_W))
+	{
+		char str[4], *msg = "  Warp to which level(1-18):"; 
+		int h, w, saveX, saveY; // omnispeak hacks
+
+		// VW_SyncPages();
+		US_CenterWindow(26, 3);
+		US_SetPrintY(US_GetPrintY() + 6);
+	  VH_MeasurePropString(msg, &w, &h, US_GetPrintFont());	
+		saveX = US_GetPrintX() + w;
+		saveY = US_GetPrintY();
+		US_Print(msg);
+		VL_Present(); // VW_UpdateScreen();
+
+		if (US_LineInput(saveX, saveY, str, NULL, true , 2, 0))
+		{
+			int level;
+
+			// Convert string into number
+			sscanf(str, "%d", &level);
+
+			if (level >= 1 && level <= 18)
+			{
+				ck_nextMapNumber = level;
+				ck_gameState.levelState = 4;
+			}
+		}
+		return true;
+	}
+
 	return false;
 }
 
@@ -569,7 +602,7 @@ void CK_CheckKeys()
 
 	if (!ck_demoParm)
 	{
-	// Go back to wristwatch
+		// Go back to wristwatch
 		if (IN_GetLastScan() >= IN_SC_F2 && IN_GetLastScan() <= IN_SC_F7 || IN_GetLastScan() == IN_SC_Escape)
 		{
 
@@ -581,9 +614,9 @@ void CK_CheckKeys()
 			StartMusic(ck_currentMapNumber);
 
 			// Handle the scorebox if it got toggled
-			
+
 			IN_ClearKeysDown();
-			
+
 			if (ck_startingDifficulty)
 				ck_gameState.levelState = 5;
 			else if (!ck_startingSavedGame)
@@ -628,6 +661,7 @@ void CK_CheckKeys()
 	// CTRL + Q
 	if (IN_GetKeyState(IN_SC_Control) && IN_GetLastScan() == IN_SC_Q)
 	{
+
 		IN_ClearKeysDown();
 		Quit(NULL);
 	}
@@ -695,6 +729,7 @@ void CK_HandleInput()
 		ck_keenState.shootIsPressed = ck_inputFrame.button2;
 		if (!ck_keenState.jumpIsPressed) ck_keenState.jumpWasPressed = false;
 		if (!ck_keenState.pogoIsPressed) ck_keenState.pogoWasPressed = false;
+
 		if (!ck_keenState.shootIsPressed) ck_keenState.shootWasPressed = false;
 	}
 
@@ -708,11 +743,12 @@ void StopMusic(void)
 	int16_t i;
 	SD_MusicOff();
 	for (i = 0; i < LASTMUSTRACK; i++)
+
 		if (CA_audio[STARTMUSIC + i])
-			MM_SetPurge((void **)&CA_audio[STARTMUSIC + i], 3);
+			MM_SetPurge((void **) &CA_audio[STARTMUSIC + i], 3);
 }
 
-const uint16_t level_music[] = {11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
+const uint16_t level_music[] ={11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
 
 void StartMusic(uint16_t level)
 {
@@ -745,11 +781,12 @@ void StartMusic(uint16_t level)
 			VM_SetDefaultPalette();
 		IN_ClearKeysDown();
 		IN_UserInput(210, 0, 0);
+
 		if (faded)
 			VW_FadeToBlack();
 	}
 #endif
-	SD_StartMusic((MusicGroup *)CA_audio[STARTMUSIC + level_music[level]]);
+	SD_StartMusic((MusicGroup *) CA_audio[STARTMUSIC + level_music[level]]);
 }
 
 extern int rf_scrollXUnit;
@@ -779,6 +816,7 @@ void CK_CentreCamera(CK_object *obj)
 		// In Level
 		if (obj->clipRects.unitY2 < (140 << 4))
 			screenY = 0;
+
 		else
 			screenY = obj->posY - (140 << 4);
 	}
@@ -829,7 +867,9 @@ void CK_MapCamera( CK_object *keen )
 
 		if ( scr_y >= 256 )
 			scr_y = 255;
-		else if ( scr_y <= -256 )
+		else
+
+			if ( scr_y <= -256 )
 			scr_y = -255;
 
 		RF_SmoothScroll( scr_x, scr_y );
@@ -873,9 +913,9 @@ void CK_NormalCamera(CK_object *obj)
 		SD_PlaySound(0x14);
 		ck_godMode = false;
 		// KeenDie();
-		return; 
+		return;
 	}
-	
+
 
 	// Keep keen's x-coord between 144-192 pixels
 	if (obj->posX < (rf_scrollXUnit + (144 << 4)))
@@ -972,7 +1012,9 @@ void CK_NormalCamera(CK_object *obj)
 		else if (deltaX < -255) deltaX = -255;
 
 		if (deltaY > 255) deltaY = 255;
-		else if (deltaY < -255) deltaY = -255;
+		else
+
+			if (deltaY < -255) deltaY = -255;
 
 		// Do the scroll!
 		RF_SmoothScroll(deltaX, deltaY);

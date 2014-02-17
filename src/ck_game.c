@@ -185,9 +185,15 @@ replayLevel:
 			 */
 			return;
 
+			// Warping level
+			// This code is added for omnispeak so that the warp functionality works
+			// Case 4 normally switches to default
+		case 4:
+			ck_currentMapNumber = ck_nextMapNumber;
+			break;
+
 
 		case 3:
-		case 4:
 		case 9:
 		case 10:
 		case 11:

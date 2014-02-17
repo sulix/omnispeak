@@ -30,6 +30,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define _NORETURN
 #endif
 
+// Record used to save & restore screen windows
+typedef	struct
+{
+	int	x,y, w,h, px,py;
+} US_WindowRec;	
+
 // In ck_quit.c, as it may be customized by individual games.
 void Quit(const char *msg) _NORETURN;
 
@@ -46,11 +52,16 @@ void US_CPrintF(const char *str, ...);
 void US_ClearWindow();
 void US_DrawWindow(int x, int y, int w, int h);
 void US_CenterWindow(int w, int h);
+void US_SaveWindow(US_WindowRec *win);
+void US_RestoreWindow(US_WindowRec *win);
+bool US_LineInput(int x, int y, char *buf, char *def, bool escok, int maxchars, int maxwidth);
+
 // Random Number Generation
 void US_InitRndT(bool randomize);
 int US_RndT();
 void US_SetRndI(int index);
 int US_GetRndI();
+
 // Getter and setter functions for print variables
 int US_GetWindowX();
 int US_GetWindowY();

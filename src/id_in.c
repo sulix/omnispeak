@@ -66,8 +66,49 @@ const char *char_key_strings[] ={
 	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?"
 };
 
+// =========================================================================
+static	char in_ASCIINames[] =		// Unshifted ASCII for scan codes
+{
+	//	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+	0  , 27 , '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 8  , 9  ,	// 0
+	'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 13 , 0  , 'a', 's',	// 1
+	'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', 39 , '`', 0  , 92 , 'z', 'x', 'c', 'v',	// 2
+	'b', 'n', 'm', ',', '.', '/', 0  , '*', 0  , ' ', 0  , 0  , 0  , 0  , 0  , 0  ,	// 3
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , '7', '8', '9', '-', '4', '5', '6', '+', '1',	// 4
+	'2', '3', '0', 127, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 5
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 6
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0		// 7
+},
+in_shiftNames[] =		// Shifted ASCII for scan codes
+{
+	//	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+	0  , 27 , '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 8  , 9  ,	// 0
+	'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', 13 , 0  , 'A', 'S',	// 1
+	'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', 34 , '~', 0  , '|', 'Z', 'X', 'C', 'V',	// 2
+	'B', 'N', 'M', '<', '>', '?', 0  , '*', 0  , ' ', 0  , 0  , 0  , 0  , 0  , 0  ,	// 3
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , '7', '8', '9', '-', '4', '5', '6', '+', '1',	// 4
+	'2', '3', '0', 127, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 5
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 6
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0   	// 7
+},
+in_specialNames[] =	// ASCII for 0xe0 prefixed codes
+{
+	//	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 0
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 13 , 0  , 0  , 0  ,	// 1
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 2
+	0  , 0  , 0  , 0  , 0  , '/', 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 3
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 4
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 5
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 6
+	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0   	// 7
+};
+
+
+
 bool in_keyStates[256];
 IN_ScanCode in_lastKeyScanned = IN_SC_None;
+char in_lastASCII;
 
 // SDLK -> IN_SC
 #define INL_MapKey(sdl,in_sc) case sdl: return in_sc
@@ -172,15 +213,78 @@ static void INL_HandleSDLEvent(SDL_Event *event)
 {
 
 	IN_ScanCode sc;
+	static bool special;
+	char c;
+
 	switch (event->type)
 	{
 	case SDL_QUIT:
 		Quit(0);
 		break;
 	case SDL_KEYDOWN:
+
 		sc = INL_SDLKToScanCode(event->key.keysym.sym);
 		in_keyStates[sc] = 1;
 		in_lastKeyScanned = sc;
+
+		if (sc == 0xe0)		// Special key prefix
+			special = true;
+		else if (sc == 0xe1)	// Handle Pause key
+			; //Paused = true;
+		else
+		{
+			if (sc & 0x80)	// Break code
+			{
+				sc &= 0x7f;
+
+				// DEBUG - handle special keys: ctl-alt-delete, print scrn
+				in_keyStates[sc] = false;
+			}
+			else			// Make code
+			{
+				/*
+				LastCode = CurCode;
+				CurCode = LastScan = sc;
+				Keyboard[sc] = true;
+				 */
+
+				if (special)
+					c = in_specialNames[sc];
+				else
+				{
+#if 0
+					if (sc == sc_CapsLock)
+					{
+						// CapsLock ^= true;
+						// DEBUG - make caps lock light work
+					}
+#endif
+
+					if (in_keyStates[IN_SC_LeftShift] || in_keyStates[IN_SC_RightShift])	// If shifted
+					{
+						c = in_shiftNames[sc];
+#if 0	
+						if ((c >= 'A') && (c <= 'Z') && CapsLock)
+							c += 'a' - 'A';
+#endif
+					}
+					else
+					{
+						c = in_ASCIINames[sc];
+#if 0
+						if ((c >= 'a') && (c <= 'z') && CapsLock)
+							c -= 'a' - 'A';
+#endif
+					}
+				}
+				if (c)
+					in_lastASCII = c;
+			}
+
+			special = false;
+		}
+
+
 		break;
 	case SDL_KEYUP:
 		sc = INL_SDLKToScanCode(event->key.keysym.sym);
@@ -252,6 +356,11 @@ IN_ScanCode IN_GetLastScan()
 	return in_lastKeyScanned;
 }
 
+char IN_GetLastASCII()
+{
+	return in_lastASCII;
+}
+
 void IN_Startup()
 {
 	for (int i = 0; i < 256; ++i)
@@ -293,7 +402,7 @@ void IN_ClearKeysDown()
 {
 	int i;
 	in_lastKeyScanned = IN_SC_None;
-	// in_lastASCII = key_None;
+	in_lastASCII = IN_KP_None;
 	memset (in_keyStates, 0, sizeof (in_keyStates));
 }
 
@@ -308,8 +417,8 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	if (in_demoState == IN_Demo_Playback)
 	{
 		uint8_t ctrlByte = in_demoBuf[in_demoPtr + 1];
-		controls->yDirection = (IN_Motion)((ctrlByte & 3) - 1);
-		controls->xDirection = (IN_Motion)(((ctrlByte >> 2) & 3) - 1);
+		controls->yDirection = (IN_Motion) ((ctrlByte & 3) - 1);
+		controls->xDirection = (IN_Motion) (((ctrlByte >> 2) & 3) - 1);
 		controls->jump = (ctrlByte >> 4) & 1;
 		controls->pogo = (ctrlByte >> 5) & 1;
 
