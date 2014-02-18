@@ -179,6 +179,7 @@ void IN_WaitKey();
 const char *IN_GetScanName(IN_ScanCode scan);
 bool IN_GetKeyState(IN_ScanCode scanCode);
 IN_ScanCode IN_GetLastScan();
+char IN_GetLastASCII();
 void IN_Startup();
 void IN_DemoStartPlaying(uint8_t *data, int len);
 void IN_DemoStopPlaying();

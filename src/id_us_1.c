@@ -21,9 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vl.h"
 #include "id_ca.h"
 #include "id_us.h"
+#include "ck_play.h"
 
 #include <ctype.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdarg.h>
 #include <strings.h> // For strcasecmp
 #include <stdlib.h>
@@ -89,7 +91,7 @@ void US_Print(const char *str)
 		while (true)
 		{
 			ch = *str;
-			*str++;
+			str++;
 			if (ch == '\0' || ch == '\n')
 			{
 				strbuf[sboff] = '\0';
@@ -265,7 +267,7 @@ static void USL_XORICursor(int x, int y, char *s, uint16_t cursor)
 	static	bool	status;		// VGA doesn't XOR...
 	char	buf[256];
 	int		temp;
-	uint16_t	w, h;
+	int	w, h;
 
 	strcpy(buf, s);
 	buf[cursor] = '\0';
@@ -299,7 +301,7 @@ bool US_LineInput(int x, int y, char *buf, char *def, bool escok, int maxchars, 
 		cursorvis, cursormoved,
 		done, result;
 	IN_ScanCode	sc;
-	uint8_t		c,
+	char	c,
 		s[128], olds[128];
 	int		i,
 		cursor,
