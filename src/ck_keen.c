@@ -1337,6 +1337,41 @@ void CK_KeenPullThink4(CK_object *obj)
 	obj->zLayer = 1;
 }
 
+
+void CK_KeenDeathThink(CK_object *obj)
+{
+	CK_PhysGravityHigh(obj);
+	obj->nextX = obj->xDirection * CK_GetTicksPerFrame();
+	//TODO: ObjectVisible?
+	ck_gameState.levelState = 1;
+}
+
+void CK_KillKeen()
+{
+	CK_object *obj = ck_keenObj;
+	if (ck_godMode)
+	{
+		return;
+	}
+
+	//TODO: PlayLoopTimer, ACTION_KEENNOT, KeenMoon, ScrollEnabled
+	obj->clipped = CLIP_not;
+	obj->zLayer = 3;
+	if (US_RndT() < 0x80)
+	{
+		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie0"));
+	}
+	else
+	{
+		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie1"));
+	}
+
+	SD_PlaySound(SOUND_KEENDIE);
+
+	obj->velY = -40;
+	obj->velX = 16;
+}
+
 void CK_KeenPoleHandleInput(CK_object *obj)
 {
 	if (ck_inputFrame.xDirection)
