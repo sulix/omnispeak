@@ -642,42 +642,42 @@ int US_GetPrintColour()
 	return us_printColour;
 }
 
-int US_SetWindowX(int parm)
+void US_SetWindowX(int parm)
 {
 	us_windowX = parm;
 }
 
-int US_SetWindowY(int parm)
+void US_SetWindowY(int parm)
 {
 	us_windowY = parm;
 }
 
-int US_SetWindowW(int parm)
+void US_SetWindowW(int parm)
 {
 	us_windowW = parm;
 }
 
-int US_SetWindowH(int parm)
+void US_SetWindowH(int parm)
 {
 	us_windowH = parm;
 }
 
-int US_SetPrintX(int parm)
+void US_SetPrintX(int parm)
 {
 	us_printX = parm;
 }
 
-int US_SetPrintY(int parm)
+void US_SetPrintY(int parm)
 {
 	us_printY = parm;
 }
 
-int US_SetPrintFont(int parm)
+void US_SetPrintFont(int parm)
 {
 	us_printFont = parm;
 }
 
-int US_SetPrintColour(int parm)
+void US_SetPrintColour(int parm)
 {
 	us_printColour = parm;
 }

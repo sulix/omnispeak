@@ -76,7 +76,7 @@ void CK_InitGame()
 	CK_KeenSetupFunctions();
 	CK_OBJ_SetupFunctions();
 	ck_currentEpisode->setupFunctions();
-	CK_ACT_LoadActions(CAL_AdjustExtension("ACTION.EXT"));
+	CK_ACT_LoadActions("ACTION.EXT");
 
 	// Setup the screen
 	VL_InitScreen();

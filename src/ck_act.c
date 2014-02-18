@@ -261,7 +261,7 @@ bool CK_ACT_ParseAction(CK_ACT_ParserState *ps)
 }
 
 
-void CK_ACT_LoadActions(char *filename)
+void CK_ACT_LoadActions(const char *filename)
 {
 	ck_actionsUsed = 0;
 	CK_ACT_SetupActionDB();
