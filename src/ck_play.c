@@ -444,8 +444,8 @@ void hackdraw(CK_object *me)
 
 void CK_OverlayForegroundTile(int fgTile, int overlayTile)
 {
-	uint16_t *src = ca_graphChunks[ca_gfxInfoE.offTiles16m + overlayTile];
-	uint16_t *dst = ca_graphChunks[ca_gfxInfoE.offTiles16m + fgTile];
+	uint16_t *src = (uint16_t*)ca_graphChunks[ca_gfxInfoE.offTiles16m + overlayTile];
+	uint16_t *dst = (uint16_t*)ca_graphChunks[ca_gfxInfoE.offTiles16m + fgTile];
 
 	for (int i = 0; i < 64; i++)
 	{
