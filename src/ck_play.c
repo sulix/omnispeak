@@ -441,6 +441,82 @@ void hackdraw(CK_object *me)
 	RF_AddSpriteDraw(&(me->sde), (150 << 4), (100 << 4), 121, false, 0);
 }
 
+void CK_OverlayForegroundTile(int fgTile, int overlayTile)
+{
+	uint16_t *src = ca_graphChunks[ca_gfxInfoE.offTiles16m + overlayTile];
+	uint16_t *dst = ca_graphChunks[ca_gfxInfoE.offTiles16m + fgTile];
+
+	for (int i = 0; i < 64; i++)
+	{
+		uint16_t row, overlayMask, overlayColor;
+		row = i & 0xF;				            // Row of the tile we're on 
+		overlayColor = *(src + i + 0x10);	// Get the overlay color plane
+		overlayMask = *(src + row);	      // Get the overlay mask plane
+		*(dst + row) &= overlayMask;      // Mask dest mask w/ overlay mask 
+		*(dst + 0x10 + i) &= overlayMask; // Now draw the overlayTile (mask...)
+		*(dst + 0x10 + i) |= overlayColor;// (... and draw color plane) 
+	}
+	
+}
+
+// TODO: make this interoperable between episodes
+void CK_WallDebug()
+{
+	// VW_SyncPages();
+	US_CenterWindow(24, 3);
+	US_PrintCentered("WORKING");
+	VL_Present();
+
+
+	// Cache the slope info foreground tiles
+	for (int i = ca_gfxInfoE.offTiles16m + 0x6C; i < ca_gfxInfoE.offTiles16m + 0x6C + 16; i++)
+	{
+		CA_CacheGrChunk(i);
+	}
+
+	// Draw the slope info tile over each foreground tile
+	for (int i = 0; i < ca_gfxInfoE.numTiles16m; i++)
+	{
+
+		if (ca_graphChunks[i + ca_gfxInfoE.offTiles16m])
+		{
+			int ti;
+
+			ti = TI_ForeTop(i) & 7;
+			if (ti)
+				CK_OverlayForegroundTile(i, ti + 0x6B);
+
+			ti = TI_ForeBottom(i) & 7;
+			if (ti)
+				CK_OverlayForegroundTile(i, ti + 0x73);
+
+			ti = TI_ForeRight(i) & 7;
+			if (ti > 1)
+			{
+				char buf[128];
+				sprintf(buf, "CK_WallDebug: East wall other than 1:%d", i);
+				Quit(buf);
+			}
+			else if (ti == 1)
+			{
+				CK_OverlayForegroundTile(i, ti + 0x72);
+			}
+
+			ti = TI_ForeLeft(i) & 7;
+			if (ti > 1)
+			{
+				char buf[128];
+				sprintf(buf, "CK_WallDebug: West wall other than 1:%d", i);
+				Quit(buf);
+			}
+			else if (ti == 1)
+			{
+				CK_OverlayForegroundTile(i, ti + 0x7A);
+			}
+		}
+	}
+}
+
 bool CK_DebugKeys()
 {
 	if (IN_GetKeyState(IN_SC_C))
@@ -540,13 +616,13 @@ bool CK_DebugKeys()
 	// Level Warp
 	if (IN_GetKeyState(IN_SC_W))
 	{
-		char str[4], *msg = "  Warp to which level(1-18):"; 
+		char str[4], *msg = "  Warp to which level(1-18):";
 		int h, w, saveX, saveY; // omnispeak hacks
 
 		// VW_SyncPages();
 		US_CenterWindow(26, 3);
 		US_SetPrintY(US_GetPrintY() + 6);
-	  VH_MeasurePropString(msg, &w, &h, US_GetPrintFont());	
+		VH_MeasurePropString(msg, &w, &h, US_GetPrintFont());
 		saveX = US_GetPrintX() + w;
 		saveY = US_GetPrintY();
 		US_Print(msg);
@@ -565,6 +641,12 @@ bool CK_DebugKeys()
 				ck_gameState.levelState = 4;
 			}
 		}
+		return true;
+	}
+
+	if (IN_GetKeyState(IN_SC_Y))
+	{
+		CK_WallDebug();
 		return true;
 	}
 
