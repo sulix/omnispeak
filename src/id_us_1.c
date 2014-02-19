@@ -21,9 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vl.h"
 #include "id_ca.h"
 #include "id_us.h"
+#include "ck_play.h"
 
 #include <ctype.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdarg.h>
 #include <strings.h> // For strcasecmp
 #include <stdlib.h>
@@ -89,7 +91,7 @@ void US_Print(const char *str)
 		while (true)
 		{
 			ch = *str;
-			*str++;
+			str++;
 			if (ch == '\0' || ch == '\n')
 			{
 				strbuf[sboff] = '\0';
@@ -265,7 +267,7 @@ static void USL_XORICursor(int x, int y, char *s, uint16_t cursor)
 	static	bool	status;		// VGA doesn't XOR...
 	char	buf[256];
 	int		temp;
-	uint16_t	w, h;
+	int	w, h;
 
 	strcpy(buf, s);
 	buf[cursor] = '\0';
@@ -299,7 +301,7 @@ bool US_LineInput(int x, int y, char *buf, char *def, bool escok, int maxchars, 
 		cursorvis, cursormoved,
 		done, result;
 	IN_ScanCode	sc;
-	uint8_t		c,
+	char	c,
 		s[128], olds[128];
 	int		i,
 		cursor,
@@ -640,42 +642,42 @@ int US_GetPrintColour()
 	return us_printColour;
 }
 
-int US_SetWindowX(int parm)
+void US_SetWindowX(int parm)
 {
 	us_windowX = parm;
 }
 
-int US_SetWindowY(int parm)
+void US_SetWindowY(int parm)
 {
 	us_windowY = parm;
 }
 
-int US_SetWindowW(int parm)
+void US_SetWindowW(int parm)
 {
 	us_windowW = parm;
 }
 
-int US_SetWindowH(int parm)
+void US_SetWindowH(int parm)
 {
 	us_windowH = parm;
 }
 
-int US_SetPrintX(int parm)
+void US_SetPrintX(int parm)
 {
 	us_printX = parm;
 }
 
-int US_SetPrintY(int parm)
+void US_SetPrintY(int parm)
 {
 	us_printY = parm;
 }
 
-int US_SetPrintFont(int parm)
+void US_SetPrintFont(int parm)
 {
 	us_printFont = parm;
 }
 
-int US_SetPrintColour(int parm)
+void US_SetPrintColour(int parm)
 {
 	us_printColour = parm;
 }

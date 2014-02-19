@@ -33,5 +33,5 @@ CK_ACT_Function CK_ACT_GetFunction(const char *fnName);
 CK_ACT_ColFunction CK_ACT_GetColFunction(const char *fnName);
 CK_action *CK_GetActionByName(const char *name);
 CK_action *CK_GetOrCreateActionByName(const char *name);
-void CK_ACT_LoadActions(char *filename);
+void CK_ACT_LoadActions(const char *filename);
 #endif

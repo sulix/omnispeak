@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdlib.h> /* For abs() */
 #include <string.h> /* For memset() */
+#include <stdio.h> /* for sscanf() */
 
 #define max(a,b) ((a<b)?b:a)
 #define min(a,b) ((a<b)?a:b)
@@ -616,7 +617,8 @@ bool CK_DebugKeys()
 	// Level Warp
 	if (IN_GetKeyState(IN_SC_W))
 	{
-		char str[4], *msg = "  Warp to which level(1-18):";
+		char str[4];
+		const char *msg = "  Warp to which level(1-18):"; 
 		int h, w, saveX, saveY; // omnispeak hacks
 
 		// VW_SyncPages();
@@ -992,7 +994,7 @@ void CK_NormalCamera(CK_object *obj)
 	if (obj->clipRects.unitY2 > (rf_scrollYMaxUnit + (208 << 4)))
 	{
 		obj->posY = obj->clipRects.unitY2 - (rf_scrollYMaxUnit + (208 << 4));
-		SD_PlaySound(0x14);
+		SD_PlaySound(SOUND_KEENFALL);
 		ck_godMode = false;
 		// KeenDie();
 		return;

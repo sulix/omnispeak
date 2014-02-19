@@ -233,7 +233,8 @@ void StopMusic(void);
 void CK_DrawTerminator(void);
 void CK_PlayDemoFile(const char *demoName);
 
-
+/* ck_keen.c */
+void CK_IncreaseScore(int score);
 
 extern CK_object *ck_keenObj;
 
