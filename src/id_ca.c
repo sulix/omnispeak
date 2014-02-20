@@ -415,6 +415,10 @@ int CAL_GetGrChunkCompLength(int chunk)
 	return CAL_GetGrChunkStart(nextChunk) - CAL_GetGrChunkStart(chunk) - sizeOffset;
 }
 
+void CA_LockGrChunk(int chunk)
+{
+	MM_SetLock(&ca_graphChunks[chunk], true);
+}
 
 void CAL_SetupGrFile()
 {
@@ -437,6 +441,19 @@ void CAL_SetupGrFile()
 	//Load the graphics --- we will keep the file open for the duration of the game.
 	ca_graphHandle = fopen("EGAGRAPH.CK5","rb");
 
+	// Read in the graphics headers (from TED's GFXINFOE)
+	// For some reason, keen decompresses these differently, not
+	// purring the resultant pointers in the ca_graphChunks array.
+	// Presumably this is to stop them from being evicted,
+	// but we have MM_SetLock for that, don't we?
+	CA_CacheGrChunk(ca_gfxInfoE.hdrBitmaps);
+	CA_CacheGrChunk(ca_gfxInfoE.hdrMasked);
+	CA_CacheGrChunk(ca_gfxInfoE.hdrSprites);
+
+	//Lock them in memory.
+	CA_LockGrChunk(ca_gfxInfoE.hdrBitmaps);
+	CA_LockGrChunk(ca_gfxInfoE.hdrMasked);
+	CA_LockGrChunk(ca_gfxInfoE.hdrSprites);
 }
 
 void CAL_ExpandGrChunk(int chunk, void *source)
@@ -710,11 +727,6 @@ void CA_Startup(void)
 {
 	// Load the ?GAGRAPH.EXT file!
 	CAL_SetupGrFile();
-
-	// Read in the graphics headers (from TED's GFXINFOE)
-	CA_CacheGrChunk(ca_gfxInfoE.hdrBitmaps);
-	CA_CacheGrChunk(ca_gfxInfoE.hdrMasked);
-	CA_CacheGrChunk(ca_gfxInfoE.hdrSprites);
 
 	// Load some other chunks needed by the game
 	CA_CacheGrChunk(88);	//TODO: What was this again?

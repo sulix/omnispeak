@@ -71,6 +71,23 @@ void CK_InitGame()
 	// Load the core datafiles
 	CA_Startup();
 
+	// Mark some chunks we'll need.
+	CA_ClearMarks();
+	CA_MarkGrChunk(3);
+	CA_MarkGrChunk(0x1C0);
+	CA_MarkGrChunk(0x1C1);
+	CA_MarkGrChunk(0x64);
+	CA_MarkGrChunk(0x65);
+	CA_CacheMarks(0);
+
+	// Lock them chunks in memory.
+	CA_LockGrChunk(3);
+	MM_SetLock(&ca_graphChunks[448], true);
+	MM_SetLock(&ca_graphChunks[449], true);
+	MM_SetLock(&ca_graphChunks[0x64], true);
+	MM_SetLock(&ca_graphChunks[0x65], true);
+
+
 	// Compile the actions
 	CK_ACT_SetupFunctions();
 	CK_KeenSetupFunctions();

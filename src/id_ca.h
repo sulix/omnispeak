@@ -65,6 +65,7 @@ void CA_CacheGrChunk(int chunk);
 void CA_ClearMarks(void);
 void CA_SetGrPurge(void);
 void CA_MarkGrChunk(int chunk);
+void CA_LockGrChunk(int chunk);
 
 void CA_CacheMarks(const char *msg);
 void CA_UpLevel(void);

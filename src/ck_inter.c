@@ -168,7 +168,7 @@ void CK_PlayDemo(int demoNumber)
 
 	CA_CacheGrChunk(demoChunk);
 	demoBuf = (uint8_t *)(ca_graphChunks[demoChunk]);
-	//MM_SetLock(&CA_CacheGrChunk
+	MM_SetLock(&ca_graphChunks[demoChunk], true);
 
 	uint16_t demoMap = *demoBuf;
 	demoBuf += 2;
@@ -194,6 +194,8 @@ void CK_PlayDemo(int demoNumber)
 	// We have to get rid of the demo buffer, as if we want to play it
 	// again, we need a fresh copy. ID_IN modifies the buffer.
 	MM_FreePtr(&ca_graphChunks[demoChunk]);
+
+	CA_ClearMarks();
 }
 
 /*
