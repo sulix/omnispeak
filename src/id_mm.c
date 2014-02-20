@@ -242,7 +242,7 @@ void MM_SortMem()
 	//We will ignore this, as no sound is implemented.
 	for (int i = 0; i < MM_MAXBLOCKS; ++i)
 	{
-		if (mm_blocks[i].purgelevel && !mm_blocks[i].locked)
+		if (mm_blocks[i].ptr && mm_blocks[i].purgelevel && !mm_blocks[i].locked)
 			MM_FreePtr(mm_blocks[i].userptr);
 	}
 }
