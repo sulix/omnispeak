@@ -37,7 +37,7 @@ int help_cur_page, help_num_pages, help_topic;
 int help_full_page;
 /* The chunks for each of the topics */
 int help_chunks[] ={
-	4914, 4915, 4916, 4917, 4920
+	4914, 4915, 4916, 4920, 4917
 };
 
 void RipToEOL( void )
@@ -300,6 +300,9 @@ void PageLayout( int show_status )
 	old_print_color = US_GetPrintColour();
 	US_SetPrintColour(10);
 
+	/* We want to scanout from the right offset. */
+	VL_SetScrollCoords(0,0);
+
 	/* Fill the background and draw the border */
 	VH_Bar( 0, 0, 320, 200, 4 );
 	VH_DrawBitmap( 0, 0, 28 );	/* Top border */
@@ -497,6 +500,7 @@ int ShowHelp( void )
 
 		/* Draw the pointer */
 		VH_DrawBitmap( 48, 48 + help_topic * 24, 24 );
+		VL_SetScrollCoords(0,0);
 		VL_Present(); //update_screen();
 
 
