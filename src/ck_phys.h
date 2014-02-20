@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CK_PHYS_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef struct CK_objPhysData
 {
@@ -57,7 +58,7 @@ void CK_PhysGravityHigh(struct CK_object *obj);
 void CK_PhysGravityMid(struct CK_object *obj);
 void CK_PhysGravityLow(struct CK_object *obj);
 void CK_PhysDampHorz(struct CK_object *obj);
-void CK_PhysAccelHorz(struct CK_object *obj, int accX, int velLimit);
+void CK_PhysAccelHorz(struct CK_object *obj, int16_t accX, int16_t velLimit);
 
 void CK_ResetClipRects(struct CK_object *obj);
 #endif

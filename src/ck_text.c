@@ -251,7 +251,8 @@ void HandleChar( void )
 void HandleWord( void )
 {
 	char buf[80];
-	int w, h, maxx, i;
+	uint16_t w, h, maxx;
+	int16_t i;
 
 	/* Read a word into the buffer */
 	buf[0] = *help_ptr++;
@@ -554,7 +555,7 @@ int ShowHelp( void )
 
 void HelpScreens(void)
 {
-	int local1, local2, oldfont, page_changed, n;
+	int16_t local1, local2, oldfont, page_changed, n;
 
 	/* Save the variables */
 	oldfont = US_GetPrintFont();

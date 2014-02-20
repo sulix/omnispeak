@@ -149,4 +149,13 @@ void SD_StartMusic(MusicGroup *music);
 void SD_FadeOutMusic(void);
 bool SD_MusicPlaying(void); // Actually return false for all time
 
+/* Timing related functions */
+
+uint32_t SD_GetTimeCount(void);
+void SD_SetTimeCount(uint32_t newval);
+int32_t SD_GetLastTimeCount(void);
+void SD_SetLastTimeCount(int32_t newval);
+uint16_t SD_GetSpriteSync(void);
+void SD_SetSpriteSync(uint16_t newval);
+
 #endif

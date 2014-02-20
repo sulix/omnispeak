@@ -175,7 +175,7 @@ const char *footer_str[3];
 
 void USL_DrawMenuFooter( void )
 {
-	int w, h;
+	uint16_t w, h;
 
 	fontcolour = 10;
 
@@ -252,7 +252,7 @@ void US_DrawCards()
 	VL_Present();
 }
 
-void center_watch_window( int w, int h, int *x, int *y )
+void center_watch_window( uint16_t w, uint16_t h, uint16_t *x, uint16_t *y )
 {
 	VH_DrawMaskedBitmap( 74, 48, 99 );
 
@@ -272,9 +272,9 @@ void center_watch_window( int w, int h, int *x, int *y )
 
 void load_save_message( const char *s1, const char *s2 )
 {
-	int x, y, w2, h, w1;
-	int window_w;
-	int print_x, print_y;
+	uint16_t x, y, w2, h, w1;
+	uint16_t window_w;
+	uint16_t print_x, print_y;
 	char buf[36];
 
 
@@ -303,12 +303,12 @@ void load_save_message( const char *s1, const char *s2 )
 
 int green_message_box( const char *s1, const char *s2, const char *s3 )
 {
-	int w1, w2, w3, h, sh;
-	int window_w, x, y;
+	uint16_t w1, w2, w3, h, sh;
+	uint16_t window_w, x, y;
 	IN_ControlFrame state;
 	char k;
 
-	int print_x, print_y;
+	uint16_t print_x, print_y;
 
 	/* Find the lengths of the strings */
 	VH_MeasurePropString( s1, &w1, &h, 4 );
@@ -1960,12 +1960,11 @@ void USL_EnterCurrentItem()
 
 void US_RunCards()
 {
-	int controller_dy;
-	unsigned long cursor_time;
+	int16_t controller_dy;
+	uint32_t cursor_time;
 	US_CardItem *item;
 	//ControlInfo status;
-	int action_taken;
-	int index;
+	bool action_taken;
 
 	bool cursor = false;
 
@@ -1980,7 +1979,7 @@ void US_RunCards()
 	controller_dy = 0;
 	command_confirmed = 0;
 	cursor = 1;
-	action_taken = 1;
+	action_taken = true;
 
 	while (!command_confirmed)
 	{
@@ -1991,12 +1990,12 @@ void US_RunCards()
 		/* Draw the icon for the current item highlighted or not */
 		if ( action_taken )
 		{
-			cursor_time = CK_GetNumTotalTics() + 35; // 1/2 second flashes
+			cursor_time = SD_GetTimeCount() + 35; // 1/2 second flashes
 			action_taken = false;
 		}
 
 		// draw icon with cursor blink
-		if ( CK_GetNumTotalTics() >= cursor_time )
+		if ( SD_GetTimeCount() >= cursor_time )
 		{
 			cursor = !cursor;
 			action_taken = true;
@@ -2016,24 +2015,24 @@ void US_RunCards()
 			{
 			case IN_SC_UpArrow:
 				US_SelectPrevItem();
-				action_taken = 1;
+				action_taken = true;
 				break;
 			case IN_SC_DownArrow:
 				US_SelectNextItem();
-				action_taken = 1;
+				action_taken = true;
 				break;
 			case IN_SC_Enter:
 				US_SelectCurrentItem();
-				action_taken = 1;
+				action_taken = true;
 				break;
 			case IN_SC_Escape:
 				USL_UpLevel();
-				action_taken = 1;
+				action_taken = true;
 				break;
 			case IN_SC_F1:
 				HelpScreens();
 				US_DrawCards();
-				action_taken = 1;
+				action_taken = true;
 				break;
 			default:
 				for (int i = 0; us_currentCard->items[i].type != US_ITEM_None; ++i)
@@ -2041,7 +2040,7 @@ void US_RunCards()
 					if (lastScan == us_currentCard->items[i].shortcutKey)
 					{
 						US_SelectItem(us_currentCard, i, true);
-						action_taken = 1;
+						action_taken = true;
 						break;
 					}
 				}
@@ -2052,7 +2051,7 @@ void US_RunCards()
 			//TODO: Add mouse/joystick support
 		}
 		IN_PumpEvents();
-		CK_SetTicsPerFrame();
+		//CK_SetTicsPerFrame();
 		VL_Present();
 	}
 

@@ -35,11 +35,6 @@ extern bool ck_godMode;
 
 struct CK_object;
 
-// Timing
-void CK_SetTicsPerFrame();
-int CK_GetTicksPerFrame();
-long CK_GetNumTotalTics();
-
 // Object Mgmt
 struct CK_object *CK_GetNewObj(bool nonCritical);
 void CK_SetupObjArray();

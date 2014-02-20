@@ -53,7 +53,7 @@ void VH_DrawBitmap(int x, int y, int chunk);
 void VH_DrawMaskedBitmap(int x, int y, int chunk);
 void VH_DrawSprite(int x, int y, int chunk);
 void VH_DrawPropChar(int x, int y, int chunk, char c, int colour);
-void VH_MeasurePropString(const char *string, int *width, int *height, int chunk);
+void VH_MeasurePropString(const char *string, uint16_t *width, uint16_t *height, int16_t chunk);
 void VH_DrawPropString(const char *string,int x, int y, int chunk, int colour);
 
 #endif

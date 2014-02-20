@@ -368,14 +368,14 @@ void CK_KeenSlide(CK_object *obj)
 	if (deltaX < 0)
 	{
 		// Move left one px per tick.
-		obj->nextX -= CK_GetTicksPerFrame() * 16;
+		obj->nextX -= SD_GetSpriteSync() * 16;
 		// If we're not at our target yet, return.
 		if (obj->nextX > deltaX) return;
 	}
-	else
+	else if (deltaX > 0)
 	{
 		// Move right one px per tick.
-		obj->nextX += CK_GetTicksPerFrame() * 16;
+		obj->nextX += SD_GetSpriteSync() * 16;
 		// If we're not at our target yet, return.
 		if (obj->nextX < deltaX) return;
 	}
@@ -521,19 +521,19 @@ void CK_KeenRidePlatform(CK_object *obj)
 
 bool CK_KeenTryClimbPole(CK_object *obj)
 {
-	if (CK_GetNumTotalTics() > ck_keenState.poleGrabTime && CK_GetNumTotalTics() - ck_keenState.poleGrabTime < 19)
+	if (SD_GetLastTimeCount() < ck_keenState.poleGrabTime)
+		ck_keenState.poleGrabTime = 0;
+	else if (SD_GetLastTimeCount() - ck_keenState.poleGrabTime < 19)
 		return false;
 
-	ck_keenState.poleGrabTime = 0;
-
-	int candidateTile = CA_TileAtPos(obj->clipRects.tileXmid, ((ck_inputFrame.yDirection==-1)?((obj->clipRects.unitY1+96)>>8):(obj->clipRects.tileY2+1)), 1);
+	uint16_t candidateTile = CA_TileAtPos(obj->clipRects.tileXmid, ((ck_inputFrame.yDirection==-1)?((obj->clipRects.unitY1+96)>>8):(obj->clipRects.tileY2+1)), 1);
 
 
 	if ((TI_ForeMisc(candidateTile) & 0x7F) == 1)
 	{
 		obj->posX = 128 + ((obj->clipRects.tileXmid - 1) << 8);
 		obj->nextX = 0;
-		obj->nextY = 32 * ck_inputFrame.yDirection;
+		obj->nextY = (ck_inputFrame.yDirection << 5);
 		obj->clipped = CLIP_not;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleSit");
 		return true;
@@ -608,7 +608,7 @@ void CK_KeenRunningThink(CK_object *obj)
 
 	// Andy seems to think this is Y as well. Need to do some more disasm.
 	// If this is an X vel, then surely we'd want to multiply it by the direction?
-	obj->nextX += ck_KeenRunXVels[obj->topTI&7] * CK_GetTicksPerFrame();
+	obj->nextX += ck_KeenRunXVels[obj->topTI&7] * SD_GetSpriteSync();
 
 	if ((obj->currentAction->chunkLeft == CK_GetActionByName("CK_ACT_keenRun1")->chunkLeft) && !(obj->user3))
 	{
@@ -647,7 +647,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenRun1");
 		CK_KeenRunningThink(obj);
-		obj->nextX = (obj->xDirection * obj->currentAction->velX * CK_GetTicksPerFrame())/4;
+		obj->nextX = (obj->xDirection * obj->currentAction->velX * SD_GetSpriteSync())/4;
 		return;
 	}
 
@@ -729,7 +729,7 @@ void CK_KeenStandingThink(CK_object *obj)
 
 	//If not on platform
 	if ((obj->topTI & ~7) == 0x18)
-		obj->user1 += CK_GetTicksPerFrame();
+		obj->user1 += SD_GetSpriteSync();
 
 	if (obj->user2 == 0 && obj->user1 > 200)
 	{
@@ -785,9 +785,9 @@ void CK_KeenLookDownThink(CK_object *obj)
 
 		if (TI_ForeLeft(tile2) || TI_ForeBottom(tile2) || TI_ForeRight(tile2))
 			return;
-		#define max(a,b) ((a>b)?a:b)
+		#define max(a,b) (((a)>(b))?(a):(b))
 
-		int deltay = max(CK_GetTicksPerFrame(),4) << 4;
+		uint16_t deltay = max(SD_GetSpriteSync(),4) << 4;
 	
 		//Moving platforms
 		if (ck_keenState.platform)
@@ -815,6 +815,7 @@ void CK_KeenLookDownThink(CK_object *obj)
 	}
 }	
 
+// TODO: More to modify here
 void CK_KeenDrawFunc(CK_object *obj)
 {
 	if (!obj->topTI)
@@ -828,6 +829,7 @@ void CK_KeenDrawFunc(CK_object *obj)
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 }
 
+// TODO: More to modify here
 void CK_KeenRunDrawFunc(CK_object *obj)
 {
 
@@ -871,17 +873,17 @@ void CK_KeenJumpThink(CK_object *obj)
 
 	if (ck_keenState.jumpTimer)
 	{
-		if (ck_keenState.jumpTimer <= CK_GetTicksPerFrame())
+		if (ck_keenState.jumpTimer <= SD_GetSpriteSync())
 		{
 			obj->nextY = obj->velY * ck_keenState.jumpTimer;
 			ck_keenState.jumpTimer = 0;
 		}
 		else
 		{
-			obj->nextY = obj->velY * CK_GetTicksPerFrame();
+			obj->nextY = obj->velY * SD_GetSpriteSync();
 			if (!ck_gameState.jumpCheat)
 			{
-				ck_keenState.jumpTimer -= CK_GetTicksPerFrame();
+				ck_keenState.jumpTimer -= SD_GetSpriteSync();
 			}
 		}
 
@@ -1126,8 +1128,8 @@ void CK_KeenPogoThink(CK_object *obj)
 		if (ck_keenState.jumpIsPressed || ck_keenState.jumpTimer <= 9) CK_PhysGravityLow(obj);
 		else CK_PhysGravityHigh(obj);
 
-		if (ck_keenState.jumpTimer <= CK_GetTicksPerFrame()) ck_keenState.jumpTimer = 0;
-		else ck_keenState.jumpTimer -= CK_GetTicksPerFrame();
+		if (ck_keenState.jumpTimer <= SD_GetSpriteSync()) ck_keenState.jumpTimer = 0;
+		else ck_keenState.jumpTimer -= SD_GetSpriteSync();
 
 		if (!ck_keenState.jumpTimer && obj->currentAction->next) obj->currentAction = obj->currentAction->next;
 	}
@@ -1139,7 +1141,7 @@ void CK_KeenPogoThink(CK_object *obj)
 	}
 	else
 	{
-		obj->nextX += obj->velX * CK_GetTicksPerFrame();
+		obj->nextX += obj->velX * SD_GetSpriteSync();
 		if (obj->velX < 0) obj->xDirection = -1;
 		else if (obj->velX > 0) obj->xDirection = 1;
 	}
@@ -1340,8 +1342,8 @@ void CK_KeenPullThink4(CK_object *obj)
 
 void CK_KeenDeathThink(CK_object *obj)
 {
-	CK_PhysGravityHigh(obj);
-	obj->nextX = obj->xDirection * CK_GetTicksPerFrame();
+	CK_PhysGravityMid(obj);
+	obj->nextX = obj->xDirection * SD_GetSpriteSync();
 	//TODO: ObjectVisible?
 	ck_gameState.levelState = 1;
 }
@@ -1407,7 +1409,7 @@ void CK_KeenPoleHandleInput(CK_object *obj)
 		ck_keenState.jumpTimer = 10;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenJump1");
 		obj->yDirection = 1;
-		ck_keenState.poleGrabTime = CK_GetNumTotalTics();
+		ck_keenState.poleGrabTime = SD_GetLastTimeCount();
 	}
 	return;
 }
@@ -1690,7 +1692,7 @@ void CK_KeenSpawnShot(CK_object *obj)
 void CK_KeenFall(CK_object *obj)
 {
 	CK_PhysGravityHigh(obj);
-	obj->nextX = obj->velX * CK_GetTicksPerFrame();
+	obj->nextX = obj->velX * SD_GetSpriteSync();
 }
 
 void CK_KeenSetupFunctions()

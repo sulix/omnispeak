@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include "SDL.h"
+
 #include "id_us.h"
 #include "id_in.h"
 #include "id_sd.h"
@@ -257,27 +259,26 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 
 void set_key_control( US_CardItem *item, int which_control )
 {
-	long lasttime;
-	int cursor;
+	bool cursor = false;
+	uint32_t lasttime = 0;
 	IN_ControlFrame state;
 	char k;
 	int i, used;
 
-	cursor = 0;
-	lasttime = 0;
+	// TODO: Should be global variables (as in vanilla Keen 5)?
 	char last_scan = 0;
-	int fontcolour = 2;
+	int16_t fontcolour = 2;
 
 	IN_ClearKeysDown();
 
 	/* Prompt the user to press a key */
 	do
 	{
-		CK_SetTicsPerFrame();
+		//CK_SetTicsPerFrame();
 		IN_PumpEvents();
 
 		/* Flicker the cursor */
-		if ( CK_GetNumTotalTics() >= lasttime )
+		if ( SD_GetTimeCount() >= lasttime )
 		{
 			/* time_count */
 			cursor = !cursor;
@@ -291,7 +292,7 @@ void set_key_control( US_CardItem *item, int which_control )
 				VH_DrawTile8( item->x + 106, item->y, 100 );
 
 			//VW_UpdateScreen();
-			lasttime = CK_GetNumTotalTics() + 35;	/* time_count */
+			lasttime = SD_GetTimeCount() + 35;	/* time_count */
 			VL_Present();
 		}
 
@@ -376,17 +377,17 @@ bool CK_US_ConfigureMenuProc(US_CardMsg msg, US_CardItem *item)
 	return false;
 }
 
-void show_paddlewar_score( int keen_score, int comp_score )
+void show_paddlewar_score( int16_t keen_score, int16_t comp_score )
 {
 	// NOTE: This is modified a little from the original
 	// exe in order to align the text and to set the proper font and color
 
-	int print_color = 10;
-	int print_y = 52;
-	int w, h;
+	int16_t print_color = 10;
+	int16_t print_y = 52;
+	uint16_t w, h;
 
-	int old_print_font = US_GetPrintFont();
-	int old_print_color = US_GetPrintColour();
+	uint16_t old_print_font = US_GetPrintFont();
+	uint16_t old_print_color = US_GetPrintColour();
 
 	US_SetPrintFont(4);
 	US_SetPrintColour(print_color);
@@ -418,13 +419,14 @@ void show_paddlewar_score( int keen_score, int comp_score )
 
 void paddlewar( void )
 {
-	int ball_visible, new_round, y_bounce, done, keen_won_last, comp_move_counter;
-	int ball_y, keen_x, comp_x, bounce_point, ball_real_x, ball_real_y;
-	int old_keen_x, old_comp_x, old_ball_x, old_ball_y, keen_score, comp_score;
-	int speedup_delay, ball_x_speed;
-	long start_delay, lasttime, timediff;
+	int16_t ball_visible, new_round, y_bounce, done, keen_won_last, comp_move_counter;
+	int16_t ball_y, keen_x, comp_x, bounce_point, ball_real_x, ball_real_y;
+	int16_t old_keen_x, old_comp_x, old_ball_x, old_ball_y, keen_score, comp_score;
+	int16_t speedup_delay, ball_x_speed;
+	int32_t start_delay;
+	uint32_t lasttime, timediff;
 	IN_ControlFrame status;
-	int ball_y_speed, ball_x;
+	int16_t ball_y_speed, ball_x;
 
 	keen_x = comp_x = 148;
 	ball_real_x = ball_real_y = ball_y_speed = 0;
@@ -437,18 +439,23 @@ void paddlewar( void )
 	new_round = 1;
 	done = 0;
 	keen_won_last = 0;
-	lasttime = CK_GetNumTotalTics();
+	lasttime = SD_GetTimeCount();
 
 	do
 	{
 		// Delay Processing
-		while ( (timediff = CK_GetNumTotalTics() - lasttime) == 0 )
+		// TODO/FIXME: Better handling of this in the future
+		while ( (timediff = SD_GetTimeCount() - lasttime) == 0 )
 		{
-			CK_SetTicsPerFrame();
-			IN_PumpEvents();
-			IN_ReadControls(0, &status );
+			// The original code waits in a busy loop.
+			// Bad idea for new code.
+			// TODO: What about checking for input/graphics/other status?
+			SDL_Delay(1);
+			//CK_SetTicsPerFrame();
+			//IN_PumpEvents();
+			//IN_ReadControls(0, &status );
 		}
-		lasttime = CK_GetNumTotalTics();
+		lasttime = SD_GetTimeCount();
 		if ( timediff > 4 )
 		{
 			timediff = 4;
@@ -457,6 +464,8 @@ void paddlewar( void )
 		// Move the game elements
 		while ( timediff-- && !done && (IN_GetLastScan() != IN_SC_Escape) )
 		{
+			IN_PumpEvents();
+			IN_ReadControls(0, &status );
 			// Move Keen's paddle
 			if ( status.xDirection < 0 || IN_GetKeyState(IN_SC_LeftArrow) )
 			{

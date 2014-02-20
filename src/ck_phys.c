@@ -603,12 +603,11 @@ bool CK_ObjectVisible(CK_object *obj)
 
 void CK_PhysGravityHigh(CK_object *obj)
 {
-	long numTics = CK_GetNumTotalTics();
-	int tics = CK_GetTicksPerFrame();
-	for (long ticCount = numTics - tics; ticCount < numTics; ++ticCount)
+	int32_t lastTimeCount = SD_GetLastTimeCount();
+	for (int32_t tickCount = lastTimeCount - SD_GetSpriteSync(); tickCount < lastTimeCount; tickCount++)
 	{
 		// Every odd tic...
-		if (ticCount & 1)
+		if (tickCount & 1)
 		{
 			if (obj->velY < 0 && obj->velY >= -4)
 			{
@@ -628,12 +627,11 @@ void CK_PhysGravityHigh(CK_object *obj)
 
 void CK_PhysGravityMid(CK_object *obj)
 {
-	long numTics = CK_GetNumTotalTics();
-	int tics = CK_GetTicksPerFrame();
-	for (long ticCount = numTics - tics; ticCount < numTics; ++ticCount)
+	int32_t lastTimeCount = SD_GetLastTimeCount();
+	for (int32_t tickCount = lastTimeCount - SD_GetSpriteSync(); tickCount < lastTimeCount; tickCount++)
 	{
 		// Every odd tic...
-		if (ticCount & 1)
+		if (tickCount & 1)
 		{
 			if (obj->velY < 0 && obj->velY >= -3)
 			{
@@ -653,14 +651,13 @@ void CK_PhysGravityMid(CK_object *obj)
 
 void CK_PhysGravityLow(CK_object *obj)
 {
-	long numTics = CK_GetNumTotalTics();
-	int tics = CK_GetTicksPerFrame();
-	for (long ticCount = numTics - tics; ticCount < numTics; ++ticCount)
+	int32_t lastTimeCount = SD_GetLastTimeCount();
+	for (int32_t tickCount = lastTimeCount - SD_GetSpriteSync(); tickCount < lastTimeCount; tickCount++)
 	{
 		// TODO: recheck this condition
-		//if ((ticCount & 3) == 1)
-		//if ((ticCount?0:1) & 3)
-		if (ticCount == 0)	// This condition is seriously fucked up.
+		//if ((tickCount & 3) == 1)
+		if ((tickCount?0:1) & 3)
+		//if (tickCount == 0)	// This condition is seriously fucked up.
 		{
 			obj->velY += 1;
 			if (obj->velY > 70)
@@ -674,10 +671,8 @@ void CK_PhysGravityLow(CK_object *obj)
 
 void CK_PhysDampHorz(CK_object *obj)
 {
-	long numTics = CK_GetNumTotalTics();
-	int tics = CK_GetTicksPerFrame();
 	bool movingLeft = (obj->velX < 0);
-	int xAdj;
+	int16_t xAdj;
 	if (obj->velX > 0)
 		xAdj = -1;
 	else if (obj->velX < 0)
@@ -685,11 +680,11 @@ void CK_PhysDampHorz(CK_object *obj)
 	else
 		xAdj = 0;
 
-
-	for (long ticCount = numTics - tics; ticCount < numTics; ++ticCount)
+	int32_t lastTimeCount = SD_GetLastTimeCount();
+	for (int32_t tickCount = lastTimeCount - SD_GetSpriteSync(); tickCount < lastTimeCount; tickCount++)
 	{
 		// Every odd tic...
-		if (ticCount & 1)
+		if (tickCount & 1)
 		{
 			obj->velX += xAdj;
 			if ((obj->velX < 0) != movingLeft)
@@ -701,15 +696,14 @@ void CK_PhysDampHorz(CK_object *obj)
 	}
 }
 
-void CK_PhysAccelHorz(CK_object *obj, int accX, int velLimit)
+void CK_PhysAccelHorz(CK_object *obj, int16_t accX, int16_t velLimit)
 {
-	long numTics = CK_GetNumTotalTics();
-	int tics = CK_GetTicksPerFrame();
 	bool isNegative = (obj->velX < 0);
-	for (long ticCount = numTics - tics; ticCount < numTics; ++ticCount)
+	int32_t lastTimeCount = SD_GetLastTimeCount();
+	for (int32_t tickCount = lastTimeCount - SD_GetSpriteSync(); tickCount < lastTimeCount; tickCount++)
 	{
 		// Every odd tic...
-		if (ticCount & 1)
+		if (tickCount & 1)
 		{
 			obj->velX += accX;
 			if ((obj->velX < 0) != isNegative)

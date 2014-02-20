@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <string.h>
 #include <strings.h> // For strcasecmp
 #include <stdlib.h>
 #include <stdbool.h>
@@ -64,13 +65,13 @@ int US_CheckParm(const char *parm, const char **strings)
 
 
 // Coords in pixels
-static int us_windowX;
-static int us_windowY;
-static int us_windowW;
-static int us_windowH;
+static int16_t us_windowX;
+static int16_t us_windowY;
+static int16_t us_windowW;
+static int16_t us_windowH;
 
-static int us_printX;
-static int us_printY;
+static int16_t us_printX;
+static int16_t us_printY;
 
 static int us_printFont = 3;
 static int us_printColour = 0;
@@ -90,6 +91,7 @@ void US_Print(const char *str)
 		sboff = 0;
 		while (true)
 		{
+			// TODO: Modify this (and possibly more)
 			ch = *str;
 			str++;
 			if (ch == '\0' || ch == '\n')
@@ -101,8 +103,10 @@ void US_Print(const char *str)
 			sboff++;
 		}
 
-		int w, h;
-		CA_CacheGrChunk(3);
+		uint16_t w, h;
+		CA_CacheGrChunk(3); // TODO: Why is that done here?
+		// TODO: Should us_printFont and us_printColour
+		// be passed as arguments or not?
 		VH_MeasurePropString(strbuf, &w, &h, us_printFont);
 		VH_DrawPropString(strbuf, us_printX, us_printY, us_printFont, us_printColour);
 
@@ -130,9 +134,9 @@ void US_PrintF(const char *str, ...)
 	US_Print(buf);
 }
 
-void USL_PrintInCenter(const char *str, int x1, int y1, int x2, int y2)
+void USL_PrintInCenter(const char *str, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
 {
-	int w, h, rw, rh, px, py;
+	uint16_t w, h, rw, rh, px, py;
 	VH_MeasurePropString(str, &w, &h, us_printFont);
 	rw = x2 - x1;
 	rh = y2 - y2;
@@ -148,8 +152,8 @@ void US_PrintCentered(const char *str)
 
 void US_CPrintLine(const char *str)
 {
-	int w, h;
-	CA_CacheGrChunk(3);
+	uint16_t w, h;
+	CA_CacheGrChunk(3); // TODO: What is this function call doing here?
 	VH_MeasurePropString(str, &w, &h, us_printFont);
 	if (w < us_windowW)
 	{
@@ -262,16 +266,18 @@ void US_RestoreWindow(US_WindowRec *win)
 
 //	USL_XORICursor() - XORs the I-bar text cursor. Used by US_LineInput()
 
-static void USL_XORICursor(int x, int y, char *s, uint16_t cursor)
+static void USL_XORICursor(uint16_t x, uint16_t y, char *s, uint16_t cursor)
 {
 	static	bool	status;		// VGA doesn't XOR...
-	char	buf[256];
-	int		temp;
-	int	w, h;
+	char	buf[128];
+	uint16_t temp;
+	uint16_t w, h;
 
 	strcpy(buf, s);
 	buf[cursor] = '\0';
 	VH_MeasurePropString(buf, &w, &h, us_printFont);
+
+	// TODO: More changes to do here?
 
 	US_SetPrintX(x + w - 1);
 	US_SetPrintY(y);
@@ -295,7 +301,7 @@ static void USL_XORICursor(int x, int y, char *s, uint16_t cursor)
 //		user hits return, the current string is copied into buf, and true is
 //		returned
 
-bool US_LineInput(int x, int y, char *buf, char *def, bool escok, int maxchars, int maxwidth)
+bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint16_t maxchars, uint16_t maxwidth)
 {
 	bool		redraw,
 		cursorvis, cursormoved,
@@ -303,11 +309,11 @@ bool US_LineInput(int x, int y, char *buf, char *def, bool escok, int maxchars, 
 	IN_ScanCode	sc;
 	char	c,
 		s[128], olds[128];
-	int		i,
-		cursor,
-		w, h,
-		len, temp;
-	int	lasttime;
+	uint16_t i,
+	         cursor,
+	         w, h,
+	         len, temp;
+	uint32_t lasttime;
 
 	if (def)
 		strcpy(s, def);
@@ -318,7 +324,7 @@ bool US_LineInput(int x, int y, char *buf, char *def, bool escok, int maxchars, 
 	cursormoved = redraw = true;
 
 	cursorvis = done = false;
-	lasttime = CK_GetNumTotalTics();
+	lasttime = SD_GetTimeCount();
 
 	/*
 	LastASCII = key_None;
@@ -328,8 +334,10 @@ bool US_LineInput(int x, int y, char *buf, char *def, bool escok, int maxchars, 
 
 	while (!done)
 	{
+		// TODO/FIXME: Handle this in a possibly better way
+		// (no busy loop, updating gfx if required, etc..)
 		IN_PumpEvents();
-		CK_SetTicsPerFrame();
+		//CK_SetTicsPerFrame();
 
 		if (cursorvis)
 			USL_XORICursor(x, y, s, cursor);
@@ -458,13 +466,13 @@ bool US_LineInput(int x, int y, char *buf, char *def, bool escok, int maxchars, 
 		if (cursormoved)
 		{
 			cursorvis = false;
-			lasttime = CK_GetNumTotalTics() - 70 /*TimeCount - TickBase*/;
+			lasttime = SD_GetTimeCount() - 70 /*TimeCount - TickBase*/;
 
 			cursormoved = false;
 		}
-		if (CK_GetNumTotalTics()-lasttime > 35 /*TimeCount - lasttime > TickBase / 2*/)
+		if (SD_GetTimeCount()-lasttime > 35 /*TimeCount - lasttime > TickBase / 2*/)
 		{
-			lasttime = CK_GetNumTotalTics();//TimeCount;
+			lasttime = SD_GetTimeCount();//TimeCount;
 
 			cursorvis ^= true;
 		}

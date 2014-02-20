@@ -238,7 +238,7 @@ void CK5_SeekKeen(CK_object *obj)
 void CK5_MineMove(CK_object *obj)
 {
 
-	int deltaX, deltaY, delta, xDir, yDir;
+	int16_t deltaX, deltaY, delta, xDir, yDir;
 
 	// Get distance to keen
 	deltaX = obj->posX - ck_keenObj->posX;
@@ -256,7 +256,7 @@ void CK5_MineMove(CK_object *obj)
 	// Move the mine to the next tile boundary
 	// obj->velX is used as a ticker
 	// When the ticker reaches zero, check if directional change needed
-	delta = CK_GetTicksPerFrame() * 10;
+	delta = SD_GetSpriteSync() * 10;
 	if (obj->velX <= delta)
 	{
 		// Move up to the tile boundary
@@ -327,8 +327,8 @@ void CK5_MineShrapCol(CK_object *o1, CK_object *o2)
 void CK5_MineMoveDotsToCenter(CK_object *obj)
 {
 
-	int deltaX, deltaY;
-	int dotOffsetX, dotOffsetY;
+	int16_t deltaX, deltaY;
+	int16_t dotOffsetX, dotOffsetY;
 
 	deltaX = obj->posX - ck_keenObj->posX;
 	deltaY = obj->posY - ck_keenObj->posY;
@@ -350,7 +350,7 @@ void CK5_MineMoveDotsToCenter(CK_object *obj)
 	// Move Dot to the center, then change Action
 	if (obj->user2 < dotOffsetX)
 	{
-		obj->user2 += CK_GetTicksPerFrame() * 4;
+		obj->user2 += SD_GetSpriteSync() * 4;
 		if (obj->user2 >= dotOffsetX)
 		{
 			obj->user2 = dotOffsetX;
@@ -359,7 +359,7 @@ void CK5_MineMoveDotsToCenter(CK_object *obj)
 	}
 	else if (obj->user2 > dotOffsetX)
 	{
-		obj->user2 -= CK_GetTicksPerFrame() * 4;
+		obj->user2 -= SD_GetSpriteSync() * 4;
 		if (obj->user2 <= dotOffsetX)
 		{
 			obj->user2 = dotOffsetX;
@@ -370,7 +370,7 @@ void CK5_MineMoveDotsToCenter(CK_object *obj)
 	// Do the same in the Y direction
 	if (obj->user3 < dotOffsetY)
 	{
-		obj->user3 += CK_GetTicksPerFrame() * 4;
+		obj->user3 += SD_GetSpriteSync() * 4;
 		if (obj->user3 >= dotOffsetY)
 		{
 			obj->user3 = dotOffsetY;
@@ -379,7 +379,7 @@ void CK5_MineMoveDotsToCenter(CK_object *obj)
 	}
 	else if (obj->user3 > dotOffsetY)
 	{
-		obj->user3 -= CK_GetTicksPerFrame() * 4;
+		obj->user3 -= SD_GetSpriteSync() * 4;
 		if (obj->user3 <= dotOffsetY)
 		{
 			obj->user3 = dotOffsetY;
@@ -393,7 +393,7 @@ void CK5_MineMoveDotsToCenter(CK_object *obj)
 void CK5_MineMoveDotsToSides(CK_object *obj)
 {
 
-	int deltaX, deltaY, dotOffsetX, dotOffsetY;
+	int16_t deltaX, deltaY, dotOffsetX, dotOffsetY;
 
 	deltaX = obj->posX - ck_keenObj->posX;
 	deltaY = obj->posY - ck_keenObj->posY;
@@ -446,7 +446,7 @@ void CK5_MineMoveDotsToSides(CK_object *obj)
 	// when it reaches the desired offset
 	if (obj->user2 < dotOffsetX)
 	{
-		obj->user2 += CK_GetTicksPerFrame() * 4;
+		obj->user2 += SD_GetSpriteSync() * 4;
 		if (obj->user2 >= dotOffsetX)
 		{
 			obj->user2 = dotOffsetX;
@@ -455,7 +455,7 @@ void CK5_MineMoveDotsToSides(CK_object *obj)
 	}
 	else if (obj->user2 > dotOffsetX)
 	{
-		obj->user2 -= CK_GetTicksPerFrame() * 4;
+		obj->user2 -= SD_GetSpriteSync() * 4;
 		if (obj->user2 <= dotOffsetX)
 		{
 			obj->user2 = dotOffsetX;
@@ -466,7 +466,7 @@ void CK5_MineMoveDotsToSides(CK_object *obj)
 	// Do the same in the Y direction
 	if (obj->user3 < dotOffsetY)
 	{
-		obj->user3 += CK_GetTicksPerFrame() * 4;
+		obj->user3 += SD_GetSpriteSync() * 4;
 		if (obj->user3 >= dotOffsetY)
 		{
 			obj->user3 = dotOffsetY;
@@ -475,7 +475,7 @@ void CK5_MineMoveDotsToSides(CK_object *obj)
 	}
 	else if (obj->user3 > dotOffsetY)
 	{
-		obj->user3 -= CK_GetTicksPerFrame() * 4;
+		obj->user3 -= SD_GetSpriteSync() * 4;
 		if (obj->user3 <= dotOffsetY)
 		{
 			obj->user3 = dotOffsetY;
@@ -861,13 +861,10 @@ void CK5_SpawnSpindred(int tileX, int tileY)
 
 void CK5_SpindredBounce(CK_object *obj)
 {
-
-	int timedelta;
-
-
-	for (timedelta = CK_GetNumTotalTics() - CK_GetTicksPerFrame(); timedelta < CK_GetNumTotalTics();  timedelta++)
+	int32_t lastTimeCount = SD_GetLastTimeCount();
+	for (int32_t timedelta = lastTimeCount - SD_GetSpriteSync(); timedelta < lastTimeCount; timedelta++)
 	{
-
+		// Every odd tic...
 		if (timedelta & 1)
 		{
 			if (obj->yDirection == IN_motion_Down)
@@ -1548,18 +1545,15 @@ void CK5_SpawnSphereful(int tileX, int tileY)
 
 void CK5_SpherefulBounce(CK_object *obj)
 {
-
-	int ticks_0;
-
-	obj->visible = 1;
+	obj->visible = true;
 
 	if (obj->nextX || obj->nextY)
 		return;
 
+	int32_t lastTimeCount = SD_GetLastTimeCount();
 	// Bounce around, and home in on Keen
-	for (ticks_0 = CK_GetNumTotalTics() - CK_GetTicksPerFrame(); ticks_0 < CK_GetNumTotalTics(); ticks_0++)
+	for (int32_t ticks_0 = lastTimeCount - SD_GetSpriteSync(); ticks_0 < lastTimeCount; ticks_0++)
 	{
-
 		if (!(ticks_0 & 0xF))
 		{
 			if (obj->velY < 8)
@@ -1572,7 +1566,6 @@ void CK5_SpherefulBounce(CK_object *obj)
 				obj->velX--;
 
 		}
-
 		obj->nextY += obj->velY;
 		obj->nextX += obj->velX;
 	}
@@ -1580,9 +1573,9 @@ void CK5_SpherefulBounce(CK_object *obj)
 
 void CK5_SpherefulTileCol(CK_object *obj)
 {
-
-	int zLayer, time, diamond_chunk;
-	int diamondpos[16] ={0x180, 0x171, 0x148, 0x109, 0x0C0, 0x077, 0x03A, 0x00F,
+	int16_t zLayer;
+	uint16_t time, diamond_chunk;
+	static uint16_t diamondpos[16] ={0x180, 0x171, 0x148, 0x109, 0x0C0, 0x077, 0x03A, 0x00F,
 		0x000, 0x00F, 0x03A, 0x077, 0x0C0, 0x109, 0x148, 0x171};
 
 	// Make the sphereful bounce off of walls
@@ -1618,10 +1611,10 @@ void CK5_SpherefulTileCol(CK_object *obj)
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 
 	//draw the diamonds
-	time = CK_GetNumTotalTics() / 8 & 0xF;
+	time = (SD_GetLastTimeCount() >> 3) & 0xF;
 
-	diamond_chunk = time / 4 + 362;
-	zLayer = time >= 8 ? 2 : 0;
+	diamond_chunk = (time >> 2) + 362;
+	zLayer = (time >= 8) ? 2 : 0;
 
 	//topleft
 	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user1, obj->posX + diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
@@ -1629,8 +1622,8 @@ void CK5_SpherefulTileCol(CK_object *obj)
 	//topright
 	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user2, obj->posX + 0x180 - diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
 
-	time = time + 8 & 0xF;
-	zLayer = time >= 8 ? 2 : 0;
+	time = (time + 8) & 0xF;
+	zLayer = (time >= 8) ? 2 : 0;
 
 	//botleft
 	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user3, obj->posX + diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);

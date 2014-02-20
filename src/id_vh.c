@@ -134,7 +134,7 @@ void VH_DrawPropChar(int x, int y, int chunk, char c, int colour)
 	VL_1bppBlitToScreen(chardata, x, y, fnt->width[c], fnt->height, colour);
 }
 
-void VH_MeasureString(const char *string, int *width, int *height, VH_Font *fnt)
+void VH_MeasureString(const char *string, uint16_t *width, uint16_t *height, VH_Font *fnt)
 {
 	*height = fnt->height;
 
@@ -144,7 +144,7 @@ void VH_MeasureString(const char *string, int *width, int *height, VH_Font *fnt)
 	}
 }
 
-void VH_MeasurePropString(const char *string, int *width, int *height, int chunk)
+void VH_MeasurePropString(const char *string, uint16_t *width, uint16_t *height, int16_t chunk)
 {
 	VH_MeasureString(string,width,height,(VH_Font *)(ca_graphChunks[chunk]));
 }

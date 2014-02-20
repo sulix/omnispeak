@@ -54,7 +54,7 @@ void US_DrawWindow(int x, int y, int w, int h);
 void US_CenterWindow(int w, int h);
 void US_SaveWindow(US_WindowRec *win);
 void US_RestoreWindow(US_WindowRec *win);
-bool US_LineInput(int x, int y, char *buf, char *def, bool escok, int maxchars, int maxwidth);
+bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint16_t maxchars, uint16_t maxwidth);
 
 // Random Number Generation
 void US_InitRndT(bool randomize);

@@ -100,6 +100,42 @@ SDL_AudioSpec SD_SDL_AudioSpec;
 static bool SD_SDL_AudioSubsystem_Up;
 static uint32_t SD_SDL_SampleOffsetInSound, SD_SDL_SamplesPerPart/*, SD_SDL_MusSamplesPerPart*/;
 
+/******************************************************************
+Timing subsection.
+Originally SDL_t0Service is responsible for incrementing TimeCount.
+/*****************************************************************/
+
+// PRIVATE variables (in this source port)
+static uint32_t TimeCount = 0; // Kind of same as Wolf3D's TimeCount from ID_SD.C
+static int32_t lasttimecount = 0; // Same as Wolf3D's lasttimecount from WL_DRAW.C?
+static uint16_t SpriteSync = 0;
+// PIT timer divisor, scaled (bt 8 if music is on, 2 otherwise)
+static int16_t ScaledTimerDivisor;
+// A few variables used for timing measurements (PC_PIT_RATE units per second)
+static uint64_t SD_LastPITTickTime;
+
+uint32_t SD_GetTimeCount(void)
+{
+	// FIXME: What happens when SDL_GetTicks() reaches the upper bound?
+	// May be challenging to fix... A proper solution should
+	// only work with *differences between SDL_GetTicks values*.
+	uint64_t currPitTicks = (uint64_t)(SDL_GetTicks()) * SD_SOUND_PART_RATE_BASE / 1000;
+	uint32_t ticksToAdd = (currPitTicks - SD_LastPITTickTime) / ScaledTimerDivisor;
+	SD_LastPITTickTime += ticksToAdd * ScaledTimerDivisor;
+	TimeCount += ticksToAdd;
+	return TimeCount;
+}
+
+void SD_SetTimeCount(uint32_t newval)
+{
+	TimeCount = newval;
+}
+
+int32_t SD_GetLastTimeCount(void) { return lasttimecount; }
+void SD_SetLastTimeCount(int32_t newval) { lasttimecount = newval; }
+uint16_t SD_GetSpriteSync(void) { return SpriteSync; }
+void SD_SetSpriteSync(uint16_t newval) { SpriteSync = newval; }
+
 /*******************************************************************************
 OPL emulation, powered by dbopl from DOSBox and using bits of code from Wolf4SDL
 *******************************************************************************/
@@ -289,6 +325,7 @@ void SD_SDL_CallBack(void *unused, Uint8 *stream, int len)
 void SDL_SetTimer0(int16_t int_8_divisor)
 {
 	SD_SDL_SamplesPerPart = (int32_t)int_8_divisor * SD_SDL_AudioSpec.freq / PC_PIT_RATE;
+	ScaledTimerDivisor = int_8_divisor;
 }
 
 void SDL_SetIntsPerSecond(int16_t tickrate)
@@ -626,7 +663,15 @@ void SDL_t0Service(void)
 	if (MusicMode == smm_AdLib)
 	{
 		SDL_ALService();
-		if (!(++count & 3))
+		++count;
+/*		if (!(count & 7))
+		{
+			LocalTime++;
+			TimeCount++;
+			if (SoundUserHook)
+				SoundUserHook();
+		}*/
+		if (!(count & 3))
 		{
 			switch (SoundMode)
 			{
@@ -641,6 +686,14 @@ void SDL_t0Service(void)
 	}
 	else
 	{
+		++count;
+/*		if (!(count & 1))
+		{
+			LocalTime++;
+			TimeCount++;
+			if (SoundUserHook)
+				SoundUserHook();
+		}*/
 		switch (SoundMode)
 		{
 		case sdm_PC:
@@ -682,7 +735,9 @@ void SDL_StartDevice(void)
 
 void SDL_SetTimerSpeed(void)
 {
-	SDL_SetIntsPerSecond(SD_SFX_PART_RATE * ((MusicMode == smm_AdLib) ? 4 : 1));
+	int16_t scaleFactor = (MusicMode == smm_AdLib) ? 4 : 1;
+	SDL_SetIntsPerSecond(SD_SFX_PART_RATE * scaleFactor);
+	ScaledTimerDivisor *= (2*scaleFactor);
 }
 
 void SD_StopSound(void);
@@ -810,8 +865,8 @@ void SD_Startup(void)
 
 	// TODO: Check command line arguments - Set alNoCheck to 1 if desired
 
-	/* TODO: Maybe set ticks to 0 (not just AL ticks)? */
 	alTimeCount = 0;
+	SD_SetTimeCount(0);
 
 	SD_SetSoundMode(sdm_Off);
 	SD_SetMusicMode(smm_Off);

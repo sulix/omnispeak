@@ -50,7 +50,7 @@ int CK5_ItemSpriteChunks[] ={
 void CK_Fall(CK_object *obj)
 {
 	CK_PhysGravityHigh(obj);
-	obj->nextX = obj->velX * CK_GetTicksPerFrame();
+	obj->nextX = obj->velX * SD_GetSpriteSync();
 }
 
 // Think function for adding a slightly lower amount of gravity
@@ -58,13 +58,13 @@ void CK_Fall(CK_object *obj)
 void CK_Fall2(CK_object *obj)
 {
 	CK_PhysGravityMid(obj);
-	obj->nextX = obj->velX * CK_GetTicksPerFrame();
+	obj->nextX = obj->velX * SD_GetSpriteSync();
 }
 
 void CK_Glide(CK_object *obj)
 {
-	obj->nextX = obj->velX * CK_GetTicksPerFrame();
-	obj->nextY = obj->velY * CK_GetTicksPerFrame();
+	obj->nextX = obj->velX * SD_GetSpriteSync();
+	obj->nextY = obj->velY * SD_GetSpriteSync();
 }
 
 void CK_BasicDrawFunc1(CK_object *obj)
@@ -155,7 +155,7 @@ void CK_BasicDrawFunc4(CK_object *obj)
 	}
 
 	// Tick the star 3-frame animation forward
-	if ((obj->user1 += CK_GetTicksPerFrame()) > 10)
+	if ((obj->user1 += SD_GetSpriteSync()) > 10)
 	{
 		obj->user1 -= 10;
 		if (++obj->user2 >= 3)
@@ -192,15 +192,15 @@ void CK5_PointItem(CK_object *obj)
 
 void CK5_BlockPlatform(CK_object *obj)
 {
-	int nextPosUnit, nextPosTile;
+	uint16_t nextPosUnit, nextPosTile;
 
 	if (obj->nextX || obj->nextY)
 	{
 		return;
 	}
 	//TODO: Implement properly.
-	obj->nextX = obj->xDirection * 12 * CK_GetTicksPerFrame();
-	obj->nextY = obj->yDirection * 12 * CK_GetTicksPerFrame();
+	obj->nextX = obj->xDirection * 12 * SD_GetSpriteSync();
+	obj->nextY = obj->yDirection * 12 * SD_GetSpriteSync();
 
 	if (obj->xDirection == 1)
 	{
@@ -290,7 +290,7 @@ void CK5_FallPlatSit (CK_object *obj)
 
 	if (obj == ck_keenState.platform)
 	{
-		obj->nextY = CK_GetTicksPerFrame() * 16;
+		obj->nextY = SD_GetSpriteSync() * 16;
 		obj->velY = 0;
 		if (obj->posY + obj->nextY - obj->user1 <= 0x80)
 			obj->currentAction = CK_GetActionByName("CK5_ACT_FallPlat1");

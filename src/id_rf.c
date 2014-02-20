@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdbool.h>
 #include <stdio.h>
+#include "SDL.h"
 
 // The refresh manager (ID_RF) is the core of the game's smooth-scrolling
 // engine. It renders tiles to an offscreen bufferand then blits from
@@ -411,7 +412,7 @@ void RFL_AnimateTiles()
 
 	for (int i = 0; i < rf_numAnimTileTimers; ++i)
 	{
-		rf_animTileTimers[i].timeToSwitch-=CK_GetTicksPerFrame();
+		rf_animTileTimers[i].timeToSwitch-=SD_GetSpriteSync();
 
 
 		if (rf_animTileTimers[i].timeToSwitch <= 0)
@@ -466,6 +467,7 @@ void RF_Startup()
 
 }
 
+// TODO: More to change? Also, originally mapNum is a global variable.
 void RF_NewMap(int mapNum)
 {
 	rf_mapWidthTiles = CA_MapHeaders[mapNum]->width;
@@ -490,6 +492,8 @@ void RF_NewMap(int mapNum)
 	RF_SetScrollBlock(1,0,false);
 	RF_SetScrollBlock(CA_MapHeaders[mapNum]->width-2,0,false);
 
+	SD_SetLastTimeCount(SD_GetTimeCount());
+	SD_SetSpriteSync(1);
 }
 
 void RF_RenderTile16(int x, int y, int tile)
@@ -751,6 +755,44 @@ void RFL_SmoothScrollLimit(int scrollXdelta, int scrollYdelta)
 	}
 
 
+}
+
+void RFL_CalcTics()
+{
+	uint32_t inctime;
+	if ((uint32_t)SD_GetLastTimeCount() > SD_GetTimeCount())
+		SD_SetTimeCount(SD_GetLastTimeCount());
+	if (in_demoState != IN_Demo_Off)
+	{
+		uint32_t new_time = SD_GetLastTimeCount();
+		// TODO/FIXME: Better handling of this in the future
+		while (new_time + 6 > SD_GetTimeCount())
+		{
+			// As long as this takes no more than 10ms...
+			SDL_Delay(1);
+		}
+		// We do not want to lose demo sync
+		SD_SetLastTimeCount(new_time + 3);
+		SD_SetTimeCount(new_time + 6);
+		SD_SetSpriteSync(3);
+		return;
+	}
+	// TODO/FIXME: Better handling of this in the future
+	do
+	{
+		inctime = SD_GetTimeCount();
+		SD_SetSpriteSync((uint16_t)(inctime & 0xFFFF) - (uint16_t)(SD_GetLastTimeCount() & 0xFFFF));
+		if (SD_GetSpriteSync() >= 2)
+			break;
+		// As long as this takes no more than 10ms...
+		SDL_Delay(1);
+	} while (1);
+	SD_SetLastTimeCount(inctime);
+	if (SD_GetSpriteSync() > 5)
+	{
+		SD_SetTimeCount(SD_GetTimeCount() - (SD_GetSpriteSync() - 5));
+		SD_SetSpriteSync(5);
+	}
 }
 
 
@@ -1027,5 +1069,7 @@ void RF_Refresh()
 
 
 	//VL_Present();
+
+	RFL_CalcTics();
 }
 

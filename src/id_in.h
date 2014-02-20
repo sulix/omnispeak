@@ -128,7 +128,7 @@ enum {
 // See wolf3d ID_IN.H
 
 typedef enum IN_DemoMode {
-  IN_Demo_Off, IN_Demo_Record, IN_Demo_Playback, IN_Demo_PlayDone
+  IN_Demo_Off = 0, IN_Demo_Record, IN_Demo_Playback, IN_Demo_PlayDone
 } IN_DemoMode;
 
 typedef enum {
@@ -173,6 +173,8 @@ typedef struct IN_ControlFrame {
   IN_Motion xDirection, yDirection;
   IN_Direction dir;
 } IN_ControlFrame;
+
+extern IN_DemoMode in_demoState;
 
 void IN_PumpEvents();
 void IN_WaitKey();

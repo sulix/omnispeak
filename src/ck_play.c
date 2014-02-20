@@ -49,9 +49,6 @@ CK_object *ck_keenObj;
 
 static CK_object tempObj;
 
-static long ck_numTotalTics;
-static int ck_ticsThisFrame;
-
 // The rectangle within which objects are active.
 int ck_activeX0Tile;
 int ck_activeY0Tile;
@@ -149,33 +146,6 @@ void CK_ItemCheat()
 		ck_gameState.keyGems[1] =
 		ck_gameState.keyGems[2] =
 		ck_gameState.keyGems[3] = 1;
-}
-
-void CK_SetTicsPerFrame()
-{
-	if (!ck_demoEnabled)
-	{
-		ck_ticsThisFrame = VL_GetTics(2);
-	}
-	else
-	{
-		VL_GetTics(3);
-		ck_ticsThisFrame = 3;
-	}
-
-	// We don't want to get physics bugs if the game runs too slowly.
-	if (ck_ticsThisFrame > 5) ck_ticsThisFrame = 5;
-	ck_numTotalTics += ck_ticsThisFrame;
-}
-
-int CK_GetTicksPerFrame()
-{
-	return ck_ticsThisFrame;
-}
-
-long CK_GetNumTotalTics()
-{
-	return ck_numTotalTics;
 }
 
 void CK_SetupObjArray()
@@ -374,11 +344,10 @@ int CK_ActionThink(CK_object *obj, int time)
 
 void CK_RunAction(CK_object *obj)
 {
-	int oldChunk = obj->gfxChunk;
-	int tics = CK_GetTicksPerFrame();
+	int16_t oldChunk = obj->gfxChunk;
 
-	int oldPosX = obj->posX;
-	int oldPosY = obj->posY;
+	int16_t oldPosX = obj->posX;
+	int16_t oldPosY = obj->posY;
 
 	obj->deltaPosX = obj->deltaPosY = 0;
 
@@ -386,7 +355,7 @@ void CK_RunAction(CK_object *obj)
 
 	CK_action *prevAction = obj->currentAction;
 
-	int ticsLeft = CK_ActionThink(obj, tics);
+	int16_t ticsLeft = CK_ActionThink(obj, SD_GetSpriteSync());
 
 	if (obj->currentAction != prevAction)
 	{
@@ -619,7 +588,7 @@ bool CK_DebugKeys()
 	{
 		char str[4];
 		const char *msg = "  Warp to which level(1-18):"; 
-		int h, w, saveX, saveY; // omnispeak hacks
+		uint16_t h, w, saveX, saveY; // omnispeak hacks
 
 		// VW_SyncPages();
 		US_CenterWindow(26, 3);
@@ -659,7 +628,7 @@ bool CK_DebugKeys()
 
 void CK_CheckKeys()
 {
-
+	// TODO: Also check for a gamepad button when relevant
 
 	// if (screen_faded)
 	// 	return;
@@ -717,7 +686,7 @@ void CK_CheckKeys()
 
 			// gameticks_2 = TimeCount
 			// FIXME: Is this the right way to handle this?
-			CK_SetTicsPerFrame();
+			SD_SetLastTimeCount(SD_GetTimeCount());
 		}
 
 		// Do Boss Key
@@ -737,7 +706,11 @@ void CK_CheckKeys()
 	// Debug Keys
 	if (IN_GetKeyState(IN_SC_F10))
 	{
-		CK_DebugKeys();
+		if (CK_DebugKeys())
+		{
+			//RF_ResetScreen();
+			SD_SetLastTimeCount(SD_GetTimeCount());
+		}
 	}
 
 	// TODO: CTRL+S sound
@@ -782,9 +755,9 @@ void CK_HandleInput()
 				// Here be dragons!
 				// In order to better emulate the original trilogy's controls, a delay
 				// is introduced when pogoing in two-button firing.
-				if (pogoTimer < 9)
+				if (pogoTimer <= 8)
 				{
-					pogoTimer += CK_GetTicksPerFrame();
+					pogoTimer += SD_GetSpriteSync();
 				}
 				else
 				{
@@ -817,9 +790,8 @@ void CK_HandleInput()
 		if (!ck_keenState.shootIsPressed) ck_keenState.shootWasPressed = false;
 	}
 
-
+	// TODO: Wrong place to call this!
 	CK_CheckKeys();
-
 }
 
 void StopMusic(void)
@@ -876,11 +848,17 @@ void StartMusic(uint16_t level)
 extern int rf_scrollXUnit;
 extern int rf_scrollYUnit;
 
+// The intended y-coordinate of the bottom of the keen sprite
+// in pixels from the top of the screen.
+static uint16_t screenYpx;
+
 // Centre the camera on the given object.
 
 void CK_CentreCamera(CK_object *obj)
 {
-	int screenX, screenY;
+	uint16_t screenX, screenY;
+
+	screenYpx = 140;
 
 	if (obj->posX < (152 << 4))
 		screenX = 0;
@@ -902,7 +880,7 @@ void CK_CentreCamera(CK_object *obj)
 			screenY = 0;
 
 		else
-			screenY = obj->posY - (140 << 4);
+			screenY = obj->clipRects.unitY2 - (140 << 4);
 	}
 
 	RF_Reposition(screenX, screenY);
@@ -917,9 +895,10 @@ void CK_CentreCamera(CK_object *obj)
 /*
  * Move the camera that follows keen on the world map
  */
+
 void CK_MapCamera( CK_object *keen )
 {
-	int scr_y, scr_x;
+	int16_t scr_y, scr_x;
 
 	if (ck_scrollDisabled)
 		return;
@@ -951,9 +930,7 @@ void CK_MapCamera( CK_object *keen )
 
 		if ( scr_y >= 256 )
 			scr_y = 255;
-		else
-
-			if ( scr_y <= -256 )
+		else if ( scr_y <= -256 )
 			scr_y = -255;
 
 		RF_SmoothScroll( scr_x, scr_y );
@@ -971,11 +948,7 @@ void CK_MapCamera( CK_object *keen )
 void CK_NormalCamera(CK_object *obj)
 {
 
-	int deltaX = 0, deltaY = 0;	// in Units
-
-	// The intended y-coordinate of the bottom of the keen sprite
-	// in pixels from the top of the screen.
-	static int screenYpx = 140 << 4;
+	int16_t deltaX = 0, deltaY = 0;	// in Units
 
 	//TODO: some unknown var must be 0
 	//This var is a "ScrollDisabled flag." If keen dies, it's set so he 
@@ -1013,7 +986,7 @@ void CK_NormalCamera(CK_object *obj)
 	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookUp2"))
 	{
 		int pxToMove;
-		if (screenYpx + CK_GetTicksPerFrame() > 167)
+		if (screenYpx + SD_GetSpriteSync() > 167)
 		{
 			// Keen should never be so low on the screen that his
 			// feet are more than 167 px from the top.
@@ -1022,7 +995,7 @@ void CK_NormalCamera(CK_object *obj)
 		else
 		{
 			// Move 1px per tick.
-			pxToMove = CK_GetTicksPerFrame();
+			pxToMove = SD_GetSpriteSync();
 		}
 		screenYpx += pxToMove;
 		deltaY = (-pxToMove) << 4;
@@ -1031,7 +1004,7 @@ void CK_NormalCamera(CK_object *obj)
 	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookDown2"))
 	{
 		int pxToMove;
-		if (screenYpx - CK_GetTicksPerFrame() < 33)
+		if (screenYpx - SD_GetSpriteSync() < 33)
 		{
 			// Keen should never be so high on the screen that his
 			// feet are fewer than 33 px from the top.
@@ -1040,7 +1013,7 @@ void CK_NormalCamera(CK_object *obj)
 		else
 		{
 			// Move 1px/tick.
-			pxToMove = CK_GetTicksPerFrame();
+			pxToMove = SD_GetSpriteSync();
 		}
 		screenYpx -= pxToMove;
 		deltaY = pxToMove << 4;
@@ -1121,20 +1094,8 @@ int CK_PlayLoop()
 {
 	StartMusic(ck_currentMapNumber);
 
-	// Note that this appears in CK_LoadLevel as well
-	if (ck_demoEnabled)
-		US_InitRndT(false);
-	else
-		US_InitRndT(true);
-
-	// Should check this, from k5disasm
-	ck_numTotalTics = 3;
-	ck_ticsThisFrame = 3;
-
-	CK_LoadLevel(true);
-
 	//ck_keenState.EnterDoorAttempt = 0;
-	ck_keenState.jumpWasPressed = ck_keenState.pogoWasPressed = ck_keenState.shootWasPressed = 0;
+	ck_keenState.jumpWasPressed = ck_keenState.pogoWasPressed = ck_keenState.shootWasPressed = false;
 	game_in_progress = 1;
 	// If this is nonzero, the level will quit immediately.
 	ck_gameState.levelState = 0;
@@ -1142,6 +1103,17 @@ int CK_PlayLoop()
 	//ck_keenState.pogoTimer = ck_scrollDisabled = ck_keenState.invincibilityTimer = 0;
 
 	CK_CentreCamera(ck_keenObj);
+
+	// Note that this appears in CK_LoadLevel as well
+	if (ck_demoEnabled)
+		US_InitRndT(false);
+	else
+		US_InitRndT(true);
+
+	SD_SetSpriteSync(3);
+	SD_SetLastTimeCount(3);
+	SD_SetTimeCount(3);
+ 
 	while (ck_gameState.levelState == 0)
 	{
 
@@ -1176,7 +1148,7 @@ int CK_PlayLoop()
 				}
 				else if (currentObj->active != OBJ_ALWAYS_ACTIVE)
 				{
-					if (US_RndT() < CK_GetTicksPerFrame() * 2)
+					if (US_RndT() < SD_GetSpriteSync() * 2)
 					{
 						RF_RemoveSpriteDraw(&currentObj->sde);
 						currentObj->active = OBJ_INACTIVE;
@@ -1268,8 +1240,11 @@ int CK_PlayLoop()
 
 		//TODO: Slow-mo, extra VBLs.
 		if (ck_slowMotionEnabled)
+		{
 			VL_DelayTics(14);
-		CK_SetTicsPerFrame();
+			SD_SetLastTimeCount(SD_GetTimeCount());
+		}
+		// TODO: Extra VBLs come here
 		VL_Present();
 		// If we've finished playing back our demo, or the player presses a key,
 		// exit the playloop.
@@ -1286,5 +1261,6 @@ int CK_PlayLoop()
 
 
 	}
+	game_in_progress = 0;
 	StopMusic();
 }

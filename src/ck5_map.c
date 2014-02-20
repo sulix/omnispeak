@@ -234,8 +234,7 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 {
 
 	int unitX, unitY;
-	int timer;
-	uint16_t animTile;
+	uint16_t timer, animTile, ticsx2;
 
 	SD_PlaySound(SOUND_UNKNOWN41);
 
@@ -245,19 +244,19 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 	// Teleport Out
 	for (timer = 0; timer < 130; )
 	{
-		int ticsx2;
-
 		// NOTE: I think that the original keen game used
 		// RF_Refresh() to delay this loop
 		// Simulate this by adding a 1/35 second delay 
 
+		// UPDATE (Feb 19 2014): Not done anymore, but VL_Present is called.
+
 		RF_Refresh();
-		VL_DelayTics(2);
-		CK_SetTicsPerFrame();
+		//VL_DelayTics(2);
+		//CK_SetTicsPerFrame();
 		VL_Present();
 
-		ticsx2 = CK_GetTicksPerFrame() * 2;
-		timer += CK_GetTicksPerFrame();
+		ticsx2 = SD_GetSpriteSync() * 2;
+		timer += SD_GetSpriteSync();
 		if (ck_keenObj->posX == unitX && ck_keenObj->posY == unitY)
 			break;
 
@@ -289,10 +288,10 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 		}
 
 		// Draw Keen walking into target
-		ck_keenObj->gfxChunk = ((CK_GetNumTotalTics() >> 3) % 3) + 0xF8;
+		ck_keenObj->gfxChunk = ((SD_GetTimeCount() >> 3) % 3) + 0xF8;
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
 
-		animTile = ((CK_GetNumTotalTics() >> 2)&1) + 0xA7F; // lighting bolt tile
+		animTile = ((SD_GetTimeCount() >> 2)&1) + 0xA7F; // lighting bolt tile
 
 		RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
 	}
@@ -337,16 +336,17 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 	{
 
 		//NOTE: Same delay tactic used here too
+		//UPDATE (Feb 19 2014): Again not
 		RF_Refresh();
-		VL_DelayTics(2);
-		CK_SetTicsPerFrame();
+		//VL_DelayTics(2);
+		//CK_SetTicsPerFrame();
 		VL_Present();
 
-		timer += CK_GetTicksPerFrame();
-		ck_keenObj->posY += CK_GetTicksPerFrame() * 3;
-		ck_keenObj->gfxChunk = (CK_GetNumTotalTics() >> 3) % 3 + 0xFB;
+		timer += SD_GetSpriteSync();
+		ck_keenObj->posY += SD_GetSpriteSync() * 3;
+		ck_keenObj->gfxChunk = (SD_GetTimeCount() >> 3) % 3 + 0xFB;
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
-		animTile = ((CK_GetNumTotalTics() >> 2)&1) + 0xA7F; // animate return lighting bolt
+		animTile = ((SD_GetTimeCount() >> 2)&1) + 0xA7F; // animate return lighting bolt
 		RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
 	}
 
@@ -409,11 +409,11 @@ void CK5_MapKeenElevator(CK_object *keen)
 	int tileX, tileY;
 
 	// Move keen in the Y direction
-	keen->nextY = keen->yDirection * 64 * CK_GetTicksPerFrame();
+	keen->nextY = keen->yDirection * 64 * SD_GetSpriteSync();
 
 	if (keen->posX != keen->user1)
 	{
-		keen->nextX = keen->xDirection * 12 * CK_GetTicksPerFrame();
+		keen->nextX = keen->xDirection * 12 * SD_GetSpriteSync();
 		if (keen->xDirection == IN_motion_Right && keen->nextX + keen->posX > keen->user1 ||
 				keen->xDirection == IN_motion_Left && keen->nextX + keen->posX < keen->user1)
 		{
@@ -482,7 +482,7 @@ void CK5_MapKeenElevator(CK_object *keen)
 		RF_Refresh();
 		VL_DelayTics(2);
 		VL_DelayTics(8*2); // Simulate 8 calls to VL_WaitVBL();
-		CK_SetTicsPerFrame();
+		//CK_SetTicsPerFrame();
 		VL_Present();
 	}
 
@@ -494,7 +494,7 @@ void CK5_MapKeenElevator(CK_object *keen)
 		RF_AddSpriteDraw(&keen->sde, keen->posX, keen->posY, keen->gfxChunk, false, keen->zLayer);
 		RF_Refresh();
 		VL_DelayTics(2);
-		CK_SetTicsPerFrame();
+		//CK_SetTicsPerFrame();
 		VL_Present();
 		
 	}
@@ -527,12 +527,12 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 
 		// Draw screen and delay 1/35th of a second
 		RF_Refresh();
-		VL_DelayTics(2);
-		CK_SetTicsPerFrame();
+		//VL_DelayTics(2);
+		//CK_SetTicsPerFrame();
 		VL_Present();
 
-		ticsx2 = CK_GetTicksPerFrame() * 2;
-		timer += CK_GetTicksPerFrame();
+		ticsx2 = SD_GetSpriteSync() * 2;
+		timer += SD_GetSpriteSync();
 
 
 		// If keen arrives at the target, then he's done walking
@@ -567,7 +567,8 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 		}
 
 		// Draw Keen walking into target
-		ck_keenObj->gfxChunk = ((CK_GetNumTotalTics() >> 3) % 3) + 0xF8;
+		// TODO: Is that done by the original code?
+		ck_keenObj->gfxChunk = ((SD_GetTimeCount() >> 3) % 3) + 0xF8;
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
 	}
 
@@ -589,7 +590,7 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 		RF_Refresh();
 		VL_DelayTics(2);
 		VL_DelayTics(8*2); // Simulate 8 calls to VL_WaitVBL();
-		CK_SetTicsPerFrame();
+		//CK_SetTicsPerFrame();
 		VL_Present();
 	}
 

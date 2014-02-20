@@ -196,7 +196,7 @@ void CK5_RedGoPlatThink(CK_object *obj)
 
 	if (obj->nextX || obj->nextY) return;
 
-	int delta = CK_GetTicksPerFrame()*12;
+	int16_t delta = SD_GetSpriteSync()*12;
 
 	// Will we reach a new tile?
 	if (obj->user2 > delta)
@@ -300,7 +300,7 @@ void CK5_PurpleGoPlatThink(CK_object *obj)
 
 	if (obj->nextX || obj->nextY) return;
 
-	int delta = CK_GetTicksPerFrame()*12;
+	int16_t delta = SD_GetSpriteSync()*12;
 
 	// Will we reach a new tile?
 	if (obj->user2 > delta)
@@ -439,7 +439,7 @@ void CK5_VolteMove(CK_object *obj)
 
 	if (obj->nextX || obj->nextY) return;
 
-	int delta = CK_GetTicksPerFrame()*32;
+	int16_t delta = SD_GetSpriteSync()*32;
 
 	// Will we reach a new tile?
 	if (obj->user2 > delta)
@@ -447,7 +447,7 @@ void CK5_VolteMove(CK_object *obj)
 		// No... keep moving in the same direction.
 		obj->user2 -= delta;
 
-		int dirX = ck5_infoplaneArrowsX[obj->user1];
+		int16_t dirX = ck5_infoplaneArrowsX[obj->user1];
 		if (dirX == 1)
 		{
 			// Moving right.
@@ -459,7 +459,7 @@ void CK5_VolteMove(CK_object *obj)
 			obj->nextX -= delta;
 		}
 
-		int dirY = ck5_infoplaneArrowsY[obj->user1];
+		int16_t dirY = ck5_infoplaneArrowsY[obj->user1];
 		if (dirY == 1)
 		{
 			// Moving down
@@ -474,7 +474,7 @@ void CK5_VolteMove(CK_object *obj)
 	else
 	{
 		// Move to next tile.
-		int dirX = ck5_infoplaneArrowsX[obj->user1];
+		int16_t dirX = ck5_infoplaneArrowsX[obj->user1];
 		if (dirX == 1)
 		{
 			// Moving right.
@@ -486,7 +486,7 @@ void CK5_VolteMove(CK_object *obj)
 			obj->nextX -= obj->user2;
 		}
 
-		int dirY = ck5_infoplaneArrowsY[obj->user1];
+		int16_t dirY = ck5_infoplaneArrowsY[obj->user1];
 		if (dirY == 1)
 		{
 			// Moving down
@@ -498,8 +498,8 @@ void CK5_VolteMove(CK_object *obj)
 			obj->nextY -= obj->user2;
 		}
 
-		int tileX = (obj->posX + obj->nextX) >> 8;
-		int tileY = (obj->posY + obj->nextY) >> 8;
+		int16_t tileX = (obj->posX + obj->nextX) >> 8;
+		int16_t tileY = (obj->posY + obj->nextY) >> 8;
 
 		obj->user1 = CA_TileAtPos(tileX, tileY, 2) - 0x5B;
 
