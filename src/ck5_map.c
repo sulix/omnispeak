@@ -480,8 +480,8 @@ void CK5_MapKeenElevator(CK_object *keen)
 		}
 		RF_ReplaceTiles(tile_array, 1, tileX, tileY-2, 2, 2);
 		RF_Refresh();
-		VL_DelayTics(2);
-		VL_DelayTics(8*2); // Simulate 8 calls to VL_WaitVBL();
+		//VL_DelayTics(2);
+		VL_DelayTics(8); // Simulate 8 calls to VL_WaitVBL();
 		//CK_SetTicsPerFrame();
 		VL_Present();
 	}
@@ -493,7 +493,7 @@ void CK5_MapKeenElevator(CK_object *keen)
 		keen->gfxChunk = 0xFB + (frame/4)%3;
 		RF_AddSpriteDraw(&keen->sde, keen->posX, keen->posY, keen->gfxChunk, false, keen->zLayer);
 		RF_Refresh();
-		VL_DelayTics(2);
+		//VL_DelayTics(2);
 		//CK_SetTicsPerFrame();
 		VL_Present();
 		
@@ -588,8 +588,8 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 		}
 		RF_ReplaceTiles(tile_array, 1, tileX+dir, tileY-1, 2, 2);
 		RF_Refresh();
-		VL_DelayTics(2);
-		VL_DelayTics(8*2); // Simulate 8 calls to VL_WaitVBL();
+		//VL_DelayTics(2);
+		VL_DelayTics(8); // Simulate 8 calls to VL_WaitVBL();
 		//CK_SetTicsPerFrame();
 		VL_Present();
 	}
