@@ -436,7 +436,7 @@ void CK5_SliceCol(CK_object *obj1, CK_object *obj2)
 
 	if (obj2->type == CT_Stunner)
 	{
-		//StunnerHits(obj1);
+		CK_ShotHit(obj2);
 		if (--obj1->user4 == 0)
 			CK_SetAction(obj1, CK_GetActionByName("CK5_ACT_SliceDie0"));
 	}
