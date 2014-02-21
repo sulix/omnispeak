@@ -348,6 +348,53 @@ void VL_1bppToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, 
 	}		
 }
 
+void VL_1bppXorWithRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr = (uint8_t*)src;
+
+	int spitch = ((w + 7)/8)*8;
+
+	for(int sy = 0; sy < h; ++sy)
+	{
+		for(int sx = 0; sx < w; ++sx)
+		{
+			int plane_off = (sy * spitch + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
+			
+			if (!(srcptr[plane_off] & plane_bit)) continue;
+			
+			// XRGB LE output
+			// TODO: Doesn't it seem a bit hackish?
+			dstptr[(sy+y)*pitch+(sx+x)*4+0] ^= VL_EGAPalette[colour].b;
+			dstptr[(sy+y)*pitch+(sx+x)*4+1] ^= VL_EGAPalette[colour].g;
+			dstptr[(sy+y)*pitch+(sx+x)*4+2] ^= VL_EGAPalette[colour].r;
+			//dstptr[(sy+y)*pitch+(sx+x)*4+3] = 0xFF;
+		}
+	}		
+}
+
+void VL_1bppXorWithPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr= (uint8_t*)src;
+
+	int spitch = ((w + 7)/8)*8;
+
+	for(int sy = 0; sy < h; ++sy)
+	{
+		for(int sx = 0; sx < w; ++sx)
+		{
+			int plane_off = (sy * spitch + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
+			
+			if (!(srcptr[plane_off] & plane_bit)) continue;
+
+			dstptr[(sy+y)*pitch+(sx+x)] ^= colour;
+		}
+	}		
+}
+
 void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
 	uint8_t *dstptr = (uint8_t*)dest;
@@ -488,6 +535,11 @@ void VL_MaskedBlitToScreen(void *src, int x, int y, int w, int h)
 void VL_1bppToScreen(void *src, int x, int y, int w, int h, int colour)
 {
 	vl_currentBackend->bitToSurface(src, vl_screen, x, y, w, h, colour);
+}
+
+void VL_1bppXorWithScreen(void *src, int x, int y, int w, int h, int colour)
+{
+	vl_currentBackend->bitXorWithSurface(src, vl_screen, x, y, w, h, colour);
 }
 
 void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour)

@@ -214,7 +214,6 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 	int which_control;
 	int result = 0;
 	int print_x, print_y;
-	int fontcolour;
 
 	which_control = (us_currentCard == &ck_us_movementMenu) ?
 		(item - ck_us_movementMenuItems) + 3 : (item - ck_us_buttonsMenuItems);
@@ -231,18 +230,18 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 		VH_Bar( 75, item->y, 159, 8, 8 );
 		USL_DrawCardItemIcon( item );
 
-		fontcolour = (item->state & US_IS_Selected) ? 10 : 2;
+		US_SetPrintColour((item->state & US_IS_Selected) ? 2 : 10);
 		print_x = item->x + 8;
 		print_y = item->y + 1;
-		VH_DrawPropString( item->caption, print_x, print_y, 4, fontcolour );
+		VH_DrawPropString( item->caption, print_x, print_y, 1, US_GetPrintColour() );
 
-		// Draw the outer green box
-		VH_Bar( item->x + 90, item->y, 40, 8, fontcolour);
+		// Draw the outer green bo
+		VH_Bar( item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8);
 		VH_Bar( item->x + 91, item->y + 1, 38, 6, 8 );
 
 		print_x = item->x + 96;
 		print_y = item->y + 1;
-		VH_DrawPropString( IN_GetScanName( *key_controls[which_control] ), print_x, print_y, 4, fontcolour );
+		VH_DrawPropString( IN_GetScanName( *key_controls[which_control] ), print_x, print_y, 1, US_GetPrintColour() );
 		result = 1;
 		break;
 
@@ -267,7 +266,7 @@ void set_key_control( US_CardItem *item, int which_control )
 
 	// TODO: Should be global variables (as in vanilla Keen 5)?
 	char last_scan = 0;
-	int16_t fontcolour = 2;
+	US_SetPrintColour(2);
 
 	IN_ClearKeysDown();
 
@@ -284,7 +283,7 @@ void set_key_control( US_CardItem *item, int which_control )
 			cursor = !cursor;
 
 			/* Draw the rectangle */
-			VH_Bar( item->x + 90, item->y, 40, 8, fontcolour ^ 8 );
+			VH_Bar( item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8 );
 			VH_Bar( item->x + 91, item->y + 1, 38, 6, 8 );
 
 			/* Draw the cursor */
@@ -382,22 +381,22 @@ void show_paddlewar_score( int16_t keen_score, int16_t comp_score )
 	// NOTE: This is modified a little from the original
 	// exe in order to align the text and to set the proper font and color
 
-	int16_t print_color = 10;
+	int16_t print_color = 2;
 	int16_t print_y = 52;
 	uint16_t w, h;
 
-	uint16_t old_print_font = US_GetPrintFont();
-	uint16_t old_print_color = US_GetPrintColour();
+	//uint16_t old_print_font = US_GetPrintFont();
+	//uint16_t old_print_color = US_GetPrintColour();
 
-	US_SetPrintFont(4);
+	//US_SetPrintFont(4);
 	US_SetPrintColour(print_color);
 
 	// Draw keen's score
 	int print_x = 80;
 	VH_Bar(print_x, print_y, 42, 6, 8);
 	const char *keenString = "KEEN:";
-	VH_MeasurePropString(keenString, &w, &h, 4);
-	VH_DrawPropString(keenString, print_x, print_y, 4, print_color);
+	VH_MeasurePropString(keenString, &w, &h, 1);
+	VH_DrawPropString(keenString, print_x, print_y, 1, print_color);
 	US_SetPrintX(print_x + w);
 	US_SetPrintY(print_y);
 	US_PrintF("%u", keen_score);
@@ -406,15 +405,15 @@ void show_paddlewar_score( int16_t keen_score, int16_t comp_score )
 	print_x = 182;
 	VH_Bar( print_x, print_y, 50, 6, 8 );
 	const char *compString = "COMP:";
-	VH_MeasurePropString(compString, &w, &h, 4);
-	VH_DrawPropString(compString, print_x, print_y, 4, print_color );
+	VH_MeasurePropString(compString, &w, &h, 1);
+	VH_DrawPropString(compString, print_x, print_y, 1, print_color );
 
 	US_SetPrintX(print_x + w);
 	US_SetPrintY(print_y);
 	US_PrintF("%u", comp_score);
 
-	US_SetPrintFont(old_print_font);
-	US_SetPrintColour(old_print_color);
+	//US_SetPrintFont(old_print_font);
+	//US_SetPrintColour(old_print_color);
 }
 
 void paddlewar( void )

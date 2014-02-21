@@ -110,7 +110,7 @@ void TimedPicCommand( void )
 
 void HandleCommand( void )
 {
-	int i, w, h, midx, wrapx, miny, maxy;
+	int16_t i, w, h, midx, wrapx, miny, maxy;
 	VH_BitmapTableEntry bmpinfo;
 
 	help_ptr++;
@@ -144,7 +144,7 @@ void HandleCommand( void )
 			US_SetPrintColour( i - 'A' + 10);
 
 		/* We're writing on a red background, so take that into account */
-		// US_SetPrintColour(US_GetPrintFont()^ 4);
+		US_SetPrintColour(US_GetPrintColour()^4);
 		help_ptr++;
 		break;
 
@@ -293,7 +293,7 @@ void HandleWord( void )
 
 void PageLayout( int show_status )
 {
-	int old_print_color, i;
+	int16_t old_print_color, i;
 	char c;
 
 	/* Save the current print color */
@@ -366,8 +366,7 @@ void PageLayout( int show_status )
 		sprintf(buf2, "%d", help_num_pages); 
 		strcat( buf, buf2);
 
-		//US_SetPrintColour(8);
-		US_SetPrintColour(12);
+		US_SetPrintColour(8);
 		US_SetPrintY(186);
 		US_SetPrintX(218);
 		VH_DrawPropString( buf, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour() );
@@ -581,8 +580,7 @@ AZ:
 	A7B2 = 0x8000;
 	sub_679( AZ : A7B2, 0 );
 #endif
-
-	US_SetPrintFont(3);
+	US_SetPrintFont(0);
 
 	StartMusic(19);
 

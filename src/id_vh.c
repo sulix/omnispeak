@@ -124,14 +124,14 @@ void VH_DrawSprite(int x, int y, int chunk)
 
 }
 
-void VH_DrawPropChar(int x, int y, int chunk, char c, int colour)
+void VH_DrawPropChar(int x, int y, int chunk, unsigned char c, int colour)
 {
-	VH_Font *fnt = (VH_Font*)ca_graphChunks[chunk];
+	VH_Font *fnt = (VH_Font*)ca_graphChunks[chunk+3];
 
 	uint8_t *chardata = (uint8_t *)fnt + fnt->location[c]; 
 
 
-	VL_1bppBlitToScreen(chardata, x, y, fnt->width[c], fnt->height, colour);
+	VL_1bppXorWithScreen(chardata, x, y, fnt->width[c], fnt->height, colour);
 }
 
 void VH_MeasureString(const char *string, uint16_t *width, uint16_t *height, VH_Font *fnt)
@@ -146,16 +146,18 @@ void VH_MeasureString(const char *string, uint16_t *width, uint16_t *height, VH_
 
 void VH_MeasurePropString(const char *string, uint16_t *width, uint16_t *height, int16_t chunk)
 {
-	VH_MeasureString(string,width,height,(VH_Font *)(ca_graphChunks[chunk]));
+	VH_MeasureString(string,width,height,(VH_Font *)(ca_graphChunks[chunk+3]));
 }
 
+// TODO: More arguments passed than in the original code?
 void VH_DrawPropString(const char *string,int x, int y, int chunk, int colour)
 {
 	int w = 0;
-	VH_Font *font = (VH_Font*)ca_graphChunks[chunk];
+	VH_Font *font = (VH_Font*)ca_graphChunks[chunk+3];
 	for (w = 0; *string; *string++)
 	{
-		VH_DrawPropChar(x+w,y,chunk,*string,colour);
+		// FIXME: Bad cast to unsigned char, even if it seems to make sense
+		VH_DrawPropChar(x+w,y,chunk,(unsigned)(*string),colour);
 		w += font->width[*string];
 	}
 }

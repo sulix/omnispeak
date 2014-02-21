@@ -69,16 +69,16 @@ int US_GetWindowW();
 int US_GetWindowH();
 int US_GetPrintX();
 int US_GetPrintY();
-int US_GetPrintFont();
-int US_GetPrintColour();
+int16_t US_GetPrintFont();
+int8_t US_GetPrintColour();
 void US_SetWindowX(int parm);
 void US_SetWindowY(int parm);
 void US_SetWindowW(int parm);
 void US_SetWindowH(int parm);
 void US_SetPrintX(int parm);
 void US_SetPrintY(int parm);
-void US_SetPrintFont(int parm);
-void US_SetPrintColour(int parm);
+void US_SetPrintFont(int16_t parm);
+void US_SetPrintColour(int8_t parm);
 
 // Common
 extern bool us_noWait; // Debug mode enabled.

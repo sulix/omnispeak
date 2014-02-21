@@ -73,9 +73,9 @@ static int16_t us_windowH;
 static int16_t us_printX;
 static int16_t us_printY;
 
-static int us_printFont = 3;
-static int us_printColour = 0;
-static int us_backColour = 0;
+static int16_t us_printFont = 0;
+static int8_t us_printColour = 15;
+static int16_t us_backColour = 0;
 
 #define US_WINDOW_MAX_X 320
 #define US_WINDOW_MAX_Y 200
@@ -268,21 +268,23 @@ void US_RestoreWindow(US_WindowRec *win)
 
 static void USL_XORICursor(uint16_t x, uint16_t y, char *s, uint16_t cursor)
 {
-	static	bool	status;		// VGA doesn't XOR...
+	//static	bool	status;		// VGA doesn't XOR...
+	static char cursorStr[2] = {0x80, 0};
 	char	buf[128];
-	uint16_t temp;
 	uint16_t w, h;
 
 	strcpy(buf, s);
 	buf[cursor] = '\0';
 	VH_MeasurePropString(buf, &w, &h, us_printFont);
-
 	// TODO: More changes to do here?
 
 	US_SetPrintX(x + w - 1);
 	US_SetPrintY(y);
 
-	if (status^=1)
+	VH_DrawPropString(cursorStr, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
+#if 0
+
+	if (status^=true)
 		VH_DrawPropString("\x80", US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
 	else
 	{
@@ -291,7 +293,7 @@ static void USL_XORICursor(uint16_t x, uint16_t y, char *s, uint16_t cursor)
 		VH_DrawPropString("\x80", US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
 		us_printColour = temp;
 	}
-
+#endif
 }
 
 //	US_LineInput() - Gets a line of user input at (x,y), the string defaults
@@ -312,7 +314,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 	uint16_t i,
 	         cursor,
 	         w, h,
-	         len, temp;
+	         len/*, temp*/;
 	uint32_t lasttime;
 
 	if (def)
@@ -448,10 +450,10 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 			px = x;
 			py = y;
 			 */
-			temp = us_printColour;
-			us_printColour = us_backColour;
+			//temp = us_printColour;
+			//us_printColour = us_backColour;
 			VH_DrawPropString(olds, x, y, us_printFont, us_printColour);
-			us_printColour = temp;
+			//us_printColour = temp;
 			strcpy(olds, s);
 
 			/*
@@ -640,12 +642,12 @@ int US_GetPrintY()
 	return us_printY;
 }
 
-int US_GetPrintFont()
+int16_t US_GetPrintFont()
 {
 	return us_printFont;
 }
 
-int US_GetPrintColour()
+int8_t US_GetPrintColour()
 {
 	return us_printColour;
 }
@@ -680,12 +682,12 @@ void US_SetPrintY(int parm)
 	us_printY = parm;
 }
 
-void US_SetPrintFont(int parm)
+void US_SetPrintFont(int16_t parm)
 {
 	us_printFont = parm;
 }
 
-void US_SetPrintColour(int parm)
+void US_SetPrintColour(int8_t parm)
 {
 	us_printColour = parm;
 }

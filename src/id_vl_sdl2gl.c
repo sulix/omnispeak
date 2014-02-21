@@ -277,6 +277,12 @@ static void VL_SDL2GL_BitToSurface(void *src, void *dst_surface, int x, int y, i
 	VL_1bppToPAL8(src, surf->data, x, y, surf->w, w, h, colour);
 }
 
+static void VL_SDL2GL_BitXorWithSurface(void *src, void *dst_surface, int x, int y, int w, int h, int colour)
+{
+	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)dst_surface;
+	VL_1bppXorWithPAL8(src, surf->data, x, y, surf->w, w, h, colour);
+}
+
 static void VL_SDL2GL_BitBlitToSurface(void *src, void *dst_surface, int x, int y, int w, int h, int colour)
 {
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)dst_surface;
@@ -418,6 +424,7 @@ VL_Backend vl_sdl2gl_backend =
 	/*.maskedToSurface =*/ &VL_SDL2GL_MaskedToSurface,
 	/*.maskedBlitToSurface =*/ &VL_SDL2GL_MaskedBlitToSurface,
 	/*.bitToSurface =*/ &VL_SDL2GL_BitToSurface,
+	/*.bitXorWithSurface =*/ &VL_SDL2GL_BitXorWithSurface,
 	/*.bitBlitToSurface =*/ &VL_SDL2GL_BitBlitToSurface,
 	/*.present =*/ &VL_SDL2GL_Present
 };

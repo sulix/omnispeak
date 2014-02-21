@@ -52,7 +52,6 @@ void set_key_control( US_CardItem *item, int which_control );
 
 extern CK_Difficulty ck_startingDifficulty;
 int game_unsaved, game_in_progress, quit_to_dos, load_game_error;
-int fontnumber, fontcolour;
 
 void (*p_exit_menu)(void) ;
 
@@ -164,11 +163,14 @@ void USL_DrawCardItem(US_CardItem *item)
 
 	USL_DrawCardItemIcon(item);
 
-	int fontcolour = 10;
-	if ( !(item->state & US_IS_Selected) ||  (item->state & US_IS_Disabled))
-		fontcolour = 2;
+	if (!(item->state & US_IS_Selected) || (item->state & US_IS_Disabled))
+		US_SetPrintColour(10);
+	else
+		US_SetPrintColour(2);
 
-	VH_DrawPropString(item->caption, item->x + 8, item->y + 1, 4, fontcolour);
+	VH_DrawPropString(item->caption, item->x + 8, item->y + 1, 1, US_GetPrintColour());
+
+	US_SetPrintColour(15);
 }
 
 const char *footer_str[3];
@@ -177,20 +179,20 @@ void USL_DrawMenuFooter( void )
 {
 	uint16_t w, h;
 
-	fontcolour = 10;
+	US_SetPrintColour(10);
 
 	/* "Arrows move" */
-	VH_DrawPropString( footer_str[2], 78, 135, 4, fontcolour );
+	VH_DrawPropString( footer_str[2], 78, 135, 1, US_GetPrintColour() );
 
 	/* "Enter selects" */
-	VH_MeasurePropString( footer_str[1], &w, &h, 4 );
-	VH_DrawPropString( footer_str[1], 230 - w, 135, 4, fontcolour );
+	VH_MeasurePropString( footer_str[1], &w, &h, 1 );
+	VH_DrawPropString( footer_str[1], 230 - w, 135, 1, US_GetPrintColour() );
 
 	/* "Esc to quit/back out" */
-	VH_MeasurePropString( footer_str[0], &w, &h, 4 );
-	VH_DrawPropString( footer_str[0], 74 + ((160 - w) / 2), 135 + h + 1, 4, fontcolour );
+	VH_MeasurePropString( footer_str[0], &w, &h, 1 );
+	VH_DrawPropString( footer_str[0], 74 + ((160 - w) / 2), 135 + h + 1, 1, US_GetPrintColour() );
 
-	fontcolour = 0;
+	US_SetPrintColour(0);
 
 	VH_HLine( 77, 231, 133, 10 );
 }
@@ -282,8 +284,8 @@ void load_save_message( const char *s1, const char *s2 )
 	strcat( buf, s2 );
 	strcat( buf, "'" );
 
-	VH_MeasurePropString( s1, &w1, &h, 4 );
-	VH_MeasurePropString( buf, &w2, &h, 4 );
+	VH_MeasurePropString( s1, &w1, &h, 1 );
+	VH_MeasurePropString( buf, &w2, &h, 1 );
 
 	window_w = (w1 > w2) ? w1 : w2;
 	window_w += 6;
@@ -291,11 +293,11 @@ void load_save_message( const char *s1, const char *s2 )
 
 	print_y = y + 2;
 	print_x = x + (window_w - w1) / 2;
-	VH_DrawPropString( s1, print_x, print_y, 4, 10 );
+	VH_DrawPropString( s1, print_x, print_y, 1, US_GetPrintColour() );
 
 	print_y += h;
 	print_x = x + (window_w - w2) / 2;
-	VH_DrawPropString( buf, print_x, print_y, 4, 10 );
+	VH_DrawPropString( buf, print_x, print_y, 1, US_GetPrintColour() );
 
 	// VW_UpdateScreen();
 	VL_Present();
@@ -311,10 +313,10 @@ int green_message_box( const char *s1, const char *s2, const char *s3 )
 	uint16_t print_x, print_y;
 
 	/* Find the lengths of the strings */
-	VH_MeasurePropString( s1, &w1, &h, 4 );
-	VH_MeasurePropString( s2, &w2, &h, 4 );
+	VH_MeasurePropString( s1, &w1, &h, 1 );
+	VH_MeasurePropString( s2, &w2, &h, 1 );
 	if ( s3 )
-		VH_MeasurePropString( s3, &w3, &h, 4 );
+		VH_MeasurePropString( s3, &w3, &h, 1 );
 	else
 		w3 = 0;
 
@@ -326,26 +328,26 @@ int green_message_box( const char *s1, const char *s2, const char *s3 )
 	center_watch_window( window_w, h, &x, &y );
 
 	/* Print the message */
-	// fontcolour = 2;
+	US_SetPrintColour(2);
 	print_x = x + (window_w - w1) / 2;
 	print_y = y + sh + 1;
-	VH_DrawPropString( s1, print_x, print_y, 4, 10 );
+	VH_DrawPropString( s1, print_x, print_y, 1, US_GetPrintColour() );
 
 	print_y += (sh * 2) - 1;
 	VH_HLine( x + 3, x + window_w - 3, print_y, 10 );
 
 	/* Print the OK prompt */
 	print_y += 2;
-	//fontcolour = 10;
+	US_SetPrintColour(10);
 	print_x = x + (window_w - w2) / 2;
-	VH_DrawPropString( s2, print_x, print_y, 4, 2 );
+	VH_DrawPropString( s2, print_x, print_y, 1, US_GetPrintColour() );
 
 	/* Print the third string ( if any ) */
 	print_y += sh;
 	if ( s3 )
 	{
 		print_x = x + (window_w - w3) / 2;
-		VH_DrawPropString( s3, print_x, print_y, 4, 2 );
+		VH_DrawPropString( s3, print_x, print_y, 1, US_GetPrintColour() );
 	}
 
 	// VW_UpdateScreen();
@@ -1812,9 +1814,9 @@ void USL_BeginCards()
 
 	CA_LoadAllSounds();
 
-	// fontnumber = 1;
+	US_SetPrintFont(1);
 	// US_SetPrintFunctions(VW_MeasurePropString, VWB_DrawPropString);
-	//fontcolour = 15;
+	US_SetPrintColour(15);
 
 	// VW_ClearVideo(3);
 	// RF_Reset();
@@ -1902,8 +1904,8 @@ void USL_EndCards()
 		USL_HandleComm(us_currentCommand);
 	}
 
-	fontnumber = 0;
-	fontcolour = 15;
+	US_SetPrintFont(0);
+	US_SetPrintColour(15);
 
 	if (ck_startingDifficulty && p_exit_menu)
 		p_exit_menu();
@@ -1911,9 +1913,9 @@ void USL_EndCards()
 	if (quit_to_dos)
 	{
 		US_CenterWindow(0x14, 3);
-		fontcolour = 3;
+		US_SetPrintColour(3);
 		US_PrintCentered("Quitting...");
-		fontcolour = 15;
+		US_SetPrintColour(15);
 		//VW_UpdateScreen();
 		Quit(NULL);
 	}

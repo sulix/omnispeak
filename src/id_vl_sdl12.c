@@ -107,6 +107,14 @@ static void VL_SDL12_BitToSurface(void *src, void *dst_surface, int x, int y, in
 	SDL_UnlockSurface(surf);
 }
 
+static void VL_SDL12_BitXorWithSurface(void *src, void *dst_surface, int x, int y, int w, int h, int colour)
+{
+	SDL_Surface *surf = (SDL_Surface *)dst_surface;
+	SDL_LockSurface(surf);
+	VL_1bppXorWithRGB(src, surf->pixels, x, y, surf->pitch, w,h, colour);
+	SDL_UnlockSurface(surf);
+}
+
 static void VL_SDL12_BitBlitToSurface(void *src, void *dst_surface, int x, int y, int w, int h, int colour)
 {
 	SDL_Surface *surf = (SDL_Surface *)dst_surface;
@@ -137,6 +145,7 @@ VL_Backend vl_sdl12_backend =
 	/*.maskedToSurface =*/ &VL_SDL12_MaskedToSurface,
 	/*.maskedBlitToSurface =*/ &VL_SDL12_MaskedBlitToSurface,
 	/*.bitToSurface =*/ &VL_SDL12_BitToSurface,
+	/*.bitXorWithSurface =*/ &VL_SDL12_BitXorWithSurface,
 	/*.bitBlitToSurface =*/ &VL_SDL12_BitBlitToSurface,
 	/*.present =*/ &VL_SDL12_Present
 };
