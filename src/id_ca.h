@@ -95,7 +95,7 @@ extern uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
 extern uint8_t *CA_audio[NUMSNDCHUNKS];
 
 /* Keen: custom cachebox hooks */
-void	(*ca_beginCacheBox)		(char *title, int numcache);
+void	(*ca_beginCacheBox)		(const char *title, int numcache);
 void	(*ca_updateCacheBox)	(void);
 void	(*ca_finishCacheBox)	(void);
 

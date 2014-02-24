@@ -80,7 +80,7 @@ ca_gfxinfo ca_gfxInfoE;
 mm_ptr_t ca_graphChunks[CA_MAX_GRAPH_CHUNKS];
 
 /* Keen: custom cachebox hooks */
-void	(*ca_beginCacheBox)		(char *title, int numcache);
+void	(*ca_beginCacheBox)		(const char *title, int numcache);
 void	(*ca_updateCacheBox)	(void);
 void	(*ca_finishCacheBox)	(void);
 

@@ -42,15 +42,15 @@ CK_Episode *ck_currentEpisode;
 /*
  * Measure the containing box size of a string that spans multiple lines
  */
-void CK_MeasureMultiline(char *str, int *w, int *h)
+void CK_MeasureMultiline(const char *str, int *w, int *h)
 {
 	char c; 
-	int x, y;
+	uint16_t x, y;
 	const char buf[80];
 	char *p;
 
 	*h = *w = (int)0;
-	p = buf;	/* must be a local buffer */
+	p = (char *)buf;	/* must be a local buffer */
 
 	while( (c = *str++) != 0 ) {
 		*p++ = c;
@@ -62,7 +62,7 @@ void CK_MeasureMultiline(char *str, int *w, int *h)
 			if( *w < x )
 				*w = x;
 
-			p = buf;
+			p = (char *)buf;
 			// Shouldn't buf be cleared so that a newline is not read over by
 			// VH_MeasurePropString?
 		}

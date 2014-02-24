@@ -230,6 +230,9 @@ void CK_KeenSetupFunctions();
 void StartMusic(uint16_t level);
 void StopMusic(void);
 
+/* ck_main.c*/
+void CK_MeasureMultiline(const char *str, int *w, int *h);
+
 /* ck_inter.c */
 void CK_DrawTerminator(void);
 void CK_PlayDemoFile(const char *demoName);

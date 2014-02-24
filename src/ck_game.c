@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdbool.h>
 #include <string.h>
+#include "SDL.h"
 
 #include "id_vl.h"
 #include "id_us.h"
@@ -103,6 +104,25 @@ void CK_MapLevelMarkAsDone()
 	}
 
 }
+
+const char *ck_levelNames[] = {
+	"Omegamatic",
+	"Ion Ventilation System",
+	"Security Center",
+	"Defense Tunnel Vlook",
+	"Energy Flow Systems",
+	"Defense Tunnel Burrh", 
+	"Regulation\nControl Center",
+	"Defense Tunnel Sorra",
+	"Neutrino\nBurst Injector",
+	"Defense Tunnel Teln",
+	"Brownian\nMotion Inducer",
+	"Gravitational\nDamping Hub",
+	"Quantum\nExplosion Dynamo",
+	"Korath III Base",
+	"BWBMegarocket",
+	"High Scores",
+};
 
 const char *ck_levelEntryTexts[] ={
 	"Keen purposefully\n"
@@ -241,7 +261,7 @@ void CK_LoadLevel(bool doCache)
 
 static int ck_cacheCountdownNum, ck_cacheBoxChunksPerPic, ck_cacheBoxChunkCounter;
 
-void CK_BeginCacheBox (char *title, int numChunks)
+void CK_BeginCacheBox (const char *title, int numChunks)
 {
 	int totalfree;
 	int w, h;
@@ -337,6 +357,110 @@ void CK_FinishCacheBox()
 
 }
 
+void CK_TryAgainMenu()
+{
+	int w, h, y1, y2, sel;
+	int y, clr;
+
+	char buf[80];
+
+	/* Copy and measure the level name */
+	strcpy( buf, ck_levelNames[ck_currentMapNumber] );
+	CK_MeasureMultiline( buf, &w, &h );
+
+	/* Take away all gems */
+	memset( ck_gameState.keyGems, 0, sizeof (ck_gameState.keyGems) );
+
+	/* If lives remain, see if they want to try this level again */
+	if ( --ck_gameState.numLives >= 0 )
+	{
+		//VW_SyncPages();
+		US_CenterWindow( 20, 8 );
+		US_SetPrintY(US_GetPrintY() + 3);
+		US_CPrint( "You didn't make it past" );
+		y1 = US_GetPrintY() + 22;
+
+		/* Center the level name vertically */
+		if ( h < 15 )
+			US_SetPrintY(US_GetPrintY() + 4);
+		US_CPrint(buf);
+
+		US_SetPrintY(y1 + 2);
+		US_CPrint( "Try Again" );
+		US_SetPrintY(US_GetPrintY() + 4);
+		y2 = US_GetPrintY() - 2;
+		US_CPrint( "Exit to Armageddon" );
+
+		IN_ClearKeysDown();
+		sel = 0;
+		while ( 1 )
+		{
+			SDL_Delay(1);
+			IN_PumpEvents();
+
+			/* Decide which selection to draw */
+			if ( sel == 1 )
+				y = y2;
+			else
+				y = y1;
+
+			/* Choose a color to draw it in */
+			if ( (SD_GetTimeCount() >> 4) & 1 )
+				clr = 12;
+			else
+				clr = 1;
+
+			/* And draw the selection box */
+			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y, clr );
+			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 1, clr );
+			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 12, clr );
+			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 13, clr );
+			VH_VLine( y + 1, y + 11, US_GetWindowX() + 4, clr );
+			VH_VLine( y + 1, y + 11, US_GetWindowX() + 5, clr );
+			VH_VLine( y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 4, clr );
+			VH_VLine( y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 5, clr );
+			VL_Present();
+
+			/* Erase the box for next time */
+			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y, 15 );
+			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 1, 15 );
+			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 12, 15 );
+			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 13, 15 );
+			VH_VLine( y + 1, y + 11, US_GetWindowX() + 4, 15 );
+			VH_VLine( y + 1, y + 11, US_GetWindowX() + 5, 15 );
+			VH_VLine( y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 4, 15 );
+			VH_VLine( y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 5, 15 );
+
+			/* If they press Esc, they want to go back to the Map */
+			if ( IN_GetLastScan() == IN_SC_Escape )
+			{
+				ck_nextMapNumber = 0;  // should be ck_currentMapNumber = 0;
+				IN_ClearKeysDown();
+				return;
+			}
+
+			IN_ReadControls( 0, &ck_inputFrame );
+			if ( ck_inputFrame.jump || ck_inputFrame.pogo || IN_GetLastScan() == IN_SC_Enter || IN_GetLastScan() == IN_SC_Space )
+			{
+				/* If they want to go back to the Map, set the current level to zero */
+				if ( sel == 1 )
+					ck_nextMapNumber = 0; // should be ck_currentMapNumber = 0;
+				return;
+			}
+
+			if ( ck_inputFrame.yDirection == -1 || IN_GetLastScan() == IN_SC_UpArrow )
+			{
+				sel = 0;
+			}
+			else if ( ck_inputFrame.yDirection == 1 || IN_GetLastScan() == IN_SC_DownArrow )
+			{
+				sel = 1;
+			}
+		} /* while */
+	}
+}
+
+
 extern CK_Difficulty ck_startingDifficulty;
 
 void CK_GameLoop()
@@ -372,7 +496,8 @@ replayLevel:
 		switch (ck_gameState.levelState)
 		{
 		case 1:
-			//Kill Keen
+			CK_TryAgainMenu();
+			ck_currentMapNumber = ck_nextMapNumber;
 			break;
 
 		case 2:
