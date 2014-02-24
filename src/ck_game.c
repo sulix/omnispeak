@@ -241,10 +241,10 @@ void CK_LoadLevel(bool doCache)
 
 static int ck_cacheCountdownNum, ck_cacheBoxChunksPerPic, ck_cacheBoxChunkCounter;
 
-void CK_BeginCacheBox (char *title, int numChunks)
+void CK_BeginCacheBox (const char *title, int numChunks)
 {
 	int totalfree;
-	int w, h;
+	uint16_t w, h;
 
 	// Vanilla keen checks if > 2kb free here
 	// If not, it doesn't cache all of the keen counting down graphics

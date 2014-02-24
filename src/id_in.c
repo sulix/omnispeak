@@ -400,7 +400,6 @@ IN_DemoMode IN_DemoGetMode()
 
 void IN_ClearKeysDown()
 {
-	int i;
 	in_lastKeyScanned = IN_SC_None;
 	in_lastASCII = IN_KP_None;
 	memset (in_keyStates, 0, sizeof (in_keyStates));

@@ -80,7 +80,7 @@ ca_gfxinfo ca_gfxInfoE;
 mm_ptr_t ca_graphChunks[CA_MAX_GRAPH_CHUNKS];
 
 /* Keen: custom cachebox hooks */
-void	(*ca_beginCacheBox)		(char *title, int numcache);
+void	(*ca_beginCacheBox)		(const char *title, int numcache);
 void	(*ca_updateCacheBox)	(void);
 void	(*ca_finishCacheBox)	(void);
 
@@ -496,7 +496,16 @@ void CA_CacheGrChunk(int chunk)
 
 	mm_ptr_t compdata;
 	MM_GetPtr(&compdata,compressedLength);
-	int read  = fread(compdata,1,compressedLength, ca_graphHandle);
+	int read = 0;// fread(compdata,1,compressedLength, ca_graphHandle);
+	do
+	{
+		int curRead = fread(((uint8_t*)compdata)+read,1,compressedLength - read, ca_graphHandle);
+		if (curRead < 0)
+		{
+			Quit("Error reading compressed graphics chunk.");
+		}
+		read += curRead;
+	} while (read < compressedLength);
 	CAL_ExpandGrChunk(chunk, compdata);
 	MM_FreePtr(&compdata);
 }
@@ -716,7 +725,16 @@ void CA_CacheMap(int mapIndex)
 		//MM_SetLock(&compBuffer,true);
 
 		
-		int read = fread(compBuffer, 1, planeCompLength, ca_GameMaps);
+		int read = 0;
+		do
+		{
+			int curRead = fread(((uint8_t*)compBuffer)+read, 1, planeCompLength - read, ca_GameMaps);
+			if (curRead < 0)
+			{
+				Quit("Error reading compressed map plane.");
+			}
+			read += curRead;
+		} while (read < planeCompLength);
 
 		uint16_t carmackExpanded = *compBuffer;
 
@@ -763,7 +781,7 @@ uint8_t *CA_audio[206];
 void CA_CacheAudioChunk(int16_t chunk)
 {
 	int32_t pos, compressed, expanded;
-	mm_ptr_t bigbuffer, source, expaned;
+	mm_ptr_t bigbuffer, source;
 	if (CA_audio[chunk])
 	{
 		MM_SetPurge((void**)(&CA_audio[chunk]), 0);
@@ -807,7 +825,7 @@ void CA_CacheAudioChunk(int16_t chunk)
 #endif
 	CAL_HuffExpand (source,CA_audio[chunk],expanded,ca_audiohuffman);
 
-done:
+//done:
 	if (compressed>BUFFERSIZE)
 		MM_FreePtr(&bigbuffer);
 }
@@ -827,6 +845,9 @@ void CA_LoadAllSounds(void)
 		case sdm_AdLib:
 			offset = STARTADLIBSOUNDS;
 			break;
+		default:
+			// Shut up some gcc warnings.
+			break;
 		}
 		for (loopvar = 0; loopvar < NUMSOUNDS; loopvar++, offset++)
 		{
@@ -845,6 +866,9 @@ void CA_LoadAllSounds(void)
 			break;
 		case sdm_AdLib:
 			offset = STARTADLIBSOUNDS;
+			break;
+		default:
+			// Shut up some gcc warnings.
 			break;
 		}
 		for (loopvar = 0; loopvar < NUMSOUNDS; loopvar++, offset++)

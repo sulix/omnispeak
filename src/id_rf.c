@@ -516,7 +516,7 @@ void RF_RenderTile16m(int x, int y, int tile)
 void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, int height)
 {
 
-	int *tile_p, newrowdist, tx, ty, bgtile, fgtile, infotile;
+	int tx, ty;
 	uint16_t *src_bgtile_ptr, *src_fgtile_ptr, *src_infotile_ptr;
 	uint16_t *dst_bgtile_ptr, *dst_fgtile_ptr, *dst_infotile_ptr;
 	int src_offset, dst_offset,offset_delta,new_row_offset;
@@ -614,9 +614,6 @@ void RFL_RenderForeTiles()
 	int scrollXtile = rf_scrollXUnit >> 8;
 	int scrollYtile = rf_scrollYUnit >> 8;
 
-	int scrollOffsetX = (rf_scrollXUnit & 0xFF) >> 4;
-	int scrollOffsetY = (rf_scrollYUnit & 0xFF) >> 4;
-
 	for (int stx =  scrollXtile; stx < scrollXtile + RF_BUFFER_WIDTH_TILES; ++stx)
 	{
 		for (int sty = scrollYtile; sty < scrollYtile + RF_BUFFER_HEIGHT_TILES; ++sty)
@@ -688,6 +685,7 @@ void RF_RepositionLimit(int scrollXunit, int scrollYunit)
 	rf_scrollXUnit = scrollXunit;
 	rf_scrollYUnit = scrollYunit;
 
+	// Keep us within the map bounds.
 	if (scrollXunit < rf_scrollXMinUnit) rf_scrollXUnit = rf_scrollXMinUnit;
 	if (scrollYunit < rf_scrollYMinUnit) rf_scrollYUnit = rf_scrollYMinUnit;
 	if (scrollXunit > rf_scrollXMaxUnit) rf_scrollXUnit = rf_scrollXMaxUnit;
@@ -695,6 +693,49 @@ void RF_RepositionLimit(int scrollXunit, int scrollYunit)
 
 	int scrollXtile = rf_scrollXUnit >> 8;
 	int scrollYtile = rf_scrollYUnit >> 8;
+
+	// Loop through the horizontal scroll blocks.
+	for (int scrollBlockID = 0; scrollBlockID < rf_numHorzScrollBlocks; ++scrollBlockID)
+	{
+		// If one is in the left half of the screen...
+		if (rf_horzScrollBlocks[scrollBlockID] >= scrollXtile &&
+			scrollXtile + 10 >= rf_horzScrollBlocks[scrollBlockID])
+		{
+			// reposition ourselves to be to its right.
+			rf_scrollXUnit = (rf_horzScrollBlocks[scrollBlockID] << 8) + 0x100;
+			break;
+		}
+
+		// If one is in the right half of the screen...
+		if (scrollXtile + 11 <= rf_horzScrollBlocks[scrollBlockID] &&
+			scrollXtile + 20 >= rf_horzScrollBlocks[scrollBlockID])
+		{
+			// reposition ourselved to be at its left.
+			rf_scrollXUnit = (rf_horzScrollBlocks[scrollBlockID] << 8) - 0x1400;
+			break;
+		}
+	}
+
+	// Loop through the vertical scroll blocks.
+	for (int scrollBlockID = 0; scrollBlockID < rf_numVertScrollBlocks; ++scrollBlockID)
+	{
+		// If one is in the top half of the screen...
+		if (rf_vertScrollBlocks[scrollBlockID] >= scrollYtile &&
+			scrollYtile + 6 >= rf_vertScrollBlocks[scrollBlockID])
+		{
+			// reposition ourselves to be beneath it.
+			rf_scrollYUnit = (rf_vertScrollBlocks[scrollBlockID] << 8) + 0x100;
+			break;
+		}
+
+		// If one is in the bottom half of the screen...
+		if (scrollYtile + 7 <= rf_vertScrollBlocks[scrollBlockID] &&
+			scrollYtile + 13 >= rf_vertScrollBlocks[scrollBlockID])
+		{
+			// reposition ourselves to be above it.
+			rf_scrollYUnit = (rf_vertScrollBlocks[scrollBlockID] << 8) - 0xD00;
+		}
+	}
 
 }
 
@@ -881,9 +922,9 @@ void RF_SmoothScroll(int scrollXdelta, int scrollYdelta)
 
 void RF_PlaceEraser(int pxX, int pxY, int pxW, int pxH)
 {
-	
-	rf_spriteErasers[rf_freeSpriteEraserIndex].pxX = pxX + rf_scrollXUnit >> 4;
-	rf_spriteErasers[rf_freeSpriteEraserIndex].pxY = pxY + rf_scrollYUnit >> 4;
+	//TODO: Check this, we're doing scrolling in VL now...
+	rf_spriteErasers[rf_freeSpriteEraserIndex].pxX = pxX + (rf_scrollXUnit >> 4);
+	rf_spriteErasers[rf_freeSpriteEraserIndex].pxY = pxY + (rf_scrollYUnit >> 4);
 	rf_spriteErasers[rf_freeSpriteEraserIndex].pxW = pxW;
 	rf_spriteErasers[rf_freeSpriteEraserIndex].pxH = pxH;
 	rf_freeSpriteEraserIndex++;
@@ -1038,14 +1079,6 @@ RF_SpriteDrawEntry *tmp = 0;
 
 void RF_Refresh()
 {
-	//TODO: Everything
-	int scrollXpixeloffset = (rf_scrollXUnit & 0xff) >> 4;
-	int scrollYpixeloffset = (rf_scrollYUnit & 0xff) >> 4;
-
-
-		
-	
-
 	RFL_AnimateTiles();
 
 	VL_SurfaceToScreen(rf_tileBuffer,0,0,0,0,RF_BUFFER_WIDTH_PIXELS,RF_BUFFER_HEIGHT_PIXELS);
@@ -1054,21 +1087,6 @@ void RF_Refresh()
 	//RFL_ProcessSpriteErasers();
 	
 	RFL_DrawSpriteList();
-
-	CA_CacheGrChunk(ca_gfxInfoE.offTiles8m);
-
-/*	for(int i = 0; i < ca_gfxInfoE.numTiles8m ; ++i)
-	{
-		VH_DrawTile8M((i%11)*8,(i/11)*8,i);
-	}
-*/
-
-	//US_CenterWindow(10,6);
-
-	//US_Print("Hello, World!\nGoodbye!\n");
-
-
-	//VL_Present();
 
 	RFL_CalcTics();
 }
