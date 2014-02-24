@@ -304,7 +304,7 @@ void CK5_MineShrapCol(CK_object *o1, CK_object *o2)
 	// Kill keen
 	if (o2->type == CT_Player)
 	{
-		//KeenDie();
+		CK_KillKeen();
 		return;
 	}
 
@@ -749,7 +749,9 @@ void CK5_RoboCol(CK_object *o1, CK_object *o2)
 		return;
 	}
 	if (o2->type == CT_Player)
-		; //KeenDie(o2);
+	{
+		CK_KillKeen();
+	}
 }
 
 void CK5_RoboShoot(CK_object *obj)
@@ -777,7 +779,7 @@ void CK5_RoboShotCol(CK_object *o1, CK_object *o2)
 
 	if (o2->type == CT_Player)
 	{
-		//KeenDie();
+		CK_KillKeen();
 		CK_SetAction2(o1, CK_GetActionByName("CK5_ACT_RoboShotHit0"));
 	}
 }
@@ -1002,8 +1004,9 @@ void CK5_MasterCol(CK_object *o1, CK_object *o2)
 	}
 
 	if (o2->type == CT_Player)
-		//KeenDie();
-		;
+	{
+		CK_KillKeen();
+	}
 }
 
 void CK5_MasterTele(CK_object *obj)
@@ -1128,7 +1131,7 @@ void CK5_MasterBallCol(CK_object *o1, CK_object *o2)
 
 	if (o2->type == CT_Player)
 	{
-		//KeenDie();
+		CK_KillKeen();
 		CK_RemoveObj(o1);
 	}
 }
@@ -1250,7 +1253,7 @@ void CK5_ShikadiCol(CK_object *o1, CK_object *o2)
 
 	if (o2->type == CT_Player)
 	{
-		//KeenDie();
+		CK_KillKeen();
 	}
 
 	if (o2->type == CT_Stunner)
@@ -1411,7 +1414,7 @@ void CK5_ShocksundCol(CK_object *o1, CK_object *o2)
 
 	if (o2->type == CT_Player)
 	{
-		//KeenDie();
+		CK_KillKeen();
 	}
 
 	if (o2->type == CT_Stunner)
@@ -1505,7 +1508,7 @@ void CK5_BarkShotCol(CK_object *o1, CK_object *o2)
 
 	if (o2->type == CT_Player)
 	{
-		//KeenDie();
+		CK_KillKeen();
 		CK_SetAction2(o1, CK_GetActionByName("CK5_ACT_BarkShotDie0"));
 		return;
 	}

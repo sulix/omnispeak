@@ -101,7 +101,7 @@ void CK5_SparkyCol(CK_object *obj1, CK_object *obj2)
 
 	if (obj2->type == CT_Player)
 	{
-		//KeenDie();
+		CK_KillKeen();
 	}
 	else if (obj2->type == CT_Stunner)
 	{
@@ -312,7 +312,7 @@ void CK5_AmptonCol(CK_object *obj1, CK_object *obj2)
 
 	if (obj2->type == CT_Player && obj1->currentAction == CK_GetActionByName("CK5_ACT_AmptonPole2"))
 	{
-		//KeenDie();
+		CK_KillKeen();
 	}
 	else if (obj2->type == CT_Stunner)
 	{
@@ -430,7 +430,7 @@ void CK5_SliceCol(CK_object *obj1, CK_object *obj2)
 
 	if (obj2->type == CT_SliceStar)
 	{
-		//KeenDie();
+		CK_KillKeen();
 		return;
 	}
 

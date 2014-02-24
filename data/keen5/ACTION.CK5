@@ -33,6 +33,9 @@
 %action CK_ACT_keenStowBook2 136 136 UnscaledOnce 0 1 12 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStowBook3
 %action CK_ACT_keenStowBook3 137 137 UnscaledOnce 0 1 12 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
 
+%action CK_ACT_keenNot -1 -1 Frame 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_keenDie0 0x8C 0x8C Frame 0 0 0x64 0 0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_keenDie0
+%action CK_ACT_keenDie1 0x8D 0x8D Frame 0 0 0x64 0 0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_keenDie1
 
 %action CK_ACT_keenRun1 117 109 ScaledFrame 1 1 6 24 0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun2
 %action CK_ACT_keenRun2 118 110 ScaledFrame 1 1 6 24 0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun3
