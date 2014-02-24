@@ -362,7 +362,7 @@ void CK5_SpawnSlice(int tileX, int tileY, int dir)
 	new_object->zLayer = 2;
 	new_object->posX = (tileX << 8);
 	new_object->posY = (tileY << 8);
-	new_object->user4 = 18;
+	new_object->user4 = 20;
 
 	switch (dir)
 	{
