@@ -349,8 +349,9 @@ void CK_RunAction(CK_object *obj)
 {
 	int16_t oldChunk = obj->gfxChunk;
 
-	int16_t oldPosX = obj->posX;
-	int16_t oldPosY = obj->posY;
+	//TODO: Check these
+	//int16_t oldPosX = obj->posX;
+	//int16_t oldPosY = obj->posY;
 
 	obj->deltaPosX = obj->deltaPosY = 0;
 
@@ -492,6 +493,34 @@ void CK_WallDebug()
 
 bool CK_DebugKeys()
 {
+	// Border colour 
+	if (IN_GetKeyState(IN_SC_B))
+	{
+		char str[4];
+		uint16_t w,h;
+		// VW_SyncPages();
+		US_CenterWindow(0x18, 3);
+		US_SetPrintY(US_GetPrintY() + 6);
+		VH_MeasurePropString(" Border color (0-15):", &w, &h, US_GetPrintFont());
+		uint16_t saveX = US_GetPrintX() + w;
+		uint16_t saveY = US_GetPrintY();
+		US_Print(" Border color (0-15):");
+		VL_Present(); // VW_UpdateScreen();
+
+		if (US_LineInput(saveX, saveY, str, NULL, true , 2, 0))
+		{
+			int colour;
+
+			// Convert string into number
+			sscanf(str, "%d", &colour);
+
+			if (colour >= 0 && colour <= 15)
+			{
+				VL_ColorBorder(colour);
+			}
+		}
+		return true;
+	}
 	if (IN_GetKeyState(IN_SC_C))
 	{
 		CK_CountActiveObjects();
@@ -668,7 +697,7 @@ void CK_CheckKeys()
 	if (!ck_demoParm)
 	{
 		// Go back to wristwatch
-		if (IN_GetLastScan() >= IN_SC_F2 && IN_GetLastScan() <= IN_SC_F7 || IN_GetLastScan() == IN_SC_Escape)
+		if ((IN_GetLastScan() >= IN_SC_F2 && IN_GetLastScan() <= IN_SC_F7) || IN_GetLastScan() == IN_SC_Escape)
 		{
 
 			// VW_SyncPages();
