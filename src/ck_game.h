@@ -25,5 +25,9 @@ extern int ck_nextMapNumber;
 void CK_GameLoop();
 void CK_LoadLevel(bool unknown);
 
+void CK_BeginCacheBox (char *title, int numcache);
+void CK_UpdateCacheBox ();
+void CK_FinishCacheBox ();
+
 #endif
 

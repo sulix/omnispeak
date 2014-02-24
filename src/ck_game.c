@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #include <stdbool.h>
+#include <string.h>
 
 #include "id_vl.h"
 #include "id_us.h"
@@ -60,7 +61,66 @@ void CK_GameOver()
 
 //TODO: KillKeen
 
-void CK_LoadLevel(bool unknown)
+const char *ck_levelEntryTexts[] ={
+	"Keen purposefully\n"
+	"wanders about the\n"
+	"Omegamatic",
+
+	"Keen investigates the\n"
+	"Ion Ventilation System",
+
+	"Keen struts through\n"
+	"the Security Center",
+
+	"Keen invades\n"
+	"Defense Tunnel Vlook",
+
+	"Keen engages\n"
+	"Energy Flow Systems",
+
+	"Keen barrels into\n"
+	"Defense Tunnel Burrh",
+
+	"Keen goes nuts in\n"
+	"the Regulation\n"
+	"Control Center",
+
+	"Keen regrets entering\n"
+	"Defense Tunnel Sorra",
+
+	"Keen blows through\n"
+	"the Neutrino\n"
+	"Burst Injector",
+
+	"Keen trots through\n"
+	"Defense Tunnel Teln",
+
+	"Keen breaks into\n"
+	"the Brownian\n"
+	"Motion Inducer",
+
+	"Keen hurries through\n"
+	"the Gravitational\n"
+	"Damping Hub",
+
+	"Keen explodes into\n"
+	"the Quantum\n"
+	"Explosion Dynamo",
+
+	"Keen faces danger\n"
+	"in the secret\n"
+	"Korath III Base",
+
+	"Keen will not be\n"
+	"in the BWBMegarocket",
+
+	"Keen unexplainedly\n"
+	"find himself by\n"
+	"theHigh Scores",
+
+};
+
+void CK_LoadLevel(bool doCache)
 {
 	if (IN_DemoGetMode() != IN_Demo_Off)
 	{
@@ -87,25 +147,167 @@ void CK_LoadLevel(bool unknown)
 	CK_SetupObjArray();
 	CK5_ScanInfoLayer();
 
+	if (ck_currentMapNumber != 0)
+	{
+		; // maplevel_mark_as_done;
+	}
+
+
+
 	RF_MarkTileGraphics();
-	CA_CacheMarks(0);
+	//MM_BombOnError();
+	// CA_LoadAllSounds()
+
+	// Cache Marked graphics and draw loading box
+	if (doCache)
+	{
+#if 0
+		if (ck_inHighScores)
+		{
+			CA_CacheMarks(NULL);
+		}
+		else
+#endif
+			if (IN_DemoGetMode() != IN_Demo_Off)
+		{
+			CA_CacheMarks("DEMO");
+		}
+		else if (ck_currentMapNumber == 0 && ck_keenObj->clipRects.tileY1 > 100)
+		{
+			/* Stepping on to korath*/
+			CA_CacheMarks("Keen steps out\nonto Korath III");
+		}
+		else
+		{
+			CA_CacheMarks(ck_levelEntryTexts[ck_currentMapNumber]);
+		}
+	}
+
+
+	// CA_CacheMarks(0);
 	// Deactivate all objects
 	for (CK_object *player = ck_keenObj; player; player = player->next)
 	{
+
 		if (player->active != OBJ_ALWAYS_ACTIVE)
 			player->active = OBJ_INACTIVE;
 	}
 }
 
+
+// Cache Box Routines
+// These are accessed as callbacks by the caching manager
+
+static int ck_cacheCountdownNum, ck_cacheBoxChunksPerPic, ck_cacheBoxChunkCounter;
+
+void CK_BeginCacheBox (char *title, int numChunks)
+{
+	int totalfree;
+	int w, h;
+
+	// Vanilla keen checks if > 2kb free here
+	// If not, it doesn't cache all of the keen counting down graphics
+	// But not necessary for omnispeak
+#if 0
+	if ((totalfree = MM_TotalFree()) > 2048)
+	{
+		ck_cacheCountdownNum = 0;
+	}
+	else
+	{
+		ck_cacheCountdownNum = 5;
+	}
+#endif
+
+	ck_cacheCountdownNum = 0;
+
+	// Cache the Keen countdown graphics
+	for (int i = 0; i < 6; i++)
+	{
+		// TODO: Episode independence
+		CA_CacheGrChunk(92 + i);
+		ca_graphChunkNeeded[92 + i] &= ~ca_levelbit;
+
+		// If a pic can't be cached, forget updating the hand pics
+		// by setting the countdown counter at 5
+		if (!ca_graphChunks[92 + i])
+		{
+			// mmerror = 0;
+			ck_cacheCountdownNum = 5;
+			break;
+		}
+
+		MM_SetPurge(ca_graphChunks + 92 + i, 3);
+	}
+
+	US_CenterWindow(26, 8);
+
+	if (ca_graphChunks[92])
+		VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 92);
+	else
+		ck_cacheCountdownNum = 5;
+
+	ca_graphChunkNeeded[92] &= !ca_levelbit;
+	US_SetWindowW(US_GetWindowW() - 0x30);
+	US_SetWindowX(US_GetWindowX() + 0x30);
+	// Omnispeak FIXME: Start printX at the right spot
+	// The following line is not present in Keen 5
+	US_SetPrintX(US_GetWindowX());
+	CK_MeasureMultiline(title, &w, &h);
+	US_SetPrintY(US_GetPrintY() + (US_GetWindowH() - h) / 2 - 4);
+	US_Print(title);
+	VL_Present();
+
+	ck_cacheBoxChunkCounter = ck_cacheBoxChunksPerPic = numChunks / 6;
+
+	if (!ck_cacheBoxChunksPerPic && !ck_cacheCountdownNum)
+	{
+		ck_cacheCountdownNum = 5;
+		if (ca_graphChunks[97])
+		{
+
+			VH_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, 97);
+		}
+
+		VL_Present();
+	}
+}
+
+void CK_UpdateCacheBox()
+{
+	ck_cacheBoxChunkCounter--;
+
+	if ( ck_cacheBoxChunkCounter == 0 && ck_cacheCountdownNum <= 4 )
+	{
+
+		ck_cacheBoxChunkCounter = ck_cacheBoxChunksPerPic;
+		if ( ca_graphChunks[93 + ck_cacheCountdownNum] )
+			VH_DrawBitmap( US_GetWindowX() - 24, US_GetWindowY() + 40, 93 + ck_cacheCountdownNum);
+		VL_Present();
+		// Because loading is VERY fast on omnispeak, add artificial delay
+		VL_DelayTics(10);
+AZ:
+		ck_cacheCountdownNum++;
+	}
+}
+
+void CK_FinishCacheBox()
+{
+
+}
+
 extern CK_Difficulty ck_startingDifficulty;
+
 void CK_GameLoop()
 {
 	do
 	{
 		if (ck_gameState.levelState != 6)
 		{
+resetDifficultyAndLevel:
 			ck_gameState.difficulty = ck_startingDifficulty;
 			ck_startingDifficulty = D_NotPlaying;
+loadLevel:
 			CK_LoadLevel(true);
 
 			//TODO: If this didn't succeed, return to level 0.
@@ -113,12 +315,14 @@ void CK_GameLoop()
 
 replayLevel:
 		ck_scrollDisabled = false;
-		//SD_WaitSoundDone();
+		SD_WaitSoundDone();
 		CK_PlayLoop();
 
 		if (ck_gameState.levelState != 6)
 		{
-			//TODO: Remove all keygems from inventory
+			memset(ck_gameState.keyGems, 0, sizeof (ck_gameState.keyGems));
+			// TODO: This is probably (but not necessarily) Keen 5 specific
+			ck_gameState.securityCard = 0;
 		}
 
 		//TODO: Some TED launching stuff
@@ -147,6 +351,7 @@ replayLevel:
 			else
 			{
 				//We've won, return to main map.
+				//TODO: Mark level as done (and more)
 				SD_PlaySound(SOUND_LEVELEXIT);
 				ck_gameState.levelsDone[ck_currentMapNumber] = 0;
 				ck_nextMapNumber = 0;
@@ -156,6 +361,9 @@ replayLevel:
 				// Then function returns here
 			}
 			break;
+
+		case 5:
+			goto resetDifficultyAndLevel;
 
 		case 6:
 			goto replayLevel;
@@ -200,7 +408,8 @@ replayLevel:
 		case 12:
 			break;
 		}
-	}	while (true); //livesLeft >= 0
+		goto loadLevel; //livesLeft >= 0
+	}	while (true);
 
 	CK_GameOver();
 	//TODO: Update High Scores
