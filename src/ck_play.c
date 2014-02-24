@@ -81,6 +81,7 @@ int16_t ck_invincibilityTimer;
 // A bunch of global variables from other modules that should be 
 // handled better, but are just defined here for now
 
+extern int game_in_progress;
 extern int load_game_error, ck_startingSavedGame;
 extern CK_Difficulty ck_startingDifficulty;
 
@@ -494,7 +495,7 @@ void CK_WallDebug()
 bool CK_DebugKeys()
 {
 	// Border colour 
-	if (IN_GetKeyState(IN_SC_B))
+	if (IN_GetKeyState(IN_SC_B) && game_in_progress)
 	{
 		char str[4];
 		uint16_t w,h;
@@ -1128,7 +1129,6 @@ void CK_NormalCamera(CK_object *obj)
 
 
 int ck_currentMapNumber;
-extern int game_in_progress;
 // Play a level.
 
 int CK_PlayLoop()

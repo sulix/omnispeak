@@ -359,7 +359,8 @@ void CK_FinishCacheBox()
 
 void CK_TryAgainMenu()
 {
-	int w, h, y1, y2, sel;
+	uint16_t w, h; 
+	int y1, y2, sel;
 	int y, clr;
 
 	char buf[80];
