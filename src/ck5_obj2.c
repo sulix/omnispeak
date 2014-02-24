@@ -310,9 +310,16 @@ void CK5_AmptonSwitch(CK_object *obj)
 void CK5_AmptonCol(CK_object *obj1, CK_object *obj2)
 {
 
-	if (obj2->type == CT_Player && obj1->currentAction == CK_GetActionByName("CK5_ACT_AmptonPole2"))
+	if (obj2->type == CT_Player)
 	{
-		CK_KillKeen();
+		if (obj1->currentAction == CK_GetActionByName("CK5_ACT_AmptonPole2"))
+		{
+			CK_KillKeen();
+		}
+		else
+		{
+			CK_PhysPushX(obj2, obj1);
+		}
 	}
 	else if (obj2->type == CT_Stunner)
 	{

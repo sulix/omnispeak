@@ -624,6 +624,15 @@ bool CK_DebugKeys()
 		return true;
 	}
 
+	if (IN_GetKeyState(IN_SC_Z))
+	{
+		ck_gameState.numLives = 0;
+		CK_KillKeen();
+		// Not sure why this'd be 'false', but that's what
+		// the disassembly says.
+		return false;
+	}
+
 	return false;
 }
 
@@ -1099,6 +1108,7 @@ int CK_PlayLoop()
 
 	//ck_keenState.EnterDoorAttempt = 0;
 	ck_invincibilityTimer = 0;
+	ck_scrollDisabled = false;
 	ck_keenState.jumpWasPressed = ck_keenState.pogoWasPressed = ck_keenState.shootWasPressed = false;
 	game_in_progress = 1;
 	// If this is nonzero, the level will quit immediately.
