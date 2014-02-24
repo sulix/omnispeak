@@ -1,5 +1,7 @@
 #include "id_vl.h"
+#include "id_vl_private.h"
 #include "id_us.h"
+#include "assert.h"
 #include <stdlib.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -100,9 +102,18 @@ static SDL_GLContext vl_sdl2gl_context;
 static GLuint vl_sdl2gl_program;
 static GLuint vl_sdl2gl_framebufferTexture;
 static GLuint vl_sdl2gl_framebufferObject;
+static GLuint vl_sdl2gl_palTextureHandle;
 static int vl_sdl2gl_framebufferWidth, vl_sdl2gl_framebufferHeight;
 static int vl_sdl2gl_screenWidth;
 static int vl_sdl2gl_screenHeight;
+static struct { int left, right, top, bottom; } vl_sdl2gl_scaledBorders;
+static int vl_sdl2gl_screenHorizScaleFactor;
+static int vl_sdl2gl_screenVertScaleFactor;
+
+/* TODO (Overscan border):
+ * - If a texture is used for offscreen rendering with scaling applied later,
+ * it's better to have the borders within the texture itself.
+ */
 
 typedef struct VL_SDL2GL_Surface
 {
@@ -122,12 +133,22 @@ const char *pxprog = 	"#version 110\n"\
 			"}\n";
 
 
-static void VL_SDL2GL_SetVideoMode(int w, int h)
+static void VL_SDL2GL_SetVideoMode(int mode)
 {
-	vl_sdl2gl_window = SDL_CreateWindow("Commander Keen",SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,w*4,h*4,SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+	assert(mode == 0xD);
+	vl_sdl2gl_window = SDL_CreateWindow("Commander Keen",SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+	                                    VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER*4/VL_VGA_GFX_WIDTH_SCALEFACTOR,
+	                                    VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER*4/VL_VGA_GFX_HEIGHT_SCALEFACTOR,
+	                                    SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
 	vl_sdl2gl_context = SDL_GL_CreateContext(vl_sdl2gl_window);
-	vl_sdl2gl_screenWidth = w;
-	vl_sdl2gl_screenHeight = h;
+	vl_sdl2gl_screenWidth = VL_EGAVGA_GFX_WIDTH;
+	vl_sdl2gl_screenHeight = VL_EGAVGA_GFX_HEIGHT;
+	vl_sdl2gl_scaledBorders.left = VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH;
+	vl_sdl2gl_scaledBorders.right = VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH;
+	vl_sdl2gl_scaledBorders.top = VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT;
+	vl_sdl2gl_scaledBorders.bottom = VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT;
+	vl_sdl2gl_screenHorizScaleFactor = VL_VGA_GFX_WIDTH_SCALEFACTOR;
+	vl_sdl2gl_screenVertScaleFactor = VL_VGA_GFX_HEIGHT_SCALEFACTOR;
 
 	if (!VL_SDL2GL_LoadGLProcs())
 	{
@@ -160,21 +181,18 @@ static void VL_SDL2GL_SetVideoMode(int w, int h)
 		Quit("Could not link palette conversion program!");
 	}
 
-	// Load the palette into a texture.
-	// TODO: Redo the palette API so we don't need to hack this and read invalid memory. :/
-	GLuint palTex;
-	glGenTextures(1, &palTex);
+	// Generate palette texture
+	glGenTextures(1, &vl_sdl2gl_palTextureHandle);
 	id_glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_1D, palTex);
+	glBindTexture(GL_TEXTURE_1D, vl_sdl2gl_palTextureHandle);
 	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 16, GL_RGB, GL_UNSIGNED_BYTE, VL_EGAPalette);
 	id_glActiveTexture(GL_TEXTURE0);
 
 	// Setup framebuffer stuff, just in case.
-	vl_sdl2gl_framebufferWidth = w;
-	vl_sdl2gl_framebufferHeight = h;
+	vl_sdl2gl_framebufferWidth = vl_sdl2gl_screenWidth;
+	vl_sdl2gl_framebufferHeight = vl_sdl2gl_screenHeight;
 	vl_sdl2gl_framebufferTexture = 0;
 	vl_sdl2gl_framebufferObject = 0;
 }
@@ -210,6 +228,27 @@ static long VL_SDL2GL_GetSurfaceMemUse(void *surface)
 {
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)surface;
 	return surf->w*surf->h;
+}
+
+static void VL_SDL2GL_RefreshPaletteAndBorderColor(void *screen)
+{
+	static uint8_t sdl2gl_palette[16][3];
+
+	for (int i = 0; i < 16; i++)
+	{
+		memcpy(sdl2gl_palette[i], VL_EGARGBColorTable[vl_emuegavgaadapter.palette[i]], 3);
+	}
+	// Load the palette into a texture.
+	id_glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_1D, vl_sdl2gl_palTextureHandle);
+	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 16, GL_RGB, GL_UNSIGNED_BYTE, sdl2gl_palette);
+	id_glActiveTexture(GL_TEXTURE0);
+
+	glClearColor((GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][0]/255,
+	             (GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][1]/255,
+	             (GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][2]/255,
+	             1.0f
+	);
 }
 
 static void VL_SDL2GL_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour)
@@ -291,12 +330,20 @@ static void VL_SDL2GL_BitBlitToSurface(void *src, void *dst_surface, int x, int 
 
 static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 {
+	int realWinW, realWinH;
+	SDL_Rect borderedWinRect;
 	// Get the real window size
-	int realWinX, realWinY;
-	SDL_GetWindowSize(vl_sdl2gl_window, &realWinX, &realWinY);
+	SDL_GetWindowSize(vl_sdl2gl_window, &realWinW, &realWinH);
+	borderedWinRect.x = realWinW * vl_sdl2gl_scaledBorders.left / (vl_sdl2gl_screenHorizScaleFactor*vl_sdl2gl_screenWidth + vl_sdl2gl_scaledBorders.left + vl_sdl2gl_scaledBorders.right);
+	borderedWinRect.y = realWinH * vl_sdl2gl_scaledBorders.top / (vl_sdl2gl_screenVertScaleFactor*vl_sdl2gl_screenHeight + vl_sdl2gl_scaledBorders.top + vl_sdl2gl_scaledBorders.bottom);
+	// Tricky calculations that preserve symmetry for the VGA
+	borderedWinRect.w = realWinW - borderedWinRect.x - realWinW * vl_sdl2gl_scaledBorders.right / (vl_sdl2gl_screenHorizScaleFactor*vl_sdl2gl_screenWidth + vl_sdl2gl_scaledBorders.left + vl_sdl2gl_scaledBorders.right);
+	borderedWinRect.h = realWinH - borderedWinRect.y - realWinH * vl_sdl2gl_scaledBorders.bottom / (vl_sdl2gl_screenVertScaleFactor*vl_sdl2gl_screenHeight + vl_sdl2gl_scaledBorders.top + vl_sdl2gl_scaledBorders.bottom);
 
-	int integerScaleX = (realWinX/vl_sdl2gl_screenWidth)*vl_sdl2gl_screenWidth;
-	int integerScaleY = (realWinY/vl_sdl2gl_screenHeight)*vl_sdl2gl_screenHeight;
+	int integerScaleX = (borderedWinRect.w/vl_sdl2gl_screenWidth)*vl_sdl2gl_screenWidth;
+	int integerScaleY = (borderedWinRect.h/vl_sdl2gl_screenHeight)*vl_sdl2gl_screenHeight;
+
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	// If our gfx hardware supports it, render into an offscreen framebuffer for the final linear phase of scaling.
 	if (id_glBlitFramebufferEXT)
@@ -347,7 +394,7 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	else
 	{
 		// Otherwise do nearest-neighbour scaling the whole time.
-		glViewport(0, 0, realWinX, realWinY);
+		glViewport(borderedWinRect.x, realWinH-borderedWinRect.y-borderedWinRect.h, borderedWinRect.w, borderedWinRect.h);
 	}
 
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)surface;
@@ -379,7 +426,7 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 
 	glDrawArrays(GL_QUADS, 0, 4);
 
-	glViewport(0, 0, realWinX, realWinY);
+	glViewport(borderedWinRect.x, realWinH-borderedWinRect.y-borderedWinRect.h, borderedWinRect.w, borderedWinRect.h);
 	// If we're using framebuffers, linearly scale it to the screen.
 	if (true)
 	{
@@ -390,7 +437,7 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 			id_glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
 			
 			id_glBlitFramebufferEXT(0, 0, integerScaleX, integerScaleY,
-						0, 0, realWinX, realWinY,
+						borderedWinRect.x, realWinH-borderedWinRect.y-borderedWinRect.h, borderedWinRect.x+borderedWinRect.w, realWinH-borderedWinRect.y,
 						GL_COLOR_BUFFER_BIT,
 						GL_LINEAR);
 		}
@@ -417,6 +464,7 @@ VL_Backend vl_sdl2gl_backend =
 	/*.createSurface =*/ &VL_SDL2GL_CreateSurface,
 	/*.destroySurface =*/ &VL_SDL2GL_DestroySurface,
 	/*.getSurfaceMemUse =*/ &VL_SDL2GL_GetSurfaceMemUse,
+	/*.refreshPaletteAndBorderColor =*/ &VL_SDL2GL_RefreshPaletteAndBorderColor,
 	/*.surfaceRect =*/ &VL_SDL2GL_SurfaceRect,
 	/*.surfaceToSurface =*/ &VL_SDL2GL_SurfaceToSurface,
 	/*.surfaceToSelf =*/ &VL_SDL2GL_SurfaceToSelf,

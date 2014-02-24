@@ -132,6 +132,7 @@ void CK_InitGame()
 
 	// Setup the screen
 	VL_InitScreen();
+	// TODO: Palette initialization should be done in the terminator code
 	VL_SetDefaultPalette();
 
 	// Setup input
@@ -145,6 +146,8 @@ void CK_InitGame()
 	// Wolf loads fonts here, but we do it in CA_Startup()?
 	
 	RF_Startup();
+
+	VL_ColorBorder(3);
 }
 
 /*

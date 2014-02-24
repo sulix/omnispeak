@@ -24,16 +24,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 
 /* Util Functions */
-typedef struct VL_EGAPaletteEntry
-{
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
-} VL_EGAPaletteEntry;
 
+extern bool vl_screenFaded;
+
+// EGA signal palettes (the 17th entry of each row is the overscan border color)
+// NOTE: Vanilla Keen can modify some of these (e.g. the border color)
+extern uint8_t vl_palette[6][17];
+extern uint16_t vl_border_color;
+
+#if 0
 extern VL_EGAPaletteEntry VL_EGAPalette[16];
-void VL_SetDefaultPalette();
 void VL_SetPalEntry(int id, uint8_t r, uint8_t g, uint8_t b);
+#endif
+
+void VL_ColorBorder(uint16_t color);
+void VL_SetDefaultPalette(void);
+void VL_FadeToBlack(void);
+void VL_FadeFromBlack(void);
+//void VL_FadeToWhite(void); // Unused in vanilla Keen 5
+//void VL_FadeFromWhite(void); // Unused in vanilla Keen 5
 void VL_UnmaskedToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h);
 void VL_MaskedToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h);
 void VL_MaskedBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h);
@@ -63,10 +72,11 @@ typedef enum VL_SurfaceUsage
 
 typedef struct VL_Backend
 {
-	void (*setVideoMode)(int w, int h);
+	void (*setVideoMode)(int mode);
 	void* (*createSurface)(int w, int h, VL_SurfaceUsage usage);
 	void (*destroySurface)(void *surface);
 	long (*getSurfaceMemUse)(void *surface);
+	void (*refreshPaletteAndBorderColor)(void *screen);
 	void (*surfaceRect)(void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*surfaceToSurface)(void *src_surface, void *dst_surface, int x, int y, int sx, int sy, int sw, int sh);
 	void (*surfaceToSelf)(void *surface, int x, int y, int sx, int sy, int sw, int sh);

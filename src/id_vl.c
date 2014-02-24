@@ -20,26 +20,99 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_mm.h"
 #include "id_ca.h"
 #include "id_vl.h"
+#include "id_vl_private.h"
 
 #include <SDL.h>
 
 #define max(a,b) (((a) < (b))?(b):(a))
 #define min(a,b) (((a) < (b))?(a):(b))
 
+// EGA color palette in RGB format (technically more can be chosen with the VGA)
+const uint8_t VL_EGARGBColorTable[16][3] = {
+	0x00, 0x00, 0x00, // Black
+	0x00, 0x00, 0xaa, // Blue
+	0x00, 0xaa, 0x00, // Green
+	0x00, 0xaa, 0xaa, // Cyan
+	0xaa, 0x00, 0x00, // Red
+	0xaa, 0x00, 0xaa, // Magenta
+	0xaa, 0x55, 0x00, // Brown
+	0xaa, 0xaa, 0xaa, // Light Grey
+	0x55, 0x55, 0x55, // Dark Grey
+	0x55, 0x55, 0xff, // Light Blue
+	0x55, 0xff, 0x55, // Light Green
+	0x55, 0xff, 0xff, // Light Cyan
+	0xff, 0x55, 0x55, // Light Red
+	0xff, 0x55, 0xff, // Light Magenta
+	0xff, 0xff, 0x55, // Yellow
+	0xff, 0xff, 0xff, // White
+};
+
+// EGA signal palettes (the 17th entry of each row is the overscan border color)
+// NOTE: Vanilla Keen can modify some of these (e.g. the border color)
+uint8_t vl_palette[6][17] = {
+ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Pitch black
+ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 0,
+ 0, 0, 0, 0, 0, 0, 0, 0,24,25,26,27,28,29,30,31, 0,
+ 0, 1, 2, 3, 4, 5, 6, 7,24,25,26,27,28,29,30,31, 0, // Default palette
+ 0, 1, 2, 3, 4, 5, 6, 7,31,31,31,31,31,31,31,31, 0,
+31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31, // Full bright
+};
+
+bool vl_screenFaded = false;
+
 static int vl_memused, vl_numsurfaces;
 
+VL_EGAVGAAdapter vl_emuegavgaadapter;
 
+uint16_t vl_border_color = 0; // An extra variable used in vanilla Keen code
+
+static VL_Backend *vl_currentBackend;
+
+#if 0
 VL_EGAPaletteEntry VL_EGAPalette[16];
+
 void VL_SetPalEntry(int id, uint8_t r, uint8_t g, uint8_t b)
 {
 	VL_EGAPalette[id].r = r;
 	VL_EGAPalette[id].g = g;
 	VL_EGAPalette[id].b = b;
 }
+#endif
+
+/* Gets a value representing 6 EGA signals determining a color number
+and returns it in a "Blue Green Red Intensity" 4-bit format.
+Usually, the 6 signals represented by the given input mean:
+"Blue Green Red Secondary-Blue Secondary-Green Secondary-Red". However, for
+the historic reason of compatibility with CGA monitors, on the 200-lines mode
+used by Keen the Secondary-Green signal is treated as an Intensity one and
+the two other intensity signals are ignored.                               */
+uint8_t VL_ConvertEGASignalToEGAEntry(const uint8_t color)
+{
+	return (color & 7) | ((color & 16) >> 1);
+}
+
+void VL_SetPaletteAndBorderColor(uint8_t *palette)
+{
+	for (int i = 0; i < 16; i++)
+		vl_emuegavgaadapter.palette[i] = VL_ConvertEGASignalToEGAEntry(palette[i]);
+	vl_emuegavgaadapter.bordercolor = palette[16];
+	vl_currentBackend->refreshPaletteAndBorderColor(vl_emuegavgaadapter.screen);
+}
+
+void VL_ColorBorder(uint16_t color)
+{
+	vl_emuegavgaadapter.bordercolor = color; // Updated EGA/VGA status
+	vl_currentBackend->refreshPaletteAndBorderColor(vl_emuegavgaadapter.screen);
+	vl_border_color = color; // Used by Keen
+}
 
 // Sets up the EGA palette used in the original keen games.
 void VL_SetDefaultPalette()
 {
+	vl_palette[3][16] = vl_border_color;
+	VL_SetPaletteAndBorderColor(vl_palette[3]);
+	vl_screenFaded = false;
+#if 0
 	VL_SetPalEntry(0,0x00, 0x00, 0x00); // Black
 	VL_SetPalEntry(1,0x00, 0x00, 0xAA); // Blue
 	VL_SetPalEntry(2,0x00, 0xAA, 0x00); // Green
@@ -56,9 +129,34 @@ void VL_SetDefaultPalette()
 	VL_SetPalEntry(13,0xFF, 0x55, 0xFF); // Light Magenta
 	VL_SetPalEntry(14,0xFF, 0xFF, 0x55); // Yellow
 	VL_SetPalEntry(15,0xFF, 0xFF, 0xFF); // White
+#endif
 }
-	
 
+void VL_FadeToBlack(void)
+{
+	for (int i = 3; i >= 0; i--)
+	{
+		vl_palette[i][16] = vl_border_color;
+		VL_SetPaletteAndBorderColor(vl_palette[i]);
+		VL_Present();
+		VL_DelayTics(6);
+	}
+	vl_screenFaded = true;
+}
+
+void VL_FadeFromBlack(void)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		vl_palette[i][16] = vl_border_color;
+		VL_SetPaletteAndBorderColor(vl_palette[i]);
+		VL_Present();
+		VL_DelayTics(6);
+	}
+	vl_screenFaded = false;
+}
+
+#if 0
 void VL_UnmaskedToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h)
 {
 	uint8_t *dstptr = (uint8_t*)dest;
@@ -85,8 +183,9 @@ void VL_UnmaskedToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] = VL_EGAPalette[pixel].r;
 			dstptr[(sy+y)*pitch+(sx+x)*4+3] = 0xFF;
 		}
-	}		
+	}	
 }
+#endif	
 
 void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h)
 {
@@ -113,6 +212,7 @@ void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int
 	}		
 }
 
+#if 0
 void VL_MaskedToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h)
 {
 	uint8_t *dstptr = (uint8_t*)dest;
@@ -142,6 +242,7 @@ void VL_MaskedToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h
 		}
 	}		
 }
+#endif
 
 void VL_MaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h)
 {
@@ -169,6 +270,7 @@ void VL_MaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h
 	}		
 }
 
+#if 0
 void VL_MaskedBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h)
 {
 	uint8_t *dstptr = (uint8_t*)dest;
@@ -202,6 +304,7 @@ void VL_MaskedBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, in
 		}
 	}		
 }
+#endif
 
 void VL_MaskedBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h)
 {
@@ -233,6 +336,7 @@ void VL_MaskedBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, i
 	}		
 }
 
+#if 0
 void VL_MaskedBlitClipToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh)
 {
 	uint8_t *dstptr = (uint8_t*)dest;
@@ -270,6 +374,7 @@ void VL_MaskedBlitClipToRGB(void *src,void *dest, int x, int y, int pitch, int w
 		}
 	}		
 }
+#endif
 
 void VL_MaskedBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh)
 {
@@ -306,6 +411,7 @@ void VL_MaskedBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int 
 }
 
 
+#if 0
 void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
 	uint8_t *dstptr = (uint8_t*)dest;
@@ -328,6 +434,7 @@ void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, 
 		}
 	}		
 }
+#endif
 
 void VL_1bppToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
@@ -348,6 +455,7 @@ void VL_1bppToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, 
 	}		
 }
 
+#if 0
 void VL_1bppXorWithRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
 	uint8_t *dstptr = (uint8_t*)dest;
@@ -371,8 +479,9 @@ void VL_1bppXorWithRGB(void *src,void *dest, int x, int y, int pitch, int w, int
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] ^= VL_EGAPalette[colour].r;
 			//dstptr[(sy+y)*pitch+(sx+x)*4+3] = 0xFF;
 		}
-	}		
+	}	
 }
+#endif	
 
 void VL_1bppXorWithPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
@@ -395,6 +504,7 @@ void VL_1bppXorWithPAL8(void *src,void *dest, int x, int y, int pitch, int w, in
 	}		
 }
 
+#if 0
 void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
 	uint8_t *dstptr = (uint8_t*)dest;
@@ -421,6 +531,7 @@ void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 		}
 	}		
 }
+#endif
 
 void VL_1bppBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
@@ -443,9 +554,6 @@ void VL_1bppBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int
 	}		
 }
 
-static void *vl_screen;
-static VL_Backend *vl_currentBackend;
-
 int VL_MemUsed()
 {
 	return vl_memused;
@@ -458,13 +566,14 @@ int VL_NumSurfaces()
 
 void VL_InitScreen()
 {
-	VL_SetDefaultPalette();
 	vl_currentBackend = VL_Impl_GetBackend();
 	vl_memused = 0;
 	vl_numsurfaces = 1;
-	vl_currentBackend->setVideoMode(320,200);
-	vl_screen = vl_currentBackend->createSurface(21*16,14*16,VL_SurfaceUsage_FrontBuffer);
-	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_screen);
+	vl_currentBackend->setVideoMode(0xD);
+	vl_emuegavgaadapter.screen = vl_currentBackend->createSurface(21*16,14*16,VL_SurfaceUsage_FrontBuffer);
+	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
+	// NOTE: The overscan border color is *not* yet set to cyan here
+	VL_SetPaletteAndBorderColor(vl_palette[3]);
 }
 
 void *VL_CreateSurface(int w, int h)
@@ -482,7 +591,7 @@ void VL_SurfaceRect(void *dst, int x, int y, int w, int h, int colour)
 
 void VL_ScreenRect(int x, int y, int w, int h, int colour)
 {
-	vl_currentBackend->surfaceRect(vl_screen,x,y,w,h,colour);
+	vl_currentBackend->surfaceRect(vl_emuegavgaadapter.screen,x,y,w,h,colour);
 }
 
 void VL_SurfaceToSurface(void *src, void *dst, int x, int y, int sx, int sy, int sw, int sh)
@@ -492,7 +601,7 @@ void VL_SurfaceToSurface(void *src, void *dst, int x, int y, int sx, int sy, int
 
 void VL_SurfaceToScreen(void *src, int x, int y, int sx, int sy, int sw, int sh)
 {
-	vl_currentBackend->surfaceToSurface(src,vl_screen, x, y, sx, sy, sw, sh);
+	vl_currentBackend->surfaceToSurface(src,vl_emuegavgaadapter.screen, x, y, sx, sy, sw, sh);
 }
 
 void VL_SurfaceToSelf(void *surf, int x, int y, int sx, int sy, int sw, int sh)
@@ -507,7 +616,7 @@ void VL_UnmaskedToSurface(void *src, void *dest, int x, int y, int w, int h)
 
 void VL_UnmaskedToScreen(void *src, int x, int y, int w, int h)
 {
-	vl_currentBackend->unmaskedToSurface(src, vl_screen, x, y, w, h);
+	vl_currentBackend->unmaskedToSurface(src, vl_emuegavgaadapter.screen, x, y, w, h);
 }
 
 void VL_MaskedToSurface(void *src, void *dest, int x, int y, int w, int h)
@@ -524,27 +633,27 @@ void VL_MaskedBlitToSurface(void *src, void *dest, int x, int y, int w, int h)
 // It does not perform masking, simply overwrites the screen's alpha channel.
 void VL_MaskedToScreen(void *src, int x, int y, int w, int h)
 {
-	vl_currentBackend->maskedToSurface(src, vl_screen, x, y, w, h);
+	vl_currentBackend->maskedToSurface(src, vl_emuegavgaadapter.screen, x, y, w, h);
 }
 
 void VL_MaskedBlitToScreen(void *src, int x, int y, int w, int h)
 {
-	vl_currentBackend->maskedBlitToSurface(src, vl_screen, x, y, w, h);
+	vl_currentBackend->maskedBlitToSurface(src, vl_emuegavgaadapter.screen, x, y, w, h);
 }
 
 void VL_1bppToScreen(void *src, int x, int y, int w, int h, int colour)
 {
-	vl_currentBackend->bitToSurface(src, vl_screen, x, y, w, h, colour);
+	vl_currentBackend->bitToSurface(src, vl_emuegavgaadapter.screen, x, y, w, h, colour);
 }
 
 void VL_1bppXorWithScreen(void *src, int x, int y, int w, int h, int colour)
 {
-	vl_currentBackend->bitXorWithSurface(src, vl_screen, x, y, w, h, colour);
+	vl_currentBackend->bitXorWithSurface(src, vl_emuegavgaadapter.screen, x, y, w, h, colour);
 }
 
 void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour)
 {
-	vl_currentBackend->bitBlitToSurface(src, vl_screen, x, y, w, h, colour);
+	vl_currentBackend->bitBlitToSurface(src, vl_emuegavgaadapter.screen, x, y, w, h, colour);
 }
 
 static long vl_lastFrameTime;
@@ -579,5 +688,5 @@ void VL_SetScrollCoords(int x, int y)
 void VL_Present()
 {
 	vl_lastFrameTime = SDL_GetTicks();
-	vl_currentBackend->present(vl_screen, vl_scrollXpixels, vl_scrollYpixels);
+	vl_currentBackend->present(vl_emuegavgaadapter.screen, vl_scrollXpixels, vl_scrollYpixels);
 }
