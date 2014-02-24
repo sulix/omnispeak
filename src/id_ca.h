@@ -57,6 +57,8 @@ typedef struct ca_gfxinfo
 	uint16_t numBinaries, offBinaries;
 } ca_gfxinfo;
 
+extern uint8_t ca_levelnum, ca_levelbit;
+extern uint8_t ca_graphChunkNeeded[CA_MAX_GRAPH_CHUNKS];
 extern ca_gfxinfo ca_gfxInfoE;
 
 extern mm_ptr_t ca_graphChunks[CA_MAX_GRAPH_CHUNKS];
@@ -91,6 +93,11 @@ extern CA_MapHeader *CA_MapHeaders[CA_NUMMAPS];
 extern uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
 
 extern uint8_t *CA_audio[NUMSNDCHUNKS];
+
+/* Keen: custom cachebox hooks */
+void	(*ca_beginCacheBox)		(char *title, int numcache);
+void	(*ca_updateCacheBox)	(void);
+void	(*ca_finishCacheBox)	(void);
 
 
 void CA_CacheMap(int mapIndex);

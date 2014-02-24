@@ -79,6 +79,11 @@ uint8_t ca_graphChunkNeeded[CA_MAX_GRAPH_CHUNKS] = {0};
 ca_gfxinfo ca_gfxInfoE;
 mm_ptr_t ca_graphChunks[CA_MAX_GRAPH_CHUNKS];
 
+/* Keen: custom cachebox hooks */
+void	(*ca_beginCacheBox)		(char *title, int numcache);
+void	(*ca_updateCacheBox)	(void);
+void	(*ca_finishCacheBox)	(void);
+
 
 // Adjusts the extension on a filename to match the current episode.
 // This function is NOT thread safe, and the string returned is only
@@ -524,6 +529,7 @@ void CA_MarkGrChunk(int chunk)
 
 void CA_CacheMarks(const char *msg)
 {
+	bool isMessage = msg? true : false;
 	int numChunksToCache = 0;
 
 	// Mark all unused chunks as purgeable, needed chunks as unpurgeable,
@@ -552,14 +558,18 @@ void CA_CacheMarks(const char *msg)
 
 	if (!numChunksToCache) return;
 
-	//TODO: Loading screen.
+	//Loading screen.
+	if (isMessage && ca_beginCacheBox)
+		ca_beginCacheBox(msg, numChunksToCache);
 
 	// Cache all of the chunks we'll need.
 	for (int i = 0; i < CA_MAX_GRAPH_CHUNKS; ++i)
 	{
 		if ( (ca_graphChunkNeeded[i] & ca_levelbit) && (!ca_graphChunks[i]) )
 		{
-			//TODO: Update loading screen.
+			//Update loading screen.
+			if (isMessage && ca_updateCacheBox)
+				ca_updateCacheBox();
 
 			// In the original keen code, a lot of work here went into coalescing reads.
 			// The C standard library does this sort of thing for us, particularly
@@ -571,7 +581,9 @@ void CA_CacheMarks(const char *msg)
 		}
 	}
 
-	//TODO: Finish Loading Screen
+	//Finish Loading Screen
+	if (isMessage && ca_finishCacheBox)
+		ca_finishCacheBox();
 
 }
 

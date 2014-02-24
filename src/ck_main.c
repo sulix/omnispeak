@@ -39,6 +39,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 CK_Episode *ck_currentEpisode;
 
+/*
+ * Measure the containing box size of a string that spans multiple lines
+ */
+void CK_MeasureMultiline(char *str, int *w, int *h)
+{
+	char c; 
+	int x, y;
+	const char buf[80];
+	char *p;
+
+	*h = *w = (int)0;
+	p = buf;	/* must be a local buffer */
+
+	while( (c = *str++) != 0 ) {
+		*p++ = c;
+
+		if( c == '\n' || *str == 0 ) {
+			VH_MeasurePropString( buf, &x, &y, US_GetPrintFont() );
+
+			*h += y;
+			if( *w < x )
+				*w = x;
+
+			p = buf;
+			// Shouldn't buf be cleared so that a newline is not read over by
+			// VH_MeasurePropString?
+		}
+	}
+}
+
 
 /*
  * Shutdown all of the 'ID Engine' components
@@ -70,6 +100,11 @@ void CK_InitGame()
 
 	// Load the core datafiles
 	CA_Startup();
+
+	// Set ID engine Callbacks
+	ca_beginCacheBox = CK_BeginCacheBox;
+	ca_updateCacheBox = CK_UpdateCacheBox;
+	ca_finishCacheBox = CK_FinishCacheBox;
 
 	// Mark some chunks we'll need.
 	CA_ClearMarks();
