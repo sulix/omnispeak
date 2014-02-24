@@ -187,6 +187,9 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 			switch (specialTileInfo)
 			{
 			case 0: break;
+			case 3:
+				CK_KillKeen();
+				break;
 			case 4:
 				CK_KeenGetTileVitalin(x,y);
 				break;
@@ -332,13 +335,14 @@ bool CK_KeenPressUp(CK_object *obj)
 				else
 				{
 					SD_PlaySound(SOUND_NEEDKEYCARD);
-					obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor2");
+					obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
 					ck_keenState.keenSliding = true;
 					return false;
 				}
 			}
 			else
 			{
+				ck_invincibilityTimer = 110;
 				obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor2");
 				obj->zLayer = 0;
 
@@ -826,6 +830,26 @@ void CK_KeenDrawFunc(CK_object *obj)
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
 		ck_keenState.jumpTimer = 0;
 	}
+	else if ((obj->topTI & 0xFFF8) == 8)
+	{
+		CK_KillKeen();
+	}
+	else if (obj->topTI == 0x29)
+	{
+		// Keen6 conveyor belt right
+		obj->nextX = SD_GetSpriteSync() * 8;
+		obj->nextY = 0;
+		obj->user1 = 0;
+		CK_PhysUpdateNormalObj(obj);
+	}
+	else if (obj->topTI == 0x31)
+	{
+		// Keen6 conveyor belt left
+		obj->nextX = SD_GetSpriteSync() * -8;
+		obj->nextY = 0;
+		obj->user1 = 0;
+		CK_PhysUpdateNormalObj(obj);
+	}
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 }
 
@@ -840,6 +864,26 @@ void CK_KeenRunDrawFunc(CK_object *obj)
 		obj->velY = 0;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
 		ck_keenState.jumpTimer = 0;
+	}
+	else if ((obj->topTI & 0xFFF8) == 8)
+	{
+		CK_KillKeen();
+	}
+	else if (obj->topTI == 0x29)
+	{
+		// Keen6 conveyor belt right
+		obj->nextX = SD_GetSpriteSync() * 8;
+		obj->nextY = 0;
+		obj->user1 = 0;
+		CK_PhysUpdateNormalObj(obj);
+	}
+	else if (obj->topTI == 0x31)
+	{
+		// Keen6 conveyor belt left
+		obj->nextX = SD_GetSpriteSync() * -8;
+		obj->nextY = 0;
+		obj->user1 = 0;
+		CK_PhysUpdateNormalObj(obj);
 	}
 
 	if ((obj->rightTI && obj->xDirection == -1) || (obj->leftTI && obj->xDirection == 1))
@@ -1014,7 +1058,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 		//Check if deadly.
 		if ((obj->topTI & ~7) == 8)
 		{
-			//TODO: Kill Keen
+			CK_KillKeen();
 		}
 		else
 		{
@@ -1235,7 +1279,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 		//Check if deadly.
 		if ((obj->topTI & ~7) == 8)
 		{
-			//TODO: Kill Keen
+			CK_KillKeen();
 		}
 		else
 		{
@@ -1343,20 +1387,29 @@ void CK_KeenPullThink4(CK_object *obj)
 void CK_KeenDeathThink(CK_object *obj)
 {
 	CK_PhysGravityMid(obj);
-	obj->nextX = obj->xDirection * SD_GetSpriteSync();
-	//TODO: ObjectVisible?
-	ck_gameState.levelState = 1;
+	obj->nextX = obj->velX * SD_GetSpriteSync();
+	if (!CK_ObjectVisible(obj))
+	{
+		ck_gameState.levelState = 1;
+	}
 }
 
 void CK_KillKeen()
 {
 	CK_object *obj = ck_keenObj;
+	if (ck_invincibilityTimer)
+	{
+		return;
+	}
+
 	if (ck_godMode)
 	{
 		return;
 	}
 
-	//TODO: PlayLoopTimer, ACTION_KEENNOT, KeenMoon, ScrollEnabled
+	//TODO: ACTION_KEENNOT, KeenMoon
+	ck_invincibilityTimer = 30;
+	ck_scrollDisabled = true;
 	obj->clipped = CLIP_not;
 	obj->zLayer = 3;
 	if (US_RndT() < 0x80)
@@ -1728,7 +1781,7 @@ void CK_KeenSetupFunctions()
 	CK_ACT_AddFunction("CK_KeenPoleDownThink",&CK_KeenPoleDownThink);
 	CK_ACT_AddFunction("CK_KeenPoleDownDrawFunc",&CK_KeenPoleDownDrawFunc);
 	CK_ACT_AddColFunction("CK_KeenColFunc",&CK_KeenColFunc);
-
+	CK_ACT_AddFunction("CK_KeenDeathThink",&CK_KeenDeathThink);
 	CK_ACT_AddFunction("CK_KeenSpawnShot", &CK_KeenSpawnShot);
 	CK_ACT_AddFunction("CK_ShotThink", &CK_ShotThink);
 	CK_ACT_AddFunction("CK_ShotDrawFunc", &CK_ShotDrawFunc);

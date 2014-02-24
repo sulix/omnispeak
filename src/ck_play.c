@@ -75,6 +75,9 @@ int ck_demoParm;
 // invincibility switch
 bool ck_godMode;
 
+// invincibility timer
+int16_t ck_invincibilityTimer;
+
 // A bunch of global variables from other modules that should be 
 // handled better, but are just defined here for now
 
@@ -969,7 +972,7 @@ void CK_NormalCamera(CK_object *obj)
 		obj->posY = obj->clipRects.unitY2 - (rf_scrollYMaxUnit + (208 << 4));
 		SD_PlaySound(SOUND_KEENFALL);
 		ck_godMode = false;
-		// KeenDie();
+		CK_KillKeen();
 		return;
 	}
 
@@ -1095,6 +1098,7 @@ int CK_PlayLoop()
 	StartMusic(ck_currentMapNumber);
 
 	//ck_keenState.EnterDoorAttempt = 0;
+	ck_invincibilityTimer = 0;
 	ck_keenState.jumpWasPressed = ck_keenState.pogoWasPressed = ck_keenState.shootWasPressed = false;
 	game_in_progress = 1;
 	// If this is nonzero, the level will quit immediately.
@@ -1237,6 +1241,13 @@ int CK_PlayLoop()
 			CK_MapCamera(ck_keenObj);
 		else
 			CK_NormalCamera(ck_keenObj);
+
+		if (ck_invincibilityTimer)
+		{
+			ck_invincibilityTimer -= SD_GetSpriteSync();
+			if (ck_invincibilityTimer < 0)
+				ck_invincibilityTimer = 0;
+		}
 
 		//TODO: Slow-mo, extra VBLs.
 		if (ck_slowMotionEnabled)

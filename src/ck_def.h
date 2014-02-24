@@ -235,6 +235,7 @@ void CK_PlayDemoFile(const char *demoName);
 
 /* ck_keen.c */
 void CK_IncreaseScore(int score);
+void CK_KillKeen();
 
 extern CK_object *ck_keenObj;
 

@@ -545,7 +545,7 @@ void CK5_VolteCol(CK_object *volte, CK_object *other)
 
 	if (other->type == CT_Player) 
 	{
-		//KeenDie();
+		CK_KillKeen();
 	}
 	else if (other->type == CT_Stunner) 
 	{ //stunner

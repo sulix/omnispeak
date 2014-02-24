@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
 
-#define CK_FUNCTABL_SIZE 128
+#define CK_FUNCTABL_SIZE 256
 
 STR_Table *ck_functionTable;
 

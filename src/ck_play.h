@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CK_PLAY_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 extern int ck_activeX0Tile;
 extern int ck_activeY0Tile;
@@ -32,6 +33,8 @@ extern bool ck_demoEnabled;
 extern bool ck_scrollDisabled;
 
 extern bool ck_godMode;
+
+extern int16_t ck_invincibilityTimer;
 
 struct CK_object;
 
