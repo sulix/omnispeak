@@ -494,7 +494,7 @@ void CK_WallDebug()
 bool CK_DebugKeys()
 {
 	// Border colour 
-	if (IN_GetKeyState(IN_SC_B))
+	if (IN_GetKeyState(IN_SC_B) && game_in_progress)
 	{
 		char str[4];
 		uint16_t w,h;

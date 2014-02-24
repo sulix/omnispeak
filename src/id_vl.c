@@ -95,13 +95,13 @@ void VL_SetPaletteAndBorderColor(uint8_t *palette)
 {
 	for (int i = 0; i < 16; i++)
 		vl_emuegavgaadapter.palette[i] = VL_ConvertEGASignalToEGAEntry(palette[i]);
-	vl_emuegavgaadapter.bordercolor = palette[16];
+	vl_emuegavgaadapter.bordercolor = VL_ConvertEGASignalToEGAEntry(palette[16]);
 	vl_currentBackend->refreshPaletteAndBorderColor(vl_emuegavgaadapter.screen);
 }
 
 void VL_ColorBorder(uint16_t color)
 {
-	vl_emuegavgaadapter.bordercolor = color; // Updated EGA/VGA status
+	vl_emuegavgaadapter.bordercolor = VL_ConvertEGASignalToEGAEntry(color); // Updated EGA/VGA status
 	vl_currentBackend->refreshPaletteAndBorderColor(vl_emuegavgaadapter.screen);
 	vl_border_color = color; // Used by Keen
 }
