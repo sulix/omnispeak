@@ -68,6 +68,7 @@ typedef enum CK_ClassType {
   CT_EnemyShot,
 	CT_Platform = 6,
   CT_StunnedCreature = 7,
+	CT_MapFlag = 8,
   CT_Sparky = 9,
   CT_Mine = 10,
   CT_SliceStar = 11,

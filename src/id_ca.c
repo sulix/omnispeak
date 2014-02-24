@@ -857,6 +857,11 @@ void CA_LoadAllSounds(void)
 //TODO: Make this less of an ugly hack.
 extern int ck_currentMapNumber;
 
+uint16_t *CA_TilePtrAtPos(int x, int y, int plane)
+{
+	return &CA_mapPlanes[plane][y*CA_MapHeaders[ck_currentMapNumber]->width+x];
+}
+
 uint16_t CA_TileAtPos(int x, int y, int plane)
 {
 	return CA_mapPlanes[plane][y*CA_MapHeaders[ck_currentMapNumber]->width+x];

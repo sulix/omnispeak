@@ -656,81 +656,20 @@ void CK_MapMiscFlagsCheck(CK_object *keen)
 	}
 }
 
-#if 0
-
-MapFlagSpawn(int tileX, int tileY)
+void CK_MapFlagSpawn(int tileX, int tileY)
 {
 
-	GetNewObj(0);
+	CK_object *flag = CK_GetNewObj(false);
 
-	GameData.new_object->clipping = 0;
-	GameData.new_object->zLayer = 3;
-	GameData.new_object->type = 8;
-	GameData.new_object->active = 1;
-	GameData.new_object->posX = (tileX << 8) - 80;
-	GameData.new_object->posY = (tileY << 8) - 480;
-	GameData.new_object->int13 = Rand() / 16;
-	CK_SetAction(GameData.new_object, ACTION_MAPFLAG0);
+	flag->clipped = CLIP_not;
+	flag->zLayer = 3;
+	flag->type = CT_MapFlag;
+	flag->active = OBJ_ACTIVE;
+	flag->posX = (tileX << 8) - 0x50;
+	flag->posY = (tileY << 8) - 0x1E0;
+	flag->actionTimer = US_RndT() / 16;
+	CK_SetAction(flag, CK_GetActionByName("CK5_ACT_MapFlag0"));
 }
-
-/*
- * Gem Door Opening stuff
- *
- */
-void DoorOpen(CK_object * obj)
-{
-	int tilearray[0x30], i;
-	int far *t;
-
-	t = CA_TileAtPos_FP(obj->posX, obj->posY, 1); // note pos is in tiles for door
-	for (i = 0; obj->user1 + 2 > i; i++, t+= map_width_T)
-		tilearray[i] = *t + 1;
-
-	RF_ReplaceTiles(tilearray, 1, obj->posX, obj->posY, 1, obj->user1 + 2);
-}
-
-void DoorPause (objtype * obj)
-{
-	// close the door, remove the gem
-	if (++obj->user2 > 5);
-	obj->action = &a_doorclose0;
-}
-
-void DoorClose(CK_object * obj)
-{
-	int tilearray[0x30], i;
-	int far *t;
-
-	t = CA_TileAtPos_FP(obj->posX, obj->posY, 1); // note pos is in tiles for door
-	for (i = 0; obj->user1 + 2 > i; i++, t+= map_width_T)
-		tilearray[i] = *t - 1;
-
-	RF_ReplaceTiles(tilearray, 1, obj->posX, obj->posY, 1, obj->user1 + 2);
-	if (obj->action == &a_doorclose2)
-		RF_ReplaceTiles((int far *) &obj->user3, 1,
-										(unsigned) obj->user & 0xFF, (unsigned) obj->user >> 8, 1, 1);
-}
-
-SecurityDoorOpen(CK_object * obj)
-{
-
-	int tilearray[0x30];
-	int *d = tilearray;
-	t = CA_TileAtPos(obj->posX, obj->posY, 1); // note pos is in tiles for door
-	for (var2 = 0; var2 < 4; var2++, t+= map_width_T)
-	{
-		for (s = 0; s < 4; s++)
-		{
-			tilearray[d++] = *(t + s) - 4;
-		}
-	}
-
-	RF_ReplaceTiles(tilearray, 1, obj->posX, obj->posY, 4, 4);
-	if (++obj->user1 == 3) obj->action = NULL;
-	return;
-}
-
-#endif
 
 /*
  * Setup all of the functions in this file.

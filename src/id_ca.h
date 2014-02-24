@@ -101,6 +101,7 @@ void	(*ca_finishCacheBox)	(void);
 
 
 void CA_CacheMap(int mapIndex);
+uint16_t *CA_TilePtrAtPos(int x, int y, int plane);
 uint16_t CA_TileAtPos(int x, int y, int plane);
 void CA_SetTileAtPos(int x, int y, int plane, int value);
 uint16_t CA_GetMapHeight();

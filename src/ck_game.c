@@ -61,6 +61,49 @@ void CK_GameOver()
 
 //TODO: KillKeen
 
+//TODO: Exit_menu_func
+
+void CK_MapLevelMarkAsDone()
+{
+	int y, x, level, i, w, flags;
+	uint16_t *pw;
+
+	i = 0;
+	pw = CA_TilePtrAtPos(0,0,2);	/* info layer */
+
+	/* Look through the map for level-related tiles */
+	for ( y = 0; y < CA_GetMapHeight(); y++ )
+	{
+		for ( x = 0; x < CA_GetMapWidth(); x++, pw++, i++ )
+		{
+			w = *pw;
+			level = w & 0xFF;
+			if ( level >= 1 && level <= 17 && ck_gameState.levelsDone[level] )
+			{	/* Is this a level tile */
+				flags = w >> 8;
+				/* Set the info tile at this position to 0 */
+				*pw = 0;
+				if ( flags == 0xD0 )
+				{	/* If this is a 'blocking' part of the level */
+					/* Set the foreground tile at this position to 0 also (remove the fences) */
+					CA_SetTileAtPos(x,y,1,0);
+				}
+				else if ( flags == 0xF0 )
+				{	/* If this is the flag holder for the level */
+#if 0
+					if ( AZ : A7C2 == level )
+						sub_339( x, y );
+					else
+						sub_338( x, y );
+#endif
+					CK_MapFlagSpawn(x,y);
+				}
+			}
+		}
+	}
+
+}
+
 const char *ck_levelEntryTexts[] ={
 	"Keen purposefully\n"
 	"wanders about the\n"
@@ -147,12 +190,10 @@ void CK_LoadLevel(bool doCache)
 	CK_SetupObjArray();
 	CK5_ScanInfoLayer();
 
-	if (ck_currentMapNumber != 0)
+	if (ck_currentMapNumber == 0)
 	{
-		; // maplevel_mark_as_done;
+		CK_MapLevelMarkAsDone(); 
 	}
-
-
 
 	RF_MarkTileGraphics();
 	//MM_BombOnError();
@@ -353,7 +394,7 @@ replayLevel:
 				//We've won, return to main map.
 				//TODO: Mark level as done (and more)
 				SD_PlaySound(SOUND_LEVELEXIT);
-				ck_gameState.levelsDone[ck_currentMapNumber] = 0;
+				ck_gameState.levelsDone[ck_currentMapNumber] = 1;
 				ck_nextMapNumber = 0;
 				ck_currentMapNumber = ck_nextMapNumber;
 				//word_4A16A = ck_currentMapNumber;

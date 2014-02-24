@@ -75,6 +75,7 @@ void CK_SpawnMapKeen(int tileX, int tileY);
 
 /* Map functions */
 void CK_MapMiscFlagsCheck(CK_object *keen);
+void CK_MapFlagSpawn(int tileX, int tileY);
 
 /* Misc functions */
 
