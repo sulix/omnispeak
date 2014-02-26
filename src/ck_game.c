@@ -42,6 +42,7 @@ int ck_nextMapNumber;
 void CK_NewGame()
 {
 	// TODO: Zero the ck_gameState
+	memset(&ck_gameState, 0, sizeof(ck_gameState));
 	ck_gameState.nextKeenAt = 20000;
 	ck_gameState.numLives = 3;
 	ck_gameState.numShots = 5;
