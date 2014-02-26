@@ -435,15 +435,37 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	}
 	else
 	{
-		if (IN_GetKeyState(in_kbdControls.jump)) controls->jump = true;
-		if (IN_GetKeyState(in_kbdControls.pogo)) controls->pogo = true;
-		if (IN_GetKeyState(in_kbdControls.fire)) controls->button2 = true;
+		if (IN_GetKeyState(in_kbdControls.upLeft))
+		{
+			controls->xDirection = IN_motion_Left;
+			controls->yDirection = IN_motion_Up;
+		}
+		else if (IN_GetKeyState(in_kbdControls.upRight))
+		{
+			controls->xDirection = IN_motion_Right;
+			controls->yDirection = IN_motion_Up;
+		}
+		else if (IN_GetKeyState(in_kbdControls.downLeft))
+		{
+			controls->xDirection = IN_motion_Left;
+			controls->yDirection = IN_motion_Down;
+		}
+		else if (IN_GetKeyState(in_kbdControls.downRight))
+		{
+			controls->xDirection = IN_motion_Right;
+			controls->yDirection = IN_motion_Down;
+		}
 
 		if (IN_GetKeyState(in_kbdControls.up)) controls->yDirection = IN_motion_Up;
 		else if (IN_GetKeyState(in_kbdControls.down)) controls->yDirection = IN_motion_Down;
 
 		if (IN_GetKeyState(in_kbdControls.left)) controls->xDirection = IN_motion_Left;
 		else if (IN_GetKeyState(in_kbdControls.right)) controls->xDirection = IN_motion_Right;
+
+		if (IN_GetKeyState(in_kbdControls.jump)) controls->jump = true;
+		if (IN_GetKeyState(in_kbdControls.pogo)) controls->pogo = true;
+		// TODO: Handle fire input separately? (e.g. two-button firing)	
+		if (IN_GetKeyState(in_kbdControls.fire)) controls->button2 = true;
 
 		controls->dir = in_dirTable[3 * (controls->yDirection + 1) + controls->xDirection + 1];
 	}
