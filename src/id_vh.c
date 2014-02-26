@@ -124,6 +124,16 @@ void VH_DrawSprite(int x, int y, int chunk)
 
 }
 
+void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
+{
+	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
+	
+	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
+
+	VL_1bppInvBlitToScreen(((uint8_t*)ca_graphChunks[chunk]) + spr.width*spr.height*0, x + (spr.originX >> 4), y + (spr.originY >> 4) , spr.width*8, spr.height, colour);
+
+}
+
 void VH_DrawPropChar(int x, int y, int chunk, unsigned char c, int colour)
 {
 	VH_Font *fnt = (VH_Font*)ca_graphChunks[chunk+3];

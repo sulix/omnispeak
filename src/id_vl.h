@@ -50,6 +50,7 @@ void VL_MaskedBlitClipToRGB(void *src,void *dest, int x, int y, int pitch, int w
 void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 void VL_1bppXorWithRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_1bppInvBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 
 void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h);
 void VL_MaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h);
@@ -58,6 +59,7 @@ void VL_MaskedBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int 
 void VL_1bppToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 void VL_1bppXorWithPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 void VL_1bppBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_1bppInvBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 
 int VL_MemUsed();
 int VL_NumSurfaces();
@@ -86,6 +88,7 @@ typedef struct VL_Backend
 	void (*bitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*bitXorWithSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*bitBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
+	void (*bitInvBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*present)(void *surface, int scrollXpx, int scrollYpx);
 } VL_Backend;
 
@@ -105,6 +108,7 @@ void VL_MaskedBlitToScreen(void *src, int x, int y, int w, int h);
 void VL_1bppToScreen(void *src, int x, int y, int w, int h, int colour);
 void VL_1bppXorWithScreen(void *src, int x, int y, int w, int h, int colour);
 void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour);
+void VL_1bppInvBlitToScreen(void *src, int x, int y, int w, int h, int colour);
 
 void VL_DelayTics(int tics);
 int VL_GetTics(int wait);
