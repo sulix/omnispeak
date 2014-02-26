@@ -522,13 +522,26 @@ bool CK_DebugKeys()
 		}
 		return true;
 	}
-	if (IN_GetKeyState(IN_SC_C))
+	if (IN_GetKeyState(IN_SC_C) && game_in_progress)
 	{
 		CK_CountActiveObjects();
+		return true;
+	}
+	// TODO: Demo Recording
+
+	// End Level
+	if (IN_GetKeyState(IN_SC_E) && game_in_progress)
+	{
+		// TODO: Handle ted level differently?
+		if (us_tedLevel)
+			//run_ted();
+			Quit(NULL);
+		ck_gameState.levelState = 2;
+		// Nope, no return of "true"
 	}
 
 	// God Mode
-	if (IN_GetKeyState(IN_SC_G))
+	if (IN_GetKeyState(IN_SC_G) && game_in_progress)
 	{
 		// VW_SyncPages();
 		US_CenterWindow(12, 2);
@@ -575,6 +588,7 @@ bool CK_DebugKeys()
 
 		VL_Present();
 		IN_WaitKey();
+		return true;
 	}
 
 	if (IN_GetKeyState(IN_SC_M))
@@ -613,6 +627,12 @@ bool CK_DebugKeys()
 		VL_Present();
 		IN_WaitKey();
 	}
+
+	// Pause
+
+	// Slow Motion
+
+	// Sprite Test
 
 	// Extra Vibbles
 
