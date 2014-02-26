@@ -530,6 +530,7 @@ void CK5_SpawnRedStandPlatform(int tileX, int tileY)
 	CK_ResetClipRects(obj);
 }
 
+// TODO: Cache stuff here instead of spawner handlers
 void CK5_ScanInfoLayer()
 {
 
@@ -669,12 +670,44 @@ void CK5_ScanInfoLayer()
 			case 42:
 				CK5_SpawnAmpton(x, y);
 				break;
+
+			case 53:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 49:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 45:
-			case 46:
-			case 47:
-			case 48:
-				CK5_TurretSpawn(x, y, infoValue - 45);
+				CK5_TurretSpawn(x, y, 0);
 				break;
+
+			case 54:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 50:
+				if (ck_gameState.difficulty < D_Normal) break;
+			case 46:
+				CK5_TurretSpawn(x, y, 1);
+				break;
+
+			case 55:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 51:
+				if (ck_gameState.difficulty < D_Normal) break;
+			case 47:
+				CK5_TurretSpawn(x, y, 2);
+				break;
+
+			case 56:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 52:
+				if (ck_gameState.difficulty < D_Normal) break;
+			case 48:
+				CK5_TurretSpawn(x, y, 3);
+				break;
+
+			case 69:
+				// Spawn extra stunner if Keen has low ammo
+				if (ck_gameState.numShots >= 5)
+					break;
+				infoValue = 68;
 			case 57:
 			case 58:
 			case 59:
@@ -764,6 +797,9 @@ void CK5_ScanInfoLayer()
 
 			case 124:
 				CK5_SpawnKorath(x, y);
+				break;
+			case 125:
+				// TODO: Signal about teleportation (caching)
 				break;
 			}
 		}
