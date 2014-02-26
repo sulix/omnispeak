@@ -92,8 +92,8 @@ void CK5_TurretShotCol(CK_object *me, CK_object *other)
 	if (other->type == CT_Player)
 	{
 		CK_KillKeen();
+		CK_SetAction2(me, CK_GetActionByName("CK5_ACT_turretShotHit1"));
 	}
-	CK_SetAction2(me, CK_GetActionByName("CK5_ACT_turretShotHit1"));
 }
 
 void CK5_TurretShotDraw(CK_object *obj)
