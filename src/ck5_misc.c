@@ -548,12 +548,17 @@ void CK5_ScanInfoLayer()
 			{
 			case 1:
 				CK_SpawnKeen(x, y, 1);
+				// TODO: Spawn demo sign
 				break;
 			case 2:
 				CK_SpawnKeen(x, y, -1);
+				// TODO: Spawn demo sign
 				break;
+
 			case 3:
-				CK_SpawnMapKeen(x, y);
+				// TODO: Spawn demo sign
+				if (ck_gameState.levelState != 13)
+					CK_SpawnMapKeen(x, y);
 				break;
 
 			case 6:
@@ -616,7 +621,8 @@ void CK5_ScanInfoLayer()
 				RF_SetScrollBlock(x, y, true);
 				break;
 			case 26:
-				RF_SetScrollBlock(x, y, false);
+				// TODO: Map keen tele spawn
+				//RF_SetScrollBlock(x, y, false);
 				break;
 			case 27:
 			case 28:
