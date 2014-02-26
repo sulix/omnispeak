@@ -512,6 +512,24 @@ void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
 	CK_ResetClipRects(obj);
 }
 
+void CK5_SpawnRedStandPlatform(int tileX, int tileY)
+{
+	CK_object *obj = CK_GetNewObj(false);
+
+	obj->type = 6;
+	obj->active = OBJ_ACTIVE;
+	obj->zLayer = 0;
+	obj->posX = tileX << 8;
+	obj->posY = obj->user1 = tileY << 8;
+	obj->xDirection = 0;
+	obj->yDirection = 1;
+	obj->clipped = CLIP_not;
+	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_redStandPlatform"));
+	obj->gfxChunk = obj->currentAction->chunkLeft;
+	CA_CacheGrChunk(obj->gfxChunk);
+	CK_ResetClipRects(obj);
+}
+
 void CK5_ScanInfoLayer()
 {
 
@@ -609,6 +627,15 @@ void CK5_ScanInfoLayer()
 			case 32:
 				CK5_SpawnFallPlat(x, y);
 				break;
+
+			case 33:
+				if (ck_gameState.difficulty > D_Easy) break;
+			case 34:
+				if (ck_gameState.difficulty > D_Normal) break;
+			case 35:
+				CK5_SpawnRedStandPlatform(x, y);
+				break;
+
 			case 36:
 			case 37:
 			case 38:

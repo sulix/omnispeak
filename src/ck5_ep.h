@@ -44,6 +44,7 @@ void CK5_SpawnFuseExplosion(int tileX, int tileY);
 void CK5_SpawnLevelEnd(void);
 CK_object *CK5_SpawnEnemyShot(int posX, int posY, CK_action *action);
 void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple);
+void CK5_SpawnRedStandPlatform(int tileX, int tileY);
 void CK5_SpawnItem(int tileX, int tileY, int itemNumber);
 
 /* ck5_obj1.c */
