@@ -63,7 +63,19 @@ void CK_GameOver()
 
 //TODO: KillKeen
 
-//TODO: Exit_menu_func
+void CK_ExitMenu(void)
+{
+	CK_NewGame();
+	// TODO: With this, cache message doesn't appear...
+	// (nothing to cache in CA_CacheMarks)
+#if 0
+	ca_levelnum--;
+	ca_levelbit >>= 1;
+	CA_ClearMarks();
+	ca_levelbit <<= 1;
+	ca_levelnum++;
+#endif
+}
 
 void CK_MapLevelMarkAsDone()
 {
