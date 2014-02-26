@@ -57,8 +57,11 @@ extern int rf_scrollYMinUnit;
 extern int rf_scrollXMaxUnit;
 extern int rf_scrollYMaxUnit;
 
+extern void (*rf_drawFunc) (void);
+
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical);
 void RF_MarkTileGraphics();
+void RF_SetDrawFunc(void (*func) (void));
 void RF_Startup();
 void RF_NewMap(int mapNum);
 void RF_RenderTile16(int x, int y, int tile);

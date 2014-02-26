@@ -459,6 +459,12 @@ void RFL_AnimateTiles()
 	}
 }
 
+void (*rf_drawFunc) (void);
+
+void RF_SetDrawFunc(void (*func) (void))
+{
+	rf_drawFunc = func;
+}
 
 void RF_Startup()
 {
@@ -1107,6 +1113,9 @@ void RF_Refresh()
 	//RFL_ProcessSpriteErasers();
 	
 	RFL_DrawSpriteList();
+
+	if (rf_drawFunc)
+		rf_drawFunc();
 
 	RFL_CalcTics();
 }

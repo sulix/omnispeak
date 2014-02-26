@@ -77,7 +77,7 @@ void CK_ExitMenu(void)
 #endif
 }
 
-void CK_MapLevelMarkAsDone()
+void CK_MapLevelMarkAsDone(void)
 {
 	int y, x, level, i, w, flags;
 	uint16_t *pw;
@@ -116,6 +116,26 @@ void CK_MapLevelMarkAsDone()
 		}
 	}
 
+}
+
+static int16_t ck_fadeDrawCounter;
+
+void CK_UpdateFadeDrawing(void)
+{
+	ck_fadeDrawCounter++;
+	if (ck_fadeDrawCounter == 2)
+	{
+		VL_FadeFromBlack();
+		RF_SetDrawFunc(0);
+		SD_SetTimeCount(SD_GetLastTimeCount());
+	}
+}
+
+void CK_BeginFadeDrawing(void)
+{
+	VL_FadeToBlack();
+	ck_fadeDrawCounter = 0;
+	RF_SetDrawFunc(&CK_UpdateFadeDrawing);
 }
 
 const char *ck_levelNames[] = {
@@ -266,6 +286,7 @@ void CK_LoadLevel(bool doCache)
 		if (player->active != OBJ_ALWAYS_ACTIVE)
 			player->active = OBJ_INACTIVE;
 	}
+	CK_BeginFadeDrawing();
 }
 
 
