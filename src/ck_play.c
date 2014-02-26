@@ -238,7 +238,7 @@ void CK_RemoveObj(CK_object *obj)
 	//ck_numObjects--;
 }
 
-int CK_ActionThink(CK_object *obj, int time)
+int16_t CK_ActionThink(CK_object *obj, int16_t time)
 {
 	CK_action *action = obj->currentAction;
 
@@ -260,7 +260,7 @@ int CK_ActionThink(CK_object *obj, int time)
 		return 0;
 	}
 
-	int newTime = time + obj->actionTimer;
+	int16_t newTime = time + obj->actionTimer;
 
 	// If we won't run out of time.
 	if (action->timer > newTime || !(action->timer))
@@ -295,7 +295,7 @@ int CK_ActionThink(CK_object *obj, int time)
 		return 0;
 	}
 
-	int remainingTime = action->timer - obj->actionTimer;
+	int16_t remainingTime = action->timer - obj->actionTimer;
 	newTime -= action->timer;
 	obj->actionTimer = 0;
 

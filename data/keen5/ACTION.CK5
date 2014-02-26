@@ -206,8 +206,8 @@
 %action CK5_ACT_turretShotHit2 0xF1 0xF1 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
 #Turrets
-%action CK5_ACT_turretWait 0 0 UnscaledOnce 0 0 0x78 0 0 NULL NULL NULL CK5_ACT_turretShoot
-%action CK5_ACT_turretShoot 0 0 UnscaledOnce 1 0 1 0 0 CK5_TurretShoot NULL NULL CK5_ACT_turretWait
+%action CK5_ACT_turretWait 0 0 UnscaledOnce 0 0 0x78 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_turretShoot
+%action CK5_ACT_turretShoot 0 0 UnscaledOnce 1 0 1 0 0 CK5_TurretShoot NULL CK_BasicDrawFunc1 CK5_ACT_turretWait
 
 # ck5_obj2.c
 
