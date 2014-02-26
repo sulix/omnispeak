@@ -637,7 +637,7 @@ bool CK_DebugKeys()
 	// Extra Vibbles
 
 	// Level Warp
-	if (IN_GetKeyState(IN_SC_W))
+	if (IN_GetKeyState(IN_SC_W) && game_in_progress)
 	{
 		char str[4];
 		const char *msg = "  Warp to which level(1-18):"; 
