@@ -1057,6 +1057,7 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	sde->y = (unitY >> 4);
 	sde->sw = VH_GetSpriteTableEntry(sprite_number).width*8;
 	sde->sh = VH_GetSpriteTableEntry(sprite_number).height;
+	sde->maskOnly = allWhite;
 	
 	//TODO: Work out how to do scrolling before doing this.
 #if 0
@@ -1082,7 +1083,14 @@ void RFL_DrawSpriteList()
 			int pixelX = sde->x - (rf_scrollXUnit >> 8)*16;
 			int pixelY = sde->y - (rf_scrollYUnit >> 8)*16;
 			
-			VH_DrawSprite(pixelX, pixelY, sde->chunk);
+			if (sde->maskOnly)
+			{
+				VH_DrawSpriteMask(pixelX, pixelY, sde->chunk, 15);
+			}
+			else
+			{
+				VH_DrawSprite(pixelX, pixelY, sde->chunk);
+			}
 		}
 	}
 }

@@ -39,30 +39,16 @@ int ck_nextMapNumber;
  * NewGame: Setup the default starting stats
  */
 
-void CK_NewGame(void)
+void CK_NewGame()
 {
-	// TODO: Zero the ck_gameState (anything wrong with this approach?)
+	// TODO: Zero the ck_gameState
 	memset(&ck_gameState, 0, sizeof(ck_gameState));
 	ck_gameState.nextKeenAt = 20000;
 	ck_gameState.numLives = 3;
 	ck_gameState.numShots = 5;
 }
 
-void CK_ExitMenu(void)
-{
-	CK_NewGame();
-	// TODO: With this, cache message doesn't appear...
-	// (nothing to cache in CA_CacheMarks)
-#if 0
-	ca_levelnum--;
-	ca_levelbit >>= 1;
-	CA_ClearMarks();
-	ca_levelbit <<= 1;
-	ca_levelnum++;
-#endif
-}
-
-void CK_GameOver(void)
+void CK_GameOver()
 {
 	US_CenterWindow(16, 3);
 	US_CPrint("Game Over!");

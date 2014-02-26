@@ -554,6 +554,28 @@ void VL_1bppBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int
 	}		
 }
 
+// This is used in VH_DrawSpriteMask.
+void VL_1bppInvBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr= (uint8_t*)src;
+
+	int spitch = ((w + 7)/8)*8;
+
+	for(int sy = 0; sy < h; ++sy)
+	{
+		for(int sx = 0; sx < w; ++sx)
+		{
+			int plane_off = (sy * spitch + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
+			
+			if ((srcptr[plane_off] & plane_bit)) continue;
+			
+			dstptr[(sy+y)*pitch+(sx+x)] = colour;
+		}
+	}		
+}
+
 int VL_MemUsed()
 {
 	return vl_memused;
@@ -654,6 +676,11 @@ void VL_1bppXorWithScreen(void *src, int x, int y, int w, int h, int colour)
 void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour)
 {
 	vl_currentBackend->bitBlitToSurface(src, vl_emuegavgaadapter.screen, x, y, w, h, colour);
+}
+
+void VL_1bppInvBlitToScreen(void *src, int x, int y, int w, int h, int colour)
+{
+	vl_currentBackend->bitInvBlitToSurface(src, vl_emuegavgaadapter.screen, x, y, w, h, colour);
 }
 
 static long vl_lastFrameTime;
