@@ -230,6 +230,10 @@ void CK_KeenSetupFunctions();
 void StartMusic(uint16_t level);
 void StopMusic(void);
 
+/* ck_game.c */
+void CK_NewGame(void);
+void CK_ExitMenu(void);
+
 /* ck_inter.c */
 void CK_DrawTerminator(void);
 void CK_PlayDemoFile(const char *demoName);

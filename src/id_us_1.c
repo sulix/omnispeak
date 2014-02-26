@@ -80,6 +80,17 @@ static int16_t us_backColour = 0;
 #define US_WINDOW_MAX_X 320
 #define US_WINDOW_MAX_Y 200
 
+void (*p_save_game)(FILE *handle);
+void (*p_load_game)(FILE *handle);
+void (*p_exit_menu)(void);
+
+void US_SetMenuFunctionPointers(void (*loadgamefunc)(FILE *), void (*savegamefunc)(FILE *), void (*exitmenufunc)(void))
+{
+	p_load_game = loadgamefunc;
+	p_save_game = savegamefunc;
+	p_exit_menu = exitmenufunc;
+}
+
 void US_Print(const char *str)
 {
 	char strbuf[256];

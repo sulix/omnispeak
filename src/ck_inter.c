@@ -43,7 +43,7 @@ void CK_HandleDemoKeys()
 	 * ck_gameState.levelState = 5;
 	 * startingDifficulty = 2;
 	 * IN_ClearKeysDown();
-	 * init_keen_stats
+	 * CK_NewGame(); (init_keen_stats)
 	 * return;
 	 */
 
@@ -136,6 +136,8 @@ void CK_PlayDemoFile(const char *demoName)
 	uint8_t *demoBuf;
 	int demoFileLength;
 
+	CK_NewGame();
+
 	CA_LoadFile(demoName, (void **)&demoBuf, &demoFileLength);
 
 	uint16_t demoMap = *demoBuf;
@@ -164,7 +166,7 @@ void CK_PlayDemo(int demoNumber)
 
 	int demoChunk = 4926 + demoNumber;
 
-	//	CK_NewGame();
+	CK_NewGame();
 
 	CA_CacheGrChunk(demoChunk);
 	demoBuf = (uint8_t *)(ca_graphChunks[demoChunk]);

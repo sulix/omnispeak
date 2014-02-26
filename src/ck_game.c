@@ -39,15 +39,30 @@ int ck_nextMapNumber;
  * NewGame: Setup the default starting stats
  */
 
-void CK_NewGame()
+void CK_NewGame(void)
 {
-	// TODO: Zero the ck_gameState
+	// TODO: Zero the ck_gameState (anything wrong with this approach?)
+	memset(&ck_gameState, 0, sizeof(ck_gameState));
 	ck_gameState.nextKeenAt = 20000;
 	ck_gameState.numLives = 3;
 	ck_gameState.numShots = 5;
 }
 
-void CK_GameOver()
+void CK_ExitMenu(void)
+{
+	CK_NewGame();
+	// TODO: With this, cache message doesn't appear...
+	// (nothing to cache in CA_CacheMarks)
+#if 0
+	ca_levelnum--;
+	ca_levelbit >>= 1;
+	CA_ClearMarks();
+	ca_levelbit <<= 1;
+	ca_levelnum++;
+#endif
+}
+
+void CK_GameOver(void)
 {
 	US_CenterWindow(16, 3);
 	US_CPrint("Game Over!");
@@ -197,12 +212,12 @@ void CK_LoadLevel(bool doCache)
 	{
 		US_InitRndT(true);
 	}
-
+#if 0
 	//TODO: Put these in the right place.
 	ck_gameState.nextKeenAt = 20000;
 	ck_gameState.numLives = 3;
 	ck_gameState.numShots = 5;
-
+#endif
 	CA_CacheMap(ck_currentMapNumber);
 	RF_NewMap(ck_currentMapNumber);
 	CA_ClearMarks();
@@ -217,7 +232,7 @@ void CK_LoadLevel(bool doCache)
 
 	RF_MarkTileGraphics();
 	//MM_BombOnError();
-	// CA_LoadAllSounds()
+	CA_LoadAllSounds();
 
 	// Cache Marked graphics and draw loading box
 	if (doCache)

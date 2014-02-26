@@ -53,8 +53,6 @@ void set_key_control( US_CardItem *item, int which_control );
 extern CK_Difficulty ck_startingDifficulty;
 int game_unsaved, game_in_progress, quit_to_dos, load_game_error;
 
-void (*p_exit_menu)(void) ;
-
 // The last selected command.
 US_CardCommand us_currentCommand = US_Comm_None;
 bool command_confirmed;
