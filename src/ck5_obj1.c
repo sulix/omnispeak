@@ -89,7 +89,11 @@ void CK5_Glide(CK_object *obj)
 
 void CK5_TurretShotCol(CK_object *me, CK_object *other)
 {
-	//TODO: Kill Keen
+	if (other->type == CT_Player)
+	{
+		CK_KillKeen();
+	}
+	CK_SetAction2(me, CK_GetActionByName("CK5_ACT_turretShotHit1"));
 }
 
 void CK5_TurretShotDraw(CK_object *obj)
@@ -177,7 +181,7 @@ void CK5_GoPlatSpawn(int tileX, int tileY, int direction, bool purple)
 
 
 	int mapW = CA_MapHeaders[ck_currentMapNumber]->width;
-	int mapH = CA_MapHeaders[ck_currentMapNumber]->height;
+	//int mapH = CA_MapHeaders[ck_currentMapNumber]->height;
 	CA_mapPlanes[2][tileY * mapW + tileX] = direction + 0x5B;
 
 	obj->user1 = direction;

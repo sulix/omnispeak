@@ -222,7 +222,7 @@ void CK5_BlockPlatform(CK_object *obj)
 			obj->xDirection = 1;
 			//TODO: Change DeltaVelocity
 			//CK_PhysUpdateX(obj, 256 - nextPosUnit&255);
-			obj->nextX += 256 - nextPosUnit & 255;
+			obj->nextX += (256 - nextPosUnit) & 255;
 		}
 	}
 	else if (obj->yDirection == 1)
@@ -269,6 +269,14 @@ void CK5_BlockPlatform(CK_object *obj)
 
 void CK_DeadlyCol(CK_object *o1, CK_object *o2)
 {
+	if (o2->type == CT_Stunner)
+	{
+		CK_ShotHit(o2);
+	}
+	else if (o2->type == CT_Player)
+	{
+		CK_KillKeen();
+	}
 }
 
 void CK5_SpawnFallPlat(int tileX, int tileY)
