@@ -50,7 +50,7 @@ ifeq ($(WITH_SDL2), 1)
 		LIBS+= -lGL
 	endif
 	IDOBJECTS+= id_vl_sdl2gl.o 
-	SDLCONFIGBIN=sdl2-config #/local/cross-tools/x86_64-w64-mingw32/bin/sdl2-config
+	SDLCONFIGBIN=/local/cross-tools/x86_64-w64-mingw32/bin/sdl2-config
 else
 	IDOBJECTS+= id_vl_sdl12.o
 	SDLCONFIGBIN=sdl-config

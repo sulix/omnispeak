@@ -530,12 +530,18 @@ void CK5_ScanInfoLayer()
 			{
 			case 1:
 				CK_SpawnKeen(x, y, 1);
+				CK_DemoSignSpawn();
+				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
 				break;
 			case 2:
 				CK_SpawnKeen(x, y, -1);
+				CK_DemoSignSpawn();
+				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
 				break;
 			case 3:
 				CK_SpawnMapKeen(x, y);
+				CK_DemoSignSpawn();
+				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
 				break;
 
 			case 6:

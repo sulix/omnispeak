@@ -71,6 +71,8 @@ void CK5_SpawnSphereful(int tileX, int tileY);
 void CK5_SpawnKorath(int tileX, int tileY);
 
 /* ck5_map.c */
+void CK_DemoSignSpawn();
+void CK_UpdateScoreBox(CK_object *scorebox);
 void CK_SpawnMapKeen(int tileX, int tileY);
 
 /* Map functions */
