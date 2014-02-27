@@ -28,50 +28,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_game.h"
 #include "ck_act.h"
 #include "ck5_ep.h"
+
+#include <string.h>
 #include <stdio.h>
 
 void CK5_MapKeenWalk(CK_object * obj);
-#if 0
-
-/*
-int bouncearray [16][4] or [4][16] or [8][8]
- */
 
 // =========================================================================
-//something to do with keen spawning and the demo sign
 
-DemoSignSpawn(void)
+CK_object *ck_scoreBoxObj;
+
+void CK_DemoSignSpawn()
 {
 
-	CK_object* obj;
+	ck_scoreBoxObj->type = CT_Friendly;
+	ck_scoreBoxObj->zLayer = 3;
+	ck_scoreBoxObj->active = OBJ_ALWAYS_ACTIVE;
+	ck_scoreBoxObj->clipped = CLIP_not;
 
-	obj->type = 1;
-	obj->zLayer = 3;
-	obj->active = 2;
-	obj->clipping = 0;
-	obj->user2 = obj->user1 = obj->user3 = obj->user = -1;
+	// Set all user vars to -1 to force scorebox redraw
+	ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
 
+#if 0
 	if (InHighScores)
 	{
-		obj->action = 0x788;
+		ck_scoreBoxObj->action = 0x788;
 		return;
 	}
 
 	if (DemoMode)
 	{
-		CK_SetAction(obj, ACTION_DEMOSIGN);
+		CK_SetAction(ck_scoreBoxObj, ACTION_DEMOSIGN);
 		CACHEGR(0x6B);
 		return;
 	}
+#endif
 
-	CK_SetAction(obj, 0x133E);
-
+	CK_SetAction(ck_scoreBoxObj, CK_GetActionByName("CK5_ACT_ScoreBox"));
 	return;
 }
 
 void DemoSign( CK_object *demo)
 {
-
+#if 0
 	if (	demo->posX == ScrollX_MU && demo->posY == ScrollY_MU ) return;
 	demo->posX = ScrollX_MU;
 	demo->posY = ScrollY_MU;
@@ -80,10 +79,192 @@ void DemoSign( CK_object *demo)
 	// RF_PlaceSprite( &(demo->int35), demo->posX+0x0A00â€“0x0200, demo->posY+0x80,0x81,0,3);
 
 	return;
+#endif
+}
+bool ck_scoreBoxEnabled = true;
+
+/*
+ * ScoreBox update
+ * Scorebox works by drawing tile8s over the sprite that has been cached in
+ * memory.
+ * 
+ * Because vanilla keen cached four shifts of the scorebox, this redraw
+ * procedure would have to be repeated for each shift.
+ * 
+ * This is not the case for omnispeak, which just caches one copy of
+ * each sprite.
+ * 
+ */
+
+/*
+ * Draws a Tile8 to an unmasked planar graphic
+ */
+void CK_ScoreBoxDrawTile8(int tilenum, uint8_t *dest, int destWidth, int planeSize)
+{
+	uint8_t *src = ca_graphChunks[ca_gfxInfoE.offTiles8] + 32 * tilenum;
+
+	// Copy the tile to the target bitmap 
+	for (int plane = 0; plane < 4; plane++, dest+=planeSize)
+	{
+		uint8_t *d = dest;
+		for (int row = 0; row < 8; row++)
+		{
+			*d = *(src++);
+			d += destWidth;
+		}
+	}
 }
 
-//has something to do with MapKeen Spawn
+void CK_UpdateScoreBox(CK_object *scorebox)
+{
+
+	bool updated = false;
+
+#if 0
+	// Don't draw anything for the high score level
+	if (InHighScores)
+		return;
+
+	// Show the demo sign for the demo mode
+	if (DemoMode)
+	{
+		CK_DoDemoSign();
+		return;
+	}
 #endif
+
+	if (!ck_scoreBoxEnabled)
+		return;
+
+
+	// NOTE: Score is stored in user1 and user2 in original keen
+	// Can just use user1 here, but be careful about loading/saving games!
+
+
+	// Draw the score if it's changed
+	if (scorebox->user1 != ck_gameState.keenScore)
+	{
+		int place, len, planeSize;
+		char buf[16];
+		uint8_t* dest;
+
+		VH_SpriteTableEntry box = VH_GetSpriteTableEntry(0xEB - ca_gfxInfoE.offSprites);
+
+		// Start drawing the tiles after the mask plane,
+		// and four rows from the top
+		dest = (uint8_t*)ca_graphChunks[0xEB];
+		dest += (planeSize = box.width * box.height);
+		dest += box.width * 4 + 1;
+
+		sprintf(buf, "%d", ck_gameState.keenScore);
+		len = strlen(buf);
+
+		// Draw the leading emptiness
+		for (place = 9; place > len; place--)
+		{
+			CK_ScoreBoxDrawTile8(0x29, dest++, box.width, planeSize);
+		}
+
+		// Draw the score
+		for (char *c = buf; *c != 0; c++)
+		{
+			CK_ScoreBoxDrawTile8(*c - 6, dest++, box.width, planeSize);
+			
+		}
+
+		scorebox->user1 = ck_gameState.keenScore;
+		updated = true;
+		
+	}
+
+	// Draw the number of shots if it's changed
+	if (scorebox->user3 != ck_gameState.numShots)
+	{
+		int place, len, planeSize;
+		char buf[16];
+		uint8_t* dest;
+
+		VH_SpriteTableEntry box = VH_GetSpriteTableEntry(0xEB - ca_gfxInfoE.offSprites);
+
+		// Start drawing the tiles after the mask plane,
+		// and 12 rows from the top
+		dest = (uint8_t*)ca_graphChunks[0xEB];
+		dest += (planeSize = box.width * box.height);
+		dest += box.width * 20 + 8;
+
+		if (ck_gameState.numShots >= 99)
+			sprintf(buf, "99");
+		else
+			sprintf(buf, "%d", ck_gameState.numShots);
+
+		len = strlen(buf);
+
+		// Draw the leading emptiness 
+		for (place = 2; place > len; place--)
+		{
+			CK_ScoreBoxDrawTile8(0x29, dest++, box.width, planeSize);
+		}
+
+		// Draw the score
+		for (char *c = buf; *c != 0; c++)
+		{
+			CK_ScoreBoxDrawTile8(*c - 6, dest++, box.width, planeSize);
+		}
+			
+		scorebox->user3 = ck_gameState.numShots;
+		updated = true;
+	}
+
+	// Draw the number of lives if it's changed
+	if (scorebox->user4 != ck_gameState.numLives)
+	{
+		int place, len, planeSize;
+		char buf[16];
+		uint8_t* dest;
+
+		VH_SpriteTableEntry box = VH_GetSpriteTableEntry(0xEB - ca_gfxInfoE.offSprites);
+
+		// Start drawing the tiles after the mask plane,
+		// and 12 rows from the top
+		dest = (uint8_t*)ca_graphChunks[0xEB];
+		dest += (planeSize = box.width * box.height);
+		dest += box.width * 20 + 3;
+
+		if (ck_gameState.numLives >= 99)
+			sprintf(buf, "99");
+		else
+			sprintf(buf, "%d", ck_gameState.numLives);
+
+		len = strlen(buf);
+
+		// Draw the leading emptiness 
+		for (place = 2; place > len; place--)
+		{
+			CK_ScoreBoxDrawTile8(0x29, dest++, box.width, planeSize);
+		}
+
+		// Draw the score
+		for (char *c = buf; *c != 0; c++)
+		{
+			CK_ScoreBoxDrawTile8(*c - 6, dest++, box.width, planeSize);
+		}
+			
+		scorebox->user4 = ck_gameState.numLives;
+		updated = true;
+	}
+
+	// Now draw the scorebox to the screen
+	if (scorebox->posX != rf_scrollXUnit || scorebox->posY != rf_scrollYUnit)
+	{
+		scorebox->posX = rf_scrollXUnit;
+		scorebox->posY = rf_scrollYUnit;
+		updated = true;
+	}
+
+	if (updated)
+		RF_AddSpriteDraw(&scorebox->sde, scorebox->posX + 0x40, scorebox->posY + 0x40, 0xEB, false, 3);
+	
+}
 
 /*
  * MapKeen Thinks

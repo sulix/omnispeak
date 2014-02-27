@@ -84,6 +84,7 @@ int16_t ck_invincibilityTimer;
 extern int game_in_progress;
 extern int load_game_error, ck_startingSavedGame;
 extern CK_Difficulty ck_startingDifficulty;
+extern CK_object *ck_scoreBoxObj;
 
 void CK_CountActiveObjects()
 {
@@ -168,7 +169,7 @@ void CK_SetupObjArray()
 
 	ck_keenObj = CK_GetNewObj(false);
 
-	// TODO: Add Andy's `special object'?
+	ck_scoreBoxObj = CK_GetNewObj(false);
 }
 
 CK_object *CK_GetNewObj(bool nonCritical)
@@ -1303,6 +1304,9 @@ int CK_PlayLoop()
 			CK_MapCamera(ck_keenObj);
 		else
 			CK_NormalCamera(ck_keenObj);
+
+		//Draw the scorebox
+		CK_UpdateScoreBox(ck_scoreBoxObj);
 
 		if (ck_invincibilityTimer)
 		{

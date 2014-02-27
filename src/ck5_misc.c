@@ -557,15 +557,18 @@ void CK5_ScanInfoLayer()
 			{
 			case 1:
 				CK_SpawnKeen(x, y, 1);
-				// TODO: Spawn demo sign
+				CK_DemoSignSpawn();
+				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
 				break;
 			case 2:
 				CK_SpawnKeen(x, y, -1);
-				// TODO: Spawn demo sign
+				CK_DemoSignSpawn();
+				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
 				break;
 
 			case 3:
-				// TODO: Spawn demo sign
+				CK_DemoSignSpawn();
+				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
 				if (ck_gameState.levelState != 13)
 					CK_SpawnMapKeen(x, y);
 				break;
