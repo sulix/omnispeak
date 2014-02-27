@@ -567,9 +567,10 @@ void CK5_ScanInfoLayer()
 				break;
 
 			case 3:
-				CK_SpawnMapKeen(x, y);
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
+				if (ck_gameState.levelState != 13)
+					CK_SpawnMapKeen(x, y);
 				break;
 
 			case 6:
