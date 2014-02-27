@@ -1738,6 +1738,8 @@ void US_SelectCurrentItem()
 	}
 }
 
+extern void CK_US_UpdateOptionsMenus();
+
 void USL_UpdateCards( void )
 {
 	int i;
@@ -1780,7 +1782,7 @@ void USL_UpdateCards( void )
 	ck_us_mainMenu.selectedItem = (game_in_progress) ? 4 : 0;
 
 	/* Update the options menu */
-	//update_options_menus();
+	CK_US_UpdateOptionsMenus();
 }
 
 void USL_BeginCards()

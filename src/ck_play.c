@@ -78,6 +78,10 @@ bool ck_godMode;
 // invincibility timer
 int16_t ck_invincibilityTimer;
 
+// ScoreBox
+bool ck_scoreBoxEnabled;
+CK_object *ck_scoreBoxObj;
+
 // A bunch of global variables from other modules that should be 
 // handled better, but are just defined here for now
 
@@ -714,7 +718,11 @@ void CK_CheckKeys()
 		HelpScreens();
 		StartMusic(ck_currentMapNumber);
 
-		// TODO: Draw Scorebox here if it's enabled
+		// Force scorebox redraw if it's enabled
+		if (ck_scoreBoxEnabled)
+		{
+			ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
+		}
 
 	}
 
@@ -732,7 +740,15 @@ void CK_CheckKeys()
 			// RF_Reset();
 			StartMusic(ck_currentMapNumber);
 
-			// Handle the scorebox if it got toggled
+			// Wipe the scorebox if it got disabled
+			if (!ck_scoreBoxEnabled && ck_scoreBoxObj->sde)
+				RF_RemoveSpriteDraw(&ck_scoreBoxObj->sde);
+
+		// Force scorebox redraw if it's enabled
+		if (ck_scoreBoxEnabled)
+		{
+			ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
+		}
 
 			IN_ClearKeysDown();
 

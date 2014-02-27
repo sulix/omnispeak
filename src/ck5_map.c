@@ -36,7 +36,6 @@ void CK5_MapKeenWalk(CK_object * obj);
 
 // =========================================================================
 
-CK_object *ck_scoreBoxObj;
 
 void CK_DemoSignSpawn()
 {
@@ -81,7 +80,6 @@ void DemoSign( CK_object *demo)
 	return;
 #endif
 }
-bool ck_scoreBoxEnabled = true;
 
 /*
  * ScoreBox update
@@ -101,7 +99,7 @@ bool ck_scoreBoxEnabled = true;
  */
 void CK_ScoreBoxDrawTile8(int tilenum, uint8_t *dest, int destWidth, int planeSize)
 {
-	uint8_t *src = ca_graphChunks[ca_gfxInfoE.offTiles8] + 32 * tilenum;
+	uint8_t *src = (uint8_t *)ca_graphChunks[ca_gfxInfoE.offTiles8] + 32 * tilenum;
 
 	// Copy the tile to the target bitmap 
 	for (int plane = 0; plane < 4; plane++, dest+=planeSize)
