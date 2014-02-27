@@ -34,28 +34,6 @@ bool CK_US_SaveGameMenuProc(US_CardMsg msg, US_CardItem *item)
 	return false;
 }
 
-US_CardItem ck_us_optionsMenuItems[];
-
-void CK_US_UpdateOptionsMenus( void )
-{
-
-	ck_us_optionsMenuItems[0].caption = ck_scoreBoxEnabled ? "SCORE BOX (ON)" : "SCORE BOX (OFF)";
-#if 0
-	ck_us_optionsMenuItems[1].caption = two_button_firing ? "TWO-BUTTON FIRING (ON)" : "TWO-BUTTON FIRING (OFF)";
-	ck_us_optionsMenuItems[2].caption = fix_jerky_motion ? "FIX JERKY MOTION (ON)" : "FIX JERKY MOTION (OFF)";
-	ck_us_optionsMenuItems[3].caption = svga_comp ? "SVGA COMPATIBILITY (ON)" : "SVGA COMPATIBILITY (OFF)";
-
-	buttons_menu_items[2].state &= ~US_Is_Disabled;
-	if ( two_button_firing )
-		buttons_menu_items[2].state |= US_Is_Disabled;
-
-	/* Set up the gamepad menu item */
-	configure_menu_items[6].state |= US_Is_Disabled;
-	if ( game_controllers[0] == CTRL_JOYSTICK1 || game_controllers[0] == CTRL_JOYSTICK2 )
-		configure_menu_items[6].state &= ~US_Is_Disabled;
-	configure_menu_items[6].caption = gamepad ? "USE GRAVIS GAMEPAD (ON)" : "USE GRAVIS GAMEPAD (OFF)";
-#endif
-}
 bool CK_US_ScoreBoxMenuProc(US_CardMsg msg, US_CardItem *item)
 {
 	if ( msg != US_MSG_CardEntered )
@@ -685,4 +663,25 @@ bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item)
 	/* Play the game */
 	paddlewar();
 	return 1;
+}
+
+void CK_US_UpdateOptionsMenus( void )
+{
+
+	ck_us_optionsMenuItems[0].caption = ck_scoreBoxEnabled ? "SCORE BOX (ON)" : "SCORE BOX (OFF)";
+#if 0
+	ck_us_optionsMenuItems[1].caption = two_button_firing ? "TWO-BUTTON FIRING (ON)" : "TWO-BUTTON FIRING (OFF)";
+	ck_us_optionsMenuItems[2].caption = fix_jerky_motion ? "FIX JERKY MOTION (ON)" : "FIX JERKY MOTION (OFF)";
+	ck_us_optionsMenuItems[3].caption = svga_comp ? "SVGA COMPATIBILITY (ON)" : "SVGA COMPATIBILITY (OFF)";
+
+	buttons_menu_items[2].state &= ~US_Is_Disabled;
+	if ( two_button_firing )
+		buttons_menu_items[2].state |= US_Is_Disabled;
+
+	/* Set up the gamepad menu item */
+	configure_menu_items[6].state |= US_Is_Disabled;
+	if ( game_controllers[0] == CTRL_JOYSTICK1 || game_controllers[0] == CTRL_JOYSTICK2 )
+		configure_menu_items[6].state &= ~US_Is_Disabled;
+	configure_menu_items[6].caption = gamepad ? "USE GRAVIS GAMEPAD (ON)" : "USE GRAVIS GAMEPAD (OFF)";
+#endif
 }
