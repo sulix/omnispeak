@@ -407,7 +407,10 @@ void CK_RunAction(CK_object *obj)
 #endif
 	if (obj->gfxChunk != oldChunk || obj->nextX || obj->nextY || obj->topTI == 0x19)
 	{
-		CK_PhysUpdateNormalObj(obj);
+		if (obj->clipped == CLIP_simple)
+			CK_PhysFullClipToWalls(obj);
+		else
+			CK_PhysUpdateNormalObj(obj);
 	}
 }
 

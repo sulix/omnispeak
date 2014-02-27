@@ -48,6 +48,7 @@ struct CK_action;
 bool CK_NotStuckInWall(struct CK_object *obj);
 
 void CK_PhysUpdateNormalObj(struct CK_object *obj);
+void CK_PhysFullClipToWalls(struct CK_object *obj);
 void CK_PhysUpdateSimpleObj(struct CK_object *obj);
 void CK_PhysPushX(struct CK_object *pushee, struct CK_object *pusher);
 void CK_PhysPushY(struct CK_object *pushee, struct CK_object *pusher);

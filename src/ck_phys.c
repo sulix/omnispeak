@@ -102,7 +102,7 @@ void CK_PhysUpdateX(CK_object *obj, int deltaUnitX)
 	// WARNING: Keen _doesn't_ update tileXmid!
 
 	obj->clipRects.tileX1 = obj->clipRects.unitX1 >> 8;
-	obj->clipRects.tileX2 = obj->clipRects.unitX1 >> 8;
+	obj->clipRects.tileX2 = obj->clipRects.unitX2 >> 8;
 }
 
 void CK_PhysUpdateY(CK_object *obj, int deltaUnitY)
@@ -218,13 +218,12 @@ void CK_PhysKeenClipUp(CK_object *obj)
 
 bool CK_NotStuckInWall(CK_object *obj)
 {
-	for (int y = obj->clipRects.tileY1; y <= obj->clipRects.tileY2; ++y)
+	for (uint16_t y = obj->clipRects.tileY1; y <= obj->clipRects.tileY2; ++y)
 	{
-		for (int x = obj->clipRects.tileX1; x <= obj->clipRects.tileX2; ++x)
+		for (uint16_t x = obj->clipRects.tileX1; x <= obj->clipRects.tileX2; ++x)
 		{
-			int tile = CA_TileAtPos(x, y, 1);
-			//TODO: Bottom and left.
-			if (TI_ForeTop(tile) || TI_ForeRight(tile))
+			uint16_t tile = CA_TileAtPos(x, y, 1);
+			if (TI_ForeTop(tile) || TI_ForeRight(tile) || TI_ForeBottom(tile) || TI_ForeLeft(tile))
 				return false;
 		}
 	}
@@ -440,16 +439,78 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 
 //TODO: Finish Implementing!!!!
 
-void CK_FullClipToWalls(CK_object *obj)
+void CK_PhysFullClipToWalls(CK_object *obj)
 {
-	int oldUnitX = obj->posX;
-	int oldUnitY = obj->posY;
+	int16_t oldUnitX = obj->posX;
+	int16_t oldUnitY = obj->posY;
 
+	if (obj->nextX > 239)
+		obj->nextX = 239;
+	else if (obj->nextX < -239)
+		obj->nextX = -239;
+	if (obj->nextY > 239)
+		obj->nextY = 239;
+	else if (obj->nextY < -239)
+		obj->nextY = -239;
+
+	obj->posX += obj->nextX;
+	obj->posY += obj->nextY;
 	obj->visible = true;
 
 	//TODO: Verify object class (need callback to episode struct)
-	// Error msg: "FullClipToWalls: Bad obclass"
+	if ((obj->type != CT_SliceStar) && (obj->type != CT_Sphereful))
+	{
+		Quit("FullClipToWalls: Bad obclass");
+	}
 
+	int16_t delX = 512, delY = 512;
+	obj->clipRects.unitX2 = obj->posX + delX;
+	obj->clipRects.unitX1 = obj->posX;
+	obj->clipRects.unitY1 = obj->posY;
+	obj->clipRects.unitY2 = obj->posY + delY;
+	obj->clipRects.tileX1 = obj->clipRects.unitX1 >> 8;
+	obj->clipRects.tileX2 = obj->clipRects.unitX2 >> 8;
+	obj->clipRects.tileY1 = obj->clipRects.unitY1 >> 8;
+	obj->clipRects.tileY2 = obj->clipRects.unitY2 >> 8;
+	//Reset the tile clipping vars.
+	obj->topTI = 0;
+	obj->bottomTI = 0;
+	obj->leftTI = 0;
+	obj->rightTI = 0;
+
+	if (!CK_NotStuckInWall(obj))
+	{
+		CK_PhysUpdateX(obj, -obj->nextX);
+		if (CK_NotStuckInWall(obj))
+		{
+			if (obj->nextX > 0)
+				obj->leftTI = 1;
+			else
+				obj->rightTI = 1;
+		}
+		else
+		{
+			if (obj->nextY > 0)
+				obj->topTI = 1;
+			else
+				obj->bottomTI = 1;
+
+			CK_PhysUpdateX(obj, obj->nextX);
+			CK_PhysUpdateY(obj, -obj->nextY);
+			if (!CK_NotStuckInWall(obj))
+			{
+				CK_PhysUpdateX(obj, -obj->nextX);
+				if (obj->nextX > 0)
+					obj->leftTI = 1;
+				else
+					obj->rightTI = 1;
+			}
+		}
+	}
+	obj->deltaPosX += (obj->posX - oldUnitX);
+	obj->deltaPosY += (obj->posY - oldUnitY);
+
+	CK_ResetClipRects(obj);
 }
 
 void CK_PhysUpdateSimpleObj(CK_object *obj)
@@ -562,7 +623,9 @@ void CK_SetAction(CK_object *obj, CK_action *act)
 	obj->clipped = oldClipping;
 
 	//TODO: Handle platforms
-	if (obj->clipped)
+	if (obj->clipped == CLIP_simple)
+		CK_PhysFullClipToWalls(obj);
+	else if (obj->clipped == CLIP_normal)
 		CK_PhysUpdateNormalObj(obj);
 }
 
