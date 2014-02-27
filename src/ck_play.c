@@ -82,6 +82,12 @@ int16_t ck_invincibilityTimer;
 bool ck_scoreBoxEnabled;
 CK_object *ck_scoreBoxObj;
 
+// Two button firing
+bool ck_twoButtonFiring;
+
+// Gamepad
+bool ck_gamePadEnabled;
+
 // A bunch of global variables from other modules that should be 
 // handled better, but are just defined here for now
 
@@ -826,21 +832,46 @@ void CK_HandleInput()
 	if (ck_inputFrame.yDirection != -1)
 		ck_keenState.keenSliding = false;
 
-	if (ck_demoEnabled) // Two-button firing mode.
+	if (!ck_gamePadEnabled || ck_demoEnabled) 
 	{
-		ck_keenState.shootIsPressed = ck_inputFrame.jump && ck_inputFrame.pogo;
-		if (ck_keenState.shootIsPressed)
+		// Two button firing mode is used for demo playback
+		if (!ck_twoButtonFiring && !ck_demoEnabled)
 		{
-			ck_keenState.jumpWasPressed = ck_keenState.jumpIsPressed = false;
-			ck_keenState.pogoWasPressed = ck_keenState.pogoIsPressed = false;
+			ck_keenState.jumpIsPressed = ck_inputFrame.jump;
+			ck_keenState.pogoIsPressed = ck_inputFrame.pogo;
+			ck_keenState.shootIsPressed = ck_inputFrame.button2;
+			if (!ck_keenState.jumpIsPressed) ck_keenState.jumpWasPressed = false;
+			if (!ck_keenState.pogoIsPressed) ck_keenState.pogoWasPressed = false;
+
+			if (!ck_keenState.shootIsPressed) ck_keenState.shootWasPressed = false;
 		}
 		else
 		{
-			ck_keenState.shootWasPressed = false;
-			ck_keenState.jumpWasPressed = false;
-			ck_keenState.jumpIsPressed = ck_inputFrame.jump;
 
-			ck_keenState.pogoWasPressed = false;
+			// Check for two-button firing
+			if (ck_inputFrame.jump && ck_inputFrame.pogo)
+			{
+				ck_keenState.shootIsPressed = true;
+				ck_keenState.jumpIsPressed = false;
+				ck_keenState.pogoIsPressed = false;
+				ck_keenState.jumpWasPressed = false;
+				ck_keenState.pogoWasPressed = false;
+				return;
+			}
+
+			ck_keenState.shootWasPressed = false;
+			ck_keenState.shootIsPressed = false;
+
+			if (ck_inputFrame.jump)
+			{
+				ck_keenState.jumpIsPressed = true;
+			}
+			else
+			{
+				ck_keenState.jumpWasPressed = false;
+				ck_keenState.jumpIsPressed = false;
+			}
+
 			if (ck_inputFrame.pogo)
 			{
 				// Here be dragons!
@@ -864,6 +895,7 @@ void CK_HandleInput()
 				}
 				else
 				{
+					ck_keenState.pogoWasPressed = false;
 					ck_keenState.pogoIsPressed = false;
 				}
 				pogoTimer = 0;
@@ -872,13 +904,7 @@ void CK_HandleInput()
 	}
 	else
 	{
-		ck_keenState.jumpIsPressed = ck_inputFrame.jump;
-		ck_keenState.pogoIsPressed = ck_inputFrame.pogo;
-		ck_keenState.shootIsPressed = ck_inputFrame.button2;
-		if (!ck_keenState.jumpIsPressed) ck_keenState.jumpWasPressed = false;
-		if (!ck_keenState.pogoIsPressed) ck_keenState.pogoWasPressed = false;
-
-		if (!ck_keenState.shootIsPressed) ck_keenState.shootWasPressed = false;
+		// TODO: Gravis Gamepad input handling
 	}
 
 	// TODO: Wrong place to call this!

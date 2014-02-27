@@ -42,6 +42,8 @@ extern int16_t ck_invincibilityTimer;
 extern bool ck_scoreBoxEnabled;
 extern struct CK_object *ck_scoreBoxObj;
 
+extern bool ck_twoButtonFiring;
+
 // Object Mgmt
 struct CK_object *CK_GetNewObj(bool nonCritical);
 void CK_SetupObjArray();

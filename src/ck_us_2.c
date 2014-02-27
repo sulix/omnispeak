@@ -47,7 +47,13 @@ bool CK_US_ScoreBoxMenuProc(US_CardMsg msg, US_CardItem *item)
 
 bool CK_US_TwoButtonFiringMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	return false;
+	if ( msg != US_MSG_CardEntered )
+		return false;
+
+	ck_twoButtonFiring = !ck_twoButtonFiring;
+	green_message_box( (ck_twoButtonFiring ? "Two-button firing now on" : "Two-button firing now off"), "Press any key", NULL );
+	CK_US_UpdateOptionsMenus();
+	return true;
 }
 
 bool CK_US_FixJerkyMotionMenuProc(US_CardMsg msg, US_CardItem *item)
@@ -669,19 +675,22 @@ void CK_US_UpdateOptionsMenus( void )
 {
 
 	ck_us_optionsMenuItems[0].caption = ck_scoreBoxEnabled ? "SCORE BOX (ON)" : "SCORE BOX (OFF)";
+	ck_us_optionsMenuItems[1].caption = ck_twoButtonFiring ? "TWO-BUTTON FIRING (ON)" : "TWO-BUTTON FIRING (OFF)";
 #if 0
-	ck_us_optionsMenuItems[1].caption = two_button_firing ? "TWO-BUTTON FIRING (ON)" : "TWO-BUTTON FIRING (OFF)";
 	ck_us_optionsMenuItems[2].caption = fix_jerky_motion ? "FIX JERKY MOTION (ON)" : "FIX JERKY MOTION (OFF)";
 	ck_us_optionsMenuItems[3].caption = svga_comp ? "SVGA COMPATIBILITY (ON)" : "SVGA COMPATIBILITY (OFF)";
 
-	buttons_menu_items[2].state &= ~US_Is_Disabled;
-	if ( two_button_firing )
-		buttons_menu_items[2].state |= US_Is_Disabled;
+#endif
+	// Disable Two button firing selection if required
+	ck_us_buttonsMenuItems[2].state &= ~US_IS_Disabled;
+	if ( ck_twoButtonFiring )
+		ck_us_buttonsMenuItems[2].state |= US_IS_Disabled;
+#if 0
 
 	/* Set up the gamepad menu item */
-	configure_menu_items[6].state |= US_Is_Disabled;
+	configure_menu_items[6].state |= US_IS_Disabled;
 	if ( game_controllers[0] == CTRL_JOYSTICK1 || game_controllers[0] == CTRL_JOYSTICK2 )
-		configure_menu_items[6].state &= ~US_Is_Disabled;
+		configure_menu_items[6].state &= ~US_IS_Disabled;
 	configure_menu_items[6].caption = gamepad ? "USE GRAVIS GAMEPAD (ON)" : "USE GRAVIS GAMEPAD (OFF)";
 #endif
 }
