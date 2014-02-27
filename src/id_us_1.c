@@ -167,7 +167,7 @@ void US_CPrintLine(const char *str)
 	uint16_t w, h;
 	CA_CacheGrChunk(3); // TODO: What is this function call doing here?
 	VH_MeasurePropString(str, &w, &h, us_printFont);
-	if (w < us_windowW)
+	if (w <= us_windowW)
 	{
 		int x = us_windowX + ((us_windowW - w) / 2);
 		VH_DrawPropString(str, x, us_printY, us_printFont, us_printColour);
@@ -179,13 +179,32 @@ void US_CPrintLine(const char *str)
 	}
 }
 
-void US_CPrint(const char *str)
+void US_CPrint(char *str)
 {
-	//TODO: Support newlines
-	US_CPrintLine(str);
+	char lastChar;
+	char *strInLine;
+	while (*str)
+	{
+		strInLine = str;
+		while (*strInLine)
+		{
+			if (*strInLine == '\n')
+				break;
+			strInLine++;
+		}
+		lastChar = *strInLine;
+		*((char *)strInLine) = '\0'; // Hence, not const
+		US_CPrintLine(str);
+		str = strInLine;
+		if (lastChar)
+		{
+			*((char *)strInLine) = lastChar; // Again not const
+			str++;
+		}
+	}
 }
 
-void US_CPrintF(const char *str, ...)
+void US_CPrintF(char *str, ...)
 {
 	char buf[256];
 	va_list args;

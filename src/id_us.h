@@ -48,8 +48,8 @@ void US_Print(const char *str);
 void US_PrintF(const char *str, ...);
 void US_PrintCentered(const char *str);
 void US_CPrintLine(const char *str);
-void US_CPrint(const char *str);
-void US_CPrintF(const char *str, ...);
+void US_CPrint(char *str); // This function MODIFIES the string
+void US_CPrintF(char *str, ...); // Could be const, but to be consistent...
 void US_ClearWindow();
 void US_DrawWindow(int x, int y, int w, int h);
 void US_CenterWindow(int w, int h);

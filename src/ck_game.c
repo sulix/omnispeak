@@ -51,8 +51,12 @@ void CK_NewGame()
 
 void CK_GameOver()
 {
+	// HACK: US_CPrint modifies strings. So don't use
+	// literals directly. (char * is NOT ok; Use char arrays.)
+	static char gameOverString[] = "gameOverString";
+
 	US_CenterWindow(16, 3);
-	US_CPrint("Game Over!");
+	US_CPrint(gameOverString);
 	VL_Present();
 	//TODO: Wait 4*70 tics
 	IN_WaitKey();
@@ -158,6 +162,101 @@ const char *ck_levelNames[] = {
 	"High Scores",
 };
 
+// HACK: Sorry, the strings need to be in WRITABLE storage,
+// because US_CPrint (temporarily) modifies them.
+
+char ck_levelEntryText_0[] =
+	"Keen purposefully\n"
+	"wanders about the\n"
+	"Omegamatic";
+
+char ck_levelEntryText_1[] =
+	"Keen investigates the\n"
+	"Ion Ventilation System";
+
+char ck_levelEntryText_2[] =
+	"Keen struts through\n"
+	"the Security Center";
+
+char ck_levelEntryText_3[] =
+	"Keen invades\n"
+	"Defense Tunnel Vlook";
+
+char ck_levelEntryText_4[] =
+	"Keen engages\n"
+	"Energy Flow Systems";
+
+char ck_levelEntryText_5[] =
+	"Keen barrels into\n"
+	"Defense Tunnel Burrh";
+
+char ck_levelEntryText_6[] =
+	"Keen goes nuts in\n"
+	"the Regulation\n"
+	"Control Center";
+
+char ck_levelEntryText_7[] =
+	"Keen regrets entering\n"
+	"Defense Tunnel Sorra";
+
+char ck_levelEntryText_8[] =
+	"Keen blows through\n"
+	"the Neutrino\n"
+	"Burst Injector";
+
+char ck_levelEntryText_9[] =
+	"Keen trots through\n"
+	"Defense Tunnel Teln";
+
+char ck_levelEntryText_10[] =
+	"Keen breaks into\n"
+	"the Brownian\n"
+	"Motion Inducer";
+
+char ck_levelEntryText_11[] =
+	"Keen hurries through\n"
+	"the Gravitational\n"
+	"Damping Hub";
+
+char ck_levelEntryText_12[] =
+	"Keen explodes into\n"
+	"the Quantum\n"
+	"Explosion Dynamo";
+
+char ck_levelEntryText_13[] =
+	"Keen faces danger\n"
+	"in the secret\n"
+	"Korath III Base";
+
+char ck_levelEntryText_14[] =
+	"Keen will not be\n"
+	"in the BWBMegarocket";
+
+char ck_levelEntryText_15[] =
+	"Keen unexplainedly\n"
+	"find himself by\n"
+	"theHigh Scores";
+
+const char *ck_levelEntryTexts[] = {
+	ck_levelEntryText_0,
+	ck_levelEntryText_1,
+	ck_levelEntryText_2,
+	ck_levelEntryText_3,
+	ck_levelEntryText_4,
+	ck_levelEntryText_5,
+	ck_levelEntryText_6,
+	ck_levelEntryText_7,
+	ck_levelEntryText_8,
+	ck_levelEntryText_9,
+	ck_levelEntryText_10,
+	ck_levelEntryText_11,
+	ck_levelEntryText_12,
+	ck_levelEntryText_13,
+	ck_levelEntryText_14,
+	ck_levelEntryText_15,
+};
+
+#if 0
 const char *ck_levelEntryTexts[] ={
 	"Keen purposefully\n"
 	"wanders about the\n"
@@ -216,6 +315,7 @@ const char *ck_levelEntryTexts[] ={
 	"theHigh Scores",
 
 };
+#endif
 
 void CK_LoadLevel(bool doCache)
 {
@@ -351,7 +451,8 @@ void CK_BeginCacheBox (const char *title, int numChunks)
 	US_SetPrintX(US_GetWindowX());
 	CK_MeasureMultiline(title, &w, &h);
 	US_SetPrintY(US_GetPrintY() + (US_GetWindowH() - h) / 2 - 4);
-	US_Print(title);
+	// FIXME: We really need to accept a non-const char* instead...
+	US_CPrint((char *)title);
 	VL_Present();
 
 	ck_cacheBoxChunkCounter = ck_cacheBoxChunksPerPic = numChunks / 6;
@@ -400,6 +501,12 @@ void CK_TryAgainMenu()
 
 	char buf[80];
 
+	// HACK: US_CPrint modifies strings. So don't use
+	// literals directly. (char * is NOT ok; Use char arrays.)
+	static char youDidntMakeItPastString[] = "You didn't make it past";
+	static char tryAgainString[] = "Try Again";
+	static char exitToArmageddonString[] = "Exit to Armageddon";
+
 	/* Copy and measure the level name */
 	strcpy( buf, ck_levelNames[ck_currentMapNumber] );
 	CK_MeasureMultiline( buf, &w, &h );
@@ -413,7 +520,7 @@ void CK_TryAgainMenu()
 		//VW_SyncPages();
 		US_CenterWindow( 20, 8 );
 		US_SetPrintY(US_GetPrintY() + 3);
-		US_CPrint( "You didn't make it past" );
+		US_CPrint(youDidntMakeItPastString);
 		y1 = US_GetPrintY() + 22;
 
 		/* Center the level name vertically */
@@ -422,10 +529,10 @@ void CK_TryAgainMenu()
 		US_CPrint(buf);
 
 		US_SetPrintY(y1 + 2);
-		US_CPrint( "Try Again" );
+		US_CPrint(tryAgainString);
 		US_SetPrintY(US_GetPrintY() + 4);
 		y2 = US_GetPrintY() - 2;
-		US_CPrint( "Exit to Armageddon" );
+		US_CPrint(exitToArmageddonString);
 
 		IN_ClearKeysDown();
 		sel = 0;
