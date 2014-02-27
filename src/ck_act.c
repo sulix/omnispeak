@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 
 #include "ck_act.h"
+#include "ck_cross.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -45,7 +46,7 @@ void CK_ACT_AddFunction(const char *fnName, CK_ACT_Function fn)
 {
 	if (!STR_AddEntry(ck_functionTable, fnName, (void*)fn))
 	{
-		printf("Function array is full: %s is %d\n", fnName, CK_FUNCTABL_SIZE);
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Function array is full: %s is %d\n", fnName, CK_FUNCTABL_SIZE);
 		Quit("AddFunction: Function table is full!");
 	}
 }
@@ -54,7 +55,7 @@ void CK_ACT_AddColFunction(const char *fnName, CK_ACT_ColFunction fn)
 {
 	if (!STR_AddEntry(ck_functionTable, fnName, (void*)fn))
 	{
-		printf("Function array is full: %s is %d\n", fnName, CK_FUNCTABL_SIZE);
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Function array is full: %s is %d\n", fnName, CK_FUNCTABL_SIZE);
 		Quit("AddColFunction: Function table is full!");
 	}
 }
@@ -65,7 +66,7 @@ CK_ACT_Function CK_ACT_GetFunction(const char *fnName)
 	CK_ACT_Function fnPtr = (CK_ACT_Function)(STR_LookupEntry(ck_functionTable, fnName));
 	if (fnPtr == 0)
 	{
-		printf("[DEBUG]: GetFunction: Could not find function \"%s\"\n",fnName);
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "GetFunction: Could not find function \"%s\"\n",fnName);
 		Quit("GetFunction: Function not found. Check your 'ACTION.CKx' file!");
 	}
 	return fnPtr;
@@ -77,7 +78,7 @@ CK_ACT_ColFunction CK_ACT_GetColFunction(const char *fnName)
 	CK_ACT_ColFunction fnPtr = (CK_ACT_ColFunction)(STR_LookupEntry(ck_functionTable, fnName));
 	if (fnPtr == 0)
 	{
-		printf("[DEBUG]: GetColFunction: Could not find function \"%s\"\n",fnName);
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "GetColFunction: Could not find function \"%s\"\n",fnName);
 		Quit("GetColFunction: Collision function not found. Check your 'ACTION.CKx' file!");
 	}
 	return fnPtr;
@@ -186,7 +187,7 @@ bool CK_ACT_ExpectToken(CK_ACT_ParserState *ps, const char *str)
 {
 	const char *c = CK_ACT_GetToken(ps);
 	bool result = !strcmp(c,str);
-	if (!result) printf("WARNING: ExpectToken, got \"%s\" expected \"%s\" on line %d\n", c, str, ps->linecount);
+	if (!result) CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "ExpectToken, got \"%s\" expected \"%s\" on line %d\n", c, str, ps->linecount);
 	STR_UnPool(c);
 	return result;
 }
@@ -208,7 +209,7 @@ CK_ActionType CK_ACT_GetActionType(CK_ACT_ParserState *ps)
 		at = AT_ScaledFrame;
 	else
 	{
-		printf("Warning: Got a bad action type %s on line %d.\n", tok, ps->linecount);
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Got a bad action type %s on line %d.\n", tok, ps->linecount);
 		at = (CK_ActionType)(atoi(tok));
 	}
 	STR_UnPool(tok);
@@ -275,7 +276,7 @@ void CK_ACT_LoadActions(const char *filename)
 
 	while (CK_ACT_ParseAction(&parserstate)) numActionsParsed++;
 
-	printf("Parsed %d actions over %d lines.\n", numActionsParsed, parserstate.linecount);
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Parsed %d actions over %d lines.\n", numActionsParsed, parserstate.linecount);
 }
 
 

@@ -19,17 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "ck_cross.h"
 
 void Quit(const char *msg) {
-	if (!msg)
+	if (!msg || !(*msg))
 	{
-		printf("Thanks for playing Commander Keen!\n");
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Thanks for playing Commander Keen!\n");
 		exit(0);
 	}
 	else
 	{
 		//__asm__("int $3");
-		fprintf(stderr, "%s\n", msg);
+		CK_Cross_puts(msg);
 		exit(-1);
 	}
 }
