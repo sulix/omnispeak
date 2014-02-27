@@ -678,17 +678,19 @@ void help_endgame( void )
 	// CA_SetGrPurge2();
 
 	/* Cache the chunkss we need */
-	CA_CacheGrChunk( 48 );	/* Dim arrow */
-	CA_CacheGrChunk( 47 );	/* Bright arrow */
-	CA_CacheGrChunk( 4743 );	/* End-game story -- extern 8 */
+	CA_CacheGrChunk( 0x1B );	/* Dim arrow */
+	CA_CacheGrChunk( 0x1A );	/* Bright arrow */
+	//TODO: Handle the Korath fuse properly.
+	CA_CacheGrChunk( 4918 );
+	CA_CacheGrChunk( 4919 );	/* End-game story -- extern 8 */
 
 	/* Initialise the parser */
-	ptext = (char *)ca_graphChunks[4743];
+	ptext = (char *)ca_graphChunks[4919];
 	help_ptr = (char *) ptext;
 	CacheLayoutGraphics();
 
 	/* Play some music */
-	// StartMusic( 7 );
+	StartMusic( 14 );
 
 	while ( help_cur_page < help_num_pages )
 	{
@@ -696,38 +698,44 @@ void help_endgame( void )
 		PageLayout( 0 );
 		IN_ClearKeysDown();
 		//sub_679( AZ : A7B4, 0 );
-
-		while ( 1 )
+		bool advancePage = false;
+		while ( !advancePage )
 		{
 			/* Draw the bright arrow and wait a short time */
-			VH_DrawBitmap( 298, 184, 47 );
+			VH_DrawBitmap( 0x12A, 0xB8, 0x1A );
 			for ( i = 0; i < 70; i++ )
 			{
-#if 0
-				if ( button_pressed() )
-					goto next_page;
-#endif
+				if ( IN_GetLastScan() != IN_SC_None )
+				{
+					advancePage = true;
+					break;
+				}
+				VL_Present();
+				IN_PumpEvents();
 				VL_GetTics( 1 );
 			}
 
 			/* Draw the dim arrow and wait a short time */
-			VH_DrawBitmap( 298, 184, 48 );
+			VH_DrawBitmap( 0x12A, 0xB8, 0x1B );
 			for ( i = 0; i < 70; i++ )
 			{
-#if 0
-				if ( button_pressed() )
-					goto next_page;
-#endif
+				if ( IN_GetLastScan() != IN_SC_None )
+				{
+					advancePage = true;
+					break;
+				}
+				VL_Present();
+				IN_PumpEvents();
 				VL_GetTics( 1 );
 			}
 		}
 	}
 
 	/* Uncache our graphics and clean up */
-	// StopMusic();
-	MM_FreePtr( &ca_graphChunks[4743] );
-	MM_FreePtr( &ca_graphChunks[47] );
-	MM_FreePtr( &ca_graphChunks[48] );
+	StopMusic();
+	MM_FreePtr( &ca_graphChunks[4919] );
+	MM_FreePtr( &ca_graphChunks[0x1B] );
+	MM_FreePtr( &ca_graphChunks[0x1A] );
 	// CA_DownLevel();
 	IN_ClearKeysDown();
 	// VW_ClearVideo( 4 );

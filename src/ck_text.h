@@ -21,5 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CK_TEXT_H
 
 void HelpScreens(void);
+void help_endgame(void);
 
 #endif

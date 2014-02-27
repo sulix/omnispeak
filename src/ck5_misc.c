@@ -664,7 +664,7 @@ void CK5_ScanInfoLayer()
 				if (ck_currentMapNumber == 12)
 				{
 					ck_gameState.fusesRemaining = 4;
-					//TODO: Spawn QED
+					CK5_QEDSpawn(x, y);
 				}
 				else
 				{

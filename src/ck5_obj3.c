@@ -1708,7 +1708,7 @@ void CK5_SpawnKorath(int tileX, int tileY)
 	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_KorathWalk1"));
 }
 
-void QEDSpawn(int tileX, int tileY)
+void CK5_QEDSpawn(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);

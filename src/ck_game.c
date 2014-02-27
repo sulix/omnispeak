@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_rf.h"
 #include "ck_def.h"
 #include "ck_play.h"
+#include "ck_text.h"
 #include "ck5_ep.h"
 
 int ck_nextMapNumber;
@@ -592,6 +593,7 @@ replayLevel:
 			 * win_game();
 			 * loadHiscores(score)
 			 */
+			help_endgame();
 			return;
 
 			// Warping level

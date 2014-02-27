@@ -70,6 +70,7 @@ void CK5_SpawnShikadi(int tileX, int tileY);
 void CK5_SpawnShocksund(int tileX, int tileY);
 void CK5_SpawnSphereful(int tileX, int tileY);
 void CK5_SpawnKorath(int tileX, int tileY);
+void CK5_QEDSpawn(int tileX, int tileY);
 
 /* ck5_map.c */
 void CK_SpawnMapKeen(int tileX, int tileY);
