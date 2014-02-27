@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 	CAL_SetupGrFile();
 	CAL_SetupMapFile();
 	//for (int i = ch; i < ch+(12*18); ++i) CA_CacheGrChunk(i);
-	//printf("%s", (char*)(ca_graphChunks[ch]));
+	//CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "%s", (char*)(ca_graphChunks[ch]));
 //	CA_CacheGrChunk(ch);
 	CA_CacheGrChunk(88);
 	CA_CacheGrChunk(3);

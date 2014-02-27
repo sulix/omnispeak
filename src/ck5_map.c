@@ -280,20 +280,16 @@ void CK_SpawnMapKeen(int tileX, int tileY)
 {
 
 	ck_keenObj->type = 2;
-#if 0
-	if (word_47258 == 0)
+	if (ck_gameState.mapPosX == 0)
 	{
-#endif
 		ck_keenObj->posX = (tileX << 8);
 		ck_keenObj->posY = (tileY << 8);
-#if 0
 	}
 	else
 	{
-		ck_keenObj->posX = word_47258;
-		ck_keenObj->posY = word_4725A;
+		ck_keenObj->posX = ck_gameState.mapPosX;
+		ck_keenObj->posY = ck_gameState.mapPosY;
 	}
-#endif
 
 	ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
 	ck_keenObj->zLayer = 1;
@@ -340,6 +336,8 @@ void CK5_ScanForLevelEntry(CK_object * obj)
 				// Vanilla keen stores the current map loaded in the cache manager
 				// and the "current_map" variable stored in the gamestate
 				// would have been changed here.
+				ck_gameState.mapPosX = obj->posX;
+				ck_gameState.mapPosY = obj->posY;
 				ck_nextMapNumber = infotile - 0xC000;
 				ck_gameState.levelState = 2;
 				SD_PlaySound(SOUND_UNKNOWN12);

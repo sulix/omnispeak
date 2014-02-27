@@ -222,7 +222,7 @@ void CK5_BlockPlatform(CK_object *obj)
 			obj->xDirection = 1;
 			//TODO: Change DeltaVelocity
 			//CK_PhysUpdateX(obj, 256 - nextPosUnit&255);
-			obj->nextX += 256 - nextPosUnit & 255;
+			obj->nextX += (256 - nextPosUnit) & 255;
 		}
 	}
 	else if (obj->yDirection == 1)
@@ -269,6 +269,14 @@ void CK5_BlockPlatform(CK_object *obj)
 
 void CK_DeadlyCol(CK_object *o1, CK_object *o2)
 {
+	if (o2->type == CT_Stunner)
+	{
+		CK_ShotHit(o2);
+	}
+	else if (o2->type == CT_Player)
+	{
+		CK_KillKeen();
+	}
 }
 
 void CK5_SpawnFallPlat(int tileX, int tileY)
@@ -512,6 +520,25 @@ void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
 	CK_ResetClipRects(obj);
 }
 
+void CK5_SpawnRedStandPlatform(int tileX, int tileY)
+{
+	CK_object *obj = CK_GetNewObj(false);
+
+	obj->type = 6;
+	obj->active = OBJ_ACTIVE;
+	obj->zLayer = 0;
+	obj->posX = tileX << 8;
+	obj->posY = obj->user1 = tileY << 8;
+	obj->xDirection = 0;
+	obj->yDirection = 1;
+	obj->clipped = CLIP_not;
+	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_redStandPlatform"));
+	obj->gfxChunk = obj->currentAction->chunkLeft;
+	CA_CacheGrChunk(obj->gfxChunk);
+	CK_ResetClipRects(obj);
+}
+
+// TODO: Cache stuff here instead of spawner handlers
 void CK5_ScanInfoLayer()
 {
 
@@ -538,6 +565,7 @@ void CK5_ScanInfoLayer()
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
 				break;
+
 			case 3:
 				CK_SpawnMapKeen(x, y);
 				CK_DemoSignSpawn();
@@ -604,7 +632,8 @@ void CK5_ScanInfoLayer()
 				RF_SetScrollBlock(x, y, true);
 				break;
 			case 26:
-				RF_SetScrollBlock(x, y, false);
+				// TODO: Map keen tele spawn
+				//RF_SetScrollBlock(x, y, false);
 				break;
 			case 27:
 			case 28:
@@ -615,6 +644,15 @@ void CK5_ScanInfoLayer()
 			case 32:
 				CK5_SpawnFallPlat(x, y);
 				break;
+
+			case 33:
+				if (ck_gameState.difficulty > D_Easy) break;
+			case 34:
+				if (ck_gameState.difficulty > D_Normal) break;
+			case 35:
+				CK5_SpawnRedStandPlatform(x, y);
+				break;
+
 			case 36:
 			case 37:
 			case 38:
@@ -628,7 +666,7 @@ void CK5_ScanInfoLayer()
 				if (ck_currentMapNumber == 12)
 				{
 					ck_gameState.fusesRemaining = 4;
-					//TODO: Spawn QED
+					CK5_QEDSpawn(x, y);
 				}
 				else
 				{
@@ -642,12 +680,44 @@ void CK5_ScanInfoLayer()
 			case 42:
 				CK5_SpawnAmpton(x, y);
 				break;
+
+			case 53:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 49:
+				if (ck_gameState.difficulty < D_Normal) break;
 			case 45:
-			case 46:
-			case 47:
-			case 48:
-				CK5_TurretSpawn(x, y, infoValue - 45);
+				CK5_TurretSpawn(x, y, 0);
 				break;
+
+			case 54:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 50:
+				if (ck_gameState.difficulty < D_Normal) break;
+			case 46:
+				CK5_TurretSpawn(x, y, 1);
+				break;
+
+			case 55:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 51:
+				if (ck_gameState.difficulty < D_Normal) break;
+			case 47:
+				CK5_TurretSpawn(x, y, 2);
+				break;
+
+			case 56:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 52:
+				if (ck_gameState.difficulty < D_Normal) break;
+			case 48:
+				CK5_TurretSpawn(x, y, 3);
+				break;
+
+			case 69:
+				// Spawn extra stunner if Keen has low ammo
+				if (ck_gameState.numShots >= 5)
+					break;
+				infoValue = 68;
 			case 57:
 			case 58:
 			case 59:
@@ -737,6 +807,9 @@ void CK5_ScanInfoLayer()
 
 			case 124:
 				CK5_SpawnKorath(x, y);
+				break;
+			case 125:
+				// TODO: Signal about teleportation (caching)
 				break;
 			}
 		}

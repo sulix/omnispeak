@@ -435,7 +435,7 @@ void CK5_SpawnSliceDiag(int tileX, int tileY)
 void CK5_SliceCol(CK_object *obj1, CK_object *obj2)
 {
 
-	if (obj2->type == CT_SliceStar)
+	if (obj2->type == CT_Player)
 	{
 		CK_KillKeen();
 		return;
@@ -531,7 +531,7 @@ void CK5_SpawnShellyBits(CK_object *obj)
 {
 
 	CK_object *new_object;
-	if (new_object = CK_GetNewObj(true))
+	if ((new_object = CK_GetNewObj(true)))
 	{
 		new_object->posX = obj->posX;
 		new_object->posY = obj->posY;
@@ -540,7 +540,7 @@ void CK5_SpawnShellyBits(CK_object *obj)
 		CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_ShellyBits0"));
 	}
 
-	if (new_object = CK_GetNewObj(true))
+	if ((new_object = CK_GetNewObj(true)))
 	{
 		new_object->posX = obj->posX;
 		new_object->posY = obj->posY;
@@ -585,7 +585,7 @@ void CK5_ShellyCol(CK_object *obj1, CK_object *obj2)
 	else
 		CK_SetAction2(obj1, CK_GetActionByName("CK5_ACT_ShellyDieGround"));
 
-	if (new_object = CK_GetNewObj(true))
+	if ((new_object = CK_GetNewObj(true)))
 	{
 		new_object->posX = obj1->posX;
 		new_object->posY = obj1->posY;
@@ -629,7 +629,7 @@ void CK5_ShellyAirTileCol(CK_object *obj)
 		CK_object *new_object;
 		SD_PlaySound(SOUND_SHELLYEXPLODE);
 		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_ShellyDieAir"));
-		if (new_object = CK_GetNewObj(true))
+		if ((new_object = CK_GetNewObj(true)))
 		{
 			new_object->posX = obj->posX;
 			new_object->posY = obj->posY;

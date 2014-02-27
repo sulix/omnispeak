@@ -155,6 +155,14 @@ static void VL_SDL12_BitBlitToSurface(void *src, void *dst_surface, int x, int y
 	SDL_UnlockSurface(surf);
 }
 
+static void VL_SDL12_BitInvBlitToSurface(void *src, void *dst_surface, int x, int y, int w, int h, int colour)
+{
+	SDL_Surface *surf = (SDL_Surface *)dst_surface;
+	SDL_LockSurface(surf);
+	VL_1bppInvBlitToPAL8(src, surf->pixels, x, y, surf->pitch, w,h, colour);
+	SDL_UnlockSurface(surf);
+}
+
 static void VL_SDL12_Present(void *surface, int scrlX, int scrlY)
 {
 	// TODO: Verify this is a VL_SurfaceUsage_FrontBuffer
@@ -182,6 +190,7 @@ VL_Backend vl_sdl12_backend =
 	/*.bitToSurface =*/ &VL_SDL12_BitToSurface,
 	/*.bitXorWithSurface =*/ &VL_SDL12_BitXorWithSurface,
 	/*.bitBlitToSurface =*/ &VL_SDL12_BitBlitToSurface,
+	/*.bitInvBlitToSurface =*/ &VL_SDL12_BitInvBlitToSurface,
 	/*.present =*/ &VL_SDL12_Present
 };
 

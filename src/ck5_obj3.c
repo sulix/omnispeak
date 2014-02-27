@@ -1706,11 +1706,9 @@ void CK5_SpawnKorath(int tileX, int tileY)
 	obj->posY = (tileY << 8) - 128;
 	obj->xDirection = US_RndT() < 128 ? 1 : -1;
 	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_KorathWalk1"));
-
-	printf("Spawning Korath at %d,%d\n", tileX, tileY);
 }
 
-void QEDSpawn(int tileX, int tileY)
+void CK5_QEDSpawn(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);

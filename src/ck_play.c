@@ -239,7 +239,7 @@ void CK_RemoveObj(CK_object *obj)
 	//ck_numObjects--;
 }
 
-int CK_ActionThink(CK_object *obj, int time)
+int16_t CK_ActionThink(CK_object *obj, int16_t time)
 {
 	CK_action *action = obj->currentAction;
 
@@ -261,7 +261,7 @@ int CK_ActionThink(CK_object *obj, int time)
 		return 0;
 	}
 
-	int newTime = time + obj->actionTimer;
+	int16_t newTime = time + obj->actionTimer;
 
 	// If we won't run out of time.
 	if (action->timer > newTime || !(action->timer))
@@ -296,7 +296,7 @@ int CK_ActionThink(CK_object *obj, int time)
 		return 0;
 	}
 
-	int remainingTime = action->timer - obj->actionTimer;
+	int16_t remainingTime = action->timer - obj->actionTimer;
 	newTime -= action->timer;
 	obj->actionTimer = 0;
 
@@ -523,13 +523,26 @@ bool CK_DebugKeys()
 		}
 		return true;
 	}
-	if (IN_GetKeyState(IN_SC_C))
+	if (IN_GetKeyState(IN_SC_C) && game_in_progress)
 	{
 		CK_CountActiveObjects();
+		return true;
+	}
+	// TODO: Demo Recording
+
+	// End Level
+	if (IN_GetKeyState(IN_SC_E) && game_in_progress)
+	{
+		// TODO: Handle ted level differently?
+		if (us_tedLevel)
+			//run_ted();
+			Quit(NULL);
+		ck_gameState.levelState = 2;
+		// Nope, no return of "true"
 	}
 
 	// God Mode
-	if (IN_GetKeyState(IN_SC_G))
+	if (IN_GetKeyState(IN_SC_G) && game_in_progress)
 	{
 		// VW_SyncPages();
 		US_CenterWindow(12, 2);
@@ -576,6 +589,7 @@ bool CK_DebugKeys()
 
 		VL_Present();
 		IN_WaitKey();
+		return true;
 	}
 
 	if (IN_GetKeyState(IN_SC_M))
@@ -615,10 +629,16 @@ bool CK_DebugKeys()
 		IN_WaitKey();
 	}
 
+	// Pause
+
+	// Slow Motion
+
+	// Sprite Test
+
 	// Extra Vibbles
 
 	// Level Warp
-	if (IN_GetKeyState(IN_SC_W))
+	if (IN_GetKeyState(IN_SC_W) && game_in_progress)
 	{
 		char str[4];
 		const char *msg = "  Warp to which level(1-18):"; 

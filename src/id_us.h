@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ID_US_H
 
 #include <stdbool.h>
+#include <stdio.h>
 #include "id_in.h"
 
 /* This keeps clang's static analyzer quiet. */
@@ -173,5 +174,12 @@ void US_RunCards();
 
 // Related
 int green_message_box( const char *s1, const char *s2, const char *s3 );
+
+// A few function pointers
+extern void (*p_save_game)(FILE *handle);
+extern void (*p_load_game)(FILE *handle);
+extern void (*p_exit_menu)(void);
+
+void US_SetMenuFunctionPointers(void (*loadgamefunc)(FILE *), void (*savegamefunc)(FILE *), void (*exitmenufunc)(void));
 
 #endif //ID_US_H

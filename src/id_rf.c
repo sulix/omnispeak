@@ -459,6 +459,12 @@ void RFL_AnimateTiles()
 	}
 }
 
+void (*rf_drawFunc) (void);
+
+void RF_SetDrawFunc(void (*func) (void))
+{
+	rf_drawFunc = func;
+}
 
 void RF_Startup()
 {
@@ -519,7 +525,7 @@ void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, in
 	int tx, ty;
 	uint16_t *src_bgtile_ptr, *src_fgtile_ptr, *src_infotile_ptr;
 	uint16_t *dst_bgtile_ptr, *dst_fgtile_ptr, *dst_infotile_ptr;
-	int src_offset, dst_offset,offset_delta,new_row_offset;
+	intptr_t src_offset, dst_offset,offset_delta,new_row_offset;
 
 	RFL_RemoveAnimRect(destx, desty, width, height);
 
@@ -530,7 +536,7 @@ void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, in
 	src_fgtile_ptr = CA_mapPlanes[1] + src_offset;
 	src_infotile_ptr = CA_mapPlanes[2] + src_offset;
 	offset_delta = dst_offset - src_offset;
-	new_row_offset = width - rf_mapWidthTiles;
+	new_row_offset = rf_mapWidthTiles - width;
 
 	for (ty = 0; ty < height; ty++)
 	{
@@ -539,9 +545,12 @@ void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, in
 			bool different;
 			int screenX, screenY;
 
-			dst_bgtile_ptr = src_bgtile_ptr + offset_delta;
-			dst_fgtile_ptr = src_fgtile_ptr + offset_delta;
-			dst_infotile_ptr = src_infotile_ptr + offset_delta;
+			src_bgtile_ptr = &CA_mapPlanes[0][(srcy+ty)*rf_mapWidthTiles+(srcx+tx)];
+			src_fgtile_ptr = &CA_mapPlanes[1][(srcy+ty)*rf_mapWidthTiles+(srcx+tx)];
+			src_infotile_ptr = &CA_mapPlanes[2][(srcy+ty)*rf_mapWidthTiles+(srcx+tx)];
+			dst_bgtile_ptr = &CA_mapPlanes[0][(desty+ty)*rf_mapWidthTiles+(destx+tx)];
+			dst_fgtile_ptr = &CA_mapPlanes[1][(desty+ty)*rf_mapWidthTiles+(destx+tx)];
+			dst_infotile_ptr = &CA_mapPlanes[2][(desty+ty)*rf_mapWidthTiles+(destx+tx)];
 
 			// Check if there is a different tile being copied
 			if (*dst_bgtile_ptr != *src_bgtile_ptr || *dst_fgtile_ptr != *src_fgtile_ptr ||
@@ -557,16 +566,21 @@ void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, in
 				different = false;
 			}
 
-			// Mark tile to be redrawn if there's a change
+			// If the tile is onscreen...
 			screenX = destx + tx - (rf_scrollXUnit >> 8);
 			screenY = desty + ty - (rf_scrollYUnit >> 8);
-			if (screenX >= 0 && screenY >= 0 && screenY < RF_BUFFER_HEIGHT_TILES && screenX < RF_BUFFER_WIDTH_TILES && different)
+			if (screenX >= 0 && screenY >= 0 && screenY < RF_BUFFER_HEIGHT_TILES && screenX < RF_BUFFER_WIDTH_TILES)
 			{
-				RF_RenderTile16(screenX, screenY, *dst_bgtile_ptr);
-				RF_RenderTile16m(screenX, screenY, *dst_fgtile_ptr);
+				// Redraw it if it's different.
+				if (different)
+				{
+					RF_RenderTile16(screenX, screenY, *dst_bgtile_ptr);
+					RF_RenderTile16m(screenX, screenY, *dst_fgtile_ptr);
+				}
+				// And check it for animations.
+				RFL_CheckForAnimTile(destx + tx, desty + ty);
 			}
 
-			RFL_CheckForAnimTile(destx + tx, desty + ty);
 			src_bgtile_ptr++;
 			src_fgtile_ptr++;
 			src_infotile_ptr++;
@@ -594,17 +608,24 @@ void RF_ReplaceTiles(uint16_t *tilePtr, int plane, int dstX, int dstY, int width
 			int tileScreenY = dstTileY - (rf_scrollYUnit >> 8);
 			int oldTile = CA_mapPlanes[plane][dstTileY*rf_mapWidthTiles+dstTileX];
 			int newTile = tilePtr[y*width+x];
+			// Update the tile on the map.
 			if (oldTile != newTile)
 			{
 				CA_mapPlanes[plane][dstTileY*rf_mapWidthTiles+dstTileX] = newTile;
-				if (tileScreenX >= 0 && tileScreenX < RF_BUFFER_WIDTH_TILES &&
-					tileScreenY >= 0 && tileScreenY < RF_BUFFER_HEIGHT_TILES)
+			}
+			// If the tile is onscreen...
+			if (tileScreenX >= 0 && tileScreenX < RF_BUFFER_WIDTH_TILES &&
+				tileScreenY >= 0 && tileScreenY < RF_BUFFER_HEIGHT_TILES)
+			{
+				// Redraw it if it has changed.
+				if (oldTile != newTile)
 				{
 					RF_RenderTile16(tileScreenX, tileScreenY, CA_mapPlanes[0][dstTileY*rf_mapWidthTiles+dstTileX]);
 					RF_RenderTile16m(tileScreenX, tileScreenY, CA_mapPlanes[1][dstTileY*rf_mapWidthTiles+dstTileX]);
 				}
+				// And check it for animations.
+				RFL_CheckForAnimTile(dstTileX, dstTileY);
 			}
-			RFL_CheckForAnimTile(dstTileX, dstTileY);
 		}
 	}
 }
@@ -1045,6 +1066,7 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	sde->y = (unitY >> 4);
 	sde->sw = VH_GetSpriteTableEntry(sprite_number).width*8;
 	sde->sh = VH_GetSpriteTableEntry(sprite_number).height;
+	sde->maskOnly = allWhite;
 	
 	//TODO: Work out how to do scrolling before doing this.
 #if 0
@@ -1070,7 +1092,14 @@ void RFL_DrawSpriteList()
 			int pixelX = sde->x - (rf_scrollXUnit >> 8)*16;
 			int pixelY = sde->y - (rf_scrollYUnit >> 8)*16;
 			
-			VH_DrawSprite(pixelX, pixelY, sde->chunk);
+			if (sde->maskOnly)
+			{
+				VH_DrawSpriteMask(pixelX, pixelY, sde->chunk, 15);
+			}
+			else
+			{
+				VH_DrawSprite(pixelX, pixelY, sde->chunk);
+			}
 		}
 	}
 }
@@ -1087,6 +1116,9 @@ void RF_Refresh()
 	//RFL_ProcessSpriteErasers();
 	
 	RFL_DrawSpriteList();
+
+	if (rf_drawFunc)
+		rf_drawFunc();
 
 	RFL_CalcTics();
 }

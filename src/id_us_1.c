@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vl.h"
 #include "id_ca.h"
 #include "id_us.h"
+#include "ck_cross.h"
 #include "ck_play.h"
 
 #include <ctype.h>
@@ -79,6 +80,17 @@ static int16_t us_backColour = 0;
 
 #define US_WINDOW_MAX_X 320
 #define US_WINDOW_MAX_Y 200
+
+void (*p_save_game)(FILE *handle);
+void (*p_load_game)(FILE *handle);
+void (*p_exit_menu)(void);
+
+void US_SetMenuFunctionPointers(void (*loadgamefunc)(FILE *), void (*savegamefunc)(FILE *), void (*exitmenufunc)(void))
+{
+	p_load_game = loadgamefunc;
+	p_save_game = savegamefunc;
+	p_exit_menu = exitmenufunc;
+}
 
 void US_Print(const char *str)
 {
@@ -199,7 +211,7 @@ void US_DrawWindow(int x, int y, int w, int h)
 	us_windowW = w * 8;
 	us_windowH = h * 8;
 
-	printf("US_DrawWindow: (%d,%d)-(%d,%d)\n", x, y, w, h);
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "US_DrawWindow: (%d,%d)-(%d,%d)\n", x, y, w, h);
 
 	int borderX = us_windowX - 8;
 	int borderY = us_windowY - 8;

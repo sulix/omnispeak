@@ -30,8 +30,7 @@ void CK5_TurretSpawn(int tileX, int tileY, int direction)
 {
 	CK_object *obj = CK_GetNewObj(false);
 
-	obj->type = 0;
-	obj->gfxChunk = 0;
+	obj->type = 15;
 	obj->active = OBJ_ACTIVE;
 	obj->clipRects.tileX1 = obj->clipRects.tileX2 = tileX;
 	obj->clipRects.tileY1 = obj->clipRects.tileY2 = tileY;
@@ -56,24 +55,23 @@ void CK5_TurretShoot(CK_object *obj)
 	shot->posX = obj->posX;
 	shot->posY = obj->posY;
 
-	printf("Shooting!\n");
 	switch (obj->user1)
 	{
 		case 0:
-			shot->velX = 0;
+			//shot->velX = 0;
 			shot->velY = -64;
 			break;
 		case 1:
 			shot->velX = 64;
-			shot->velY = 0;
+			//shot->velY = 0;
 			break;
 		case 2:
-			shot->velX = 0;
+			//shot->velX = 0;
 			shot->velY = 64;
 			break;
 		case 3:
 			shot->velX = -64;
-			shot->velY = 0;
+			//shot->velY = 0;
 			break;
 	}
 
@@ -85,26 +83,29 @@ void CK5_TurretShoot(CK_object *obj)
 
 void CK5_Glide(CK_object *obj)
 {
-	obj->nextX = obj->velX;
-	obj->nextY = obj->velY;
+	obj->nextX = obj->velX * SD_GetSpriteSync();
+	obj->nextY = obj->velY * SD_GetSpriteSync();
 }
 
 void CK5_TurretShotCol(CK_object *me, CK_object *other)
 {
-	//TODO: Kill Keen
+	if (other->type == CT_Player)
+	{
+		CK_KillKeen();
+		CK_SetAction2(me, CK_GetActionByName("CK5_ACT_turretShotHit1"));
+	}
 }
 
 void CK5_TurretShotDraw(CK_object *obj)
 {
 	if (obj->topTI || obj->bottomTI || obj->leftTI || obj->rightTI)
 	{
-		printf("Shot Hit\n");
 		SD_PlaySound(SOUND_ENEMYSHOTHIT);
 		//obj->clipped=false;
 		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_turretShotHit1"));
 	}
 
-	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->currentAction->chunkLeft, false, 0);
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->currentAction->chunkLeft, false, obj->zLayer);
 
 }
 
@@ -180,7 +181,7 @@ void CK5_GoPlatSpawn(int tileX, int tileY, int direction, bool purple)
 
 
 	int mapW = CA_MapHeaders[ck_currentMapNumber]->width;
-	int mapH = CA_MapHeaders[ck_currentMapNumber]->height;
+	//int mapH = CA_MapHeaders[ck_currentMapNumber]->height;
 	CA_mapPlanes[2][tileY * mapW + tileX] = direction + 0x5B;
 
 	obj->user1 = direction;

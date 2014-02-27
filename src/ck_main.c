@@ -101,6 +101,9 @@ void CK_InitGame()
 	// Load the core datafiles
 	CA_Startup();
 
+	// Set a few Menu Callbacks
+	// TODO: Finish this!
+	US_SetMenuFunctionPointers(NULL /*Load*/, NULL /*Save*/, &CK_ExitMenu);
 	// Set ID engine Callbacks
 	ca_beginCacheBox = CK_BeginCacheBox;
 	ca_updateCacheBox = CK_UpdateCacheBox;
@@ -157,6 +160,7 @@ void CK_InitGame()
  * main menu and game loops when they are required.
  */
 
+extern CK_Difficulty ck_startingDifficulty;
 static int ck_startingLevel = 0;
 void CK_DemoLoop()
 {
@@ -170,13 +174,18 @@ void CK_DemoLoop()
 
 	if (us_tedLevel)
 	{
-		us_noWait = true;
-		ck_currentMapNumber = us_tedLevelNumber;
+		us_noWait = true; // ?
 
+		CK_NewGame();
 		CA_LoadAllSounds();
+		ck_currentMapNumber = us_tedLevelNumber;
+		ck_startingDifficulty = D_Normal;
+
+		// TODO: Support selecting difficulty via an extra command line
+		// argument ("easy", "normal", "hard")
 
 		CK_GameLoop();
-		Quit(0);
+		Quit(0); // run_ted
 	}
 
 	/*
