@@ -186,7 +186,7 @@
 %action CK5_ACT_FallPlat1 0x1be 0x1be Frame 0x0 0x0 0x0 0x0 0x0 CK5_FallPlatFall NULL CK_BasicDrawFunc1 NULL
 %action CK5_ACT_FallPlat2 0x1be 0x1be ScaledFrame 0x0 0x0 0x0 0x0 -32 CK5_FallPlatRise NULL CK_BasicDrawFunc1 NULL
 
-%action CK5_ACT_redStandPlatform 446 446 AT_UnscaledOnce 0 0 32000 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_redStandPlatform
+%action CK5_ACT_redStandPlatform 446 446 UnscaledOnce 0 0 32000 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_redStandPlatform
 
 # ck5_obj1.c
 
