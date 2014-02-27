@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
+struct CK_object;
+
 extern int ck_activeX0Tile;
 extern int ck_activeY0Tile;
 extern int ck_activeX1Tile;
@@ -36,7 +38,9 @@ extern bool ck_godMode;
 
 extern int16_t ck_invincibilityTimer;
 
-struct CK_object;
+
+extern bool ck_scoreBoxEnabled;
+extern struct CK_object *ck_scoreBoxObj;
 
 // Object Mgmt
 struct CK_object *CK_GetNewObj(bool nonCritical);
