@@ -829,7 +829,7 @@ void SD_Startup(void)
 	}
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "WARNING: SDL audio system initialization failed,\n%s\n", SDL_GetError());
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
 		SD_SDL_AudioSubsystem_Up = false;
 	}
 	else
@@ -842,7 +842,7 @@ void SD_Startup(void)
 		SD_SDL_AudioSpec.userdata = NULL;
 		if (SDL_OpenAudio(&SD_SDL_AudioSpec, NULL))
 		{
-			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "WARNING: Cannot open SDL audio device,\n%s\n", SDL_GetError());
+			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
 			SDL_QuitSubSystem(SDL_INIT_AUDIO);
 			SD_SDL_AudioSubsystem_Up = false;
 		}
@@ -858,7 +858,7 @@ void SD_Startup(void)
 
 		if (YM3812Init(1, 3579545, SD_SDL_AudioSpec.freq))
 		{
-			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "WARNING: Preparation of emulated OPL chip has failed\n");
+			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Preparation of emulated OPL chip has failed\n");
 		}
 	}
 	/*word_4E19A = 0; */ /* TODO: Unused variable? */
