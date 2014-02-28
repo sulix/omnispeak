@@ -61,7 +61,7 @@ void CK5_SparkyPrepareCharge(CK_object *obj)
 void CK5_SparkySearchLeft(CK_object *obj)
 {
 
-	unsigned int delY = ck_keenObj->clipRects.unitY2 + 0x100 - obj->clipRects.unitY2;
+	uint16_t delY = ck_keenObj->clipRects.unitY2 + 0x100 - obj->clipRects.unitY2;
 
 	if (delY < 0x200 && ck_keenObj->posX < obj->posX)
 	{
@@ -75,7 +75,7 @@ void CK5_SparkySearchLeft(CK_object *obj)
 void CK5_SparkySearchRight(CK_object *obj)
 {
 
-	unsigned int delY = ck_keenObj->clipRects.unitY2 + 0x100 - obj->clipRects.unitY2;
+	uint16_t delY = ck_keenObj->clipRects.unitY2 + 0x100 - obj->clipRects.unitY2;
 
 	if (delY < 0x200 && ck_keenObj->posX > obj->posX)
 	{
