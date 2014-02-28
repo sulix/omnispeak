@@ -99,6 +99,13 @@ char* CAL_AdjustExtension(const char *filename)
 	return newname;
 }
 
+bool CA_FarWrite(int handle, uint8_t *source, int length)
+{
+	// TODO: Implement
+	return false;
+	
+}
+
 // CA_ReadFile reads a whole file into the preallocated memory buffer at 'offset'
 // NOTE that this function is deprecated: use CA_SafeReadFile instead.
 //

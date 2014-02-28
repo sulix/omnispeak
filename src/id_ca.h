@@ -36,11 +36,12 @@ void CA_LoadAllSounds(void);
 // -- File IO --
 
 char* CAL_AdjustExtension(const char *filename);
+bool CA_FarWrite(int handle, uint8_t *source, int length);
 bool CA_ReadFile(const char *filename, void *offset);
 bool CA_SafeReadFile(const char *filename, void *offset, int bufLength);
 bool CA_WriteFile(const char *filename, void *offset, int bufLength);
 bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize);
-
+int CAL_RLEWCompress (void *src, int expLength, void *dest, uint16_t rletag);
 
 
 // -- Graphics --

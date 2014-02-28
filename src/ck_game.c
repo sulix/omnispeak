@@ -63,6 +63,49 @@ void CK_GameOver()
 }
 
 //TODO: Save Game
+bool CK_SaveGame (int handle)
+{
+int cmplen, bufsize, i;
+	CK_object *obj;
+	uint8_t *buf;
+
+	/* This saves the game */
+
+	/* Write out Keen stats */
+	ck_keenState.platform = NULL;
+	if( !CA_FarWrite( handle, (uint8_t*)&ck_gameState, 86 ) )
+		return false;
+
+	bufsize = CA_GetMapWidth() * CA_GetMapHeight() * 2;	
+	MM_GetPtr( (mm_ptr_t *)buf, bufsize/*, 0*/ ); /* or ( &buf, (long)bufsize ); -- allocate mem */
+
+	/* Compress and save the current level */
+	for( i = 0; i < 3; i++ ) {
+		cmplen = CAL_RLEWCompress( CA_TilePtrAtPos(0,0,i), bufsize, buf + 2, 0xABCD );
+
+		/* Write the size of the compressed level */
+		*((uint32_t *)buf) = cmplen;
+		if( !CA_FarWrite( handle, buf, cmplen + 2 ) ) {
+			/* Free the buffer and return failure */
+			MM_FreePtr( (mm_ptr_t *)buf );
+			return false;
+		}
+	}
+
+	/* Save all the objects */
+	for( obj = ck_keenObj; obj != NULL; obj = obj->next ) {
+		if( !CA_FarWrite( handle, (uint8_t *)obj, 76 ) ) {
+			/* Free the buffer and return failure */
+			MM_FreePtr( (mm_ptr_t *)buf );
+			return false;
+		}
+	}
+
+	/* Free the buffer and return success */
+	MM_FreePtr( (mm_ptr_t *)buf );
+	return true;
+
+}
 //TODO: Load Game
 
 
