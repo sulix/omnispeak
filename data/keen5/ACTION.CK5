@@ -317,8 +317,8 @@
 %action CK5_ACT_SpirogripSpin8 0x18D 0x18D UnscaledOnce 0 0 8 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin1
 
 %action CK5_ACT_SpirogripFlyDown 0x189 0x189 ScaledOnce 0 0 0 0 48 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachDown
-%action CK5_ACT_SpirogripFlyRight 0x18C 0x18C ScaledOnce 0 0 0 -48 0 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachRight
-%action CK5_ACT_SpirogripFlyLeft 0x18A 0x18A ScaledOnce 0 0 0 48 0 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachLeft
+%action CK5_ACT_SpirogripFlyRight 0x18C 0x18C ScaledOnce 0 0 0 48 0 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachRight
+%action CK5_ACT_SpirogripFlyLeft 0x18A 0x18A ScaledOnce 0 0 0 -48 0 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachLeft
 %action CK5_ACT_SpirogripFlyUp 0x18B 0x18B ScaledOnce 0 0 0 0 -48 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachUp
 
 %action CK5_ACT_SpirogripAttachDown 0x189 0x189 UnscaledOnce 0 0 150 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripReleaseDown
@@ -327,8 +327,8 @@
 %action CK5_ACT_SpirogripAttachUp 0x18B 0x18B UnscaledOnce 0 0 150 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripReleaseUp
 
 %action CK5_ACT_SpirogripReleaseDown 0x189 0x189 ScaledOnce 0 0 64 0 -16 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin6
-%action CK5_ACT_SpirogripReleaseRight 0x18C 0x18C ScaledOnce 0 0 64 16 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin4
-%action CK5_ACT_SpirogripReleaseLeft 0x18A 0x18A ScaledOnce 0 0 64 -16 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin8
+%action CK5_ACT_SpirogripReleaseRight 0x18C 0x18C ScaledOnce 0 0 64 -16 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin4
+%action CK5_ACT_SpirogripReleaseLeft 0x18A 0x18A ScaledOnce 0 0 64 16 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin8
 %action CK5_ACT_SpirogripReleaseUp 0x18B 0x18B ScaledOnce 0 0 64 0 16 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin2
 
 

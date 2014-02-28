@@ -802,15 +802,15 @@ void CK5_SpawnSpirogrip(int tileX, int tileY)
 {
 	CK_object *obj = CK_GetNewObj(false);
 
-	obj->type = 13; // Spirogrip
+	obj->type = CT_Spirogrip;
 	obj->active = OBJ_ACTIVE;
 	obj->posX = (tileX << 8);
 	obj->posY = (tileY << 8) - 256;
 
-	obj->xDirection = -1; // Left
-	obj->yDirection = 1; //Down
+	obj->xDirection = 1; // Right
+	obj->yDirection = 1; // Down
 
-	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_SpirogripSpin1"));
+	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_SpirogripAttachDown"));
 }
 
 void CK5_SpirogripSpin(CK_object *obj)
