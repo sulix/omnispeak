@@ -906,9 +906,6 @@ void CK_HandleInput()
 	{
 		// TODO: Gravis Gamepad input handling
 	}
-
-	// TODO: Wrong place to call this!
-	CK_CheckKeys();
 }
 
 void StopMusic(void)
@@ -1376,18 +1373,33 @@ int CK_PlayLoop()
 		VL_Present();
 		// If we've finished playing back our demo, or the player presses a key,
 		// exit the playloop.
-		if (IN_DemoGetMode() == IN_Demo_Playback && IN_GetLastScan() != IN_SC_None )
+		if (IN_DemoGetMode() == IN_Demo_Playback)
 		{
-			ck_gameState.levelState = 2;
-			ck_demoEnabled = false;
-			IN_DemoStopPlaying();
+			if (!vl_screenFaded && (IN_GetLastScan() != IN_SC_None))
+			{
+				ck_gameState.levelState = 2;
+
+				// TODO: Wrong place to do these?
+				ck_demoEnabled = false;
+				IN_DemoStopPlaying();
+				// TODO: Change scancode here
+				//if (IN_GetLastScan() != IN_SC_F1)
+				//	ID_SetLastScan(IN_SC_Space);
+			}
 		}
 		else if (IN_DemoGetMode() == IN_Demo_PlayDone)
 		{
 			ck_gameState.levelState = 2;
 		}
-
-
+		else
+		{
+			CK_CheckKeys();
+		}
+		// End-Of-Game cheat
+		if (IN_GetKeyState(IN_SC_E) && IN_GetKeyState(IN_SC_N) && IN_GetKeyState(IN_SC_D))
+		{
+			ck_gameState.levelState = 15;
+		}
 	}
 	game_in_progress = 0;
 	StopMusic();
