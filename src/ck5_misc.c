@@ -824,7 +824,7 @@ void CK5_ScanInfoLayer()
 extern uint8_t ca_levelbit;
 extern uint8_t ca_graphChunkNeeded[CA_MAX_GRAPH_CHUNKS];
 
-void FuseMessage()
+void CK5_FuseMessage()
 {
 	SD_WaitSoundDone();
 

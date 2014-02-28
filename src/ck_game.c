@@ -726,15 +726,15 @@ replayLevel:
 
 		case 8:
 			// Quit to Dos
-			// IN_ClearKeysDown();
+			IN_ClearKeysDown();
 			return;
 
 		case 14:
-			// The Korath fuse was broken
+			// The level has been ended by fuse destruction
 			SD_PlaySound(SOUND_LEVELEXIT);
 			//word_4A16A = ck_currentMapNumber;
 			ck_gameState.levelsDone[ck_currentMapNumber] = 14;
-			// TODO: Fuse Message goes here
+			CK5_FuseMessage();
 			ck_currentMapNumber = 0;
 			break;
 
