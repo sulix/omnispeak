@@ -280,7 +280,7 @@ char ck_levelEntryText_15[] =
 	"find himself by\n"
 	"theHigh Scores";
 
-const char *ck_levelEntryTexts[] = {
+char *ck_levelEntryTexts[] = {
 	ck_levelEntryText_0,
 	ck_levelEntryText_1,
 	ck_levelEntryText_2,
@@ -399,6 +399,10 @@ void CK_LoadLevel(bool doCache)
 	// Cache Marked graphics and draw loading box
 	if (doCache)
 	{
+		// HACK: US_CPrint modifies strings. So don't use
+		// literals directly. (char * is NOT ok; Use char arrays.)
+		static char demoString[] = "DEMO";
+		static char korathString[] = "Keen steps out\nonto Korath III";
 #if 0
 		if (ck_inHighScores)
 		{
@@ -408,12 +412,12 @@ void CK_LoadLevel(bool doCache)
 #endif
 			if (IN_DemoGetMode() != IN_Demo_Off)
 		{
-			CA_CacheMarks("DEMO");
+			CA_CacheMarks(demoString);
 		}
 		else if (ck_currentMapNumber == 0 && ck_keenObj->clipRects.tileY1 > 100)
 		{
 			/* Stepping on to korath*/
-			CA_CacheMarks("Keen steps out\nonto Korath III");
+			CA_CacheMarks(korathString);
 		}
 		else
 		{
@@ -439,7 +443,8 @@ void CK_LoadLevel(bool doCache)
 
 static int ck_cacheCountdownNum, ck_cacheBoxChunksPerPic, ck_cacheBoxChunkCounter;
 
-void CK_BeginCacheBox (const char *title, int numChunks)
+// The string may be temporarily modified by US_CPrint, hence it's non-const.
+void CK_BeginCacheBox (char *title, int numChunks)
 {
 	int totalfree;
 	uint16_t w, h;
@@ -494,8 +499,7 @@ void CK_BeginCacheBox (const char *title, int numChunks)
 	US_SetPrintX(US_GetWindowX());
 	CK_MeasureMultiline(title, &w, &h);
 	US_SetPrintY(US_GetPrintY() + (US_GetWindowH() - h) / 2 - 4);
-	// FIXME: We really need to accept a non-const char* instead...
-	US_CPrint((char *)title);
+	US_CPrint(title);
 	VL_Present();
 
 	ck_cacheBoxChunkCounter = ck_cacheBoxChunksPerPic = numChunks / 6;
