@@ -712,6 +712,11 @@ void VL_SetScrollCoords(int x, int y)
 	vl_scrollYpixels = y;
 }
 
+void VL_ClearScreen(int colour)
+{
+	VL_ScreenRect(0, 0, 320, 200, colour);
+}
+
 void VL_Present()
 {
 	vl_lastFrameTime = SDL_GetTicks();

@@ -817,7 +817,157 @@ void CK5_ScanInfoLayer()
 	}
 }
 
-// TODO: Galaxy Explosion Stuff
+// Galaxy Explosion Ending Sequence
+uint8_t endsplosion_pal_change[][18] = 
+{
+	{ 0x8, 0x8, 0x7, 0xF, 0x7, 0x8, 0x0, 0x8, 0x7, 0xF, 0x7, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
+	{ 0x7, 0x7, 0x7, 0x7, 0x7, 0xF, 0x7, 0x8, 0x0, 0x7, 0xF, 0x7, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0},
+};
+
+uint8_t endsplosion_palette[17] = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x3 };
+
+/*
+ * There can be 4000 stars in the galaxy ending
+ * Each star is defined by an initial position and velocity vector
+ * Each pixel is 0x80 units square, upper left of screen is (0,0)
+ * When galaxy explodes, star is updated by its velocity component
+ *  on every tick, until it exceeds screen boundaries.
+ */
+
+typedef struct CK5_GalExplode
+{
+	uint16_t x[4000]; 
+	int16_t dx[4000]; 
+	uint16_t y[4000]; 
+	int16_t dy[4000];
+} CK5_GalExplode;
+
+void CK_GalExplodePageFlip(int offset)
+{
+
+	VL_Present();
+}
+
+void CK_GalExplodeUpdateCoords(int offset)
+{
+	// NOTE: Normally, the offset would be set to allow for page flipping
+	// But we don't need to worry about that in omnispeak
+
+	// Blank the video buffer
+	VH_Bar(0, 0, 320, 200, 0);
+
+	CK5_GalExplode *info = (CK5_GalExplode*)ca_graphChunks[4925];
+
+	// Update the star positions
+	// Each pixel is 0x80 x 0x80 "distance units"
+	for (int i = 3999; i >= 0; i--)
+	{
+		uint16_t newPos;
+
+		newPos = info->x[i] + info->dx[i]; 
+		if (newPos > 320 * 0x80)
+			continue;
+		info->x[i] = newPos;
+
+		newPos = info->y[i] + info->dy[i];
+		if (newPos > 200 * 0x80)
+			continue;
+		info->y[i] = newPos;
+
+		VH_Plot(info->x[i]/0x80, info->y[i]/0x80, 0xF);
+	}
+}
+
+void CK5_ExplodeGalaxy() 
+{
+	// purge_chunks()
+	VL_SetScrollCoords(0,0);
+
+	VL_FadeToBlack();
+	CA_CacheGrChunk(89); // Galaxy Pic
+	CA_CacheGrChunk(4925); // Star Coords
+	CA_CacheGrChunk(98);  // Game Over Pic
+
+	// VW_SetLineWidth(40);
+	// VH_SetScreen(0);
+	// VW_ClearVideo(0);
+	VL_ClearScreen(0);
+
+	// Draw the galaxy
+	VH_DrawBitmap(0, 0, 89);
+	VL_FadeFromBlack();
+	IN_ClearKeysDown();
+	SD_PlaySound(SOUND_GALAXYEXPLODEPRE);
+
+
+	// Galaxy is about to explode
+	for (int i = 0; i < 18; i++)
+	{
+		IN_PumpEvents();
+
+		endsplosion_palette[8] = endsplosion_pal_change[0][i];
+		endsplosion_palette[7] = endsplosion_pal_change[0][i];
+		VL_SetPaletteAndBorderColor(endsplosion_palette);
+		//VW_WaitVBL(10);
+		VL_DelayTics(10);
+
+		if (IN_GetLastScan())
+			goto done;
+
+		VL_Present();
+	}
+
+
+	// Write Mode 2();
+	// Set Plane Write Mask;
+
+	SD_PlaySound(SOUND_GALAXYEXPLODE);
+	VL_ClearScreen(0);
+
+	for (int i = 0; i < 30; i++)
+	{
+		IN_PumpEvents();
+
+		SD_SetLastTimeCount(SD_GetTimeCount());
+
+		CK_GalExplodeUpdateCoords(2000);
+		CK_GalExplodePageFlip(2000);
+
+		// Delay
+		while (SD_GetTimeCount() - SD_GetLastTimeCount() < 4)
+			;
+
+		SD_SetLastTimeCount(SD_GetTimeCount());
+
+		CK_GalExplodeUpdateCoords(0);
+		CK_GalExplodePageFlip(0);
+
+		// Delay
+		while (SD_GetTimeCount() - SD_GetLastTimeCount() < 4)
+			;
+
+		if (IN_GetLastScan())
+			goto done;
+
+	}
+
+done:
+	// Set Video back to normal
+	VL_ClearScreen(0);
+	// VW_SetLineWidth(0);
+	VL_SetDefaultPalette();
+
+	// RF_Reset();
+
+	StartMusic(18);
+
+	VH_DrawBitmap(32, 80, 98);
+	VL_Present();
+
+	IN_UserInput(24 * 70, false);
+	
+	StopMusic();
+}
 
 // Fuse Explosion Message
 
