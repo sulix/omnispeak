@@ -190,7 +190,7 @@ void CK5_PointItem(CK_object *obj)
 		obj->gfxChunk = obj->user2;
 }
 
-void CK5_BlockPlatform(CK_object *obj)
+void CK5_RedAxisPlatform(CK_object *obj)
 {
 	uint16_t nextPosUnit, nextPosTile;
 
@@ -229,7 +229,7 @@ void CK5_BlockPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitY2 + obj->nextY;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1 + obj->user1] == 0x1F)
+		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile - 2, 2) == 0x1F)
 			{
@@ -249,7 +249,84 @@ void CK5_BlockPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitY1 + obj->nextY;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1 + obj->user1] == 0x1F)
+		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
+		{
+			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile + 2, 2) == 0x1F)
+			{
+				// Stop the platform.
+				obj->visible = true;
+				obj->nextY = 0;
+			}
+			else
+			{
+				obj->yDirection = 1;
+				//TODO: Change DeltaVelocity
+				obj->nextY +=  256 - (nextPosUnit & 255);
+			}
+		}
+	}
+}
+
+void CK5_PurpleAxisPlatform(CK_object *obj)
+{
+	uint16_t nextPosUnit, nextPosTile;
+
+	if (obj->nextX || obj->nextY)
+	{
+		return;
+	}
+	//TODO: Implement properly.
+	obj->nextX = obj->xDirection * 12 * SD_GetSpriteSync();
+	obj->nextY = obj->yDirection * 12 * SD_GetSpriteSync();
+
+	if (obj->xDirection == 1)
+	{
+		nextPosUnit = obj->clipRects.unitX2 + obj->nextX;
+		nextPosTile = nextPosUnit >> 8;
+		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		{
+			obj->xDirection = -1;
+			//TODO: Change DeltaVelocity
+			obj->nextX -= (nextPosUnit & 255);
+		}
+	}
+	else if (obj->xDirection == -1)
+	{
+		nextPosUnit = obj->clipRects.unitX1 + obj->nextX;
+		nextPosTile = nextPosUnit >> 8;
+		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		{
+			obj->xDirection = 1;
+			//TODO: Change DeltaVelocity
+			//CK_PhysUpdateX(obj, 256 - nextPosUnit&255);
+			obj->nextX += (256 - nextPosUnit) & 255;
+		}
+	}
+	else if (obj->yDirection == 1)
+	{
+		nextPosUnit = obj->clipRects.unitY2 + obj->nextY;
+		nextPosTile = nextPosUnit >> 8;
+		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
+		{
+			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile - 2, 2) == 0x1F)
+			{
+				//Stop the platform.
+				obj->visible = true;
+				obj->nextY = 0;
+			}
+			else
+			{
+				obj->yDirection = -1;
+				//TODO: Change DeltaVelocity
+				obj->nextY -= ( nextPosUnit & 255);
+			}
+		}
+	}
+	else if (obj->yDirection == -1)
+	{
+		nextPosUnit = obj->clipRects.unitY1 + obj->nextY;
+		nextPosTile = nextPosUnit >> 8;
+		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile + 2, 2) == 0x1F)
 			{
@@ -414,7 +491,8 @@ void CK5_SetupFunctions()
 	CK_ACT_AddFunction("CK_BasicDrawFunc2", &CK_BasicDrawFunc2);
 	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
 	CK_ACT_AddFunction("CK5_PointItem", &CK5_PointItem);
-	CK_ACT_AddFunction("CK5_BlockPlatform", &CK5_BlockPlatform);
+	CK_ACT_AddFunction("CK5_RedAxisPlatform", &CK5_RedAxisPlatform);
+	CK_ACT_AddFunction("CK5_PurpleAxisPlatform", &CK5_PurpleAxisPlatform);
 	CK_ACT_AddFunction("CK5_FallPlatSit", &CK5_FallPlatSit);
 	CK_ACT_AddFunction("CK5_FallPlatFall", &CK5_FallPlatFall);
 	CK_ACT_AddFunction("CK5_FallPlatRise", &CK5_FallPlatRise);
@@ -472,7 +550,7 @@ void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
 	CA_CacheGrChunk(obj->gfxChunk + 1);
 }
 
-void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
+void CK5_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
 {
 	CK_object *obj = CK_GetNewObj(false);
 
@@ -504,17 +582,16 @@ void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
 
 	if (purple)
 	{
-		obj->user1 = 1;
 		obj->posX += 0x40;
 		obj->posY += 0x40;
-		CK_SetAction(obj, CK_GetActionByName("CK5_act_purpleBlockPlatform"));
+		CK_SetAction(obj, CK_GetActionByName("CK5_act_purpleAxisPlatform"));
 	}
 	else
 	{
 
-		obj->user1 = 0;
-		CK_SetAction(obj, CK_GetActionByName("CK5_act_redBlockPlatform"));
+		CK_SetAction(obj, CK_GetActionByName("CK5_act_redAxisPlatform"));
 	}
+	// TODO: These should *not* be done here.
 	obj->gfxChunk = obj->currentAction->chunkLeft;
 	CA_CacheGrChunk(obj->gfxChunk);
 	CK_ResetClipRects(obj);
@@ -640,7 +717,7 @@ void CK5_ScanInfoLayer()
 			case 28:
 			case 29:
 			case 30:
-				CK5_SpawnRedBlockPlatform(x, y, infoValue - 27, false);
+				CK5_SpawnAxisPlatform(x, y, infoValue - 27, false);
 				break;
 			case 32:
 				CK5_SpawnFallPlat(x, y);
@@ -771,7 +848,7 @@ void CK5_ScanInfoLayer()
 			case 85:
 			case 86:
 			case 87:
-				CK5_SpawnRedBlockPlatform(x, y, infoValue - 84, true);
+				CK5_SpawnAxisPlatform(x, y, infoValue - 84, true);
 				break;
 
 			case 90:
