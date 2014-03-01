@@ -977,6 +977,7 @@ void CK_KeenJumpThink(CK_object *obj)
 	if (obj->bottomTI == 17)
 	{
 		obj->nextX = 0;
+		obj->velX = 0;
 	}
 
 	//Shooting

@@ -534,10 +534,10 @@ void CK_PhysUpdateSimpleObj(CK_object *obj)
 		CK_ResetClipRects(obj);
 
 		//Reset the tile clipping vars.
-		obj->topTI = 0;
-		obj->bottomTI = 0;
-		obj->leftTI = 0;
-		obj->rightTI = 0;
+		//obj->topTI = 0;
+		//obj->bottomTI = 0;
+		//obj->leftTI = 0;
+		//obj->rightTI = 0;
 
 		if (obj->clipped)
 		{
