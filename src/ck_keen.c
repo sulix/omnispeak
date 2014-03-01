@@ -503,10 +503,13 @@ void CK_KeenRidePlatform(CK_object *obj)
 		obj->nextY = plat->clipRects.unitY1 - obj->clipRects.unitY2 - 16;
 		CK_PhysUpdateSimpleObj(obj);
 
-		//TODO: Something relating to scrolling?
-		
+		// Keen has a "/NOPAN" parameter which disables use of the EGA panning
+		// register. In order to make platforms less ugly when this is on
+		// (though not much less ugly, IMHO), we would do some more processing here.
+		// As is, we just do the line below, to keep keen at the same position while scrolling.	
 
-		// WTF?
+		// Keen's x position should move with 2px granularity when on a platform so that scrolling
+		// looks nice. (Keen will stay at the same pixel position when scrolling, as we scroll 2px at a time).
 		obj->posX |= plat->posX & 0x1F;
 
 		// We've hit the ceiling?
@@ -1312,11 +1315,21 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 	if (other->type == 6)
 	{
 		obj->clipped = CLIP_normal;
-		CK_PhysUpdateSimpleObj(obj);
+		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
 		ck_keenState.jumpTimer = 0;
 		obj->deltaPosX = 0;
 		obj->deltaPosY = 0;
 		CK_PhysPushY(obj,other);
+		return;
+	}
+	else if (other->type == 0x0E || other->type == 0x17)
+	{
+		obj->zLayer = 1;
+		obj->clipped = CLIP_normal;
+		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
+		ck_keenState.jumpTimer = 0;
+		obj->deltaPosX = 0;
+		obj->deltaPosY = 0;
 		return;
 	}
 

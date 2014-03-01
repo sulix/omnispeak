@@ -1206,8 +1206,7 @@ int ck_currentMapNumber;
 int CK_PlayLoop()
 {
 	StartMusic(ck_currentMapNumber);
-
-	//ck_keenState.EnterDoorAttempt = 0;
+	memset(&ck_keenState, 0, sizeof(ck_keenState));
 	ck_invincibilityTimer = 0;
 	ck_scrollDisabled = false;
 	ck_keenState.jumpWasPressed = ck_keenState.pogoWasPressed = ck_keenState.shootWasPressed = false;
@@ -1321,9 +1320,14 @@ int CK_PlayLoop()
 		{
 			if (currentObj->active)
 			{
-				//TODO: Check if object has fallen off the bottom of the map.
-				//CK_ActionThink(currentObj,1);	
-				//else...
+				if (currentObj->clipRects.tileY2 >= (CA_GetMapHeight() - 1))
+				{
+					if (currentObj->active != OBJ_ALWAYS_ACTIVE)
+					{
+						CK_RemoveObj(currentObj);
+						continue;
+					}
+				}
 				if (currentObj->visible && currentObj->currentAction->draw)
 				{
 					currentObj->visible = false;	//We don't need to render it twice!
