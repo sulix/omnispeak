@@ -88,6 +88,9 @@ bool ck_twoButtonFiring;
 // Gamepad
 bool ck_gamePadEnabled;
 
+// Pogo timer for two-button firing
+int ck_pogoTimer;
+
 // A bunch of global variables from other modules that should be 
 // handled better, but are just defined here for now
 
@@ -827,8 +830,6 @@ void CK_HandleInput()
 {
 	IN_ReadControls(0, &ck_inputFrame);
 
-	static int pogoTimer = 0;
-
 	if (ck_inputFrame.yDirection != -1)
 		ck_keenState.keenSliding = false;
 
@@ -877,9 +878,9 @@ void CK_HandleInput()
 				// Here be dragons!
 				// In order to better emulate the original trilogy's controls, a delay
 				// is introduced when pogoing in two-button firing.
-				if (pogoTimer <= 8)
+				if (ck_pogoTimer <= 8)
 				{
-					pogoTimer += SD_GetSpriteSync();
+					ck_pogoTimer += SD_GetSpriteSync();
 				}
 				else
 				{
@@ -889,7 +890,7 @@ void CK_HandleInput()
 			else
 			{
 				// If the player lets go of pogo, pogo immediately.
-				if (pogoTimer)
+				if (ck_pogoTimer)
 				{
 					ck_keenState.pogoIsPressed = true;
 				}
@@ -898,7 +899,7 @@ void CK_HandleInput()
 					ck_keenState.pogoWasPressed = false;
 					ck_keenState.pogoIsPressed = false;
 				}
-				pogoTimer = 0;
+				ck_pogoTimer = 0;
 			}
 		}
 	}
@@ -1206,6 +1207,7 @@ int ck_currentMapNumber;
 int CK_PlayLoop()
 {
 	StartMusic(ck_currentMapNumber);
+	ck_pogoTimer = 0;
 	memset(&ck_keenState, 0, sizeof(ck_keenState));
 	ck_invincibilityTimer = 0;
 	ck_scrollDisabled = false;
