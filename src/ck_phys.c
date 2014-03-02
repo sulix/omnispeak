@@ -656,12 +656,12 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 
 bool CK_ObjectVisible(CK_object *obj)
 {
-	if (obj->clipRects.tileX2 < ck_activeX1Tile && obj->clipRects.tileY2 < ck_activeY1Tile && obj->clipRects.tileX1 > ck_activeX0Tile && obj->clipRects.tileY1 > ck_activeY0Tile)
+	if (obj->clipRects.tileX2 < ck_activeX0Tile || obj->clipRects.tileY2 < ck_activeY0Tile || obj->clipRects.tileX1 > ck_activeX1Tile || obj->clipRects.tileY1 > ck_activeY1Tile)
 	{
-		return true;
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
 void CK_PhysGravityHigh(CK_object *obj)

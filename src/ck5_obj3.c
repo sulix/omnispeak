@@ -1224,7 +1224,7 @@ void CK5_ShikadiWalk(CK_object *obj)
 			return;
 		}
 
-		//if at tile boundary (i.e., ready for zap
+		//if at tile boundary (i.e., ready for zap)
 		if ((obj->posX & 0xFF) || !CK_ObjectVisible(obj))
 			return;
 
