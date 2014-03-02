@@ -384,7 +384,7 @@ void CK5_FallPlatSit (CK_object *obj)
 
 void CK5_FallPlatFall (CK_object *obj)
 {
-	int16_t newY, newYT;
+	uint16_t newY, newYT;
 
 	CK_PhysGravityHigh(obj);
 	newY = obj->clipRects.unitY2 + obj->nextY;
