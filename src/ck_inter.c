@@ -200,12 +200,12 @@ void CK_PlayDemoFile(const char *demoName)
 	uint16_t demoLen = *((uint16_t *) demoBuf);
 
 	ck_currentMapNumber =demoMap;
+	ck_gameState.difficulty = D_Normal;
 
 	CK_LoadLevel(true);
 
 	ck_demoEnabled = true;
 
-	ck_gameState.difficulty = D_Normal;
 
 	IN_DemoStartPlaying(demoBuf, demoLen);
 
@@ -234,13 +234,11 @@ void CK_PlayDemo(int demoNumber)
 
 	ck_currentMapNumber =demoMap;
 
+	ck_demoEnabled = true;
+	IN_DemoStartPlaying(demoBuf, demoLen);
+
 	CK_LoadLevel(true);
 
-	ck_demoEnabled = true;
-
-	ck_gameState.difficulty = D_Normal;
-
-	IN_DemoStartPlaying(demoBuf, demoLen);
 
 
 	CK_PlayLoop();

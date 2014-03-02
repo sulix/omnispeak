@@ -1224,7 +1224,7 @@ void CK5_ShikadiWalk(CK_object *obj)
 			return;
 		}
 
-		//if at tile boundary (i.e., ready for zap
+		//if at tile boundary (i.e., ready for zap)
 		if ((obj->posX & 0xFF) || !CK_ObjectVisible(obj))
 			return;
 
@@ -1645,14 +1645,14 @@ void CK5_KorathDraw(CK_object *obj)
 		obj->posX -= obj->deltaPosX;
 		obj->xDirection = -1;
 		obj->timeUntillThink = US_RndT() / 32;
-		CK_SetAction(obj, obj->currentAction);
+		CK_SetAction2(obj, obj->currentAction);
 	}
 	else if (obj->xDirection == -1 && obj->rightTI)
 	{
 		obj->posX -= obj->deltaPosX;
 		obj->xDirection = 1;
 		obj->timeUntillThink = US_RndT() / 32;
-		CK_SetAction(obj, obj->currentAction);
+		CK_SetAction2(obj, obj->currentAction);
 	}
 	else if (!obj->topTI)
 	{
@@ -1662,8 +1662,7 @@ void CK5_KorathDraw(CK_object *obj)
 		obj->timeUntillThink = US_RndT() / 32;
 		obj->nextX = 0;
 
-		CK_PhysUpdateNormalObj(obj);
-		//CK_SetAction(obj, obj->currentAction);
+		CK_SetAction2(obj, obj->currentAction);
 	}
 
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0,

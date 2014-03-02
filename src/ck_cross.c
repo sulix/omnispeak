@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include "ck_cross.h"
 
+#ifdef CK_RAND_DEBUG
+#include <execinfo.h>
+#endif
+
 void CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass, const char *format, ...)
 	{
 	// TODO: For now we simply do this.
@@ -23,6 +27,22 @@ void CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass, const char *format, ..
 	}
 	va_end(args);
 }
+
+#ifdef CK_RAND_DEBUG
+
+void CK_Cross_StackTrace()
+{
+	int numFunctions;
+	char **strings;
+	void *buffer[100];
+
+	numFunctions = backtrace(buffer, 100);
+	strings = backtrace_symbols(buffer, numFunctions);
+	for (int i = 0; i < numFunctions; ++i)
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "[BT] %s\n", strings[i]);
+}
+
+#endif
 
 void CK_Cross_puts(const char *str)
 {

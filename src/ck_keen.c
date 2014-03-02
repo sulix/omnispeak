@@ -735,7 +735,7 @@ void CK_KeenStandingThink(CK_object *obj)
 	}
 
 	//If not on platform
-	if ((obj->topTI & ~7) == 0x18)
+	if ((obj->topTI & ~7) != 0x18)
 		obj->user1 += SD_GetSpriteSync();
 
 	if (obj->user2 == 0 && obj->user1 > 200)
@@ -817,7 +817,7 @@ void CK_KeenLookDownThink(CK_object *obj)
 	if (ck_inputFrame.yDirection != 1 || ck_inputFrame.xDirection != 0 || (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
 		|| (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed))
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookDown4");
 		return;
 	}
 }	
@@ -977,6 +977,7 @@ void CK_KeenJumpThink(CK_object *obj)
 	if (obj->bottomTI == 17)
 	{
 		obj->nextX = 0;
+		obj->velX = 0;
 	}
 
 	//Shooting
@@ -1694,7 +1695,7 @@ void CK_KeenSpawnShot(CK_object *obj)
 			CK_SpawnShot(obj->posX - 128, obj->posY + 64, 6);
 		}
 	}
-	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShoot2"))
+	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShoot2"))
 	{
 		if (obj->xDirection == 1)
 		{
@@ -1702,25 +1703,22 @@ void CK_KeenSpawnShot(CK_object *obj)
 		}
 		else
 		{
-			//TODO: There's no '-128' in the keen5 binary.
-			//However, there clearly should be one, and for whatever
-			//reason, it's not working without it. (Shot is invisible?)
-			CK_SpawnShot(obj->posX - 128, obj->posY + 32, 6);
+			CK_SpawnShot(obj->posX, obj->posY + 32, 6);
 		}
 	}
-	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShootDown2"))
+	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShootDown2"))
 	{
 		CK_SpawnShot(obj->posX + 128, obj->posY + 288, 4);
 	}
-	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShootUp2"))
+	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShootUp2"))
 	{
 		CK_SpawnShot(obj->posX + 80, obj->posY - 160, 0);
 	}
-	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenShootUp1"))
+	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenShootUp1"))
 	{
 		CK_SpawnShot(obj->posX + 80, obj->posY - 160, 0);
 	}
-	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShoot1"))
+	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShoot1"))
 	{
 		if (obj->xDirection == 1)
 		{
@@ -1731,7 +1729,7 @@ void CK_KeenSpawnShot(CK_object *obj)
 			CK_SpawnShot(obj->posX - 128, obj->posY + 64, 6);
 		}
 	}
-	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShootUp1"))
+	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShootUp1"))
 	{
 		if (obj->xDirection == 1)
 		{
@@ -1742,7 +1740,7 @@ void CK_KeenSpawnShot(CK_object *obj)
 			CK_SpawnShot(obj->posX + 192, obj->posY + 64, 0);
 		}
 	}
-	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShootDown1"))
+	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShootDown1"))
 	{
 		if (obj->xDirection == 1)
 		{

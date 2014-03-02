@@ -377,22 +377,21 @@ void CK5_FallPlatSit (CK_object *obj)
 	{
 		obj->nextY = SD_GetSpriteSync() * 16;
 		obj->velY = 0;
-		if (obj->posY + obj->nextY - obj->user1 <= 0x80)
+		if ((unsigned)(obj->posY + obj->nextY - obj->user1) >= 0x80)
 			obj->currentAction = CK_GetActionByName("CK5_ACT_FallPlat1");
 	}
 }
 
 void CK5_FallPlatFall (CK_object *obj)
 {
-
-	int newY, newYT;
+	uint16_t newY, newYT;
 
 	CK_PhysGravityHigh(obj);
 	newY = obj->clipRects.unitY2 + obj->nextY;
 	newYT = newY >> 8;
 
 	// Stop falling if platform hits a block
-	if (obj->clipRects.tileY2 != newYT && CA_TileAtPos(obj->clipRects.tileX1, newYT, 2) == 0x1F)
+	if ((obj->clipRects.tileY2 != newYT) && (CA_TileAtPos(obj->clipRects.tileX1, newYT, 2) == 0x1F))
 	{
 		obj->nextY = 0xFF - (obj->clipRects.unitY2 & 0xFF);
 		if (ck_keenState.platform != obj)

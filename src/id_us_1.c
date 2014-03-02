@@ -582,6 +582,10 @@ void US_InitRndT(bool randomize)
 
 int US_RndT()
 {
+#ifdef CK_RAND_DEBUG
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL,"Returning random number %d, %d for:\n", us_randomIndex, us_RandomTable[us_randomIndex&0xff]);
+	CK_Cross_StackTrace();
+#endif
 	return us_RandomTable[(us_randomIndex++)&0xff];
 }
 
