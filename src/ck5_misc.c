@@ -190,7 +190,7 @@ void CK5_PointItem(CK_object *obj)
 		obj->gfxChunk = obj->user2;
 }
 
-void CK5_BlockPlatform(CK_object *obj)
+void CK5_RedAxisPlatform(CK_object *obj)
 {
 	uint16_t nextPosUnit, nextPosTile;
 
@@ -229,7 +229,7 @@ void CK5_BlockPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitY2 + obj->nextY;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1 + obj->user1] == 0x1F)
+		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile - 2, 2) == 0x1F)
 			{
@@ -249,7 +249,84 @@ void CK5_BlockPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitY1 + obj->nextY;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1 + obj->user1] == 0x1F)
+		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
+		{
+			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile + 2, 2) == 0x1F)
+			{
+				// Stop the platform.
+				obj->visible = true;
+				obj->nextY = 0;
+			}
+			else
+			{
+				obj->yDirection = 1;
+				//TODO: Change DeltaVelocity
+				obj->nextY +=  256 - (nextPosUnit & 255);
+			}
+		}
+	}
+}
+
+void CK5_PurpleAxisPlatform(CK_object *obj)
+{
+	uint16_t nextPosUnit, nextPosTile;
+
+	if (obj->nextX || obj->nextY)
+	{
+		return;
+	}
+	//TODO: Implement properly.
+	obj->nextX = obj->xDirection * 12 * SD_GetSpriteSync();
+	obj->nextY = obj->yDirection * 12 * SD_GetSpriteSync();
+
+	if (obj->xDirection == 1)
+	{
+		nextPosUnit = obj->clipRects.unitX2 + obj->nextX;
+		nextPosTile = nextPosUnit >> 8;
+		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		{
+			obj->xDirection = -1;
+			//TODO: Change DeltaVelocity
+			obj->nextX -= (nextPosUnit & 255);
+		}
+	}
+	else if (obj->xDirection == -1)
+	{
+		nextPosUnit = obj->clipRects.unitX1 + obj->nextX;
+		nextPosTile = nextPosUnit >> 8;
+		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		{
+			obj->xDirection = 1;
+			//TODO: Change DeltaVelocity
+			//CK_PhysUpdateX(obj, 256 - nextPosUnit&255);
+			obj->nextX += (256 - nextPosUnit) & 255;
+		}
+	}
+	else if (obj->yDirection == 1)
+	{
+		nextPosUnit = obj->clipRects.unitY2 + obj->nextY;
+		nextPosTile = nextPosUnit >> 8;
+		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
+		{
+			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile - 2, 2) == 0x1F)
+			{
+				//Stop the platform.
+				obj->visible = true;
+				obj->nextY = 0;
+			}
+			else
+			{
+				obj->yDirection = -1;
+				//TODO: Change DeltaVelocity
+				obj->nextY -= ( nextPosUnit & 255);
+			}
+		}
+	}
+	else if (obj->yDirection == -1)
+	{
+		nextPosUnit = obj->clipRects.unitY1 + obj->nextY;
+		nextPosTile = nextPosUnit >> 8;
+		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile + 2, 2) == 0x1F)
 			{
@@ -414,7 +491,8 @@ void CK5_SetupFunctions()
 	CK_ACT_AddFunction("CK_BasicDrawFunc2", &CK_BasicDrawFunc2);
 	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
 	CK_ACT_AddFunction("CK5_PointItem", &CK5_PointItem);
-	CK_ACT_AddFunction("CK5_BlockPlatform", &CK5_BlockPlatform);
+	CK_ACT_AddFunction("CK5_RedAxisPlatform", &CK5_RedAxisPlatform);
+	CK_ACT_AddFunction("CK5_PurpleAxisPlatform", &CK5_PurpleAxisPlatform);
 	CK_ACT_AddFunction("CK5_FallPlatSit", &CK5_FallPlatSit);
 	CK_ACT_AddFunction("CK5_FallPlatFall", &CK5_FallPlatFall);
 	CK_ACT_AddFunction("CK5_FallPlatRise", &CK5_FallPlatRise);
@@ -472,7 +550,7 @@ void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
 	CA_CacheGrChunk(obj->gfxChunk + 1);
 }
 
-void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
+void CK5_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
 {
 	CK_object *obj = CK_GetNewObj(false);
 
@@ -504,17 +582,16 @@ void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple)
 
 	if (purple)
 	{
-		obj->user1 = 1;
 		obj->posX += 0x40;
 		obj->posY += 0x40;
-		CK_SetAction(obj, CK_GetActionByName("CK5_act_purpleBlockPlatform"));
+		CK_SetAction(obj, CK_GetActionByName("CK5_act_purpleAxisPlatform"));
 	}
 	else
 	{
 
-		obj->user1 = 0;
-		CK_SetAction(obj, CK_GetActionByName("CK5_act_redBlockPlatform"));
+		CK_SetAction(obj, CK_GetActionByName("CK5_act_redAxisPlatform"));
 	}
+	// TODO: These should *not* be done here.
 	obj->gfxChunk = obj->currentAction->chunkLeft;
 	CA_CacheGrChunk(obj->gfxChunk);
 	CK_ResetClipRects(obj);
@@ -640,7 +717,7 @@ void CK5_ScanInfoLayer()
 			case 28:
 			case 29:
 			case 30:
-				CK5_SpawnRedBlockPlatform(x, y, infoValue - 27, false);
+				CK5_SpawnAxisPlatform(x, y, infoValue - 27, false);
 				break;
 			case 32:
 				CK5_SpawnFallPlat(x, y);
@@ -771,7 +848,7 @@ void CK5_ScanInfoLayer()
 			case 85:
 			case 86:
 			case 87:
-				CK5_SpawnRedBlockPlatform(x, y, infoValue - 84, true);
+				CK5_SpawnAxisPlatform(x, y, infoValue - 84, true);
 				break;
 
 			case 90:
@@ -817,7 +894,157 @@ void CK5_ScanInfoLayer()
 	}
 }
 
-// TODO: Galaxy Explosion Stuff
+// Galaxy Explosion Ending Sequence
+uint8_t endsplosion_pal_change[][18] = 
+{
+	{ 0x8, 0x8, 0x7, 0xF, 0x7, 0x8, 0x0, 0x8, 0x7, 0xF, 0x7, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
+	{ 0x7, 0x7, 0x7, 0x7, 0x7, 0xF, 0x7, 0x8, 0x0, 0x7, 0xF, 0x7, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0},
+};
+
+uint8_t endsplosion_palette[17] = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x3 };
+
+/*
+ * There can be 4000 stars in the galaxy ending
+ * Each star is defined by an initial position and velocity vector
+ * Each pixel is 0x80 units square, upper left of screen is (0,0)
+ * When galaxy explodes, star is updated by its velocity component
+ *  on every tick, until it exceeds screen boundaries.
+ */
+
+typedef struct CK5_GalExplode
+{
+	uint16_t x[4000]; 
+	int16_t dx[4000]; 
+	uint16_t y[4000]; 
+	int16_t dy[4000];
+} CK5_GalExplode;
+
+void CK_GalExplodePageFlip(int offset)
+{
+
+	VL_Present();
+}
+
+void CK_GalExplodeUpdateCoords(int offset)
+{
+	// NOTE: Normally, the offset would be set to allow for page flipping
+	// But we don't need to worry about that in omnispeak
+
+	// Blank the video buffer
+	VH_Bar(0, 0, 320, 200, 0);
+
+	CK5_GalExplode *info = (CK5_GalExplode*)ca_graphChunks[4925];
+
+	// Update the star positions
+	// Each pixel is 0x80 x 0x80 "distance units"
+	for (int i = 3999; i >= 0; i--)
+	{
+		uint16_t newPos;
+
+		newPos = info->x[i] + info->dx[i]; 
+		if (newPos > 320 * 0x80)
+			continue;
+		info->x[i] = newPos;
+
+		newPos = info->y[i] + info->dy[i];
+		if (newPos > 200 * 0x80)
+			continue;
+		info->y[i] = newPos;
+
+		VH_Plot(info->x[i]/0x80, info->y[i]/0x80, 0xF);
+	}
+}
+
+void CK5_ExplodeGalaxy() 
+{
+	// purge_chunks()
+	VL_SetScrollCoords(0,0);
+
+	VL_FadeToBlack();
+	CA_CacheGrChunk(89); // Galaxy Pic
+	CA_CacheGrChunk(4925); // Star Coords
+	CA_CacheGrChunk(98);  // Game Over Pic
+
+	// VW_SetLineWidth(40);
+	// VH_SetScreen(0);
+	// VW_ClearVideo(0);
+	VL_ClearScreen(0);
+
+	// Draw the galaxy
+	VH_DrawBitmap(0, 0, 89);
+	VL_FadeFromBlack();
+	IN_ClearKeysDown();
+	SD_PlaySound(SOUND_GALAXYEXPLODEPRE);
+
+
+	// Galaxy is about to explode
+	for (int i = 0; i < 18; i++)
+	{
+		IN_PumpEvents();
+
+		endsplosion_palette[8] = endsplosion_pal_change[0][i];
+		endsplosion_palette[7] = endsplosion_pal_change[0][i];
+		VL_SetPaletteAndBorderColor(endsplosion_palette);
+		//VW_WaitVBL(10);
+		VL_DelayTics(10);
+
+		if (IN_GetLastScan())
+			goto done;
+
+		VL_Present();
+	}
+
+
+	// Write Mode 2();
+	// Set Plane Write Mask;
+
+	SD_PlaySound(SOUND_GALAXYEXPLODE);
+	VL_ClearScreen(0);
+
+	for (int i = 0; i < 30; i++)
+	{
+		IN_PumpEvents();
+
+		SD_SetLastTimeCount(SD_GetTimeCount());
+
+		CK_GalExplodeUpdateCoords(2000);
+		CK_GalExplodePageFlip(2000);
+
+		// Delay
+		while (SD_GetTimeCount() - SD_GetLastTimeCount() < 4)
+			;
+
+		SD_SetLastTimeCount(SD_GetTimeCount());
+
+		CK_GalExplodeUpdateCoords(0);
+		CK_GalExplodePageFlip(0);
+
+		// Delay
+		while (SD_GetTimeCount() - SD_GetLastTimeCount() < 4)
+			;
+
+		if (IN_GetLastScan())
+			goto done;
+
+	}
+
+done:
+	// Set Video back to normal
+	VL_ClearScreen(0);
+	// VW_SetLineWidth(0);
+	VL_SetDefaultPalette();
+
+	// RF_Reset();
+
+	StartMusic(18);
+
+	VH_DrawBitmap(32, 80, 98);
+	VL_Present();
+
+	IN_UserInput(24 * 70, false);
+	
+	StopMusic();
+}
 
 // Fuse Explosion Message
 

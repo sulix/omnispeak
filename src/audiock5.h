@@ -67,8 +67,8 @@ typedef enum {
 		SOUND_UNKNOWN50,         // 50
 		SOUND_UNKNOWN51,         // 51
 		SOUND_UNKNOWN52,         // 52
-		SOUND_UNKNOWN53,         // 53
-		SOUND_UNKNOWN54,         // 54
+		SOUND_GALAXYEXPLODE,     // 53
+		SOUND_GALAXYEXPLODEPRE,  // 54
 		SOUND_GOTKEYCARD,        // 55
 		SOUND_UNKNOWN56,         // 56
 		SOUND_KEENLANDONFUSE,    // 57

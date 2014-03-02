@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #include "id_in.h"
+#include "id_sd.h"
 #include "id_us.h"
 
 #include <string.h>
@@ -471,4 +472,50 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	}
 
 	//TODO: Record this inputFrame
+}
+
+// TODO: Handle Joy/Mouse
+int IN_CheckAck()
+{
+	int di;
+
+	di = IN_GetLastScan();
+
+#if 0
+	if (MousePresent && INL_GetMouseButtons)
+		di = 1;
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (JoyPresent[i] || Gamepad)
+			if (INL_GetJoyButtons)
+				di = 1;
+	}
+		
+#endif 
+
+	return di;
+
+}
+
+bool IN_UserInput(int tics, bool arg4) 
+{
+	int lasttime = SD_GetTimeCount();
+
+	do 
+	{
+		IN_PumpEvents();
+
+		if (IN_CheckAck())
+		{
+			// TODO: Reverse this function
+			if (arg4)
+				;//sub_263F7();
+
+			return true;
+
+		}
+	} while (SD_GetTimeCount() - lasttime < tics);
+
+	return false;
 }

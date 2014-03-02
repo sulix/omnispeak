@@ -85,6 +85,7 @@ void CK_MapFlagSpawn(int tileX, int tileY);
 
 /* ck5_misc.c */
 void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act);
+void CK5_ExplodeGalaxy();
 void CK5_FuseMessage();
 
 #endif

@@ -554,9 +554,9 @@ void CK_PhysUpdateSimpleObj(CK_object *obj)
 
 void CK_PhysPushX(CK_object *pushee, CK_object *pusher)
 {
-	int deltaPosX = pusher->deltaPosX - pushee->deltaPosX;
-	int deltaX_1 = pusher->clipRects.unitX2 - pushee->clipRects.unitX1;
-	int deltaX_2 = pushee->clipRects.unitX2 - pusher->clipRects.unitX1;
+	int16_t deltaPosX = pusher->deltaPosX - pushee->deltaPosX;
+	int16_t deltaX_1 = pusher->clipRects.unitX2 - pushee->clipRects.unitX1;
+	int16_t deltaX_2 = pushee->clipRects.unitX2 - pusher->clipRects.unitX1;
 
 	// Push object to the right
 	if ((deltaX_1 > 0) && (deltaX_1 <= deltaPosX))
@@ -570,7 +570,7 @@ void CK_PhysPushX(CK_object *pushee, CK_object *pusher)
 	}
 
 	// Push object to the left
-	if (deltaX_2 > 0 && deltaX_2 >= -deltaPosX)
+	if ((deltaX_2 > 0) && (-deltaPosX >= deltaX_2))
 	{
 		pushee->nextX = -deltaX_2;
 		if (pushee->currentAction->stickToGround)
@@ -583,10 +583,10 @@ void CK_PhysPushX(CK_object *pushee, CK_object *pusher)
 
 void CK_PhysPushY(CK_object *pushee, CK_object *pusher)
 {
-	int deltaDeltaY = pushee->deltaPosY - pusher->deltaPosY;
-	int deltaClipY = pushee->clipRects.unitY2 - pusher->clipRects.unitY1;
+	int16_t deltaDeltaY = pushee->deltaPosY - pusher->deltaPosY;
+	int16_t deltaClipY = pushee->clipRects.unitY2 - pusher->clipRects.unitY1;
 
-	if (deltaClipY >= 0 && deltaClipY <= deltaDeltaY)
+	if ((deltaClipY >= 0) && (deltaClipY <= deltaDeltaY))
 	{
 		//If the pushee is keen, set ck_keenState.currentPlatform to pusher
 		// (I'm not sure I like this)
@@ -656,12 +656,12 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 
 bool CK_ObjectVisible(CK_object *obj)
 {
-	if (obj->clipRects.tileX2 < ck_activeX1Tile && obj->clipRects.tileY2 < ck_activeY1Tile && obj->clipRects.tileX1 > ck_activeX0Tile && obj->clipRects.tileY1 > ck_activeY0Tile)
+	if (obj->clipRects.tileX2 < ck_activeX0Tile || obj->clipRects.tileY2 < ck_activeY0Tile || obj->clipRects.tileX1 > ck_activeX1Tile || obj->clipRects.tileY1 > ck_activeY1Tile)
 	{
-		return true;
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
 void CK_PhysGravityHigh(CK_object *obj)

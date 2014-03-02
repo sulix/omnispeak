@@ -765,9 +765,20 @@ replayLevel:
 		case 12:
 			break;
 		}
+
+		if (ck_gameState.numLives < 0)
+			break;
+
 		goto loadLevel; //livesLeft >= 0
 	}	while (true);
 
+#if 0
+	// Keen4/6 simple game over
 	CK_GameOver();
+#endif
+
+	// Keen 5: Blow up the galaxy
+	CK5_ExplodeGalaxy();
+
 	//TODO: Update High Scores
 }
