@@ -1116,7 +1116,7 @@ void CK_NormalCamera(CK_object *obj)
 		deltaY = (-pxToMove) << 4;
 
 	}
-	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookDown2"))
+	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookDown3"))
 	{
 		int pxToMove;
 		if (screenYpx - SD_GetSpriteSync() < 33)

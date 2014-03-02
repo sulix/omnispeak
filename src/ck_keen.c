@@ -735,7 +735,7 @@ void CK_KeenStandingThink(CK_object *obj)
 	}
 
 	//If not on platform
-	if ((obj->topTI & ~7) == 0x18)
+	if ((obj->topTI & ~7) != 0x18)
 		obj->user1 += SD_GetSpriteSync();
 
 	if (obj->user2 == 0 && obj->user1 > 200)
@@ -817,7 +817,7 @@ void CK_KeenLookDownThink(CK_object *obj)
 	if (ck_inputFrame.yDirection != 1 || ck_inputFrame.xDirection != 0 || (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
 		|| (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed))
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
+		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookDown4");
 		return;
 	}
 }	
