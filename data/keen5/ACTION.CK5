@@ -2,6 +2,9 @@
 # Action database for Keen 5 (v1.4)
 #
 
+# ck_phys.c
+%action CK_ACT_NULL 0 0 Frame 0 0 0 0 0 NULL NULL NULL NULL
+
 # ck_keen.c: Apart from sprite numbers these should work across all keen versions
 
 

@@ -48,13 +48,13 @@ void CK_DemoSignSpawn()
 	// Set all user vars to -1 to force scorebox redraw
 	ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
 
-#if 0
-	if (InHighScores)
+	if (ck_inHighScores)
 	{
-		ck_scoreBoxObj->action = 0x788;
+		ck_scoreBoxObj->currentAction = CK_GetActionByName("CK_ACT_NULL");
 		return;
 	}
 
+#if 0
 	if (DemoMode)
 	{
 		CK_SetAction(ck_scoreBoxObj, ACTION_DEMOSIGN);
@@ -118,11 +118,11 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 
 	bool updated = false;
 
-#if 0
 	// Don't draw anything for the high score level
-	if (InHighScores)
+	if (ck_inHighScores)
 		return;
 
+#if 0
 	// Show the demo sign for the demo mode
 	if (DemoMode)
 	{

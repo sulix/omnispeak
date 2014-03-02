@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 int ck_startingSavedGame = 0;
+bool ck_inHighScores = false;
 CK_Difficulty ck_startingDifficulty = D_NotPlaying;
 
 void CK_HandleDemoKeys()
@@ -55,7 +56,7 @@ void CK_HandleDemoKeys()
 
 	// Otherwise, start the wristwatch menu
 	US_RunCards();
-	if (!ck_startingDifficulty)
+	if (ck_startingDifficulty)
 	{
 		ck_gameState.levelState = 5;
 		return;
@@ -239,7 +240,10 @@ void CK_PlayDemo(int demoNumber)
 
 	CK_LoadLevel(true);
 
+	
 
+	if (ck_inHighScores)
+		CK_OverlayHighScores();
 
 	CK_PlayLoop();
 
@@ -256,7 +260,25 @@ void CK_PlayDemo(int demoNumber)
 /*
  * High scores
  */
-void DrawHighScores() 
+
+// Draw the high scores overtop the level
+void CK_OverlayHighScores()
 {
-	// TODO: implement
+
+}
+
+// Enter name if a high score has been achieved
+void CK_SubmitHighScore(int score)
+{
+	// TODO: 
+
+}
+
+// Play the high score level
+void CK_DoHighScores() 
+{
+	ck_inHighScores = true;
+	IN_ClearKeysDown();
+	CK_PlayDemo(4);
+	ck_inHighScores = false;
 }

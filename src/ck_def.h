@@ -84,6 +84,16 @@ typedef enum CK_ClassType {
 	CT_QED = 25,
 } CK_ClassType;
 
+typedef enum CK_LevelState
+{
+  LS_Playing = 0,             // In Level
+  LS_Died = 1,                // Keen Died
+  LS_LevelComplete = 2,       // Level Completed
+  LS_CouncilRescued = 3,      // Rescued Council Member (Keen 4)
+  LS_AboutToRecordDemo = 4,   // About to Record Demo
+  LS_DestroyedQED = 15,       // Destroyed QED (Keen 5)
+} CK_LevelState;
+
 // This struct is 0x58 bytes big in Keen5
 // It must be preserved if omnispeak savegames are to be compatible 
 // with those of vanilla keen
@@ -106,15 +116,6 @@ typedef struct CK_GameState
 	//struct CK_object *platform;  // This was a 16-bit pointer in DOS Keen5.exe
 
 	int levelState;				// Level State (should probably be enum)
-						// Values:
-						// 0 - In Level
-						// 1 - Keen Died
-						// 2 - Level Completed
-						// 3 - Rescued Council Member (Keen 4)
-						// 4 - About to Record Demo
-						// 5 - ???
-						// 6 - ???
-						// 15 - Destroyed QED (Keen 5)
 	bool jumpCheat;				// Is the jump cheat enabled? (Not in Keen5 gamestate struct)
 } CK_GameState;
 
@@ -235,8 +236,15 @@ void CK_NewGame(void);
 void CK_ExitMenu(void);
 
 /* ck_inter.c */
+extern bool ck_inHighScores;
+
 void CK_DrawTerminator(void);
+void CK_DrawStarWars(void);
 void CK_PlayDemoFile(const char *demoName);
+
+void CK_OverlayHighScores();
+void CK_SubmitHighScore(int score);
+void CK_DoHighScores();
 
 /* ck_keen.c */
 void CK_IncreaseScore(int score);

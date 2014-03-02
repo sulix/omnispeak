@@ -220,8 +220,8 @@ void CK_DemoLoop()
 			CK_PlayDemo(1);
 			break;
 		case 4:
-			// High Scores
-			CK_PlayDemo(4);
+			CK_DoHighScores();// High Scores
+			// CK_PlayDemo(4);
 			break;
 		case 5:
 			CK_PlayDemo(2);
@@ -241,7 +241,7 @@ void CK_DemoLoop()
 			if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
 			{
 				CK_GameLoop();
-				// DoHighScores();
+				CK_DoHighScores();
 				if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
 					continue;
 

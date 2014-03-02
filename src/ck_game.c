@@ -403,14 +403,11 @@ void CK_LoadLevel(bool doCache)
 		// literals directly. (char * is NOT ok; Use char arrays.)
 		static char demoString[] = "DEMO";
 		static char korathString[] = "Keen steps out\nonto Korath III";
-#if 0
 		if (ck_inHighScores)
 		{
 			CA_CacheMarks(NULL);
 		}
-		else
-#endif
-			if (IN_DemoGetMode() != IN_Demo_Off)
+		else if (IN_DemoGetMode() != IN_Demo_Off)
 		{
 			CA_CacheMarks(demoString);
 		}
@@ -781,4 +778,5 @@ replayLevel:
 	CK5_ExplodeGalaxy();
 
 	//TODO: Update High Scores
+	CK_SubmitHighScore(ck_gameState.keenScore);
 }
