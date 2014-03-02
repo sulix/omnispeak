@@ -623,20 +623,6 @@ bool CK_DebugKeys()
 		return true;
 	}
 
-	if (IN_GetKeyState(IN_SC_S))
-	{
-		ck_slowMotionEnabled = !ck_slowMotionEnabled;
-		US_CenterWindow(18, 3);
-
-		if (ck_slowMotionEnabled)
-			US_PrintCentered("Slow motion ON");
-		else
-			US_PrintCentered("Slow motion OFF");
-		VL_Present();
-		IN_WaitKey();
-		return true;
-	}
-
 	if (IN_GetKeyState(IN_SC_N))
 	{
 		US_CenterWindow(18, 3);
@@ -652,11 +638,25 @@ bool CK_DebugKeys()
 		}
 		VL_Present();
 		IN_WaitKey();
+		return true;
 	}
 
 	// Pause
 
 	// Slow Motion
+	if (IN_GetKeyState(IN_SC_S) && game_in_progress)
+	{
+		ck_slowMotionEnabled = !ck_slowMotionEnabled;
+		US_CenterWindow(18, 3);
+
+		if (ck_slowMotionEnabled)
+			US_PrintCentered("Slow motion ON");
+		else
+			US_PrintCentered("Slow motion OFF");
+		VL_Present();
+		IN_WaitKey();
+		return true;
+	}
 
 	// Sprite Test
 
