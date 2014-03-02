@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ */
 
 #include "id_us.h"
 #include "id_mm.h"
@@ -44,31 +44,32 @@ CK_Episode *ck_currentEpisode;
  */
 void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h)
 {
-	char c; 
+	char c;
 	uint16_t x, y;
 	char buf[80];
 	char *p;
 
-	*h = *w = (uint16_t)0;
+	*h = *w = (uint16_t) 0;
 	p = buf;	/* must be a local buffer */
 
-	while( (c = *str++) != 0 ) {
+	while ( (c = *str++) != 0 )
+	{
 		*p++ = c;
 
-		if( c == '\n' || *str == 0 ) {
+		if ( c == '\n' || *str == 0 )
+		{
 			VH_MeasurePropString( buf, &x, &y, US_GetPrintFont() );
 
 			*h += y;
-			if( *w < x )
+			if ( *w < x )
 				*w = x;
 
-			p = (char *)buf;
+			p = (char *) buf;
 			// Shouldn't buf be cleared so that a newline is not read over by
 			// VH_MeasurePropString?
 		}
 	}
 }
-
 
 /*
  * Shutdown all of the 'ID Engine' components
@@ -145,9 +146,9 @@ void CK_InitGame()
 	SD_Startup();
 
 	//TODO: Read game config
-	
+
 	// Wolf loads fonts here, but we do it in CA_Startup()?
-	
+
 	RF_Startup();
 
 	VL_ColorBorder(3);
@@ -162,6 +163,7 @@ void CK_InitGame()
 
 extern CK_Difficulty ck_startingDifficulty;
 static int ck_startingLevel = 0;
+
 void CK_DemoLoop()
 {
 	/* FIXME: Should be called from load_config with the correct settings */
@@ -193,7 +195,7 @@ void CK_DemoLoop()
 	 */
 
 	// Given we're not coming from TED, run through the demos.
-	
+
 	int demoNumber = 0;
 
 	while (true)
@@ -201,7 +203,7 @@ void CK_DemoLoop()
 		// TODO: This should really be called in SetupGameLevel
 		CA_LoadAllSounds();
 
-		switch(demoNumber++)
+		switch (demoNumber++)
 		{
 		case 0:		// Terminator scroller and Title Screen
 			CK_DrawTerminator();	//TODO: Move this to an episode struct.
@@ -212,6 +214,7 @@ void CK_DemoLoop()
 			break;
 		case 2:
 			// Star Wars story text
+			CK_DrawStarWars();
 			break;
 		case 3:
 			CK_PlayDemo(1);
@@ -231,21 +234,29 @@ void CK_DemoLoop()
 			demoNumber = 0;
 			break;
 		}
-		if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
+
+		// Game Loop
+		while (1)
 		{
-tryagain:
-			CK_GameLoop();
-			// DoHighScores();
 			if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
-				goto tryagain;
+			{
+				CK_GameLoop();
+				// DoHighScores();
+				if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
+					continue;
 
-			// draw_title();
+				// draw_title();
 
-			// Disasm: Useless comparison of levelstate to 5 or 6 again
-			goto tryagain;
+				if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
+					continue;
+			}
+			else
+			{
+				break;
+			}
 		}
 	}
-	
+
 	Quit("Demo loop exited!?");
 
 }
@@ -254,7 +265,7 @@ int main(int argc, char *argv[])
 {
 	// Send the cmd-line args to the User Manager.
 	us_argc = argc;
-	us_argv = (const char **)argv;
+	us_argv = (const char **) argv;
 
 	// We want Keen 5 (for now!)
 	ck_currentEpisode = &ck5_episode;
@@ -263,12 +274,12 @@ int main(int argc, char *argv[])
 
 	for (int i = 1; i < argc; ++i)
 	{
-		if (!strcmp(argv[i],"/DEMOFILE"))
+		if (!strcmp(argv[i], "/DEMOFILE"))
 		{
-			CK_PlayDemoFile(argv[i+1]);
+			CK_PlayDemoFile(argv[i + 1]);
 			Quit(0);
 		}
-	}	
+	}
 
 	// Draw the ANSI "Press Key When Ready Screen" here
 	CK_DemoLoop();

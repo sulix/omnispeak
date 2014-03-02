@@ -74,6 +74,34 @@ void CK_HandleDemoKeys()
 void CK_DrawTerminator(void)
 {
 	// TODO: Implement all terminator functions
+	// In the meantime, there's this placeholder
+
+#if 1
+	{
+		VL_ClearScreen(0);
+		VL_SetScrollCoords(0,0);
+		//CA_CacheGrChunk(3);
+		int firsttime = SD_GetLastTimeCount();
+	do
+	{
+		char buf[80];
+
+		sprintf(buf, "Terminator Graphic: %d", (SD_GetTimeCount()-firsttime)/70);
+
+		VH_DrawPropString(buf, 30, 10, 0, 15);
+		VH_DrawPropString("Ends at 5", 30, 20, 0, 15);
+
+		IN_PumpEvents();
+		VL_DelayTics(35);
+		VL_Present();
+
+		if ((SD_GetTimeCount()-firsttime)/70 > 5)
+			break;
+		
+
+	} while (!IN_GetLastScan());
+	}
+#endif
 
 	int terminator_complete = 1;
 	// After the terminator text has run, keys are checked
@@ -115,6 +143,33 @@ void CK_DrawTerminator(void)
 void CK_DrawStarWars()
 {
 	// TODO: Implement
+	// In the meantime, there's this placeholder
+
+#if 1
+	{
+		VL_ClearScreen(0);
+		VL_SetScrollCoords(0,0);
+		//CA_CacheGrChunk(3);
+		int firsttime = SD_GetLastTimeCount();
+	do
+	{
+		char buf[80];
+
+		sprintf(buf, "Star Wars: %d", (SD_GetTimeCount()-firsttime)/70);
+
+		VH_DrawPropString(buf, 30, 10, 0, 15);
+		VH_DrawPropString("Ends at 5", 30, 20, 0, 15);
+
+		IN_PumpEvents();
+		VL_DelayTics(35);
+		VL_Present();
+
+		if ((SD_GetTimeCount()-firsttime)/70 > 5)
+			break;
+
+	} while (!IN_GetLastScan());
+	}
+#endif
 }
 
 /*
