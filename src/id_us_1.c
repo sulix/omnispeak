@@ -562,7 +562,7 @@ uint8_t us_RandomTable[256] ={
 	120, 163, 236, 249
 };
 
-static int us_randomIndex;
+static uint16_t us_randomIndex; // Was 16-bit, even if storing just a 8-bit val
 
 // Seed the random number generator.
 
@@ -570,7 +570,7 @@ void US_InitRndT(bool randomize)
 {
 	if (randomize)
 	{
-		us_randomIndex = time(0);
+		us_randomIndex = time(0) & 0xFF;
 	}
 	else
 	{
@@ -582,11 +582,13 @@ void US_InitRndT(bool randomize)
 
 int US_RndT()
 {
+	us_randomIndex++;
+	us_randomIndex &= 0xFF;
 #ifdef CK_RAND_DEBUG
-	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL,"Returning random number %d, %d for:\n", us_randomIndex, us_RandomTable[us_randomIndex&0xff]);
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL,"Returning random number %d, %d for:\n", us_randomIndex, us_RandomTable[us_randomIndex]);
 	CK_Cross_StackTrace();
 #endif
-	return us_RandomTable[(us_randomIndex++)&0xff];
+	return us_RandomTable[us_randomIndex];
 }
 
 // Set the random seed (index)
