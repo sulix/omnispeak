@@ -38,10 +38,10 @@ CK_Episode ck5_episode ={
 // Contains some keen-5 specific functions.
 
 //StartSprites + 
-int CK5_ItemSpriteChunks[] ={
-	122, 124, 126, 128,
-	108, 110, 112, 114, 116, 118,
-	120, 131, 105
+int16_t CK5_ItemSpriteChunks[] ={
+	224, 226, 228, 230,
+	210, 212, 214, 216, 218, 220,
+	222, 233, 207
 };
 
 
@@ -535,16 +535,18 @@ void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
 	CK_object *obj = CK_GetNewObj(false);
 
 	obj->clipped = CLIP_not;
-	obj->active = OBJ_ACTIVE;
-	obj->type = 5;	//OBJ_ITEM
+	//obj->active = OBJ_ACTIVE;
 	obj->zLayer = 2;
+	obj->type = 5;	//OBJ_ITEM
 	obj->posX = tileX << 8;
 	obj->posY = tileY << 8;
+	obj->yDirection = -1;
 	obj->user1 = itemNumber;
-	obj->gfxChunk = CK5_ItemSpriteChunks[itemNumber] + ca_gfxInfoE.offSprites;
+	obj->gfxChunk = CK5_ItemSpriteChunks[itemNumber];
 	obj->user2 = obj->gfxChunk;
 	obj->user3 = obj->gfxChunk + 2;
 	CK_SetAction(obj, CK_GetActionByName("CK5_act_item") );
+	// TODO: Wrong place to cache?
 	CA_CacheGrChunk(obj->gfxChunk);
 	CA_CacheGrChunk(obj->gfxChunk + 1);
 }

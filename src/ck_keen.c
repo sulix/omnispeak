@@ -69,6 +69,17 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 	{
 		if (b->user1 > 12)
 			return;
+
+		SD_PlaySound(CK5_ItemSounds[b->user1]);
+
+		b->type = 1;
+		b->zLayer = 3;
+		b->gfxChunk = CK5_ItemShadows[b->user1];
+
+		CK_IncreaseScore(CK5_ItemPoints[b->user1]);
+
+		//b->yDirection = -1;
+
 		if (b->user1 < 4)
 		{
 			ck_gameState.keyGems[b->user1]++;
@@ -85,13 +96,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		{
 			ck_gameState.securityCard = 1;
 		}
-		SD_PlaySound(CK5_ItemSounds[b->user1]);
-
-		b->type = 1;
-		b->zLayer = 3;
-		b->gfxChunk = CK5_ItemShadows[b->user1];
-		b->yDirection = -1;
-		CK_SetAction(b, &CK_ACT_itemNotify);
+		CK_SetAction2(b, &CK_ACT_itemNotify);
 	}
 	else if (b->type == 6) //Platform
 	{
@@ -139,7 +144,9 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 	SD_PlaySound(CK5_ItemSounds[itemNumber]);
 
 	CK_IncreaseScore(CK5_ItemPoints[itemNumber]);
-	
+
+	// TODO: Handle more kinds of pick-ups
+
 	if (itemNumber == 11)
 	{
 		ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
