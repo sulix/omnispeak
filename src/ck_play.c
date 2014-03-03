@@ -1254,10 +1254,10 @@ int CK_PlayLoop()
 				currentObj->visible = true;
 			}
 			else if (currentObj->active && currentObj != ck_keenObj && (
-							 (currentObj->clipRects.tileX2 <= ck_activeX0Tile) ||
-							 (currentObj->clipRects.tileX1 >= ck_activeX1Tile) ||
-							 (currentObj->clipRects.tileY1 >= ck_activeY1Tile) ||
-							 (currentObj->clipRects.tileY2 <= ck_activeY0Tile)))
+							 (currentObj->clipRects.tileX2 < ck_activeX0Tile) ||
+							 (currentObj->clipRects.tileX1 > ck_activeX1Tile) ||
+							 (currentObj->clipRects.tileY1 > ck_activeY1Tile) ||
+							 (currentObj->clipRects.tileY2 < ck_activeY0Tile)))
 			{
 				//TODO: Add an Episode callback. Ep 4 requires
 				// type 33 to remove int33 (Andy's decomp)
@@ -1268,7 +1268,7 @@ int CK_PlayLoop()
 				}
 				else if (currentObj->active != OBJ_ALWAYS_ACTIVE)
 				{
-					if (US_RndT() < SD_GetSpriteSync() * 2)
+					if (US_RndT() < SD_GetSpriteSync() * 2 || vl_screenFaded)
 					{
 						RF_RemoveSpriteDraw(&currentObj->sde);
 						currentObj->active = OBJ_INACTIVE;
