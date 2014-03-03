@@ -1209,13 +1209,13 @@ void CK_KeenPogoThink(CK_object *obj)
 		{
 		case -1:
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShootUp1");
-			break;
+			return;
 		case 0:
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShoot1");
-			break;
+			return;
 		case 1:
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShootDown1");
-			break;
+			return;
 		}
 	}
 	
