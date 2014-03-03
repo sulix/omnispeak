@@ -1008,7 +1008,7 @@ void CK_CentreCamera(CK_object *obj)
 	ck_activeX0Tile = max((rf_scrollXUnit >> 8) - 6, 0);
 	ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + 6, 0);
 	ck_activeY0Tile = max((rf_scrollYUnit >> 8) - 6, 0);
-	ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (200 >> 4) + 6, 0);
+	ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + 6, 0);
 }
 
 /*
@@ -1059,6 +1059,12 @@ void CK_MapCamera( CK_object *keen )
 		 * ScrollX1_T = ScrollX0_T + VIRTUAL_SCREEN_W_T;
 		 * ScrollY1_T = ScrollY0_T + VIRTUAL_SCREEN_H_T;
 		 */
+
+		//TODO: This is 4 in Andy's disasm.
+		ck_activeX0Tile = max((rf_scrollXUnit >> 8) - 6, 0);
+		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + 6, 0);
+		ck_activeY0Tile = max((rf_scrollYUnit >> 8) - 6, 0);
+		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + 6, 0);
 	}
 }
 
@@ -1199,7 +1205,7 @@ void CK_NormalCamera(CK_object *obj)
 		ck_activeX0Tile = max((rf_scrollXUnit >> 8) - 6, 0);
 		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + 6, 0);
 		ck_activeY0Tile = max((rf_scrollYUnit >> 8) - 6, 0);
-		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (200 >> 4) + 6, 0);
+		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + 6, 0);
 	}
 }
 
