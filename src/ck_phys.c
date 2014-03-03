@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_def.h"
 #include "id_vh.h"
 #include "id_ca.h"
+#include "id_rf.h"
 #include "id_us.h"
 
 #include <stdio.h>
@@ -656,7 +657,8 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 
 bool CK_ObjectVisible(CK_object *obj)
 {
-	if (obj->clipRects.tileX2 < ck_activeX0Tile || obj->clipRects.tileY2 < ck_activeY0Tile || obj->clipRects.tileX1 > ck_activeX1Tile || obj->clipRects.tileY1 > ck_activeY1Tile)
+	// TODO: Use ScrollX0_T,  ScrollX1_T and co. directly?
+	if (obj->clipRects.tileX2 < (rf_scrollXUnit >> 8) || obj->clipRects.tileY2 < (rf_scrollYUnit >> 8) || obj->clipRects.tileX1 > ((rf_scrollXUnit >> 8) + (320 >> 4)) || obj->clipRects.tileY1 > ((rf_scrollYUnit >> 8) + (208 >> 4)))
 	{
 		return false;
 	}

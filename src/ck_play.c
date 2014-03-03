@@ -1091,7 +1091,7 @@ void CK_NormalCamera(CK_object *obj)
 	// Kill keen if he falls out the bottom
 	if (obj->clipRects.unitY2 > (rf_scrollYMaxUnit + (208 << 4)))
 	{
-		obj->posY = obj->clipRects.unitY2 - (rf_scrollYMaxUnit + (208 << 4));
+		obj->posY -= obj->clipRects.unitY2 - (rf_scrollYMaxUnit + (208 << 4));
 		SD_PlaySound(SOUND_KEENFALL);
 		ck_godMode = false;
 		CK_KillKeen();
