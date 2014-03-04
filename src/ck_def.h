@@ -243,7 +243,7 @@ void CK_DrawStarWars(void);
 void CK_PlayDemoFile(const char *demoName);
 
 void CK_OverlayHighScores();
-void CK_SubmitHighScore(int score);
+void CK_SubmitHighScore(int score, uint16_t arg4);
 void CK_DoHighScores();
 
 /* ck_keen.c */

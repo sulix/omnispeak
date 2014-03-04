@@ -741,10 +741,11 @@ replayLevel:
 			 * purge_chunks()
 			 * RF_Reset();
 			 * VW_SyncPages();
-			 * win_game();
-			 * loadHiscores(score)
 			 */
 			help_endgame();
+#if 0
+			CK_SubmitHighScore(ck_gameState.keenScore, 0);
+#endif
 			return;
 
 			// Warping level
@@ -778,5 +779,7 @@ replayLevel:
 	CK5_ExplodeGalaxy();
 
 	//TODO: Update High Scores
-	CK_SubmitHighScore(ck_gameState.keenScore);
+#if 0
+	CK_SubmitHighScore(ck_gameState.keenScore, 0);
+#endif
 }
