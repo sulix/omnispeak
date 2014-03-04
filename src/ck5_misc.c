@@ -893,6 +893,13 @@ void CK5_ScanInfoLayer()
 			}
 		}
 	}
+
+	for (CK_object *obj = ck_keenObj; obj != NULL; obj = obj->next)
+	{
+		if (obj->active != OBJ_ALWAYS_ACTIVE)
+			obj->active = OBJ_INACTIVE;
+	}
+	// TODO: Some more stuff (including opening elevator after breaking fuses)
 }
 
 // Galaxy Explosion Ending Sequence

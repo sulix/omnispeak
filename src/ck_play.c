@@ -1253,39 +1253,41 @@ int CK_PlayLoop()
 			if (!currentObj->active &&
 					(currentObj->clipRects.tileX2 >= (rf_scrollXUnit >> 8) - 1) &&
 					(currentObj->clipRects.tileX1 <= (rf_scrollXUnit >> 8) + (320 >> 4) + 1) &&
-					(currentObj->clipRects.tileY1 <= (rf_scrollYUnit >> 8) + (200 >> 4) + 1) &&
+					(currentObj->clipRects.tileY1 <= (rf_scrollYUnit >> 8) + (208 >> 4) + 1) &&
 					(currentObj->clipRects.tileY2 >= (rf_scrollYUnit >> 8) - 1))
 			{
 				currentObj->active = OBJ_ACTIVE;
 				currentObj->visible = true;
 			}
-			else if (currentObj->active && currentObj != ck_keenObj && (
-							 (currentObj->clipRects.tileX2 < ck_activeX0Tile) ||
-							 (currentObj->clipRects.tileX1 > ck_activeX1Tile) ||
-							 (currentObj->clipRects.tileY1 > ck_activeY1Tile) ||
-							 (currentObj->clipRects.tileY2 < ck_activeY0Tile)))
+			if (currentObj->active)
 			{
-				//TODO: Add an Episode callback. Ep 4 requires
-				// type 33 to remove int33 (Andy's decomp)
-				if (currentObj->active == OBJ_EXISTS_ONLY_ONSCREEN)
+				if ((currentObj->clipRects.tileX2 < ck_activeX0Tile) ||
+				    (currentObj->clipRects.tileX1 > ck_activeX1Tile) ||
+				    (currentObj->clipRects.tileY1 > ck_activeY1Tile) ||
+				    (currentObj->clipRects.tileY2 < ck_activeY0Tile))
 				{
-					CK_RemoveObj(currentObj);
-					continue;
-				}
-				else if (currentObj->active != OBJ_ALWAYS_ACTIVE)
-				{
-					if (US_RndT() < SD_GetSpriteSync() * 2 || vl_screenFaded)
+					//TODO: Add an Episode callback. Ep 4 requires
+					// type 33 to remove int33 (Andy's decomp)
+					// For Ep 5 that's type 7
+					if (currentObj->active == OBJ_EXISTS_ONLY_ONSCREEN)
 					{
-						RF_RemoveSpriteDraw(&currentObj->sde);
-						currentObj->active = OBJ_INACTIVE;
+						CK_RemoveObj(currentObj);
 						continue;
 					}
+					else if (currentObj->active != OBJ_ALWAYS_ACTIVE)
+					{
+						if (US_RndT() < SD_GetSpriteSync() * 2 || vl_screenFaded)
+						{
+							RF_RemoveSpriteDraw(&currentObj->sde);
+							if (currentObj->type == CT_StunnedCreature)
+								RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & currentObj->user3);
+							currentObj->active = OBJ_INACTIVE;
+							continue;
+						}
+					}
 				}
-
-			}
-
-			if (currentObj->active)
 				CK_RunAction(currentObj);
+			}
 		}
 
 
