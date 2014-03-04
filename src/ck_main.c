@@ -206,7 +206,14 @@ void CK_DemoLoop()
 		switch (demoNumber++)
 		{
 		case 0:		// Terminator scroller and Title Screen
-			CK_DrawTerminator();	//TODO: Move this to an episode struct.
+#if 0
+			// If no pixel panning capability
+			// Then the terminator screen isn't shown
+			if (NoPan)
+				CK_ShowTitleScreen();
+			else
+#endif
+				CK_DrawTerminator();	//TODO: Move this to an episode struct.
 #if 1 //DEMO_LOOP_ENABLED
 			break;
 		case 1:
@@ -245,7 +252,7 @@ void CK_DemoLoop()
 				if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
 					continue;
 
-				// draw_title();
+				CK_ShowTitleScreen();
 
 				if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
 					continue;

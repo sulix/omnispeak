@@ -240,6 +240,9 @@ extern bool ck_inHighScores;
 
 void CK_DrawTerminator(void);
 void CK_DrawStarWars(void);
+
+void CK_ShowTitleScreen();
+
 void CK_PlayDemoFile(const char *demoName);
 
 void CK_OverlayHighScores();

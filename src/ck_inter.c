@@ -176,16 +176,18 @@ void CK_DrawStarWars()
 #endif
 }
 
-/*
- * FizzleFade Title Screen
- */
 void CK_ShowTitleScreen()
 {
-	// TODO: Make this fizzle in 
+	// scrollofs = 0;
 	CA_CacheGrChunk(88);
 	VH_DrawBitmap(0,0,88);
+	// Draw to offscreen buffer and copy?
+	// VW_SetScreen(0,bufferofs_0);
+	// VWL_ScreenToScreen(bufferofs, bufferofs_0, 42, 224);
 	VL_Present();
-	IN_WaitKey();
+	IN_UserInput(420, false);
+	CA_ClearMarks();
+	CK_HandleDemoKeys();
 }
 
 //TODO: Add some demo number stuff
