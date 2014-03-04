@@ -183,16 +183,20 @@ void CK5_AmptonWalk(CK_object *obj)
 		// Check for a pole
 		if (miscflags == MISCFLAG_POLE)
 		{
+			// Don't always climb the pole
 			if (US_RndT() < 0xC4)
 			{
-				int polebelow = (TI_ForeMisc(CA_TileAtPos(tileX, tileY + 2, 1))&0x7F) == MISCFLAG_POLE ? 1 : 0;
-				int poleabove = (TI_ForeMisc(CA_TileAtPos(tileX, tileY - 2, 1))&0x7F) == MISCFLAG_POLE ? 1 : 0;
+				bool polebelow = ((TI_ForeMisc(CA_TileAtPos(tileX, tileY + 2, 1))&0x7F) == MISCFLAG_POLE);
+				bool poleabove = ((TI_ForeMisc(CA_TileAtPos(tileX, tileY - 2, 1))&0x7F) == MISCFLAG_POLE);
 
-				// Don't always climb the pole
-				if (US_RndT() < 0x80)
-					poleabove = 0;
-				else
-					polebelow = 0;
+				// Pick direction if there is a choice
+				if (poleabove && polebelow)
+				{
+					if (US_RndT() < 0x80)
+						poleabove = false;
+					else
+						polebelow = false;
+				}
 
 				//climb up
 				if (poleabove)
