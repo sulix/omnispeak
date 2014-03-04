@@ -1110,7 +1110,7 @@ void CK_NormalCamera(CK_object *obj)
 	// Keen should be able to look up and down.
 	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookUp2"))
 	{
-		int pxToMove;
+		int16_t pxToMove;
 		if (screenYpx + SD_GetSpriteSync() > 167)
 		{
 			// Keen should never be so low on the screen that his
@@ -1128,7 +1128,7 @@ void CK_NormalCamera(CK_object *obj)
 	}
 	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookDown3"))
 	{
-		int pxToMove;
+		int16_t pxToMove;
 		if (screenYpx - SD_GetSpriteSync() < 33)
 		{
 			// Keen should never be so high on the screen that his
@@ -1156,10 +1156,37 @@ void CK_NormalCamera(CK_object *obj)
 			deltaY += obj->deltaPosY;
 
 			//TODO: Something hideous
-			if ((screenYpx << 4) + rf_scrollYUnit + deltaY !=  (obj->clipRects.unitY2))
+			// TODO: Convert to 16-bit once the rest is converted
+			// (due to unsigned vs signed mess)
+			int cmpAmt = (screenYpx << 4) + rf_scrollYUnit + deltaY;
+			if (cmpAmt != obj->clipRects.unitY2)
 			{
-				int adjAmt = (((screenYpx << 4) + rf_scrollYUnit + deltaY - obj->clipRects.unitY2));
-				int adjAmt2 = abs(adjAmt / 8);
+				int oneDiff, otherDiff;
+				if (obj->clipRects.unitY2 < cmpAmt)
+					oneDiff = cmpAmt - obj->clipRects.unitY2;
+				else
+					oneDiff = obj->clipRects.unitY2 - cmpAmt;
+
+				// TODO: Unsigned shift left,
+				// followed by a signed shift right...
+				otherDiff = (signed)((unsigned)oneDiff << 4) >> 7;
+				if (otherDiff > 48)
+					otherDiff = 48;
+				otherDiff *= SD_GetSpriteSync();
+				if (otherDiff < 16)
+				{
+					if (oneDiff < 16)
+						otherDiff = oneDiff;
+					else
+						otherDiff = 16;
+				}
+				if (obj->clipRects.unitY2 < cmpAmt)
+					deltaY -= otherDiff;
+				else
+					deltaY += otherDiff;
+#if 0
+				int16_t adjAmt = (((screenYpx << 4) + rf_scrollYUnit + deltaY - obj->clipRects.unitY2));
+				int16_t adjAmt2 = abs(adjAmt / 8);
 
 				adjAmt2 = (adjAmt2 <= 48) ? adjAmt2 : 48;
 
@@ -1167,7 +1194,7 @@ void CK_NormalCamera(CK_object *obj)
 					deltaY -= adjAmt2;
 				else
 					deltaY += adjAmt2;
-
+#endif
 			}
 		}
 
