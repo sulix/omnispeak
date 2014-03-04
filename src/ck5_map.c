@@ -588,41 +588,41 @@ void CK5_MapKeenElevator(CK_object *keen)
 	// Move keen in the Y direction
 	keen->nextY = keen->yDirection * 64 * SD_GetSpriteSync();
 
-	if (keen->posX != keen->user1)
+	if (keen->posX != keen->user2)
 	{
 		keen->nextX = keen->xDirection * 12 * SD_GetSpriteSync();
-		if (keen->xDirection == IN_motion_Right && keen->nextX + keen->posX > keen->user1 ||
-				keen->xDirection == IN_motion_Left && keen->nextX + keen->posX < keen->user1)
+		if (keen->xDirection == IN_motion_Right && keen->nextX + keen->posX > keen->user2 ||
+				keen->xDirection == IN_motion_Left && keen->nextX + keen->posX < keen->user2)
 		{
-			keen->nextX = keen->user1 - keen->posX;
+			keen->nextX = keen->user2 - keen->posX;
 		}
 	}
 
 	//1D776
 	// Update hitbox
 	keen->clipRects.unitX1 = keen->posX + keen->nextX;
-	keen->clipRects.unitX2 = keen->clipRects.unitX2 + 0xFF;
+	keen->clipRects.unitX2 = keen->clipRects.unitX1 + 0xFF;
 
 	keen->clipRects.unitY1 = keen->posY + keen->nextY;
-	keen->clipRects.unitY2 = keen->clipRects.unitY2 + 0xFF;
+	keen->clipRects.unitY2 = keen->clipRects.unitY1 + 0xFF;
 
 	// If keen has not yet hit the Y destination, keep moving
 	if (keen->yDirection == IN_motion_Down)
 	{
-		if ((uint16_t) (keen->posY + keen->nextY)<(uint16_t) keen->user2)
+		if ((uint16_t) (keen->posY + keen->nextY)<(uint16_t) keen->user1)
 			return;
 	}
 	else
 	{
-		if ((uint16_t) (keen->posY + keen->nextY)>(uint16_t) keen->user2)
+		if ((uint16_t) (keen->posY + keen->nextY)>(uint16_t) keen->user1)
 			return;
 	}
 
 	// 1D7C5
 	// Arrived at destination; turn travelling keen back into normal map keen
 	keen->nextX = keen->nextY = 0;
-	keen->posX = keen->user1;
-	keen->posY = keen->user2;
+	keen->posX = keen->user2;
+	keen->posY = keen->user1;
 	keen->zLayer = 1;
 	keen->user1 = 4;  // Keen faces south
 	keen->user2 = 3;
@@ -635,7 +635,8 @@ void CK5_MapKeenElevator(CK_object *keen)
 	tileY = keen->posY >> 8;
 	CK_MapCamera(keen);
 
-	// TODO: Draw Scorebox
+	//Draw the scorebox
+	CK_UpdateScoreBox(ck_scoreBoxObj);
 
 	RF_Refresh();
 	RF_Refresh();
@@ -700,10 +701,13 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 
 		CK_ResetClipRects(ck_keenObj);
 		CK_MapCamera(ck_keenObj);
-		// TODO: Draw The Scorebox
+
+		//Draw the scorebox
+		CK_UpdateScoreBox(ck_scoreBoxObj);
 
 		// Draw screen and delay 1/35th of a second
 		RF_Refresh();
+		VL_SetScrollCoords((rf_scrollXUnit & 0xff) >> 4, (rf_scrollYUnit & 0xff) >> 4);
 		//VL_DelayTics(2);
 		//CK_SetTicsPerFrame();
 		VL_Present();
@@ -777,16 +781,16 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 	// Get the destination stored in the info plane 
 	// and store X in map units in user1; Y in user 2
 	int dest_tile = CA_TileAtPos(tileX, tileY, 2);
-	ck_keenObj->user1 = dest_tile / 256 * 256;
-	ck_keenObj->user2 = ((dest_tile & 0x00FF)+1 << 8);
+	ck_keenObj->user2 = dest_tile / 256 * 256;
+	ck_keenObj->user1 = (((dest_tile & 0x007F)+1) << 8);
 
 	// Move keen based on the relative location of the target
-	if ((uint16_t) ck_keenObj->user2 < (uint16_t) ck_keenObj->posY)
+	if ((uint16_t) ck_keenObj->user1 < (uint16_t) ck_keenObj->posY)
 		ck_keenObj->yDirection = IN_motion_Up;
 	else
 		ck_keenObj->yDirection = IN_motion_Down;
 
-	if ((uint16_t) ck_keenObj->user1 < (uint16_t) ck_keenObj->posX)
+	if ((uint16_t) ck_keenObj->user2 < (uint16_t) ck_keenObj->posX)
 		ck_keenObj->xDirection = IN_motion_Left;
 	else
 		ck_keenObj->xDirection = IN_motion_Right;

@@ -1008,7 +1008,7 @@ void CK_CentreCamera(CK_object *obj)
 	ck_activeX0Tile = max((rf_scrollXUnit >> 8) - 6, 0);
 	ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + 6, 0);
 	ck_activeY0Tile = max((rf_scrollYUnit >> 8) - 6, 0);
-	ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (200 >> 4) + 6, 0);
+	ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + 6, 0);
 }
 
 /*
@@ -1059,6 +1059,12 @@ void CK_MapCamera( CK_object *keen )
 		 * ScrollX1_T = ScrollX0_T + VIRTUAL_SCREEN_W_T;
 		 * ScrollY1_T = ScrollY0_T + VIRTUAL_SCREEN_H_T;
 		 */
+
+		//TODO: This is 4 in Andy's disasm.
+		ck_activeX0Tile = max((rf_scrollXUnit >> 8) - 6, 0);
+		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + 6, 0);
+		ck_activeY0Tile = max((rf_scrollYUnit >> 8) - 6, 0);
+		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + 6, 0);
 	}
 }
 
@@ -1085,7 +1091,7 @@ void CK_NormalCamera(CK_object *obj)
 	// Kill keen if he falls out the bottom
 	if (obj->clipRects.unitY2 > (rf_scrollYMaxUnit + (208 << 4)))
 	{
-		obj->posY = obj->clipRects.unitY2 - (rf_scrollYMaxUnit + (208 << 4));
+		obj->posY -= obj->clipRects.unitY2 - (rf_scrollYMaxUnit + (208 << 4));
 		SD_PlaySound(SOUND_KEENFALL);
 		ck_godMode = false;
 		CK_KillKeen();
@@ -1199,7 +1205,7 @@ void CK_NormalCamera(CK_object *obj)
 		ck_activeX0Tile = max((rf_scrollXUnit >> 8) - 6, 0);
 		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + 6, 0);
 		ck_activeY0Tile = max((rf_scrollYUnit >> 8) - 6, 0);
-		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (200 >> 4) + 6, 0);
+		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + 6, 0);
 	}
 }
 
@@ -1254,10 +1260,10 @@ int CK_PlayLoop()
 				currentObj->visible = true;
 			}
 			else if (currentObj->active && currentObj != ck_keenObj && (
-							 (currentObj->clipRects.tileX2 <= ck_activeX0Tile) ||
-							 (currentObj->clipRects.tileX1 >= ck_activeX1Tile) ||
-							 (currentObj->clipRects.tileY1 >= ck_activeY1Tile) ||
-							 (currentObj->clipRects.tileY2 <= ck_activeY0Tile)))
+							 (currentObj->clipRects.tileX2 < ck_activeX0Tile) ||
+							 (currentObj->clipRects.tileX1 > ck_activeX1Tile) ||
+							 (currentObj->clipRects.tileY1 > ck_activeY1Tile) ||
+							 (currentObj->clipRects.tileY2 < ck_activeY0Tile)))
 			{
 				//TODO: Add an Episode callback. Ep 4 requires
 				// type 33 to remove int33 (Andy's decomp)
@@ -1268,7 +1274,7 @@ int CK_PlayLoop()
 				}
 				else if (currentObj->active != OBJ_ALWAYS_ACTIVE)
 				{
-					if (US_RndT() < SD_GetSpriteSync() * 2)
+					if (US_RndT() < SD_GetSpriteSync() * 2 || vl_screenFaded)
 					{
 						RF_RemoveSpriteDraw(&currentObj->sde);
 						currentObj->active = OBJ_INACTIVE;
