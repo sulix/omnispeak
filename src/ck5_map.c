@@ -483,6 +483,8 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 	ck_keenObj->user1 = 4;
 	CK_SetAction(ck_keenObj, ck_keenObj->currentAction);
 	CK_CentreCamera(ck_keenObj);
+	// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
+	VL_SetScrollCoords((rf_scrollXUnit & 0xef) >> 4, (rf_scrollYUnit & 0xff) >> 4);
 
 	// Set objects to be active if they're inside the screen
 	for (CK_object *obj = ck_keenObj->next; obj != NULL; obj = obj->next)
@@ -497,9 +499,9 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 		RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 	}
 
-	// TODO: Redraw Scorebox here 
-
+	CK_UpdateScoreBox(ck_scoreBoxObj);
 	RF_Refresh();
+	VL_Present();
 	RF_Refresh();
 	SD_PlaySound(SOUND_UNKNOWN41);
 
@@ -628,11 +630,14 @@ void CK5_MapKeenElevator(CK_object *keen)
 	tileX = keen->posX >> 8;
 	tileY = keen->posY >> 8;
 	CK_MapCamera(keen);
+	// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
+	VL_SetScrollCoords((rf_scrollXUnit & 0xef) >> 4, (rf_scrollYUnit & 0xff) >> 4);
 
 	//Draw the scorebox
 	CK_UpdateScoreBox(ck_scoreBoxObj);
 
 	RF_Refresh();
+	VL_Present();
 	RF_Refresh();
 
 	keen->posY -= 0x100;
