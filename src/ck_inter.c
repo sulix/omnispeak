@@ -80,6 +80,7 @@ void CK_DrawTerminator(void)
 	// TODO: Implement all terminator functions
 	// In the meantime, there's this placeholder
 
+	bool terminator_complete = false;
 #if 1
 	{
 		VL_ClearScreen(0);
@@ -107,24 +108,67 @@ void CK_DrawTerminator(void)
 	}
 #endif
 
-	int terminator_complete = 1;
-	// After the terminator text has run, keys are checked
+	// Placeholder ends here: this is now real keen code.
 
-#if 0
-	// Leave this out for now so we go straight to the menu
+	// Somewhere around here, the terminator itself ends and the fizzle fade begins
+
+	// After the terminator text has run, keys are checked
+	if (!IN_GetLastScan())
+	{
+		// One of terminator2 or terminator1 is likely the fizzlefade
+		; //terminator2();
+	}
+
+	if (!IN_GetLastScan())
+	{
+		// terminator1();
+		terminator_complete = true;
+	}
+
+	// Free the COMMANDER and KEEN bitmaps
+	// MM_SetPurge(4922, 3);
+	// MM_SetPurge(4923, 3);
+
+	// Restore video mode to normal
+	VL_ClearScreen(0);
+	// VW_SetLineWidth(0x40);
+	VL_SetDefaultPalette();
+	// RF_Reset();
+	CA_ClearMarks();
+
+	// Handle any keypresses
 	if (!IN_GetLastScan())
 		return;
-#endif
 
+	// Go to help screen
 	if (IN_GetLastScan() == IN_SC_F1)
 	{
-		// DoHelpScreen
+		HelpScreens();
 		return;
 	}
 
 	if (!terminator_complete)
 	{
-		// TODO: implement
+		// RF_Reset();
+
+		// Display Title Screen
+		CA_CacheGrChunk(88);
+		VH_DrawBitmap(0, 0, 88);
+		VL_Present();// ORIGINAL: VW_SetScreen(bufferofs, 0);
+		IN_WaitKey(); // FIXME: Should be IN_WaitButton();
+		CA_ClearMarks();
+
+		// TODO: If started with /DEMO PARM
+#if 0
+		if (DemoSwitch)
+		{
+			ck_gameState.levelState = 5;
+			ck_startingDifficulty = D_Normal;
+			IN_ClearKeysDown();
+			CK_NewGame();
+			return;
+		}
+#endif
 
 	}
 

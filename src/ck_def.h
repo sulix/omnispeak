@@ -268,6 +268,9 @@ void CK_OBJ_SetupFunctions();
 /* ck_main.c */
 void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h);
 
+/* ck_text.c */
+void HelpScreens(void);
+
 /* ck_us_2.c */
 void CK_US_UpdateOptionsMenus();
 
