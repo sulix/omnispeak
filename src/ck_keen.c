@@ -353,7 +353,10 @@ bool CK_KeenPressUp(CK_object *obj)
 				obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor2");
 				obj->zLayer = 0;
 
-				//TODO: Korath lightning?
+				if (!CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY1, 2))
+				{
+					CK5_SpawnLightning();
+				}
 			}
 		}
 		else

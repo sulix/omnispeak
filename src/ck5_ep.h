@@ -42,6 +42,7 @@ void CK5_ScanInfoLayer();
 /* ck5_misc.c */
 void CK5_SpawnFuseExplosion(int tileX, int tileY);
 void CK5_SpawnLevelEnd(void);
+void CK5_SpawnLightning(void);
 CK_object *CK5_SpawnEnemyShot(int posX, int posY, CK_action *action);
 void CK5_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple);
 void CK5_SpawnRedStandPlatform(int tileX, int tileY);
@@ -76,6 +77,7 @@ void CK5_QEDSpawn(int tileX, int tileY);
 void CK_DemoSignSpawn();
 void CK_UpdateScoreBox(CK_object *scorebox);
 void CK_SpawnMapKeen(int tileX, int tileY);
+void CK5_MapKeenTeleSpawn(int tileX, int tileY);
 
 /* Map functions */
 void CK_MapMiscFlagsCheck(CK_object *keen);

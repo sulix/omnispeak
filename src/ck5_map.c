@@ -299,12 +299,12 @@ void CK5_MapKeenTeleSpawn(int tileX, int tileY)
 	ck_keenObj->type = 2;
 	ck_keenObj->posX = (tileX << 8);
 	ck_keenObj->posY = (tileY << 8);
-	ck_keenObj->active = OBJ_ACTIVE;
+	ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
 	ck_keenObj->zLayer = 1;
 	ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None;
 	ck_keenObj->user1 = 6;
 	ck_keenObj->user2 = 3;
-	ck_keenObj->user3;
+	ck_keenObj->user3 = 0;
 	ck_keenObj->gfxChunk = 244;
 	CK_SetAction(ck_keenObj, CK_GetActionByName("CK5_ACT_MapKeenStart"));
 }
