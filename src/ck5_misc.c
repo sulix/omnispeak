@@ -675,8 +675,6 @@ void CK5_ScanInfoLayer()
 				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
 				if (ck_gameState.levelState != 13)
 					CK_SpawnMapKeen(x, y);
-				else if (ck_gameState.levelState == 13)
-					CK5_MapKeenTeleSpawn(x, y);
 				break;
 
 			case 6:
@@ -739,8 +737,9 @@ void CK5_ScanInfoLayer()
 				RF_SetScrollBlock(x, y, true);
 				break;
 			case 26:
-				// TODO: Map keen tele spawn
 				//RF_SetScrollBlock(x, y, false);
+				if (ck_gameState.levelState == 13)
+					CK5_MapKeenTeleSpawn(x, y);
 				break;
 			case 27:
 			case 28:
