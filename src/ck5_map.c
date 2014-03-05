@@ -701,7 +701,8 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 
 		// Draw screen and delay 1/35th of a second
 		RF_Refresh();
-		VL_SetScrollCoords((rf_scrollXUnit & 0xff) >> 4, (rf_scrollYUnit & 0xff) >> 4);
+		// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
+		VL_SetScrollCoords((rf_scrollXUnit & 0xef) >> 4, (rf_scrollYUnit & 0xff) >> 4);
 		//VL_DelayTics(2);
 		//CK_SetTicsPerFrame();
 		VL_Present();
