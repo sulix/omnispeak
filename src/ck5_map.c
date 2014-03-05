@@ -50,35 +50,31 @@ void CK_DemoSignSpawn()
 
 	if (ck_inHighScores)
 	{
+		// Don't display anything in the high scores
 		ck_scoreBoxObj->currentAction = CK_GetActionByName("CK_ACT_NULL");
-		return;
 	}
-
-#if 0
-	if (DemoMode)
+	else if (IN_DemoGetMode())
 	{
-		CK_SetAction(ck_scoreBoxObj, ACTION_DEMOSIGN);
-		CACHEGR(0x6B);
-		return;
+		// If this is a demo, display the DEMO banner
+		CK_SetAction(ck_scoreBoxObj, CK_GetActionByName("CK5_ACT_DemoSign"));
+		CA_CacheGrChunk(0x6B);
 	}
-#endif
-
-	CK_SetAction(ck_scoreBoxObj, CK_GetActionByName("CK5_ACT_ScoreBox"));
-	return;
+	else
+	{
+		// If a normal game, display the scorebox 
+		CK_SetAction(ck_scoreBoxObj, CK_GetActionByName("CK5_ACT_ScoreBox"));
+	}
 }
 
-void DemoSign( CK_object *demo)
+void CK_DemoSign( CK_object *demo)
 {
-#if 0
-	if (	demo->posX == ScrollX_MU && demo->posY == ScrollY_MU ) return;
-	demo->posX = ScrollX_MU;
-	demo->posY = ScrollY_MU;
+	if (	demo->posX == rf_scrollXUnit && demo->posY == rf_scrollYUnit ) 
+		return;
+	demo->posX = rf_scrollXUnit;
+	demo->posY = rf_scrollYUnit;
 
 	//place demo sprite in center top
-	// RF_PlaceSprite( &(demo->int35), demo->posX+0x0A00â€“0x0200, demo->posY+0x80,0x81,0,3);
-
-	return;
-#endif
+	RF_AddSpriteDraw( &(demo->sde), demo->posX+0x0A00 - 0x200, demo->posY+0x80,0x6B,false,3);
 }
 
 /*
@@ -122,14 +118,12 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 	if (ck_inHighScores)
 		return;
 
-#if 0
 	// Show the demo sign for the demo mode
-	if (DemoMode)
+	if (IN_DemoGetMode())
 	{
-		CK_DoDemoSign();
+		CK_DemoSign(scorebox);
 		return;
 	}
-#endif
 
 	if (!ck_scoreBoxEnabled)
 		return;

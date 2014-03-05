@@ -141,6 +141,9 @@
 #ScoreBox
 %action CK5_ACT_ScoreBox 0 0 Frame 0 0 0 0 0 NULL NULL NULL NULL 
 
+#DemoSign
+%action CK5_ACT_DemoSign 0x6B 0x6B Frame 0 0 0 0 0 NULL NULL NULL NULL 
+
 # Mapkeen
 %action CK5_ACT_MapKeenElevator -1 -1 Frame 1 0 6 16 16 CK5_MapKeenElevator NULL CK_BasicDrawFunc1 NULL 
 %action CK5_ACT_MapKeenStart 0x0 0x0 UnscaledFrame 0x0 0x0 0x168 0x0 0x0 CK5_MapKeenStill NULL CK_BasicDrawFunc1 CK5_ACT_MapKeenWave0
