@@ -1383,13 +1383,14 @@ int CK_PlayLoop()
 		else
 			CK_NormalCamera(ck_keenObj);
 
+		//Draw the scorebox
+		CK_UpdateScoreBox(ck_scoreBoxObj);
+
 		// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
 		VL_SetScrollCoords((rf_scrollXUnit & 0xef) >> 4, (rf_scrollYUnit & 0xff) >> 4);
 		RF_Refresh();
 
 
-		//Draw the scorebox
-		CK_UpdateScoreBox(ck_scoreBoxObj);
 
 		if (ck_invincibilityTimer)
 		{
