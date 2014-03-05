@@ -39,6 +39,11 @@ static int ck_physSlopeHeight[8][16] ={
 	{  0xF0,  0xE0,  0xD0,  0xC0,  0xB0,  0xA0,  0x90,  0x80,  0x70,  0x60,  0x50,  0x40,  0x30,  0x20,  0x10,  0x0  }
 };
 
+CK_objPhysData ck_oldRects;
+CK_objPhysData ck_deltaRects;
+int ck_nextX;
+int ck_nextY;
+
 extern CK_object *ck_keenObj;
 
 void CK_ResetClipRects(CK_object *obj)
@@ -65,29 +70,29 @@ void CK_ResetClipRects(CK_object *obj)
 
 void CK_SetOldClipRects(CK_object *obj)
 {
-	obj->oldRects.unitX1 = obj->clipRects.unitX1;
-	obj->oldRects.unitX2 = obj->clipRects.unitX2;
-	obj->oldRects.unitY1 = obj->clipRects.unitY1;
-	obj->oldRects.unitY2 = obj->clipRects.unitY2;
+	ck_oldRects.unitX1 = obj->clipRects.unitX1;
+	ck_oldRects.unitX2 = obj->clipRects.unitX2;
+	ck_oldRects.unitY1 = obj->clipRects.unitY1;
+	ck_oldRects.unitY2 = obj->clipRects.unitY2;
 
-	obj->oldRects.unitXmid = obj->clipRects.unitXmid;
+	ck_oldRects.unitXmid = obj->clipRects.unitXmid;
 
-	obj->oldRects.tileX1 = obj->clipRects.tileX1;
-	obj->oldRects.tileX2 = obj->clipRects.tileX2;
-	obj->oldRects.tileY1 = obj->clipRects.tileY1;
-	obj->oldRects.tileY2 = obj->clipRects.tileY2;
+	ck_oldRects.tileX1 = obj->clipRects.tileX1;
+	ck_oldRects.tileX2 = obj->clipRects.tileX2;
+	ck_oldRects.tileY1 = obj->clipRects.tileY1;
+	ck_oldRects.tileY2 = obj->clipRects.tileY2;
 
-	obj->oldRects.tileXmid = obj->clipRects.tileXmid;
+	ck_oldRects.tileXmid = obj->clipRects.tileXmid;
 }
 
 void CK_SetDeltaClipRects(CK_object *obj)
 {
-	obj->deltaRects.unitX1 = obj->clipRects.unitX1 - obj->oldRects.unitX1;
-	obj->deltaRects.unitY1 = obj->clipRects.unitY1 - obj->oldRects.unitY1;
-	obj->deltaRects.unitX2 = obj->clipRects.unitX2 - obj->oldRects.unitX2;
-	obj->deltaRects.unitY2 = obj->clipRects.unitY2 - obj->oldRects.unitY2;
+	ck_deltaRects.unitX1 = obj->clipRects.unitX1 - ck_oldRects.unitX1;
+	ck_deltaRects.unitY1 = obj->clipRects.unitY1 - ck_oldRects.unitY1;
+	ck_deltaRects.unitX2 = obj->clipRects.unitX2 - ck_oldRects.unitX2;
+	ck_deltaRects.unitY2 = obj->clipRects.unitY2 - ck_oldRects.unitY2;
 
-	obj->deltaRects.unitXmid = obj->clipRects.unitXmid - obj->oldRects.unitXmid;
+	ck_deltaRects.unitXmid = obj->clipRects.unitXmid - ck_oldRects.unitXmid;
 
 	// We don't calculate tile deltas.
 }
@@ -167,7 +172,7 @@ void CK_PhysKeenClipDown(CK_object *obj)
 	{
 		int slope = ck_physSlopeHeight[(topTI & 7)][midTileXOffset];
 		int deltaY = (obj->clipRects.tileY2 << 8) + slope - 1 - obj->clipRects.unitY2;
-		if (deltaY <= 0 && -(obj->deltaRects.unitY2) <= deltaY)
+		if (deltaY <= 0 && -(ck_deltaRects.unitY2) <= deltaY)
 		{
 			obj->topTI = topTI;
 			CK_PhysUpdateY(obj, deltaY);
@@ -208,7 +213,7 @@ void CK_PhysKeenClipUp(CK_object *obj)
 	{
 		int slopeAmt = ck_physSlopeHeight[bottomTI & 0x07][midTileXOffset];
 		deltaY = ((obj->clipRects.tileY1 + 1) << 8) - slopeAmt - obj->clipRects.unitY1;
-		if (deltaY >= 0 && (-obj->deltaRects.unitY1) >= deltaY)
+		if (deltaY >= 0 && (-ck_deltaRects.unitY1) >= deltaY)
 		{
 			obj->bottomTI = bottomTI;
 			CK_PhysUpdateY(obj, deltaY);
@@ -238,11 +243,11 @@ void CK_PhysClipVert(CK_object *obj)
 
 
 
-	int vertDisplace = -abs(obj->deltaRects.unitXmid) - obj->deltaRects.unitY2 - 16;	// Move above slope first.
+	int vertDisplace = -abs(ck_deltaRects.unitXmid) - ck_deltaRects.unitY2 - 16;	// Move above slope first.
 
 
 
-	for (int y = obj->oldRects.tileY2 - 1; obj->clipRects.tileY2 >= y; ++y)
+	for (int y = ck_oldRects.tileY2 - 1; obj->clipRects.tileY2 >= y; ++y)
 	{
 		int tile = CA_TileAtPos(obj->clipRects.tileXmid, y, 1);
 		if (TI_ForeTop(tile))
@@ -262,11 +267,9 @@ void CK_PhysClipVert(CK_object *obj)
 			}
 		}
 	}
-	//TODO: Ceiling collision.
+	vertDisplace = abs(ck_deltaRects.unitXmid) - ck_deltaRects.unitY1 + 16;
 
-	vertDisplace = abs(obj->deltaRects.unitXmid) - obj->deltaRects.unitY1 + 16;
-
-	for (int y = obj->oldRects.tileY1 + 1; y >= obj->clipRects.tileY1; --y)
+	for (int y = ck_oldRects.tileY1 + 1; y >= obj->clipRects.tileY1; --y)
 	{
 		int tile = CA_TileAtPos(obj->clipRects.tileXmid, y, 1);
 
@@ -277,7 +280,7 @@ void CK_PhysClipVert(CK_object *obj)
 
 			int slopeAmt = -ck_physSlopeHeight[TI_ForeBottom(tile)&0x07][midTileXOffset];
 
-			if ((slopeAmt - objYOffset > 0) && ((slopeAmt - objYOffset) <= vertDisplace) && ((obj->nextY + slopeAmt - objYOffset) < 256) && ((obj->nextY + slopeAmt - objYOffset) > -256))
+			if ((slopeAmt - objYOffset > 0) && ((slopeAmt - objYOffset) <= vertDisplace) && ((ck_nextY + slopeAmt - objYOffset) < 256) && ((ck_nextY + slopeAmt - objYOffset) > -256))
 			{
 				obj->bottomTI = TI_ForeBottom(tile);
 				CK_PhysUpdateY(obj, -objYOffset + slopeAmt);
@@ -349,38 +352,38 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 		}
 		else
 		{
-			if (obj->nextX > 0)
+			if (ck_nextX > 0)
 			{
-				obj->nextY = (obj->nextX) + 16;
+				ck_nextY = (ck_nextX) + 16;
 			}
 			else
 			{
-				obj->nextY = -(obj->nextX) + 16;
+				ck_nextY = -(ck_nextX) + 16;
 			}
 			wasNotOnPlatform = true;
 		}
 	}
 
-	if (obj->nextX > 240 - 1)
+	if (ck_nextX > 240 - 1)
 	{
-		obj->nextX = 240 - 1;
+		ck_nextX = 240 - 1;
 	}
-	else if (obj->nextX < -240 + 1)
+	else if (ck_nextX < -240 + 1)
 	{
-		obj->nextX = -240 + 1;
-	}
-
-	if (obj->nextY > 255)
-	{
-		obj->nextY = 255;
-	}
-	else if (obj->nextY < -239)
-	{
-		obj->nextY = -239;
+		ck_nextX = -240 + 1;
 	}
 
-	obj->posX += obj->nextX;
-	obj->posY += obj->nextY;
+	if (ck_nextY > 255)
+	{
+		ck_nextY = 255;
+	}
+	else if (ck_nextY < -239)
+	{
+		ck_nextY = -239;
+	}
+
+	obj->posX += ck_nextX;
+	obj->posY += ck_nextY;
 
 
 	obj->visible = true;
@@ -409,11 +412,11 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 			//TODO: Handle keen NOT being pushed.
 			if (obj == ck_keenObj)
 			{
-				if (!obj->topTI && obj->deltaRects.unitY2 > 0)
+				if (!obj->topTI && ck_deltaRects.unitY2 > 0)
 				{
 					CK_PhysKeenClipDown(obj);
 				}
-				if (!obj->bottomTI && obj->deltaRects.unitY1 < 0)
+				if (!obj->bottomTI && ck_deltaRects.unitY1 < 0)
 				{
 					CK_PhysKeenClipUp(obj);
 				}
@@ -426,7 +429,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 
 		if (!obj->topTI && wasNotOnPlatform)
 		{
-			obj->posX = oldUnitX + obj->nextX;
+			obj->posX = oldUnitX + ck_nextX;
 			obj->posY = oldUnitY;
 			CK_ResetClipRects(obj);
 		}
@@ -445,17 +448,17 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 	int16_t oldUnitX = obj->posX;
 	int16_t oldUnitY = obj->posY;
 
-	if (obj->nextX > 239)
-		obj->nextX = 239;
-	else if (obj->nextX < -239)
-		obj->nextX = -239;
-	if (obj->nextY > 239)
-		obj->nextY = 239;
-	else if (obj->nextY < -239)
-		obj->nextY = -239;
+	if (ck_nextX > 239)
+		ck_nextX = 239;
+	else if (ck_nextX < -239)
+		ck_nextX = -239;
+	if (ck_nextY > 239)
+		ck_nextY = 239;
+	else if (ck_nextY < -239)
+		ck_nextY = -239;
 
-	obj->posX += obj->nextX;
-	obj->posY += obj->nextY;
+	obj->posX += ck_nextX;
+	obj->posY += ck_nextY;
 	obj->visible = true;
 
 	//TODO: Verify object class (need callback to episode struct)
@@ -481,27 +484,27 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 
 	if (!CK_NotStuckInWall(obj))
 	{
-		CK_PhysUpdateX(obj, -obj->nextX);
+		CK_PhysUpdateX(obj, -ck_nextX);
 		if (CK_NotStuckInWall(obj))
 		{
-			if (obj->nextX > 0)
+			if (ck_nextX > 0)
 				obj->leftTI = 1;
 			else
 				obj->rightTI = 1;
 		}
 		else
 		{
-			if (obj->nextY > 0)
+			if (ck_nextY > 0)
 				obj->topTI = 1;
 			else
 				obj->bottomTI = 1;
 
-			CK_PhysUpdateX(obj, obj->nextX);
-			CK_PhysUpdateY(obj, -obj->nextY);
+			CK_PhysUpdateX(obj, ck_nextX);
+			CK_PhysUpdateY(obj, -ck_nextY);
 			if (!CK_NotStuckInWall(obj))
 			{
-				CK_PhysUpdateX(obj, -obj->nextX);
-				if (obj->nextX > 0)
+				CK_PhysUpdateX(obj, -ck_nextX);
+				if (ck_nextX > 0)
 					obj->leftTI = 1;
 				else
 					obj->rightTI = 1;
@@ -521,8 +524,8 @@ void CK_PhysUpdateSimpleObj(CK_object *obj)
 	oldUnitY = obj->posY;
 
 
-	obj->posX += obj->nextX;
-	obj->posY += obj->nextY;
+	obj->posX += ck_nextX;
+	obj->posY += ck_nextY;
 
 
 	obj->visible = true;
@@ -562,9 +565,9 @@ void CK_PhysPushX(CK_object *pushee, CK_object *pusher)
 	// Push object to the right
 	if ((deltaX_1 > 0) && (deltaX_1 <= deltaPosX))
 	{
-		pushee->nextX = deltaX_1;
+		ck_nextX = deltaX_1;
 		if (pushee->currentAction->stickToGround)
-			pushee->nextY = -deltaX_1 + 16;
+			ck_nextY = -deltaX_1 + 16;
 		CK_PhysUpdateNormalObj(pushee);
 		pushee->rightTI = 1;
 		return;
@@ -573,9 +576,9 @@ void CK_PhysPushX(CK_object *pushee, CK_object *pusher)
 	// Push object to the left
 	if ((deltaX_2 > 0) && (-deltaPosX >= deltaX_2))
 	{
-		pushee->nextX = -deltaX_2;
+		ck_nextX = -deltaX_2;
 		if (pushee->currentAction->stickToGround)
-			pushee->nextY = deltaX_2 + 16;
+			ck_nextY = deltaX_2 + 16;
 		CK_PhysUpdateNormalObj(pushee);
 		pushee->leftTI = 1;
 		return;
@@ -594,7 +597,7 @@ void CK_PhysPushY(CK_object *pushee, CK_object *pusher)
 		if (pushee == ck_keenObj)
 			ck_keenState.platform = pusher;
 
-		pushee->nextY = -deltaClipY;
+		ck_nextY = -deltaClipY;
 		bool pusheeSticksToGround = pushee->currentAction->stickToGround;
 		pushee->currentAction->stickToGround = false;
 		CK_PhysUpdateNormalObj(pushee);
@@ -614,8 +617,8 @@ void CK_SetAction(CK_object *obj, CK_action *act)
 
 	if (obj->gfxChunk == -1) obj->gfxChunk = 0;
 
-	obj->nextX = 0;
-	obj->nextY = 0;
+	ck_nextX = 0;
+	ck_nextY = 0;
 
 	//TODO: Support clipped enums.
 	CK_ClipType oldClipping = obj->clipped;
@@ -646,8 +649,8 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 	if (obj->gfxChunk == -1) obj->gfxChunk = 0;
 
 	obj->visible = true;
-	obj->nextX = 0;
-	obj->nextY = 0;
+	ck_nextX = 0;
+	ck_nextY = 0;
 
 
 	if (obj->topTI != 0x19)
@@ -676,7 +679,7 @@ void CK_PhysGravityHigh(CK_object *obj)
 		{
 			if (obj->velY < 0 && obj->velY >= -4)
 			{
-				obj->nextY += obj->velY;
+				ck_nextY += obj->velY;
 				obj->velY = 0;
 				return;
 			}
@@ -686,7 +689,7 @@ void CK_PhysGravityHigh(CK_object *obj)
 				obj->velY = 70;
 			}
 		}
-		obj->nextY += obj->velY;
+		ck_nextY += obj->velY;
 	}
 }
 
@@ -700,7 +703,7 @@ void CK_PhysGravityMid(CK_object *obj)
 		{
 			if (obj->velY < 0 && obj->velY >= -3)
 			{
-				obj->nextY += obj->velY;
+				ck_nextY += obj->velY;
 				obj->velY = 0;
 				return;
 			}
@@ -710,7 +713,7 @@ void CK_PhysGravityMid(CK_object *obj)
 				obj->velY = 70;
 			}
 		}
-		obj->nextY += obj->velY;
+		ck_nextY += obj->velY;
 	}
 }
 
@@ -730,7 +733,7 @@ void CK_PhysGravityLow(CK_object *obj)
 				obj->velY = 70;
 			}
 		}
-		obj->nextY += obj->velY;
+		ck_nextY += obj->velY;
 	}
 }
 
@@ -757,7 +760,7 @@ void CK_PhysDampHorz(CK_object *obj)
 				obj->velX = 0;
 			}
 		}
-		obj->nextX += obj->velX;
+		ck_nextX += obj->velX;
 	}
 }
 
@@ -786,6 +789,6 @@ void CK_PhysAccelHorz(CK_object *obj, int16_t accX, int16_t velLimit)
 				obj->velX = -velLimit;
 			}
 		}
-		obj->nextX += obj->velX;
+		ck_nextX += obj->velX;
 	}
 }

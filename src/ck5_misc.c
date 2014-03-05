@@ -50,7 +50,7 @@ int16_t CK5_ItemSpriteChunks[] ={
 void CK_Fall(CK_object *obj)
 {
 	CK_PhysGravityHigh(obj);
-	obj->nextX = obj->velX * SD_GetSpriteSync();
+	ck_nextX = obj->velX * SD_GetSpriteSync();
 }
 
 // Think function for adding a slightly lower amount of gravity
@@ -58,13 +58,13 @@ void CK_Fall(CK_object *obj)
 void CK_Fall2(CK_object *obj)
 {
 	CK_PhysGravityMid(obj);
-	obj->nextX = obj->velX * SD_GetSpriteSync();
+	ck_nextX = obj->velX * SD_GetSpriteSync();
 }
 
 void CK_Glide(CK_object *obj)
 {
-	obj->nextX = obj->velX * SD_GetSpriteSync();
-	obj->nextY = obj->velY * SD_GetSpriteSync();
+	ck_nextX = obj->velX * SD_GetSpriteSync();
+	ck_nextY = obj->velY * SD_GetSpriteSync();
 }
 
 void CK_BasicDrawFunc1(CK_object *obj)
@@ -194,40 +194,40 @@ void CK5_RedAxisPlatform(CK_object *obj)
 {
 	uint16_t nextPosUnit, nextPosTile;
 
-	if (obj->nextX || obj->nextY)
+	if (ck_nextX || ck_nextY)
 	{
 		return;
 	}
 	//TODO: Implement properly.
-	obj->nextX = obj->xDirection * 12 * SD_GetSpriteSync();
-	obj->nextY = obj->yDirection * 12 * SD_GetSpriteSync();
+	ck_nextX = obj->xDirection * 12 * SD_GetSpriteSync();
+	ck_nextY = obj->yDirection * 12 * SD_GetSpriteSync();
 
 	if (obj->xDirection == 1)
 	{
-		nextPosUnit = obj->clipRects.unitX2 + obj->nextX;
+		nextPosUnit = obj->clipRects.unitX2 + ck_nextX;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
 		{
 			obj->xDirection = -1;
 			//TODO: Change DeltaVelocity
-			obj->nextX -= (nextPosUnit & 255);
+			ck_nextX -= (nextPosUnit & 255);
 		}
 	}
 	else if (obj->xDirection == -1)
 	{
-		nextPosUnit = obj->clipRects.unitX1 + obj->nextX;
+		nextPosUnit = obj->clipRects.unitX1 + ck_nextX;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
 		{
 			obj->xDirection = 1;
 			//TODO: Change DeltaVelocity
 			//CK_PhysUpdateX(obj, 256 - nextPosUnit&255);
-			obj->nextX += (256 - nextPosUnit) & 255;
+			ck_nextX += (256 - nextPosUnit) & 255;
 		}
 	}
 	else if (obj->yDirection == 1)
 	{
-		nextPosUnit = obj->clipRects.unitY2 + obj->nextY;
+		nextPosUnit = obj->clipRects.unitY2 + ck_nextY;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
 		{
@@ -235,19 +235,19 @@ void CK5_RedAxisPlatform(CK_object *obj)
 			{
 				//Stop the platform.
 				obj->visible = true;
-				obj->nextY = 0;
+				ck_nextY = 0;
 			}
 			else
 			{
 				obj->yDirection = -1;
 				//TODO: Change DeltaVelocity
-				obj->nextY -= ( nextPosUnit & 255);
+				ck_nextY -= ( nextPosUnit & 255);
 			}
 		}
 	}
 	else if (obj->yDirection == -1)
 	{
-		nextPosUnit = obj->clipRects.unitY1 + obj->nextY;
+		nextPosUnit = obj->clipRects.unitY1 + ck_nextY;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
 		{
@@ -255,13 +255,13 @@ void CK5_RedAxisPlatform(CK_object *obj)
 			{
 				// Stop the platform.
 				obj->visible = true;
-				obj->nextY = 0;
+				ck_nextY = 0;
 			}
 			else
 			{
 				obj->yDirection = 1;
 				//TODO: Change DeltaVelocity
-				obj->nextY +=  256 - (nextPosUnit & 255);
+				ck_nextY +=  256 - (nextPosUnit & 255);
 			}
 		}
 	}
@@ -271,40 +271,40 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 {
 	uint16_t nextPosUnit, nextPosTile;
 
-	if (obj->nextX || obj->nextY)
+	if (ck_nextX || ck_nextY)
 	{
 		return;
 	}
 	//TODO: Implement properly.
-	obj->nextX = obj->xDirection * 12 * SD_GetSpriteSync();
-	obj->nextY = obj->yDirection * 12 * SD_GetSpriteSync();
+	ck_nextX = obj->xDirection * 12 * SD_GetSpriteSync();
+	ck_nextY = obj->yDirection * 12 * SD_GetSpriteSync();
 
 	if (obj->xDirection == 1)
 	{
-		nextPosUnit = obj->clipRects.unitX2 + obj->nextX;
+		nextPosUnit = obj->clipRects.unitX2 + ck_nextX;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
 		{
 			obj->xDirection = -1;
 			//TODO: Change DeltaVelocity
-			obj->nextX -= (nextPosUnit & 255);
+			ck_nextX -= (nextPosUnit & 255);
 		}
 	}
 	else if (obj->xDirection == -1)
 	{
-		nextPosUnit = obj->clipRects.unitX1 + obj->nextX;
+		nextPosUnit = obj->clipRects.unitX1 + ck_nextX;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
 		{
 			obj->xDirection = 1;
 			//TODO: Change DeltaVelocity
 			//CK_PhysUpdateX(obj, 256 - nextPosUnit&255);
-			obj->nextX += (256 - nextPosUnit) & 255;
+			ck_nextX += (256 - nextPosUnit) & 255;
 		}
 	}
 	else if (obj->yDirection == 1)
 	{
-		nextPosUnit = obj->clipRects.unitY2 + obj->nextY;
+		nextPosUnit = obj->clipRects.unitY2 + ck_nextY;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
 		{
@@ -312,19 +312,19 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 			{
 				//Stop the platform.
 				obj->visible = true;
-				obj->nextY = 0;
+				ck_nextY = 0;
 			}
 			else
 			{
 				obj->yDirection = -1;
 				//TODO: Change DeltaVelocity
-				obj->nextY -= ( nextPosUnit & 255);
+				ck_nextY -= ( nextPosUnit & 255);
 			}
 		}
 	}
 	else if (obj->yDirection == -1)
 	{
-		nextPosUnit = obj->clipRects.unitY1 + obj->nextY;
+		nextPosUnit = obj->clipRects.unitY1 + ck_nextY;
 		nextPosTile = nextPosUnit >> 8;
 		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_currentMapNumber]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
 		{
@@ -332,13 +332,13 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 			{
 				// Stop the platform.
 				obj->visible = true;
-				obj->nextY = 0;
+				ck_nextY = 0;
 			}
 			else
 			{
 				obj->yDirection = 1;
 				//TODO: Change DeltaVelocity
-				obj->nextY +=  256 - (nextPosUnit & 255);
+				ck_nextY +=  256 - (nextPosUnit & 255);
 			}
 		}
 	}
@@ -375,9 +375,9 @@ void CK5_FallPlatSit (CK_object *obj)
 
 	if (obj == ck_keenState.platform)
 	{
-		obj->nextY = SD_GetSpriteSync() * 16;
+		ck_nextY = SD_GetSpriteSync() * 16;
 		obj->velY = 0;
-		if ((unsigned)(obj->posY + obj->nextY - obj->user1) >= 0x80)
+		if ((unsigned)(obj->posY + ck_nextY - obj->user1) >= 0x80)
 			obj->currentAction = CK_GetActionByName("CK5_ACT_FallPlat1");
 	}
 }
@@ -387,13 +387,13 @@ void CK5_FallPlatFall (CK_object *obj)
 	uint16_t newY, newYT;
 
 	CK_PhysGravityHigh(obj);
-	newY = obj->clipRects.unitY2 + obj->nextY;
+	newY = obj->clipRects.unitY2 + ck_nextY;
 	newYT = newY >> 8;
 
 	// Stop falling if platform hits a block
 	if ((obj->clipRects.tileY2 != newYT) && (CA_TileAtPos(obj->clipRects.tileX1, newYT, 2) == 0x1F))
 	{
-		obj->nextY = 0xFF - (obj->clipRects.unitY2 & 0xFF);
+		ck_nextY = 0xFF - (obj->clipRects.unitY2 & 0xFF);
 		if (ck_keenState.platform != obj)
 			obj->currentAction = CK_GetActionByName("CK5_ACT_FallPlat2");
 	}
@@ -408,7 +408,7 @@ void CK5_FallPlatRise (CK_object *obj)
 	}
 	else if ((unsigned) obj->posY <= (unsigned) obj->user1)
 	{
-		obj->nextY = obj->user1 - obj->posY;
+		ck_nextY = obj->user1 - obj->posY;
 		obj->currentAction = CK_GetActionByName("CK5_ACT_FallPlat0");
 	}
 }

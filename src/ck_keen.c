@@ -379,20 +379,20 @@ void CK_KeenSlide(CK_object *obj)
 	if (deltaX < 0)
 	{
 		// Move left one px per tick.
-		obj->nextX -= SD_GetSpriteSync() * 16;
+		ck_nextX -= SD_GetSpriteSync() * 16;
 		// If we're not at our target yet, return.
-		if (obj->nextX > deltaX) return;
+		if (ck_nextX > deltaX) return;
 	}
 	else if (deltaX > 0)
 	{
 		// Move right one px per tick.
-		obj->nextX += SD_GetSpriteSync() * 16;
+		ck_nextX += SD_GetSpriteSync() * 16;
 		// If we're not at our target yet, return.
-		if (obj->nextX < deltaX) return;
+		if (ck_nextX < deltaX) return;
 	}
 
 	// We're at our target.
-	obj->nextX = deltaX;
+	ck_nextX = deltaX;
 	obj->user1 = 0;
 	if (!CK_KeenPressUp(obj))
 	{
@@ -497,8 +497,8 @@ void CK_KeenRidePlatform(CK_object *obj)
 		ck_keenState.platform = 0;
 		if (plat->deltaPosY < 0)
 		{
-			obj->nextX = 0;
-			obj->nextY = plat->deltaPosY;
+			ck_nextX = 0;
+			ck_nextY = plat->deltaPosY;
 			CK_PhysUpdateSimpleObj(obj);
 			return;
 		}
@@ -506,8 +506,8 @@ void CK_KeenRidePlatform(CK_object *obj)
 	else
 	{
 		//Ride the platform
-		obj->nextX = plat->deltaPosX;
-		obj->nextY = plat->clipRects.unitY1 - obj->clipRects.unitY2 - 16;
+		ck_nextX = plat->deltaPosX;
+		ck_nextY = plat->clipRects.unitY1 - obj->clipRects.unitY2 - 16;
 		CK_PhysUpdateSimpleObj(obj);
 
 		// Keen has a "/NOPAN" parameter which disables use of the EGA panning
@@ -546,8 +546,8 @@ bool CK_KeenTryClimbPole(CK_object *obj)
 	if ((TI_ForeMisc(candidateTile) & 0x7F) == 1)
 	{
 		obj->posX = 128 + ((obj->clipRects.tileXmid - 1) << 8);
-		obj->nextX = 0;
-		obj->nextY = (ck_inputFrame.yDirection << 5);
+		ck_nextX = 0;
+		ck_nextY = (ck_inputFrame.yDirection << 5);
 		obj->clipped = CLIP_not;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleSit");
 		return true;
@@ -600,7 +600,7 @@ void CK_KeenRunningThink(CK_object *obj)
 		SD_PlaySound(SOUND_KEENJUMP);
 		obj->velX = obj->xDirection * 16;
 		obj->velY = -40;
-		obj->nextX = obj->nextY = 0;
+		ck_nextX = ck_nextY = 0;
 		ck_keenState.jumpTimer = 18;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenJump1");
 		// Is this the mystical 'impossible pogo'?
@@ -615,14 +615,14 @@ void CK_KeenRunningThink(CK_object *obj)
 		obj->velX = obj->xDirection * 16;
 		obj->velY = -48;
 		// Should this be nextY? Andy seems to think so, but lemm thinks that X is right...
-		obj->nextX = 0;
+		ck_nextX = 0;
 		ck_keenState.jumpTimer = 24;
 		return;
 	}
 
 	// Andy seems to think this is Y as well. Need to do some more disasm.
 	// If this is an X vel, then surely we'd want to multiply it by the direction?
-	obj->nextX += ck_KeenRunXVels[obj->topTI&7] * SD_GetSpriteSync();
+	ck_nextX += ck_KeenRunXVels[obj->topTI&7] * SD_GetSpriteSync();
 
 	if ((obj->currentAction->chunkLeft == CK_GetActionByName("CK_ACT_keenRun1")->chunkLeft) && !(obj->user3))
 	{
@@ -661,7 +661,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenRun1");
 		CK_KeenRunningThink(obj);
-		obj->nextX = (obj->xDirection * obj->currentAction->velX * SD_GetSpriteSync())/4;
+		ck_nextX = (obj->xDirection * obj->currentAction->velX * SD_GetSpriteSync())/4;
 		return;
 	}
 
@@ -685,7 +685,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 		SD_PlaySound(SOUND_KEENJUMP);
 		obj->velX = 0;
 		obj->velY = -40;
-		obj->nextY = 0;
+		ck_nextY = 0;
 		ck_keenState.jumpTimer = 18;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenJump1");
 		return;
@@ -698,7 +698,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo1");
 		obj->velX = 0;
 		obj->velY = -48;
-		obj->nextY = 0;
+		ck_nextY = 0;
 		ck_keenState.jumpTimer = 24;
 		return;
 	}
@@ -812,8 +812,8 @@ void CK_KeenLookDownThink(CK_object *obj)
 
 		obj->clipRects.unitY2 += deltay;
 		obj->posY += deltay;
-		obj->nextX = 0;
-		obj->nextY = 0;
+		ck_nextX = 0;
+		ck_nextY = 0;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
 		obj->velX = obj->velY = 0;
 		SD_PlaySound(SOUND_KEENFALL);
@@ -847,16 +847,16 @@ void CK_KeenDrawFunc(CK_object *obj)
 	else if (obj->topTI == 0x29)
 	{
 		// Keen6 conveyor belt right
-		obj->nextX = SD_GetSpriteSync() * 8;
-		obj->nextY = 0;
+		ck_nextX = SD_GetSpriteSync() * 8;
+		ck_nextY = 0;
 		obj->user1 = 0;
 		CK_PhysUpdateNormalObj(obj);
 	}
 	else if (obj->topTI == 0x31)
 	{
 		// Keen6 conveyor belt left
-		obj->nextX = SD_GetSpriteSync() * -8;
-		obj->nextY = 0;
+		ck_nextX = SD_GetSpriteSync() * -8;
+		ck_nextY = 0;
 		obj->user1 = 0;
 		CK_PhysUpdateNormalObj(obj);
 	}
@@ -882,16 +882,16 @@ void CK_KeenRunDrawFunc(CK_object *obj)
 	else if (obj->topTI == 0x29)
 	{
 		// Keen6 conveyor belt right
-		obj->nextX = SD_GetSpriteSync() * 8;
-		obj->nextY = 0;
+		ck_nextX = SD_GetSpriteSync() * 8;
+		ck_nextY = 0;
 		obj->user1 = 0;
 		CK_PhysUpdateNormalObj(obj);
 	}
 	else if (obj->topTI == 0x31)
 	{
 		// Keen6 conveyor belt left
-		obj->nextX = SD_GetSpriteSync() * -8;
-		obj->nextY = 0;
+		ck_nextX = SD_GetSpriteSync() * -8;
+		ck_nextY = 0;
 		obj->user1 = 0;
 		CK_PhysUpdateNormalObj(obj);
 	}
@@ -929,12 +929,12 @@ void CK_KeenJumpThink(CK_object *obj)
 	{
 		if (ck_keenState.jumpTimer <= SD_GetSpriteSync())
 		{
-			obj->nextY = obj->velY * ck_keenState.jumpTimer;
+			ck_nextY = obj->velY * ck_keenState.jumpTimer;
 			ck_keenState.jumpTimer = 0;
 		}
 		else
 		{
-			obj->nextY = obj->velY * SD_GetSpriteSync();
+			ck_nextY = obj->velY * SD_GetSpriteSync();
 			if (!ck_gameState.jumpCheat)
 			{
 				ck_keenState.jumpTimer -= SD_GetSpriteSync();
@@ -983,7 +983,7 @@ void CK_KeenJumpThink(CK_object *obj)
 	//Pole
 	if (obj->bottomTI == 17)
 	{
-		obj->nextX = 0;
+		ck_nextX = 0;
 		obj->velX = 0;
 	}
 
@@ -1160,7 +1160,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 void CK_KeenPogoBounceThink(CK_object *obj)
 {
 	obj->velY = -48;
-	obj->nextY = 6 * obj->velY;
+	ck_nextY = 6 * obj->velY;
 	ck_keenState.jumpTimer = 24;
 	SD_PlaySound(SOUND_KEENPOGO);
 }
@@ -1196,7 +1196,7 @@ void CK_KeenPogoThink(CK_object *obj)
 	}
 	else
 	{
-		obj->nextX += obj->velX * SD_GetSpriteSync();
+		ck_nextX += obj->velX * SD_GetSpriteSync();
 		if (obj->velX < 0) obj->xDirection = -1;
 		else if (obj->velX > 0) obj->xDirection = 1;
 	}
@@ -1204,7 +1204,7 @@ void CK_KeenPogoThink(CK_object *obj)
 	// Stop for poles?
 	if (obj->bottomTI == 17)
 	{
-		obj->nextX = 0;
+		ck_nextX = 0;
 		obj->velX = 0;
 	}
 
@@ -1358,11 +1358,11 @@ void CK_KeenHangThink(CK_object *obj)
 
 		if(obj->xDirection == 1)
 		{
-			obj->nextY = -256;
+			ck_nextY = -256;
 		}
 		else
 		{
-			obj->nextY = -128;
+			ck_nextY = -128;
 		}
 		//TODO: Set keen->zlayer 3
 
@@ -1382,20 +1382,20 @@ void CK_KeenHangThink(CK_object *obj)
 void CK_KeenPullThink1(CK_object *obj)
 {
 	if (obj->xDirection == 1)
-		obj->nextX = 128;
+		ck_nextX = 128;
 	else
-		obj->nextY = -128;
+		ck_nextY = -128;
 }
 
 void CK_KeenPullThink2(CK_object *obj)
 {
-	obj->nextX = obj->xDirection * 128;
-	obj->nextY = -128;
+	ck_nextX = obj->xDirection * 128;
+	ck_nextY = -128;
 }
 
 void CK_KeenPullThink3(CK_object *obj)
 {
-	obj->nextY = -128;
+	ck_nextY = -128;
 }
 
 void CK_KeenPullThink4(CK_object *obj)
@@ -1408,7 +1408,7 @@ void CK_KeenPullThink4(CK_object *obj)
 void CK_KeenDeathThink(CK_object *obj)
 {
 	CK_PhysGravityMid(obj);
-	obj->nextX = obj->velX * SD_GetSpriteSync();
+	ck_nextX = obj->velX * SD_GetSpriteSync();
 	if (!CK_ObjectVisible(obj))
 	{
 		ck_gameState.levelState = 1;
@@ -1535,7 +1535,7 @@ void CK_KeenPoleUpThink(CK_object *obj)
 	
 	if ((TI_ForeMisc(topTile) & 127) != 1)
 	{
-		obj->nextY = 0;
+		ck_nextY = 0;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleSit");
 		CK_KeenPoleHandleInput(obj);
 		return;
@@ -1763,7 +1763,7 @@ void CK_KeenSpawnShot(CK_object *obj)
 void CK_KeenFall(CK_object *obj)
 {
 	CK_PhysGravityHigh(obj);
-	obj->nextX = obj->velX * SD_GetSpriteSync();
+	ck_nextX = obj->velX * SD_GetSpriteSync();
 }
 
 void CK_KeenSetupFunctions()

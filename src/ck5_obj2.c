@@ -48,7 +48,7 @@ void CK5_SparkyWait(CK_object *obj)
 	if (US_RndT() < 0x40)
 	{
 		obj->currentAction = CK_GetActionByName("CK5_ACT_SparkySearch0");
-		obj->nextX = 0;
+		ck_nextX = 0;
 	}
 }
 
@@ -205,7 +205,7 @@ void CK5_AmptonWalk(CK_object *obj)
 					obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonPole0");
 					obj->clipped = CLIP_not;
 					obj->timeUntillThink = 6;
-					obj->nextX = 0;
+					ck_nextX = 0;
 					return;
 				}
 
@@ -216,7 +216,7 @@ void CK5_AmptonWalk(CK_object *obj)
 					obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonPole0");
 					obj->clipped = CLIP_not;
 					obj->timeUntillThink = 6;
-					obj->nextX = 0;
+					ck_nextX = 0;
 					return;
 				}
 			}
@@ -230,7 +230,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 	int newYT;
 
 	// Check if ampton is moving into new tile
-	newYT = (obj->clipRects.unitY2 + obj->nextY) >> 8;
+	newYT = (obj->clipRects.unitY2 + ck_nextY) >> 8;
 
 	if (obj->clipRects.tileY2 == newYT)
 		return;
@@ -256,7 +256,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 				obj->clipRects.unitY2 -= delY;
 				obj->clipped = CLIP_normal;
 				obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonDismount0");
-				obj->nextY = 0x10;
+				ck_nextY = 0x10;
 				obj->yDirection = IN_motion_Down;
 				CK_PhysUpdateNormalObj(obj);
 				obj->timeUntillThink = 4;
@@ -266,7 +266,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 		else if ((TI_ForeMisc(CA_TileAtPos(tileX, tileY - 1, 1)) & 0x7F) != MISCFLAG_POLE)
 		{
 			// Hit the top of a pole; go back down
-			obj->nextY = 0;
+			ck_nextY = 0;
 			obj->yDirection = IN_motion_Down;
 			return;
 		}
@@ -291,7 +291,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 				obj->clipRects.unitX2 += delY;
 				obj->clipped = CLIP_normal;
 				obj->currentAction = CK_GetActionByName("CK5_ACT_AmptonDismount0");
-				obj->nextY = 0x10;
+				ck_nextY = 0x10;
 				CK_PhysUpdateNormalObj(obj);
 				obj->timeUntillThink = 4;
 				return;
@@ -299,7 +299,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 		}
 		else if ((TI_ForeMisc(CA_TileAtPos(tileX, tileY, 1)) & 0x7F) != MISCFLAG_POLE)
 		{
-			obj->nextY = 0;
+			ck_nextY = 0;
 			obj->yDirection = IN_motion_Up;
 			return;
 		}
@@ -509,7 +509,7 @@ void CK5_ShellyWait(CK_object *obj)
 				obj->velX = 0x10;
 				obj->velY = -0x18;
 				obj->currentAction = CK_GetActionByName("CK5_ACT_ShellyDive0");
-				obj->nextY = obj->nextX = 0;
+				ck_nextY = ck_nextX = 0;
 			}
 		}
 		else
@@ -519,7 +519,7 @@ void CK5_ShellyWait(CK_object *obj)
 				obj->velX = -0x10;
 				obj->velY = -0x18;
 				obj->currentAction = CK_GetActionByName("CK5_ACT_ShellyDive0");
-				obj->nextY = obj->nextX = 0;
+				ck_nextY = ck_nextX = 0;
 			}
 		}
 	}

@@ -523,7 +523,7 @@ void CK5_AnimateMapTeleporter(int tileX, int tileY)
 
 	animTile = 0;
 	RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
-	ck_keenObj->nextX = ck_keenObj->nextY = 0;
+	ck_nextX = ck_nextY = 0;
 	CK_PhysUpdateNormalObj(ck_keenObj);
 }
 
@@ -537,14 +537,14 @@ MapKeenElevator(CK_object * obj)
 
 	int var2, s, var4;
 
-	obj->nextY = obj->yDirection * 64 * CK_GetTicksPerFrame();
+	ck_nextY = obj->yDirection * 64 * CK_GetTicksPerFrame();
 	if (obj->posX != obj->user2)
 	{
-		obj->nextX = obj->xDirection * 12 * CK_GetTicksPerFrame();
-		if (obj->xDirection == IN_motion_Right && obj->nextX + obj->posX > obj->user2 ||
-				obj->xDirection == IN_motion_Left && obj->nextX + obj->posX < obj->user2)
+		ck_nextX = obj->xDirection * 12 * CK_GetTicksPerFrame();
+		if (obj->xDirection == IN_motion_Right && ck_nextX + obj->posX > obj->user2 ||
+				obj->xDirection == IN_motion_Left && ck_nextX + obj->posX < obj->user2)
 		{
-			obj->nextX = obj->user2 - obj->posX;
+			ck_nextX = obj->user2 - obj->posX;
 		}
 	}
 	// draw the doors closing
@@ -580,41 +580,41 @@ void CK5_MapKeenElevator(CK_object *keen)
 	int tileX, tileY;
 
 	// Move keen in the Y direction
-	keen->nextY = keen->yDirection * 64 * SD_GetSpriteSync();
+	ck_nextY = keen->yDirection * 64 * SD_GetSpriteSync();
 
 	if (keen->posX != keen->user2)
 	{
-		keen->nextX = keen->xDirection * 12 * SD_GetSpriteSync();
-		if (keen->xDirection == IN_motion_Right && keen->nextX + keen->posX > keen->user2 ||
-				keen->xDirection == IN_motion_Left && keen->nextX + keen->posX < keen->user2)
+		ck_nextX = keen->xDirection * 12 * SD_GetSpriteSync();
+		if (keen->xDirection == IN_motion_Right && ck_nextX + keen->posX > keen->user2 ||
+				keen->xDirection == IN_motion_Left && ck_nextX + keen->posX < keen->user2)
 		{
-			keen->nextX = keen->user2 - keen->posX;
+			ck_nextX = keen->user2 - keen->posX;
 		}
 	}
 
 	//1D776
 	// Update hitbox
-	keen->clipRects.unitX1 = keen->posX + keen->nextX;
+	keen->clipRects.unitX1 = keen->posX + ck_nextX;
 	keen->clipRects.unitX2 = keen->clipRects.unitX1 + 0xFF;
 
-	keen->clipRects.unitY1 = keen->posY + keen->nextY;
+	keen->clipRects.unitY1 = keen->posY + ck_nextY;
 	keen->clipRects.unitY2 = keen->clipRects.unitY1 + 0xFF;
 
 	// If keen has not yet hit the Y destination, keep moving
 	if (keen->yDirection == IN_motion_Down)
 	{
-		if ((uint16_t) (keen->posY + keen->nextY)<(uint16_t) keen->user1)
+		if ((uint16_t) (keen->posY + ck_nextY)<(uint16_t) keen->user1)
 			return;
 	}
 	else
 	{
-		if ((uint16_t) (keen->posY + keen->nextY)>(uint16_t) keen->user1)
+		if ((uint16_t) (keen->posY + ck_nextY)>(uint16_t) keen->user1)
 			return;
 	}
 
 	// 1D7C5
 	// Arrived at destination; turn travelling keen back into normal map keen
-	keen->nextX = keen->nextY = 0;
+	ck_nextX = ck_nextY = 0;
 	keen->posX = keen->user2;
 	keen->posY = keen->user1;
 	keen->zLayer = 1;

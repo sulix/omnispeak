@@ -85,8 +85,8 @@ int CK5_Walk(CK_object *obj, CK_Controldir dir)
 
 	int tx, ty;
 
-	tx = (obj->posX + obj->nextX) >> 8;
-	ty = (obj->posY + obj->nextY) >> 8;
+	tx = (obj->posX + ck_nextX) >> 8;
+	ty = (obj->posY + ck_nextY) >> 8;
 
 	switch (dir)
 	{
@@ -177,8 +177,8 @@ void CK5_SeekKeen(CK_object *obj)
 	// We want to move in that direction first?
 
 	// Get position difference between Keen and Mine
-	deltaX = ck_keenObj->posX - (obj->posX + obj->nextX);
-	deltaY = ck_keenObj->posY - (obj->posY + obj->nextY);
+	deltaX = ck_keenObj->posX - (obj->posX + ck_nextX);
+	deltaY = ck_keenObj->posY - (obj->posY + ck_nextY);
 	closestAxis = Dir_nodir;
 	farthestAxis = Dir_nodir;
 
@@ -260,8 +260,8 @@ void CK5_MineMove(CK_object *obj)
 	if (obj->velX <= delta)
 	{
 		// Move up to the tile boundary
-		obj->nextX = obj->xDirection * obj->velX;
-		obj->nextY = obj->yDirection * obj->velX;
+		ck_nextX = obj->xDirection * obj->velX;
+		ck_nextY = obj->yDirection * obj->velX;
 		delta -= obj->velX;
 		xDir = obj->xDirection;
 		yDir = obj->yDirection;
@@ -278,8 +278,8 @@ void CK5_MineMove(CK_object *obj)
 
 	// Tick down velX and move mine
 	obj->velX -= delta;
-	obj->nextX += delta * obj->xDirection;
-	obj->nextY += delta * obj->yDirection;
+	ck_nextX += delta * obj->xDirection;
+	ck_nextY += delta * obj->yDirection;
 	return;
 }
 
@@ -770,7 +770,7 @@ void CK5_RoboShoot(CK_object *obj)
 		new_object->velX = obj->xDirection * 60;
 		new_object->velY = obj->user1 & 1 ? -8 : 8;
 		SD_PlaySound(SOUND_ENEMYSHOOT);
-		obj->nextX = obj->xDirection == IN_motion_Right ? -0x40 : 0x40;
+		ck_nextX = obj->xDirection == IN_motion_Right ? -0x40 : 0x40;
 	}
 }
 
@@ -873,7 +873,7 @@ void CK5_SpindredBounce(CK_object *obj)
 			{
 				if (obj->velY < 0 && obj->velY >= -3)
 				{
-					obj->nextY += obj->velY;
+					ck_nextY += obj->velY;
 					obj->velY = 0;
 					return;
 				}
@@ -885,7 +885,7 @@ void CK5_SpindredBounce(CK_object *obj)
 			{
 				if (obj->velY > 0 && obj->velY <= 3)
 				{
-					obj->nextY += obj->velY;
+					ck_nextY += obj->velY;
 					obj->velY = 0;
 					return;
 				}
@@ -893,7 +893,7 @@ void CK5_SpindredBounce(CK_object *obj)
 					obj->velY = -70;
 			}
 		}
-		obj->nextY += obj->velY;
+		ck_nextY += obj->velY;
 
 	}
 }
@@ -1072,7 +1072,7 @@ void CK5_MasterTele(CK_object *obj)
 		}
 
 		// make it through previous nested loop == succesful tele
-		obj->nextX = obj->nextY = 0;
+		ck_nextX = ck_nextY = 0;
 		return;
 	}
 
@@ -1081,8 +1081,8 @@ void CK5_MasterTele(CK_object *obj)
 	obj->currentAction = CK_GetActionByName("CK5_ACT_Master0");
 	obj->posX = posX_0 - 1;
 	obj->posY = posY_0;
-	obj->nextX = 1;
-	obj->nextY = 0;
+	ck_nextX = 1;
+	ck_nextY = 0;
 }
 
 // This was actually found in CK_MISC.C, which would suggest it had a more
@@ -1219,7 +1219,7 @@ void CK5_ShikadiWalk(CK_object *obj)
 		if (US_RndT() < 0x10)
 		{
 			// 1/16 chance of stopping walk
-			obj->nextX = 0;
+			ck_nextX = 0;
 			obj->currentAction = CK_GetActionByName("CK5_ACT_ShikadiStand0");
 			return;
 		}
@@ -1239,7 +1239,7 @@ void CK5_ShikadiWalk(CK_object *obj)
 
 		obj->user1 = tx;
 		obj->currentAction = CK_GetActionByName("CK5_ACT_ShikadiPole0");
-		obj->nextX = 0;
+		ck_nextX = 0;
 		SD_PlaySound(SOUND_POLEZAP);
 	}
 }
@@ -1296,10 +1296,10 @@ void CK5_PoleZap(CK_object *obj)
 {
 
 	int tile;
-	if (obj->nextY == 0)
+	if (ck_nextY == 0)
 	{
 		// Slide up until there's no more pole
-		obj->nextY = obj->yDirection * 48;
+		ck_nextY = obj->yDirection * 48;
 		tile = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY1, 1);
 
 		if (TI_ForeMisc(tile) != MISCFLAG_POLE)
@@ -1366,7 +1366,7 @@ void CK5_ShocksundSearch(CK_object *obj)
 
 	if (US_RndT() < 0x10)
 	{
-		obj->nextX = 0;
+		ck_nextX = 0;
 		obj->currentAction = CK_GetActionByName("CK5_ACT_ShocksundStand0");
 		obj->user1 = 0x10;
 		return;
@@ -1383,7 +1383,7 @@ void CK5_ShocksundSearch(CK_object *obj)
 	if (US_RndT() < 0x80)
 	{
 
-		obj->nextX = 0;
+		ck_nextX = 0;
 		obj->currentAction = CK_GetActionByName("CK5_ACT_ShocksundShoot0");
 	}
 }
@@ -1550,7 +1550,7 @@ void CK5_SpherefulBounce(CK_object *obj)
 {
 	obj->visible = true;
 
-	if (obj->nextX || obj->nextY)
+	if (ck_nextX || ck_nextY)
 		return;
 
 	int32_t lastTimeCount = SD_GetLastTimeCount();
@@ -1569,8 +1569,8 @@ void CK5_SpherefulBounce(CK_object *obj)
 				obj->velX--;
 
 		}
-		obj->nextY += obj->velY;
-		obj->nextX += obj->velX;
+		ck_nextY += obj->velY;
+		ck_nextX += obj->velX;
 	}
 }
 
@@ -1660,7 +1660,7 @@ void CK5_KorathDraw(CK_object *obj)
 		obj->posX -= obj->deltaPosX;
 		obj->xDirection = -obj->xDirection;
 		obj->timeUntillThink = US_RndT() / 32;
-		obj->nextX = 0;
+		ck_nextX = 0;
 
 		CK_SetAction2(obj, obj->currentAction);
 	}
@@ -1674,7 +1674,7 @@ void CK5_KorathWalk(CK_object *obj)
 	if (US_RndT() < 10)
 	{
 
-		obj->nextX = 0;
+		ck_nextX = 0;
 		obj->xDirection = US_RndT() < 128 ? 1 : -1;
 		obj->currentAction = CK_GetActionByName("CK5_ACT_KorathWait");
 	}

@@ -295,11 +295,11 @@ int16_t CK_ActionThink(CK_object *obj, int16_t time)
 			if (obj->xDirection)
 			{
 				//TODO: Work out what to do with the nextVelocity stuff.
-				obj->nextX += action->velX * (time * obj->xDirection);
+				ck_nextX += action->velX * (time * obj->xDirection);
 			}
 			if (obj->yDirection)
 			{
-				obj->nextY += action->velY * (time * obj->yDirection);
+				ck_nextY += action->velY * (time * obj->yDirection);
 			}
 		}
 
@@ -326,22 +326,22 @@ int16_t CK_ActionThink(CK_object *obj, int16_t time)
 	{
 		if (obj->xDirection)
 		{
-			obj->nextX += action->velX * (remainingTime * obj->xDirection);
+			ck_nextX += action->velX * (remainingTime * obj->xDirection);
 		}
 		if (obj->yDirection)
 		{
-			obj->nextY += action->velY * (remainingTime * obj->yDirection);
+			ck_nextY += action->velY * (remainingTime * obj->yDirection);
 		}
 	}
 	else /*if (action->type == AT_UnscaledOnce || action->type == AT_UnscaledFrame)*/
 	{
 		if (obj->xDirection)
 		{
-			obj->nextX += action->velX * obj->xDirection;
+			ck_nextX += action->velX * obj->xDirection;
 		}
 		if (obj->yDirection)
 		{
-			obj->nextY += action->velY * obj->yDirection;
+			ck_nextY += action->velY * obj->yDirection;
 		}
 	}
 
@@ -379,7 +379,7 @@ void CK_RunAction(CK_object *obj)
 
 	obj->deltaPosX = obj->deltaPosY = 0;
 
-	obj->nextX = obj->nextY = 0;
+	ck_nextX = ck_nextY = 0;
 
 	CK_action *prevAction = obj->currentAction;
 
@@ -428,7 +428,7 @@ void CK_RunAction(CK_object *obj)
 	if (obj->currentAction->chunkLeft && obj->xDirection <= 0) obj->gfxChunk = obj->currentAction->chunkLeft;
 	if (obj->currentAction->chunkRight && obj->xDirection > 0) obj->gfxChunk = obj->currentAction->chunkRight;
 #endif
-	if (obj->gfxChunk != oldChunk || obj->nextX || obj->nextY || obj->topTI == 0x19)
+	if (obj->gfxChunk != oldChunk || ck_nextX || ck_nextY || obj->topTI == 0x19)
 	{
 		if (obj->clipped == CLIP_simple)
 			CK_PhysFullClipToWalls(obj);

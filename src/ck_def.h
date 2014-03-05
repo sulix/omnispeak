@@ -181,12 +181,15 @@ typedef struct CK_object
 
 	CK_objPhysData clipRects;
 
+	// In real keen, these are shared, so we're moving them out.
+#if 0
 	CK_objPhysData oldRects;
 
 	CK_objPhysData deltaRects;
 
 	int nextX;
 	int nextY;
+#endif
 
 	//TileInfo for surrounding tiles.
 	int topTI, bottomTI, leftTI, rightTI;
@@ -202,6 +205,11 @@ typedef struct CK_object
 	struct CK_object *next;
 	struct CK_object *prev;
 } CK_object;
+
+extern CK_objPhysData ck_oldrects;
+extern CK_objPhysData ck_deltarects;
+extern int ck_nextX;
+extern int ck_nextY;
 
 typedef struct CK_keenState
 {
