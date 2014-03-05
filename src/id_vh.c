@@ -120,7 +120,9 @@ void VH_DrawSprite(int x, int y, int chunk)
 	
 	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
 
-	VL_MaskedBlitToScreen(ca_graphChunks[chunk], x + (spr.originX >> 4), y + (spr.originY >> 4) , spr.width*8, spr.height);
+	int shiftMask = ~(5-spr.shifts);
+
+	VL_MaskedBlitToScreen(ca_graphChunks[chunk], (x + (spr.originX >> 4))&shiftMask, y + (spr.originY >> 4) , spr.width*8, spr.height);
 
 }
 
@@ -130,7 +132,9 @@ void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
 	
 	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
 
-	VL_1bppInvBlitToScreen(((uint8_t*)ca_graphChunks[chunk]) + spr.width*spr.height*0, x + (spr.originX >> 4), y + (spr.originY >> 4) , spr.width*8, spr.height, colour);
+	int shiftMask = ~(5-spr.shifts);
+
+	VL_1bppInvBlitToScreen(((uint8_t*)ca_graphChunks[chunk]), (x + (spr.originX >> 4))&shiftMask, y + (spr.originY >> 4) , spr.width*8, spr.height, colour);
 
 }
 

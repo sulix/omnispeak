@@ -1377,26 +1377,16 @@ int CK_PlayLoop()
 			}
 		}
 
-		//TODO: Follow player with camera.
-
-		RF_Refresh();
-#if 0
-		for (CK_object *obj = ck_keenObj; obj; obj = obj->next)
-		{
-			VL_ScreenRect((obj->clipRects.tileX1 << 4) - (rf_scrollXUnit >> 4), (obj->clipRects.tileY1 << 4) - (rf_scrollYUnit >> 4),
-										(obj->clipRects.tileX2 - obj->clipRects.tileX1 + 1) << 4,
-										(obj->clipRects.tileY2 - obj->clipRects.tileY1 + 1) << 4, 10);
-
-			VL_ScreenRect((obj->clipRects.tileXmid << 4) - (rf_scrollXUnit >> 4), (obj->clipRects.tileY2 << 4) - (rf_scrollYUnit >> 4), 16, 16, 9);
-			VL_ScreenRect((obj->clipRects.unitX1 >> 4) - (rf_scrollXUnit >> 4), (obj->clipRects.unitY1 >> 4) - (rf_scrollYUnit >> 4), (obj->clipRects.unitX2 - obj->clipRects.unitX1) >> 4, (obj->clipRects.unitY2 - obj->clipRects.unitY1) >> 4, 8);
-		}
-#endif
-		VL_SetScrollCoords((rf_scrollXUnit & 0xff) >> 4, (rf_scrollYUnit & 0xff) >> 4);
-
+		// Follow the player with the camera.
 		if (ck_currentMapNumber == 0)
 			CK_MapCamera(ck_keenObj);
 		else
 			CK_NormalCamera(ck_keenObj);
+
+		// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
+		VL_SetScrollCoords((rf_scrollXUnit & 0xef) >> 4, (rf_scrollYUnit & 0xff) >> 4);
+		RF_Refresh();
+
 
 		//Draw the scorebox
 		CK_UpdateScoreBox(ck_scoreBoxObj);
