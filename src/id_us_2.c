@@ -432,9 +432,8 @@ int USL_ConfirmComm( US_CardCommand command )
 			ask_user = 1;
 		break;
 	}
-	// TODO: implement green_message_box
-	//result = ask_user ? green_message_box( s1, s2, s3 ) : 1;
-	result = 1;
+
+	result = ask_user ? green_message_box( s1, s2, s3 ) : 1;
 	if ( result )
 	{
 		us_currentCommand = command;
