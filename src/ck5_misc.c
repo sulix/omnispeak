@@ -616,6 +616,32 @@ void CK5_SpawnRedStandPlatform(int tileX, int tileY)
 	CK_ResetClipRects(obj);
 }
 
+void CK5_OpenMapTeleporter(int tileX, int tileY)
+{
+	uint16_t tile_array[4];
+	for (int y = 0; y < 2; y++)
+	{
+		for (int x = 0; x < 2; x++)
+		{
+			tile_array[y * 2 + x] = CA_TileAtPos(5 * 2 + x, y, 1);
+		}
+	}
+	RF_ReplaceTiles(tile_array, 1, tileX, tileY, 2, 2);
+}
+
+void CK5_CloseMapTeleporter(int tileX, int tileY)
+{
+	uint16_t tile_array[4];
+	for (int y = 0; y < 2; y++)
+	{
+		for (int x = 0; x < 2; x++)
+		{
+			tile_array[y * 2 + x] = CA_TileAtPos(x, y, 1);
+		}
+	}
+	RF_ReplaceTiles(tile_array, 1, tileX, tileY, 2, 2);
+}
+
 // TODO: Cache stuff here instead of spawner handlers
 void CK5_ScanInfoLayer()
 {
@@ -711,8 +737,9 @@ void CK5_ScanInfoLayer()
 				RF_SetScrollBlock(x, y, true);
 				break;
 			case 26:
-				// TODO: Map keen tele spawn
 				//RF_SetScrollBlock(x, y, false);
+				if (ck_gameState.levelState == 13)
+					CK5_MapKeenTeleSpawn(x, y);
 				break;
 			case 27:
 			case 28:
@@ -900,6 +927,36 @@ void CK5_ScanInfoLayer()
 			obj->active = OBJ_INACTIVE;
 	}
 	// TODO: Some more stuff (including opening elevator after breaking fuses)
+	
+	if (ck_currentMapNumber == 0)
+	{
+		int keenYTilePos = ck_keenObj->posY >> 8;
+
+		// The top of the lower shaft is opened if you're above its entrance or
+		// on Korath III.
+		if (keenYTilePos < 75 || keenYTilePos > 100)
+		{
+			CK5_CloseMapTeleporter(24, 76);
+			CK5_OpenMapTeleporter(22, 55);
+		}
+
+		// Unlock the entrance to the upper shaft if we're below the top and the
+		// fuses are broken.
+		if (ck_gameState.levelsDone[4] &&
+			ck_gameState.levelsDone[6] &&
+			ck_gameState.levelsDone[8] &&
+			ck_gameState.levelsDone[10] &&
+			keenYTilePos > 39)
+		{
+			CK5_OpenMapTeleporter(26, 55);
+		}
+
+		// Unlock the top elevator when we're at the top or on Korath III.
+		if (keenYTilePos < 39 || keenYTilePos > 100)
+		{
+			CK5_OpenMapTeleporter(24, 30);
+		}
+	}
 }
 
 // Galaxy Explosion Ending Sequence

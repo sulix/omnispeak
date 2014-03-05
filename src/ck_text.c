@@ -680,12 +680,20 @@ void help_endgame( void )
 	/* Cache the chunkss we need */
 	CA_CacheGrChunk( 0x1B );	/* Dim arrow */
 	CA_CacheGrChunk( 0x1A );	/* Bright arrow */
-	//TODO: Handle the Korath fuse properly.
-	CA_CacheGrChunk( 4918 );
-	CA_CacheGrChunk( 4919 );	/* End-game story -- extern 8 */
+
+	// Check for Korath Fuse
+	if (ck_gameState.levelsDone[13] == 0x0E)
+	{
+		CA_CacheGrChunk( 4919 );
+		ptext = (char *)ca_graphChunks[4919];
+	}
+	else
+	{
+		CA_CacheGrChunk( 4918 );
+		ptext = (char *)ca_graphChunks[4918];
+	}
 
 	/* Initialise the parser */
-	ptext = (char *)ca_graphChunks[4919];
 	help_ptr = (char *) ptext;
 	CacheLayoutGraphics();
 
@@ -733,7 +741,10 @@ void help_endgame( void )
 
 	/* Uncache our graphics and clean up */
 	StopMusic();
-	MM_FreePtr( &ca_graphChunks[4919] );
+	if (ck_gameState.levelsDone[13] == 0x0E)
+		MM_FreePtr( &ca_graphChunks[4919] );
+	else
+		MM_FreePtr( &ca_graphChunks[4918] );
 	MM_FreePtr( &ca_graphChunks[0x1B] );
 	MM_FreePtr( &ca_graphChunks[0x1A] );
 	// CA_DownLevel();
