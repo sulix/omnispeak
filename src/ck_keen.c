@@ -1626,7 +1626,7 @@ void CK_SpawnShot(int x, int y, int direction)
 	shot->posY = y;
 	shot->zLayer = 0;
 	shot->type = CT_Stunner; // TODO: obj_stunner
-	shot->active = OBJ_ACTIVE;
+	shot->active = OBJ_ALWAYS_ACTIVE;
 
 	SD_PlaySound(SOUND_KEENSHOOT);
 	
@@ -1649,7 +1649,7 @@ void CK_SpawnShot(int x, int y, int direction)
 		shot->yDirection = 0;
 		break;
 	default:
-		Quit("SpawnShot: bad dir!");
+		Quit("SpawnShot: Bad dir!");
 	}
 
 	CK_SetAction(shot, CK_GetActionByName("CK_ACT_keenShot1"));
@@ -1663,14 +1663,40 @@ void CK_ShotHit(CK_object *obj)
 	SD_PlaySound(SOUND_KEENSHOTHIT);
 }
 
-void CK_ShotColFunc(CK_object *obj, CK_object *other)
+void CK_ShotThink(CK_object *shot)
 {
-	//TODO: Maybe do something.
-}
-
-void CK_ShotThink(CK_object *obj)
-{
-	//TODO: Kill things which are offscreen.
+	// Stun things which are offscreen.
+	if ((shot->clipRects.tileX2 < (rf_scrollXUnit >> 8)) ||
+	    (shot->clipRects.tileY2 < (rf_scrollYUnit >> 8)) ||
+	    (shot->clipRects.tileX1 > (rf_scrollXUnit >> 8) + (320 >> 4)) ||
+	    (shot->clipRects.tileY1 > (rf_scrollYUnit >> 8) + (208 >> 4)))
+	{
+		if ((shot->clipRects.tileX2 + 10 < (rf_scrollXUnit >> 8)) ||
+		    (shot->clipRects.tileX1 - 10 > (rf_scrollXUnit >> 8) + (320 >> 4)) ||
+		    (shot->clipRects.tileY2 + 6 < (rf_scrollYUnit >> 8)) ||
+		    (shot->clipRects.tileY1 - 6 > (rf_scrollYUnit >> 8) + (208 >> 4)))
+		{
+			CK_RemoveObj(shot);
+			return;
+		}
+		for (CK_object *currentObj = ck_keenObj->next; currentObj; currentObj = currentObj->next)
+		{
+			if (currentObj->active ||
+			    (shot->clipRects.unitX2 <= currentObj->clipRects.unitX1) ||
+			    (shot->clipRects.unitX1 >= currentObj->clipRects.unitX2) ||
+			    (shot->clipRects.unitY1 >= currentObj->clipRects.unitY2) ||
+			    (shot->clipRects.unitY2 <= currentObj->clipRects.unitY1))
+				continue;
+			if (currentObj->currentAction->collide)
+			{
+				currentObj->currentAction->collide(currentObj, shot);
+				currentObj->visible = true;
+				currentObj->active = OBJ_ACTIVE;
+			}
+			if (shot->type == CT_nothing)
+				return;
+		}
+	}
 }
 
 void CK_ShotDrawFunc(CK_object *obj)
@@ -1681,11 +1707,6 @@ void CK_ShotDrawFunc(CK_object *obj)
 	{
 		CK_ShotHit(obj);
 	}
-	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
-}
-
-void CK_SimpleDrawFunc(CK_object *obj)
-{
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 }
 
@@ -1803,7 +1824,5 @@ void CK_KeenSetupFunctions()
 	CK_ACT_AddFunction("CK_KeenSpawnShot", &CK_KeenSpawnShot);
 	CK_ACT_AddFunction("CK_ShotThink", &CK_ShotThink);
 	CK_ACT_AddFunction("CK_ShotDrawFunc", &CK_ShotDrawFunc);
-	CK_ACT_AddColFunction("CK_ShotColFunc", &CK_ShotColFunc);
-	CK_ACT_AddFunction("CK_SimpleDrawFunc",&CK_SimpleDrawFunc);
 	CK_ACT_AddFunction("CK_KeenFall",&CK_KeenFall);
 }
