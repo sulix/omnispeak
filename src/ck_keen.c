@@ -1357,8 +1357,6 @@ void CK_KeenHangThink(CK_object *obj)
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPull1");
 
-		obj->clipped = CLIP_not;
-
 		if(obj->xDirection == 1)
 		{
 			ck_nextY = -256;
@@ -1405,6 +1403,7 @@ void CK_KeenPullThink4(CK_object *obj)
 {
 	obj->clipped = CLIP_normal;
 	obj->zLayer = 1;
+	ck_nextY = 128;
 }
 
 
