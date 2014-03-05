@@ -1704,11 +1704,57 @@ void CK_ShotThink(CK_object *shot)
 
 void CK_ShotDrawFunc(CK_object *obj)
 {
-	//TODO: Force the bullet through pole-holes.
-	
-	if (obj->topTI || obj->bottomTI || obj->leftTI || obj->rightTI)
+	uint16_t t;
+
+	// shoot down through a pole hole
+	if (obj->topTI == 1 && obj->clipRects.tileX1 != obj->clipRects.tileX2) 
 	{
-		CK_ShotHit(obj);
+		t = CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1-1, 1);
+		if (TI_ForeTop(t) == 0x11) 
+		{
+			obj->topTI = 0x11;
+			obj->posX += 0x100 - (obj->posX & 0xFF);
+		}
+	} 
+	// move into pole hole before making contact
+	else if (obj->topTI == 0x11 && obj->clipRects.tileX1 != obj->clipRects.tileX2) 
+	{
+		obj->posX &= 0xFF00;
+	}
+
+	// shoot through pole hole upwards
+	if (obj->bottomTI == 1 && obj->clipRects.tileX1 != obj->clipRects.tileX2) 
+	{
+		t = CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2+1, 1);
+		if (TI_ForeBottom(t) == 0x11) 
+		{
+			obj->bottomTI = 0x11;
+			obj->posX += 0x100 - (obj->posX & 0xFF);
+		}
+	} 
+	// move into pole hole whilst travelling upwards
+	else if (obj->bottomTI == 0x11 && obj->clipRects.tileX1 != obj->clipRects.tileX2) 
+	{
+		obj->posX &= 0xFF00;
+	}
+
+	// if hit any other type of object, die
+	if (obj->topTI != 0x11 && obj->bottomTI != 0x11) 
+	{
+		if (obj->topTI || obj->bottomTI || obj->rightTI || obj->leftTI) 
+		{
+			CK_ShotHit(obj);
+		}
+	} 
+	else 
+	// correct for pole hole passage
+	{
+		ck_nextY = obj->currentAction->velY * SD_GetSpriteSync() * obj->yDirection;
+		obj->posY += ck_nextY;
+		obj->clipRects.unitY1 += ck_nextY;
+		obj->clipRects.unitY2 += ck_nextY;
+		obj->clipRects.tileY1 = obj->clipRects.unitY1 >> 8;
+		obj->clipRects.tileY2 = obj->clipRects.unitY2 >> 8;
 	}
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 }
