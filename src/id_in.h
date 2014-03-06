@@ -178,7 +178,7 @@ typedef struct IN_ControlFrame {
 
 extern IN_DemoMode in_demoState;
 
-bool in_Paused;
+extern bool in_Paused;
 
 void IN_PumpEvents();
 void IN_WaitKey();
