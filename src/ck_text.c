@@ -513,12 +513,10 @@ int ShowHelp( void )
 				help_topic--;
 				break;
 			case IN_SC_Escape:
-				// VW_ClearVideo( 4 );
-				VH_Bar(0, 0, 320, 200, 4);
+				VL_ClearScreen(4);
 				return -1;
 			case IN_SC_Enter:
-				// VW_ClearVideo( 4 );
-				VH_Bar(0, 0, 320, 200, 4);
+				VL_ClearScreen(4);
 				return help_topic;
 			case IN_SC_DownArrow:
 				help_topic++;
@@ -530,8 +528,7 @@ int ShowHelp( void )
 		//ymove += cstatus.dy;
 		if ( /*cstatus.button1 || cstatus.button2 || */cinfo.jump || cinfo.pogo )
 		{
-			// VW_ClearVideo( 4 );
-			VH_Bar(0, 0, 320, 200, 4);
+			VL_ClearScreen(4);
 			return help_topic;
 		}
 
@@ -564,7 +561,9 @@ AZ:
 	outportw( 0x3C4, 0x0F02 ); /* Set map mask register */
 	sub_409();
 	uncache_all_graphics();
-	VW_ClearVideo( 4 );
+#endif
+	VL_ClearScreen(4);
+#if 0
 	sub_472();
 AZ:
 	A7B4 = 0;
@@ -579,8 +578,7 @@ AZ:
 	while ( 1 )
 	{
 		n = ShowHelp();
-		// VW_ClearVideo( 4 );
-		VH_Bar( 0, 0, 320, 200, 4 );
+		VL_ClearScreen(4);
 
 		/* If the user pressed Esc */
 		if ( n == -1 )
@@ -593,8 +591,7 @@ AZ:
 			AZ: A7B2 = local1;
 			 */
 			US_SetPrintFont(oldfont);
-			// VW_ClearVideo( 4 );
-			VH_Bar( 0, 0, 320, 200, 4 );
+			VL_ClearScreen(4);
 			// RF_Reset();
 			StopMusic();
 			return;
@@ -663,8 +660,7 @@ void help_endgame( void )
 	int i;
 
 	/* Set up */
-	// VW_ClearVideo( 4 );
-	VH_Bar(0, 0, 320, 200, 4);
+	VL_ClearScreen(4);
 	// RF_Reset();
 	CA_UpLevel();
 	CA_SetGrPurge();
@@ -742,8 +738,7 @@ void help_endgame( void )
 	MM_FreePtr( &ca_graphChunks[0x1A] );
 	// CA_DownLevel();
 	IN_ClearKeysDown();
-	// VW_ClearVideo( 4 );
-	VH_Bar(0, 0, 320, 200, 4);
+	VL_ClearScreen(4);
 	// RF_Reset();
 	// CA_SetGrPurge();
 }

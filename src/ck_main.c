@@ -152,6 +152,8 @@ void CK_InitGame()
 	RF_Startup();
 
 	VL_ColorBorder(3);
+	VL_ClearScreen(0);
+	VL_Present();
 }
 
 /*

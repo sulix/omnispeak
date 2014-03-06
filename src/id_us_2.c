@@ -1819,7 +1819,7 @@ void USL_BeginCards()
 	// US_SetPrintFunctions(VW_MeasurePropString, VWB_DrawPropString);
 	US_SetPrintColour(15);
 
-	// VW_ClearVideo(3);
+	VL_ClearScreen(3);
 	// RF_Reset();
 
 	us_currentCommand = US_Comm_None;
@@ -1922,8 +1922,8 @@ void USL_EndCards()
 	}
 
 	IN_ClearKeysDown();
-	// SD_WaitSoundDone();
-	// VW_ClearVideo(3); // Draw Cyan)
+	SD_WaitSoundDone();
+	VL_ClearScreen(3); // Draw Cyan
 	// CA_DownLevel();
 	CA_LoadAllSounds();
 }
