@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vl.h"
 #include "id_in.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 /*
@@ -75,6 +76,175 @@ void CK_HandleDemoKeys()
  * Terminator Intro Text
  */
 
+// The Fizzlefade routine
+// Operates by drawing the title graphic into offscreen video memory, then
+// using the hardware to copy the source to the display area, pixel-by-pixel
+
+// The same effect can be achieved in omnispeak by drawing the title screen
+// to an new surface, then copying from the surface to the screen
+void CK_FizzleFade()
+{
+	int i;
+
+	uint8_t bitmasks[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
+	uint16_t columns1[320];
+	uint16_t rows1[200];
+
+	// Construct a multiplication table for multiples of 
+	for (i = 0; i < 320; i++)
+		columns1[i] = i;
+
+
+	// Shuffle the table entries
+	for (i = 0; i < 320; i++)
+	{
+		
+		// NOTE: BCC rand() implementation is capped at 0x7FFF 
+		int16_t var2 = (320 * (rand()&0x7FFF))/0x8000;
+
+		uint16_t var4 = columns1[var2];
+
+		columns1[var2] = columns1[i];
+		
+		columns1[i] = var4;
+	}
+
+	for (i = 0; i < 200; i++)
+		rows1[i] = columns1[i];
+
+	VL_SetDefaultPalette();
+
+#if 0
+	// DOS: Calculate the difference between dest and src
+
+	if (word_46CA6)
+	{
+		bufferofs = word_499C7+124;
+		bufferofs_0 = word_499C7;
+	}
+	else
+	{
+		bufferofs_0 = 124 + (bufferofs = word_499C7);
+	}
+#endif
+
+	// VW_SetScreen(0, bufferofs_0);
+
+	// DOS: Draw Title Bitmap offscreen
+	// VW_DrawBitmap(0,0,88); 
+
+	// SDL: Draw it to a new surface
+	uint8_t *titleBuffer = VL_CreateSurface(320, 200);
+
+	// FIXME: This is cached somewhere else
+	CA_CacheGrChunk(88);
+
+	VH_BitmapTableEntry dimensions = VH_GetBitmapTableEntry(88 - ca_gfxInfoE.offBitmaps);
+	
+	VL_UnmaskedToSurface(ca_graphChunks[88], titleBuffer, 0, 0, dimensions.width*8, dimensions.height);
+
+	// int16_t copyDelta = bufferofs_0 - bufferofs;
+
+	// Do the fizzling
+	// 
+	for (i = 0; i < 360; i++)
+	{
+		int16_t var_10 = i-160;
+
+		if (var_10 < 0)
+			var_10 = 0;
+
+		int16_t var_12 = i;
+
+		if (var_12 >= 200)
+			var_12 = 199;
+
+		for (int16_t y = var_10; y <= var_12; y++)
+		{
+			// DOS:
+			// uint16_t var_E = bufferofs + ylookup[y];
+
+			for (int attempt = 0; attempt < 2; attempt++)
+			{
+				uint16_t x = columns1[rows1[y]];
+
+				if (++rows1[y] == 320)
+					rows1[y] = 0;
+					
+				// Here's what happens in DOS Keen, for reference
+#if 0
+				_SI = x % 8;
+
+				// Set bitmask register to draw the correct pixel of the incoming data
+				//outw(0x3CE, si<<8|8);
+
+				// Point source and destinations to respective areas in vmemory
+				_SI = var_E + x / 8;
+				_DI = _SI + copyDelta;
+
+				// NOTE: loop is unrolled in omnispeak
+				for (plane = 0; plane < 4; plane++)
+				{
+					// Enable memory write to one color plane only
+					outw(0x3C4, (1<<plane)<<8|2);
+					
+					// Read from the corresponding color plane
+					outw(0x3CE, (1*plane)<<8|4);
+
+					// Move the pixel
+					asm mov bl, es:[si];
+					asm xchg bl, es:[di];
+				}
+#endif
+
+				// Now the SDL version...
+				VL_SurfaceToScreen(titleBuffer, x, y, x, y, 1, 1);
+				// VL_SurfaceToScreen(titleBuffer, 0, 0, 0, 0, 320, 200);
+
+			}
+			
+		}
+
+		VL_Present();
+
+		// VL_WaitVBL(1);
+		VL_DelayTics(1);
+
+		IN_PumpEvents(); 
+
+		if (IN_CheckAck())
+			if (IN_GetLastScan() == 0x3B)
+				IN_SetLastScan(0x39);
+
+		if (IN_GetLastScan())
+		{
+			// Enable bitmask across all planes
+			// out(0x3CE, 0xFF08);
+
+			// Write enable all memory planes
+			// out(0x3C4, 0xF02);
+
+			// free(titleBuffer);
+
+			return;
+		}
+	}
+
+	// Title screen is now drawn, wait for a bit
+
+	// Enable bitmask across all planes
+	// out(0x3CE, 0xFF08);
+
+	// Write enable all memory planes
+	// out(0x3C4, 0xF02);
+
+	IN_UserInput(420, false);
+
+	// VL_DestroySurface?
+	// free(titleBuffer);
+	
+}
+
 void CK_DrawTerminator(void)
 {
 	// TODO: Implement all terminator functions
@@ -94,13 +264,13 @@ void CK_DrawTerminator(void)
 		sprintf(buf, "Terminator Graphic: %d", (SD_GetTimeCount()-firsttime)/70);
 
 		VH_DrawPropString(buf, 30, 10, 0, 15);
-		VH_DrawPropString("Ends at 5", 30, 20, 0, 15);
+		VH_DrawPropString("Ends at 3", 30, 20, 0, 15);
 
 		IN_PumpEvents();
 		VL_DelayTics(35);
 		VL_Present();
 
-		if ((SD_GetTimeCount()-firsttime)/70 > 5)
+		if ((SD_GetTimeCount()-firsttime)/70 > 3)
 			break;
 		
 
@@ -115,13 +285,12 @@ void CK_DrawTerminator(void)
 	// After the terminator text has run, keys are checked
 	if (!IN_GetLastScan())
 	{
-		// One of terminator2 or terminator1 is likely the fizzlefade
 		; //terminator2();
 	}
 
 	if (!IN_GetLastScan())
 	{
-		// terminator1();
+	  CK_FizzleFade();
 		terminator_complete = true;
 	}
 

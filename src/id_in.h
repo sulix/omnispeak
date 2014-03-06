@@ -185,7 +185,7 @@ void IN_WaitKey();
 const char *IN_GetScanName(IN_ScanCode scan);
 bool IN_GetKeyState(IN_ScanCode scanCode);
 IN_ScanCode IN_GetLastScan(void);
-void ID_SetLastScan(IN_ScanCode scanCode);
+void IN_SetLastScan(IN_ScanCode scanCode);
 char IN_GetLastASCII(void);
 void IN_Startup(void);
 void IN_DemoStartPlaying(uint8_t *data, int len);
@@ -197,5 +197,6 @@ IN_DemoMode IN_DemoGetMode();
 void IN_ClearKeysDown();
 void IN_ReadControls(int player, IN_ControlFrame *controls);
 void IN_WaitButton();
+int IN_CheckAck();
 bool IN_UserInput(int tics, bool arg4);
 #endif

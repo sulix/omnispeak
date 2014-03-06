@@ -1424,7 +1424,7 @@ int CK_PlayLoop()
 			{
 				ck_gameState.levelState = 2;
 				if (IN_GetLastScan() != IN_SC_F1)
-					ID_SetLastScan(IN_SC_Space);
+					IN_SetLastScan(IN_SC_Space);
 			}
 		}
 		else if (IN_DemoGetMode() == IN_Demo_PlayDone)

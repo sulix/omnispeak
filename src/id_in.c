@@ -407,7 +407,7 @@ IN_ScanCode IN_GetLastScan(void)
 	return in_lastKeyScanned;
 }
 
-void ID_SetLastScan(IN_ScanCode scanCode)
+void IN_SetLastScan(IN_ScanCode scanCode)
 {
 	in_lastKeyScanned = scanCode;
 }
