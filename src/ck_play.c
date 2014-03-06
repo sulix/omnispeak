@@ -687,7 +687,7 @@ bool CK_DebugKeys()
 
 			if (level >= 1 && level <= 18)
 			{
-				ck_nextMapNumber = level;
+				ck_currentMapNumber = level;
 				ck_gameState.levelState = 4;
 			}
 		}
@@ -718,8 +718,8 @@ void CK_CheckKeys()
 {
 	// TODO: Also check for a gamepad button when relevant
 
-	// if (screen_faded)
-	// 	return;
+	if (vl_screenFaded)
+		return;
 
 	// Drop down status
 	if (IN_GetKeyState(IN_SC_Enter))
@@ -992,7 +992,7 @@ void CK_CentreCamera(CK_object *obj)
 	else
 		screenX = obj->posX - (152 << 4);
 
-	if (ck_currentMapNumber == 0)
+	if (ca_mapOn == 0)
 	{
 		// World Map
 		if (obj->posY < (80 << 4))
@@ -1361,7 +1361,7 @@ int CK_PlayLoop()
 
 		//TODO: If not world map, check keen -> item-tile collision.
 
-		if (ck_currentMapNumber == 0)
+		if (ca_mapOn == 0)
 			CK_MapMiscFlagsCheck(ck_keenObj);
 		else
 			CK_KeenCheckSpecialTileInfo(ck_keenObj);
@@ -1390,7 +1390,7 @@ int CK_PlayLoop()
 		}
 
 		// Follow the player with the camera.
-		if (ck_currentMapNumber == 0)
+		if (ca_mapOn == 0)
 			CK_MapCamera(ck_keenObj);
 		else
 			CK_NormalCamera(ck_keenObj);

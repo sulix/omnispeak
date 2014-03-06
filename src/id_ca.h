@@ -59,6 +59,7 @@ typedef struct ca_gfxinfo
 } ca_gfxinfo;
 
 extern uint8_t ca_levelnum, ca_levelbit;
+extern int16_t ca_mapOn;
 extern uint8_t ca_graphChunkNeeded[CA_MAX_GRAPH_CHUNKS];
 extern ca_gfxinfo ca_gfxInfoE;
 

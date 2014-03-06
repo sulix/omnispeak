@@ -73,7 +73,8 @@ uint32_t CAL_ReadULong(void *offset)
 //Begin locals
 SDMode oldsoundmode;
 
-uint8_t ca_levelnum = 0, ca_levelbit = 1;
+uint8_t ca_levelnum = 0, ca_levelbit = 0;
+int16_t ca_mapOn = 0;
 uint8_t ca_graphChunkNeeded[CA_MAX_GRAPH_CHUNKS] = {0};
 
 ca_gfxinfo ca_gfxInfoE;
@@ -695,6 +696,7 @@ void CA_CacheMap(int mapIndex)
 			MM_FreePtr((void**)(&CA_mapPlanes[plane]));
 		}
 	}
+	ca_mapOn = mapIndex;
 
 	//Have we loaded this map's header?
 	if (!CA_MapHeaders[mapIndex])
@@ -778,6 +780,11 @@ void CA_Startup(void)
 
 	// Load the audio file
 	CAL_SetupAudioFile();
+
+	ca_mapOn = -1;
+	ca_levelbit = 1;
+	ca_levelnum = 0;
+	// TODO: Cache box handlers and more?
 }
 
 void CA_Shutdown(void)
@@ -890,29 +897,30 @@ void CA_LoadAllSounds(void)
 }
 
 //TODO: Make this less of an ugly hack.
-extern int ck_currentMapNumber;
+//TODO (Mar 6 2014): ok, no need anymore? (ca_mapOn is used here now)
+//extern int ck_currentMapNumber;
 
 uint16_t *CA_TilePtrAtPos(int x, int y, int plane)
 {
-	return &CA_mapPlanes[plane][y*CA_MapHeaders[ck_currentMapNumber]->width+x];
+	return &CA_mapPlanes[plane][y*CA_MapHeaders[ca_mapOn]->width+x];
 }
 
 uint16_t CA_TileAtPos(int x, int y, int plane)
 {
-	return CA_mapPlanes[plane][y*CA_MapHeaders[ck_currentMapNumber]->width+x];
+	return CA_mapPlanes[plane][y*CA_MapHeaders[ca_mapOn]->width+x];
 }
 
 void CA_SetTileAtPos(int x, int y, int plane, int value)
 {
-	CA_mapPlanes[plane][y*CA_MapHeaders[ck_currentMapNumber]->width+x] = value;
+	CA_mapPlanes[plane][y*CA_MapHeaders[ca_mapOn]->width+x] = value;
 }
 
 uint16_t CA_GetMapWidth() 
 {
-	return CA_MapHeaders[ck_currentMapNumber]->width;
+	return CA_MapHeaders[ca_mapOn]->width;
 }
 
 uint16_t CA_GetMapHeight() 
 {
-	return CA_MapHeaders[ck_currentMapNumber]->height;
+	return CA_MapHeaders[ca_mapOn]->height;
 }

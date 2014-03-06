@@ -472,7 +472,7 @@ void CK5_SpawnLevelEnd(void)
 
 void CK5_LevelEnd(CK_object *obj)
 {
-	ck_gameState.levelState = ck_currentMapNumber == 12 ? 15 : 14;
+	ck_gameState.levelState = (ca_mapOn == 12) ? 15 : 14;
 }
 
 void CK5_SetupFunctions()

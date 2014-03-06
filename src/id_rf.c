@@ -474,14 +474,14 @@ void RF_Startup()
 }
 
 // TODO: More to change? Also, originally mapNum is a global variable.
-void RF_NewMap(int mapNum)
+void RF_NewMap(void)
 {
-	rf_mapWidthTiles = CA_MapHeaders[mapNum]->width;
-	rf_mapHeightTiles = CA_MapHeaders[mapNum]->height;
+	rf_mapWidthTiles = CA_MapHeaders[ca_mapOn]->width;
+	rf_mapHeightTiles = CA_MapHeaders[ca_mapOn]->height;
 	rf_scrollXMinUnit = 0x0200;		//Two-tile wide border around map
 	rf_scrollYMinUnit = 0x0200;
-	rf_scrollXMaxUnit = ((CA_MapHeaders[mapNum]->width - RF_SCREEN_WIDTH_TILES - 2) << 8);
-	rf_scrollYMaxUnit = ((CA_MapHeaders[mapNum]->height - RF_SCREEN_HEIGHT_TILES - 2) << 8);
+	rf_scrollXMaxUnit = ((CA_MapHeaders[ca_mapOn]->width - RF_SCREEN_WIDTH_TILES - 2) << 8);
+	rf_scrollYMaxUnit = ((CA_MapHeaders[ca_mapOn]->height - RF_SCREEN_HEIGHT_TILES - 2) << 8);
 
 	// Reset the scroll-blocks
 	rf_numVertScrollBlocks = rf_numHorzScrollBlocks = 0;
@@ -494,9 +494,9 @@ void RF_NewMap(int mapNum)
 	
 	// Set-up a two-tile wide border
 	RF_SetScrollBlock(0,1,true);
-	RF_SetScrollBlock(0,CA_MapHeaders[mapNum]->height-2,true);
+	RF_SetScrollBlock(0,CA_MapHeaders[ca_mapOn]->height-2,true);
 	RF_SetScrollBlock(1,0,false);
-	RF_SetScrollBlock(CA_MapHeaders[mapNum]->width-2,0,false);
+	RF_SetScrollBlock(CA_MapHeaders[ca_mapOn]->width-2,0,false);
 
 	SD_SetLastTimeCount(SD_GetTimeCount());
 	SD_SetSpriteSync(1);

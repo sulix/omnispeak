@@ -34,8 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_text.h"
 #include "ck5_ep.h"
 
-int ck_nextMapNumber;
-
 /*
  * NewGame: Setup the default starting stats
  */
@@ -381,13 +379,13 @@ void CK_LoadLevel(bool doCache)
 	ck_gameState.numShots = 5;
 #endif
 	CA_CacheMap(ck_currentMapNumber);
-	RF_NewMap(ck_currentMapNumber);
+	RF_NewMap();
 	CA_ClearMarks();
 
 	CK_SetupObjArray();
 	CK5_ScanInfoLayer();
 
-	if (ck_currentMapNumber == 0)
+	if (ca_mapOn == 0)
 	{
 		CK_MapLevelMarkAsDone(); 
 	}
@@ -411,14 +409,14 @@ void CK_LoadLevel(bool doCache)
 		{
 			CA_CacheMarks(demoString);
 		}
-		else if (ck_currentMapNumber == 0 && ck_keenObj->clipRects.tileY1 > 100)
+		else if (ca_mapOn == 0 && ck_keenObj->clipRects.tileY1 > 100)
 		{
 			/* Stepping on to korath*/
 			CA_CacheMarks(korathString);
 		}
 		else
 		{
-			CA_CacheMarks(ck_levelEntryTexts[ck_currentMapNumber]);
+			CA_CacheMarks(ck_levelEntryTexts[ca_mapOn]);
 		}
 	}
 
@@ -545,7 +543,7 @@ void CK_TryAgainMenu()
 	static char exitToArmageddonString[] = "Exit to Armageddon";
 
 	/* Copy and measure the level name */
-	strcpy( buf, ck_levelNames[ck_currentMapNumber] );
+	strcpy( buf, ck_levelNames[ca_mapOn] );
 	CK_MeasureMultiline( buf, &w, &h );
 
 	/* Take away all gems */
@@ -579,7 +577,7 @@ void CK_TryAgainMenu()
 			IN_PumpEvents();
 
 			/* Decide which selection to draw */
-			if ( sel == 1 )
+			if ( sel != 0 )
 				y = y2;
 			else
 				y = y1;
@@ -614,7 +612,7 @@ void CK_TryAgainMenu()
 			/* If they press Esc, they want to go back to the Map */
 			if ( IN_GetLastScan() == IN_SC_Escape )
 			{
-				ck_nextMapNumber = 0;  // should be ck_currentMapNumber = 0;
+				ck_currentMapNumber = 0;
 				IN_ClearKeysDown();
 				return;
 			}
@@ -623,8 +621,8 @@ void CK_TryAgainMenu()
 			if ( ck_inputFrame.jump || ck_inputFrame.pogo || IN_GetLastScan() == IN_SC_Enter || IN_GetLastScan() == IN_SC_Space )
 			{
 				/* If they want to go back to the Map, set the current level to zero */
-				if ( sel == 1 )
-					ck_nextMapNumber = 0; // should be ck_currentMapNumber = 0;
+				if ( sel != 0 )
+					ck_currentMapNumber = 0;
 				return;
 			}
 
@@ -677,13 +675,13 @@ replayLevel:
 		{
 		case 1:
 			CK_TryAgainMenu();
-			ck_currentMapNumber = ck_nextMapNumber;
+			//ck_currentMapNumber = ck_nextMapNumber;
 			break;
 
 		case 2:
 		case 7:
 		case 13:
-			if (ck_currentMapNumber == 0)
+			if (ca_mapOn == 0)
 			{
 				// US_CenterWindow(8, 0x1A);
 				// window_print_y += 0x19;
@@ -692,19 +690,19 @@ replayLevel:
 				// This is an omnispeak hack
 				// because we can't change ck_currentMapNumber from within
 				// CK_ScanForLevelEntry
-				ck_currentMapNumber = ck_nextMapNumber;
+				// UPDATE (Mar 6 2014): Not the case anymore
+				//ck_currentMapNumber = ck_nextMapNumber;
 			}
 			else
 			{
 				//We've won, return to main map.
 				//TODO: Mark level as done (and more)
 				SD_PlaySound(SOUND_LEVELEXIT);
-				ck_gameState.levelsDone[ck_currentMapNumber] = 1;
-				ck_nextMapNumber = 0;
-				ck_currentMapNumber = ck_nextMapNumber;
-				//word_4A16A = ck_currentMapNumber;
+				ck_currentMapNumber = 0;
+				//word_4A16A = ca_mapOn;
+				ck_gameState.levelsDone[ca_mapOn] = 1;
 				// TODO: If Keen launched with /Demo switch
-				// Then function returns here
+				// Then function returns here based on ca_mapOn
 			}
 			break;
 
@@ -722,8 +720,8 @@ replayLevel:
 		case 14:
 			// The level has been ended by fuse destruction
 			SD_PlaySound(SOUND_LEVELEXIT);
-			//word_4A16A = ck_currentMapNumber;
-			ck_gameState.levelsDone[ck_currentMapNumber] = 14;
+			//word_4A16A = ca_mapOn;
+			ck_gameState.levelsDone[ca_mapOn] = 14;
 			CK5_FuseMessage();
 			ck_currentMapNumber = 0;
 			break;
@@ -740,13 +738,15 @@ replayLevel:
 			CK_SubmitHighScore(ck_gameState.keenScore, 0);
 #endif
 			return;
-
+#if 0
 			// Warping level
 			// This code is added for omnispeak so that the warp functionality works
 			// Case 4 normally switches to default
+			// UPDATE (Mar 6 2014): Not needed anymore.
 		case 4:
 			ck_currentMapNumber = ck_nextMapNumber;
 			break;
+#endif
 
 
 		case 3:
