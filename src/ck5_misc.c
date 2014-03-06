@@ -206,7 +206,7 @@ void CK5_RedAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitX2 + ck_nextX;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_gameState.currentLevel]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
 		{
 			obj->xDirection = -1;
 			//TODO: Change DeltaVelocity
@@ -217,7 +217,7 @@ void CK5_RedAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitX1 + ck_nextX;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_gameState.currentLevel]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
 		{
 			obj->xDirection = 1;
 			//TODO: Change DeltaVelocity
@@ -229,7 +229,7 @@ void CK5_RedAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitY2 + ck_nextY;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_gameState.currentLevel]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
+		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile - 2, 2) == 0x1F)
 			{
@@ -249,7 +249,7 @@ void CK5_RedAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitY1 + ck_nextY;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_gameState.currentLevel]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
+		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile + 2, 2) == 0x1F)
 			{
@@ -283,7 +283,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitX2 + ck_nextX;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_gameState.currentLevel]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
 		{
 			obj->xDirection = -1;
 			//TODO: Change DeltaVelocity
@@ -294,7 +294,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitX1 + ck_nextX;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_gameState.currentLevel]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
 		{
 			obj->xDirection = 1;
 			//TODO: Change DeltaVelocity
@@ -306,7 +306,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitY2 + ck_nextY;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_gameState.currentLevel]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
+		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile - 2, 2) == 0x1F)
 			{
@@ -326,7 +326,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitY1 + ck_nextY;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ck_gameState.currentLevel]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
+		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile + 2, 2) == 0x1F)
 			{
@@ -647,8 +647,8 @@ void CK5_ScanInfoLayer()
 {
 
 	//TODO: Work out where to store current map number, etc.
-	int mapW = CA_MapHeaders[ck_gameState.currentLevel]->width;
-	int mapH = CA_MapHeaders[ck_gameState.currentLevel]->height;
+	int mapW = CA_MapHeaders[ca_mapOn]->width;
+	int mapH = CA_MapHeaders[ca_mapOn]->height;
 
 	ck_gameState.fusesRemaining = 0;
 
