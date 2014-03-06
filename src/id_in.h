@@ -66,6 +66,8 @@ typedef uint8_t IN_ScanCode;
   IN_SC_Insert = 0x52,
   IN_SC_Delete = 0x53,
 
+	IN_SC_Pause = 0xe1,
+
   IN_SC_F1 = 0x3b,
   IN_SC_F2 = 0x3c,
   IN_SC_F3 = 0x3d,
@@ -175,6 +177,8 @@ typedef struct IN_ControlFrame {
 } IN_ControlFrame;
 
 extern IN_DemoMode in_demoState;
+
+bool in_Paused;
 
 void IN_PumpEvents();
 void IN_WaitKey();

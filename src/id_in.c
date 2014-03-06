@@ -107,6 +107,7 @@ in_specialNames[] =	// ASCII for 0xe0 prefixed codes
 
 
 
+bool in_Paused;
 bool in_keyStates[256];
 IN_ScanCode in_lastKeyScanned = IN_SC_None;
 char in_lastASCII;
@@ -140,6 +141,9 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 		INL_MapKey(SDLK_END, IN_SC_End);
 		INL_MapKey(SDLK_PAGEUP, IN_SC_PgUp);
 		INL_MapKey(SDLK_PAGEDOWN, IN_SC_PgDown);
+		
+		INL_MapKey(SDLK_PAUSE, IN_SC_Pause);
+
 		INL_MapKey(SDLK_F1, IN_SC_F1);
 		INL_MapKey(SDLK_F2, IN_SC_F2);
 		INL_MapKey(SDLK_F3, IN_SC_F3);
@@ -230,8 +234,8 @@ static void INL_HandleSDLEvent(SDL_Event *event)
 
 		if (sc == 0xe0)		// Special key prefix
 			special = true;
-		else if (sc == 0xe1)	// Handle Pause key
-			; //Paused = true;
+		else if (sc == IN_SC_Pause)	// Handle Pause key
+			in_Paused = true;
 		else
 		{
 			if (sc & 0x80)	// Break code

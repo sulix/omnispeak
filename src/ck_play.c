@@ -728,6 +728,18 @@ void CK_CheckKeys()
 	}
 
 	// TODO: If Paused
+	if (in_Paused)
+	{
+		SD_MusicOff();
+		// VW_SyncPages();
+		US_CenterWindow(8, 3);
+		US_PrintCentered("PAUSED");
+		VL_Present(); // VW_UpdateScreen();
+		IN_WaitButton();
+		// RF_ResetScreen();
+		in_Paused = false;
+		SD_MusicOn();
+	}
 
 	// HELP
 	if (IN_GetLastScan() == IN_SC_F1)
