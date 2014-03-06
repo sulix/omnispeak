@@ -1923,7 +1923,10 @@ void USL_EndCards()
 
 	IN_ClearKeysDown();
 	SD_WaitSoundDone();
-	VL_ClearScreen(3); // Draw Cyan
+	//FIXME: Cyan should be drawn, but this results in a cyan background
+	//for longer than expected (possibly due to legal of EGA features)
+	//VL_ClearScreen(3); // Draw Cyan
+	VL_ClearScreen(0); // For now we draw black
 	// CA_DownLevel();
 	CA_LoadAllSounds();
 }
