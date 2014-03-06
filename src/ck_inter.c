@@ -155,7 +155,7 @@ void CK_DrawTerminator(void)
 		CA_CacheGrChunk(88);
 		VH_DrawBitmap(0, 0, 88);
 		VL_Present();// ORIGINAL: VW_SetScreen(bufferofs, 0);
-		IN_WaitKey(); // FIXME: Should be IN_WaitButton();
+		IN_WaitButton();
 		CA_ClearMarks();
 
 		// TODO: If started with /DEMO PARM

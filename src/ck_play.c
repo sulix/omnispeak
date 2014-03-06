@@ -119,7 +119,7 @@ void CK_CountActiveObjects()
 	US_PrintF("Active Objects : %d", active);
 	US_PrintF("Inactive Object : %d", inactive);
 	VL_Present();
-	IN_WaitKey();
+	IN_WaitButton();
 }
 
 void CK_DebugMemory()
@@ -139,7 +139,7 @@ void CK_DebugMemory()
 	US_PrintF("GFX Mem Used: %dk", VL_MemUsed() / 1024);
 	US_PrintF("GFX Surfaces: %d", VL_NumSurfaces());
 	VL_Present();
-	IN_WaitKey();
+	IN_WaitButton();
 	//MM_ShowMemory();
 }
 
@@ -164,7 +164,7 @@ void CK_ItemCheat()
 	// TODO: PrintY+=2;
 	US_CPrint(cheatOptionString);
 	VL_Present();
-	IN_WaitKey();
+	IN_WaitButton();
 	//RF_Reset();
 	ck_gameState.numShots = 99;
 	ck_gameState.numLives++;
@@ -578,7 +578,7 @@ bool CK_DebugKeys()
 			US_PrintCentered("God Mode ON");
 
 		VL_Present();
-		IN_WaitKey(); // TODO: Wait for button
+		IN_WaitButton(); 
 		ck_godMode = !ck_godMode;
 		return true;
 	}
@@ -596,7 +596,7 @@ bool CK_DebugKeys()
 		ck_gameState.numShots = 99;
 		ck_gameState.securityCard = 1;
 		VL_Present();
-		IN_WaitKey(); // TODO: WaitButton();
+		IN_WaitButton(); 
 		CK_IncreaseScore(3000);
 		return true;
 	}
@@ -613,7 +613,7 @@ bool CK_DebugKeys()
 			US_PrintCentered("\nJump cheat OFF");
 
 		VL_Present();
-		IN_WaitKey();
+		IN_WaitButton();
 		return true;
 	}
 
@@ -637,7 +637,7 @@ bool CK_DebugKeys()
 			ck_keenObj->clipped = CLIP_normal;
 		}
 		VL_Present();
-		IN_WaitKey();
+		IN_WaitButton();
 		return true;
 	}
 
@@ -654,7 +654,7 @@ bool CK_DebugKeys()
 		else
 			US_PrintCentered("Slow motion OFF");
 		VL_Present();
-		IN_WaitKey();
+		IN_WaitButton();
 		return true;
 	}
 

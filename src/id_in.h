@@ -189,5 +189,6 @@ bool IN_DemoIsPlaying();
 IN_DemoMode IN_DemoGetMode();
 void IN_ClearKeysDown();
 void IN_ReadControls(int player, IN_ControlFrame *controls);
+void IN_WaitButton();
 bool IN_UserInput(int tics, bool arg4);
 #endif

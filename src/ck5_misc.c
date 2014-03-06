@@ -1146,14 +1146,14 @@ void CK5_FuseMessage()
 	IN_ClearKeysDown();
 	// TODO: Add Joystick compatability here
 	// IN_WaitForButton();
-	IN_WaitKey();
+	IN_WaitButton();
 
 	// Draw the Keen Thumbs Up Pic
 	VH_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x5B);
 	VL_Present();
 	// VW_WaitVBL(30);
 	IN_ClearKeysDown();
-	IN_WaitKey();
+	IN_WaitButton();
 	CA_DownLevel();
 	// StopMusic();
 }

@@ -347,6 +347,52 @@ void IN_WaitKey()
 	}
 }
 
+//void IN_WaitASCII() {}
+
+void IN_WaitForButtonPress()
+{
+
+	while (1)
+	{
+		IN_PumpEvents();
+
+		if (in_lastKeyScanned)
+		{
+			in_keyStates[in_lastKeyScanned] = 0;
+
+			if (in_lastKeyScanned == in_lastKeyScanned)
+				in_lastKeyScanned = 0;
+
+			in_lastKeyScanned = 0;
+			return;
+		}
+
+	#if 0
+		if (MousePresent)
+		{
+			if (INL_GetMouseButtons())
+				while (INL_GetMouseButtons())
+					;
+
+			return;
+		}
+
+		for (int i = 0; i < 2; i++)
+		{
+			if (JoyPresent[i] || Gamepad)
+			{
+				if (IN_GetJoyButtonsDB(i))
+				{
+					while (IN_GetJoyButtonsDB(i))
+						;
+					return;
+				}
+			}
+		}
+	#endif
+	}
+}
+
 bool IN_GetKeyState(IN_ScanCode scanCode)
 {
 	return in_keyStates[scanCode];
@@ -474,6 +520,38 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	//TODO: Record this inputFrame
 }
 
+void IN_WaitButton()
+{
+	// Zero all of the input
+	IN_PumpEvents();
+
+	in_keyStates[in_lastKeyScanned] = 0;
+
+	if (in_lastKeyScanned == in_lastKeyScanned)
+		in_lastKeyScanned = 0;
+
+	in_lastKeyScanned = 0;
+
+#if 0
+	if (MousePresent)
+	{
+		while (INL_GetMouseButtons())
+			;
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (JoyPresent[i] || Gamepad)
+			while (IN_GetJoyButtonsDB(i))
+				;
+	}
+#endif
+
+	// Now wait for a button press
+	IN_WaitForButtonPress();
+
+}
+
 // TODO: Handle Joy/Mouse
 int IN_CheckAck()
 {
@@ -498,7 +576,7 @@ int IN_CheckAck()
 
 }
 
-bool IN_UserInput(int tics, bool arg4) 
+bool IN_UserInput(int tics, bool waitPress) 
 {
 	int lasttime = SD_GetTimeCount();
 
@@ -508,9 +586,8 @@ bool IN_UserInput(int tics, bool arg4)
 
 		if (IN_CheckAck())
 		{
-			// TODO: Reverse this function
-			if (arg4)
-				;//sub_263F7();
+			if (waitPress)
+				IN_WaitForButtonPress();
 
 			return true;
 
