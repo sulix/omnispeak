@@ -197,12 +197,10 @@ void CK_DemoLoop()
 	// Given we're not coming from TED, run through the demos.
 
 	int demoNumber = 0;
+	ck_gameState.levelState = 0;
 
 	while (true)
 	{
-		// TODO: This should really be called in SetupGameLevel
-		CA_LoadAllSounds();
-
 		switch (demoNumber++)
 		{
 		case 0:		// Terminator scroller and Title Screen

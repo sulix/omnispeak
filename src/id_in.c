@@ -402,17 +402,22 @@ bool IN_GetKeyState(IN_ScanCode scanCode)
 	return in_keyStates[scanCode];
 }
 
-IN_ScanCode IN_GetLastScan()
+IN_ScanCode IN_GetLastScan(void)
 {
 	return in_lastKeyScanned;
 }
 
-char IN_GetLastASCII()
+void ID_SetLastScan(IN_ScanCode scanCode)
+{
+	in_lastKeyScanned = scanCode;
+}
+
+char IN_GetLastASCII(void)
 {
 	return in_lastASCII;
 }
 
-void IN_Startup()
+void IN_Startup(void)
 {
 	for (int i = 0; i < 256; ++i)
 		in_keyStates[i] = 0;

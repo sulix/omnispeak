@@ -53,7 +53,7 @@ void CK_HandleDemoKeys()
 
 	if (IN_GetLastScan() == IN_SC_F1)
 	{
-		// DoHelp();
+		HelpScreens();
 		return;
 	}
 
@@ -296,15 +296,17 @@ void CK_PlayDemo(int demoNumber)
 #endif
 
 	CK_PlayLoop();
-
-	// What should we do after playing the demo?
-	CK_HandleDemoKeys();
+	IN_DemoStopPlaying();
 
 	// We have to get rid of the demo buffer, as if we want to play it
 	// again, we need a fresh copy. ID_IN modifies the buffer.
 	MM_FreePtr(&ca_graphChunks[demoChunk]);
-
+	//VW_SyncPages();
 	CA_ClearMarks();
+
+	// What should we do after playing the demo?
+	CK_HandleDemoKeys();
+
 }
 
 /*

@@ -184,9 +184,10 @@ void IN_PumpEvents();
 void IN_WaitKey();
 const char *IN_GetScanName(IN_ScanCode scan);
 bool IN_GetKeyState(IN_ScanCode scanCode);
-IN_ScanCode IN_GetLastScan();
-char IN_GetLastASCII();
-void IN_Startup();
+IN_ScanCode IN_GetLastScan(void);
+void ID_SetLastScan(IN_ScanCode scanCode);
+char IN_GetLastASCII(void);
+void IN_Startup(void);
 void IN_DemoStartPlaying(uint8_t *data, int len);
 void IN_DemoStopPlaying();
 #if 0

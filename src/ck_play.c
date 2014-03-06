@@ -1423,12 +1423,8 @@ int CK_PlayLoop()
 			if (!vl_screenFaded && (IN_GetLastScan() != IN_SC_None))
 			{
 				ck_gameState.levelState = 2;
-
-				// TODO: Wrong place to do this?
-				IN_DemoStopPlaying();
-				// TODO: Change scancode here
-				//if (IN_GetLastScan() != IN_SC_F1)
-				//	ID_SetLastScan(IN_SC_Space);
+				if (IN_GetLastScan() != IN_SC_F1)
+					ID_SetLastScan(IN_SC_Space);
 			}
 		}
 		else if (IN_DemoGetMode() == IN_Demo_PlayDone)
