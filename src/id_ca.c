@@ -488,7 +488,7 @@ void CAL_ExpandGrChunk(int chunk, void *source)
 
 void CA_CacheGrChunk(int chunk)
 {
-	//TODO: Implement grneeded
+	CA_MarkGrChunk(chunk);
 
 	//Is the chunk already loaded?
 	if (ca_graphChunks[chunk])

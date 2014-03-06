@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "id_mm.h"
 #include "id_us.h"
+#include "ck_cross.h"
 
 #include <stdlib.h>
 
@@ -76,6 +77,9 @@ static void MML_ClearBlock()
 	//Did we find a purgable block?
 	if (!bestBlock)
 		Quit("MML_ClearBlock(): No purgable blocks!");
+
+	if (bestBlock->purgelevel < 3)
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "MM_ClearBlock(): Purging a block with purgelevel %d\n", bestBlock->purgelevel);
 
 	//Free the sucker.
 	MM_FreePtr(bestBlock->userptr);
@@ -137,6 +141,7 @@ void MM_GetPtr(mm_ptr_t *ptr, unsigned long size)
 		blk->ptr = malloc(size);
 		if (!blk->ptr)
 		{
+			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "MM_GetPtr: Failed to alloc block (%d bytes) with system malloc. Trying to free some space.\n", size);
 			if (mm_numpurgeable)
 				MML_ClearBlock();
 			else

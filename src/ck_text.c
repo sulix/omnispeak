@@ -404,19 +404,11 @@ void CacheLayoutGraphics( void )
 	help_num_pages = help_cur_page = 0;
 
 	/* Cache the border graphics */
-	// TODO: GrNeeded
-#if 0
-SEG_AX:
-	0050 |= AZ : 7AEC;
-SEG_AX:
-	0051 |= AZ : 7AEC;
-SEG_AX:
-	0052 |= AZ : 7AEC;
-SEG_AX:
-	0053 |= AZ : 7AEC;
-SEG_AX:
-	0054 |= AZ : 7AEC;
-#endif
+	CA_MarkGrChunk(28);
+	CA_MarkGrChunk(29);
+	CA_MarkGrChunk(30);
+	CA_MarkGrChunk(31);
+	CA_MarkGrChunk(32);
 
 	do
 	{
@@ -674,7 +666,8 @@ void help_endgame( void )
 	// VW_ClearVideo( 4 );
 	VH_Bar(0, 0, 320, 200, 4);
 	// RF_Reset();
-	// CA_UpLevel();
+	CA_UpLevel();
+	CA_SetGrPurge();
 	// CA_SetGrPurge2();
 
 	/* Cache the chunkss we need */
