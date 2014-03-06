@@ -113,7 +113,7 @@ int ck_KeenPoleOffs[3] = {-8, 0, 8};
 void CK_IncreaseScore(int score)
 {
 	ck_gameState.keenScore += score;
-	if (ck_demoEnabled) return;
+	if (IN_DemoGetMode() != IN_Demo_Off) return;
 	if (ck_gameState.keenScore > ck_gameState.nextKeenAt)
 	{
 		SD_PlaySound(SOUND_GOTEXTRALIFE);

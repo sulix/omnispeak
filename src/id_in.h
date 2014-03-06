@@ -189,7 +189,9 @@ char IN_GetLastASCII();
 void IN_Startup();
 void IN_DemoStartPlaying(uint8_t *data, int len);
 void IN_DemoStopPlaying();
+#if 0
 bool IN_DemoIsPlaying();
+#endif
 IN_DemoMode IN_DemoGetMode();
 void IN_ClearKeysDown();
 void IN_ReadControls(int player, IN_ControlFrame *controls);

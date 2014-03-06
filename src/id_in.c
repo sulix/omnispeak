@@ -439,10 +439,12 @@ void IN_DemoStopPlaying()
 	in_demoState = IN_Demo_Off;
 }
 
+#if 0
 bool IN_DemoIsPlaying()
 {
 	return in_demoState == IN_Demo_Playback;
 }
+#endif
 
 IN_DemoMode IN_DemoGetMode()
 {

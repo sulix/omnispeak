@@ -30,8 +30,6 @@ extern int ck_activeY0Tile;
 extern int ck_activeX1Tile;
 extern int ck_activeY1Tile;
 
-extern bool ck_demoEnabled;
-
 extern bool ck_scrollDisabled;
 
 extern bool ck_godMode;

@@ -252,7 +252,6 @@ void CK_PlayDemoFile(const char *demoName)
 
 	ck_gameState.currentLevel =demoMap;
 	ck_gameState.difficulty = D_Normal;
-	ck_demoEnabled = true;
 
 	CK_LoadLevel(true);
 
@@ -285,7 +284,6 @@ void CK_PlayDemo(int demoNumber)
 
 	ck_gameState.currentLevel =demoMap;
 
-	ck_demoEnabled = true;
 	IN_DemoStartPlaying(demoBuf, demoLen);
 
 	CK_LoadLevel(true);

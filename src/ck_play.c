@@ -60,8 +60,6 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj);
 void StartMusic(uint16_t level);
 void StopMusic(void);
 
-bool ck_demoEnabled;
-
 CK_GameState ck_gameState;
 
 static bool ck_slowMotionEnabled = false;
@@ -845,10 +843,10 @@ void CK_HandleInput()
 	if (ck_inputFrame.yDirection != -1)
 		ck_keenState.keenSliding = false;
 
-	if (!ck_gamePadEnabled || ck_demoEnabled) 
+	if (!ck_gamePadEnabled || (IN_DemoGetMode() != IN_Demo_Off))
 	{
 		// Two button firing mode is used for demo playback
-		if (!ck_twoButtonFiring && !ck_demoEnabled)
+		if (!ck_twoButtonFiring && (IN_DemoGetMode() == IN_Demo_Off))
 		{
 			ck_keenState.jumpIsPressed = ck_inputFrame.jump;
 			ck_keenState.pogoIsPressed = ck_inputFrame.pogo;
@@ -1269,7 +1267,7 @@ int CK_PlayLoop()
 	CK_CentreCamera(ck_keenObj);
 
 	// Note that this appears in CK_LoadLevel as well
-	if (ck_demoEnabled)
+	if (IN_DemoGetMode() != IN_Demo_Off)
 		US_InitRndT(false);
 	else
 		US_InitRndT(true);
@@ -1426,8 +1424,7 @@ int CK_PlayLoop()
 			{
 				ck_gameState.levelState = 2;
 
-				// TODO: Wrong place to do these?
-				ck_demoEnabled = false;
+				// TODO: Wrong place to do this?
 				IN_DemoStopPlaying();
 				// TODO: Change scancode here
 				//if (IN_GetLastScan() != IN_SC_F1)
