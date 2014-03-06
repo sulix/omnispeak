@@ -180,8 +180,8 @@ void CK5_GoPlatSpawn(int tileX, int tileY, int direction, bool purple)
 	}
 
 
-	int mapW = CA_MapHeaders[ck_currentMapNumber]->width;
-	//int mapH = CA_MapHeaders[ck_currentMapNumber]->height;
+	int mapW = CA_MapHeaders[ck_gameState.currentLevel]->width;
+	//int mapH = CA_MapHeaders[ck_gameState.currentLevel]->height;
 	CA_mapPlanes[2][tileY * mapW + tileX] = direction + 0x5B;
 
 	obj->user1 = direction;

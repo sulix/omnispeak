@@ -378,7 +378,7 @@ void CK_LoadLevel(bool doCache)
 	ck_gameState.numLives = 3;
 	ck_gameState.numShots = 5;
 #endif
-	CA_CacheMap(ck_currentMapNumber);
+	CA_CacheMap(ck_gameState.currentLevel);
 	RF_NewMap();
 	CA_ClearMarks();
 
@@ -612,7 +612,7 @@ void CK_TryAgainMenu()
 			/* If they press Esc, they want to go back to the Map */
 			if ( IN_GetLastScan() == IN_SC_Escape )
 			{
-				ck_currentMapNumber = 0;
+				ck_gameState.currentLevel = 0;
 				IN_ClearKeysDown();
 				return;
 			}
@@ -622,7 +622,7 @@ void CK_TryAgainMenu()
 			{
 				/* If they want to go back to the Map, set the current level to zero */
 				if ( sel != 0 )
-					ck_currentMapNumber = 0;
+					ck_gameState.currentLevel = 0;
 				return;
 			}
 
@@ -675,7 +675,7 @@ replayLevel:
 		{
 		case 1:
 			CK_TryAgainMenu();
-			//ck_currentMapNumber = ck_nextMapNumber;
+			//ck_gameState.currentLevel = ck_nextMapNumber;
 			break;
 
 		case 2:
@@ -688,17 +688,17 @@ replayLevel:
 				// window_print("One Moment");
 
 				// This is an omnispeak hack
-				// because we can't change ck_currentMapNumber from within
-				// CK_ScanForLevelEntry
+				// because we can't change ck_gameState.currentLevel
+				// from within CK_ScanForLevelEntry
 				// UPDATE (Mar 6 2014): Not the case anymore
-				//ck_currentMapNumber = ck_nextMapNumber;
+				//ck_gameState.currentLevel = ck_nextMapNumber;
 			}
 			else
 			{
 				//We've won, return to main map.
 				//TODO: Mark level as done (and more)
 				SD_PlaySound(SOUND_LEVELEXIT);
-				ck_currentMapNumber = 0;
+				ck_gameState.currentLevel = 0;
 				//word_4A16A = ca_mapOn;
 				ck_gameState.levelsDone[ca_mapOn] = 1;
 				// TODO: If Keen launched with /Demo switch
@@ -723,7 +723,7 @@ replayLevel:
 			//word_4A16A = ca_mapOn;
 			ck_gameState.levelsDone[ca_mapOn] = 14;
 			CK5_FuseMessage();
-			ck_currentMapNumber = 0;
+			ck_gameState.currentLevel = 0;
 			break;
 
 		case 15:
@@ -744,7 +744,7 @@ replayLevel:
 			// Case 4 normally switches to default
 			// UPDATE (Mar 6 2014): Not needed anymore.
 		case 4:
-			ck_currentMapNumber = ck_nextMapNumber;
+			ck_gameState.currentLevel = ck_nextMapNumber;
 			break;
 #endif
 

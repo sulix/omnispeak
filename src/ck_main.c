@@ -180,7 +180,7 @@ void CK_DemoLoop()
 
 		CK_NewGame();
 		CA_LoadAllSounds();
-		ck_currentMapNumber = us_tedLevelNumber;
+		ck_gameState.currentLevel = us_tedLevelNumber;
 		ck_startingDifficulty = D_Normal;
 
 		// TODO: Support selecting difficulty via an extra command line

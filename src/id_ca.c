@@ -899,6 +899,7 @@ void CA_LoadAllSounds(void)
 //TODO: Make this less of an ugly hack.
 //TODO (Mar 6 2014): ok, no need anymore? (ca_mapOn is used here now)
 //extern int ck_currentMapNumber;
+//UPDATE (Mar 6 2014): The var above is now ck_gameState.currentLevel.
 
 uint16_t *CA_TilePtrAtPos(int x, int y, int plane)
 {

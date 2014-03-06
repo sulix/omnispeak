@@ -110,7 +110,7 @@ typedef struct CK_GameState
 	int16_t word_4729C;
 	int16_t fusesRemaining;
 	int16_t keyGems[4];
-	int16_t currentLevel; // this is currently stored as ck_currentMapNumber
+	int16_t currentLevel;
 	int16_t numLives;			// Number of lives keen has.
 	CK_Difficulty difficulty;		// Difficulty level of current game
 	//struct CK_object *platform;  // This was a 16-bit pointer in DOS Keen5.exe
@@ -228,7 +228,6 @@ typedef struct CK_keenState
 
 extern CK_keenState ck_keenState;
 extern IN_ControlFrame ck_inputFrame;
-extern int ck_currentMapNumber;
 void CK_SpawnKeen(int tileX, int tileY, int direction);
 void CK_ShotHit(CK_object *obj);
 

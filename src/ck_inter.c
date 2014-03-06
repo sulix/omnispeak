@@ -250,7 +250,7 @@ void CK_PlayDemoFile(const char *demoName)
 	uint16_t demoLen = *((uint16_t *) demoBuf);
 	demoBuf += 2;
 
-	ck_currentMapNumber =demoMap;
+	ck_gameState.currentLevel =demoMap;
 	ck_gameState.difficulty = D_Normal;
 	ck_demoEnabled = true;
 
@@ -283,7 +283,7 @@ void CK_PlayDemo(int demoNumber)
 	uint16_t demoLen = *((uint16_t *) demoBuf);
 	demoBuf += 2;
 
-	ck_currentMapNumber =demoMap;
+	ck_gameState.currentLevel =demoMap;
 
 	ck_demoEnabled = true;
 	IN_DemoStartPlaying(demoBuf, demoLen);
@@ -411,7 +411,7 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 	if (var6 != -1)
 	{
 		ck_inHighScores = true;
-		ck_currentMapNumber = 15;
+		ck_gameState.currentLevel = 15;
 		CK_LoadLevel(true);
 		CK_OverlayHighScores();
 		US_SetPrintColour(12);

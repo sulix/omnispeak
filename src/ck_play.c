@@ -687,7 +687,7 @@ bool CK_DebugKeys()
 
 			if (level >= 1 && level <= 18)
 			{
-				ck_currentMapNumber = level;
+				ck_gameState.currentLevel = level;
 				ck_gameState.levelState = 4;
 			}
 		}
@@ -746,7 +746,7 @@ void CK_CheckKeys()
 	{
 		StopMusic();
 		HelpScreens();
-		StartMusic(ck_currentMapNumber);
+		StartMusic(ck_gameState.currentLevel);
 
 		// Force scorebox redraw if it's enabled
 		if (ck_scoreBoxEnabled)
@@ -768,7 +768,7 @@ void CK_CheckKeys()
 			US_RunCards();
 
 			// RF_Reset();
-			StartMusic(ck_currentMapNumber);
+			StartMusic(ck_gameState.currentLevel);
 
 			// Wipe the scorebox if it got disabled
 			if (!ck_scoreBoxEnabled && ck_scoreBoxObj->sde)
@@ -1250,12 +1250,11 @@ void CK_NormalCamera(CK_object *obj)
 
 
 
-int ck_currentMapNumber;
 // Play a level.
 
 int CK_PlayLoop()
 {
-	StartMusic(ck_currentMapNumber);
+	StartMusic(ck_gameState.currentLevel);
 	ck_pogoTimer = 0;
 	memset(&ck_keenState, 0, sizeof(ck_keenState));
 	ck_invincibilityTimer = 0;

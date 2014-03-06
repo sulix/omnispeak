@@ -330,7 +330,7 @@ void CK5_ScanForLevelEntry(CK_object * obj)
 				// would have been changed here.
 				ck_gameState.mapPosX = obj->posX;
 				ck_gameState.mapPosY = obj->posY;
-				ck_currentMapNumber = infotile - 0xC000;
+				ck_gameState.currentLevel = infotile - 0xC000;
 				ck_gameState.levelState = 2;
 				SD_PlaySound(SOUND_UNKNOWN12);
 				return;
