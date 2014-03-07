@@ -134,7 +134,7 @@ void CK_FizzleFade()
 	// VW_DrawBitmap(0,0,88); 
 
 	// SDL: Draw it to a new surface
-	uint8_t *titleBuffer = VL_CreateSurface(320, 200);
+	uint8_t *titleBuffer = (uint8_t *)VL_CreateSurface(320, 200);
 
 	// FIXME: This is cached somewhere else
 	CA_CacheGrChunk(88);
