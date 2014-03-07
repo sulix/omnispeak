@@ -150,6 +150,8 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 	vl_sdl2gl_screenHorizScaleFactor = VL_VGA_GFX_WIDTH_SCALEFACTOR;
 	vl_sdl2gl_screenVertScaleFactor = VL_VGA_GFX_HEIGHT_SCALEFACTOR;
 
+	SDL_SetWindowMinimumSize(vl_sdl2gl_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
+
 	if (!VL_SDL2GL_LoadGLProcs())
 	{
 		Quit("Your system does not have one or more required OpenGL extensions.");
@@ -346,8 +348,11 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	borderedWinRect.w = realWinW - borderedWinRect.x - realWinW * vl_sdl2gl_scaledBorders.right / (vl_sdl2gl_screenHorizScaleFactor*vl_sdl2gl_screenWidth + vl_sdl2gl_scaledBorders.left + vl_sdl2gl_scaledBorders.right);
 	borderedWinRect.h = realWinH - borderedWinRect.y - realWinH * vl_sdl2gl_scaledBorders.bottom / (vl_sdl2gl_screenVertScaleFactor*vl_sdl2gl_screenHeight + vl_sdl2gl_scaledBorders.top + vl_sdl2gl_scaledBorders.bottom);
 
-	int integerScaleX = (borderedWinRect.w/vl_sdl2gl_screenWidth)*vl_sdl2gl_screenWidth;
-	int integerScaleY = (borderedWinRect.h/vl_sdl2gl_screenHeight)*vl_sdl2gl_screenHeight;
+#ifndef max
+#define max(a,b) (((a)>(b))?(a):(b))
+#endif
+	int integerScaleX = max((borderedWinRect.w/vl_sdl2gl_screenWidth)*vl_sdl2gl_screenWidth,vl_sdl2gl_screenWidth);
+	int integerScaleY = max((borderedWinRect.h/vl_sdl2gl_screenHeight)*vl_sdl2gl_screenHeight,vl_sdl2gl_screenHeight);
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
