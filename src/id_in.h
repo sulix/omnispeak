@@ -29,6 +29,14 @@ typedef uint8_t IN_ScanCode;
 //
 // These scancodes match keen (and wolf3d)'s numbering, such that
 // patches and config files may be compatible.
+//
+// Also based on an earlier investigation of DOS scancodes (apparently some
+// keys were originally found on the keypad only, although the slash and enter
+// keys are exceptions).
+//
+// TODO: Maybe rearrange these based on the history of keyboards?
+// Say, if something was found on the keypad only, use IN_KP.
+// More generally, maybe write IN_SC_KP (or similar) rather than IN_KP.
 
             /*typedef*/ enum /*IN_ScanCode*/ {
   IN_SC_None = 0x00,
@@ -48,17 +56,31 @@ typedef uint8_t IN_ScanCode;
   IN_SC_Equals = 0x0d,
   IN_SC_Backspace = 0x0e,
   IN_SC_Tab = 0x0f,
+  IN_SC_LeftBracket = 0x1a,
+  IN_SC_RightBracket = 0x1b,
   IN_SC_Enter = 0x1c,
   IN_SC_Control = 0x1d,
+  IN_SC_SemiColon = 0x27,
+  IN_SC_SingleQuote = 0x28,
+  IN_SC_Grave = 0x29,
   IN_SC_LeftShift = 0x2a,
+  IN_SC_BackSlash = 0x2b,
+  IN_SC_Comma = 0x33,
+  IN_SC_Period = 0x34,
+  IN_SC_Slash = 0x35,
   IN_SC_RightShift = 0x36,
+
   IN_SC_Alt = 0x38,
   IN_SC_Space = 0x39,
   IN_SC_CapsLock = 0x3a,
+  IN_SC_NumLock = 0x45,
+  IN_SC_ScrollLock = 0x46,
+
   IN_SC_UpArrow = 0x48,
   IN_SC_LeftArrow = 0x4b,
   IN_SC_RightArrow = 0x4d,
   IN_SC_DownArrow = 0x50,
+
   IN_SC_Home = 0x47,
   IN_SC_End = 0x4f,
   IN_SC_PgUp = 0x49,
@@ -72,16 +94,17 @@ typedef uint8_t IN_ScanCode;
   IN_SC_F2 = 0x3c,
   IN_SC_F3 = 0x3d,
   IN_SC_F4 = 0x3e,
-  IN_SC_F5 = 0x40,
-  IN_SC_F6 = 0x41,
-  IN_SC_F7 = 0x42,
-  IN_SC_F8 = 0x43,
-  IN_SC_F9 = 0x44,
-  IN_SC_F10 = 0x45,
-  IN_SC_F11 = 0x57,
-  IN_SC_F12 = 0x59,
+  IN_SC_F5 = 0x3f,
+  IN_SC_F6 = 0x40,
+  IN_SC_F7 = 0x41,
+  IN_SC_F8 = 0x42,
+  IN_SC_F9 = 0x43,
+  IN_SC_F10 = 0x44,
 
-  IN_SC_A = 0x1a,
+  IN_SC_F11 = 0x57,
+  IN_SC_F12 = 0x58,
+
+  IN_SC_A = 0x1e,
   IN_SC_B = 0x30,
   IN_SC_C = 0x2e,
   IN_SC_D = 0x20,
@@ -106,7 +129,7 @@ typedef uint8_t IN_ScanCode;
   IN_SC_W = 0x11,
   IN_SC_X = 0x2d,
   IN_SC_Y = 0x15,
-  IN_SC_Z = 0x2c
+  IN_SC_Z = 0x2c,
 
   //IN_KP_Enter = 0x0d,
   //IN_KP_Escape = 0x1b,
@@ -117,13 +140,17 @@ typedef uint8_t IN_ScanCode;
 enum {
 
   IN_KP_None = 0,
-  IN_KP_Return = 0x0d,
-  IN_KP_Enter = 0x0d,
+  //IN_KP_Return = 0x1c,
+  //IN_KP_Enter = 0x1c,
   IN_KP_Escape = 0x1b,
   IN_KP_Space = 0x20,
   IN_KP_BackSpace = 0x08,
   IN_KP_Tab = 0x09,
-  IN_KP_Delete = 0x7f,
+  IN_KP_Multiply = 0x37,
+  IN_KP_Minus = 0x4a,
+  IN_KP_Center = 0x4c,
+  IN_KP_Plus = 0x4e,
+  //IN_KP_Delete = 0x53,
 
 };
 

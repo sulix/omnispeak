@@ -129,6 +129,13 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 		INL_MapKey(SDLK_LCTRL, IN_SC_Control);
 		INL_MapKey(SDLK_RCTRL, IN_SC_Control);
 		INL_MapKey(SDLK_CAPSLOCK, IN_SC_CapsLock);
+#if SDL_VERSION_ATLEAST(1,3,0)
+		INL_MapKey(SDLK_NUMLOCKCLEAR, IN_SC_NumLock);
+		INL_MapKey(SDLK_SCROLLLOCK, IN_SC_ScrollLock);
+#else
+		INL_MapKey(SDLK_NUMLOCK, IN_SC_NumLock);
+		INL_MapKey(SDLK_SCROLLOCK, IN_SC_ScrollLock);
+#endif
 		INL_MapKey(SDLK_LSHIFT, IN_SC_LeftShift);
 		INL_MapKey(SDLK_RSHIFT, IN_SC_RightShift);
 		INL_MapKey(SDLK_UP, IN_SC_UpArrow);
@@ -151,11 +158,15 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 		INL_MapKey(SDLK_F5, IN_SC_F5);
 		INL_MapKey(SDLK_F6, IN_SC_F6);
 		INL_MapKey(SDLK_F7, IN_SC_F7);
-
+		INL_MapKey(SDLK_F8, IN_SC_F8);
 		INL_MapKey(SDLK_F9, IN_SC_F9);
 		INL_MapKey(SDLK_F10, IN_SC_F10);
+
 		INL_MapKey(SDLK_F11, IN_SC_F11);
 		INL_MapKey(SDLK_F12, IN_SC_F12);
+
+		INL_MapKey(SDLK_BACKQUOTE, IN_SC_Grave);
+
 		INL_MapKey(SDLK_1, IN_SC_One);
 		INL_MapKey(SDLK_2, IN_SC_Two);
 		INL_MapKey(SDLK_3, IN_SC_Three);
@@ -166,6 +177,21 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 		INL_MapKey(SDLK_8, IN_SC_Eight);
 		INL_MapKey(SDLK_9, IN_SC_Nine);
 		INL_MapKey(SDLK_0, IN_SC_Zero);
+
+		INL_MapKey(SDLK_MINUS, IN_SC_Minus);
+		INL_MapKey(SDLK_EQUALS, IN_SC_Equals);
+
+		INL_MapKey(SDLK_LEFTBRACKET, IN_SC_LeftBracket);
+		INL_MapKey(SDLK_RIGHTBRACKET, IN_SC_RightBracket);
+
+		INL_MapKey(SDLK_SEMICOLON, IN_SC_SemiColon);
+		INL_MapKey(SDLK_QUOTE, IN_SC_SingleQuote);
+		INL_MapKey(SDLK_BACKSLASH, IN_SC_BackSlash);
+
+		INL_MapKey(SDLK_COMMA, IN_SC_Comma);
+		INL_MapKey(SDLK_PERIOD, IN_SC_Period);
+		INL_MapKey(SDLK_SLASH, IN_SC_Slash);
+
 		INL_MapKey(SDLK_a, IN_SC_A);
 		INL_MapKey(SDLK_b, IN_SC_B);
 		INL_MapKey(SDLK_c, IN_SC_C);
@@ -192,6 +218,38 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 		INL_MapKey(SDLK_x, IN_SC_X);
 		INL_MapKey(SDLK_y, IN_SC_Y);
 		INL_MapKey(SDLK_z, IN_SC_Z);
+
+		// Keypad keys (used as num-lock is toggled *off*, more or less)
+
+		INL_MapKey(SDLK_KP_DIVIDE, IN_SC_Slash);
+		INL_MapKey(SDLK_KP_MULTIPLY, IN_KP_Multiply);
+		INL_MapKey(SDLK_KP_MINUS, IN_KP_Minus);
+		INL_MapKey(SDLK_KP_PLUS, IN_KP_Plus);
+		INL_MapKey(SDLK_KP_ENTER, IN_SC_Enter);
+		INL_MapKey(SDLK_KP_PERIOD, IN_SC_Delete);
+#if SDL_VERSION_ATLEAST(1,3,0)
+		INL_MapKey(SDLK_KP_1, IN_SC_End);
+		INL_MapKey(SDLK_KP_2, IN_SC_DownArrow);
+		INL_MapKey(SDLK_KP_3, IN_SC_PgDown);
+		INL_MapKey(SDLK_KP_4, IN_SC_LeftArrow);
+		INL_MapKey(SDLK_KP_5, IN_KP_Center);
+		INL_MapKey(SDLK_KP_6, IN_SC_RightArrow);
+		INL_MapKey(SDLK_KP_7, IN_SC_Home);
+		INL_MapKey(SDLK_KP_8, IN_SC_UpArrow);
+		INL_MapKey(SDLK_KP_9, IN_SC_PgUp);
+		INL_MapKey(SDLK_KP_0, IN_SC_Insert);
+#else
+		INL_MapKey(SDLK_KP1, IN_SC_End);
+		INL_MapKey(SDLK_KP2, IN_SC_DownArrow);
+		INL_MapKey(SDLK_KP3, IN_SC_PgDown);
+		INL_MapKey(SDLK_KP4, IN_SC_LeftArrow);
+		INL_MapKey(SDLK_KP5, IN_KP_Center);
+		INL_MapKey(SDLK_KP6, IN_SC_RightArrow);
+		INL_MapKey(SDLK_KP7, IN_SC_Home);
+		INL_MapKey(SDLK_KP8, IN_SC_UpArrow);
+		INL_MapKey(SDLK_KP9, IN_SC_PgUp);
+		INL_MapKey(SDLK_KP0, IN_SC_Insert);
+#endif
 	default: return IN_SC_Invalid;
 	}
 }
