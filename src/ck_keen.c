@@ -1322,25 +1322,24 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 
 void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 {
-	//TODO: collision with types 14,23?
-	if (other->type == 6)
+	if (other->type == CT_Platform)
 	{
 		obj->clipped = CLIP_normal;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
 		ck_keenState.jumpTimer = 0;
-		obj->deltaPosX = 0;
-		obj->deltaPosY = 0;
+		obj->velX = 0;
+		obj->velY = 0;
 		CK_PhysPushY(obj,other);
 		return;
 	}
-	else if (other->type == 0x0E || other->type == 0x17)
+	else if (other->type == CT_Ampton || other->type == CT_Korath)
 	{
 		obj->zLayer = 1;
 		obj->clipped = CLIP_normal;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
 		ck_keenState.jumpTimer = 0;
-		obj->deltaPosX = 0;
-		obj->deltaPosY = 0;
+		obj->velX = 0;
+		obj->velY = 0;
 		return;
 	}
 
