@@ -45,6 +45,7 @@ void CK_NewGame()
 	ck_gameState.nextKeenAt = 20000;
 	ck_gameState.numLives = 3;
 	ck_gameState.numShots = 5;
+	ck_gameState.currentLevel = 0;
 }
 
 void CK_GameOver()

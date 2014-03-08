@@ -132,6 +132,18 @@ void VL_SetDefaultPalette()
 #endif
 }
 
+void VL_SetPaletteByID(int id)
+{
+	vl_palette[id][16] = vl_border_color;
+	VL_SetPaletteAndBorderColor(vl_palette[id]);
+}
+
+void VL_SetPalette(uint8_t *palette)
+{
+	palette[16] = vl_border_color;
+	VL_SetPaletteAndBorderColor(palette);
+}
+
 void VL_FadeToBlack(void)
 {
 	for (int i = 3; i >= 0; i--)
