@@ -1246,6 +1246,8 @@ void CK_KeenBreakFuse(int x, int y)
 	}
 
 	uint16_t brokenFuseTiles[] = {0, 0};
+	brokenFuseTiles[0] = CA_TileAtPos(0,0,1);
+	brokenFuseTiles[1] = CA_TileAtPos(0,1,1);
 
 	RF_ReplaceTiles(brokenFuseTiles, 1, x, y, 1, 2);
 }
