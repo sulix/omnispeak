@@ -450,7 +450,7 @@ void CK5_SpawnFuseExplosion(int tileX, int tileY)
 	new_object->zLayer = 3;
 	new_object->clipped = CLIP_not;
 	new_object->type = 24;
-	new_object->posX = tileX << 8;
+	new_object->posX = (tileX - 1) << 8;
 	new_object->posY = tileY << 8;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_FuseExplosion0"));
 	SD_PlaySound(SOUND_UNKNOWN52);
