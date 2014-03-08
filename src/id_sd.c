@@ -463,7 +463,7 @@ void SDL_PCService(void)
 
 		if (!(--pcLengthLeft))
 		{
-			SDL_PCStopSound();
+			SDL_PCStopSound_Low();
 			SDL_SoundFinished();
 		}
 	}
