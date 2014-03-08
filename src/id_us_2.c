@@ -2041,6 +2041,13 @@ void US_RunCards()
 				action_taken = true;
 				break;
 			default:
+				if (lastScan == in_kbdControls.jump || lastScan == in_kbdControls.pogo)
+				{
+					US_SelectCurrentItem();
+					action_taken = true;
+					break;
+				}
+
 				for (int i = 0; us_currentCard->items[i].type != US_ITEM_None; ++i)
 				{
 					if (lastScan == us_currentCard->items[i].shortcutKey)

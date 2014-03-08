@@ -196,6 +196,8 @@ typedef struct IN_KeyMapping {
   IN_ScanCode downRight;
 } IN_KeyMapping;
 
+extern IN_KeyMapping in_kbdControls;
+
 typedef struct IN_ControlFrame {
   bool jump, pogo, button2, button3;
   int x, y;

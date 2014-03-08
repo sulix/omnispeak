@@ -256,7 +256,7 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 
 #undef INL_MapKey
 
-static IN_KeyMapping in_kbdControls;
+IN_KeyMapping in_kbdControls;
 
 IN_ScanCode *key_controls[] ={
 	&in_kbdControls.jump, &in_kbdControls.pogo, &in_kbdControls.fire,
