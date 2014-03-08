@@ -357,17 +357,39 @@ void CK_DrawTerminator(void)
  * Star Wars Story Text 
  */
 
+uint8_t ck_starWarsPalette[] = {
+	0x00, 0x01, 0x18, 0x1E, 0x1F, 0x1C, 0x06, 0x07,
+	0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x00};
+
 void CK_DrawStarWars()
 {
+	// Keen5 sets the palette to the default one here.
+	VL_ClearScreen(0);
+	VL_SetScrollCoords(0,0);
+
+	CA_SetGrPurge();
+	// Cache the Star Wars font.
+	CA_CacheGrChunk(5);
+	// Render out the story text (to an offscreen buffer?)
+	CA_CacheGrChunk(87); // Story bkg image.
+
+	// Keen draws this to a separate surface, for fast copies.
+	VH_DrawBitmap(0, 0, 87);
+
+	VL_SetPalette(ck_starWarsPalette);
+	
+	// At this point, Keen generates a set of buffers full of machine code,
+	// one per line, which scale the text (from the surface mentioned above)
+	// to make the "Star Wars" effect. (sub_152AE)
+
+	StartMusic(17);
+	
+
 	// TODO: Implement
 	// In the meantime, there's this placeholder
-
 #if 1
-	{
-		VL_ClearScreen(0);
-		VL_SetScrollCoords(0,0);
-		//CA_CacheGrChunk(3);
-		int firsttime = SD_GetLastTimeCount();
+	int firsttime = SD_GetLastTimeCount();
+	CA_CacheGrChunk(3);
 	do
 	{
 		char buf[80];
@@ -385,7 +407,12 @@ void CK_DrawStarWars()
 			break;
 
 	} while (!IN_GetLastScan());
-	}
+	StopMusic();
+
+	VL_ClearScreen(0);
+	VL_SetScrollCoords(0,0);
+	VL_SetDefaultPalette();
+	CA_ClearMarks();
 #endif
 }
 

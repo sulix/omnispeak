@@ -37,6 +37,8 @@ extern VL_EGAPaletteEntry VL_EGAPalette[16];
 void VL_SetPalEntry(int id, uint8_t r, uint8_t g, uint8_t b);
 #endif
 
+void VL_SetPaletteByID(int id);
+void VL_SetPalette(uint8_t *palette);
 void VL_SetPaletteAndBorderColor(uint8_t *palette);
 void VL_ColorBorder(uint16_t color);
 void VL_SetDefaultPalette(void);
