@@ -177,10 +177,10 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 		// so we need to convert them to 16-bit mono samples
 		for(i = 0; i < length; i++)
 		{
-			// Scale volume (actually *not* for now)
-			Bit32s sample = buffer[2*i]; // Pick one channel...
-			if(sample > 8191) sample = 8191;
-			else if(sample < -8192) sample = -8192;
+			// Scale volume and pick one channel
+			Bit32s sample = 2*buffer[2*i];
+			if(sample > 16383) sample = 16383;
+			else if(sample < -16384) sample = -16384;
 			stream[i] = sample;
 		}
 	}
@@ -193,10 +193,10 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 		// so we only need to convert them to 16-bit mono samples
 		for(i = 0; i < length; i++)
 		{
-			// Scale volume (actually *not* for now)
-			Bit32s sample = buffer[i];
-			if(sample > 8191) sample = 8191;
-			else if(sample < -8192) sample = -8192;
+			// Scale volume
+			Bit32s sample = 2*buffer[i];
+			if(sample > 16383) sample = 16383;
+			else if(sample < -16384) sample = -16384;
 			stream[i] = (int16_t) sample;
 		}
 	}
@@ -247,7 +247,7 @@ static inline void PCSpeakerUpdateOne(int16_t *stream, int length)
 		{
 			SD_SDL_BeepHalfCycleCounter %= SD_SDL_BeepHalfCycleCounterUpperBound;
 			// 32767 - too loud
-			SD_SDL_CurrentBeepSample = 8191-SD_SDL_CurrentBeepSample;
+			SD_SDL_CurrentBeepSample = 24575-SD_SDL_CurrentBeepSample;
 		}
 	}
 }
