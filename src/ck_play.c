@@ -265,9 +265,9 @@ int16_t CK_ActionThink(CK_object *obj, int16_t time)
 
 
 	// ThinkMethod: 2
-	if (obj->currentAction->type == AT_Frame)
+	if (action->type == AT_Frame)
 	{
-		if (obj->currentAction->think)
+		if (action->think)
 		{
 			if (obj->timeUntillThink)
 			{
@@ -275,7 +275,7 @@ int16_t CK_ActionThink(CK_object *obj, int16_t time)
 			}
 			else
 			{
-				obj->currentAction->think(obj);
+				action->think(obj);
 			}
 		}
 		return 0;
@@ -309,7 +309,7 @@ int16_t CK_ActionThink(CK_object *obj, int16_t time)
 					obj->timeUntillThink--;
 				else
 				{
-					obj->currentAction->think(obj);
+					action->think(obj);
 				}
 			}
 		}
@@ -349,7 +349,7 @@ int16_t CK_ActionThink(CK_object *obj, int16_t time)
 			obj->timeUntillThink--;
 		else
 		{
-			obj->currentAction->think(obj);
+			action->think(obj);
 		}
 	}
 
