@@ -420,14 +420,10 @@ void CK_PlayDemoFile(const char *demoName)
 	demoBuf += 2;
 
 	ck_gameState.currentLevel =demoMap;
-	ck_gameState.difficulty = D_Normal;
-
-	CK_LoadLevel(true);
-
-
 
 	IN_DemoStartPlaying(demoBuf, demoLen);
 
+	CK_LoadLevel(true);
 
 	CK_PlayLoop();
 

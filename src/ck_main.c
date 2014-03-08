@@ -283,6 +283,10 @@ int main(int argc, char *argv[])
 	{
 		if (!strcmp(argv[i], "/DEMOFILE"))
 		{
+			// A bit of stuff from the usual demo loop
+			SD_Default(true, sdm_AdLib, smm_AdLib);
+			ck_gameState.levelState = 0;
+
 			CK_PlayDemoFile(argv[i + 1]);
 			Quit(0);
 		}
