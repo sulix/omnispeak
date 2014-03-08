@@ -348,7 +348,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 		// If the object is resting on a platform
 		if (obj->topTI == 0x19)
 		{
-			obj->velY = 145;
+			ck_nextY = 145;
 		}
 		else
 		{
