@@ -145,6 +145,7 @@ size_t CK_Cross_fwriteBoolTo16LE(const void *ptr, size_t count, FILE *stream)
 	return actualCount;
 }
 
+#if 0
 /*** Beginning of template implementation of enum I/O ***/
 
 #define CK_CROSS_IMPLEMENT_FP_READWRITE_8LE_FUNCS(ourSampleEnum) \
@@ -178,6 +179,4 @@ size_t CK_Cross_fwrite_ ## ourSampleEnum ## _To8LE (const void *ptr, size_t coun
 } \
 
 /*** End of template implementation of enum I/O ***/
-
-// For now we implement these for IN_ScanCode
-CK_CROSS_IMPLEMENT_FP_READWRITE_8LE_FUNCS(IN_ScanCode)
+#endif

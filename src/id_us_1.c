@@ -627,9 +627,6 @@ int us_argc;
 
 
 
-// Write this for enum file I/O access (converting to/from 8-bit ints)
-CK_CROSS_DECLARE_FP_READWRITE_8LE_FUNCS(IN_ScanCode)
-
 void US_LoadConfig(void)
 {
 	int16_t inputDevice, configRev;
@@ -671,20 +668,17 @@ void US_LoadConfig(void)
 		CK_Cross_freadInt16LE(&inputDevice, 1, f);
 
 		// Read most of in_kbdControls one-by-one (it's a struct):
-		// - Converting to IN_ScanCode.
 		// - No fire key for now.
-		//
-		// WARNING: The given function is a TEMPLATE implementation!
-		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.jump, 1, f);
-		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.pogo, 1, f);
-		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.upLeft, 1, f);
-		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.up, 1, f);
-		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.upRight, 1, f);
-		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.left, 1, f);
-		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.right, 1, f);
-		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.downLeft, 1, f);
-		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.down, 1, f);
-		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.downRight, 1, f);
+		CK_Cross_freadInt8LE(&in_kbdControls.jump, 1, f);
+		CK_Cross_freadInt8LE(&in_kbdControls.pogo, 1, f);
+		CK_Cross_freadInt8LE(&in_kbdControls.upLeft, 1, f);
+		CK_Cross_freadInt8LE(&in_kbdControls.up, 1, f);
+		CK_Cross_freadInt8LE(&in_kbdControls.upRight, 1, f);
+		CK_Cross_freadInt8LE(&in_kbdControls.left, 1, f);
+		CK_Cross_freadInt8LE(&in_kbdControls.right, 1, f);
+		CK_Cross_freadInt8LE(&in_kbdControls.downLeft, 1, f);
+		CK_Cross_freadInt8LE(&in_kbdControls.down, 1, f);
+		CK_Cross_freadInt8LE(&in_kbdControls.downRight, 1, f);
 
 		CK_Cross_freadBoolFrom16LE(&ck_scoreBoxEnabled, 1, f);
 		CK_Cross_freadBoolFrom16LE(&ck_svgaCompatibility, 1, f);
@@ -693,8 +687,8 @@ void US_LoadConfig(void)
 		CK_Cross_freadBoolFrom16LE(&ck_fixJerkyMotion, 1, f);
 		CK_Cross_freadBoolFrom16LE(&ck_twoButtonFiring, 1, f);
 
-		// Now the fire key comes (again using template)
-		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.fire, 1, f);
+		// Now the fire key comes
+		CK_Cross_freadInt8LE(&in_kbdControls.fire, 1, f);
 
 		CK_Cross_freadBoolFrom16LE(&ck_gamePadEnabled, 1, f);
 		CK_Cross_freadInt16LE(in_gamepadButtons, 4, f);
@@ -737,7 +731,6 @@ void US_SaveConfig(void)
 		CK_Cross_fwriteInt16LE(&ck_highScores[i].arg4, 1, f);
 	}
 
-	// WARNING: The given functions are TEMPLATE implementations!
 	intVal = (int16_t)SoundMode;
 	CK_Cross_fwriteInt16LE(&intVal, 1, f);
 	intVal = (int16_t)MusicMode;
@@ -752,16 +745,16 @@ void US_SaveConfig(void)
 	// - No fire key for now.
 	//
 	// WARNING: The given function is a TEMPLATE implementation!
-	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.jump, 1, f);
-	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.pogo, 1, f);
-	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.upLeft, 1, f);
-	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.up, 1, f);
-	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.upRight, 1, f);
-	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.left, 1, f);
-	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.right, 1, f);
-	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.downLeft, 1, f);
-	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.down, 1, f);
-	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.downRight, 1, f);
+	CK_Cross_fwriteInt8LE(&in_kbdControls.jump, 1, f);
+	CK_Cross_fwriteInt8LE(&in_kbdControls.pogo, 1, f);
+	CK_Cross_fwriteInt8LE(&in_kbdControls.upLeft, 1, f);
+	CK_Cross_fwriteInt8LE(&in_kbdControls.up, 1, f);
+	CK_Cross_fwriteInt8LE(&in_kbdControls.upRight, 1, f);
+	CK_Cross_fwriteInt8LE(&in_kbdControls.left, 1, f);
+	CK_Cross_fwriteInt8LE(&in_kbdControls.right, 1, f);
+	CK_Cross_fwriteInt8LE(&in_kbdControls.downLeft, 1, f);
+	CK_Cross_fwriteInt8LE(&in_kbdControls.down, 1, f);
+	CK_Cross_fwriteInt8LE(&in_kbdControls.downRight, 1, f);
 
 	CK_Cross_fwriteBoolTo16LE(&ck_scoreBoxEnabled, 1, f);
 	CK_Cross_fwriteBoolTo16LE(&ck_svgaCompatibility, 1, f);
@@ -771,7 +764,7 @@ void US_SaveConfig(void)
 	CK_Cross_fwriteBoolTo16LE(&ck_twoButtonFiring, 1, f);
 
 	// Now the fire key comes (again using template)
-	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.fire, 1, f);
+	CK_Cross_fwriteInt8LE(&in_kbdControls.fire, 1, f);
 
 	CK_Cross_fwriteBoolTo16LE(&ck_gamePadEnabled, 1, f);
 	CK_Cross_fwriteInt16LE(in_gamepadButtons, 4, f);

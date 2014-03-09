@@ -40,11 +40,13 @@ size_t CK_Cross_fwriteInt32LE(const void *ptr, size_t count, FILE *stream);
 size_t CK_Cross_freadBoolFrom16LE(void *ptr, size_t count, FILE *stream);
 size_t CK_Cross_fwriteBoolTo16LE(const void *ptr, size_t count, FILE *stream);
 
+#if 0
 // Similar functions for enum <-> 8-bit conversions, given as a template
 // (Declarations only; Implementations should be done in ck_cross.c)
 #define CK_CROSS_DECLARE_FP_READWRITE_8LE_FUNCS(ourSampleEnum) \
 size_t CK_Cross_fread_ ## ourSampleEnum ## _From8LE (void *ptr, size_t count, FILE *stream); \
 size_t CK_Cross_fwrite_ ## ourSampleEnum ## _To8LE (const void *ptr, size_t count, FILE *stream);
 // End of template
+#endif
 
 #endif
