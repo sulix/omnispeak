@@ -607,7 +607,6 @@ int US_GetRndI()
 }
 
 
-
 // Common
 
 /*
@@ -767,6 +766,64 @@ void US_SaveConfig(void)
 	CK_Cross_fwriteInt16LE(in_gamepadButtons, 4, f);
 	fclose(f);
 }
+
+//
+// Savefiles
+//
+
+static char us_savefile[] = "SAVEGAMx.CK5"; 	/* data_1602e = AZ:45CB */
+
+US_Savefile us_savefiles[6];
+
+/* Returns the name of the saved game with the given index (0-based) */
+const char *US_GetSavefileName( int index /*, int param_2*/ ) 
+{
+	us_savefile[7] = (char)(index + '0'); 		/* 'x' in "SAVEGAMx.CK5" */
+	return us_savefile;
+}
+
+void US_GetSavefiles()
+{
+	int valid;
+	FILE *handle;
+	const char *filename;
+	int i;
+	US_Savefile *psfe = us_savefiles;	
+
+	while( i < 6 ) 
+	{
+		filename = US_GetSavefileName( i );
+		valid = 0;
+		// handle = open( filename, O_RDONLY | O_BINARY );
+		handle = fopen( filename, "rb");
+
+		if( handle ) 
+		{
+			if( fread( psfe, sizeof( US_Savefile ), 1, handle) == 1 )
+				if( strcmp( psfe->id, "CK5" ) == 0 )	/* AZ:46AA */
+					if( psfe->unknown1 == (uint16_t)0xA537 )
+						valid = 1;
+
+			fclose( handle );
+		}
+
+		if( !valid )
+		{
+			strcpy( psfe->id, "CK5" );		/* AZ:46AE */
+			psfe->used = 0;
+			strcpy( psfe->name, "Empty" );		/* AZ:46B2 */
+		}
+		else 
+		{
+			psfe->used = 1;
+		}
+
+		i++;
+		psfe++;
+	}
+
+}
+
 
 void US_Startup(void)
 {

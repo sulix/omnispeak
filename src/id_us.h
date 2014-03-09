@@ -183,4 +183,17 @@ extern void (*p_exit_menu)(void);
 
 void US_SetMenuFunctionPointers(void (*loadgamefunc)(FILE *), void (*savegamefunc)(FILE *), void (*exitmenufunc)(void));
 
+// Savefiles
+typedef struct US_Savefile
+{
+	char id[4];
+	uint16_t unknown1;
+	uint16_t used;
+	char name[0x22];
+} __attribute__((packed)) US_Savefile;
+
+extern US_Savefile us_savefiles[6];
+
+void US_GetSavefiles();
+
 #endif //ID_US_H
