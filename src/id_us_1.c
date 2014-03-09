@@ -741,10 +741,7 @@ void US_SaveConfig(void)
 	CK_Cross_fwriteInt16LE(&intVal, 1, f); // Input device
 
 	// Write most of in_kbdControls one-by-one (it's a struct):
-	// - Converting from IN_ScanCode.
 	// - No fire key for now.
-	//
-	// WARNING: The given function is a TEMPLATE implementation!
 	CK_Cross_fwriteInt8LE(&in_kbdControls.jump, 1, f);
 	CK_Cross_fwriteInt8LE(&in_kbdControls.pogo, 1, f);
 	CK_Cross_fwriteInt8LE(&in_kbdControls.upLeft, 1, f);
