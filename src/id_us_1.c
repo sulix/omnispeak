@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_ca.h"
 #include "id_us.h"
 #include "ck_cross.h"
+#include "ck_def.h"
 #include "ck_play.h"
 
 #include <ctype.h>
@@ -606,6 +607,7 @@ int US_GetRndI()
 }
 
 
+
 // Common
 
 /*
@@ -623,10 +625,166 @@ int us_tedLevelNumber; // Number of level to launch from TED
 const char **us_argv;
 int us_argc;
 
-void US_Startup()
+
+
+// Write this for enum file I/O access (converting to/from 8-bit ints)
+CK_CROSS_DECLARE_FP_READWRITE_8LE_FUNCS(IN_ScanCode)
+
+void US_LoadConfig(void)
+{
+	int16_t inputDevice, configRev;
+	SDMode sd;
+	SMMode sm;
+	bool hadAdlib = false; // Originally this is not set to 0 directly
+	char fileExt[4];
+	const char *fileName = CAL_AdjustExtension("CONFIG.EXT");
+	bool configFileLoaded;
+	FILE *f = fopen(fileName, "rb");
+	if (f)
+	{
+		CK_Cross_freadInt8LE(fileExt, sizeof(fileExt), f);
+		CK_Cross_freadInt16LE(&configRev, 1, f);
+		// FIXME: Dangerous function call comes here (to strcmp)
+		// (but true to the original and effectively safe)
+		if (strcmp(fileExt, fileName+7) || (configRev != 4))
+		{
+			fclose(f);
+			f = NULL;
+		}
+	}
+	if (f)
+	{
+		int16_t intVal;
+		// High scores table (an array of structs)
+		for (int i = 0; i < 8; i++)
+		{
+			CK_Cross_freadInt8LE(ck_highScores[i].name, sizeof(ck_highScores[i].name), f);
+			CK_Cross_freadInt32LE(&ck_highScores[i].score, 1, f);
+			CK_Cross_freadInt16LE(&ck_highScores[i].arg4, 1, f);
+		}
+
+		if (CK_Cross_freadInt16LE(&intVal, 1, f))
+			sd = (SDMode)intVal;
+		if (CK_Cross_freadInt16LE(&intVal, 1, f))
+			sm = (SMMode)intVal;
+
+		CK_Cross_freadInt16LE(&inputDevice, 1, f);
+
+		// Read most of in_kbdControls one-by-one (it's a struct):
+		// - Converting to IN_ScanCode.
+		// - No fire key for now.
+		//
+		// WARNING: The given function is a TEMPLATE implementation!
+		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.jump, 1, f);
+		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.pogo, 1, f);
+		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.upLeft, 1, f);
+		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.up, 1, f);
+		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.upRight, 1, f);
+		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.left, 1, f);
+		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.right, 1, f);
+		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.downLeft, 1, f);
+		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.down, 1, f);
+		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.downRight, 1, f);
+
+		CK_Cross_freadBoolFrom16LE(&ck_scoreBoxEnabled, 1, f);
+		CK_Cross_freadBoolFrom16LE(&ck_svgaCompatibility, 1, f);
+		CK_Cross_freadBoolFrom16LE(&quiet_sfx, 1, f);
+		CK_Cross_freadBoolFrom16LE(&hadAdlib, 1, f);
+		CK_Cross_freadBoolFrom16LE(&ck_fixJerkyMotion, 1, f);
+		CK_Cross_freadBoolFrom16LE(&ck_twoButtonFiring, 1, f);
+
+		// Now the fire key comes (again using template)
+		CK_Cross_fread_IN_ScanCode_From8LE(&in_kbdControls.fire, 1, f);
+
+		CK_Cross_freadBoolFrom16LE(&ck_gamePadEnabled, 1, f);
+		CK_Cross_freadInt16LE(in_gamepadButtons, 4, f);
+		fclose(f);
+		//word_49EE1 = 0; // Unused?
+		configFileLoaded = true;
+	}
+	else
+	{
+		sd = sdm_Off;
+		sm = smm_Off;
+		inputDevice = 0;
+		ck_scoreBoxEnabled = true;
+		ck_twoButtonFiring = false;
+		configFileLoaded = false;
+		//word_49EE1 = 1; // Unused?
+	}
+	SD_Default(configFileLoaded && (hadAdlib == AdLibPresent), sd, sm);
+	IN_Default(configFileLoaded, inputDevice);
+
+}
+
+void US_SaveConfig(void)
+{
+	const char *fileName = CAL_AdjustExtension("CONFIG.EXT");
+	int16_t intVal;
+	FILE *f = fopen(fileName, "wb");
+	if (!f)
+		return;
+
+	CK_Cross_fwriteInt8LE((fileName+7), 4, f); // Config file extension
+	intVal = 4;
+	CK_Cross_fwriteInt16LE(&intVal, 1, f); // Config file revision
+
+	// High scores table (an array of structs)
+	for (int i = 0; i < 8; i++)
+	{
+		CK_Cross_fwriteInt8LE(ck_highScores[i].name, sizeof(ck_highScores[i].name), f);
+		CK_Cross_fwriteInt32LE(&ck_highScores[i].score, 1, f);
+		CK_Cross_fwriteInt16LE(&ck_highScores[i].arg4, 1, f);
+	}
+
+	// WARNING: The given functions are TEMPLATE implementations!
+	intVal = (int16_t)SoundMode;
+	CK_Cross_fwriteInt16LE(&intVal, 1, f);
+	intVal = (int16_t)MusicMode;
+	CK_Cross_fwriteInt16LE(&intVal, 1, f);
+
+	// FIXME: Currently it is unused
+	intVal = 0;
+	CK_Cross_fwriteInt16LE(&intVal, 1, f); // Input device
+
+	// Write most of in_kbdControls one-by-one (it's a struct):
+	// - Converting from IN_ScanCode.
+	// - No fire key for now.
+	//
+	// WARNING: The given function is a TEMPLATE implementation!
+	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.jump, 1, f);
+	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.pogo, 1, f);
+	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.upLeft, 1, f);
+	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.up, 1, f);
+	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.upRight, 1, f);
+	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.left, 1, f);
+	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.right, 1, f);
+	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.downLeft, 1, f);
+	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.down, 1, f);
+	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.downRight, 1, f);
+
+	CK_Cross_fwriteBoolTo16LE(&ck_scoreBoxEnabled, 1, f);
+	CK_Cross_fwriteBoolTo16LE(&ck_svgaCompatibility, 1, f);
+	CK_Cross_fwriteBoolTo16LE(&quiet_sfx, 1, f);
+	CK_Cross_fwriteBoolTo16LE(&AdLibPresent, 1, f);
+	CK_Cross_fwriteBoolTo16LE(&ck_fixJerkyMotion, 1, f);
+	CK_Cross_fwriteBoolTo16LE(&ck_twoButtonFiring, 1, f);
+
+	// Now the fire key comes (again using template)
+	CK_Cross_fwrite_IN_ScanCode_To8LE(&in_kbdControls.fire, 1, f);
+
+	CK_Cross_fwriteBoolTo16LE(&ck_gamePadEnabled, 1, f);
+	CK_Cross_fwriteInt16LE(in_gamepadButtons, 4, f);
+	fclose(f);
+}
+
+void US_Startup(void)
 {
 	// Initialize the random number generator (to the current time).
 	US_InitRndT(true);
+
+	// Load configuration file
+	US_LoadConfig();
 
 	// Check command line args.
 	for (int i = 1; i < us_argc; ++i)
@@ -645,6 +803,12 @@ void US_Startup()
 		}
 	}
 
+}
+
+void US_Shutdown(void)
+{
+	// TODO: More to add
+	US_SaveConfig();
 }
 
 // Getter and setter functions for print variables

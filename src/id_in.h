@@ -198,6 +198,8 @@ typedef struct IN_KeyMapping {
 
 extern IN_KeyMapping in_kbdControls;
 
+extern int16_t in_gamepadButtons[4];
+
 typedef struct IN_ControlFrame {
   bool jump, pogo, button2, button3;
   int x, y;
@@ -217,6 +219,7 @@ IN_ScanCode IN_GetLastScan(void);
 void IN_SetLastScan(IN_ScanCode scanCode);
 char IN_GetLastASCII(void);
 void IN_Startup(void);
+void IN_Default(bool gotit, int16_t inputChoice);
 void IN_DemoStartPlaying(uint8_t *data, int len);
 void IN_DemoStopPlaying();
 #if 0

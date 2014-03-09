@@ -228,6 +228,16 @@ typedef struct CK_keenState
 
 extern CK_keenState ck_keenState;
 extern IN_ControlFrame ck_inputFrame;
+
+typedef struct CK_HighScore
+{
+	char name[58];
+	uint32_t score;
+	uint16_t arg4;
+} CK_HighScore;
+
+extern CK_HighScore ck_highScores[8];
+
 void CK_SpawnKeen(int tileX, int tileY, int direction);
 void CK_ShotHit(CK_object *obj);
 

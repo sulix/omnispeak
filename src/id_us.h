@@ -90,7 +90,8 @@ extern int us_tedLevelNumber; // Number of level to launch from TED
 extern const char **us_argv;
 extern int us_argc;
 
-void US_Startup();
+void US_Startup(void);
+void US_Shutdown(void);
 
 // ID_US_2
 

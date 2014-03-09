@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_in.h"
 #include "id_sd.h"
+#include "ck_cross.h"
 #include "ck_play.h"
 
 bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)

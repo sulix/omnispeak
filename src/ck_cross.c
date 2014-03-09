@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "ck_cross.h"
+#include "id_in.h"
+#include "id_sd.h"
 
 #ifdef CK_RAND_DEBUG
 #include <execinfo.h>
@@ -77,12 +79,12 @@ size_t CK_Cross_freadInt32LE(void *ptr, size_t count, FILE *stream)
 	return count;
 }
 
-size_t CK_Cross_fwriteInt8LE(void *ptr, size_t count, FILE *stream)
+size_t CK_Cross_fwriteInt8LE(const void *ptr, size_t count, FILE *stream)
 {
 	return fwrite(ptr, 1, count, stream);
 }
 
-size_t CK_Cross_fwriteInt16LE(void *ptr, size_t count, FILE *stream)
+size_t CK_Cross_fwriteInt16LE(const void *ptr, size_t count, FILE *stream)
 {
 #ifndef CK_CROSS_IS_BIGENDIAN
 	return fwrite(ptr, 2, count, stream);
@@ -98,7 +100,7 @@ size_t CK_Cross_fwriteInt16LE(void *ptr, size_t count, FILE *stream)
 #endif
 }
 
-size_t CK_Cross_fwriteInt32LE(void *ptr, size_t count, FILE *stream)
+size_t CK_Cross_fwriteInt32LE(const void *ptr, size_t count, FILE *stream)
 {
 #ifndef CK_CROSS_IS_BIGENDIAN
 	return fwrite(ptr, 4, count, stream);
@@ -129,7 +131,8 @@ size_t CK_Cross_freadBoolFrom16LE(void *ptr, size_t count, FILE *stream)
 	}
 	return actualCount;
 }
-size_t CK_Cross_fwriteBoolTo16LE(void *ptr, size_t count, FILE *stream)
+
+size_t CK_Cross_fwriteBoolTo16LE(const void *ptr, size_t count, FILE *stream)
 {
 	uint16_t val;
 	size_t actualCount = 0;
@@ -141,3 +144,40 @@ size_t CK_Cross_fwriteBoolTo16LE(void *ptr, size_t count, FILE *stream)
 	}
 	return actualCount;
 }
+
+/*** Beginning of template implementation of enum I/O ***/
+
+#define CK_CROSS_IMPLEMENT_FP_READWRITE_8LE_FUNCS(ourSampleEnum) \
+size_t CK_Cross_fread_ ## ourSampleEnum ## _From8LE (void *ptr, size_t count, FILE *stream) \
+{ \
+	uint8_t val; \
+	size_t actualCount = 0; \
+	ourSampleEnum *currEnumPtr = (ourSampleEnum *)ptr; /* No lvalue compilation error */ \
+	for (size_t loopVar = 0; loopVar < count; loopVar++, currEnumPtr++) \
+	{ \
+		if (fread(&val, 1, 1, stream)) /* Should be either 0 or 1 */ \
+		{ \
+			*currEnumPtr = (ourSampleEnum)val; \
+			actualCount++; \
+		} \
+	} \
+	return actualCount; \
+} \
+\
+size_t CK_Cross_fwrite_ ## ourSampleEnum ## _To8LE (const void *ptr, size_t count, FILE *stream) \
+{ \
+	uint8_t val; \
+	size_t actualCount = 0; \
+	ourSampleEnum *currEnumPtr = (ourSampleEnum *)ptr; /* No lvalue compilation error */ \
+	for (size_t loopVar = 0; loopVar < count; loopVar++, currEnumPtr++) \
+	{ \
+		val = (uint8_t)(*currEnumPtr); \
+		actualCount += fwrite(&val, 1, 1, stream); \
+	} \
+	return actualCount; \
+} \
+
+/*** End of template implementation of enum I/O ***/
+
+// For now we implement these for IN_ScanCode
+CK_CROSS_IMPLEMENT_FP_READWRITE_8LE_FUNCS(IN_ScanCode)
