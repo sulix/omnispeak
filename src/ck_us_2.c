@@ -59,12 +59,24 @@ bool CK_US_TwoButtonFiringMenuProc(US_CardMsg msg, US_CardItem *item)
 
 bool CK_US_FixJerkyMotionMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	return false;
+	if ( msg != US_MSG_CardEntered )
+		return false;
+
+	ck_fixJerkyMotion = !ck_fixJerkyMotion;
+	green_message_box( (ck_fixJerkyMotion ? "Jerky motion fix enabled" : "Jerky motion fix disabled"), "Press any key", NULL );
+	CK_US_UpdateOptionsMenus();
+	return true;
 }
 
 bool CK_US_SVGACompatibilityMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	return false;
+	if ( msg != US_MSG_CardEntered )
+		return false;
+
+	ck_svgaCompatibility = !ck_svgaCompatibility;
+	green_message_box( (ck_svgaCompatibility ? "SVGA compatibility now on" : "SVGA compatibility now off"), "Press any key", NULL );
+	CK_US_UpdateOptionsMenus();
+	return true;
 }
 
 bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item);
@@ -679,11 +691,9 @@ void CK_US_UpdateOptionsMenus( void )
 
 	ck_us_optionsMenuItems[0].caption = ck_scoreBoxEnabled ? "SCORE BOX (ON)" : "SCORE BOX (OFF)";
 	ck_us_optionsMenuItems[1].caption = ck_twoButtonFiring ? "TWO-BUTTON FIRING (ON)" : "TWO-BUTTON FIRING (OFF)";
-#if 0
-	ck_us_optionsMenuItems[2].caption = fix_jerky_motion ? "FIX JERKY MOTION (ON)" : "FIX JERKY MOTION (OFF)";
-	ck_us_optionsMenuItems[3].caption = svga_comp ? "SVGA COMPATIBILITY (ON)" : "SVGA COMPATIBILITY (OFF)";
+	ck_us_optionsMenuItems[2].caption = ck_fixJerkyMotion ? "FIX JERKY MOTION (ON)" : "FIX JERKY MOTION (OFF)";
+	ck_us_optionsMenuItems[3].caption = ck_svgaCompatibility ? "SVGA COMPATIBILITY (ON)" : "SVGA COMPATIBILITY (OFF)";
 
-#endif
 	// Disable Two button firing selection if required
 	ck_us_buttonsMenuItems[2].state &= ~US_IS_Disabled;
 	if ( ck_twoButtonFiring )
