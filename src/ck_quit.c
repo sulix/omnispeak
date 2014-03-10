@@ -21,7 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include "ck_cross.h"
 
+void CK_ShutdownID(void); // TODO: Hack?
+
 void Quit(const char *msg) {
+	CK_ShutdownID();
 	if (!msg || !(*msg))
 	{
 		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Thanks for playing Commander Keen!\n");

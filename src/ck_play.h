@@ -42,6 +42,11 @@ extern struct CK_object *ck_scoreBoxObj;
 
 extern bool ck_twoButtonFiring;
 
+extern bool ck_fixJerkyMotion;
+extern bool ck_svgaCompatibility;
+
+extern bool ck_gamePadEnabled;
+
 // Object Mgmt
 struct CK_object *CK_GetNewObj(bool nonCritical);
 void CK_SetupObjArray();

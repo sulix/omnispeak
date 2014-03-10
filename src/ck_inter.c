@@ -505,13 +505,6 @@ void CK_PlayDemo(int demoNumber)
  * High scores
  */
 
-typedef struct CK_HighScore
-{
-	char name[58];
-	uint32_t score;
-	uint16_t arg4;
-} CK_HighScore;
-
 CK_HighScore ck_highScores[8] =
 {
 	{"Id Software - '91", 10000, 0},

@@ -83,6 +83,12 @@ CK_object *ck_scoreBoxObj;
 // Two button firing
 bool ck_twoButtonFiring;
 
+// Fix jerky motion
+bool ck_fixJerkyMotion;
+
+// SVGA compatibility
+bool ck_svgaCompatibility;
+
 // Gamepad
 bool ck_gamePadEnabled;
 

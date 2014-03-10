@@ -22,17 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_in.h"
 #include "id_sd.h"
+#include "ck_cross.h"
 #include "ck_play.h"
 
-bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
-{
-	return false;
-}
-
-bool CK_US_SaveGameMenuProc(US_CardMsg msg, US_CardItem *item)
-{
-	return false;
-}
 
 bool CK_US_ScoreBoxMenuProc(US_CardMsg msg, US_CardItem *item)
 {
@@ -58,12 +50,24 @@ bool CK_US_TwoButtonFiringMenuProc(US_CardMsg msg, US_CardItem *item)
 
 bool CK_US_FixJerkyMotionMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	return false;
+	if ( msg != US_MSG_CardEntered )
+		return false;
+
+	ck_fixJerkyMotion = !ck_fixJerkyMotion;
+	green_message_box( (ck_fixJerkyMotion ? "Jerky motion fix enabled" : "Jerky motion fix disabled"), "Press any key", NULL );
+	CK_US_UpdateOptionsMenus();
+	return true;
 }
 
 bool CK_US_SVGACompatibilityMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	return false;
+	if ( msg != US_MSG_CardEntered )
+		return false;
+
+	ck_svgaCompatibility = !ck_svgaCompatibility;
+	green_message_box( (ck_svgaCompatibility ? "SVGA compatibility now on" : "SVGA compatibility now off"), "Press any key", NULL );
+	CK_US_UpdateOptionsMenus();
+	return true;
 }
 
 bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item);
@@ -122,6 +126,83 @@ US_CardItem ck_us_loadSaveMenuItems[] ={
 	{ US_ITEM_Normal, 0, IN_SC_Six, 0, US_Comm_None, 0, 0, 0 },
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
+
+extern US_Card *us_currentCard;
+void CK_US_DrawSavegameItemBorder( US_CardItem *item )
+{
+
+	int c;
+
+	/* Set the item's position */
+	item->y = us_currentCard->y + 60;
+	item->y += (item - ck_us_loadSaveMenuItems) * 11;
+
+	/* Choose an appropriate color */
+	US_SetPrintColour((item->state & US_IS_Selected) ? 2 : 10);
+	c = US_GetPrintColour() ^ 8;
+
+	/* Draw the rectangle */
+	VH_HLine( item->x, item->x + 148, item->y, c );
+	VH_HLine( item->x, item->x + 148, item->y + 9, c );
+	VH_VLine( item->y, item->y + 9, item->x, c );
+	VH_VLine( item->y, item->y + 9, item->x + 148, c );
+}
+
+bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	int result, i;
+
+	result = 0;
+
+	switch ( msg )
+	{
+	case US_MSG_CardEntered:
+		if ( getenv( "UID" ) )
+			US_GetSavefiles();
+
+		for ( i = 0; i < 6; i++ )
+		{
+			if ( us_savefiles[i].name )
+				ck_us_loadSaveMenuItems[i].state &= ~US_IS_Disabled;
+			else
+				ck_us_loadSaveMenuItems[i].state |= US_IS_Disabled;
+		}
+		break;
+
+	case US_MSG_DrawItemIcon:
+		CK_US_DrawSavegameItemBorder( item );
+		result = 1;
+		break;
+
+	case US_MSG_DrawItem:
+		CK_US_DrawSavegameItemBorder( item );
+
+		/* Draw the caption */
+		VH_Bar( item->x + 1, item->y + 2, 146, 7, 8 );
+		i = item - ck_us_loadSaveMenuItems; 
+		if ( us_savefiles[i].used )
+			US_SetPrintX(item->x + 2);
+		else
+			US_SetPrintX(item->x + 60);
+
+		US_SetPrintY(item->y + 2);
+		VH_DrawPropString( us_savefiles[i].used ? us_savefiles[i].name : "Empty", US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour() );
+		result = 1;
+		break;
+
+	case US_MSG_ItemEntered:
+		//load_savegame_item( item );
+		result = 1;
+		break;
+	}
+
+	return result;
+}
+
+bool CK_US_SaveGameMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	return false;
+}
 
 US_Card ck_us_loadGameMenu ={ 4, 3, 69, 0, ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0 };
 US_Card ck_us_saveGameMenu ={ 4, 3, 70, 0, ck_us_loadSaveMenuItems, &CK_US_SaveGameMenuProc, 0, 0, 0 };
@@ -678,11 +759,9 @@ void CK_US_UpdateOptionsMenus( void )
 
 	ck_us_optionsMenuItems[0].caption = ck_scoreBoxEnabled ? "SCORE BOX (ON)" : "SCORE BOX (OFF)";
 	ck_us_optionsMenuItems[1].caption = ck_twoButtonFiring ? "TWO-BUTTON FIRING (ON)" : "TWO-BUTTON FIRING (OFF)";
-#if 0
-	ck_us_optionsMenuItems[2].caption = fix_jerky_motion ? "FIX JERKY MOTION (ON)" : "FIX JERKY MOTION (OFF)";
-	ck_us_optionsMenuItems[3].caption = svga_comp ? "SVGA COMPATIBILITY (ON)" : "SVGA COMPATIBILITY (OFF)";
+	ck_us_optionsMenuItems[2].caption = ck_fixJerkyMotion ? "FIX JERKY MOTION (ON)" : "FIX JERKY MOTION (OFF)";
+	ck_us_optionsMenuItems[3].caption = ck_svgaCompatibility ? "SVGA COMPATIBILITY (ON)" : "SVGA COMPATIBILITY (OFF)";
 
-#endif
 	// Disable Two button firing selection if required
 	ck_us_buttonsMenuItems[2].state &= ~US_IS_Disabled;
 	if ( ck_twoButtonFiring )

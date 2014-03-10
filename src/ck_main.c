@@ -74,10 +74,10 @@ void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h)
 /*
  * Shutdown all of the 'ID Engine' components
  */
-void CK_ShutdownID()
+void CK_ShutdownID(void)
 {
 	//TODO: Some managers don't have shutdown implemented yet
-	//US
+	US_Shutdown();
 	SD_Shutdown();
 	//IN
 	//RF
@@ -96,7 +96,6 @@ void CK_InitGame()
 	// Can't do much without memory!
 	MM_Startup();
 
-	US_Startup();
 	//TODO: Get filenames/etc from config/episode
 
 	// Load the core datafiles
@@ -145,7 +144,7 @@ void CK_InitGame()
 	// Setup audio
 	SD_Startup();
 
-	//TODO: Read game config
+	US_Startup();
 
 	// Wolf loads fonts here, but we do it in CA_Startup()?
 
@@ -168,8 +167,6 @@ static int ck_startingLevel = 0;
 
 void CK_DemoLoop()
 {
-	/* FIXME: Should be called from load_config with the correct settings */
-	SD_Default(true, sdm_AdLib, smm_AdLib);
 	/*
 	 * Commander Keen could be 'launched' from the map editor TED to test a map.
 	 * This was implemented by having TED launch keen with the /TEDLEVEL xx
@@ -284,7 +281,6 @@ int main(int argc, char *argv[])
 		if (!strcmp(argv[i], "/DEMOFILE"))
 		{
 			// A bit of stuff from the usual demo loop
-			SD_Default(true, sdm_AdLib, smm_AdLib);
 			ck_gameState.levelState = 0;
 
 			CK_PlayDemoFile(argv[i + 1]);
