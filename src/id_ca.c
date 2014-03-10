@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_ca.h"
 #include "id_us.h"
 #include "ck_ep.h"
+#include "ck_cross.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -35,7 +36,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define CA_THREEBYTEHEADERS
 
+#ifndef _WIN32
+#include <sys/stat.h>
+#include <dirent.h>
 
+static bool CAL_AdjustFilenameCase(char *filename)
+{
+	// Quickly check to see if the file exists with the current case.
+	struct stat fileStat;
+	if (!stat(filename, &fileStat))
+	{
+		return true;
+	}
+
+	DIR *currentDirPtr = opendir(".");
+
+	// Search the current directory for matching names.
+	for (struct dirent *dirEntry = readdir(currentDirPtr); dirEntry; dirEntry = readdir(currentDirPtr))
+	{
+		if (!strcasecmp(dirEntry->d_name, filename))
+		{
+			// We've found our file!
+			// TODO: This is more than a little ugly.
+			strcpy(filename, dirEntry->d_name);
+			return true;
+		}
+	}
+
+	// We didn't find a matching file.
+	return false;
+}
+#else
+static bool CAL_AdjustFilenameCase(char *filename)
+{
+	return true;
+}
+#endif
 //Begin globals
 
 /* These functions read a little-endian value. */
@@ -100,6 +136,10 @@ char* CAL_AdjustExtension(const char *filename)
 	newname[fnamelen-3] = ck_currentEpisode->ext[0];
 	newname[fnamelen-2] = ck_currentEpisode->ext[1];
 	newname[fnamelen-1] = ck_currentEpisode->ext[2];
+	if (!CAL_AdjustFilenameCase(newname))
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Couldn't find file \"%s\" in the current directory.\n", newname);
+	}
 	return newname;
 }
 
@@ -441,21 +481,21 @@ void CAL_SetupGrFile()
 	//TODO: Setup cfg mechanism for filenames, chunk data.
 
 	//Load the ?GADICT
-	CA_LoadFile("EGADICT.CK5", (void**)(&ca_gr_huffdict), 0);
+	CA_LoadFile("EGADICT.EXT", (void**)(&ca_gr_huffdict), 0);
 
 	// We don't need to 'OptimizeNodes'.
 	//CAL_OptimizeNodes(ca_gr_huffdict);
 
 	//Load the ?GAHEAD
-	CA_LoadFile("EGAHEAD.CK5", &ca_graphStarts, 0);
+	CA_LoadFile("EGAHEAD.EXT", &ca_graphStarts, 0);
 
 	// Read chunk type info from GFEINFO?
-	FILE *gfxinfoe = fopen("GFXINFOE.CK5","rb");
+	FILE *gfxinfoe = fopen(CAL_AdjustExtension("GFXINFOE.EXT"),"rb");
 	fread(&ca_gfxInfoE, 1, sizeof(ca_gfxinfo), gfxinfoe);
 	fclose(gfxinfoe);
 
 	//Load the graphics --- we will keep the file open for the duration of the game.
-	ca_graphHandle = fopen("EGAGRAPH.CK5","rb");
+	ca_graphHandle = fopen(CAL_AdjustExtension("EGAGRAPH.EXT"),"rb");
 
 	// Read in the graphics headers (from TED's GFXINFOE)
 	// For some reason, keen decompresses these differently, not
@@ -669,16 +709,16 @@ void CAL_SetupAudioFile(void)
 	//TODO: Setup cfg mechanism for filenames, chunk data.
 
 	//Load the AUDIODCT
-	CA_LoadFile("AUDIODCT.CK5", (void**)(&ca_audiohuffman), 0);
+	CA_LoadFile("AUDIODCT.EXT", (void**)(&ca_audiohuffman), 0);
 
 	// We don't need to 'OptimizeNodes'.
 	//CAL_OptimizeNodes(ca_audiohuffman);
 
 	//Load the AUDIOHED
-	CA_LoadFile("AUDIOHED.CK5", (void **)(&ca_audiostarts), 0);
+	CA_LoadFile("AUDIOHED.EXT", (void **)(&ca_audiostarts), 0);
 
 	//Load the sound data --- we will keep the file open for the duration of the game.
-	ca_audiohandle = fopen("AUDIO.CK5","rb");
+	ca_audiohandle = fopen(CAL_AdjustExtension("AUDIO.EXT"),"rb");
 	if (!ca_audiohandle)
 	{
 		Quit("Can't open AUDIO.CK5!");
