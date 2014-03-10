@@ -24,6 +24,12 @@ void CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass, const char *format, ..
 // Emulates the functionality of the "puts" function in text mode
 void CK_Cross_puts(const char *str);
 
+// More standard C functions emulated,
+// taking English locale into account (and more, but NOT all)
+int CK_Cross_toupper(int c);
+// A bit less standard, but still done assuming English locale
+int CK_Cross_strcasecmp(const char *s1, const char *s2);
+
 // Used for reading buffers of a specific type, assuming Little-Endian
 // byte order in the file's data itself. It gets converted to native order.
 size_t CK_Cross_freadInt8LE(void *ptr, size_t count, FILE *stream);
