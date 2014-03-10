@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string.h>
 #include <stdarg.h>
 #include <string.h>
-#include <strings.h> // For strcasecmp
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -53,14 +52,7 @@ int US_CheckParm(const char *parm, const char **strings)
 	{
 
 		if (strings[i][0] == '\0') continue;
-		/* BIG FIXME FIXME FIXME
-		 *
-		 * strcasecmp may function differently than expected.
-		 * For instance, with the Turkish locale in mind, it is
-		 * possible that strcasecmp("i", "I") is non-zero.
-		 * Furthermore, strcasecmp is not a part of the C99 standard.
-		 */
-		if (!strcasecmp(parm, strings[i])) return i;
+		if (!CK_Cross_strcasecmp(parm, strings[i])) return i;
 	}
 	return -1;
 }

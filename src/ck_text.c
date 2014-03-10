@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include <string.h>
 
+#include "ck_cross.h"
 #include "ck_def.h"
 #include "id_ca.h"
 #include "id_in.h"
@@ -114,7 +115,7 @@ void HandleCommand( void )
 	VH_BitmapTableEntry bmpinfo;
 
 	help_ptr++;
-	switch ( toupper( *help_ptr ) )
+	switch ( CK_Cross_toupper( *help_ptr ) )
 	{
 	case 'B':
 		/* Solid red box y, x, w, h */
@@ -137,7 +138,7 @@ void HandleCommand( void )
 		help_ptr++;
 
 		/* A single hex digit is used for the text color */
-		i = toupper( *help_ptr );
+		i = CK_Cross_toupper( *help_ptr );
 		if ( i >= '0' && i <= '9' )
 			US_SetPrintColour( i - '0');
 		else if ( i >= 'A' && i <= 'F' )
@@ -222,7 +223,7 @@ void NewLine( void )
 		{
 			if ( *help_ptr == '^' )
 			{
-				c = toupper( *(help_ptr + 1) );
+				c = CK_Cross_toupper( *(help_ptr + 1) );
 				if ( c == 'E' || c == 'P' )
 				{
 					help_full_page = 1;
@@ -331,7 +332,7 @@ void PageLayout( int show_status )
 		help_ptr++;
 
 	/* Make sure we start with a "new page" command */
-	if ( !(*help_ptr++ == '^' && toupper( *help_ptr ) == 'P') )
+	if ( !(*help_ptr++ == '^' && CK_Cross_toupper( *help_ptr ) == 'P') )
 		Quit( "PageLayout: Text not headed with ^P" );
 
 	/* Move to the next line after the ^P */
@@ -384,7 +385,7 @@ void BackPage( void )
 	do
 	{
 		help_ptr--;
-	} while ( !(*help_ptr == '^' && toupper( *(help_ptr + 1) ) == 'P') );
+	} while ( !(*help_ptr == '^' && CK_Cross_toupper( *(help_ptr + 1) ) == 'P') );
 }
 
 extern uint8_t ca_levelnum;
@@ -415,7 +416,7 @@ void CacheLayoutGraphics( void )
 		if ( *help_ptr == '^' )
 		{
 			help_ptr++;
-			c = toupper( *help_ptr );
+			c = CK_Cross_toupper( *help_ptr );
 
 			/* Count pages */
 			if ( c == 'P' )

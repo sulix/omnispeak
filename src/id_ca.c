@@ -54,7 +54,7 @@ static bool CAL_AdjustFilenameCase(char *filename)
 	// Search the current directory for matching names.
 	for (struct dirent *dirEntry = readdir(currentDirPtr); dirEntry; dirEntry = readdir(currentDirPtr))
 	{
-		if (!strcasecmp(dirEntry->d_name, filename))
+		if (!CK_Cross_strcasecmp(dirEntry->d_name, filename))
 		{
 			// We've found our file!
 			// TODO: This is more than a little ugly.
