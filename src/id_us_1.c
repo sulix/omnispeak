@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_cross.h"
 #include "ck_def.h"
 #include "ck_play.h"
+#include "ck_ep.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -634,7 +635,7 @@ void US_LoadConfig(void)
 		CK_Cross_freadInt16LE(&configRev, 1, f);
 		// FIXME: Dangerous function call comes here (to strcmp)
 		// (but true to the original and effectively safe)
-		if (strcmp(fileExt, fileName+7) || (configRev != 4))
+		if (strcmp(fileExt, ck_currentEpisode->ext) || (configRev != 4))
 		{
 			fclose(f);
 			f = NULL;
@@ -710,7 +711,7 @@ void US_SaveConfig(void)
 	if (!f)
 		return;
 
-	CK_Cross_fwriteInt8LE((fileName+7), 4, f); // Config file extension
+	CK_Cross_fwriteInt8LE((ck_currentEpisode->ext), 4, f); // Config file extension
 	intVal = 4;
 	CK_Cross_fwriteInt16LE(&intVal, 1, f); // Config file revision
 
