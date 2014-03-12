@@ -34,6 +34,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdio.h>
 #include "SDL.h"
 
+// For chdir
+#ifdef _MSC_VER
+#include <direct.h>
+#else
+#include <unistd.h>
+#endif
+
 #define CA_THREEBYTEHEADERS
 
 #ifndef _WIN32
