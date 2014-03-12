@@ -1761,15 +1761,15 @@ void USL_UpdateCards( void )
 		ck_us_soundMenuItems[3].state |= US_IS_Disabled;
 		ck_us_musicMenuItems[1].state |= US_IS_Disabled;
 	}
-#if 0
+
 	/* Joystick and gamepad menu items*/
-	if ( !joystick_present[0] )
-		configure_menu_items[4].state |= US_IS_Disabled;
-	if ( !joystick_present[1] )
-		configure_menu_items[5].state |= US_IS_Disabled;
+	if ( true ) //!joystick_present[0] )
+		ck_us_configureMenuItems[4].state |= US_IS_Disabled;
+	if ( true ) //!joystick_present[1] )
+		ck_us_configureMenuItems[5].state |= US_IS_Disabled;
+#if 0
 	if ( !joystick_present[0] && !joystick_present[1] )
 		configure_menu_items[6].state |= US_IS_Disabled;
-
 #endif
 	ck_us_mainMenuItems[4].caption = (game_in_progress) ? "RETURN TO GAME" : "RETURN TO DEMO";
 	/* Save game and end game items */

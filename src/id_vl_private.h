@@ -50,7 +50,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define VL_VGA_GFX_SHRUNK_WIDTH_PLUS_BORDER (VL_EGAVGA_GFX_WIDTH+VL_VGA_GFX_SHRUNK_LEFTBORDER_WIDTH+VL_VGA_GFX_SHRUNK_RIGHTBORDER_WIDTH)
 #define VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER (VL_EGAVGA_GFX_HEIGHT+VL_VGA_GFX_SHRUNK_TOPBORDER_HEIGHT+VL_VGA_GFX_SHRUNK_BOTTOMBORDER_HEIGHT)
 
-#define VL_WINDOW_TITLE "Omnispeak Keen Day 2014 Preview"
+#define VL_WINDOW_TITLE "Omnispeak - Keen Day 2014 Preview"
 
 // EGA color table in RGB format (technically more can be chosen with the VGA)
 extern const uint8_t VL_EGARGBColorTable[16][3];
