@@ -67,11 +67,16 @@ static bool CAL_AdjustFilenameCase(char *filename)
 	return false;
 }
 #else
+#define WIN32_MEAN_AND_LEAN
+#undef UNICODE
+#include <windows.h>
 static bool CAL_AdjustFilenameCase(char *filename)
 {
-	return true;
+	DWORD fileAttribs = GetFileAttributes(filename);
+	return (fileAttribs != INVALID_FILE_ATTRIBUTES);
 }
 #endif
+
 //Begin globals
 
 /* These functions read a little-endian value. */
@@ -808,6 +813,25 @@ void CA_CacheMap(int mapIndex)
 // CA_Startup opens the core CA datafiles
 void CA_Startup(void)
 {
+	// Check for the existence of EGAGRAPH for the Keen Day preview.
+	
+	// If the file isn't in the current directory, it might be in the directory the game binary is in.
+	char checkFile[] = "EGAGRAPH.CK5";
+#if SDL_VERSION_ATLEAST(2,0,1) 
+	if (!CAL_AdjustFilenameCase(checkFile))
+	{
+		chdir(SDL_GetBasePath());
+	}
+#endif
+
+#if SDL_VERSION_ATLEAST(1,3,0)
+	if (!CAL_AdjustFilenameCase(checkFile))
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Omnispeak", "Could not find EGAGRAPH.CK5. Please copy Keen 5 into the Omnispeak directory.", NULL);
+		Quit("Could not find EGAGRAPH.CK5. Please copy Keen 5 into the Omnispeak directory.");
+	}
+#endif
+
 	// Load the ?GAGRAPH.EXT file!
 	CAL_SetupGrFile();
 
