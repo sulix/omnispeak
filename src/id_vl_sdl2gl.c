@@ -144,7 +144,7 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 	//
 	// There are a few more tricks in use to handle the overscan border
 	// and VGA line doubling.
-	vl_sdl2gl_window = SDL_CreateWindow("Commander Keen",SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+	vl_sdl2gl_window = SDL_CreateWindow(VL_WINDOW_TITLE,SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 	                                    VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER*3/VL_VGA_GFX_WIDTH_SCALEFACTOR,
 	                                    6*VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER*3/(5*VL_VGA_GFX_HEIGHT_SCALEFACTOR),
 	                                    SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
