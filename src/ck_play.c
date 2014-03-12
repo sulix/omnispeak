@@ -262,7 +262,7 @@ void CK_RemoveObj(CK_object *obj)
 
 	obj->prev = ck_freeObject;
 	ck_freeObject = obj;
-	//ck_numObjects--;
+	ck_numObjects--;
 }
 
 int16_t CK_ActionThink(CK_object *obj, int16_t time)
@@ -1380,7 +1380,13 @@ int CK_PlayLoop()
 			{
 				if (currentObj->clipRects.tileY2 >= (CA_GetMapHeight() - 1))
 				{
-					if (currentObj->active != OBJ_ALWAYS_ACTIVE)
+					if (currentObj->type == CT_Player)
+					{
+						// Kill Keen if he exits the bottom of the map.
+						ck_gameState.levelState = 1;
+						continue;
+					}
+					else
 					{
 						CK_RemoveObj(currentObj);
 						continue;
