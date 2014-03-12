@@ -520,6 +520,8 @@ void CK_WallDebug()
 			}
 		}
 	}
+	// Hack to work around F10-Y not updating the screen immediately.
+	RF_Reposition(rf_scrollXUnit, rf_scrollYUnit);
 }
 
 bool CK_DebugKeys()

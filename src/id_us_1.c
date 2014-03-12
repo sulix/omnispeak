@@ -224,8 +224,6 @@ void US_DrawWindow(int x, int y, int w, int h)
 	us_windowW = w * 8;
 	us_windowH = h * 8;
 
-	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "US_DrawWindow: (%d,%d)-(%d,%d)\n", x, y, w, h);
-
 	int borderX = us_windowX - 8;
 	int borderY = us_windowY - 8;
 	int borderW = us_windowW + 8;
