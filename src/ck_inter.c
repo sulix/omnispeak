@@ -251,7 +251,7 @@ void CK_DrawTerminator(void)
 	// In the meantime, there's this placeholder
 
 	bool terminator_complete = false;
-#if 1
+#if 0
 	{
 		VL_ClearScreen(0);
 		VL_SetScrollCoords(0,0);
