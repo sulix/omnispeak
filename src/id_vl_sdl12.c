@@ -159,7 +159,7 @@ static void VL_SDL12_BitInvBlitToSurface(void *src, void *dst_surface, int x, in
 {
 	SDL_Surface *surf = (SDL_Surface *)dst_surface;
 	SDL_LockSurface(surf);
-	VL_1bppInvBlitToPAL8(src, surf->pixels, x, y, surf->pitch, w,h, colour);
+	VL_1bppInvBlitClipToPAL8(src, surf->pixels, x, y, surf->pitch, w,h, surf->w, surf->h, colour);
 	SDL_UnlockSurface(surf);
 }
 

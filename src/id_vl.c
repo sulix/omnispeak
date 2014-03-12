@@ -588,6 +588,30 @@ void VL_1bppInvBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, 
 	}		
 }
 
+void VL_1bppInvBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh, int colour)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr = (uint8_t*)src;
+	int initialX = max(-x,0);
+	int initialY = max(-y,0);
+	int finalW = min(max(dw-x,0), w);
+	int finalH = min(max(dh-y,0), h);
+	int spitch = ((w + 7)/8)*8;
+
+	for(int sy = initialY; sy < finalH; ++sy)
+	{
+		for(int sx = initialX; sx < finalW; ++sx)
+		{
+			int plane_off = (sy * spitch + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
+			
+			if ((srcptr[plane_off] & plane_bit)) continue;
+			
+			dstptr[(sy+y)*pitch+(sx+x)] = colour;
+		}
+	}		
+}
+
 int VL_MemUsed()
 {
 	return vl_memused;

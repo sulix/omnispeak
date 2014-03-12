@@ -54,6 +54,7 @@ void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, 
 void VL_1bppXorWithRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 void VL_1bppInvBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
+//TODO: 1bppInvBlitClipToRGB
 
 void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h);
 void VL_MaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h);
@@ -63,6 +64,7 @@ void VL_1bppToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, 
 void VL_1bppXorWithPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 void VL_1bppBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 void VL_1bppInvBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_1bppInvBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh, int colour);
 
 int VL_MemUsed();
 int VL_NumSurfaces();
