@@ -880,7 +880,14 @@ void SD_Startup(void)
 		SD_SDL_AudioSpec.freq = 49716; // OPL rate
 		SD_SDL_AudioSpec.format = AUDIO_S16;
 		SD_SDL_AudioSpec.channels = 1;
+		// Under wine, small buffer sizes cause a lot of crackling, so we double the
+		// buffer size. This will result in a tiny amount (~10ms) of extra lag on windows,
+		// but it's a price I'm prepared to pay to not have my ears explode.
+#ifdef _WIN32
+		SD_SDL_AudioSpec.samples = 1024;
+#else
 		SD_SDL_AudioSpec.samples = 512;
+#endif
 		SD_SDL_AudioSpec.callback = SD_SDL_CallBack;
 		SD_SDL_AudioSpec.userdata = NULL;
 		if (SDL_OpenAudio(&SD_SDL_AudioSpec, NULL))
