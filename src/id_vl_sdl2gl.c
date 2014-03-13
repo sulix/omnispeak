@@ -63,6 +63,9 @@ PFN_ID_GLBLITFRAMEBUFFEREXTPROC id_glBlitFramebufferEXT = 0;
 
 static bool VL_SDL2GL_LoadGLProcs()
 {
+	int majorGLVersion = 0;
+	glGetIntegerv(GL_MAJOR_VERSION, &majorGLVersion);
+	if (majorGLVersion < 2) return false;
 	// OpenGL 1.3
 	id_glActiveTexture = (PFN_ID_GLACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glActiveTexture");
 	// OpenGL 2.0
@@ -82,7 +85,7 @@ static bool VL_SDL2GL_LoadGLProcs()
 	id_glUseProgram = (PFN_ID_GLUSEPROGRAMPROC)SDL_GL_GetProcAddress("glUseProgram");
 	id_glUniform1i = (PFN_ID_GLUNIFORM1IPROC)SDL_GL_GetProcAddress("glUniform1i");
 	// EXT_framebuffer_object
-	if (!SDL_GL_ExtensionSupported("GL_EXT_framebuffer_object")) return false;
+	if (!SDL_GL_ExtensionSupported("GL_EXT_framebuffer_object")) return true;
 	id_glIsFramebufferEXT = (PFN_ID_GLISFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glIsFramebufferEXT");
 	id_glBindFramebufferEXT = (PFN_ID_GLBINDFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glBindFramebufferEXT");
 	id_glDeleteFramebuffersEXT = (PFN_ID_GLDELETEFRAMEBUFFERSEXTPROC)SDL_GL_GetProcAddress("glDeleteFramebuffersEXT");
@@ -165,6 +168,7 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 
 	if (!VL_SDL2GL_LoadGLProcs())
 	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Omnispeak", "Omnispeak requires OpenGL 2.0 or higher to run. Check that your drivers are installed correctly.", NULL);
 		Quit("Your system does not have one or more required OpenGL extensions.");
 	}
 
@@ -368,7 +372,7 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// If our gfx hardware supports it, render into an offscreen framebuffer for the final linear phase of scaling.
-	if (id_glBlitFramebufferEXT)
+	if (SDL_GL_ExtensionSupported("GL_EXT_framebuffer_object"))
 	{
 		// Reset the framebuffer object if we can do a better integer scale.
 		if (vl_sdl2gl_framebufferWidth != integerScaleX || vl_sdl2gl_framebufferHeight != integerScaleY)
@@ -450,10 +454,10 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 
 	glViewport(borderedWinRect.x, realWinH-borderedWinRect.y-borderedWinRect.h, borderedWinRect.w, borderedWinRect.h);
 	// If we're using framebuffers, linearly scale it to the screen.
-	if (true)
+	if (SDL_GL_ExtensionSupported("GL_EXT_framebuffer_object"))
 	{
 		// Use EXT_framebuffer_blit if available, otherwise draw a quad.
-		if (id_glBlitFramebufferEXT)
+		if (SDL_GL_ExtensionSupported("GL_EXT_framebuffer_blit"))
 		{
 			id_glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
 			id_glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
