@@ -616,7 +616,6 @@ const char **us_argv;
 int us_argc;
 
 
-
 void US_LoadConfig(void)
 {
 	int16_t inputDevice, configRev;
@@ -815,6 +814,7 @@ void US_GetSavefiles()
 
 }
 
+static bool us_started = false;
 
 void US_Startup(void)
 {
@@ -840,11 +840,14 @@ void US_Startup(void)
 			break;
 		}
 	}
+	us_started = true;
 
 }
 
 void US_Shutdown(void)
 {
+	if (!us_started)
+		return;
 	// TODO: More to add
 	US_SaveConfig();
 }
