@@ -42,10 +42,11 @@ WITH_SDL2=1
 ifeq ($(WITH_SDL2), 1)
 	IDOBJECTS+= id_vl_sdl2gl.o 
 	FRAMEWORKS= -framework SDL2 -framework OpenGL
-
+	SDLINCLUDE= -I/Library/Frameworks/SDL2.framework/Headers
 else
 	IDOBJECTS+= id_vl_sdl12.o
 	FRAMEWORKS= -framework SDL
+	SDLINCLUDE= -I/Library/Frameworks/SDL.framework/Headers
 endif
 
 OBJ := $(IDOBJECTS:%=../obj/%)
@@ -66,7 +67,7 @@ binfiles: ../data/keen5/ACTION.CK5
 
 ../obj/%.o: %.c
 	@mkdir -p $(dir $@)
-	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -c -MMD -o $@ $<
+	$(CXX) $(INTCXXFLAGS) $(SDLINCLUDE) $(CXXFLAGS) -g -c -MMD -o $@ $<
 
 $(OUTBIN): $(OBJ)
 	@mkdir -p $(dir $@)
