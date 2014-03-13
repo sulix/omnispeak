@@ -817,6 +817,27 @@ void CA_CacheMap(int mapIndex)
 	}
 }
 
+void CA_AssertFileExists(char *filename)
+{
+	if (!CAL_AdjustFilenameCase(filename))
+	{
+		char message[128];
+#ifdef _MSC_VER
+		// MSVC++ does not have snprintf, but does have _snprintf which does not null-terminate.
+		// Here it shouldn't be a problem (Keen filenames are 8.3, so won't overflow the buffer), but it's
+		// better safe than sorry.
+		_snprintf(message, 127, "Could not find %s. Please copy it into the Omnispeak directory.", filename);
+		message[127] = '\0';
+#else
+		snprintf(message, 128, "Could not find %s. Please copy it into the Omnispeak directory.", filename);
+#endif
+#if SDL_VERSION_ATLEAST(1,3,0)
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Omnispeak", message, NULL);
+#endif
+		Quit(message);
+	}
+}
+
 // CA_Startup opens the core CA datafiles
 void CA_Startup(void)
 {
@@ -830,14 +851,13 @@ void CA_Startup(void)
 		chdir(SDL_GetBasePath());
 	}
 #endif
+	// Check EGAGRAPH
+	CA_AssertFileExists(checkFile);
+	char audioCheckFile[] = "AUDIO.CK5";
+	CA_AssertFileExists(audioCheckFile);
+	char gameMapsCheckFile[] = "GAMEMAPS.CK5";
+	CA_AssertFileExists(gameMapsCheckFile);
 
-#if SDL_VERSION_ATLEAST(1,3,0)
-	if (!CAL_AdjustFilenameCase(checkFile))
-	{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Omnispeak", "Could not find EGAGRAPH.CK5. Please copy Keen 5 into the Omnispeak directory.", NULL);
-		Quit("Could not find EGAGRAPH.CK5. Please copy Keen 5 into the Omnispeak directory.");
-	}
-#endif
 
 	// Load the ?GAGRAPH.EXT file!
 	CAL_SetupGrFile();
