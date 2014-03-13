@@ -251,10 +251,10 @@ void CK_DrawTerminator(void)
 	// In the meantime, there's this placeholder
 
 	bool terminator_complete = false;
+	VL_ClearScreen(0);
+	VL_SetScrollCoords(0,0);
 #if 0
 	{
-		VL_ClearScreen(0);
-		VL_SetScrollCoords(0,0);
 		//CA_CacheGrChunk(3);
 		int firsttime = SD_GetLastTimeCount();
 	do
