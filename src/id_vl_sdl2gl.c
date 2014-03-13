@@ -132,6 +132,7 @@ const char *pxprog = 	"#version 110\n"\
 			"\tgl_FragColor = texture1D(palette,texture2D(screenBuf, gl_TexCoord[0].xy).r);\n"\
 			"}\n";
 
+void VL_SDL2GL_SetIcon(SDL_Window *wnd);
 
 static void VL_SDL2GL_SetVideoMode(int mode)
 {
@@ -159,6 +160,8 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 	vl_sdl2gl_screenVertScaleFactor = VL_VGA_GFX_HEIGHT_SCALEFACTOR;
 
 	SDL_SetWindowMinimumSize(vl_sdl2gl_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
+
+	VL_SDL2GL_SetIcon(vl_sdl2gl_window);
 
 	if (!VL_SDL2GL_LoadGLProcs())
 	{
