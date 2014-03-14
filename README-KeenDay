@@ -1,0 +1,45 @@
+Omnispeak: A Commander Keen 5 Reimplementation
+Keen Day 2014 Preview Release
+
+Omnispeak is a re-implementation of the Keen:Galaxy engine which aims for
+almost perfect, bug-for-bug compatibility with the original games. Essentially,
+it is a rewrite of the keen 5 engine in modern-ish c99, based on several
+disassembly/decompilation efforts.
+
+At the moment, you can play through all of Keen 5 with Omnispeak. To get it
+running you'll need to copy the AUDIO.CK5, EGAGRAPH.CK5 and GAMEMAPS.CK5 files
+from Keen 5 v1.4 (this is the version you can buy on Steam) and place them into
+the Omnispeak directory.
+
+There are a few things that aren't quite finished you should know about:
+- The status screen is not yet implemented.
+- Nor are the "Terminator" and "Star Wars" intros.
+- "High Scores" do not display.
+- You can't load or save games.
+- Joystick and Gamepad support is not yet implemented.
+- You can't use the mouse to scroll through the menu, either.
+- Not all debug cheats are implemented, and they do not need to be activated
+  with A-2-Enter.
+- There are some minor simulation differences which cause some custom demos to
+  go out of sync.
+- Some switch behaviour used in some levelpacks depends upon the exact memory
+  layout of the original DOS executable, which has not yet been emulated.
+- Custom levels which overlay infoplane values over animated tiles can corrupt
+  memory in the original game, and may not load at this time.
+- And a few other things here and there.
+
+Note that "patches" to the original game are not (and will not) be supported.
+Sprite actions, however, are read from ACTIONS.CK5, and can be modified there.
+The format of this file may change, so we advise not doing anything drastic
+modding-wise with Omnispeak just yet.
+
+The source code for Omnispeak can be found at:
+http://github.com/sulix/omnispeak
+and the version used to build this preview is tagged "keen-day-2014".
+
+Thanks, and Keen On!
+
+-- The Omnispeak Team
+sulix,
+NY00123,
+lemm
