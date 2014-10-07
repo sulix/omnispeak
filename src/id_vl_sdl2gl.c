@@ -64,7 +64,8 @@ PFN_ID_GLBLITFRAMEBUFFEREXTPROC id_glBlitFramebufferEXT = 0;
 static bool VL_SDL2GL_LoadGLProcs()
 {
 	int majorGLVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &majorGLVersion);
+	const char *GLVersion = glGetString(GL_VERSION);
+	sscanf(GLVersion, "%d", &majorGLVersion);
 	if (majorGLVersion < 2) return false;
 	// OpenGL 1.3
 	id_glActiveTexture = (PFN_ID_GLACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glActiveTexture");
