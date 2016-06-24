@@ -121,6 +121,8 @@ uint32_t CAL_ReadULong(void *offset)
 //Begin locals
 SDMode oldsoundmode;
 
+ca_audinfo ca_audInfoE;
+
 uint8_t ca_levelnum = 0, ca_levelbit = 0;
 int16_t ca_mapOn = 0;
 uint8_t ca_graphChunkNeeded[CA_MAX_GRAPH_CHUNKS] = {0};
@@ -159,7 +161,7 @@ bool CA_FarWrite(int handle, uint8_t *source, int length)
 {
 	// TODO: Implement
 	return false;
-	
+
 }
 
 // CA_ReadFile reads a whole file into the preallocated memory buffer at 'offset'
@@ -168,7 +170,7 @@ bool CA_FarWrite(int handle, uint8_t *source, int length)
 bool CA_ReadFile(const char *filename, void *offset)
 {
 	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
-	
+
 	//Find the length of the file.
 	fseek(f,0,SEEK_END);
 	int length = ftell(f);
@@ -229,7 +231,7 @@ bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 
 	int amountRead = fread(*ptr,1, length,f);
 
-	fclose(f);	
+	fclose(f);
 
 	if (amountRead != length)
 		return false;
@@ -272,8 +274,8 @@ void CAL_HuffExpand(void *src, void *dest, int expLength, ca_huffnode *table)
 			// We've got a '0' bit.
 			headptr = table[headptr].bit_0;
 		}
-		
-		
+
+
 		if (headptr > 255) headptr -= 256;
 		else {
 			*(dstptr++) = (uint8_t)(headptr & 0xff);
@@ -290,7 +292,7 @@ void CAL_HuffExpand(void *src, void *dest, int expLength, ca_huffnode *table)
 		}
 	}
 }
-	
+
 #define CA_CARMACK_NEARTAG 0xA700
 #define CA_CARMACK_FARTAG 0xA800
 
@@ -528,7 +530,7 @@ void CAL_ExpandGrChunk(int chunk, void *source)
 {
 	//TODO: Support non-basic chunks.
 	int32_t length = CAL_GetGrChunkExpLength(chunk);
-	
+
 	if (!length)
 	{
 		length = CAL_ReadLong(source);
@@ -706,9 +708,9 @@ uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
 extern uint8_t *ti_tileInfo;
 void CAL_SetupMapFile(void)
 {
-	CA_LoadFile("MAPHEAD.CK5", (void**)(&ca_MapHead), 0);
+	CA_LoadFile("MAPHEAD.EXT", (void**)(&ca_MapHead), 0);
 	ca_GameMaps = fopen(CAL_AdjustExtension("GAMEMAPS.EXT"), "rb");
-	CA_LoadFile("TILEINFO.CK5",(void**)(&ti_tileInfo), 0);
+	CA_LoadFile("TILEINFO.EXT",(void**)(&ti_tileInfo), 0);
 }
 
 static ca_huffnode *ca_audiohuffman;
@@ -718,7 +720,10 @@ int32_t *ca_audiostarts;
 
 void CAL_SetupAudioFile(void)
 {
-	//TODO: Setup cfg mechanism for filenames, chunk data.
+	// Read audio chunk type info from AUDINFOE
+  FILE *audinfoe = fopen(CAL_AdjustExtension("AUDINFOE.EXT"),"rb");
+	fread(&ca_audInfoE, 1, sizeof(ca_audinfo), audinfoe);
+	fclose(audinfoe);
 
 	//Load the AUDIODCT
 	CA_LoadFile("AUDIODCT.EXT", (void**)(&ca_audiohuffman), 0);
@@ -753,15 +758,15 @@ void CA_CacheMap(int mapIndex)
 	//Have we loaded this map's header?
 	if (!CA_MapHeaders[mapIndex])
 	{
-		uint32_t headerOffset = ca_MapHead->headerOffsets[mapIndex]; 
-		
+		uint32_t headerOffset = ca_MapHead->headerOffsets[mapIndex];
+
 		if (headerOffset <= 0)
 		{
 			Quit("CA_CacheMap: Tried to load a non-existant map!");
 		}
 
 		MM_GetPtr((void**)(&CA_MapHeaders[mapIndex]),sizeof(CA_MapHeader));
-		
+
 		fseek(ca_GameMaps, headerOffset, SEEK_SET);
 
 		fread(CA_MapHeaders[mapIndex], 1, sizeof(CA_MapHeader), ca_GameMaps);
@@ -780,7 +785,7 @@ void CA_CacheMap(int mapIndex)
 	{
 		int32_t planeOffset = CA_MapHeaders[mapIndex]->planeOffsets[plane];
 		int32_t planeCompLength = CA_MapHeaders[mapIndex]->planeLengths[plane];
-		
+
 		MM_GetPtr((void**)&CA_mapPlanes[plane],planeSize);
 
 		fseek(ca_GameMaps, planeOffset, SEEK_SET);
@@ -789,7 +794,7 @@ void CA_CacheMap(int mapIndex)
 		MM_GetPtr((void**)(&compBuffer),planeCompLength);
 		//MM_SetLock(&compBuffer,true);
 
-		
+
 		int read = 0;
 		do
 		{
@@ -805,7 +810,7 @@ void CA_CacheMap(int mapIndex)
 
 		uint16_t *rlewBuffer;
 		MM_GetPtr((void**)(&rlewBuffer), carmackExpanded);
-		
+
 		//Decompress the map.
 		CAL_CarmackExpand(compBuffer+1, rlewBuffer, carmackExpanded);
 		CAL_RLEWExpand(rlewBuffer+1, CA_mapPlanes[plane], planeSize, ca_MapHead->rleTag);
@@ -842,29 +847,33 @@ void CA_AssertFileExists(char *filename)
 void CA_Startup(void)
 {
 	// Check for the existence of EGAGRAPH for the Keen Day preview.
-	
+
 	// If the file isn't in the current directory, it might be in the directory the game binary is in.
-	char checkFile[] = "EGAGRAPH.CK5";
-#if SDL_VERSION_ATLEAST(2,0,1) 
+	char checkFile[] = "EGAGRAPH.EXT";
+
+#if SDL_VERSION_ATLEAST(2,0,1)
 	if (!CAL_AdjustFilenameCase(checkFile))
 	{
 		chdir(SDL_GetBasePath());
 	}
 #endif
 	// Check EGAGRAPH
-	CA_AssertFileExists(checkFile);
-	char audioCheckFile[] = "AUDIO.CK5";
-	CA_AssertFileExists(audioCheckFile);
-	char gameMapsCheckFile[] = "GAMEMAPS.CK5";
-	CA_AssertFileExists(gameMapsCheckFile);
+	CA_AssertFileExists(CAL_AdjustExtension(checkFile));
+
+	char audioCheckFile[] = "AUDIO.EXT";
+	CA_AssertFileExists(CAL_AdjustExtension(audioCheckFile));
+
+	char gameMapsCheckFile[] = "GAMEMAPS.EXT";
+	CA_AssertFileExists(CAL_AdjustExtension(gameMapsCheckFile));
 
 
 	// Load the ?GAGRAPH.EXT file!
 	CAL_SetupGrFile();
 
 	// Load some other chunks needed by the game
-	CA_CacheGrChunk(88);	//TODO: What was this again?
-	CA_CacheGrChunk(3);	// Main font
+  // (Moved to CK_InitGame())
+  // CA_CacheGrChunk(88);	//Title Screen
+	// CA_CacheGrChunk(3);	// Main font
 
 	// Setup the map file
 	CAL_SetupMapFile();
@@ -885,7 +894,7 @@ void CA_Shutdown(void)
 	fclose(ca_audiohandle);
 }
 
-uint8_t *CA_audio[206];
+uint8_t *CA_audio[CA_MAX_AUDIO_CHUNKS];
 
 void CA_CacheAudioChunk(int16_t chunk)
 {
@@ -949,16 +958,16 @@ void CA_LoadAllSounds(void)
 		switch (oldsoundmode)
 		{
 		case sdm_PC:
-			offset = STARTPCSOUNDS;
+			offset = ca_audInfoE.startPCSounds; // STARTPCSOUNDS;
 			break;
 		case sdm_AdLib:
-			offset = STARTADLIBSOUNDS;
+      offset = ca_audInfoE.startAdlibSounds; //STARTADLIBSOUNDS;
 			break;
 		default:
 			// Shut up some gcc warnings.
 			break;
 		}
-		for (loopvar = 0; loopvar < NUMSOUNDS; loopvar++, offset++)
+		for (loopvar = 0; loopvar < ca_audInfoE.numSounds; loopvar++, offset++)
 		{
 			if (CA_audio[offset])
 			{
@@ -971,16 +980,16 @@ void CA_LoadAllSounds(void)
 		switch (SoundMode)
 		{
 		case sdm_PC:
-			offset = STARTPCSOUNDS;
+			offset = ca_audInfoE.startPCSounds; // STARTPCSOUNDS;
 			break;
 		case sdm_AdLib:
-			offset = STARTADLIBSOUNDS;
+			offset = ca_audInfoE.startAdlibSounds; // STARTADLIBSOUNDS;
 			break;
 		default:
 			// Shut up some gcc warnings.
 			break;
 		}
-		for (loopvar = 0; loopvar < NUMSOUNDS; loopvar++, offset++)
+		for (loopvar = 0; loopvar < ca_audInfoE.numSounds; loopvar++, offset++)
 		{
 			CA_CacheAudioChunk(offset);
 		}
@@ -1007,12 +1016,12 @@ void CA_SetTileAtPos(int x, int y, int plane, int value)
 	CA_mapPlanes[plane][y*CA_MapHeaders[ca_mapOn]->width+x] = value;
 }
 
-uint16_t CA_GetMapWidth() 
+uint16_t CA_GetMapWidth()
 {
 	return CA_MapHeaders[ca_mapOn]->width;
 }
 
-uint16_t CA_GetMapHeight() 
+uint16_t CA_GetMapHeight()
 {
 	return CA_MapHeaders[ca_mapOn]->height;
 }

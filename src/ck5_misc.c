@@ -37,7 +37,7 @@ CK_Episode ck5_episode ={
 
 // Contains some keen-5 specific functions.
 
-//StartSprites + 
+//StartSprites +
 int16_t CK5_ItemSpriteChunks[] ={
 	224, 226, 228, 230,
 	210, 212, 214, 216, 218, 220,
@@ -73,7 +73,7 @@ void CK_BasicDrawFunc1(CK_object *obj)
 }
 
 /*
- * For walking and turning around at edges 
+ * For walking and turning around at edges
  */
 void CK_BasicDrawFunc2(CK_object *obj)
 {
@@ -778,7 +778,7 @@ void CK5_ScanInfoLayer()
 				{
 					ck_gameState.fusesRemaining++;
 				}
-				break;	
+				break;
 			case 44:
 				if (ck_gameState.difficulty < D_Hard) break;
 			case 43:
@@ -927,7 +927,7 @@ void CK5_ScanInfoLayer()
 			obj->active = OBJ_INACTIVE;
 	}
 	// TODO: Some more stuff (including opening elevator after breaking fuses)
-	
+
 	if (ck_gameState.currentLevel == 0)
 	{
 		int keenYTilePos = ck_keenObj->posY >> 8;
@@ -960,7 +960,7 @@ void CK5_ScanInfoLayer()
 }
 
 // Galaxy Explosion Ending Sequence
-uint8_t endsplosion_pal_change[][18] = 
+uint8_t endsplosion_pal_change[][18] =
 {
 	{ 0x8, 0x8, 0x7, 0xF, 0x7, 0x8, 0x0, 0x8, 0x7, 0xF, 0x7, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
 	{ 0x7, 0x7, 0x7, 0x7, 0x7, 0xF, 0x7, 0x8, 0x0, 0x7, 0xF, 0x7, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0},
@@ -978,9 +978,9 @@ uint8_t endsplosion_palette[17] = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x18
 
 typedef struct CK5_GalExplode
 {
-	uint16_t x[4000]; 
-	int16_t dx[4000]; 
-	uint16_t y[4000]; 
+	uint16_t x[4000];
+	int16_t dx[4000];
+	uint16_t y[4000];
 	int16_t dy[4000];
 } CK5_GalExplode;
 
@@ -1006,7 +1006,7 @@ void CK_GalExplodeUpdateCoords(int offset)
 	{
 		uint16_t newPos;
 
-		newPos = info->x[i] + info->dx[i]; 
+		newPos = info->x[i] + info->dx[i];
 		if (newPos > 320 * 0x80)
 			continue;
 		info->x[i] = newPos;
@@ -1020,7 +1020,7 @@ void CK_GalExplodeUpdateCoords(int offset)
 	}
 }
 
-void CK5_ExplodeGalaxy() 
+void CK5_ExplodeGalaxy()
 {
 	// purge_chunks()
 	VL_SetScrollCoords(0,0);
@@ -1107,7 +1107,7 @@ done:
 	VL_Present();
 
 	IN_UserInput(24 * 70, false);
-	
+
 	StopMusic();
 }
 

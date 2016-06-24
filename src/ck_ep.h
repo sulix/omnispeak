@@ -32,7 +32,6 @@ typedef struct CK_Episode
 
 	// Scan the 'info layer' of a map.
 	void (*scanInfoLayer)();
-	
 } CK_Episode;
 
 extern CK_Episode *ck_currentEpisode;

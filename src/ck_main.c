@@ -116,6 +116,7 @@ void CK_InitGame()
 	CA_MarkGrChunk(0x1C1);
 	CA_MarkGrChunk(0x64);
 	CA_MarkGrChunk(0x65);
+  CA_MarkGrChunk(88); // Moved from CA_Startup
 	CA_CacheMarks(0);
 
 	// Lock them chunks in memory.

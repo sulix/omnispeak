@@ -30,6 +30,16 @@ void CA_Startup(void);
 void CA_Shutdown(void);
 
 // -- Audio --
+
+#define CA_MAX_AUDIO_CHUNKS 256
+typedef struct ca_audinfo
+{
+  uint16_t numSongs, numSounds, numSndChunks;
+  uint16_t startPCSounds, startAdlibSounds, startDigiSounds, startMusic;
+} ca_audinfo;
+
+ca_audinfo ca_audInfoE;
+
 void CA_CacheAudioChunk(int16_t chunk);
 void CA_LoadAllSounds(void);
 
@@ -95,7 +105,7 @@ extern CA_MapHeader *CA_MapHeaders[CA_NUMMAPS];
 
 extern uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
 
-extern uint8_t *CA_audio[NUMSNDCHUNKS];
+extern uint8_t *CA_audio[CA_MAX_AUDIO_CHUNKS];
 
 /* Keen: custom cachebox hooks
  * NOTE: The string may be temporarily modified
@@ -111,7 +121,7 @@ uint16_t *CA_TilePtrAtPos(int x, int y, int plane);
 uint16_t CA_TileAtPos(int x, int y, int plane);
 void CA_SetTileAtPos(int x, int y, int plane, int value);
 uint16_t CA_GetMapHeight();
-uint16_t CA_GetMapWidth(); 
+uint16_t CA_GetMapWidth();
 
 
 #endif
