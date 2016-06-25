@@ -173,6 +173,43 @@ void US_CPrintLine(const char *str)
 	}
 }
 
+void US_CPrint(const char *str)
+{
+	char lastChar;
+	char *strInLine, *strLineStart;
+  char buf[256];
+
+  if (strlen(str) > sizeof(buf)/sizeof(char))
+  {
+    Quit("US_CPrint() - String too long");
+  }
+
+  strcpy(buf, str);
+  strLineStart = buf;
+
+	while (*strLineStart)
+	{
+		strInLine = strLineStart;
+		while (*strInLine)
+		{
+			if (*strInLine == '\n')
+				break;
+			strInLine++;
+		}
+		lastChar = *strInLine;
+		*strInLine = '\0'; // Hence, strLineStart is not const
+		US_CPrintLine(strLineStart);
+		strLineStart = strInLine;
+		if (lastChar)
+		{
+			*strInLine = lastChar; // Again not const
+			strLineStart++;
+		}
+	}
+}
+
+#if 0
+// The old, non-const version of US_CPrint
 void US_CPrint(char *str)
 {
 	char lastChar;
@@ -197,8 +234,9 @@ void US_CPrint(char *str)
 		}
 	}
 }
+#endif
 
-void US_CPrintF(char *str, ...)
+void US_CPrintF(const char *str, ...)
 {
 	char buf[256];
 	va_list args;
