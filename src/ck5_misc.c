@@ -28,10 +28,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck5_ep.h"
 #include <stdio.h>
 
-CK_Episode ck5_episode ={
+CK_EpisodeDef ck5_episode ={
+  Ep_CK5,
 	"CK5",
 	&CK5_SetupFunctions,
-	&CK5_ScanInfoLayer
+	&CK5_ScanInfoLayer,
+  &CK5_DefineConstants
 };
 
 
@@ -43,144 +45,6 @@ int16_t CK5_ItemSpriteChunks[] ={
 	210, 212, 214, 216, 218, 220,
 	222, 233, 207
 };
-
-
-// Think function for adding gravity
-
-void CK_Fall(CK_object *obj)
-{
-	CK_PhysGravityHigh(obj);
-	ck_nextX = obj->velX * SD_GetSpriteSync();
-}
-
-// Think function for adding a slightly lower amount of gravity
-
-void CK_Fall2(CK_object *obj)
-{
-	CK_PhysGravityMid(obj);
-	ck_nextX = obj->velX * SD_GetSpriteSync();
-}
-
-void CK_Glide(CK_object *obj)
-{
-	ck_nextX = obj->velX * SD_GetSpriteSync();
-	ck_nextY = obj->velY * SD_GetSpriteSync();
-}
-
-void CK_BasicDrawFunc1(CK_object *obj)
-{
-	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
-}
-
-/*
- * For walking and turning around at edges
- */
-void CK_BasicDrawFunc2(CK_object *obj)
-{
-	// Hit wall walking right; turn around and go left
-	if (obj->xDirection == IN_motion_Right && obj->leftTI != 0)
-	{
-		obj->posX -= obj->deltaPosX;
-		obj->xDirection = IN_motion_Left;
-		obj->timeUntillThink = US_RndT() / 32;
-		CK_SetAction2(obj, obj->currentAction);
-	}
-		// Hit wall walking left; turn around and go right
-	else if (obj->xDirection == IN_motion_Left && obj->rightTI != 0)
-	{
-		obj->posX -= obj->deltaPosX;
-		obj->xDirection = IN_motion_Right;
-		obj->timeUntillThink = US_RndT() / 32;
-		CK_SetAction2(obj, obj->currentAction);
-	}
-		// Walked off of ledge; turn around
-	else if (obj->topTI == 0)
-	{
-		obj->posX -= obj->deltaPosX;
-		obj->xDirection = -obj->xDirection;
-		obj->timeUntillThink = US_RndT() / 32;
-		CK_SetAction2(obj, obj->currentAction);
-	}
-
-	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
-}
-
-/*
- * Think function for stunned creatures
- */
-void CK_BasicDrawFunc4(CK_object *obj)
-{
-	int starsX, starsY;
-
-	// Handle physics
-	if (obj->leftTI || obj->rightTI)
-	{
-		obj->velX = 0;
-	}
-
-	if (obj->bottomTI)
-	{
-		obj->velY = 0;
-	}
-
-	if (obj->topTI)
-	{
-		obj->velX = obj->velY = 0;
-		if (obj->currentAction->next)
-		{
-			CK_SetAction2(obj, obj->currentAction->next);
-		}
-	}
-
-	// Draw the primary chunk
-	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
-
-
-	// Draw the stunner stars, offset based on the initial type of the stunned
-	// critter
-
-	starsX = starsY = 0;
-
-	switch (obj->user4)
-	{
-	case CT_Sparky:
-		starsX += 0x40;
-		break;
-	case 14:
-		starsY -= 0x80;
-		break;
-	case 0x17:
-		starsY -= 0x80;
-		break;
-	}
-
-	// Tick the star 3-frame animation forward
-	if ((obj->user1 += SD_GetSpriteSync()) > 10)
-	{
-		obj->user1 -= 10;
-		if (++obj->user2 >= 3)
-			obj->user2 = 0;
-	}
-
-	// FIXME: Will cause problems on 64-bit systems
-	RF_AddSpriteDraw((RF_SpriteDrawEntry**) (&obj->user3), obj->posX + starsX, obj->posY + starsY, obj->user2 + 143, false, 3);
-}
-
-void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act)
-{
-	// Kill the stunner shot
-	CK_ShotHit(stunner);
-
-	// Set stunned creature action
-	creature->user1 = creature->user2 = creature->user3 = 0;
-	creature->user4 = creature->type;
-	CK_SetAction2(creature, new_creature_act);
-	creature->type = CT_StunnedCreature;
-
-	// Make the creature jump up a bit
-	if ((creature->velY -= 0x18) < -0x30)
-		creature->velY = -0x30;
-}
 
 void CK5_PointItem(CK_object *obj)
 {
@@ -344,18 +208,6 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	}
 }
 
-void CK_DeadlyCol(CK_object *o1, CK_object *o2)
-{
-	if (o2->type == CT_Stunner)
-	{
-		CK_ShotHit(o2);
-	}
-	else if (o2->type == CT_Player)
-	{
-		CK_KillKeen();
-	}
-}
-
 void CK5_SpawnFallPlat(int tileX, int tileY)
 {
 	CK_object *new_object = CK_GetNewObj(false);
@@ -496,6 +348,44 @@ void CK5_SetupFunctions()
 	CK_ACT_AddFunction("CK5_FallPlatFall", &CK5_FallPlatFall);
 	CK_ACT_AddFunction("CK5_FallPlatRise", &CK5_FallPlatRise);
 	CK_ACT_AddFunction("CK5_LevelEnd", &CK5_LevelEnd);
+}
+
+void CK5_DefineConstants(void)
+{
+  PIC_TITLESCREEN = 88;
+
+  SPR_DEMOSIGN = 0x6B;
+
+  SPR_SECURITYCARD_1 = 207;
+  SPR_GEM_A1 = 224;
+  SPR_GEM_B1 = 226;
+  SPR_GEM_C1 = 228;
+  SPR_GEM_D1 = 230;
+  SPR_100_PTS1 = 210;
+  SPR_200_PTS1 = 212;
+  SPR_500_PTS1 = 214;
+  SPR_1000_PTS1 = 216;
+  SPR_2000_PTS1 = 218;
+  SPR_5000_PTS1 = 220;
+  SPR_1UP1 = 222;
+  SPR_STUNNER1 = 233;
+
+  SPR_SCOREBOX = 235;
+
+  SPR_MAPKEEN_WALK1_N = 248;
+  SPR_MAPKEEN_STAND_N = 250;
+  SPR_MAPKEEN_STAND_NE = 265;
+  SPR_MAPKEEN_STAND_E = 247;
+  SPR_MAPKEEN_STAND_SE = 256;
+  SPR_MAPKEEN_WALK1_S = 251;
+  SPR_MAPKEEN_STAND_S = 253;
+  SPR_MAPKEEN_STAND_SW = 259;
+  SPR_MAPKEEN_STAND_W = 244;
+  SPR_MAPKEEN_STAND_NW = 262;
+
+  TILE8_DIGIT_0 = 0x6;
+  TILE8_DIGIT_EMPTY = 0x29;
+
 }
 
 /*

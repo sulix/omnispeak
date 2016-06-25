@@ -260,7 +260,7 @@ void US_CenterWindow(int w, int h)
 	US_DrawWindow((maxXtile - w) / 2, (maxYtile - h) / 2, w, h);
 }
 
-//	US_SaveWindow() - Saves the current window parms into a record for later restoration 
+//	US_SaveWindow() - Saves the current window parms into a record for later restoration
 void US_SaveWindow(US_WindowRec *win)
 {
 	win->x = US_GetWindowX();
@@ -376,7 +376,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 		sc = IN_GetLastScan();
 		c = IN_GetLastASCII();
 		IN_ClearKeysDown();
-		
+
 		switch (sc)
 		{
 		case IN_SC_LeftArrow:
@@ -766,7 +766,7 @@ static char us_savefile[] = "SAVEGAMx.CK5"; 	/* data_1602e = AZ:45CB */
 US_Savefile us_savefiles[6];
 
 /* Returns the name of the saved game with the given index (0-based) */
-const char *US_GetSavefileName( int index /*, int param_2*/ ) 
+const char *US_GetSavefileName( int index /*, int param_2*/ )
 {
 	us_savefile[7] = (char)(index + '0'); 		/* 'x' in "SAVEGAMx.CK5" */
 	return us_savefile;
@@ -778,16 +778,16 @@ void US_GetSavefiles()
 	FILE *handle;
 	const char *filename;
 	int i;
-	US_Savefile *psfe = us_savefiles;	
+	US_Savefile *psfe = us_savefiles;
 
-	while( i < 6 ) 
+	while( i < 6 )
 	{
 		filename = US_GetSavefileName( i );
 		valid = 0;
 		// handle = open( filename, O_RDONLY | O_BINARY );
 		handle = fopen( filename, "rb");
 
-		if( handle ) 
+		if( handle )
 		{
 			if( fread( psfe, sizeof( US_Savefile ), 1, handle) == 1 )
 				if( strcmp( psfe->id, "CK5" ) == 0 )	/* AZ:46AA */
@@ -803,7 +803,7 @@ void US_GetSavefiles()
 			psfe->used = 0;
 			strcpy( psfe->name, "Empty" );		/* AZ:46B2 */
 		}
-		else 
+		else
 		{
 			psfe->used = 1;
 		}

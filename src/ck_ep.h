@@ -20,11 +20,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CK_EP_H
 #define CK_EP_H
 
+typedef enum CK_Episode
+{
+  Ep_Nil,
+  Ep_CK4,
+  Ep_CK5,
+  Ep_CK6,
+} CK_Episode;
+
 //This structure defines an episode of Commander Keen, providing
 //function pointers to episode specific code and data.
-typedef struct CK_Episode
+typedef struct CK_EpisodeDef
 {
-	// Extension for data files + identifier
+  // Identifier
+  CK_Episode ep;
+
+	// Extension for data files
 	char ext[4];
 
 	// Setup function names for ACTIONS.EXT
@@ -32,8 +43,11 @@ typedef struct CK_Episode
 
 	// Scan the 'info layer' of a map.
 	void (*scanInfoLayer)();
-} CK_Episode;
 
-extern CK_Episode *ck_currentEpisode;
+  // Faux-#define episode-dependent constants
+	void (*defineConstants)();
+} CK_EpisodeDef;
+
+extern CK_EpisodeDef *ck_currentEpisode;
 
 #endif

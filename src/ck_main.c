@@ -37,7 +37,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /*
  * The 'episode' we're playing.
  */
-CK_Episode *ck_currentEpisode;
+CK_EpisodeDef *ck_currentEpisode;
+
+int16_t PIC_TITLESCREEN;
+
+int16_t SPR_DEMOSIGN;
+
+int16_t SPR_SECURITYCARD_1;
+int16_t SPR_GEM_A1;
+int16_t SPR_GEM_B1;
+int16_t SPR_GEM_C1;
+int16_t SPR_GEM_D1;
+int16_t SPR_100_PTS1;
+int16_t SPR_200_PTS1;
+int16_t SPR_500_PTS1;
+int16_t SPR_1000_PTS1;
+int16_t SPR_2000_PTS1;
+int16_t SPR_5000_PTS1;
+int16_t SPR_1UP1;
+int16_t SPR_STUNNER1;
+
+int16_t SPR_SCOREBOX;
+
+int16_t SPR_MAPKEEN_WALK1_N;
+int16_t SPR_MAPKEEN_STAND_N;
+int16_t SPR_MAPKEEN_STAND_NE;
+int16_t SPR_MAPKEEN_STAND_E;
+int16_t SPR_MAPKEEN_STAND_SE;
+int16_t SPR_MAPKEEN_WALK1_S;
+int16_t SPR_MAPKEEN_STAND_S;
+int16_t SPR_MAPKEEN_STAND_SW;
+int16_t SPR_MAPKEEN_STAND_W;
+int16_t SPR_MAPKEEN_STAND_NW;
+
+int16_t TILE8_DIGIT_0;
+int16_t TILE8_DIGIT_EMPTY;
 
 /*
  * Measure the containing box size of a string that spans multiple lines
@@ -274,6 +308,7 @@ int main(int argc, char *argv[])
 
 	// We want Keen 5 (for now!)
 	ck_currentEpisode = &ck5_episode;
+  ck_currentEpisode->defineConstants();
 
 	CK_InitGame();
 

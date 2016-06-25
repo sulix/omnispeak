@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 typedef	struct
 {
 	int	x,y, w,h, px,py;
-} US_WindowRec;	
+} US_WindowRec;
 
 // In ck_quit.c, as it may be customized by individual games.
 void Quit(const char *msg) _NORETURN;

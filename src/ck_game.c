@@ -75,7 +75,7 @@ int cmplen, bufsize, i;
 	if( !CA_FarWrite( handle, (uint8_t*)&ck_gameState, 86 ) )
 		return false;
 
-	bufsize = CA_GetMapWidth() * CA_GetMapHeight() * 2;	
+	bufsize = CA_GetMapWidth() * CA_GetMapHeight() * 2;
 	MM_GetPtr( (mm_ptr_t *)buf, bufsize/*, 0*/ ); /* or ( &buf, (long)bufsize ); -- allocate mem */
 
 	/* Compress and save the current level */
@@ -191,7 +191,7 @@ const char *ck_levelNames[] = {
 	"Security Center",
 	"Defense Tunnel Vlook",
 	"Energy Flow Systems",
-	"Defense Tunnel Burrh", 
+	"Defense Tunnel Burrh",
 	"Regulation\nControl Center",
 	"Defense Tunnel Sorra",
 	"Neutrino\nBurst Injector",
@@ -388,7 +388,7 @@ void CK_LoadLevel(bool doCache)
 
 	if (ca_mapOn == 0)
 	{
-		CK_MapLevelMarkAsDone(); 
+		CK_MapLevelMarkAsDone();
 	}
 
 	RF_MarkTileGraphics();
@@ -531,7 +531,7 @@ void CK_FinishCacheBox()
 
 void CK_TryAgainMenu()
 {
-	uint16_t w, h; 
+	uint16_t w, h;
 	int y1, y2, sel;
 	int y, clr;
 

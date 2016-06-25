@@ -65,6 +65,7 @@ typedef enum CK_ClassType {
 	CT_Player = 2,
 	CT_Stunner,
 	CT_EnemyShot,
+  CT_Item = 5,
 	CT_Platform = 6,
 	CT_StunnedCreature = 7,
 	CT_MapFlag = 8,
@@ -79,7 +80,7 @@ typedef enum CK_ClassType {
 	CT_Master = 19,
 	CT_Shikadi = 20,
 	CT_Shocksund = 21,
-	CT_Sphereful = 22, 
+	CT_Sphereful = 22,
 	CT_Korath = 23,
 	CT_QED = 25,
 } CK_ClassType;
@@ -95,7 +96,7 @@ typedef enum CK_LevelState
 } CK_LevelState;
 
 // This struct is 0x58 bytes big in Keen5
-// It must be preserved if omnispeak savegames are to be compatible 
+// It must be preserved if omnispeak savegames are to be compatible
 // with those of vanilla keen
 typedef struct CK_GameState
 {
@@ -249,6 +250,9 @@ void StartMusic(uint16_t level);
 void StopMusic(void);
 
 /* ck_game.c */
+// // extern const char **ck_levelNames;
+// extern const char **ck_levelEntryTexts;
+
 void CK_NewGame(void);
 void CK_ExitMenu(void);
 
@@ -277,10 +281,53 @@ void CK_OBJ_SetupFunctions();
 /* ck_main.c */
 void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h);
 
+/* ck_misc.c */
+void CK_Fall(CK_object *obj);
+void CK_Fall2(CK_object *obj);
+void CK_Glide(CK_object *obj);
+void CK_BasicDrawFunc1(CK_object *obj);
+void CK_BasicDrawFunc2(CK_object *obj);
+void CK_BasicDrawFunc4(CK_object *obj);
+void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act);
+void CK_DeadlyCol(CK_object *o1, CK_object *o2);
+
 /* ck_text.c */
 void HelpScreens(void);
 
 /* ck_us_2.c */
 void CK_US_UpdateOptionsMenus();
 
+extern int16_t PIC_TITLESCREEN;
+
+extern int16_t SPR_DEMOSIGN;
+
+extern int16_t SPR_SECURITYCARD_1;
+extern int16_t SPR_GEM_A1;
+extern int16_t SPR_GEM_B1;
+extern int16_t SPR_GEM_C1;
+extern int16_t SPR_GEM_D1;
+extern int16_t SPR_100_PTS1;
+extern int16_t SPR_200_PTS1;
+extern int16_t SPR_500_PTS1;
+extern int16_t SPR_1000_PTS1;
+extern int16_t SPR_2000_PTS1;
+extern int16_t SPR_5000_PTS1;
+extern int16_t SPR_1UP1;
+extern int16_t SPR_STUNNER1;
+
+extern int16_t SPR_SCOREBOX;
+
+extern int16_t SPR_MAPKEEN_WALK1_N;
+extern int16_t SPR_MAPKEEN_STAND_N;
+extern int16_t SPR_MAPKEEN_STAND_NE;
+extern int16_t SPR_MAPKEEN_STAND_E;
+extern int16_t SPR_MAPKEEN_STAND_SE;
+extern int16_t SPR_MAPKEEN_WALK1_S;
+extern int16_t SPR_MAPKEEN_STAND_S;
+extern int16_t SPR_MAPKEEN_STAND_SW;
+extern int16_t SPR_MAPKEEN_STAND_W;
+extern int16_t SPR_MAPKEEN_STAND_NW;
+
+extern int16_t TILE8_DIGIT_0;
+extern int16_t TILE8_DIGIT_EMPTY;
 #endif
