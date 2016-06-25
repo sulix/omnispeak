@@ -251,7 +251,8 @@ void StopMusic(void);
 
 /* ck_game.c */
 // // extern const char **ck_levelNames;
-// extern const char **ck_levelEntryTexts;
+extern char **ck_levelEntryTexts;
+extern const char **ck_levelNames;
 
 void CK_NewGame(void);
 void CK_ExitMenu(void);

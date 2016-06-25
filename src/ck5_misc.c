@@ -350,6 +350,119 @@ void CK5_SetupFunctions()
 	CK_ACT_AddFunction("CK5_LevelEnd", &CK5_LevelEnd);
 }
 
+// HACK: Sorry, the strings need to be in WRITABLE storage,
+// because US_CPrint (temporarily) modifies them.
+
+char ck5_levelEntryText_0[] =
+	"Keen purposefully\n"
+	"wanders about the\n"
+	"Omegamatic";
+
+char ck5_levelEntryText_1[] =
+	"Keen investigates the\n"
+	"Ion Ventilation System";
+
+char ck5_levelEntryText_2[] =
+	"Keen struts through\n"
+	"the Security Center";
+
+char ck5_levelEntryText_3[] =
+	"Keen invades\n"
+	"Defense Tunnel Vlook";
+
+char ck5_levelEntryText_4[] =
+	"Keen engages\n"
+	"Energy Flow Systems";
+
+char ck5_levelEntryText_5[] =
+	"Keen barrels into\n"
+	"Defense Tunnel Burrh";
+
+char ck5_levelEntryText_6[] =
+	"Keen goes nuts in\n"
+	"the Regulation\n"
+	"Control Center";
+
+char ck5_levelEntryText_7[] =
+	"Keen regrets entering\n"
+	"Defense Tunnel Sorra";
+
+char ck5_levelEntryText_8[] =
+	"Keen blows through\n"
+	"the Neutrino\n"
+	"Burst Injector";
+
+char ck5_levelEntryText_9[] =
+	"Keen trots through\n"
+	"Defense Tunnel Teln";
+
+char ck5_levelEntryText_10[] =
+	"Keen breaks into\n"
+	"the Brownian\n"
+	"Motion Inducer";
+
+char ck5_levelEntryText_11[] =
+	"Keen hurries through\n"
+	"the Gravitational\n"
+	"Damping Hub";
+
+char ck5_levelEntryText_12[] =
+	"Keen explodes into\n"
+	"the Quantum\n"
+	"Explosion Dynamo";
+
+char ck5_levelEntryText_13[] =
+	"Keen faces danger\n"
+	"in the secret\n"
+	"Korath III Base";
+
+char ck5_levelEntryText_14[] =
+	"Keen will not be\n"
+	"in the BWBMegarocket";
+
+char ck5_levelEntryText_15[] =
+	"Keen unexplainedly\n"
+	"find himself by\n"
+	"theHigh Scores";
+
+char *ck5_levelEntryTexts[] = {
+	ck5_levelEntryText_0,
+	ck5_levelEntryText_1,
+	ck5_levelEntryText_2,
+	ck5_levelEntryText_3,
+	ck5_levelEntryText_4,
+	ck5_levelEntryText_5,
+	ck5_levelEntryText_6,
+	ck5_levelEntryText_7,
+	ck5_levelEntryText_8,
+	ck5_levelEntryText_9,
+	ck5_levelEntryText_10,
+	ck5_levelEntryText_11,
+	ck5_levelEntryText_12,
+	ck5_levelEntryText_13,
+	ck5_levelEntryText_14,
+	ck5_levelEntryText_15,
+};
+
+const char *ck5_levelNames[] = {
+	"Omegamatic",
+	"Ion Ventilation System",
+	"Security Center",
+	"Defense Tunnel Vlook",
+	"Energy Flow Systems",
+	"Defense Tunnel Burrh",
+	"Regulation\nControl Center",
+	"Defense Tunnel Sorra",
+	"Neutrino\nBurst Injector",
+	"Defense Tunnel Teln",
+	"Brownian\nMotion Inducer",
+	"Gravitational\nDamping Hub",
+	"Quantum\nExplosion Dynamo",
+	"Korath III Base",
+	"BWBMegarocket",
+	"High Scores",
+};
+
 void CK5_DefineConstants(void)
 {
   PIC_TITLESCREEN = 88;
@@ -385,6 +498,9 @@ void CK5_DefineConstants(void)
 
   TILE8_DIGIT_0 = 0x6;
   TILE8_DIGIT_EMPTY = 0x29;
+
+  ck_levelEntryTexts = ck5_levelEntryTexts;
+  ck_levelNames = ck5_levelNames;
 
 }
 
@@ -427,7 +543,7 @@ void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
 	obj->clipped = CLIP_not;
 	//obj->active = OBJ_ACTIVE;
 	obj->zLayer = 2;
-	obj->type = 5;	//OBJ_ITEM
+	obj->type = CT_Item;	//OBJ_ITEM
 	obj->posX = tileX << 8;
 	obj->posY = tileY << 8;
 	obj->yDirection = -1;
