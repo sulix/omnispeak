@@ -299,6 +299,8 @@ void HelpScreens(void);
 void CK_US_UpdateOptionsMenus();
 
 extern int16_t PIC_TITLESCREEN;
+int16_t PIC_COUNTDOWN5;
+int16_t PIC_COUNTDOWN0;
 
 extern int16_t SPR_DEMOSIGN;
 

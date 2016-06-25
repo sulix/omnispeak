@@ -40,6 +40,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 CK_EpisodeDef *ck_currentEpisode;
 
 int16_t PIC_TITLESCREEN;
+int16_t PIC_COUNTDOWN5;
+int16_t PIC_COUNTDOWN0;
 
 int16_t SPR_DEMOSIGN;
 

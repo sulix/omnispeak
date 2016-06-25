@@ -466,6 +466,8 @@ const char *ck5_levelNames[] = {
 void CK5_DefineConstants(void)
 {
   PIC_TITLESCREEN = 88;
+  PIC_COUNTDOWN5 = 92;
+  PIC_COUNTDOWN0 = 97;
 
   SPR_DEMOSIGN = 0x6B;
 

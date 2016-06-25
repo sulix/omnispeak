@@ -189,68 +189,6 @@ void CK_BeginFadeDrawing(void)
 char **ck_levelEntryTexts;
 const char **ck_levelNames;
 
-
-#if 0
-const char *ck_levelEntryTexts[] ={
-	"Keen purposefully\n"
-	"wanders about the\n"
-	"Omegamatic",
-
-	"Keen investigates the\n"
-	"Ion Ventilation System",
-
-	"Keen struts through\n"
-	"the Security Center",
-
-	"Keen invades\n"
-	"Defense Tunnel Vlook",
-
-	"Keen engages\n"
-	"Energy Flow Systems",
-
-	"Keen barrels into\n"
-	"Defense Tunnel Burrh",
-
-	"Keen goes nuts in\n"
-	"the Regulation\n"
-	"Control Center",
-
-	"Keen regrets entering\n"
-	"Defense Tunnel Sorra",
-
-	"Keen blows through\n"
-	"the Neutrino\n"
-	"Burst Injector",
-
-	"Keen trots through\n"
-	"Defense Tunnel Teln",
-
-	"Keen breaks into\n"
-	"the Brownian\n"
-	"Motion Inducer",
-
-	"Keen hurries through\n"
-	"the Gravitational\n"
-	"Damping Hub",
-
-	"Keen explodes into\n"
-	"the Quantum\n"
-	"Explosion Dynamo",
-
-	"Keen faces danger\n"
-	"in the secret\n"
-	"Korath III Base",
-
-	"Keen will not be\n"
-	"in the BWBMegarocket",
-
-	"Keen unexplainedly\n"
-	"find himself by\n"
-	"theHigh Scores",
-
-};
-#endif
-
 void CK_LoadLevel(bool doCache)
 {
 	if (IN_DemoGetMode() != IN_Demo_Off)
@@ -265,12 +203,7 @@ void CK_LoadLevel(bool doCache)
 	{
 		US_InitRndT(true);
 	}
-#if 0
-	//TODO: Put these in the right place.
-	ck_gameState.nextKeenAt = 20000;
-	ck_gameState.numLives = 3;
-	ck_gameState.numShots = 5;
-#endif
+
 	CA_CacheMap(ck_gameState.currentLevel);
 	RF_NewMap();
 	CA_ClearMarks();
@@ -350,29 +283,29 @@ void CK_BeginCacheBox (char *title, int numChunks)
 	for (int i = 0; i < 6; i++)
 	{
 		// TODO: Episode independence
-		CA_CacheGrChunk(92 + i);
-		ca_graphChunkNeeded[92 + i] &= ~ca_levelbit;
+		CA_CacheGrChunk(PIC_COUNTDOWN5 + i);
+		ca_graphChunkNeeded[PIC_COUNTDOWN5 + i] &= ~ca_levelbit;
 
 		// If a pic can't be cached, forget updating the hand pics
 		// by setting the countdown counter at 5
-		if (!ca_graphChunks[92 + i])
+		if (!ca_graphChunks[PIC_COUNTDOWN5 + i])
 		{
 			// mmerror = 0;
 			ck_cacheCountdownNum = 5;
 			break;
 		}
 
-		MM_SetPurge(ca_graphChunks + 92 + i, 3);
+		MM_SetPurge(ca_graphChunks + PIC_COUNTDOWN5 + i, 3);
 	}
 
 	US_CenterWindow(26, 8);
 
-	if (ca_graphChunks[92])
-		VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 92);
+	if (ca_graphChunks[PIC_COUNTDOWN5])
+		VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), PIC_COUNTDOWN5);
 	else
 		ck_cacheCountdownNum = 5;
 
-	ca_graphChunkNeeded[92] &= !ca_levelbit;
+	ca_graphChunkNeeded[PIC_COUNTDOWN5] &= !ca_levelbit;
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
 	// Omnispeak FIXME: Start printX at the right spot
@@ -388,10 +321,10 @@ void CK_BeginCacheBox (char *title, int numChunks)
 	if (!ck_cacheBoxChunksPerPic && !ck_cacheCountdownNum)
 	{
 		ck_cacheCountdownNum = 5;
-		if (ca_graphChunks[97])
+		if (ca_graphChunks[PIC_COUNTDOWN0])
 		{
 
-			VH_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, 97);
+			VH_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN0);
 		}
 
 		VL_Present();
