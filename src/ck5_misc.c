@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_vl.h"
+#include "ck_game.h"
 #include "ck_play.h"
 #include "ck_phys.h"
 #include "ck_def.h"
@@ -353,6 +354,7 @@ void CK5_SetupFunctions()
 // HACK: Sorry, the strings need to be in WRITABLE storage,
 // because US_CPrint (temporarily) modifies them.
 
+// ck_game.c
 char ck5_levelEntryText_0[] =
 	"Keen purposefully\n"
 	"wanders about the\n"
@@ -472,6 +474,9 @@ soundnames ck5_itemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND
 soundnames ck5_itemSounds[]  = { 19, 19, 19, 19, 8,8,8,8,8,8, 17, 9, 55 };
 int16_t ck5_itemShadows[] = {232, 232, 232, 232, 195, 196, 197,  198,  199,  200, 201, 202, 209};
 
+// ck_play.c
+uint16_t ck5_levelMusic[] ={11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
+
 void CK5_DefineConstants(void)
 {
   FON_MAINFONT = 3;
@@ -513,9 +518,6 @@ void CK5_DefineConstants(void)
   SPR_MAPKEEN_STAND_SW = 259;
   SPR_MAPKEEN_STAND_W = 244;
   SPR_MAPKEEN_STAND_NW = 262;
-
-  TILE8_DIGIT_0 = 0x6;
-  TILE8_DIGIT_EMPTY = 0x29;
 
   DEMOSTART = 4926;
 
@@ -610,6 +612,9 @@ void CK5_DefineConstants(void)
   // ck_keen.c
   ck_itemSounds = ck5_itemSounds;
   ck_itemShadows = ck5_itemShadows;
+
+  // ck_play.c
+  ck_levelMusic = ck5_levelMusic;
 
 }
 

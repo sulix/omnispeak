@@ -62,7 +62,7 @@ uint16_t *ck_itemShadows;
 
 void CK_KeenColFunc(CK_object *a, CK_object *b)
 {
-	if (b->type == 5)
+	if (b->type == CT_Item)
 	{
 		if (b->user1 > 12)
 			return;
@@ -95,7 +95,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		}
 		CK_SetAction2(b, &CK_ACT_itemNotify);
 	}
-	else if (b->type == 6) //Platform
+	else if (b->type == CT_Platform) //Platform
 	{
 		if (!ck_keenState.platform)
 			CK_PhysPushY(a,b);

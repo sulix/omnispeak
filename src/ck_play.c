@@ -937,7 +937,7 @@ void StopMusic(void)
 			MM_SetPurge((void **) &CA_audio[ca_audInfoE.startMusic + i], 3);
 }
 
-const uint16_t level_music[] ={11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
+uint16_t *ck_levelMusic;
 
 void StartMusic(uint16_t level)
 {
@@ -946,12 +946,12 @@ void StartMusic(uint16_t level)
 		Quit("StartMusic() - bad level number");
 	}
 	SD_MusicOff();
-	if (level_music[level] == 0xFFFF)
+	if (ck_levelMusic[level] == 0xFFFF)
 		return;
 	if (MusicMode != smm_AdLib)
 		return;
 	MM_BombOnError(false);
-	CA_CacheAudioChunk(ca_audInfoE.startMusic + level_music[level]);
+	CA_CacheAudioChunk(ca_audInfoE.startMusic + ck_levelMusic[level]);
 	MM_BombOnError(true);
 	// TODO: FINISH THIS!
 #if 0
@@ -975,7 +975,7 @@ void StartMusic(uint16_t level)
 			VW_FadeToBlack();
 	}
 #endif
-	SD_StartMusic((MusicGroup *) CA_audio[ca_audInfoE.startMusic + level_music[level]]);
+	SD_StartMusic((MusicGroup *) CA_audio[ca_audInfoE.startMusic + ck_levelMusic[level]]);
 }
 
 extern int rf_scrollXUnit;

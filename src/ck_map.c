@@ -54,7 +54,7 @@ void CK_DemoSignSpawn()
 	{
 		// If this is a demo, display the DEMO banner
 		CK_SetAction(ck_scoreBoxObj, CK_GetActionByName("CK_ACT_DemoSign"));
-		CA_CacheGrChunk(0x6B);
+		CA_CacheGrChunk(SPR_DEMOSIGN);
 	}
 	else
 	{
@@ -71,7 +71,7 @@ void CK_DemoSign( CK_object *demo)
 	demo->posY = rf_scrollYUnit;
 
 	//place demo sprite in center top
-	RF_AddSpriteDraw( &(demo->sde), demo->posX+0x0A00 - 0x200, demo->posY+0x80,0x6B,false,3);
+	RF_AddSpriteDraw( &(demo->sde), demo->posX+0x0A00 - 0x200, demo->posY+0x80,SPR_DEMOSIGN,false,3);
 }
 
 /*
@@ -137,11 +137,11 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		char buf[16];
 		uint8_t* dest;
 
-		VH_SpriteTableEntry box = VH_GetSpriteTableEntry(0xEB - ca_gfxInfoE.offSprites);
+		VH_SpriteTableEntry box = VH_GetSpriteTableEntry(SPR_SCOREBOX - ca_gfxInfoE.offSprites);
 
 		// Start drawing the tiles after the mask plane,
 		// and four rows from the top
-		dest = (uint8_t*)ca_graphChunks[0xEB];
+		dest = (uint8_t*)ca_graphChunks[SPR_SCOREBOX];
 		dest += (planeSize = box.width * box.height);
 		dest += box.width * 4 + 1;
 
@@ -173,11 +173,11 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		char buf[16];
 		uint8_t* dest;
 
-		VH_SpriteTableEntry box = VH_GetSpriteTableEntry(0xEB - ca_gfxInfoE.offSprites);
+		VH_SpriteTableEntry box = VH_GetSpriteTableEntry(SPR_SCOREBOX - ca_gfxInfoE.offSprites);
 
 		// Start drawing the tiles after the mask plane,
 		// and 12 rows from the top
-		dest = (uint8_t*)ca_graphChunks[0xEB];
+		dest = (uint8_t*)ca_graphChunks[SPR_SCOREBOX];
 		dest += (planeSize = box.width * box.height);
 		dest += box.width * 20 + 8;
 
@@ -211,11 +211,11 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		char buf[16];
 		uint8_t* dest;
 
-		VH_SpriteTableEntry box = VH_GetSpriteTableEntry(0xEB - ca_gfxInfoE.offSprites);
+		VH_SpriteTableEntry box = VH_GetSpriteTableEntry(SPR_SCOREBOX - ca_gfxInfoE.offSprites);
 
 		// Start drawing the tiles after the mask plane,
 		// and 12 rows from the top
-		dest = (uint8_t*)ca_graphChunks[0xEB];
+		dest = (uint8_t*)ca_graphChunks[SPR_SCOREBOX];
 		dest += (planeSize = box.width * box.height);
 		dest += box.width * 20 + 3;
 
@@ -251,6 +251,6 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 	}
 
 	if (updated)
-		RF_AddSpriteDraw(&scorebox->sde, scorebox->posX + 0x40, scorebox->posY + 0x40, 0xEB, false, 3);
+		RF_AddSpriteDraw(&scorebox->sde, scorebox->posX + 0x40, scorebox->posY + 0x40, SPR_SCOREBOX, false, 3);
 
 }

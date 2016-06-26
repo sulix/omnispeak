@@ -249,11 +249,6 @@ void CK_KeenSetupFunctions();
 void StartMusic(uint16_t level);
 void StopMusic(void);
 
-/* ck_game.c */
-// // extern const char **ck_levelNames;
-extern char **ck_levelEntryTexts;
-extern const char **ck_levelNames;
-
 void CK_NewGame(void);
 void CK_ExitMenu(void);
 
@@ -342,9 +337,6 @@ extern int16_t SPR_MAPKEEN_STAND_S;
 extern int16_t SPR_MAPKEEN_STAND_SW;
 extern int16_t SPR_MAPKEEN_STAND_W;
 extern int16_t SPR_MAPKEEN_STAND_NW;
-
-extern int16_t TILE8_DIGIT_0;
-extern int16_t TILE8_DIGIT_EMPTY;
 
 extern int16_t DEMOSTART;
 

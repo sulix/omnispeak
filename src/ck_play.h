@@ -47,6 +47,8 @@ extern bool ck_svgaCompatibility;
 
 extern bool ck_gamePadEnabled;
 
+extern uint16_t *ck_levelMusic;
+
 // Object Mgmt
 struct CK_object *CK_GetNewObj(bool nonCritical);
 void CK_SetupObjArray();
