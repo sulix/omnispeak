@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_vl.h"
-#include "ck_game.h"
 #include "ck_play.h"
 #include "ck_phys.h"
 #include "ck_def.h"
@@ -465,6 +464,7 @@ const char *ck5_levelNames[] = {
 	"High Scores",
 };
 
+// ck_keen.c
 /*
 soundnames ck5_itemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM,
                                SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,
