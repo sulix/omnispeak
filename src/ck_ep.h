@@ -22,10 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 typedef enum CK_Episode
 {
-  Ep_Nil,
-  Ep_CK4,
-  Ep_CK5,
-  Ep_CK6,
+  EP_Nil,
+  EP_CK4,
+  EP_CK5,
+  EP_CK6,
 } CK_Episode;
 
 //This structure defines an episode of Commander Keen, providing

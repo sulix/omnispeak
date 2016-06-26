@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdio.h>
 
 CK_EpisodeDef ck5_episode ={
-  Ep_CK5,
+  EP_CK5,
 	"CK5",
 	&CK5_SetupFunctions,
 	&CK5_ScanInfoLayer,
@@ -465,9 +465,15 @@ const char *ck5_levelNames[] = {
 
 void CK5_DefineConstants(void)
 {
+  FON_MAINFONT = 3;
+
   PIC_TITLESCREEN = 88;
   PIC_COUNTDOWN5 = 92;
+  PIC_COUNTDOWN4 = 93;
   PIC_COUNTDOWN0 = 97;
+
+  MPIC_STATUSLEFT = 100;
+  MPIC_STATUSRIGHT = 101;
 
   SPR_DEMOSIGN = 0x6B;
 
@@ -500,6 +506,8 @@ void CK5_DefineConstants(void)
 
   TILE8_DIGIT_0 = 0x6;
   TILE8_DIGIT_EMPTY = 0x29;
+
+  STR_EXIT_TO_MAP = "Exit to Armageddon";
 
   ck_levelEntryTexts = ck5_levelEntryTexts;
   ck_levelNames = ck5_levelNames;

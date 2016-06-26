@@ -39,9 +39,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 CK_EpisodeDef *ck_currentEpisode;
 
+int16_t FON_MAINFONT;
+
 int16_t PIC_TITLESCREEN;
 int16_t PIC_COUNTDOWN5;
+int16_t PIC_COUNTDOWN4;
 int16_t PIC_COUNTDOWN0;
+
+int16_t MPIC_STATUSLEFT;
+int16_t MPIC_STATUSRIGHT;
 
 int16_t SPR_DEMOSIGN;
 
@@ -74,6 +80,8 @@ int16_t SPR_MAPKEEN_STAND_NW;
 
 int16_t TILE8_DIGIT_0;
 int16_t TILE8_DIGIT_EMPTY;
+
+char *STR_EXIT_TO_MAP;
 
 /*
  * Measure the containing box size of a string that spans multiple lines
@@ -147,20 +155,20 @@ void CK_InitGame()
 
 	// Mark some chunks we'll need.
 	CA_ClearMarks();
-	CA_MarkGrChunk(3);
-	CA_MarkGrChunk(0x1C0);
-	CA_MarkGrChunk(0x1C1);
-	CA_MarkGrChunk(0x64);
-	CA_MarkGrChunk(0x65);
-  CA_MarkGrChunk(88); // Moved from CA_Startup
+	CA_MarkGrChunk(FON_MAINFONT);
+	CA_MarkGrChunk(ca_gfxInfoE.offTiles8);
+	CA_MarkGrChunk(ca_gfxInfoE.offTiles8m);
+	CA_MarkGrChunk(MPIC_STATUSLEFT);
+	CA_MarkGrChunk(MPIC_STATUSRIGHT);
+  CA_MarkGrChunk(PIC_TITLESCREEN); // Moved from CA_Startup
 	CA_CacheMarks(0);
 
 	// Lock them chunks in memory.
-	CA_LockGrChunk(3);
-	MM_SetLock(&ca_graphChunks[448], true);
-	MM_SetLock(&ca_graphChunks[449], true);
-	MM_SetLock(&ca_graphChunks[0x64], true);
-	MM_SetLock(&ca_graphChunks[0x65], true);
+	CA_LockGrChunk(FON_MAINFONT);
+	MM_SetLock(&ca_graphChunks[ca_gfxInfoE.offTiles8], true);
+	MM_SetLock(&ca_graphChunks[ca_gfxInfoE.offTiles8m], true);
+	MM_SetLock(&ca_graphChunks[MPIC_STATUSLEFT], true);
+	MM_SetLock(&ca_graphChunks[MPIC_STATUSRIGHT], true);
 
 
 	// Compile the actions

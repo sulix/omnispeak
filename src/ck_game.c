@@ -50,12 +50,8 @@ void CK_NewGame()
 
 void CK_GameOver()
 {
-	// HACK: US_CPrint modifies strings. So don't use
-	// literals directly. (char * is NOT ok; Use char arrays.)
-	static char gameOverString[] = "gameOverString";
-
 	US_CenterWindow(16, 3);
-	US_CPrint(gameOverString);
+  US_CPrint("gameOverString");
 	VL_Present();
 	//TODO: Wait 4*70 tics
 	IN_WaitKey();
@@ -223,22 +219,18 @@ void CK_LoadLevel(bool doCache)
 	// Cache Marked graphics and draw loading box
 	if (doCache)
 	{
-		// HACK: US_CPrint modifies strings. So don't use
-		// literals directly. (char * is NOT ok; Use char arrays.)
-		static char demoString[] = "DEMO";
-		static char korathString[] = "Keen steps out\nonto Korath III";
 		if (ck_inHighScores)
 		{
 			CA_CacheMarks(NULL);
 		}
 		else if (IN_DemoGetMode() != IN_Demo_Off)
 		{
-			CA_CacheMarks(demoString);
+			CA_CacheMarks("DEMO");
 		}
-		else if (ca_mapOn == 0 && ck_keenObj->clipRects.tileY1 > 100)
+    else if (ck_currentEpisode->ep = EP_CK5 && ca_mapOn == 0 && ck_keenObj->clipRects.tileY1 > 100)
 		{
 			/* Stepping on to korath*/
-			CA_CacheMarks(korathString);
+			CA_CacheMarks("Keen steps out\nonto Korath III");
 		}
 		else
 		{
@@ -339,8 +331,8 @@ void CK_UpdateCacheBox()
 	{
 
 		ck_cacheBoxChunkCounter = ck_cacheBoxChunksPerPic;
-		if ( ca_graphChunks[93 + ck_cacheCountdownNum] )
-			VH_DrawBitmap( US_GetWindowX() - 24, US_GetWindowY() + 40, 93 + ck_cacheCountdownNum);
+		if ( ca_graphChunks[PIC_COUNTDOWN4 + ck_cacheCountdownNum] )
+			VH_DrawBitmap( US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN4 + ck_cacheCountdownNum);
 		VL_Present();
 		// Because loading is VERY fast on omnispeak, add artificial delay
 		VL_DelayTics(10);
@@ -362,12 +354,6 @@ void CK_TryAgainMenu()
 
 	char buf[80];
 
-	// HACK: US_CPrint modifies strings. So don't use
-	// literals directly. (char * is NOT ok; Use char arrays.)
-	static char youDidntMakeItPastString[] = "You didn't make it past";
-	static char tryAgainString[] = "Try Again";
-	static char exitToArmageddonString[] = "Exit to Armageddon";
-
 	/* Copy and measure the level name */
 	strcpy( buf, ck_levelNames[ca_mapOn] );
 	CK_MeasureMultiline( buf, &w, &h );
@@ -381,7 +367,7 @@ void CK_TryAgainMenu()
 		//VW_SyncPages();
 		US_CenterWindow( 20, 8 );
 		US_SetPrintY(US_GetPrintY() + 3);
-		US_CPrint(youDidntMakeItPastString);
+		US_CPrint( "You didn't make it past");
 		y1 = US_GetPrintY() + 22;
 
 		/* Center the level name vertically */
@@ -390,10 +376,10 @@ void CK_TryAgainMenu()
 		US_CPrint(buf);
 
 		US_SetPrintY(y1 + 2);
-		US_CPrint(tryAgainString);
+		US_CPrint( "Try Again");
 		US_SetPrintY(US_GetPrintY() + 4);
 		y2 = US_GetPrintY() - 2;
-		US_CPrint(exitToArmageddonString);
+		US_CPrint(STR_EXIT_TO_MAP);
 
 		IN_ClearKeysDown();
 		sel = 0;
@@ -544,12 +530,15 @@ replayLevel:
 			return;
 
 		case 14:
-			// The level has been ended by fuse destruction
-			SD_PlaySound(SOUND_LEVELEXIT);
-			//word_4A16A = ca_mapOn;
-			ck_gameState.levelsDone[ca_mapOn] = 14;
-			CK5_FuseMessage();
-			ck_gameState.currentLevel = 0;
+      if (ck_currentEpisode->ep == EP_CK5)
+      {
+        // The level has been ended by fuse destruction
+        SD_PlaySound(SOUND_LEVELEXIT);
+        //word_4A16A = ca_mapOn;
+        ck_gameState.levelsDone[ca_mapOn] = 14;
+        CK5_FuseMessage();
+        ck_gameState.currentLevel = 0;
+      }
 			break;
 
 		case 15:
@@ -595,7 +584,10 @@ replayLevel:
 #endif
 
 	// Keen 5: Blow up the galaxy
-	CK5_ExplodeGalaxy();
+  if (ck_currentEpisode->ep == EP_CK5)
+  {
+    CK5_ExplodeGalaxy();
+  }
 
 	//TODO: Update High Scores
 #if 0

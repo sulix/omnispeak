@@ -298,9 +298,17 @@ void HelpScreens(void);
 /* ck_us_2.c */
 void CK_US_UpdateOptionsMenus();
 
+
+// Constants
+extern int16_t FON_MAINFONT;
+
 extern int16_t PIC_TITLESCREEN;
-int16_t PIC_COUNTDOWN5;
-int16_t PIC_COUNTDOWN0;
+extern int16_t PIC_COUNTDOWN5;
+extern int16_t PIC_COUNTDOWN4;
+extern int16_t PIC_COUNTDOWN0;
+
+extern int16_t MPIC_STATUSLEFT;
+extern int16_t MPIC_STATUSRIGHT;
 
 extern int16_t SPR_DEMOSIGN;
 
@@ -333,4 +341,6 @@ extern int16_t SPR_MAPKEEN_STAND_NW;
 
 extern int16_t TILE8_DIGIT_0;
 extern int16_t TILE8_DIGIT_EMPTY;
+
+extern char *STR_EXIT_TO_MAP;
 #endif
