@@ -95,7 +95,7 @@ bool ck_gamePadEnabled;
 // Pogo timer for two-button firing
 int ck_pogoTimer;
 
-// A bunch of global variables from other modules that should be 
+// A bunch of global variables from other modules that should be
 // handled better, but are just defined here for now
 
 extern int game_in_progress;
@@ -454,14 +454,14 @@ void CK_OverlayForegroundTile(int fgTile, int overlayTile)
 	for (int i = 0; i < 64; i++)
 	{
 		uint16_t row, overlayMask, overlayColor;
-		row = i & 0xF;				            // Row of the tile we're on 
+		row = i & 0xF;				            // Row of the tile we're on
 		overlayColor = *(src + i + 0x10);	// Get the overlay color plane
 		overlayMask = *(src + row);	      // Get the overlay mask plane
-		*(dst + row) &= overlayMask;      // Mask dest mask w/ overlay mask 
+		*(dst + row) &= overlayMask;      // Mask dest mask w/ overlay mask
 		*(dst + 0x10 + i) &= overlayMask; // Now draw the overlayTile (mask...)
-		*(dst + 0x10 + i) |= overlayColor;// (... and draw color plane) 
+		*(dst + 0x10 + i) |= overlayColor;// (... and draw color plane)
 	}
-	
+
 }
 
 // TODO: make this interoperable between episodes
@@ -526,7 +526,7 @@ void CK_WallDebug()
 
 bool CK_DebugKeys()
 {
-	// Border colour 
+	// Border colour
 	if (IN_GetKeyState(IN_SC_B) && game_in_progress)
 	{
 		char str[4];
@@ -584,7 +584,7 @@ bool CK_DebugKeys()
 			US_PrintCentered("God Mode ON");
 
 		VL_Present();
-		IN_WaitButton(); 
+		IN_WaitButton();
 		ck_godMode = !ck_godMode;
 		return true;
 	}
@@ -602,7 +602,7 @@ bool CK_DebugKeys()
 		ck_gameState.numShots = 99;
 		ck_gameState.securityCard = 1;
 		VL_Present();
-		IN_WaitButton(); 
+		IN_WaitButton();
 		CK_IncreaseScore(3000);
 		return true;
 	}
@@ -672,7 +672,7 @@ bool CK_DebugKeys()
 	if (IN_GetKeyState(IN_SC_W) && game_in_progress)
 	{
 		char str[4];
-		const char *msg = "  Warp to which level(1-18):"; 
+		const char *msg = "  Warp to which level(1-18):";
 		uint16_t h, w, saveX, saveY; // omnispeak hacks
 
 		// VW_SyncPages();
@@ -933,8 +933,8 @@ void StopMusic(void)
 	SD_MusicOff();
 	for (i = 0; i < LASTMUSTRACK; i++)
 
-		if (CA_audio[STARTMUSIC + i])
-			MM_SetPurge((void **) &CA_audio[STARTMUSIC + i], 3);
+		if (CA_audio[ca_audInfoE.startMusic + i])
+			MM_SetPurge((void **) &CA_audio[ca_audInfoE.startMusic + i], 3);
 }
 
 const uint16_t level_music[] ={11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
@@ -951,7 +951,7 @@ void StartMusic(uint16_t level)
 	if (MusicMode != smm_AdLib)
 		return;
 	MM_BombOnError(false);
-	CA_CacheAudioChunk(STARTMUSIC + level_music[level]);
+	CA_CacheAudioChunk(ca_audInfoE.startMusic + level_music[level]);
 	MM_BombOnError(true);
 	// TODO: FINISH THIS!
 #if 0
@@ -975,7 +975,7 @@ void StartMusic(uint16_t level)
 			VW_FadeToBlack();
 	}
 #endif
-	SD_StartMusic((MusicGroup *) CA_audio[STARTMUSIC + level_music[level]]);
+	SD_StartMusic((MusicGroup *) CA_audio[ca_audInfoE.startMusic + level_music[level]]);
 }
 
 extern int rf_scrollXUnit;
@@ -1094,7 +1094,7 @@ void CK_NormalCamera(CK_object *obj)
 	int16_t deltaX = 0, deltaY = 0;	// in Units
 
 	//TODO: some unknown var must be 0
-	//This var is a "ScrollDisabled flag." If keen dies, it's set so he 
+	//This var is a "ScrollDisabled flag." If keen dies, it's set so he
 	// can fall out the bottom
 	if (ck_scrollDisabled)
 		return;
@@ -1283,7 +1283,7 @@ int CK_PlayLoop()
 	SD_SetSpriteSync(3);
 	SD_SetLastTimeCount(3);
 	SD_SetTimeCount(3);
- 
+
 	while (ck_gameState.levelState == 0)
 	{
 

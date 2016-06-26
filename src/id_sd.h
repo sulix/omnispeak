@@ -8,7 +8,10 @@
 #ifndef	ID_SD_H
 #define	ID_SD_H
 
-#include "audiock5.h"
+typedef int16_t soundnames;
+typedef int16_t musicnames;
+
+// #include "audiock5.h"
 #include "opl/dbopl.h"
 
 typedef	enum

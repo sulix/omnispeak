@@ -272,6 +272,9 @@ void CK_SubmitHighScore(int score, uint16_t arg4);
 void CK_DoHighScores();
 
 /* ck_keen.c */
+soundnames *ck_itemSounds;
+uint16_t *ck_itemShadows;
+
 void CK_IncreaseScore(int score);
 void CK_KillKeen();
 
@@ -302,6 +305,7 @@ void CK_US_UpdateOptionsMenus();
 // Constants
 extern int16_t FON_MAINFONT;
 
+extern int16_t PIC_STARWARS;
 extern int16_t PIC_TITLESCREEN;
 extern int16_t PIC_COUNTDOWN5;
 extern int16_t PIC_COUNTDOWN4;
@@ -341,6 +345,90 @@ extern int16_t SPR_MAPKEEN_STAND_NW;
 
 extern int16_t TILE8_DIGIT_0;
 extern int16_t TILE8_DIGIT_EMPTY;
+
+extern int16_t DEMOSTART;
+
+extern int16_t SOUND_KEENWALK0;
+extern int16_t SOUND_KEENWALK1;
+extern int16_t SOUND_KEENJUMP;
+extern int16_t SOUND_KEENLAND;
+extern int16_t SOUND_KEENSHOOT;
+extern int16_t SOUND_MINEEXPLODE;
+extern int16_t SOUND_SLICEBUMP;
+extern int16_t SOUND_KEENPOGO;
+extern int16_t SOUND_GOTITEM;
+extern int16_t SOUND_GOTSTUNNER;
+extern int16_t SOUND_GOTVITALIN;
+extern int16_t SOUND_UNKNOWN11;
+extern int16_t SOUND_UNKNOWN12;
+extern int16_t SOUND_LEVELEXIT;
+extern int16_t SOUND_NEEDKEYCARD;
+extern int16_t SOUND_KEENHITCEILING;
+extern int16_t SOUND_SPINDREDFLYUP;
+extern int16_t SOUND_GOTEXTRALIFE;
+extern int16_t SOUND_OPENSECURITYDOOR;
+extern int16_t SOUND_GOTGEM;
+extern int16_t SOUND_KEENFALL;
+extern int16_t SOUND_KEENOUTOFAMMO;
+extern int16_t SOUND_UNKNOWN22;
+extern int16_t SOUND_KEENDIE;
+extern int16_t SOUND_UNKNOWN24;
+extern int16_t SOUND_KEENSHOTHIT;
+extern int16_t SOUND_UNKNOWN26;
+extern int16_t SOUND_SPIROSLAM;
+extern int16_t SOUND_SPINDREDSLAM;
+extern int16_t SOUND_ENEMYSHOOT;
+extern int16_t SOUND_ENEMYSHOTHIT;
+extern int16_t SOUND_AMPTONWALK0;
+extern int16_t SOUND_AMPTONWALK1;
+extern int16_t SOUND_AMPTONSTUN;
+extern int16_t SOUND_UNKNOWN34;
+extern int16_t SOUND_UNKNOWN35;
+extern int16_t SOUND_SHELLYEXPLODE;
+extern int16_t SOUND_SPINDREDFLYDOWN;
+extern int16_t SOUND_MASTERSHOT;
+extern int16_t SOUND_MASTERTELE;
+extern int16_t SOUND_POLEZAP;
+extern int16_t SOUND_UNKNOWN41;
+extern int16_t SOUND_SHOCKSUNDBARK;
+extern int16_t SOUND_UNKNOWN43;
+extern int16_t SOUND_UNKNOWN44;
+extern int16_t SOUND_BARKSHOTDIE;
+extern int16_t SOUND_UNKNOWN46;
+extern int16_t SOUND_UNKNOWN47;
+extern int16_t SOUND_UNKNOWN48;
+extern int16_t SOUND_UNKNOWN49;
+extern int16_t SOUND_UNKNOWN50;
+extern int16_t SOUND_UNKNOWN51;
+extern int16_t SOUND_UNKNOWN52;
+extern int16_t SOUND_GALAXYEXPLODE;
+extern int16_t SOUND_GALAXYEXPLODEPRE;
+extern int16_t SOUND_GOTKEYCARD;
+extern int16_t SOUND_UNKNOWN56;
+extern int16_t SOUND_KEENLANDONFUSE;
+extern int16_t SOUND_SPARKYPREPCHARGE;
+extern int16_t SOUND_SPHEREFULCEILING;
+extern int16_t SOUND_OPENGEMDOOR;
+extern int16_t SOUND_SPIROFLY;
+extern int16_t SOUND_UNKNOWN62;
+extern int16_t SOUND_UNKNOWN63;
+extern int16_t LASTSOUND;
+
+extern int16_t CAMEIN_MUS;
+extern int16_t LITTLEAMPTON_MUS;
+extern int16_t THEICE_MUS;
+extern int16_t SNOOPIN_MUS;
+extern int16_t BAGPIPES_MUS;
+extern int16_t WEDNESDAY_MUS;
+extern int16_t ROCKNOSTONE_MUS;
+extern int16_t OUTOFBREATH_MUS;
+extern int16_t SHIKADIAIRE_MUS;
+extern int16_t DIAMONDS_MUS;
+extern int16_t TIGHTER_MUS;
+extern int16_t ROBOREDROCK_MUS;
+extern int16_t FANFARE_MUS;
+extern int16_t BRINGEROFWAR_MUS;
+extern int16_t LASTMUSTRACK;
 
 extern char *STR_EXIT_TO_MAP;
 #endif

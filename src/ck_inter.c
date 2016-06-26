@@ -90,7 +90,7 @@ void CK_FizzleFade()
 	uint16_t columns1[320];
 	uint16_t rows1[200];
 
-	// Construct a multiplication table for multiples of 
+	// Construct a multiplication table for multiples of
 	for (i = 0; i < 320; i++)
 		columns1[i] = i;
 
@@ -98,14 +98,14 @@ void CK_FizzleFade()
 	// Shuffle the table entries
 	for (i = 0; i < 320; i++)
 	{
-		
-		// NOTE: BCC rand() implementation is capped at 0x7FFF 
+
+		// NOTE: BCC rand() implementation is capped at 0x7FFF
 		int16_t var2 = (320 * (rand()&0x7FFF))/0x8000;
 
 		uint16_t var4 = columns1[var2];
 
 		columns1[var2] = columns1[i];
-		
+
 		columns1[i] = var4;
 	}
 
@@ -131,22 +131,22 @@ void CK_FizzleFade()
 	// VW_SetScreen(0, bufferofs_0);
 
 	// DOS: Draw Title Bitmap offscreen
-	// VW_DrawBitmap(0,0,88); 
+	// VW_DrawBitmap(0,0,PIC_TITLESCREEN);
 
 	// SDL: Draw it to a new surface
 	uint8_t *titleBuffer = (uint8_t *)VL_CreateSurface(320, 200);
 
 	// FIXME: This is cached somewhere else
-	CA_CacheGrChunk(88);
+	CA_CacheGrChunk(PIC_TITLESCREEN);
 
-	VH_BitmapTableEntry dimensions = VH_GetBitmapTableEntry(88 - ca_gfxInfoE.offBitmaps);
-	
-	VL_UnmaskedToSurface(ca_graphChunks[88], titleBuffer, 0, 0, dimensions.width*8, dimensions.height);
+	VH_BitmapTableEntry dimensions = VH_GetBitmapTableEntry(PIC_TITLESCREEN - ca_gfxInfoE.offBitmaps);
+
+	VL_UnmaskedToSurface(ca_graphChunks[PIC_TITLESCREEN], titleBuffer, 0, 0, dimensions.width*8, dimensions.height);
 
 	// int16_t copyDelta = bufferofs_0 - bufferofs;
 
 	// Do the fizzling
-	// 
+	//
 	for (i = 0; i < 360; i++)
 	{
 		int16_t var_10 = i-160;
@@ -170,7 +170,7 @@ void CK_FizzleFade()
 
 				if (++rows1[y] == 320)
 					rows1[y] = 0;
-					
+
 				// Here's what happens in DOS Keen, for reference
 #if 0
 				_SI = x % 8;
@@ -187,7 +187,7 @@ void CK_FizzleFade()
 				{
 					// Enable memory write to one color plane only
 					outw(0x3C4, (1<<plane)<<8|2);
-					
+
 					// Read from the corresponding color plane
 					outw(0x3CE, (1*plane)<<8|4);
 
@@ -202,7 +202,7 @@ void CK_FizzleFade()
 				// VL_SurfaceToScreen(titleBuffer, 0, 0, 0, 0, 320, 200);
 
 			}
-			
+
 		}
 
 		VL_Present();
@@ -210,11 +210,11 @@ void CK_FizzleFade()
 		// VL_WaitVBL(1);
 		VL_DelayTics(1);
 
-		IN_PumpEvents(); 
+		IN_PumpEvents();
 
 		if (IN_CheckAck())
-			if (IN_GetLastScan() == 0x3B)
-				IN_SetLastScan(0x39);
+			if (IN_GetLastScan() == IN_SC_F1)
+				IN_SetLastScan(IN_SC_Space);
 
 		if (IN_GetLastScan())
 		{
@@ -242,7 +242,7 @@ void CK_FizzleFade()
 
 	// VL_DestroySurface?
 	// free(titleBuffer);
-	
+
 }
 
 void CK_DrawTerminator(void)
@@ -272,7 +272,7 @@ void CK_DrawTerminator(void)
 
 		if ((SD_GetTimeCount()-firsttime)/70 > 3)
 			break;
-		
+
 
 	} while (!IN_GetLastScan());
 	}
@@ -321,8 +321,8 @@ void CK_DrawTerminator(void)
 		// RF_Reset();
 
 		// Display Title Screen
-		CA_CacheGrChunk(88);
-		VH_DrawBitmap(0, 0, 88);
+		CA_CacheGrChunk(PIC_TITLESCREEN);
+		VH_DrawBitmap(0, 0, PIC_TITLESCREEN);
 		VL_Present();// ORIGINAL: VW_SetScreen(bufferofs, 0);
 		IN_WaitButton();
 		CA_ClearMarks();
@@ -350,11 +350,11 @@ void CK_DrawTerminator(void)
 
 	if (ck_startingSavedGame)
 		ck_gameState.levelState = 6;
-	
+
 }
 
 /*
- * Star Wars Story Text 
+ * Star Wars Story Text
  */
 
 uint8_t ck_starWarsPalette[] = {
@@ -371,19 +371,19 @@ void CK_DrawStarWars()
 	// Cache the Star Wars font.
 	CA_CacheGrChunk(5);
 	// Render out the story text (to an offscreen buffer?)
-	CA_CacheGrChunk(87); // Story bkg image.
+	CA_CacheGrChunk(PIC_STARWARS); // Story bkg image.
 
 	// Keen draws this to a separate surface, for fast copies.
-	VH_DrawBitmap(0, 0, 87);
+	VH_DrawBitmap(0, 0, PIC_STARWARS);
 
 	VL_SetPalette(ck_starWarsPalette);
-	
+
 	// At this point, Keen generates a set of buffers full of machine code,
 	// one per line, which scale the text (from the surface mentioned above)
 	// to make the "Star Wars" effect. (sub_152AE)
 
 	StartMusic(17);
-	
+
 
 	// TODO: Implement
 	// In the meantime, there's this placeholder
@@ -419,8 +419,8 @@ void CK_DrawStarWars()
 void CK_ShowTitleScreen()
 {
 	// scrollofs = 0;
-	CA_CacheGrChunk(88);
-	VH_DrawBitmap(0,0,88);
+	CA_CacheGrChunk(PIC_TITLESCREEN);
+	VH_DrawBitmap(0,0,PIC_TITLESCREEN);
 	// Draw to offscreen buffer and copy?
 	// VW_SetScreen(0,bufferofs_0);
 	// VWL_ScreenToScreen(bufferofs, bufferofs_0, 42, 224);
@@ -461,7 +461,7 @@ void CK_PlayDemo(int demoNumber)
 {
 	uint8_t *demoBuf;
 
-	int demoChunk = 4926 + demoNumber;
+	int demoChunk = DEMOSTART + demoNumber;
 
 	CK_NewGame();
 
@@ -480,7 +480,7 @@ void CK_PlayDemo(int demoNumber)
 
 	CK_LoadLevel(true);
 
-	
+
 
 #if 0
 	if (ck_inHighScores)
@@ -568,7 +568,7 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 	strcpy(newHighScore.name, "");
 	newHighScore.score = score;
 	newHighScore.arg4 = arg_4;
-	
+
 
 
 	// Check if this entry made the high scores
@@ -584,7 +584,7 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 				continue;
 		}
 	}
-		
+
 	// Insert the new high score into the proper slot
 	for (var4 = 8; --var4 > entry; )
 		memcpy(&ck_highScores[var4], &ck_highScores[var4-1], 64);
@@ -609,7 +609,7 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 
 		US_SetPrintY(entry*16 + 0x23);
 		US_SetPrintX(0x28);
-		
+
 		US_LineInput(US_GetPrintX(), US_GetPrintY(), ck_highScores[var6].name, 0, 1, 0x39, 0x70);
 
 		ck_inHighScores = false;
@@ -619,7 +619,7 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 }
 
 // Play the high score level
-void CK_DoHighScores() 
+void CK_DoHighScores()
 {
 	ck_inHighScores = true;
 	IN_ClearKeysDown();

@@ -56,12 +56,9 @@ void CK_BasicDrawFunc1(CK_object *obj);
 
 CK_action CK_ACT_itemNotify = {0, 0, AT_ScaledOnce, 0, 0, 40, 0, 8, 0, 0, CK_BasicDrawFunc1, 0};
 
-soundnames CK5_ItemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM,
-                               SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,
-                               SOUND_GOTEXTRALIFE, SOUND_GOTSTUNNER, SOUND_GOTKEYCARD
-};
-uint16_t CK5_ItemPoints[]  = {  0,   0,   0,   0, 100, 200, 500, 1000, 2000, 5000,   0,   0,   0};
-uint16_t CK5_ItemShadows[] = {232, 232, 232, 232, 195, 196, 197,  198,  199,  200, 201, 202, 209};
+soundnames *ck_itemSounds;
+uint16_t ck_itemPoints[]  = {  0,   0,   0,   0, 100, 200, 500, 1000, 2000, 5000,   0,   0,   0};
+uint16_t *ck_itemShadows;
 
 void CK_KeenColFunc(CK_object *a, CK_object *b)
 {
@@ -70,13 +67,13 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		if (b->user1 > 12)
 			return;
 
-		SD_PlaySound(CK5_ItemSounds[b->user1]);
+		SD_PlaySound(ck_itemSounds[b->user1]);
 
 		b->type = 1;
 		b->zLayer = 3;
-		b->gfxChunk = CK5_ItemShadows[b->user1];
+		b->gfxChunk = ck_itemShadows[b->user1];
 
-		CK_IncreaseScore(CK5_ItemPoints[b->user1]);
+		CK_IncreaseScore(ck_itemPoints[b->user1]);
 
 		//b->yDirection = -1;
 
@@ -119,13 +116,13 @@ void CK_IncreaseScore(int score)
 		SD_PlaySound(SOUND_GOTEXTRALIFE);
 		ck_gameState.numLives++;
 		ck_gameState.nextKeenAt *= 2;
-	}	
+	}
 }
 
 void CK_SpawnKeen(int tileX, int tileY, int direction)
 {
 	ck_keenObj->type = CT_Player; //TODO: obj_keen
-	ck_keenObj->active = OBJ_ALWAYS_ACTIVE; 
+	ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
 	ck_keenObj->visible = true;
 	ck_keenObj->zLayer = 1;
 	ck_keenObj->clipped = CLIP_normal;
@@ -141,9 +138,9 @@ static uint16_t emptyTile = 0;
 void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 {
 	RF_ReplaceTiles(&emptyTile, 1, tileX, tileY, 1, 1);
-	SD_PlaySound(CK5_ItemSounds[itemNumber]);
+	SD_PlaySound(ck_itemSounds[itemNumber]);
 
-	CK_IncreaseScore(CK5_ItemPoints[itemNumber]);
+	CK_IncreaseScore(ck_itemPoints[itemNumber]);
 
 	// TODO: Handle more kinds of pick-ups
 
@@ -158,7 +155,7 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 	notify->posX = tileX << 8;
 	notify->posY = tileY << 8;
 	notify->yDirection = -1;
-	notify->user2 = CK5_ItemShadows[itemNumber];
+	notify->user2 = ck_itemShadows[itemNumber];
 	notify->gfxChunk = notify->user2;
 	CK_SetAction(notify, &CK_ACT_itemNotify);
 	notify->clipped = CLIP_not;
@@ -172,7 +169,7 @@ void CK_GetVitalin(int tileX, int tileY)
 	notify->zLayer = 3;
 	notify->posX = tileX << 8;
 	notify->posY = tileY << 8;
-	
+
 	CK_SetAction(notify, CK_GetActionByName("CK_ACT_VitalinNotify1"));
 }
 
@@ -260,7 +257,7 @@ void CK_KeenPressSwitchThink(CK_object *obj)
 				if (!TI_ForeAnimTile(currentTile)) break;
 				uint16_t newTile = currentTile + TI_ForeAnimTile(currentTile);
 				RF_ReplaceTiles(&newTile, 1, tileX, tileY, 1, 1);
-			} 
+			}
 		}
 	}
 	else
@@ -277,7 +274,7 @@ void CK_KeenPressSwitchThink(CK_object *obj)
 			// Insert or remove a [B] block.
 			infoPlaneValue ^= 0x1F;
 		}
-		
+
 		CA_mapPlanes[2][switchTargetY*CA_GetMapWidth() + switchTargetX] = infoPlaneValue;
 	}
 }
@@ -320,7 +317,7 @@ bool CK_KeenPressUp(CK_object *obj)
 		if (obj->posX == destUnitX)
 		{
 			//We're at the door.
-			
+
 			// Is it a security door?
 			if (tileMiscFlag == MISCFLAG_SECURITYDOOR)
 			{
@@ -374,7 +371,7 @@ bool CK_KeenPressUp(CK_object *obj)
 	// No? Return to our caller, who will handle poles/looking up.
 	return false;
 }
-	
+
 // Think function for keen "sliding" towards a switch, keygem or door.
 void CK_KeenSlide(CK_object *obj)
 {
@@ -453,7 +450,7 @@ void CK_KeenPlaceGem(CK_object *obj)
 	RF_ReplaceTiles(&newFGTile, 1, obj->clipRects.tileXmid, obj->clipRects.tileY2, 1, 1);
 
 	SD_PlaySound(SOUND_OPENGEMDOOR);
-	
+
 	CK_object *newObj = CK_GetNewObj(false);
 
 	newObj->posX = targetX;
@@ -516,7 +513,7 @@ void CK_KeenRidePlatform(CK_object *obj)
 		// Keen has a "/NOPAN" parameter which disables use of the EGA panning
 		// register. In order to make platforms less ugly when this is on
 		// (though not much less ugly, IMHO), we would do some more processing here.
-		// As is, we just do the line below, to keep keen at the same position while scrolling.	
+		// As is, we just do the line below, to keep keen at the same position while scrolling.
 
 		// Keen's x position should move with 2px granularity when on a platform so that scrolling
 		// looks nice. (Keen will stay at the same pixel position when scrolling, as we scroll 2px at a time).
@@ -570,7 +567,7 @@ void CK_KeenRunningThink(CK_object *obj)
 	}
 
 	obj->xDirection = ck_inputFrame.xDirection;
-	
+
 	if (ck_inputFrame.yDirection == -1)
 	{
 		if (CK_KeenTryClimbPole(obj)) return;
@@ -585,7 +582,7 @@ void CK_KeenRunningThink(CK_object *obj)
 	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
 	{
 		ck_keenState.shootWasPressed = true;
-		
+
 		if (ck_inputFrame.yDirection == -1)
 		{
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenShootUp1");
@@ -711,7 +708,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 		if (CK_KeenTryClimbPole(obj)) return;
 		if (!ck_keenState.keenSliding && CK_KeenPressUp(obj)) return;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookUp1");
-	}	
+	}
 	else if (ck_inputFrame.yDirection == 1)
 	{
 		// Try poles.
@@ -720,7 +717,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookDown1");
 		return;
 	}
-		
+
 }
 
 void CK_KeenStandingThink(CK_object *obj)
@@ -796,7 +793,7 @@ void CK_KeenLookDownThink(CK_object *obj)
 		//If the tiles below the player are blocking on any side but the top, they cannot be jumped through
 		int tile1 = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2, 1);
 		int tile2 = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2+1, 1);
-		
+
 		if (TI_ForeLeft(tile1) || TI_ForeBottom(tile1) || TI_ForeRight(tile1))
 			return;
 
@@ -805,7 +802,7 @@ void CK_KeenLookDownThink(CK_object *obj)
 		#define max(a,b) (((a)>(b))?(a):(b))
 
 		uint16_t deltay = max(SD_GetSpriteSync(),4) << 4;
-	
+
 		//Moving platforms
 		if (ck_keenState.platform)
 			deltay += ck_keenState.platform->deltaPosY;
@@ -822,7 +819,7 @@ void CK_KeenLookDownThink(CK_object *obj)
 		SD_PlaySound(SOUND_KEENFALL);
 		return;
 	}
-	
+
 
 	if (ck_inputFrame.yDirection != 1 || ck_inputFrame.xDirection != 0 || (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
 		|| (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed))
@@ -830,7 +827,7 @@ void CK_KeenLookDownThink(CK_object *obj)
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookDown4");
 		return;
 	}
-}	
+}
 
 // TODO: More to modify here
 void CK_KeenDrawFunc(CK_object *obj)
@@ -926,7 +923,7 @@ void CK_KeenJumpThink(CK_object *obj)
 		obj->velY = -40;
 		ck_keenState.jumpTimer = 18;
 		ck_keenState.jumpWasPressed = true;
-	}	 
+	}
 
 	if (ck_keenState.jumpTimer)
 	{
@@ -1021,7 +1018,7 @@ void CK_KeenJumpThink(CK_object *obj)
 	{
 		CK_KeenTryClimbPole(obj);
 	}
-	
+
 }
 
 extern int rf_scrollXUnit, rf_scrollYUnit;
@@ -1083,7 +1080,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 			if (obj->topTI != 0x19 || !ck_keenState.jumpTimer) // Or standing on a platform.
 			{
 				obj->user1 = obj->user2 = 0;	// Being on the ground is boring.
-	
+
 				//TODO: Finish these
 				if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShoot1"))
 				{
@@ -1092,7 +1089,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 				else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShootUp1"))
 				{
 					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenShootUp1"));
-				}	
+				}
 				else if (ck_inputFrame.xDirection)
 				{
 					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenRun1"));
@@ -1228,7 +1225,7 @@ void CK_KeenPogoThink(CK_object *obj)
 			return;
 		}
 	}
-	
+
 	//Stop pogoing if Alt pressed
 	if (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed)
 	{
@@ -1265,7 +1262,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 
 	if (obj->bottomTI)
 	{
-		
+
 		if (obj->bottomTI == 17)	//Pole
 		{
 			obj->posY -= 32;
@@ -1283,7 +1280,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 				if (obj->velY < 0) obj->velY = 0;
 			}
 			else obj->velY = 0;
-		
+
 			ck_keenState.jumpTimer = 0;
 		}
 	}
@@ -1370,7 +1367,7 @@ void CK_KeenHangThink(CK_object *obj)
 
 		//if (obj->xDirection == 1)
 		//{
-			
+
 
 	}
 	else if (ck_inputFrame.yDirection == 1 || (ck_inputFrame.xDirection && ck_inputFrame.xDirection != obj->xDirection))
@@ -1475,7 +1472,7 @@ void CK_KeenPoleHandleInput(CK_object *obj)
 		}
 	}
 
-	
+
 	if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
 	{
 		ck_keenState.jumpWasPressed = true;
@@ -1535,7 +1532,7 @@ void CK_KeenPoleSitThink(CK_object *obj)
 void CK_KeenPoleUpThink(CK_object *obj)
 {
 	int topTile = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY1, 1);
-	
+
 	if ((TI_ForeMisc(topTile) & 127) != 1)
 	{
 		ck_nextY = 0;
@@ -1588,7 +1585,7 @@ void CK_KeenPoleDownThink(CK_object *obj)
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleUp1");
 		obj->yDirection = -1;
 	}
-	
+
 	CK_KeenPoleHandleInput(obj);
 }
 
@@ -1632,7 +1629,7 @@ void CK_SpawnShot(int x, int y, int direction)
 	shot->active = OBJ_ALWAYS_ACTIVE;
 
 	SD_PlaySound(SOUND_KEENSHOOT);
-	
+
 	switch(direction)
 	{
 	case 0:
@@ -1707,46 +1704,46 @@ void CK_ShotDrawFunc(CK_object *obj)
 	uint16_t t;
 
 	// shoot down through a pole hole
-	if (obj->topTI == 1 && obj->clipRects.tileX1 != obj->clipRects.tileX2) 
+	if (obj->topTI == 1 && obj->clipRects.tileX1 != obj->clipRects.tileX2)
 	{
 		t = CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1-1, 1);
-		if (TI_ForeTop(t) == 0x11) 
+		if (TI_ForeTop(t) == 0x11)
 		{
 			obj->topTI = 0x11;
 			obj->posX += 0x100 - (obj->posX & 0xFF);
 		}
-	} 
+	}
 	// move into pole hole before making contact
-	else if (obj->topTI == 0x11 && obj->clipRects.tileX1 != obj->clipRects.tileX2) 
+	else if (obj->topTI == 0x11 && obj->clipRects.tileX1 != obj->clipRects.tileX2)
 	{
 		obj->posX &= 0xFF00;
 	}
 
 	// shoot through pole hole upwards
-	if (obj->bottomTI == 1 && obj->clipRects.tileX1 != obj->clipRects.tileX2) 
+	if (obj->bottomTI == 1 && obj->clipRects.tileX1 != obj->clipRects.tileX2)
 	{
 		t = CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2+1, 1);
-		if (TI_ForeBottom(t) == 0x11) 
+		if (TI_ForeBottom(t) == 0x11)
 		{
 			obj->bottomTI = 0x11;
 			obj->posX += 0x100 - (obj->posX & 0xFF);
 		}
-	} 
+	}
 	// move into pole hole whilst travelling upwards
-	else if (obj->bottomTI == 0x11 && obj->clipRects.tileX1 != obj->clipRects.tileX2) 
+	else if (obj->bottomTI == 0x11 && obj->clipRects.tileX1 != obj->clipRects.tileX2)
 	{
 		obj->posX &= 0xFF00;
 	}
 
 	// if hit any other type of object, die
-	if (obj->topTI != 0x11 && obj->bottomTI != 0x11) 
+	if (obj->topTI != 0x11 && obj->bottomTI != 0x11)
 	{
-		if (obj->topTI || obj->bottomTI || obj->rightTI || obj->leftTI) 
+		if (obj->topTI || obj->bottomTI || obj->rightTI || obj->leftTI)
 		{
 			CK_ShotHit(obj);
 		}
-	} 
-	else 
+	}
+	else
 	// correct for pole hole passage
 	{
 		ck_nextY = obj->currentAction->velY * SD_GetSpriteSync() * obj->yDirection;

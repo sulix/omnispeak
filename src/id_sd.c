@@ -807,7 +807,7 @@ bool SD_SetSoundMode(SDMode mode)
 			{
 				break;
 			}
-			offset = NUMSOUNDS;
+      offset = ca_audInfoE.numSounds;
 			NeedsDigitized = 0;
 			any_sound = true;
 			break;
