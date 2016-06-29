@@ -47,14 +47,6 @@ int16_t CK4_ItemSpriteChunks[] ={
 	222, 233, 207
 };
 
-void CK4_PointItem(CK_object *obj)
-{
-	//	obj->timeUntillThink = 20;
-	obj->visible = true;
-	if (++obj->gfxChunk == obj->user3)
-		obj->gfxChunk = obj->user2;
-}
-
 void CK4_RedAxisPlatform(CK_object *obj)
 {
 	uint16_t nextPosUnit, nextPosTile;
@@ -285,7 +277,6 @@ void CK4_SetupFunctions()
 	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
 	CK_ACT_AddFunction("CK_BasicDrawFunc2", &CK_BasicDrawFunc2);
 	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
-	CK_ACT_AddFunction("CK4_PointItem", &CK4_PointItem);
 }
 
 // HACK: Sorry, the strings need to be in WRITABLE storage,
@@ -467,20 +458,18 @@ void CK4_DefineConstants(void)
 
   SPR_DEMOSIGN = 129;
 
-  /*
-  SPR_GEM_A1 = 224;
-  SPR_GEM_B1 = 226;
-  SPR_GEM_C1 = 228;
-  SPR_GEM_D1 = 230;
-  SPR_100_PTS1 = 210;
-  SPR_200_PTS1 = 212;
-  SPR_500_PTS1 = 214;
-  SPR_1000_PTS1 = 216;
-  SPR_2000_PTS1 = 218;
-  SPR_5000_PTS1 = 220;
-  SPR_1UP1 = 222;
-  SPR_STUNNER1 = 233;
-  */
+  SPR_GEM_A1 = 242;
+  SPR_GEM_B1 = 244;
+  SPR_GEM_C1 = 246;
+  SPR_GEM_D1 = 248;
+  SPR_100_PTS1 = 227;
+  SPR_200_PTS1 = 229;
+  SPR_500_PTS1 = 231;
+  SPR_1000_PTS1 = 233;
+  SPR_2000_PTS1 = 235;
+  SPR_5000_PTS1 = 237;
+  SPR_1UP1 = 239;
+  SPR_STUNNER1 = 251;
 
   SPR_SCOREBOX = 253;
 
@@ -515,7 +504,7 @@ void CK4_DefineConstants(void)
   SOUND_KEENPOGO = 7;
   SOUND_GOTITEM = 8;
   SOUND_GOTSTUNNER = 9;
-  SOUND_GOTVITALIN = 10;
+  SOUND_GOTCENTILIFE = 10;
   SOUND_UNKNOWN11 = 11;
   SOUND_UNKNOWN12 = 12;
   SOUND_LEVELEXIT = 13;
@@ -618,28 +607,6 @@ CK_object *CK4_SpawnEnemyShot(int posX, int posY, CK_action *action)
 		CK_RemoveObj(new_object);
 		return NULL;
 	}
-}
-
-void CK4_SpawnItem(int tileX, int tileY, int itemNumber)
-{
-
-	CK_object *obj = CK_GetNewObj(false);
-
-	obj->clipped = CLIP_not;
-	//obj->active = OBJ_ACTIVE;
-	obj->zLayer = 2;
-	obj->type = CT_Item;	//OBJ_ITEM
-	obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
-	obj->yDirection = -1;
-	obj->user1 = itemNumber;
-	obj->gfxChunk = CK4_ItemSpriteChunks[itemNumber];
-	obj->user2 = obj->gfxChunk;
-	obj->user3 = obj->gfxChunk + 2;
-	CK_SetAction(obj, CK_GetActionByName("CK4_act_item") );
-	// TODO: Wrong place to cache?
-	CA_CacheGrChunk(obj->gfxChunk);
-	CA_CacheGrChunk(obj->gfxChunk + 1);
 }
 
 void CK4_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
@@ -784,10 +751,10 @@ void CK4_ScanInfoLayer()
 			case 66:
 			case 67:
 			case 68:
-				CK4_SpawnItem(x, y, infoValue - 57);
+				CK_SpawnItem(x, y, infoValue - 57);
 				break;
 			case 70:
-				CK4_SpawnItem(x, y, infoValue - 58); // Omegamatic Keycard
+				CK_SpawnItem(x, y, infoValue - 58); // Omegamatic Keycard
 				break;
 
 			case 84:

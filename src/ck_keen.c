@@ -161,23 +161,11 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 	notify->clipped = CLIP_not;
 }
 
-void CK_GetVitalin(int tileX, int tileY)
-{
-	CK_object *notify = CK_GetNewObj(true);
-	notify->type = 1;
-	notify->clipped = CLIP_not;
-	notify->zLayer = 3;
-	notify->posX = tileX << 8;
-	notify->posY = tileY << 8;
-
-	CK_SetAction(notify, CK_GetActionByName("CK_ACT_VitalinNotify1"));
-}
-
-void CK_KeenGetTileVitalin(int tileX, int tileY)
+void CK_KeenGetTileCentilife(int tileX, int tileY)
 {
 	RF_ReplaceTiles(&emptyTile, 1, tileX, tileY, 1, 1);
-	SD_PlaySound(SOUND_GOTVITALIN);
-	CK_GetVitalin(tileX, tileY);
+	SD_PlaySound(SOUND_GOTCENTILIFE);
+	CK_SpawnCentilifeNotify(tileX, tileY);
 	// TODO: Complete this
 }
 
@@ -195,7 +183,7 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 				CK_KillKeen();
 				break;
 			case 4:
-				CK_KeenGetTileVitalin(x,y);
+				CK_KeenGetTileCentilife(x,y);
 				break;
 			case MISCFLAG_GEMHOLDER0:
 			case MISCFLAG_GEMHOLDER1:

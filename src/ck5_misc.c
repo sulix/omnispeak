@@ -47,14 +47,6 @@ int16_t CK5_ItemSpriteChunks[] ={
 	222, 233, 207
 };
 
-void CK5_PointItem(CK_object *obj)
-{
-	//	obj->timeUntillThink = 20;
-	obj->visible = true;
-	if (++obj->gfxChunk == obj->user3)
-		obj->gfxChunk = obj->user2;
-}
-
 void CK5_RedAxisPlatform(CK_object *obj)
 {
 	uint16_t nextPosUnit, nextPosTile;
@@ -342,7 +334,6 @@ void CK5_SetupFunctions()
 	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
 	CK_ACT_AddFunction("CK_BasicDrawFunc2", &CK_BasicDrawFunc2);
 	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
-	CK_ACT_AddFunction("CK5_PointItem", &CK5_PointItem);
 	CK_ACT_AddFunction("CK5_RedAxisPlatform", &CK5_RedAxisPlatform);
 	CK_ACT_AddFunction("CK5_PurpleAxisPlatform", &CK5_PurpleAxisPlatform);
 	CK_ACT_AddFunction("CK5_FallPlatSit", &CK5_FallPlatSit);
@@ -578,7 +569,7 @@ void CK5_DefineConstants(void)
   SOUND_KEENPOGO = 7;
   SOUND_GOTITEM = 8;
   SOUND_GOTSTUNNER = 9;
-  SOUND_GOTVITALIN = 10;
+  SOUND_GOTCENTILIFE = 10;
   SOUND_UNKNOWN11 = 11;
   SOUND_UNKNOWN12 = 12;
   SOUND_LEVELEXIT = 13;
@@ -697,28 +688,6 @@ CK_object *CK5_SpawnEnemyShot(int posX, int posY, CK_action *action)
 		CK_RemoveObj(new_object);
 		return NULL;
 	}
-}
-
-void CK5_SpawnItem(int tileX, int tileY, int itemNumber)
-{
-
-	CK_object *obj = CK_GetNewObj(false);
-
-	obj->clipped = CLIP_not;
-	//obj->active = OBJ_ACTIVE;
-	obj->zLayer = 2;
-	obj->type = CT_Item;	//OBJ_ITEM
-	obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
-	obj->yDirection = -1;
-	obj->user1 = itemNumber;
-	obj->gfxChunk = CK5_ItemSpriteChunks[itemNumber];
-	obj->user2 = obj->gfxChunk;
-	obj->user3 = obj->gfxChunk + 2;
-	CK_SetAction(obj, CK_GetActionByName("CK5_act_item") );
-	// TODO: Wrong place to cache?
-	CA_CacheGrChunk(obj->gfxChunk);
-	CA_CacheGrChunk(obj->gfxChunk + 1);
 }
 
 void CK5_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
@@ -1006,10 +975,10 @@ void CK5_ScanInfoLayer()
 			case 66:
 			case 67:
 			case 68:
-				CK5_SpawnItem(x, y, infoValue - 57);
+				CK_SpawnItem(x, y, infoValue - 57);
 				break;
 			case 70:
-				CK5_SpawnItem(x, y, infoValue - 58); // Omegamatic Keycard
+				CK_SpawnItem(x, y, infoValue - 58); // Omegamatic Keycard
 				break;
 
 			case 73:

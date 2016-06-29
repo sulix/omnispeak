@@ -184,6 +184,15 @@
 #%action a_Bubble3 0x2EE71ABE A0W A0W W W W 4W W 8W Bubbles NULL DrawFunc1 a_Bubble3
 #
 
+# ck_obj.c
+# Items
+%action CK_ACT_item 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_act_item2
+%action CK_ACT_item2 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_act_item
+
+# Lifewater drops
+%action CK_ACT_CentilifeNotify1 215 215 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify2
+%action CK_ACT_CentilifeNotify2 216 216 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify3
+%action CK_ACT_CentilifeNotify3 217 217 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
 ### Keen4 Stuff
 #%action a_Miragia0 0x2EE71DFC W W W W W 2CW W W miragia_0 NULL NULL a_Miragia1

@@ -230,7 +230,7 @@ void CK_LoadLevel(bool doCache)
 		{
 			CA_CacheMarks("DEMO");
 		}
-    else if (ck_currentEpisode->ep = EP_CK5 && ca_mapOn == 0 && ck_keenObj->clipRects.tileY1 > 100)
+    else if (ck_currentEpisode->ep == EP_CK5 && ca_mapOn == 0 && ck_keenObj->clipRects.tileY1 > 100)
 		{
 			/* Stepping on to korath*/
 			CA_CacheMarks("Keen steps out\nonto Korath III");

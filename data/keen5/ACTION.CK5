@@ -136,7 +136,7 @@
 
 %action CK_ACT_SecurityDoorOpen 0 0 UnscaledOnce 0 0 15 0 0 CK_SecurityDoorOpen NULL NULL CK_ACT_SecurityDoorOpen
 
-# ck5_map.c
+# ck_map.c
 
 #ScoreBox
 %action CK_ACT_ScoreBox 0 0 Frame 0 0 0 0 0 NULL NULL NULL NULL 
@@ -160,16 +160,6 @@
 
 
 # ck5_misc.c
-
-# Items
-%action CK5_act_item 0 0 UnscaledOnce 0 0 20 0 0 CK5_PointItem NULL CK_BasicDrawFunc1 CK5_act_item2
-%action CK5_act_item2 0 0 UnscaledOnce 0 0 20 0 0 CK5_PointItem NULL CK_BasicDrawFunc1 CK5_act_item
-
-
-%action CK_ACT_VitalinNotify1 203 203 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_VitalinNotify2
-%action CK_ACT_VitalinNotify2 204 204 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_VitalinNotify3
-%action CK_ACT_VitalinNotify3 205 205 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_VitalinNotify4
-%action CK_ACT_VitalinNotify4 206 206 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
 # Teleporter Lightning
 %action CK5_ACT_LightningH0 0x122 0x122 UnscaledOnce 0x0 0x0 0x6 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_LightningH1
@@ -203,6 +193,17 @@
 %action CK5_ACT_FallPlat2 0x1be 0x1be ScaledFrame 0x0 0x0 0x0 0x0 -32 CK5_FallPlatRise NULL CK_BasicDrawFunc1 NULL
 
 %action CK5_ACT_redStandPlatform 446 446 UnscaledOnce 0 0 32000 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_redStandPlatform
+
+#ck_obj.c
+# Items
+%action CK_ACT_item 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_act_item2
+%action CK_ACT_item2 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_act_item
+
+# Vitalins
+%action CK_ACT_CentilifeNotify1 203 203 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify2
+%action CK_ACT_CentilifeNotify2 204 204 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify3
+%action CK_ACT_CentilifeNotify3 205 205 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify4
+%action CK_ACT_CentilifeNotify4 206 206 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
 # ck5_obj1.c
 

@@ -300,6 +300,10 @@ void CK_BasicDrawFunc4(CK_object *obj);
 void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act);
 void CK_DeadlyCol(CK_object *o1, CK_object *o2);
 
+/* ck_obj.c */
+void CK_SpawnItem(int tileX, int tileY, int itemNumber);
+void CK_SpawnCentilifeNotify(int tileX, int tileY);
+
 /* ck_text.c */
 void HelpScreens(void);
 
@@ -403,7 +407,7 @@ extern int SOUND_SLICEBUMP;
 extern int SOUND_KEENPOGO;
 extern int SOUND_GOTITEM;
 extern int SOUND_GOTSTUNNER;
-extern int SOUND_GOTVITALIN;
+extern int SOUND_GOTCENTILIFE;
 extern int SOUND_UNKNOWN11;
 extern int SOUND_UNKNOWN12;
 extern int SOUND_LEVELEXIT;
