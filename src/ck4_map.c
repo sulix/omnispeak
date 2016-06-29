@@ -15,23 +15,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ */
 
-#ifndef CK_GAME_H
-#define CK_GAME_H
+#include "id_ca.h"
+#include "id_in.h"
+#include "id_vl.h"
+#include "id_rf.h"
+#include "id_sd.h"
+#include "ck_play.h"
+#include "ck_phys.h"
+#include "ck_def.h"
+#include "ck_game.h"
+#include "ck_act.h"
+#include "ck4_ep.h"
 
-extern char **ck_levelEntryTexts;
-extern const char **ck_levelNames;
+#include <string.h>
+#include <stdio.h>
 
-extern int ck_lastLevelFinished;
-
-void CK_GameLoop();
-void CK_LoadLevel(bool unknown);
-
-// The string may be temporarily modified by US_CPrint, hence it's non-const.
-void CK_BeginCacheBox (char *title, int numChunks);
-void CK_UpdateCacheBox ();
-void CK_FinishCacheBox ();
-
-#endif
-
+void CK4_Map_SetupFunctions()
+{
+}

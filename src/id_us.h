@@ -161,7 +161,8 @@ typedef struct US_Card
 {
 	int x;
 	int y;
-	int gfxChunk;
+	//int gfxChunk;
+  int *gfxChunk; // converted to pointer for multiple episode support
 	// An unknown int
 	int unknown;
 	US_CardItem *items;	//Pointer to item array.

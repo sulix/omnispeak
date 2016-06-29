@@ -37,8 +37,9 @@ int help_line_startx[18], help_line_endx[18];
 int help_cur_page, help_num_pages, help_topic;
 int help_full_page;
 /* The chunks for each of the topics */
-int help_chunks[] ={
-	4914, 4915, 4916, 4920, 4917
+// Converted into an array of pointers for multiple-episode support
+int *help_chunks[] ={
+  &TEXT_HELPMENU, &TEXT_CONTROLS, &TEXT_STORY, &TEXT_ORDER, &TEXT_ABOUTID
 };
 
 void RipToEOL( void )
@@ -173,7 +174,7 @@ void HandleCommand( void )
 		/* Draw the picture */
 		ParsePicCommand();
 		VH_DrawBitmap( help_x & ~7, help_y, help_pic );
-		bmpinfo = VH_GetBitmapTableEntry(help_pic - 6);
+    bmpinfo = VH_GetBitmapTableEntry(help_pic - ca_gfxInfoE.offBitmaps);
 		w = bmpinfo.width * 8;
 		h = bmpinfo.height;
 
@@ -306,13 +307,13 @@ void PageLayout( int show_status )
 
 	/* Fill the background and draw the border */
 	VH_Bar( 0, 0, 320, 200, 4 );
-	VH_DrawBitmap( 0, 0, 28 );	/* Top border */
-	VH_DrawBitmap( 0, 8, 29 );	/* Left border */
-	VH_DrawBitmap( 312, 8, 30 ); /* Right border */
+	VH_DrawBitmap( 0, 0, PIC_BORDERTOP );	/* Top border */
+	VH_DrawBitmap( 0, 8, PIC_BORDERLEFT );	/* Left border */
+	VH_DrawBitmap( 312, 8, PIC_BORDERRIGHT ); /* Right border */
 	if ( show_status )
-		VH_DrawBitmap( 8, 176, 31 ); /* Bottom status bar */
+		VH_DrawBitmap( 8, 176, PIC_BORDERBOTTOMSTATUS ); /* Bottom status bar */
 	else
-		VH_DrawBitmap( 8, 192, 32 ); /* Bottom border */
+		VH_DrawBitmap( 8, 192, PIC_BORDERBOTTOM ); /* Bottom border */
 
 	/* Set the lines' start and end positions so the text stays within the border */
 	for ( i = 0; i < 18; i++ )
@@ -360,11 +361,11 @@ void PageLayout( int show_status )
 		char buf[64], buf2[64];
 		strcpy( buf, "pg " );
 		// itoa( help_cur_page, buf2, 10 );
-		sprintf(buf2, "%d", help_cur_page); 
+		sprintf(buf2, "%d", help_cur_page);
 		strcat( buf, buf2);
 		strcat( buf, " of " );
 		// itoa( help_num_pages, buf2, 10 );
-		sprintf(buf2, "%d", help_num_pages); 
+		sprintf(buf2, "%d", help_num_pages);
 		strcat( buf, buf2);
 
 		US_SetPrintColour(8);
@@ -405,11 +406,11 @@ void CacheLayoutGraphics( void )
 	help_num_pages = help_cur_page = 0;
 
 	/* Cache the border graphics */
-	CA_MarkGrChunk(28);
-	CA_MarkGrChunk(29);
-	CA_MarkGrChunk(30);
-	CA_MarkGrChunk(31);
-	CA_MarkGrChunk(32);
+	CA_MarkGrChunk(PIC_BORDERTOP);
+	CA_MarkGrChunk(PIC_BORDERLEFT);
+	CA_MarkGrChunk(PIC_BORDERRIGHT);
+	CA_MarkGrChunk(PIC_BORDERBOTTOMSTATUS);
+	CA_MarkGrChunk(PIC_BORDERBOTTOM);
 
 	do
 	{
@@ -464,19 +465,19 @@ int ShowHelp( void )
 	VH_Bar( 0, 0, 320, 200, 4 );
 
 	/* Cache graphics */
-	CA_CacheGrChunk( 6 );	/* Help menu pic */
-	CA_CacheGrChunk( 24 );	/* Help menu pointer */
-	CA_CacheGrChunk( 28 );	/* Top border */
-	CA_CacheGrChunk( 29 );	/* Left border */
-	CA_CacheGrChunk( 30 );	/* Right border */
-	CA_CacheGrChunk( 32 );	/* Bottom border */
+	CA_CacheGrChunk( PIC_HELPMENU );	/* Help menu pic */
+	CA_CacheGrChunk( PIC_HELPPOINTER );	/* Help menu pointer */
+	CA_CacheGrChunk( PIC_BORDERTOP );	/* Top border */
+	CA_CacheGrChunk( PIC_BORDERLEFT );	/* Left border */
+	CA_CacheGrChunk( PIC_BORDERRIGHT );	/* Right border */
+	CA_CacheGrChunk( PIC_BORDERBOTTOM );	/* Bottom border */
 
 	/* Draw the border and the main menu pic */
-	VH_DrawBitmap( 0, 0, 28 );	/* Top border */
-	VH_DrawBitmap( 0, 8, 29 );	/* Left border */
-	VH_DrawBitmap( 312, 8, 30 );	/* Right border */
-	VH_DrawBitmap( 8, 192, 32 );	/* Bottom border */
-	VH_DrawBitmap( 96, 8, 6 );		/* Menu picture */
+	VH_DrawBitmap( 0, 0, PIC_BORDERTOP );	/* Top border */
+	VH_DrawBitmap( 0, 8, PIC_BORDERLEFT );	/* Left border */
+	VH_DrawBitmap( 312, 8, PIC_BORDERRIGHT );	/* Right border */
+	VH_DrawBitmap( 8, 192, PIC_BORDERBOTTOM );	/* Bottom border */
+	VH_DrawBitmap( 96, 8, PIC_HELPMENU );		/* Menu picture */
 
 	ymove = 0;
 	IN_ClearKeysDown();
@@ -491,7 +492,7 @@ int ShowHelp( void )
 			help_topic = 4;
 
 		/* Draw the pointer */
-		VH_DrawBitmap( 48, 48 + help_topic * 24, 24 );
+		VH_DrawBitmap( 48, 48 + help_topic * 24, PIC_HELPPOINTER );
 		VL_SetScrollCoords(0,0);
 		VL_Present(); //update_screen();
 
@@ -599,7 +600,7 @@ AZ:
 		}
 
 		/* Cache the chunk with the topic */
-		n = help_chunks[n];
+		n = *help_chunks[n];
 		CA_CacheGrChunk( n );
 
 		/* Set up the help ptr and initialise the parser */
@@ -668,19 +669,19 @@ void help_endgame( void )
 	// CA_SetGrPurge2();
 
 	/* Cache the chunkss we need */
-	CA_CacheGrChunk( 0x1B );	/* Dim arrow */
-	CA_CacheGrChunk( 0x1A );	/* Bright arrow */
+	CA_CacheGrChunk( PIC_ARROWDIM );	/* Dim arrow */
+	CA_CacheGrChunk( PIC_ARROWBRIGHT );	/* Bright arrow */
 
 	// Check for Korath Fuse
-	if (ck_gameState.levelsDone[13] == 0x0E)
+  if (/*ck_currentEpisode->ep == EP_CK5 &&*/ ck_gameState.levelsDone[13] == 0x0E)
 	{
-		CA_CacheGrChunk( 4919 );
-		ptext = (char *)ca_graphChunks[4919];
+    CA_CacheGrChunk( TEXT_SECRETEND );
+		ptext = (char *)ca_graphChunks[TEXT_SECRETEND];
 	}
 	else
 	{
-		CA_CacheGrChunk( 4918 );
-		ptext = (char *)ca_graphChunks[4918];
+		CA_CacheGrChunk( TEXT_END );
+		ptext = (char *)ca_graphChunks[TEXT_END];
 	}
 
 	/* Initialise the parser */
@@ -699,8 +700,8 @@ void help_endgame( void )
 		bool advancePage = false;
 		while ( !advancePage )
 		{
-			/* Draw the bright arrow and wait a short time */
-			VH_DrawBitmap( 0x12A, 0xB8, 0x1A );
+			/* Draw the dim arrow and wait a short time */
+			VH_DrawBitmap( 0x12A, 0xB8, PIC_ARROWDIM );
 			for ( i = 0; i < 70; i++ )
 			{
 				if ( IN_GetLastScan() != IN_SC_None )
@@ -713,8 +714,8 @@ void help_endgame( void )
 				VL_GetTics( 1 );
 			}
 
-			/* Draw the dim arrow and wait a short time */
-			VH_DrawBitmap( 0x12A, 0xB8, 0x1B );
+      /* Draw the bright arrow and wait a short time */
+			VH_DrawBitmap( 0x12A, 0xB8, PIC_ARROWBRIGHT );
 			for ( i = 0; i < 70; i++ )
 			{
 				if ( IN_GetLastScan() != IN_SC_None )
@@ -732,11 +733,11 @@ void help_endgame( void )
 	/* Uncache our graphics and clean up */
 	StopMusic();
 	if (ck_gameState.levelsDone[13] == 0x0E)
-		MM_FreePtr( &ca_graphChunks[4919] );
+		MM_FreePtr( &ca_graphChunks[TEXT_SECRETEND] );
 	else
-		MM_FreePtr( &ca_graphChunks[4918] );
-	MM_FreePtr( &ca_graphChunks[0x1B] );
-	MM_FreePtr( &ca_graphChunks[0x1A] );
+		MM_FreePtr( &ca_graphChunks[TEXT_END] );
+	MM_FreePtr( &ca_graphChunks[PIC_ARROWBRIGHT] );
+	MM_FreePtr( &ca_graphChunks[PIC_ARROWDIM] );
 	// CA_DownLevel();
 	IN_ClearKeysDown();
 	VL_ClearScreen(4);

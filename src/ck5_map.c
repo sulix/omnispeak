@@ -32,45 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string.h>
 #include <stdio.h>
 
-void CK5_MapKeenWalk(CK_object * obj);
-
 // =========================================================================
-
-
-/*
- * MapKeen Thinks
- * user1 stores compass direction
- * user2 stores animation frame counter
- * user3 stores some sort of velocity
- */
-
-static int ck_mapKeenFrames[] ={ 0xF7, 0x106, 0xF4, 0xFD, 0xFA, 0x100, 0xF1, 0x103 };
-static int word_417BA[] ={ 2, 3, 1, 3, 4, 6, 0, 2};
-
-void CK_SpawnMapKeen(int tileX, int tileY)
-{
-
-	ck_keenObj->type = 2;
-	if (ck_gameState.mapPosX == 0)
-	{
-		ck_keenObj->posX = (tileX << 8);
-		ck_keenObj->posY = (tileY << 8);
-	}
-	else
-	{
-		ck_keenObj->posX = ck_gameState.mapPosX;
-		ck_keenObj->posY = ck_gameState.mapPosY;
-	}
-
-	ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
-	ck_keenObj->zLayer = 1;
-	ck_keenObj->xDirection= ck_keenObj->yDirection = IN_motion_None;
-	ck_keenObj->user1 = 6;
-	ck_keenObj->user2 = 3;
-	ck_keenObj->user3 = 0;
-	ck_keenObj->gfxChunk = 0xF4;
-	CK_SetAction(ck_keenObj, CK_GetActionByName("CK5_ACT_MapKeenStart"));
-}
 
 void CK5_MapKeenTeleSpawn(int tileX, int tileY)
 {
@@ -85,97 +47,7 @@ void CK5_MapKeenTeleSpawn(int tileX, int tileY)
 	ck_keenObj->user2 = 3;
 	ck_keenObj->user3 = 0;
 	ck_keenObj->gfxChunk = 244;
-	CK_SetAction(ck_keenObj, CK_GetActionByName("CK5_ACT_MapKeenStart"));
-}
-
-
-//look for level entrry
-
-void CK5_ScanForLevelEntry(CK_object * obj)
-{
-
-	int tx, ty;
-	int tileY_0 = obj->clipRects.tileY1;
-
-	for (ty = obj->clipRects.tileY1; ty <= obj->clipRects.tileY2; ty++)
-	{
-		for (tx = obj->clipRects.tileX1; tx <= obj->clipRects.tileX2; tx++)
-		{
-			int infotile =CA_TileAtPos(tx, ty, 2);
-			if (infotile > 0xC000 && infotile < 0xC012)
-			{
-				// Vanilla keen stores the current map loaded in the cache manager
-				// and the "current_map" variable stored in the gamestate
-				// would have been changed here.
-				ck_gameState.mapPosX = obj->posX;
-				ck_gameState.mapPosY = obj->posY;
-				ck_gameState.currentLevel = infotile - 0xC000;
-				ck_gameState.levelState = 2;
-				SD_PlaySound(SOUND_UNKNOWN12);
-				return;
-			}
-		}
-	}
-}
-
-void CK5_MapKeenStill(CK_object * obj)
-{
-
-	if (ck_inputFrame.dir != IN_dir_None)
-	{
-		obj->currentAction = CK_GetActionByName("CK5_ACT_MapKeenWalk0");
-		obj->user2 = 0;
-		CK5_MapKeenWalk(obj);
-	}
-
-	if (ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed || ck_keenState.shootIsPressed)
-	{
-		CK5_ScanForLevelEntry(obj);
-	}
-}
-
-void CK5_MapKeenWalk(CK_object * obj)
-{
-
-	if (obj->user3 == 0)
-	{
-		obj->xDirection = ck_inputFrame.xDirection;
-		obj->yDirection = ck_inputFrame.yDirection;
-		if (ck_keenState.pogoIsPressed || ck_keenState.jumpIsPressed || ck_keenState.shootIsPressed)
-			CK5_ScanForLevelEntry(obj);
-
-		// Go back to standing if no arrows pressed
-		if (ck_inputFrame.dir == IN_dir_None)
-		{
-			obj->currentAction = CK_GetActionByName("CK5_ACT_MapKeenStart");
-			obj->gfxChunk = ck_mapKeenFrames[obj->user1] + 3;
-			return;
-		}
-		else
-		{
-			obj->user1 = ck_inputFrame.dir;
-		}
-	}
-	else
-	{
-		if ((obj->user3 -= 4) < 0)
-			obj->user3 = 0;
-	}
-
-	// Advance Walking Frame Animation
-	if (++obj->user2 == 4)
-		obj->user2 = 0;
-	obj->gfxChunk = ck_mapKeenFrames[obj->user1] + word_417BA[obj->user2];
-
-	//walk hi lo sound
-	if (obj->user2 == 1)
-	{
-		SD_PlaySound(SOUND_KEENWALK0);
-	}
-	else if (obj->user2 == 3)
-	{
-		SD_PlaySound(SOUND_KEENWALK1);
-	}
+	CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
 }
 
 // FIXME: Keen teleports, but animation doesn't work
@@ -403,7 +275,7 @@ void CK5_MapKeenElevator(CK_object *keen)
 	keen->user2 = 3;
 	keen->user3 = 0;
 	ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None;
-	keen->currentAction = CK_GetActionByName("CK5_ACT_MapKeenStart");
+	keen->currentAction = CK_GetActionByName("CK_ACT_MapKeenStart");
 	keen->gfxChunk = 0xFD;
 	keen->clipped = CLIP_normal;
 	tileX = keen->posX >> 8;
@@ -582,61 +454,11 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 	// ck_keenObj->user3 = 1;
 }
 
-//Thisis called from playloop
-
-#define MISCFLAG_TELEPORT 0x14
-#define MISCFLAG_LEFTELEVATOR 0x21
-#define MISCFLAG_RIGHTELEVATOR 0x22
-
-void CK_MapMiscFlagsCheck(CK_object *keen)
-{
-
-	int midTileX, midTileY;
-
-	if (keen->user3)
-		return;
-
-	midTileX = keen->clipRects.tileXmid;
-	midTileY = ((keen->clipRects.unitY2 - keen->clipRects.unitY1) / 2 + keen->clipRects.unitY1) >> 8;
-
-	switch (TI_ForeMisc(CA_TileAtPos(midTileX, midTileY, 1)))
-	{
-
-	case MISCFLAG_TELEPORT:
-		CK5_AnimateMapTeleporter(midTileX, midTileY);
-		break;
-
-	case MISCFLAG_LEFTELEVATOR:
-		CK5_AnimateMapElevator(midTileX, midTileY, 0);
-		break;
-
-	case MISCFLAG_RIGHTELEVATOR:
-		CK5_AnimateMapElevator(midTileX, midTileY, -1);
-		break;
-	}
-}
-
-void CK_MapFlagSpawn(int tileX, int tileY)
-{
-
-	CK_object *flag = CK_GetNewObj(false);
-
-	flag->clipped = CLIP_not;
-	flag->zLayer = 3;
-	flag->type = CT_MapFlag;
-	flag->active = OBJ_ACTIVE;
-	flag->posX = (tileX << 8) - 0x50;
-	flag->posY = (tileY << 8) - 0x1E0;
-	flag->actionTimer = US_RndT() / 16;
-	CK_SetAction(flag, CK_GetActionByName("CK5_ACT_MapFlag0"));
-}
 
 /*
  * Setup all of the functions in this file.
  */
 void CK5_Map_SetupFunctions()
 {
-	CK_ACT_AddFunction("CK5_MapKeenStill", &CK5_MapKeenStill);
-	CK_ACT_AddFunction("CK5_MapKeenWalk", &CK5_MapKeenWalk);
 	CK_ACT_AddFunction("CK5_MapKeenElevator", &CK5_MapKeenElevator);
 }

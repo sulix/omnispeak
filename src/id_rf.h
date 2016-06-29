@@ -50,6 +50,14 @@ typedef struct RF_SpriteDrawEntry
 #define RF_SCREEN_WIDTH_TILES 20
 #define RF_SCREEN_HEIGHT_TILES 13
 
+#define PRIORITIES 4
+#define MASKEDTILEPRIORITY 3 // planes go: 0, 1, 2, MTILES, 3
+#define TILEGLOBAL 256
+#define PIXGLOBAL 16
+
+#define G_T_SHIFT 8  // global >> ?? = tile
+#define G_P_SHIFT 4  // global >> ?? = pixels
+#define P_T_SHIFT 4  // pixels >> ?? = tile
 
 extern int rf_scrollXUnit, rf_scrollYUnit;
 extern int rf_scrollXMinUnit;

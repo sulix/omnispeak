@@ -85,7 +85,7 @@ US_CardItem ck_us_debugMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_debugMenu ={ 0, 0, 88, 0, ck_us_debugMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_debugMenu ={ 0, 0, &PIC_DEBUGCARD, 0, ck_us_debugMenuItems, 0, 0, 0, 0 };
 
 // Sound Menu
 US_CardItem ck_us_soundMenuItems[] ={
@@ -96,7 +96,7 @@ US_CardItem ck_us_soundMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_soundMenu ={ 8, 0, 72, 0, ck_us_soundMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_soundMenu ={ 8, 0, &PIC_SOUNDCARD, 0, ck_us_soundMenuItems, 0, 0, 0, 0 };
 
 // Music Menu
 US_CardItem ck_us_musicMenuItems[] ={
@@ -105,7 +105,7 @@ US_CardItem ck_us_musicMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_musicMenu ={ 8, 0, 73, 0, ck_us_musicMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_musicMenu ={ 8, 0, &PIC_MUSICCARD, 0, ck_us_musicMenuItems, 0, 0, 0, 0 };
 
 // New Game Menu
 US_CardItem ck_us_newGameMenuItems[] ={
@@ -115,7 +115,7 @@ US_CardItem ck_us_newGameMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_newGameMenu ={ 8, 0, 68, 0, ck_us_newGameMenuItems, 0, 1, 0, 0/*, 0*/ };
+US_Card ck_us_newGameMenu ={ 8, 0, &PIC_NEWGAMECARD, 0, ck_us_newGameMenuItems, 0, 1, 0, 0/*, 0*/ };
 
 // Load/Save Game Menus
 US_CardItem ck_us_loadSaveMenuItems[] ={
@@ -180,7 +180,7 @@ bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 
 		/* Draw the caption */
 		VH_Bar( item->x + 1, item->y + 2, 146, 7, 8 );
-		i = item - ck_us_loadSaveMenuItems; 
+		i = item - ck_us_loadSaveMenuItems;
 		if ( us_savefiles[i].used )
 			US_SetPrintX(item->x + 2);
 		else
@@ -205,8 +205,8 @@ bool CK_US_SaveGameMenuProc(US_CardMsg msg, US_CardItem *item)
 	return false;
 }
 
-US_Card ck_us_loadGameMenu ={ 4, 3, 69, 0, ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0 };
-US_Card ck_us_saveGameMenu ={ 4, 3, 70, 0, ck_us_loadSaveMenuItems, &CK_US_SaveGameMenuProc, 0, 0, 0 };
+US_Card ck_us_loadGameMenu ={ 4, 3, &PIC_LOADCARD, 0, ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0 };
+US_Card ck_us_saveGameMenu ={ 4, 3, &PIC_SAVECARD, 0, ck_us_loadSaveMenuItems, &CK_US_SaveGameMenuProc, 0, 0, 0 };
 
 // Dummy Menus
 
@@ -225,7 +225,7 @@ US_CardItem ck_us_optionsMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_optionsMenu ={ 8, 0, 78, 0, ck_us_optionsMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_optionsMenu ={ 8, 0, &PIC_OPTIONSCARD, 0, ck_us_optionsMenuItems, 0, 0, 0, 0 };
 
 // Movement Kbd Controls Menu
 US_CardItem ck_us_movementMenuItems[] ={
@@ -240,7 +240,7 @@ US_CardItem ck_us_movementMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_movementMenu ={ 0, 0, 75, 0, ck_us_movementMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
+US_Card ck_us_movementMenu ={ 0, 0, &PIC_MOVEMENTCARD, 0, ck_us_movementMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
 
 // Buttons Kbd Controls Menu
 US_CardItem ck_us_buttonsMenuItems[] ={
@@ -250,7 +250,7 @@ US_CardItem ck_us_buttonsMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_buttonsMenu ={ 0, 0, 76, 0, ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0 };
+US_Card ck_us_buttonsMenu ={ 0, 0, &PIC_BUTTONSCARD, 0, ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0 };
 
 // Keyboard Menu
 US_CardItem ck_us_keyboardMenuItems[] ={
@@ -259,13 +259,13 @@ US_CardItem ck_us_keyboardMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_keyboardMenu ={ 8, 0, 74, 0, ck_us_keyboardMenuItems, &CK_US_KeyboardMenuProc, 0, 0, 0 };
+US_Card ck_us_keyboardMenu ={ 8, 0, &PIC_KEYBOARDCARD, 0, ck_us_keyboardMenuItems, &CK_US_KeyboardMenuProc, 0, 0, 0 };
 
 // Custom Menus
 
-US_Card ck_us_joystick1Menu ={ 0, 0, 77, 0, 0, &CK_US_Joystick1MenuProc, 0, 0, 0 };
-US_Card ck_us_joystick2Menu ={ 0, 0, 77, 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0 };
-US_Card ck_us_gamepadMenu ={ 0, 0, 77, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0 };
+US_Card ck_us_joystick1Menu ={ 0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick1MenuProc, 0, 0, 0 };
+US_Card ck_us_joystick2Menu ={ 0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0 };
+US_Card ck_us_gamepadMenu ={ 0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0 };
 
 // Configure Menu
 US_CardItem ck_us_configureMenuItems[] ={
@@ -279,7 +279,7 @@ US_CardItem ck_us_configureMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_configureMenu ={ 0, 0, 71, 0, ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0 };
+US_Card ck_us_configureMenu ={ 0, 0, &PIC_CONFIGURECARD, 0, ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0 };
 
 // Paddle War!
 
@@ -298,7 +298,7 @@ US_CardItem ck_us_mainMenuItems[] ={
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
-US_Card ck_us_mainMenu ={ 32, 4, 67, 0, ck_us_mainMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_mainMenu ={ 32, 4, &PIC_MENUCARD, 0, ck_us_mainMenuItems, 0, 0, 0, 0 };
 
 extern US_Card *us_currentCard;
 extern IN_ScanCode *key_controls[];
@@ -447,7 +447,7 @@ bool CK_US_KeyboardMenuProc(US_CardMsg msg, US_CardItem *item)
 		game_controller[0] = CTRL_KEYBOARD;
 		gamepad = 0;
 		CK_US_UpdateOptionsMenus();
-#endif 
+#endif
 	}
 	return false;
 }
@@ -623,7 +623,7 @@ void paddlewar( void )
 			// Bounce ball off of side wall
 			if ( (ball_real_x + ball_x_speed) / 4 > 228 || (ball_real_x + ball_x_speed) / 4 < 78 )
 			{
-				SD_PlaySound(SOUND_UNKNOWN47);
+				SD_PlaySound(SOUND_PONGWALL);
 				ball_x_speed = -ball_x_speed;
 			}
 
@@ -636,7 +636,7 @@ void paddlewar( void )
 				new_round = 1;
 				keen_won_last = 0;
 				comp_score++;
-				SD_PlaySound(SOUND_UNKNOWN49);
+				SD_PlaySound(SOUND_COMPSCORE);
 				show_paddlewar_score( keen_score, comp_score );
 				if ( comp_score == 21 )
 				{
@@ -651,7 +651,7 @@ void paddlewar( void )
 				new_round = 1;
 				keen_won_last = 1;
 				keen_score++;
-				SD_PlaySound(SOUND_UNKNOWN50);	/* play_sound */
+				SD_PlaySound(SOUND_KEENSCORE);	/* play_sound */
 				show_paddlewar_score( keen_score, comp_score );
 				if ( keen_score == 21 )
 				{
@@ -672,7 +672,7 @@ void paddlewar( void )
 				{
 					bounce_point = comp_x;
 					y_bounce = 1;
-					SD_PlaySound(SOUND_UNKNOWN48);
+					SD_PlaySound(SOUND_COMPPADDLE);
 				}
 				else if ( ball_y_speed > 0 && ball_y >= 132 && ball_y < 135 && (keen_x - 5) <= ball_x && (keen_x + 11) > ball_x )
 				{
@@ -686,7 +686,7 @@ void paddlewar( void )
 					}
 					bounce_point = keen_x;
 					y_bounce = 1;
-					SD_PlaySound(SOUND_UNKNOWN46);
+					SD_PlaySound(SOUND_KEENPADDLE);
 				}
 
 				if ( y_bounce )
@@ -712,18 +712,18 @@ void paddlewar( void )
 			// (which works around this by having two sprites, one shifted one
 			// pixel over) ends up shifted an extra pixel sometimes. By ignoring
 			// the lower bit of ball_x here, we emulate the shift behaviour we need.
-			VH_DrawSprite( ball_x & ~1, ball_y, (ball_x & 1) ? 104 : 103 );
+			VH_DrawSprite( ball_x & ~1, ball_y, (ball_x & 1) ? SPR_BALL1 : SPR_BALL0 );
 		}
 
 		// Draw Computer Paddle
 		VH_Bar( old_comp_x - 3, 66, 16, 3, 8 );
 		old_comp_x = comp_x;
-		VH_DrawSprite( comp_x, 66, 102 );
+		VH_DrawSprite( comp_x, 66, SPR_PADDLE );
 
 		// Draw Keen paddle
 		VH_Bar( old_keen_x - 3, 135, 16, 3, 8 );
 		old_keen_x = keen_x;
-		VH_DrawSprite( keen_x, 135, 102 );
+		VH_DrawSprite( keen_x, 135, SPR_PADDLE );
 
 		//sub_658();
 		VL_Present();
@@ -739,10 +739,10 @@ bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item)
 		return 0;
 
 	/* Draw the watch */
-	VH_DrawBitmap( 0, 0, 82 );
+	VH_DrawBitmap( 0, 0, PIC_WRISTWATCH );
 
 	/* Draw the PaddleWar title */
-	VH_DrawBitmap( 130, 48, 79 );
+	VH_DrawBitmap( 130, 48, PIC_PADDLEWAR );
 
 	/* Draw a line above the playing area */
 	VH_HLine( 77, 231, 60, 10 );

@@ -32,7 +32,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_def.h"
 #include "ck_play.h"
 #include "ck_text.h"
+#include "ck4_ep.h"
 #include "ck5_ep.h"
+
+// =========================================================================
+
+int ck_lastLevelFinished;
+
+// =========================================================================
 
 /*
  * NewGame: Setup the default starting stats
@@ -147,18 +154,14 @@ void CK_MapLevelMarkAsDone(void)
 				}
 				else if ( flags == 0xF0 )
 				{	/* If this is the flag holder for the level */
-#if 0
-					if ( AZ : A7C2 == level )
-						sub_339( x, y );
-					else
-						sub_338( x, y );
-#endif
-					CK_MapFlagSpawn(x,y);
+          if (ck_currentEpisode->ep != EP_CK5 && ck_lastLevelFinished == level)
+            CK_FlippingFlagSpawn(x,y);
+          else
+					  CK_MapFlagSpawn(x,y);
 				}
 			}
 		}
 	}
-
 }
 
 static int16_t ck_fadeDrawCounter;
@@ -205,7 +208,7 @@ void CK_LoadLevel(bool doCache)
 	CA_ClearMarks();
 
 	CK_SetupObjArray();
-	CK5_ScanInfoLayer();
+  ck_currentEpisode->scanInfoLayer();
 
 	if (ca_mapOn == 0)
 	{
@@ -511,7 +514,7 @@ replayLevel:
 				//TODO: Mark level as done (and more)
 				SD_PlaySound(SOUND_LEVELEXIT);
 				ck_gameState.currentLevel = 0;
-				//word_4A16A = ca_mapOn;
+				ck_lastLevelFinished = ca_mapOn;
 				ck_gameState.levelsDone[ca_mapOn] = 1;
 				// TODO: If Keen launched with /Demo switch
 				// Then function returns here based on ca_mapOn
@@ -534,7 +537,7 @@ replayLevel:
       {
         // The level has been ended by fuse destruction
         SD_PlaySound(SOUND_LEVELEXIT);
-        //word_4A16A = ca_mapOn;
+        ck_lastLevelFinished = ca_mapOn;
         ck_gameState.levelsDone[ca_mapOn] = 14;
         CK5_FuseMessage();
         ck_gameState.currentLevel = 0;

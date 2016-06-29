@@ -27,9 +27,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_def.h"
 #include "ck_game.h"
 #include "ck_act.h"
+#include "ck4_ep.h"
+#include "ck5_ep.h"
 
 #include <string.h>
 #include <stdio.h>
+
+void CK_MapKeenWalk(CK_object * obj);
 
 // =========================================================================
 
@@ -253,4 +257,282 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 	if (updated)
 		RF_AddSpriteDraw(&scorebox->sde, scorebox->posX + 0x40, scorebox->posY + 0x40, SPR_SCOREBOX, false, 3);
 
+}
+
+// =========================================================================
+
+
+/*
+ * MapKeen Thinks
+ * user1 stores compass direction
+ * user2 stores animation frame counter
+ * user3 stores some sort of velocity
+ */
+
+int *ck_mapKeenFrames;
+static int word_417BA[] ={ 2, 3, 1, 3, 4, 6, 0, 2};
+
+void CK_SpawnMapKeen(int tileX, int tileY)
+{
+
+	ck_keenObj->type = 2;
+	if (ck_gameState.mapPosX == 0)
+	{
+		ck_keenObj->posX = (tileX << 8);
+		ck_keenObj->posY = (tileY << 8);
+	}
+	else
+	{
+		ck_keenObj->posX = ck_gameState.mapPosX;
+		ck_keenObj->posY = ck_gameState.mapPosY;
+	}
+
+	ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
+	ck_keenObj->zLayer = 1;
+	ck_keenObj->xDirection= ck_keenObj->yDirection = IN_motion_None;
+	ck_keenObj->user1 = 6;
+	ck_keenObj->user2 = 3;
+	ck_keenObj->user3 = 0;
+  ck_keenObj->gfxChunk = SPR_MAPKEEN_STAND_W;
+	CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
+}
+
+//look for level entrry
+
+void CK_ScanForLevelEntry(CK_object * obj)
+{
+
+	int tx, ty;
+	int tileY_0 = obj->clipRects.tileY1;
+
+	for (ty = obj->clipRects.tileY1; ty <= obj->clipRects.tileY2; ty++)
+	{
+		for (tx = obj->clipRects.tileX1; tx <= obj->clipRects.tileX2; tx++)
+		{
+			int infotile =CA_TileAtPos(tx, ty, 2);
+			if (infotile > 0xC000 && infotile < 0xC012)
+			{
+				// Vanilla keen stores the current map loaded in the cache manager
+				// and the "current_map" variable stored in the gamestate
+				// would have been changed here.
+				ck_gameState.mapPosX = obj->posX;
+				ck_gameState.mapPosY = obj->posY;
+				ck_gameState.currentLevel = infotile - 0xC000;
+				ck_gameState.levelState = 2;
+				SD_PlaySound(SOUND_UNKNOWN12);
+				return;
+			}
+		}
+	}
+}
+
+void CK_MapKeenStill(CK_object * obj)
+{
+
+	if (ck_inputFrame.dir != IN_dir_None)
+	{
+		obj->currentAction = CK_GetActionByName("CK_ACT_MapKeenWalk0");
+		obj->user2 = 0;
+		CK_MapKeenWalk(obj);
+	}
+
+	if (ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed || ck_keenState.shootIsPressed)
+	{
+		CK_ScanForLevelEntry(obj);
+	}
+}
+
+void CK_MapKeenWalk(CK_object * obj)
+{
+
+	if (obj->user3 == 0)
+	{
+		obj->xDirection = ck_inputFrame.xDirection;
+		obj->yDirection = ck_inputFrame.yDirection;
+		if (ck_keenState.pogoIsPressed || ck_keenState.jumpIsPressed || ck_keenState.shootIsPressed)
+			CK_ScanForLevelEntry(obj);
+
+		// Go back to standing if no arrows pressed
+		if (ck_inputFrame.dir == IN_dir_None)
+		{
+			obj->currentAction = CK_GetActionByName("CK_ACT_MapKeenStart");
+			obj->gfxChunk = ck_mapKeenFrames[obj->user1] + 3;
+			return;
+		}
+		else
+		{
+			obj->user1 = ck_inputFrame.dir;
+		}
+	}
+	else
+	{
+		if ((obj->user3 -= 4) < 0)
+			obj->user3 = 0;
+	}
+
+	// Advance Walking Frame Animation
+	if (++obj->user2 == 4)
+		obj->user2 = 0;
+	obj->gfxChunk = ck_mapKeenFrames[obj->user1] + word_417BA[obj->user2];
+
+	//walk hi lo sound
+	if (obj->user2 == 1)
+	{
+		SD_PlaySound(SOUND_KEENWALK0);
+	}
+	else if (obj->user2 == 3)
+	{
+		SD_PlaySound(SOUND_KEENWALK1);
+	}
+}
+
+//Thisis called from playloop
+
+#define MISCFLAG_TELEPORT 0x14
+#define MISCFLAG_LEFTELEVATOR 0x21
+#define MISCFLAG_RIGHTELEVATOR 0x22
+
+void CK_MapMiscFlagsCheck(CK_object *keen)
+{
+
+	int midTileX, midTileY;
+
+	if (keen->user3)
+		return;
+
+	midTileX = keen->clipRects.tileXmid;
+	midTileY = ((keen->clipRects.unitY2 - keen->clipRects.unitY1) / 2 + keen->clipRects.unitY1) >> 8;
+
+	switch (TI_ForeMisc(CA_TileAtPos(midTileX, midTileY, 1)))
+	{
+
+	case MISCFLAG_TELEPORT:
+		CK5_AnimateMapTeleporter(midTileX, midTileY);
+		break;
+
+	case MISCFLAG_LEFTELEVATOR:
+		CK5_AnimateMapElevator(midTileX, midTileY, 0);
+		break;
+
+	case MISCFLAG_RIGHTELEVATOR:
+		CK5_AnimateMapElevator(midTileX, midTileY, -1);
+		break;
+	}
+}
+
+// =========================================================================
+// Map Flags
+
+typedef struct
+{
+  uint16_t x, y;
+
+} CK_FlagPoint;
+
+static CK_FlagPoint ck_flagPoints[30];
+
+void CK_MapFlagSpawn(int tileX, int tileY)
+{
+
+	CK_object *flag = CK_GetNewObj(false);
+
+	flag->clipped = CLIP_not;
+	flag->zLayer = 3;
+	flag->type = CT_MapFlag;
+	flag->active = OBJ_ACTIVE;
+  flag->posX = (tileX << 8) + (ck_currentEpisode->ep == EP_CK5 ? -0x50 : 0x60);
+	flag->posY = (tileY << 8) - 0x1E0;
+	flag->actionTimer = US_RndT() / 16;
+
+	CK_SetAction(flag, CK_GetActionByName("CK_ACT_MapFlag0"));
+}
+
+void CK_FlippingFlagSpawn(int tileX, int tileY)
+{
+  int32_t dx, dy;
+
+  CK_object *obj = CK_GetNewObj(false);
+  obj->clipped = CLIP_not;
+  obj->zLayer = PRIORITIES - 1;
+  obj->type = CT_MapFlag;
+  obj->posX = ck_gameState.mapPosX - 0x100;
+  obj->posY = ck_gameState.mapPosY - 0x100;
+
+  // Destination coords
+  obj->user1 = (tileX << G_T_SHIFT) + 0x60;
+  obj->user2 = (tileY << G_T_SHIFT) - 0x260;
+
+  dx = (int32_t)obj->user1 - (int32_t)obj->posX;
+  dy = (int32_t)obj->user2 - (int32_t)obj->posY;
+
+  // Make a table of coordinates for the flag's path
+  for (int i = 0; i < 30; i++)
+  {
+     // Draw points in a straight line between keen and the holster
+     ck_flagPoints[i].x = obj->posX + dx * (i < 24 ? i : 24) / 24;
+     ck_flagPoints[i].y = obj->posY + dy * i / 30;
+
+     // Offset th eY points to mimic a parabolic trajectory
+     if (i < 10)
+       ck_flagPoints[i].y -= i * 0x30; // going up
+     else if (i < 15)
+       ck_flagPoints[i].y -= i * 16 + 0x140;
+     else if (i < 20)
+       ck_flagPoints[i].y -= (20 - i) * 16 + 0x1E0;
+     else
+       ck_flagPoints[i].y -= (29 - i) * 0x30;
+  }
+
+  CK_SetAction(obj, CK_GetActionByName("CK_ACT_MapFlagFlips0"));
+
+}
+
+void CK_MapFlagThrown(CK_object *obj)
+{
+  // Might this be a source of non-determinism?
+  // (if screen unfades at different rates based on diff architecture)
+  if (!vl_screenFaded)
+  {
+    SD_StopSound();
+    SD_PlaySound(SOUND_FLAGFLIP);
+    obj->currentAction = obj->currentAction->next;
+  }
+
+}
+
+void CK_MapFlagFall(CK_object *obj)
+{
+  obj->user3 += SD_GetSpriteSync();
+
+  if (obj->user3 > 50)
+    obj->user3 = 50;
+
+  obj->posX = ck_flagPoints[obj->user3/2].x;
+  obj->posY = ck_flagPoints[obj->user3/2].y;
+
+  obj->visible = true;
+  if (!obj->user1)
+    SD_PlaySound(SOUND_FLAGFLIP);
+}
+
+void CK_MapFlagLand(CK_object *obj)
+{
+  // Plop the flag in its holster
+  obj->posX = obj->user1;
+  obj->posY = obj->user2 + 0x80;
+  obj->zLayer = PRIORITIES - 1;
+
+  SD_PlaySound(SOUND_FLAGLAND);
+}
+
+/*
+ * Setup all of the functions in this file.
+ */
+void CK_Map_SetupFunctions()
+{
+	CK_ACT_AddFunction("CK_MapKeenStill", &CK_MapKeenStill);
+	CK_ACT_AddFunction("CK_MapKeenWalk", &CK_MapKeenWalk);
+  CK_ACT_AddFunction("CK_MapFlagThrown", &CK_MapFlagThrown);
+  CK_ACT_AddFunction("CK_MapFlagFall", &CK_MapFlagFall);
+  CK_ACT_AddFunction("CK_MapFlagLand", &CK_MapFlagLand);
 }

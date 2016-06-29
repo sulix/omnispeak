@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * ID_US_2 handles the main menu in keen.
  * The system has a stack of 'US_Card's, each of which contain an array of
  * menu items. Each card has a callback, which handles messages.
- * 
+ *
  * NOTE: The original Keen game used a callback to handle string printing
  * and measurement, presumably so that printing routines could be swapped
- * on the fly.  Here, we are just calling VH_DrawPropString and VH_MeasurePropString 
+ * on the fly.  Here, we are just calling VH_DrawPropString and VH_MeasurePropString
  * directly.
  */
 
@@ -68,7 +68,7 @@ US_CardItem new_game_menu_items[] ={
 	{ US_ITEM_None, 0, IN_SC_None, NULL,             US_Comm_None,  NULL, 0, 0 },
 };
 
-US_Card new_game_menu ={ 8, 0, 68, 0, new_game_menu_items, NULL, 0, 0, 0 };
+US_Card new_game_menu ={ 8, 0, &PIC_NEWGAMECARD, 0, new_game_menu_items, NULL, 0, 0, 0 };
 
 US_CardItem main_menu_items[] ={
 	{ US_ITEM_Submenu, 0, IN_SC_N,    "NEW GAME",   US_Comm_None, &new_game_menu, 0, 0 },
@@ -83,7 +83,7 @@ US_CardItem main_menu_items[] ={
 };
 
 //AS:00A2
-US_Card main_menu ={ 32, 4, 67, 0, main_menu_items, NULL, 0, 0, 0 };
+US_Card main_menu ={ 32, 4, &PIC_MENUCARD, 0, main_menu_items, NULL, 0, 0, 0 };
 
 void US_SetupCards(US_Card *initial)
 {
@@ -205,7 +205,7 @@ void USL_DrawCard()
 	if (us_currentCard->gfxChunk)
 	{
 		VH_HLine(77, 231, 55, 10);
-		VH_DrawBitmap(80, 48, us_currentCard->gfxChunk);
+		VH_DrawBitmap(80, 48, *us_currentCard->gfxChunk);
 	}
 
 	// Draw the Footer
@@ -244,7 +244,7 @@ void US_DrawCards()
 	// Draw the watch screen and the active card
 	if (us_currentCard->items || us_currentCard->gfxChunk)
 	{
-		VH_DrawBitmap(0, 0, 82);
+		VH_DrawBitmap(0, 0, PIC_WRISTWATCH);
 		USL_DrawCard();
 	}
 
@@ -254,7 +254,7 @@ void US_DrawCards()
 
 void center_watch_window( uint16_t w, uint16_t h, uint16_t *x, uint16_t *y )
 {
-	VH_DrawMaskedBitmap( 74, 48, 99 );
+	VH_DrawMaskedBitmap( 74, 48, MPIC_WRISTWATCHSCREEN );
 
 	/* Calculate the position */
 	*x = 74 + (160 - w) / 2;
@@ -1791,14 +1791,14 @@ void USL_BeginCards()
 
 	// NOTE: I'm caching more stuff here than is necessary
 
-	// Cache all bitmaps 
+	// Cache all bitmaps
 	for (int i = ca_gfxInfoE.offBitmaps; i < (ca_gfxInfoE.offBitmaps + ca_gfxInfoE.numBitmaps); ++i)
 	{
 		CA_CacheGrChunk(i);
 	}
 
 	// Cache the font
-	CA_CacheGrChunk(4);
+	CA_CacheGrChunk(FON_WATCHFONT);
 
 	// Cache the wristwatch screen masked bitmap
 	CA_CacheGrChunk(ca_gfxInfoE.offMasked);
@@ -1808,7 +1808,8 @@ void USL_BeginCards()
 	CA_CacheGrChunk(ca_gfxInfoE.offTiles8m);
 
 	// Cache the first few sprites for paddlewar
-	for (int i = ca_gfxInfoE.offSprites; i < (ca_gfxInfoE.offSprites + 10); ++i)
+	// for (int i = ca_gfxInfoE.offSprites; i < (ca_gfxInfoE.offSprites + 10); ++i)
+	for (int i = SPR_PADDLE; i <= SPR_BALL3; ++i)
 	{
 		CA_CacheGrChunk(i);
 	}

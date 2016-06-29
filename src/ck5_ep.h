@@ -75,19 +75,16 @@ void CK5_SpawnKorath(int tileX, int tileY);
 void CK5_QEDSpawn(int tileX, int tileY);
 
 /* ck5_map.c */
-void CK_DemoSignSpawn();
-void CK_UpdateScoreBox(CK_object *scorebox);
 void CK_SpawnMapKeen(int tileX, int tileY);
 void CK5_MapKeenTeleSpawn(int tileX, int tileY);
 
 /* Map functions */
-void CK_MapMiscFlagsCheck(CK_object *keen);
-void CK_MapFlagSpawn(int tileX, int tileY);
+void CK5_AnimateMapTeleporter(int tileX, int tileY);
+void CK5_AnimateMapElevator(int tileX, int tileY, int dir);
 
 /* Misc functions */
 
 /* ck5_misc.c */
-void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act);
 void CK5_ExplodeGalaxy();
 void CK5_FuseMessage();
 

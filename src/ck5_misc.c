@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_vl.h"
+#include "ck_game.h"
 #include "ck_play.h"
 #include "ck_phys.h"
 #include "ck_def.h"
@@ -474,12 +475,43 @@ soundnames ck5_itemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND
 soundnames ck5_itemSounds[]  = { 19, 19, 19, 19, 8,8,8,8,8,8, 17, 9, 55 };
 int16_t ck5_itemShadows[] = {232, 232, 232, 232, 195, 196, 197,  198,  199,  200, 201, 202, 209};
 
+// ck_map.c
+int ck5_mapKeenFrames[] = { 0xF7, 0x106, 0xF4, 0xFD, 0xFA, 0x100, 0xF1, 0x103 };
+
 // ck_play.c
 uint16_t ck5_levelMusic[] ={11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
 
 void CK5_DefineConstants(void)
 {
   FON_MAINFONT = 3;
+  FON_WATCHFONT = 4;
+
+  PIC_HELPMENU = 6;
+  PIC_ARROWDIM = 26;
+  PIC_ARROWBRIGHT = 27;
+  PIC_HELPPOINTER = 24;
+  PIC_BORDERTOP = 28;
+  PIC_BORDERLEFT = 29;
+  PIC_BORDERRIGHT = 30;
+  PIC_BORDERBOTTOMSTATUS = 31;
+  PIC_BORDERBOTTOM = 32;
+
+  PIC_MENUCARD = 67;
+  PIC_NEWGAMECARD = 68;
+  PIC_LOADCARD = 69;
+  PIC_SAVECARD = 70;
+  PIC_CONFIGURECARD = 71;
+  PIC_SOUNDCARD = 72;
+  PIC_MUSICCARD = 73;
+  PIC_KEYBOARDCARD = 74;
+  PIC_MOVEMENTCARD = 75;
+  PIC_BUTTONSCARD = 76;
+  PIC_JOYSTICKCARD = 77;
+  PIC_OPTIONSCARD = 78;
+  PIC_PADDLEWAR = 79;
+  PIC_DEBUGCARD = 88;
+
+  PIC_WRISTWATCH = 82;
 
   PIC_STARWARS = 87;
   PIC_TITLESCREEN = 88;
@@ -487,8 +519,15 @@ void CK5_DefineConstants(void)
   PIC_COUNTDOWN4 = 93;
   PIC_COUNTDOWN0 = 97;
 
+  MPIC_WRISTWATCHSCREEN = 99;
   MPIC_STATUSLEFT = 100;
   MPIC_STATUSRIGHT = 101;
+
+  SPR_PADDLE = 102;
+  SPR_BALL0 = 103;
+  SPR_BALL1 = 104;
+  SPR_BALL2 = 105;
+  SPR_BALL3 = 106;
 
   SPR_DEMOSIGN = 0x6B;
 
@@ -518,6 +557,14 @@ void CK5_DefineConstants(void)
   SPR_MAPKEEN_STAND_SW = 259;
   SPR_MAPKEEN_STAND_W = 244;
   SPR_MAPKEEN_STAND_NW = 262;
+
+  TEXT_HELPMENU = 4914;
+  TEXT_CONTROLS = 4915;
+  TEXT_STORY = 4916;
+  TEXT_ABOUTID = 4917;
+  TEXT_END = 4918;
+  TEXT_SECRETEND = 4919;
+  TEXT_ORDER = 4920;
 
   DEMOSTART = 4926;
 
@@ -564,14 +611,14 @@ void CK5_DefineConstants(void)
   SOUND_POLEZAP = 40;
   SOUND_UNKNOWN41 = 41;
   SOUND_SHOCKSUNDBARK = 42;
-  SOUND_UNKNOWN43 = 43;
-  SOUND_UNKNOWN44 = 44;
+  //SOUND_UNKNOWN43 = 43;
+  //SOUND_UNKNOWN44 = 44;
   SOUND_BARKSHOTDIE = 45;
-  SOUND_UNKNOWN46 = 46;
-  SOUND_UNKNOWN47 = 47;
-  SOUND_UNKNOWN48 = 48;
-  SOUND_UNKNOWN49 = 49;
-  SOUND_UNKNOWN50 = 50;
+  SOUND_KEENPADDLE = 46;
+  SOUND_PONGWALL = 47;
+  SOUND_COMPPADDLE = 48;
+  SOUND_COMPSCORE = 49;
+  SOUND_KEENSCORE = 50;
   SOUND_UNKNOWN51 = 51;
   SOUND_UNKNOWN52 = 52;
   SOUND_GALAXYEXPLODE = 53;
@@ -612,6 +659,9 @@ void CK5_DefineConstants(void)
   // ck_keen.c
   ck_itemSounds = ck5_itemSounds;
   ck_itemShadows = ck5_itemShadows;
+
+  // ck_map.c
+  ck_mapKeenFrames = ck5_mapKeenFrames;
 
   // ck_play.c
   ck_levelMusic = ck5_levelMusic;
