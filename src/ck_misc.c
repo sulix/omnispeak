@@ -124,18 +124,25 @@ void CK_BasicDrawFunc4(CK_object *obj)
 
 	starsX = starsY = 0;
 
-	switch (obj->user4)
-	{
-	case CT_Sparky:
-		starsX += 0x40;
-		break;
-	case 14:
-		starsY -= 0x80;
-		break;
-	case 0x17:
-		starsY -= 0x80;
-		break;
-	}
+  if (ck_currentEpisode->ep == EP_CK4)
+  {
+
+  }
+  else if (ck_currentEpisode->ep == EP_CK5)
+  {
+    switch (obj->user4)
+    {
+    case CT5_Sparky:
+      starsX += 0x40;
+      break;
+    case CT5_Ampton:
+      starsY -= 0x80;
+      break;
+    case CT5_Korath:
+      starsY -= 0x80;
+      break;
+    }
+  }
 
 	// Tick the star 3-frame animation forward
 	if ((obj->user1 += SD_GetSpriteSync()) > 10)
@@ -158,7 +165,7 @@ void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_cre
 	creature->user1 = creature->user2 = creature->user3 = 0;
 	creature->user4 = creature->type;
 	CK_SetAction2(creature, new_creature_act);
-	creature->type = CT_StunnedCreature;
+	creature->type = CT5_StunnedCreature;
 
 	// Make the creature jump up a bit
 	if ((creature->velY -= 0x18) < -0x30)

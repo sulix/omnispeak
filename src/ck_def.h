@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ck_phys.h"
 #include "id_heads.h"
+#include "ck_ep.h"
 
 #define CK_MAX_OBJECTS 100
 
@@ -60,30 +61,67 @@ typedef enum CK_Dir {
 } CK_Dir;
 
 typedef enum CK_ClassType {
-	CT_nothing = 0,
+	CT_Nothing = 0,
 	CT_Friendly = 1,
 	CT_Player = 2,
-	CT_Stunner,
-	CT_EnemyShot,
-  CT_Item = 5,
-	CT_Platform = 6,
-	CT_StunnedCreature = 7,
-	CT_MapFlag = 8,
-	CT_Sparky = 9,
-	CT_Mine = 10,
-	CT_SliceStar = 11,
-	CT_Robo = 12,
-	CT_Spirogrip = 13,
-	CT_Ampton = 14,
-	CT_Volte = 16,
-	CT_Spindred = 18,
-	CT_Master = 19,
-	CT_Shikadi = 20,
-	CT_Shocksund = 21,
-	CT_Sphereful = 22,
-	CT_Korath = 23,
-	CT_QED = 25,
+	CT_Stunner = 3,
+
+  CT4_Item = 4,
+  CT4_Slug = 5,
+  CT4_CouncilMember = 6,
+  CT4_7 = 7,
+  CT4_Egg = 8,
+  CT4_9 = 9,
+  CT4_10 = 10,
+  CT4_11 = 11,
+  CT4_Wormmouth = 12,
+  CT4_0xD = 13,
+  CT4_Berkeloid = 14,
+  CT4_Bounder = 15,
+  CT4_Inchworm = 16,
+  CT4_0x11 = 17,
+  CT4_0x12 = 18,
+  CT4_Mimrock = 19,
+  CT4_Platform = 20,
+  CT4_Dopefish = 21,
+  CT4_Schoolfish = 22,
+  CT4_0x17 = 23,
+  CT4_Lindsey = 24,
+  CT4_Cloud = 25,
+  CT4_Smirky = 26,
+  CT4_Bird = 27,
+  CT4_0x1C = 28,
+  CT4_0x1D = 29,
+  CT4_0x1E = 30,
+  CT4_EnemyShot = 31,
+  CT4_0x20 = 32,
+  CT4_StunnedCreature = 33,
+  CT4_MapFlag = 34,
+
+	CT5_EnemyShot = 4,
+  CT5_Item = 5,
+	CT5_Platform = 6,
+	CT5_StunnedCreature = 7,
+	CT5_MapFlag = 8,
+	CT5_Sparky = 9,
+	CT5_Mine = 10,
+	CT5_SliceStar = 11,
+	CT5_Robo = 12,
+	CT5_Spirogrip = 13,
+	CT5_Ampton = 14,
+	CT5_Volte = 16,
+  CT5_0x11 = 17,
+	CT5_Spindred = 18,
+	CT5_Master = 19,
+	CT5_Shikadi = 20,
+	CT5_Shocksund = 21,
+	CT5_Sphereful = 22,
+	CT5_Korath = 23,
+	CT5_QED = 25,
 } CK_ClassType;
+
+#define CT_CLASS(type) \
+  (ck_currentEpisode->ep == EP_CK4 ? CT4_##type : (ck_currentEpisode->ep == EP_CK5 ? CT5_##type : CT_Nothing))
 
 typedef enum CK_LevelState
 {

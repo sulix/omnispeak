@@ -42,14 +42,12 @@ void CK4_ScanInfoLayer();
 
 /* ck4_misc.c */
 void CK4_SpawnLevelEnd(void);
-void CK4_SpawnLightning(void);
 CK_object *CK4_SpawnEnemyShot(int posX, int posY, CK_action *action);
 void CK4_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple);
 void CK4_SpawnRedStandPlatform(int tileX, int tileY);
-void CK4_SpawnItem(int tileX, int tileY, int itemNumber);
 
 /* ck4_obj1.c */
-void CK4_TurretSpawn(int tileX, int tileY, int direction);
+void CK4_SpawnMiragia(int tileX, int tileY);
 
 /* ck4_obj2.c */
 

@@ -32,7 +32,7 @@ void CK5_SpawnSparky(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_Sparky;
+	new_object->type = CT5_Sparky;
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 0;
 	new_object->posX = tileX << 8;
@@ -141,7 +141,7 @@ void CK5_SpawnAmpton(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_Ampton;
+	new_object->type = CT5_Ampton;
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 0;
 	new_object->posX = (tileX << 8);
@@ -167,7 +167,7 @@ void CK5_AmptonWalk(CK_object *obj)
 		SD_PlaySound(SOUND_AMPTONWALK1);
 	}
 
-	// if on tile boundary (i.e. sliding or computer) then skip 
+	// if on tile boundary (i.e. sliding or computer) then skip
 	// the check for a pole or a computer
 	if (obj->posX & 0xFF)
 	{
@@ -245,7 +245,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 		if (!TI_ForeTop(CA_TileAtPos(tileX, tileY, 1)) && TI_ForeTop(CA_TileAtPos(tileX, tileY + 1, 1)))
 		{
 			// Dismount if there are fewer than 4 pole tiles above the hole
-			// or randomly, if there are more than 4 
+			// or randomly, if there are more than 4
 			if (((TI_ForeMisc(CA_TileAtPos(tileX, tileY - 4, 1)) & 0x7F) != MISCFLAG_POLE) ||
 					US_RndT() >= 0x80)
 			{
@@ -368,7 +368,7 @@ void CK5_SpawnSlice(int tileX, int tileY, int dir)
 
 	CK_object *new_object = CK_GetNewObj(false);
 
-	new_object->type = CT_SliceStar;
+	new_object->type = CT5_SliceStar;
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 2;
 	new_object->posX = (tileX << 8);
@@ -404,7 +404,7 @@ void CK5_SpawnSliceDiag(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_SliceStar;
+	new_object->type = CT5_SliceStar;
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 2;
 	new_object->clipped = CLIP_simple;
@@ -485,7 +485,7 @@ void CK5_SpawnShelly(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_Sparky; // Apparently, the same type as a sparky
+	new_object->type = CT5_Sparky; // Apparently, the same type as a sparky
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 0;
 	new_object->posX = (tileX << 8);
@@ -564,7 +564,7 @@ void CK5_ShellyCol(CK_object *obj1, CK_object *obj2)
 	{
 		CK_PhysPushX(obj2, obj1);
 		//don't detonate if not inside shelley
-		if (ck_keenObj->clipRects.unitXmid < obj1->clipRects.unitX1 || ck_keenObj->clipRects.unitXmid > obj1->clipRects.unitX2) 
+		if (ck_keenObj->clipRects.unitXmid < obj1->clipRects.unitX1 || ck_keenObj->clipRects.unitXmid > obj1->clipRects.unitX2)
 		{
 			return;
 		}
@@ -573,7 +573,7 @@ void CK5_ShellyCol(CK_object *obj1, CK_object *obj2)
 	{
 		CK_ShotHit(obj2);
 	}
-	else if (obj2->type == CT_EnemyShot)
+	else if (obj2->type == CT5_EnemyShot)
 	{
 		CK_RemoveObj(obj2);
 	}

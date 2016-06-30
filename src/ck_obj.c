@@ -82,7 +82,7 @@ void CK_SpawnItem(int tileX, int tileY, int itemNumber)
 	obj->clipped = CLIP_not;
 	//obj->active = OBJ_ACTIVE;
 	obj->zLayer = 2;
-	obj->type = CT_Item;	//OBJ_ITEM
+	obj->type = CT_CLASS(Item);
 	obj->posX = tileX << 8;
 	obj->posY = tileY << 8;
 	obj->yDirection = -1;

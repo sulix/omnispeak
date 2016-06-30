@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // =========================================================================
 
-int ck_lastLevelFinished;
+static int ck_lastLevelFinished;
 
 // =========================================================================
 
@@ -486,6 +486,7 @@ replayLevel:
 		//TODO: Some TED launching stuff
 
 
+    ck_lastLevelFinished = -1;
 		switch (ck_gameState.levelState)
 		{
 		case 1:

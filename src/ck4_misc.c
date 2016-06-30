@@ -40,13 +40,6 @@ CK_EpisodeDef ck4_episode ={
 
 // Contains some keen-4 specific functions.
 
-//StartSprites +
-int16_t CK4_ItemSpriteChunks[] ={
-	224, 226, 228, 230,
-	210, 212, 214, 216, 218, 220,
-	222, 233, 207
-};
-
 void CK4_RedAxisPlatform(CK_object *obj)
 {
 	uint16_t nextPosUnit, nextPosTile;
@@ -204,7 +197,7 @@ void CK4_PurpleAxisPlatform(CK_object *obj)
 void CK4_SpawnFallPlat(int tileX, int tileY)
 {
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_Platform;
+	new_object->type = CT_CLASS(Platform);
 	new_object->active = OBJ_ALWAYS_ACTIVE;
 	new_object->zLayer = 0;
 	new_object->posX = tileX << 8;
@@ -258,16 +251,12 @@ void CK4_FallPlatRise (CK_object *obj)
 	}
 }
 
-// MISC Keen 5 functions
-
 // Level Ending Object Spawn
-
-
 void CK4_SetupFunctions()
 {
 	//Quick hack as we haven't got a deadly function yet
 	CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
-	// CK4_Obj1_SetupFunctions();
+	CK4_Obj1_SetupFunctions();
 	// CK4_Obj2_SetupFunctions();
 	// CK4_Obj3_SetupFunctions();
 	CK4_Map_SetupFunctions();
@@ -284,76 +273,84 @@ void CK4_SetupFunctions()
 
 // ck_game.c
 char ck4_levelEntryText_0[] =
-	"Keen purposefully\n"
-	"wanders about the\n"
-	"Omegamatic";
+	"Keen enters the\n"
+	"Shadowlands\n";
 
 char ck4_levelEntryText_1[] =
-	"Keen investigates the\n"
-	"Ion Ventilation System";
+	"Keen makes a run for\n"
+	"the Border Village";
 
 char ck4_levelEntryText_2[] =
-	"Keen struts through\n"
-	"the Security Center";
+  "Keen slips into\n"
+	"Slug Village";
 
 char ck4_levelEntryText_3[] =
-	"Keen invades\n"
-	"Defense Tunnel Vlook";
+	"Keen plummets into\n"
+	"the The Perilous Pit";
 
 char ck4_levelEntryText_4[] =
-	"Keen engages\n"
-	"Energy Flow Systems";
+	"Keen plods down into\n"
+	"the Cave of the\n"
+	"Descendents";
 
 char ck4_levelEntryText_5[] =
-	"Keen barrels into\n"
-	"Defense Tunnel Burrh";
+	"Keen shivers along\n"
+	"the Chasm of Chills";
 
 char ck4_levelEntryText_6[] =
-	"Keen goes nuts in\n"
-	"the Regulation\n"
-	"Control Center";
+	"Keen reflects upon\n"
+	"entering Crystalus";
 
 char ck4_levelEntryText_7[] =
-	"Keen regrets entering\n"
-	"Defense Tunnel Sorra";
+	"Keen stumbles upon\n"
+	"Hillville";
 
 char ck4_levelEntryText_8[] =
-	"Keen blows through\n"
-	"the Neutrino\n"
-	"Burst Injector";
+	"Keen grits his teeth\n"
+	"and enters Sand Yego";
 
 char ck4_levelEntryText_9[] =
-	"Keen trots through\n"
-	"Defense Tunnel Teln";
+	"Keen disappears into\n"
+	"Miragia";
 
 char ck4_levelEntryText_10[] =
-	"Keen breaks into\n"
-	"the Brownian\n"
-	"Motion Inducer";
+	"Keen crawls into\n"
+	"Lifewater Oasis";
 
 char ck4_levelEntryText_11[] =
-	"Keen hurries through\n"
-	"the Gravitational\n"
-	"Damping Hub";
+	"Keen backs into the\n"
+	"Pyramid of the Moons";
 
 char ck4_levelEntryText_12[] =
-	"Keen explodes into\n"
-	"the Quantum\n"
-	"Explosion Dynamo";
+  "Keen move silently in\n"
+	"the Pyramid of Shadows";
 
 char ck4_levelEntryText_13[] =
-	"Keen faces danger\n"
-	"in the secret\n"
-	"Korath III Base";
+	"Keen reverently enters\n"
+	"the Pyramid of the\n"
+	"Gnosticene Ancients";
 
 char ck4_levelEntryText_14[] =
-	"Keen will not be\n"
-	"in the BWBMegarocket";
+	"Keen hesitantly crosses\n"
+	"into the Pyramid of the\n"
+	"Forbidden";
 
 char ck4_levelEntryText_15[] =
-	"Keen unexplainedly\n"
-	"find himself by\n"
-	"theHigh Scores";
+	"Keen mucks along the\n"
+	"Isle of Tar";
+
+char ck4_levelEntryText_16[] =
+	"Keen blazes across the\n"
+	"Isle of Fire";
+
+char ck4_levelEntryText_17[] =
+	"Keen hopefully enters\n"
+	"the Well of Wishes";
+
+char ck4_levelEntryText_18[] =
+	"Keen launches into the\n"
+  "Bean-with-Bacon\n"
+  "Megarocket";
 
 char *ck4_levelEntryTexts[] = {
 	ck4_levelEntryText_0,
@@ -372,33 +369,32 @@ char *ck4_levelEntryTexts[] = {
 	ck4_levelEntryText_13,
 	ck4_levelEntryText_14,
 	ck4_levelEntryText_15,
+	ck4_levelEntryText_16,
+	ck4_levelEntryText_17,
+	ck4_levelEntryText_18,
 };
 
 const char *ck4_levelNames[] = {
-	"Omegamatic",
-	"Ion Ventilation System",
-	"Security Center",
-	"Defense Tunnel Vlook",
-	"Energy Flow Systems",
-	"Defense Tunnel Burrh",
-	"Regulation\nControl Center",
-	"Defense Tunnel Sorra",
-	"Neutrino\nBurst Injector",
-	"Defense Tunnel Teln",
-	"Brownian\nMotion Inducer",
-	"Gravitational\nDamping Hub",
-	"Quantum\nExplosion Dynamo",
-	"Korath III Base",
-	"BWBMegarocket",
-	"High Scores",
+	"Shadowlands",
+  "Border Village",
+	"Slug Village",
+	"The Perilous Pit",
+	"Cave of the Descendents",
+	"Chasm of Chills",
+	"Crystalus",
+	"Hilville",
+	"Sand Yego",
+	"Miragia",
+	"Lifewater Oasis",
+	"Pyramid of the Moons",
+	"Pyramid of Shadows",
+	"Pyramid of the\nGnosticene Ancients",
+	"Isle of Tar",
+  "Isle of Fire",
+  "Well of Wishes",
+  "Bean-with-Bacon\nMegarocket"
 };
 
-/*
-soundnames ck4_itemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM,
-                               SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,
-                               SOUND_GOTEXTRALIFE, SOUND_GOTSTUNNER,
-};
-*/
 soundnames ck4_itemSounds[]  = { 19, 19, 19, 19, 8,8,8,8,8,8, 17, 9, 55 };
 int16_t ck4_itemShadows[] = {250, 250, 250, 250, 219, 220, 221, 222, 223, 224, 225, 226};
 
@@ -546,18 +542,6 @@ void CK4_DefineConstants(void)
   SOUND_COMPPADDLE = 49;
   SOUND_COMPSCORE = 50;
   SOUND_KEENSCORE = 51;
-//   SOUND_UNKNOWN52 = 52;
-//   SOUND_GALAXYEXPLODE = 53;
-//   SOUND_GALAXYEXPLODEPRE = 54;
-//   SOUND_GOTKEYCARD = 55;
-//   SOUND_UNKNOWN56 = 56;
-//   SOUND_KEENLANDONFUSE = 57;
-//   SOUND_SPARKYPREPCHARGE = 58;
-//   SOUND_SPHEREFULCEILING = 59;
-//   SOUND_OPENGEMDOOR = 60;
-//   SOUND_SPIROFLY = 61;
-//   SOUND_UNKNOWN62 = 62;
-//   SOUND_UNKNOWN63 = 63;
   LASTSOUND = 52;
 
   STR_EXIT_TO_MAP = "Exit to Shadowlands";
@@ -575,7 +559,6 @@ void CK4_DefineConstants(void)
 
   // ck_play.c
   ck_levelMusic = ck4_levelMusic;
-
 }
 
 /*
@@ -594,7 +577,7 @@ CK_object *CK4_SpawnEnemyShot(int posX, int posY, CK_action *action)
 
 	new_object->posX = posX;
 	new_object->posY = posY;
-	new_object->type = CT_EnemyShot;
+	new_object->type = CT4_EnemyShot;
 	new_object->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	CK_SetAction(new_object, action);
 
@@ -733,8 +716,11 @@ void CK4_ScanInfoLayer()
 				CK4_SpawnRedStandPlatform(x, y);
 				break;
 
+#endif
+      case 33:
+        CK4_SpawnMiragia(x, y);
 
-			case 69:
+			case 34:
 				// Spawn extra stunner if Keen has low ammo
 				if (ck_gameState.numShots >= 5)
 					break;
@@ -753,9 +739,7 @@ void CK4_ScanInfoLayer()
 			case 68:
 				CK_SpawnItem(x, y, infoValue - 57);
 				break;
-			case 70:
-				CK_SpawnItem(x, y, infoValue - 58); // Omegamatic Keycard
-				break;
+#if 0
 
 			case 84:
 			case 85:

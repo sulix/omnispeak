@@ -246,7 +246,7 @@ void CK_RemoveObj(CK_object *obj)
 	// replaces the user int variables
 	RF_RemoveSpriteDraw(&obj->sde);
 
-	if (obj->type == CT_StunnedCreature)
+	if (obj->type == CT5_StunnedCreature)
 	{
 		// FIXME: This cast is bad on 64-bit platforms
 		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & obj->user3);
@@ -1323,7 +1323,7 @@ int CK_PlayLoop()
 						if (US_RndT() < SD_GetSpriteSync() * 2 || vl_screenFaded)
 						{
 							RF_RemoveSpriteDraw(&currentObj->sde);
-							if (currentObj->type == CT_StunnedCreature)
+							if (currentObj->type == CT5_StunnedCreature)
 								RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & currentObj->user3);
 							currentObj->active = OBJ_INACTIVE;
 							continue;

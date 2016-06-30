@@ -62,7 +62,7 @@ uint16_t *ck_itemShadows;
 
 void CK_KeenColFunc(CK_object *a, CK_object *b)
 {
-	if (b->type == CT_Item)
+	if (b->type == CT_CLASS(Item))
 	{
 		if (b->user1 > 12)
 			return;
@@ -95,7 +95,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		}
 		CK_SetAction2(b, &CK_ACT_itemNotify);
 	}
-	else if (b->type == CT_Platform) //Platform
+	else if (b->type == CT_CLASS(Platform)) //Platform
 	{
 		if (!ck_keenState.platform)
 			CK_PhysPushY(a,b);
@@ -1309,7 +1309,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 
 void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 {
-	if (other->type == CT_Platform)
+  if (other->type == CT_CLASS(Platform))
 	{
 		obj->clipped = CLIP_normal;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
@@ -1319,7 +1319,7 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		CK_PhysPushY(obj,other);
 		return;
 	}
-	else if (other->type == CT_Ampton || other->type == CT_Korath)
+  else if (ck_currentEpisode->ep == EP_CK5 && (other->type == CT5_Ampton || other->type == CT5_Korath))
 	{
 		obj->zLayer = 1;
 		obj->clipped = CLIP_normal;
@@ -1681,7 +1681,7 @@ void CK_ShotThink(CK_object *shot)
 				currentObj->visible = true;
 				currentObj->active = OBJ_ACTIVE;
 			}
-			if (shot->type == CT_nothing)
+			if (shot->type == CT_Nothing)
 				return;
 		}
 	}

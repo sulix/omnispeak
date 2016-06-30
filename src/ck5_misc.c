@@ -204,7 +204,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 void CK5_SpawnFallPlat(int tileX, int tileY)
 {
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_Platform;
+	new_object->type = CT5_Platform;
 	new_object->active = OBJ_ALWAYS_ACTIVE;
 	new_object->zLayer = 0;
 	new_object->posX = tileX << 8;
@@ -675,7 +675,7 @@ CK_object *CK5_SpawnEnemyShot(int posX, int posY, CK_action *action)
 
 	new_object->posX = posX;
 	new_object->posY = posY;
-	new_object->type = CT_EnemyShot;
+	new_object->type = CT5_EnemyShot;
 	new_object->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	CK_SetAction(new_object, action);
 

@@ -462,7 +462,7 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 	obj->visible = true;
 
 	//TODO: Verify object class (need callback to episode struct)
-	if ((obj->type != CT_SliceStar) && (obj->type != CT_Sphereful))
+  if (ck_currentEpisode->ep == EP_CK5 && ((obj->type != CT5_SliceStar) && (obj->type != CT5_Sphereful)))
 	{
 		Quit("FullClipToWalls: Bad obclass");
 	}

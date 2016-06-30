@@ -49,7 +49,7 @@ void CK5_TurretShoot(CK_object *obj)
 {
 	CK_object *shot = CK_GetNewObj(true);
 
-	shot->type = 4;	//TurretShot
+	shot->type = CT5_EnemyShot;	//TurretShot
 	shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	//shot->clipped = true;
 	shot->posX = obj->posX;
@@ -400,13 +400,13 @@ void CK5_PurpleGoPlatThink(CK_object *obj)
 	}
 }
 
-void CK5_SpawnVolte(int tileX, int tileY) 
+void CK5_SpawnVolte(int tileX, int tileY)
 {
 
 	int dir;
 
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_Volte;
+	new_object->type = CT5_Volte;
 	new_object->active = OBJ_ALWAYS_ACTIVE;
 	new_object->zLayer = 0;
 	new_object->posX = tileX << 8;
@@ -435,7 +435,7 @@ void CK5_SpawnVolte(int tileX, int tileY)
 
 // This is very similar to the GoPlat function
 // The only difference is the increased speed and the error message
-void CK5_VolteMove(CK_object *obj) 
+void CK5_VolteMove(CK_object *obj)
 {
 
 	if (ck_nextX || ck_nextY) return;
@@ -541,14 +541,14 @@ void CK5_VolteMove(CK_object *obj)
 	}
 }
 
-void CK5_VolteCol(CK_object *volte, CK_object *other) 
+void CK5_VolteCol(CK_object *volte, CK_object *other)
 {
 
-	if (other->type == CT_Player) 
+	if (other->type == CT_Player)
 	{
 		CK_KillKeen();
 	}
-	else if (other->type == CT_Stunner) 
+	else if (other->type == CT_Stunner)
 	{ //stunner
 		CK_ShotHit(other);
 		CK_SetAction2(volte, CK_GetActionByName("CK5_ACT_VolteStunned"));
@@ -567,7 +567,7 @@ void CK5_Obj1_SetupFunctions()
 	CK_ACT_AddFunction("CK5_SneakPlatThink", &CK5_SneakPlatThink);
 	CK_ACT_AddFunction("CK5_RedGoPlatThink", &CK5_RedGoPlatThink);
 	CK_ACT_AddFunction("CK5_PurpleGoPlatThink", &CK5_PurpleGoPlatThink);
-	
+
 	// VolteFace
 	CK_ACT_AddFunction("CK5_VolteMove", &CK5_VolteMove);
 	CK_ACT_AddColFunction("CK5_VolteCol", &CK5_VolteCol);

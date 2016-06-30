@@ -714,7 +714,7 @@ void CK5_SpawnRobo(int tileX, int tileY)
 {
 
 	CK_object *obj = CK_GetNewObj(false);
-	obj->type = CT_Robo;
+	obj->type = CT5_Robo;
 	obj->active = OBJ_ACTIVE;
 	obj->posX = tileX << 8;
 	obj->posY = (tileY << 8) - 0x400;
@@ -802,7 +802,7 @@ void CK5_SpawnSpirogrip(int tileX, int tileY)
 {
 	CK_object *obj = CK_GetNewObj(false);
 
-	obj->type = CT_Spirogrip;
+	obj->type = CT5_Spirogrip;
 	obj->active = OBJ_ACTIVE;
 	obj->posX = (tileX << 8);
 	obj->posY = (tileY << 8) - 256;
@@ -852,7 +852,7 @@ void CK5_SpawnSpindred(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_Spindred;
+	new_object->type = CT5_Spindred;
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 0;
 	new_object->posX = (tileX << 8);
@@ -949,7 +949,7 @@ void CK5_SpawnMaster(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_Master;
+	new_object->type = CT5_Master;
 	new_object->active = OBJ_ACTIVE;
 	new_object->posX = (tileX << 8);
 	new_object->posY = (tileY << 8) - 0x180;
@@ -1179,7 +1179,7 @@ void CK5_SpawnShikadi(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_Shikadi;
+	new_object->type = CT5_Shikadi;
 	new_object->active = OBJ_ACTIVE;
 	new_object->posX = (tileX << 8);
 	new_object->posY = (tileY << 8) - 0x100;
@@ -1197,7 +1197,7 @@ void CK5_ShikadiWalk(CK_object *obj)
 {
 	int tx, tile;
 
-	// By casting to unsigned, we also check if the difference in 
+	// By casting to unsigned, we also check if the difference in
 	// Y values is greater than zero
 	if (ck_keenObj->currentAction->collide == &CK_KeenSpecialColFunc || (unsigned) (obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2 + 0x100) <= 0x200)
 	{
@@ -1284,7 +1284,7 @@ void CK5_ShikadiPole(CK_object *obj)
 	new_object = CK_GetNewObj(true);
 	new_object->posX = tileX;
 	new_object->posY = obj->posY + 0x80;
-	new_object->type = CT_EnemyShot;
+	new_object->type = CT5_EnemyShot;
 	new_object->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	new_object->clipped = CLIP_not;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_PoleZap0"));
@@ -1349,7 +1349,7 @@ void CK5_SpawnShocksund(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_Shocksund;
+	new_object->type = CT5_Shocksund;
 	new_object->active = OBJ_ACTIVE;
 	new_object->posX = (tileX << 8);
 	new_object->posY = (tileY << 8) - 0x80;
@@ -1538,7 +1538,7 @@ void CK5_SpawnSphereful(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_Sphereful;
+	new_object->type = CT5_Sphereful;
 	new_object->clipped = CLIP_simple;
 	new_object->active = OBJ_ACTIVE;
 	new_object->posX = tileX << 8;
@@ -1711,7 +1711,7 @@ void CK5_QEDSpawn(int tileX, int tileY)
 {
 
 	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_QED;
+	new_object->type = CT5_QED;
 	new_object->active = OBJ_ACTIVE;
 	new_object->clipRects.tileX1 = tileX;
 	new_object->clipRects.tileY1 = tileY;

@@ -438,7 +438,7 @@ void CK_MapFlagSpawn(int tileX, int tileY)
 
 	flag->clipped = CLIP_not;
 	flag->zLayer = 3;
-	flag->type = CT_MapFlag;
+  flag->type = CT_CLASS(MapFlag);
 	flag->active = OBJ_ACTIVE;
   flag->posX = (tileX << 8) + (ck_currentEpisode->ep == EP_CK5 ? -0x50 : 0x60);
 	flag->posY = (tileY << 8) - 0x1E0;
@@ -454,7 +454,7 @@ void CK_FlippingFlagSpawn(int tileX, int tileY)
   CK_object *obj = CK_GetNewObj(false);
   obj->clipped = CLIP_not;
   obj->zLayer = PRIORITIES - 1;
-  obj->type = CT_MapFlag;
+  obj->type = CT_CLASS(MapFlag);
   obj->posX = ck_gameState.mapPosX - 0x100;
   obj->posY = ck_gameState.mapPosY - 0x100;
 

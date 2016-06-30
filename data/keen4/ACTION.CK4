@@ -186,8 +186,8 @@
 
 # ck_obj.c
 # Items
-%action CK_ACT_item 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_act_item2
-%action CK_ACT_item2 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_act_item
+%action CK_ACT_item 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item2
+%action CK_ACT_item2 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item
 
 # Lifewater drops
 %action CK_ACT_CentilifeNotify1 215 215 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify2
@@ -195,245 +195,243 @@
 %action CK_ACT_CentilifeNotify3 217 217 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
 ### Keen4 Stuff
-#%action a_Miragia0 0x2EE71DFC W W W W W 2CW W W miragia_0 NULL NULL a_Miragia1
-#%action a_Miragia1 0x2EE71E1A W W W W W EW W W miragia_1 NULL NULL a_Miragia2
-#%action a_Miragia2 0x2EE71E38 W W W W W EW W W miragia_2 NULL NULL a_Miragia3
-#%action a_Miragia3 0x2EE71E56 W W W W W EW W W miragia_3 NULL NULL a_Miragia4
-#%action a_Miragia4 0x2EE71E74 W W W W W 2CW W W miragia_4 NULL NULL a_Miragia5
-#%action a_Miragia5 0x2EE71E92 W W W W W EW W W miragia_5 NULL NULL a_Miragia6
-#%action a_Miragia6 0x2EE71EB0 W W W W W EW W W miragia_6 NULL NULL a_Miragia7
-#%action a_Miragia7 0x2EE71ECE W W W W W EW W W miragia_7 NULL NULL a_Miragia0
-#%action a_Items0 0x2EE71EEC W W W W W 4W W W item_animate NULL DrawFunc1 a_Items1
-#%action a_Items1 0x2EE71F0A W W W W W 4W W W item_animate NULL DrawFunc1 a_Items0
-#%action a_ItemCollected0 0x2EE71F28 W W W W W 8W W W NULL NULL DrawFunc1 NULL
-#%action a_DropSplash0 0x2EE71F46 $D7W $D7W W W W $AW W W NULL NULL DrawFunc1 a_DropSplash1
-#%action a_DropSplash1 0x2EE71F64 $D8W $D8W W W W $AW W W NULL NULL DrawFunc1 a_DropSplash2
-#%action a_DropSplash2 0x2EE71F82 $D9W $D9W W W W $AW W W NULL NULL DrawFunc1 NULL
-#%action a_CouncilWalk0 0x2EE71FB8 66W 64W W W W $AW 0W W member_move NULL DrawFunc2 a_CouncilWalk1
-#%action a_CouncilWalk1 0x2EE71FD6 67W 65W W W W $AW 0W W member_move NULL DrawFunc2 a_CouncilWalk0
-#%action a_CouncilPause0 0x2EE71FF4 68W 69W W W W 8W 0W W NULL NULL DrawFunc1 a_CouncilWalk0
-#%action a_SlugMove0 0x2EE72012 40W 3BW W W W W 0W W NULL slug_collide DrawFunc3 a_SlugMove1
-#%action a_SlugMove1 0x2EE72030 41W 3CW W W W W 0W W slug_move slug_collide DrawFunc3 a_SlugMove0
-#%action a_SlugSliming0 0x2EE7204E 42W 3DW W W W CW 0W W slug_pooh slug_collide DrawFunc3 a_SlugMove0
-#%action a_SlugStunned0 0x2EE7206C 3EW 3EW W W W W W W Fall NULL DrawFunc4 NULL
-#%action a_SlugStunned1 0x2EE7208A 3FW 3FW W W W W W W Fall NULL DrawFunc4 NULL
-#%action a_Slugslime0 0x2EE720A8 43W 43W W W W 2CW W W NULL SprCol1 DrawFunc1 a_SlugslimeEvap0
-#%action a_SlugslimeEvap0 0x2EE720C6 44W 44W W W W CW W W NULL NULL DrawFunc1 NULL
-#%action a_Mushroom0 0x2EE720E4 45W 47W W W W W W W mushroom_move mushroom_collide mushroom_draw a_Mushroom1
-#%action a_Mushroom1 0x2EE72102 46W 48W W W W W W W mushroom_move mushroom_collide mushroom_draw a_Mushroom0
-#%action a_Egg0 0x2EE72120 6AW 6AW W W W W W W NULL egg_collide DrawFunc1 NULL
-#%action a_Eggshell0 0x2EE7213E 6BW 6BW W W W 530W W W NULL NULL DrawFunc1 NULL
-#%action a_EggshellBitA0 0x2EE7215C 6CW 6CW W W W W W W Fall NULL DrawEggshell NULL
-#%action a_EggshellBitB0 0x2EE7217A 6DW 6DW W W W W W W Fall NULL DrawEggshell NULL
-#%action a_EggshellBitC0 0x2EE72198 6EW 6EW W W W W W W Fall NULL DrawEggshell NULL
-#%action a_BirdHatched0 0x2EE721B6 73W 6FW W W W 8W 0W W NULL BirdHatchedCollide BluebirdDraw a_BirdWalk1
-#%action a_BirdWalk0 0x2EE721D4 73W 6FW W W W W 0W W NULL BirdCollide BluebirdDraw a_BirdWalk1
-#%action a_BirdWalk1 0x2EE721F2 74W 70W W W W W 0W W NULL BirdCollide BluebirdDraw a_BirdWalk2
-#%action a_BirdWalk2 0x2EE72210 75W 71W W W W W 0W W NULL BirdCollide BluebirdDraw a_BirdWalk3
-#%action a_BirdWalk3 0x2EE7222E 76W 72W W W W W 0W W BirdWalk BirdCollide BluebirdDraw a_BirdWalk0
-#%action a_BirdFly0 0x2EE7224C 77W 77W W W W W W W BirdFly BirdCollide BluebirdFlyingDraw a_BirdFly1
-#%action a_BirdFly1 0x2EE7226A 78W 78W W W W W W W BirdFly BirdCollide BluebirdFlyingDraw a_BirdFly2
-#%action a_BirdFly2 0x2EE72288 79W 79W W W W W W W BirdFly BirdCollide BluebirdFlyingDraw a_BirdFly3
-#%action a_BirdFly3 0x2EE722A6 7AW 7AW W W W W W W BirdFly BirdCollide BluebirdFlyingDraw a_BirdFly0
-#%action a_BirdLand0 0x2EE722C4 7AW 7AW W W W W 0W W Fall2 BirdCollide DrawBirdLanding NULL
-#%action a_BirdStunned0 0x2EE722E2 7BW 7BW W W W $F0W W W Fall BirdHatchedCollide DrawFunc1 a_BirdRecover0
-#%action a_BirdRecover0 0x2EE72300 73W 6FW W W W 4W W W NULL BirdHatchedCollide DrawFunc1 a_BirdRecover1
-#%action a_BirdRecover1 0x2EE7231E 7BW 7BW W W W 4W W W NULL BirdHatchedCollide DrawFunc1 a_BirdRecover2
-#%action a_BirdRecover2 0x2EE7233C 73W 6FW W W W 4W W W NULL BirdHatchedCollide DrawFunc1 a_BirdRecover3
-#%action a_BirdRecover3 0x2EE7235A 7BW 7BW W W W 4W W W hatch_egg BirdHatchedCollide DrawFunc1 a_BirdWalk0
-#%action a_ArachnutWalk0 0x2EE72378 A9W ACW W W W W 0W W NULL arachnut_collide DrawFunc2 a_ArachnutWalk1
-#%action a_ArachnutWalk1 0x2EE72396 AAW ABW W W W W 0W W NULL arachnut_collide DrawFunc2 a_ArachnutWalk2
-#%action a_ArachnutWalk2 0x2EE723B4 ABW AAW W W W W 0W W NULL arachnut_collide DrawFunc2 a_ArachnutWalk3
-#%action a_ArachnutWalk3 0x2EE723D2 ACW A9W W W W W 0W W ArachnutSearch arachnut_collide DrawFunc2 a_ArachnutWalk0
-#%action a_ArachnutStunned0 0x2EE723F0 ADW ADW W W W $F0W W W NULL arachnut_stunned_collide DrawFunc1 a_ArachnutRecover0
-#%action a_ArachnutRecover0 0x2EE7240E A9W A9W W W W 4W W W NULL arachnut_stunned_collide DrawFunc1 a_ArachnutRecover1
-#%action a_ArachnutRecover1 0x2EE7242C ADW ADW W W W 4W W W NULL arachnut_stunned_collide DrawFunc1 a_ArachnutRecover2
-#%action a_ArachnutRecover2 0x2EE7244A A9W A9W W W W 4W W W NULL arachnut_stunned_collide DrawFunc1 a_ArachnutRecover3
-#%action a_ArachnutRecover3 0x2EE72468 ADW ADW W W W 4W W W NULL arachnut_stunned_collide DrawFunc1 a_ArachnutWalk0
-#%action a_SkypestFly0 0x2EE72486 BBW BDW W W W W W W SkypestFly skypest_air_collide draw_skypest a_SkypestFly1
-#%action a_SkypestFly1 0x2EE724A4 BCW BEW W W W W W W SkypestFly skypest_air_collide draw_skypest a_SkypestFly0
-#%action a_SkypestSquish0 0x2EE724C2 C8W C8W W W W W W W NULL NULL DrawFunc1 a_SkypestSquish0
-#%action a_SkypestPreen0 0x2EE724E0 C7W C7W W W W 4W W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen1
-#%action a_SkypestPreen1 0x2EE724FE BFW BFW W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen2
-#%action a_SkypestPreen2 0x2EE7251C C0W C0W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen3
-#%action a_SkypestPreen3 0x2EE7253A C1W C1W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen4
-#%action a_SkypestPreen4 0x2EE72558 C2W C2W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen5
-#%action a_SkypestPreen5 0x2EE72576 C1W C1W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen6
-#%action a_SkypestPreen6 0x2EE72594 C0W C0W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen7
-#%action a_SkypestPreen7 0x2EE725B2 BFW BFW W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen8
-#%action a_SkypestPreen8 0x2EE725D0 C7W C7W W W W CW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen9
-#%action a_SkypestPreen9 0x2EE725EE C3W C3W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen10
-#%action a_SkypestPreen10 0x2EE7260C C4W C4W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen11
-#%action a_SkypestPreen11 0x2EE7262A C5W C5W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen12
-#%action a_SkypestPreen12 0x2EE72648 C6W C6W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen13
-#%action a_SkypestPreen13 0x2EE72666 C5W C5W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen14
-#%action a_SkypestPreen14 0x2EE72684 C4W C4W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen15
-#%action a_SkypestPreen15 0x2EE726A2 C3W C3W W W W $AW W W NULL skypest_ground_collide DrawFunc1 a_SkypestPreen16
-#%action a_SkypestPreen16 0x2EE726C0 C7W C7W W W W 4W W W SkypestTakeoff skypest_ground_collide DrawFunc1 a_SkypestFly0
-#%action a_WormmouthMove0 0x2EE726DE C9W C9W W W W W 0W W wormmouth_move NULL DrawFunc2 a_WormmouthMove0
-#%action a_WormmouthPeep0 0x2EE726FC CCW CCW W W W 4W W W NULL wormmouth_check_shot DrawFunc1 a_WormmouthPeep1
-#%action a_WormmouthPeep1 0x2EE7271A CDW CDW W W W W W W NULL wormmouth_check_shot DrawFunc1 a_WormmouthPeep2
-#%action a_WormmouthPeep2 0x2EE72738 CCW CCW W W W 4W W W wormmouth_look_left wormmouth_check_shot DrawFunc1 a_WormmouthPeep3
-#%action a_WormmouthPeep3 0x2EE72756 C9W C9W W W W W W W NULL wormmouth_check_shot DrawFunc1 a_WormmouthPeep4
-#%action a_WormmouthPeep4 0x2EE72774 CAW CAW W W W 4W W W NULL wormmouth_check_shot DrawFunc1 a_WormmouthPeep5
-#%action a_WormmouthPeep5 0x2EE72792 CBW CBW W W W W W W NULL wormmouth_check_shot DrawFunc1 a_WormmouthPeep6
-#%action a_WormmouthPeep6 0x2EE727B0 CAW CAW W W W 4W W W wormmouth_look_right wormmouth_check_shot DrawFunc1 a_WormmouthPeep7
-#%action a_WormmouthPeep7 0x2EE727CE C9W C9W W W W W W W wormmouth_go_to_player NULL DrawFunc1 a_WormmouthMove0
-#%action a_WormmouthBite0 0x2EE727EC D1W CEW W W W W W W NULL wormmouth_collide DrawFunc1 a_WormmouthBite1
-#%action a_WormmouthBite1 0x2EE7280A D2W CFW W W W W W W NULL wormmouth_collide DrawFunc1 a_WormmouthBite2
-#%action a_WormmouthBite2 0x2EE72828 D3W D0W W W W 0W W W NULL wormmouth_collide DrawFunc1 a_WormmouthBite3
-#%action a_WormmouthBite3 0x2EE72846 D2W CFW W W W W W W NULL wormmouth_collide DrawFunc1 a_WormmouthBite4
-#%action a_WormmouthBite4 0x2EE72864 D1W CEW W W W W W W NULL wormmouth_collide DrawFunc1 a_WormmouthMove0
-#%action a_WormmouthStunned0 0x2EE72882 D4W D4W W W W $AW W W Fall NULL DrawFunc4 NULL
-#%action a_CloudDormant0 0x2EE728A0 F2W F2W W W W 4W W W NULL cloud_collide DrawFunc1 NULL
-#%action a_CloudAwaken0 0x2EE728BE F3W F3W W W W 4W W W NULL NULL cloud_draw a_CloudMove0
-#%action a_CloudMove0 0x2EE728DC F3W F3W W W W 4W W W cloud_move NULL cloud_draw NULL
-#%action a_CloudCheckStrike0 0x2EE728FA F3W F3W W W W 4W W W cloud_check_strike NULL cloud_draw NULL
-#%action a_CloudMoveB0 0x2EE72918 F3W F3W W W W CW W W Glide NULL cloud_draw a_CloudMove0
-#%action a_CloudStrike0 0x2EE72936 F4W F4W W W W $AW W W NULL NULL DrawFunc1 a_CloudStrike1
-#%action a_CloudStrike1 0x2EE72954 F3W F3W W W W $AW W W NULL NULL DrawFunc1 a_CloudStrike2
-#%action a_CloudStrike2 0x2EE72972 F4W F4W W W W $AW W W NULL NULL DrawFunc1 a_CloudStrike3
-#%action a_CloudStrike3 0x2EE72990 F3W F3W W W W $AW W W cloud_strike NULL DrawFunc1 a_CloudStrike4
-#%action a_CloudStrike4 0x2EE729AE F4W F4W W W W $AW W W NULL NULL DrawFunc1 a_CloudStrike5
-#%action a_CloudStrike5 0x2EE729CC F3W F3W W W W $AW W W NULL NULL DrawFunc1 a_CloudStrike6
-#%action a_CloudStrike6 0x2EE729EA F4W F4W W W W $AW W W NULL NULL DrawFunc1 a_CloudStrike7
-#%action a_CloudStrike7 0x2EE72A08 F3W F3W W W W $AW W W NULL NULL DrawFunc1 a_CloudStrike8
-#%action a_CloudStrike8 0x2EE72A26 F4W F4W W W W 0W W W NULL NULL DrawFunc1 a_CloudMoveB0
-#%action a_Lightning0 0x2EE72A44 F5W F5W W W W W W W NULL SprCol1 DrawFunc1 a_Lightning1
-#%action a_Lightning1 0x2EE72A62 F6W F6W W W W W W W NULL SprCol1 DrawFunc1 a_Lightning2
-#%action a_Lightning2 0x2EE72A80 F5W F5W W W W W W W NULL SprCol1 DrawFunc1 a_Lightning3
-#%action a_Lightning3 0x2EE72A9E F6W F6W W W W W W W NULL SprCol1 DrawFunc1 a_Lightning4
-#%action a_Lightning4 0x2EE72ABC F5W F5W W W W W W W NULL SprCol1 DrawFunc1 a_Lightning5
-#%action a_Lightning5 0x2EE72ADA F6W F6W W W W W W W NULL SprCol1 DrawFunc1 NULL
-#%action a_BerkeloidMove0 0x2EE72AF8 F7W FBW W W W W W W berkeloid_move berkeloid_collide berkeloid_draw a_BerkeloidMove1
-#%action a_BerkeloidMove1 0x2EE72B16 F8W FCW W W W W W W berkeloid_move berkeloid_collide berkeloid_draw a_BerkeloidMove2
-#%action a_BerkeloidMove2 0x2EE72B34 F9W FDW W W W W W W berkeloid_move berkeloid_collide berkeloid_draw a_BerkeloidMove3
-#%action a_BerkeloidMove3 0x2EE72B52 FAW FEW W W W W W W berkeloid_move berkeloid_collide berkeloid_draw a_BerkeloidMove0
-#%action a_BerkeloidThrow0 0x2EE72B70 FFW 01W W W W W W W SetDraw berkeloid_collide berkeloid_hover a_BerkeloidThrow1
-#%action a_BerkeloidThrow1 0x2EE72B8E FFW 01W W W W W W W SetDraw berkeloid_collide berkeloid_hover a_BerkeloidThrow2
-#%action a_BerkeloidThrow2 0x2EE72BAC FFW 01W W W W W W W SetDraw berkeloid_collide berkeloid_hover a_BerkeloidThrow3
-#%action a_BerkeloidThrow3 0x2EE72BCA FFW 01W W W W W W W SetDraw berkeloid_collide berkeloid_hover a_BerkeloidThrow4
-#%action a_BerkeloidThrow4 0x2EE72BE8 FFW 01W W W W W W W SetDraw berkeloid_collide berkeloid_hover a_BerkeloidThrow5
-#%action a_BerkeloidThrow5 0x2EE72C06 FFW 01W W W W W W W berkeloid_throw berkeloid_collide berkeloid_hover a_BerkeloidThrow6
-#%action a_BerkeloidThrow6 0x2EE72C24 00W 02W W W W W W W SetDraw berkeloid_collide berkeloid_hover a_BerkeloidThrow7
-#%action a_BerkeloidThrow7 0x2EE72C42 00W 02W W W W W W W SetDraw berkeloid_collide berkeloid_hover a_BerkeloidThrow8
-#%action a_BerkeloidThrow8 0x2EE72C60 00W 02W W W W W W W SetDraw berkeloid_collide berkeloid_hover a_BerkeloidThrow9
-#%action a_BerkeloidThrow9 0x2EE72C7E 00W 02W W W W W W W SetDraw berkeloid_collide berkeloid_hover a_BerkeloidThrow10
-#%action a_BerkeloidThrow10 0x2EE72C9C 00W 02W W W W W W W SetDraw berkeloid_collide berkeloid_hover a_BerkeloidThrow11
-#%action a_BerkeloidThrow11 0x2EE72CBA 00W 02W W W W W W W berkeloid_throw_done berkeloid_collide berkeloid_hover a_BerkeloidMove0
-#%action a_FireballAir0 0x2EE72CD8 03W 03W W W W W W W Fall2 SprCol1 fireball_draw a_FireballAir1
-#%action a_FireballAir1 0x2EE72CF6 04W 04W W W W W W W Fall2 SprCol1 fireball_draw a_FireballAir0
-#%action a_FireballGround0 0x2EE72D14 03W 03W W W W W W W NULL berkeloid_collide DrawFunc1 a_FireballGround1
-#%action a_FireballGround1 0x2EE72D32 05W 05W W W W $CW W W NULL berkeloid_collide DrawFunc1 a_FireballGround2
-#%action a_FireballGround2 0x2EE72D50 06W 06W W W W $CW W W NULL berkeloid_collide DrawFunc1 a_FireballGround3
-#%action a_FireballGround3 0x2EE72D6E 05W 05W W W W $CW W W NULL berkeloid_collide DrawFunc1 a_FireballGround4
-#%action a_FireballGround4 0x2EE72D8C 06W 06W W W W $CW W W NULL berkeloid_collide DrawFunc1 a_FireballGround5
-#%action a_FireballGround5 0x2EE72DAA 03W 03W W W W $CW W W NULL berkeloid_collide DrawFunc1 a_FireballGround6
-#%action a_FireballGround6 0x2EE72DC8 04W 04W W W W $CW W W NULL berkeloid_collide DrawFunc1 a_FireballGround7
-#%action a_FireballGround7 0x2EE72DE6 03W 03W W W W $CW W W NULL berkeloid_collide DrawFunc1 a_FireballGround8
-#%action a_FireballGround8 0x2EE72E04 04W 04W W W W $CW W W NULL berkeloid_collide DrawFunc1 NULL
-#%action a_FootPoof0 0x2EE72E22 5EW 5EW W W W $CW W W NULL NULL DrawFunc1 a_FootPoof1
-#%action a_FootPoof1 0x2EE72E40 5FW 5FW W W W $CW W W NULL NULL DrawFunc1 a_FootPoof2
-#%action a_FootPoof2 0x2EE72E5E 60W 60W W W W $CW W W NULL NULL DrawFunc1 a_FootPoof3
-#%action a_FootPoof3 0x2EE72E7C 61W 61W W W W $CW W W NULL NULL DrawFunc1 NULL
-#%action a_Inchworm0 0x2EE72E9A 4FW 4DW W W W EW 0W W inchworm_move inchworm_collide DrawFunc2 a_Inchworm1
-#%action a_Inchworm1 0x2EE72EB8 50W 4EW W W W EW 0W W inchworm_move inchworm_collide DrawFunc2 a_Inchworm0
-#%action a_Foot0 0x2EE72ED6 $FFFFW $FFFFW W W W 0W W W NULL NULL DrawFunc1 a_Foot1
-#%action a_Foot1 0x2EE72EF4 51W 51W W W W 530W W W NULL foot_collide DrawFunc1 NULL
-#%action a_Bounder0 0x2EE72F12 EFW EFW W W W 4W W W Fall bounder_check_shot bounder_draw a_Bounder1
-#%action a_Bounder1 0x2EE72F30 F0W F0W W W W 4W W W Fall bounder_check_shot bounder_draw a_Bounder0
-#%action a_BounderMoveHorz0 0x2EE72F4E EBW EDW W W W 4W W W Fall bounder_check_shot bounder_draw a_BounderMoveHorz1
-#%action a_BounderMoveHorz1 0x2EE72F6C ECW EEW W W W 4W W W Fall bounder_check_shot bounder_draw a_BounderMoveHorz0
-#%action a_BounderStunned0 0x2EE72F8A EFW EFW W W W W W W Fall NULL DrawFunc4 a_BounderStunned1
-#%action a_BounderStunned1 0x2EE72FA8 F1W F1W W W W W W W Fall NULL DrawFunc4 NULL
-#%action a_LickHop0 0x2EE72FC6 D9W D5W W W W $AW W W lick_move lick_check_shot DrawFunc1 a_LickHop1
-#%action a_LickHop1 0x2EE72FE4 DAW D6W W W W W W W Fall lick_check_shot lick_draw a_LickHop2
-#%action a_LickHop2 0x2EE73002 DBW D7W W W W W W W Fall lick_check_shot lick_draw NULL
-#%action a_LickHop3 0x2EE73020 DCW D8W W W W $AW W W NULL lick_check_shot DrawFunc1 a_LickHop0
-#%action a_LickFlame0 0x2EE7303E E0W DDW W W W W W W NULL lick_collide DrawFunc1 a_LickFlame1
-#%action a_LickFlame1 0x2EE7305C E1W DEW W W W W W W NULL lick_collide DrawFunc1 a_LickFlame2
-#%action a_LickFlame2 0x2EE7307A E2W DFW W W W W W W NULL lick_collide DrawFunc1 a_LickFlame3
-#%action a_LickFlame3 0x2EE73098 E1W DEW W W W W W W NULL lick_collide DrawFunc1 a_LickFlame4
-#%action a_LickFlame4 0x2EE730B6 E0W DDW W W W W W W NULL lick_collide DrawFunc1 a_LickFlame5
-#%action a_LickFlame5 0x2EE730D4 E1W DEW W W W W W W NULL lick_collide DrawFunc1 a_LickFlame6
-#%action a_LickFlame6 0x2EE730F2 E2W DFW W W W W W W NULL lick_collide DrawFunc1 a_LickFlame7
-#%action a_LickFlame7 0x2EE73110 E1W DEW W W W W W W NULL lick_collide DrawFunc1 a_LickHop2
-#%action a_LickStunned0 0x2EE7312E E3W E3W W W W W W W Fall NULL DrawFunc4 a_LickStunned1
-#%action a_LickStunned1 0x2EE7314C E3W E3W W W W W W W Fall NULL DrawFunc4 NULL
-#%action a_Platform0 0x2EE7316A E4W E4W W W W W W W platform_move NULL platform_draw NULL
-#%action a_PlatformSit 0x2EE73188 E4W E4W W W W W W W platform_sit NULL DrawFunc1 NULL
-#%action a_PlatformDrop 0x2EE731A6 E4W E4W W W W W W W platform_drop NULL DrawFunc1 NULL
-#%action a_PlatformRise 0x2EE731C4 E4W E4W W W W W W $FFE0W platform_rise NULL DrawFunc1 NULL
-#%action a_Smirky0 0x2EE731E2 52W 52W W W W 4W W W NULL smirky_collide DrawFunc1 a_Smirky1
-#%action a_Smirky1 0x2EE73200 53W 53W W W W 4W W W SmirkySearch smirky_collide DrawFunc1 NULL
-#%action a_SmirkyTele0 0x2EE7321E 5EW 5EW W W W 4W W W NULL smirky_collide DrawFunc1 a_SmirkyTele1
-#%action a_SmirkyTele1 0x2EE7323C 5FW 5FW W W W 4W W W NULL smirky_collide DrawFunc1 a_SmirkyTele2
-#%action a_SmirkyTele2 0x2EE7325A 60W 60W W W W 4W W W NULL smirky_collide DrawFunc1 a_SmirkyTele3
-#%action a_SmirkyTele3 0x2EE73278 61W 61W W W W 4W W W SmirkyTeleport smirky_collide DrawFunc1 a_SmirkyTele4
-#%action a_SmirkyTele4 0x2EE73296 61W 61W W W W 4W W W NULL smirky_collide DrawFunc1 a_SmirkyTele5
-#%action a_SmirkyTele5 0x2EE732B4 60W 60W W W W 4W W W NULL smirky_collide DrawFunc1 a_SmirkyTele6
-#%action a_SmirkyTele6 0x2EE732D2 5FW 5FW W W W 4W W W NULL smirky_collide DrawFunc1 a_SmirkyTele7
-#%action a_SmirkyTele7 0x2EE732F0 5EW 5EW W W W 4W W W NULL smirky_collide DrawFunc1 a_SmirkyJump0
-#%action a_SmirkyJump0 0x2EE7330E 57W 54W W W W W W W Fall2 smirky_collide draw_smirky a_SmirkyJump1
-#%action a_SmirkyJump1 0x2EE7332C 58W 55W W W W W W W Fall2 smirky_collide draw_smirky a_SmirkyJump2
-#%action a_SmirkyJump2 0x2EE7334A 59W 56W W W W W W W Fall2 smirky_collide draw_smirky a_SmirkyJump3
-#%action a_SmirkyJump3 0x2EE73368 58W 55W W W W W W W Fall2 smirky_collide draw_smirky a_SmirkyJump0
-#%action a_SmirkyStunned0 0x2EE73386 57W 57W W W W W W W Fall NULL DrawFunc4 a_SmirkyStunned1
-#%action a_SmirkyStunned1 0x2EE733A4 63W 63W W W W W W W Fall NULL DrawFunc4 NULL
-#%action a_StolenItem0 0x2EE733C2 5AW 5AW W W W $AW W W NULL NULL DrawFunc1 a_StolenItem1
-#%action a_StolenItem1 0x2EE733E0 5BW 5BW W W W $AW W W NULL NULL DrawFunc1 a_StolenItem2
-#%action a_StolenItem2 0x2EE733FE 5CW 5CW W W W $AW W W NULL NULL DrawFunc1 a_StolenItem3
-#%action a_StolenItem3 0x2EE7341C 5DW 5DW W W W $AW W W NULL NULL DrawFunc1 NULL
-#%action a_Mimrock0 0x2EE7343A 84W 84W W W W 4W W W mimrock_wait NULL DrawFunc2 a_Mimrock0
-#%action a_MimrockWalk0 0x2EE73458 89W 85W W W W W 0W W mimrock_check_jump mimrock_collide DrawFunc2 a_MimrockWalk1
-#%action a_MimrockWalk1 0x2EE73476 8AW 86W W W W W 0W W mimrock_check_jump mimrock_collide DrawFunc2 a_MimrockWalk2
-#%action a_MimrockWalk2 0x2EE73494 8BW 87W W W W W 0W W mimrock_check_jump mimrock_collide DrawFunc2 a_MimrockWalk3
-#%action a_MimrockWalk3 0x2EE734B2 8CW 88W W W W W 0W W mimrock_check_jump mimrock_collide DrawFunc2 a_MimrockWalk4
-#%action a_MimrockWalk4 0x2EE734D0 89W 85W W W W W 0W W mimrock_check_jump mimrock_collide DrawFunc2 a_MimrockWalk5
-#%action a_MimrockWalk5 0x2EE734EE 8AW 86W W W W W 0W W mimrock_check_jump mimrock_collide DrawFunc2 a_Mimrock0
-#%action a_MimrockJump0 0x2EE7350C 90W 8DW W W W 8W W W Fall2 mimrock_collide_air DrawMimrockJump a_MimrockJump1
-#%action a_MimrockJump1 0x2EE7352A 91W 8EW W W W $AW W W Fall2 mimrock_collide_air DrawMimrockJump a_MimrockJump2
-#%action a_MimrockJump2 0x2EE73548 92W 8FW W W W $AW W W Fall2 mimrock_collide_air DrawMimrockJump a_MimrockJump1
-#%action a_MimrockBounce0 0x2EE73566 92W 8FW W W W $AW W W Fall mimrock_collide DrawMimrockBounce NULL
-#%action a_MimrockStunned0 0x2EE73584 92W 92W W W W $CW W W Fall NULL DrawFunc4 a_MimrockStunned1
-#%action a_MimrockStunned1 0x2EE735A2 93W 93W W W W $CW W W Fall NULL DrawFunc4 NULL
-#%action a_DopefishSwim0 0x2EE735C0 A2W 94W W W W 4W W W DopefishMove DopefishCollide DrawFish a_DopefishSwim1
-#%action a_DopefishSwim1 0x2EE735DE A3W 95W W W W 4W W W DopefishMove DopefishCollide DrawFish a_DopefishSwim0
-#%action a_DopefishEat0 0x2EE735FC A4W 96W W W W W W W DopefishEat NULL DrawFunc1 NULL
-#%action a_DopefishBurp0 0x2EE7361A A2W 94W W W W CW W W NULL NULL DrawFunc1 a_DopefishBurp1
-#%action a_DopefishBurp1 0x2EE73638 97W 97W W W W CW W W DopefishBurp NULL DrawFunc1 a_DopefishBurp2
-#%action a_DopefishBurp2 0x2EE73656 98W 98W W W W CW W W NULL NULL DrawFunc1 a_DopefishBurp3
-#%action a_DopefishBurp3 0x2EE73674 A2W 94W W W W W W W DopefishAfterBurp NULL DrawFunc1 a_DopefishSwim0
-#%action a_SchoolfishEaten0 0x2EE73692 A5W A7W W W W W W W NULL NULL DrawFunc1 NULL
-#%action a_KeenEaten0 0x2EE736B0 39W 39W W W W W W W NULL NULL DrawFunc1 a_KeenEaten1
-#%action a_KeenEaten1 0x2EE736CE $FFFFW $FFFFW W W W $B4W W W UnderwaterDeath NULL DrawFunc1 a_KeenEaten1
-#%action a_DopeBubble0 0x2EE736EC 99W 99W W W W 4W W 4W Bubbles NULL DrawFunc1 a_DopeBubble1
-#%action a_DopeBubble1 0x2EE7370A 9AW 9AW W W W 4W W 4W Bubbles NULL DrawFunc1 a_DopeBubble2
-#%action a_DopeBubble2 0x2EE73728 9BW 9BW W W W 4W W 4W Bubbles NULL DrawFunc1 a_DopeBubble3
-#%action a_DopeBubble3 0x2EE73746 9CW 9CW W W W 4W W 4W Bubbles NULL DrawFunc1 a_DopeBubble0
-#%action a_SchoolfishSwim0 0x2EE73764 A5W A7W W W W 4W W W SchoolfishMove NULL DrawFish a_SchoolfishSwim1
-#%action a_SchoolfishSwim1 0x2EE73782 A6W A8W W W W 4W W W SchoolfishMove NULL DrawFish a_SchoolfishSwim0
-#%action a_Sprite0 0x2EE737A0 AFW AFW W W W $AW W W SpritePatrol SprCol1 DrawFunc1 a_Sprite0
-#%action a_SpriteAiming0 0x2EE737BE B0W B2W W W W 8W W W SpriteAim SprCol1 DrawFunc1 a_Sprite0
-#%action a_SpriteShooting0 0x2EE737DC B1W B3W W W W 8W W W SpriteShoot SprCol1 DrawFunc1 a_SpriteShooting1
-#%action a_SpriteShooting1 0x2EE737FA B1W B3W W W W EW W W NULL SprCol1 DrawFunc1 a_Sprite0
-#%action a_SpriteBullet0 0x2EE73818 B4W B4W W W W $AW 0W W NULL SprCol1 DrawProjectile a_SpriteBullet1
-#%action a_SpriteBullet1 0x2EE73836 B5W B5W W W W $AW 0W W NULL SprCol1 DrawProjectile a_SpriteBullet2
-#%action a_SpriteBullet2 0x2EE73854 B6W B6W W W W $AW 0W W NULL SprCol1 DrawProjectile a_SpriteBullet3
-#%action a_SpriteBullet3 0x2EE73872 B7W B7W W W W $AW 0W W NULL SprCol1 DrawProjectile a_SpriteBullet0
-#%action a_Mine0 0x2EE73890 B8W B8W W W W $AW W W platform_move MineCollide DrawFunc1 a_Mine0
-#%action a_MineExplode0 0x2EE738AE B9W B9W W W W EW W W NULL NULL DrawFunc1 a_MineExplode1
-#%action a_MineExplode1 0x2EE738CC BAW BAW W W W EW W W NULL NULL DrawFunc1 NULL
-#%action a_Lindsey0 0x2EE738EA 49W 49W W W W 4W W W LindseyFloat NULL DrawFunc1 a_Lindsey1
-#%action a_Lindsey1 0x2EE73908 4AW 4AW W W W 4W W W LindseyFloat NULL DrawFunc1 a_Lindsey2
-#%action a_Lindsey2 0x2EE73926 4BW 4BW W W W 4W W W LindseyFloat NULL DrawFunc1 a_Lindsey3
-#%action a_Lindsey3 0x2EE73944 4CW 4CW W W W 4W W W LindseyFloat NULL DrawFunc1 a_Lindsey0
-#%action a_DartGun0 0x2EE73962 W W W W W 6W W W DartGun NULL NULL a_DartGun0
-#%action a_DartHorz0 0x2EE73980 82W 80W W W W W 0W W NULL SprCol1 DrawProjectile a_DartHorz1
-#%action a_DartHorz1 0x2EE7399E 83W 81W W W W W 0W W NULL SprCol1 DrawProjectile a_DartHorz0
-#%action a_DartUp0 0x2EE739BC 7CW 7CW W W W W W 0W NULL SprCol1 DrawProjectile a_DartUp1
-#%action a_DartUp1 0x2EE739DA 7DW 7DW W W W W W 0W NULL SprCol1 DrawProjectile a_DartUp0
-#%action a_DartDown0 0x2EE739F8 7EW 7EW W W W W W 0W NULL SprCol1 DrawProjectile a_DartDown1
-#%action a_DartDown1 0x2EE73A16 7FW 7FW W W W W W 0W NULL SprCol1 DrawProjectile a_DartDown0
-#%action a_Wetsuit0 0x2EE73A34 AEW AEW W W W 530W W W NULL WetsuitCollide DrawFunc1 a_Wetsuit0
+# ck4_obj1.c
+
+# Miragia
+%action CK4_ACT_Miragia0 0 0 UnscaledOnce 0 0 300 0 0 CK4_Miragia0 NULL NULL CK4_ACT_Miragia1
+%action CK4_ACT_Miragia1 0 0 UnscaledOnce 0 0 30 0 0 CK4_Miragia1 NULL NULL CK4_ACT_Miragia2
+%action CK4_ACT_Miragia2 0 0 UnscaledOnce 0 0 30 0 0 CK4_Miragia2 NULL NULL CK4_ACT_Miragia3
+%action CK4_ACT_Miragia3 0 0 UnscaledOnce 0 0 30 0 0 CK4_Miragia3 NULL NULL CK4_ACT_Miragia4
+%action CK4_ACT_Miragia4 0 0 UnscaledOnce 0 0 300 0 0 CK4_Miragia4 NULL NULL CK4_ACT_Miragia5
+%action CK4_ACT_Miragia5 0 0 UnscaledOnce 0 0 30 0 0 CK4_Miragia5 NULL NULL CK4_ACT_Miragia6
+%action CK4_ACT_Miragia6 0 0 UnscaledOnce 0 0 30 0 0 CK4_Miragia6 NULL NULL CK4_ACT_Miragia7
+%action CK4_ACT_Miragia7 0 0 UnscaledOnce 0 0 30 0 0 CK4_Miragia7 NULL NULL CK4_ACT_Miragia0
+
+#%action CK4_ACT_CouncilWalk0 0x66 0x64 0 0 0 $0xA 0x0 0 member_move NULL DrawFunc2 CK4_ACT_CouncilWalk1
+#%action CK4_ACT_CouncilWalk1 0x67 0x65 0 0 0 $0xA 0x0 0 member_move NULL DrawFunc2 CK4_ACT_CouncilWalk0
+#%action CK4_ACT_CouncilPause0 0x68 0x69 0 0 0 0x8 0x0 0 NULL NULL DrawFunc1 CK4_ACT_CouncilWalk0
+#%action CK4_ACT_SlugMove0 0x40 0x3B 0 0 0 0 0x0 0 NULL slug_collide DrawFunc3 CK4_ACT_SlugMove1
+#%action CK4_ACT_SlugMove1 0x41 0x3C 0 0 0 0 0x0 0 slug_move slug_collide DrawFunc3 CK4_ACT_SlugMove0
+#%action CK4_ACT_SlugSliming0 0x42 0x3D 0 0 0 0xC 0x0 0 slug_pooh slug_collide DrawFunc3 CK4_ACT_SlugMove0
+#%action CK4_ACT_SlugStunned0 0x3E 0x3E 0 0 0 0 0 0 Fall NULL DrawFunc4 NULL
+#%action CK4_ACT_SlugStunned1 0x3F 0x3F 0 0 0 0 0 0 Fall NULL DrawFunc4 NULL
+#%action CK4_ACT_Slugslime0 0x43 0x43 0 0 0 0x2C 0 0 NULL SprCol1 DrawFunc1 CK4_ACT_SlugslimeEvap0
+#%action CK4_ACT_SlugslimeEvap0 0x44 0x44 0 0 0 0xC 0 0 NULL NULL DrawFunc1 NULL
+#%action CK4_ACT_Mushroom0 0x45 0x47 0 0 0 0 0 0 mushroom_move mushroom_collide mushroom_draw CK4_ACT_Mushroom1
+#%action CK4_ACT_Mushroom1 0x46 0x48 0 0 0 0 0 0 mushroom_move mushroom_collide mushroom_draw CK4_ACT_Mushroom0
+#%action CK4_ACT_Egg0 0x6A 0x6A 0 0 0 0 0 0 NULL egg_collide DrawFunc1 NULL
+#%action CK4_ACT_Eggshell0 0x6B 0x6B 0 0 0 0x530 0 0 NULL NULL DrawFunc1 NULL
+#%action CK4_ACT_EggshellBitA0 0x6C 0x6C 0 0 0 0 0 0 Fall NULL DrawEggshell NULL
+#%action CK4_ACT_EggshellBitB0 0x6D 0x6D 0 0 0 0 0 0 Fall NULL DrawEggshell NULL
+#%action CK4_ACT_EggshellBitC0 0x6E 0x6E 0 0 0 0 0 0 Fall NULL DrawEggshell NULL
+#%action CK4_ACT_BirdHatched0 0x73 0x6F 0 0 0 0x8 0x0 0 NULL BirdHatchedCollide BluebirdDraw CK4_ACT_BirdWalk1
+#%action CK4_ACT_BirdWalk0 0x73 0x6F 0 0 0 0 0x0 0 NULL BirdCollide BluebirdDraw CK4_ACT_BirdWalk1
+#%action CK4_ACT_BirdWalk1 0x74 0x70 0 0 0 0 0x0 0 NULL BirdCollide BluebirdDraw CK4_ACT_BirdWalk2
+#%action CK4_ACT_BirdWalk2 0x75 0x71 0 0 0 0 0x0 0 NULL BirdCollide BluebirdDraw CK4_ACT_BirdWalk3
+#%action CK4_ACT_BirdWalk3 0x76 0x72 0 0 0 0 0x0 0 BirdWalk BirdCollide BluebirdDraw CK4_ACT_BirdWalk0
+#%action CK4_ACT_BirdFly0 0x77 0x77 0 0 0 0 0 0 BirdFly BirdCollide BluebirdFlyingDraw CK4_ACT_BirdFly1
+#%action CK4_ACT_BirdFly1 0x78 0x78 0 0 0 0 0 0 BirdFly BirdCollide BluebirdFlyingDraw CK4_ACT_BirdFly2
+#%action CK4_ACT_BirdFly2 0x79 0x79 0 0 0 0 0 0 BirdFly BirdCollide BluebirdFlyingDraw CK4_ACT_BirdFly3
+#%action CK4_ACT_BirdFly3 0x7A 0x7A 0 0 0 0 0 0 BirdFly BirdCollide BluebirdFlyingDraw CK4_ACT_BirdFly0
+#%action CK4_ACT_BirdLand0 0x7A 0x7A 0 0 0 0 0x0 0 Fall2 BirdCollide DrawBirdLanding NULL
+#%action CK4_ACT_BirdStunned0 0x7B 0x7B 0 0 0 $0xF0 0 0 Fall BirdHatchedCollide DrawFunc1 CK4_ACT_BirdRecover0
+#%action CK4_ACT_BirdRecover0 0x73 0x6F 0 0 0 0x4 0 0 NULL BirdHatchedCollide DrawFunc1 CK4_ACT_BirdRecover1
+#%action CK4_ACT_BirdRecover1 0x7B 0x7B 0 0 0 0x4 0 0 NULL BirdHatchedCollide DrawFunc1 CK4_ACT_BirdRecover2
+#%action CK4_ACT_BirdRecover2 0x73 0x6F 0 0 0 0x4 0 0 NULL BirdHatchedCollide DrawFunc1 CK4_ACT_BirdRecover3
+#%action CK4_ACT_BirdRecover3 0x7B 0x7B 0 0 0 0x4 0 0 hatch_egg BirdHatchedCollide DrawFunc1 CK4_ACT_BirdWalk0
+#%action CK4_ACT_ArachnutWalk0 0xA9 0xAC 0 0 0 0 0x0 0 NULL arachnut_collide DrawFunc2 CK4_ACT_ArachnutWalk1
+#%action CK4_ACT_ArachnutWalk1 0xAA 0xAB 0 0 0 0 0x0 0 NULL arachnut_collide DrawFunc2 CK4_ACT_ArachnutWalk2
+#%action CK4_ACT_ArachnutWalk2 0xAB 0xAA 0 0 0 0 0x0 0 NULL arachnut_collide DrawFunc2 CK4_ACT_ArachnutWalk3
+#%action CK4_ACT_ArachnutWalk3 0xAC 0xA9 0 0 0 0 0x0 0 ArachnutSearch arachnut_collide DrawFunc2 CK4_ACT_ArachnutWalk0
+#%action CK4_ACT_ArachnutStunned0 0xAD 0xAD 0 0 0 $0xF0 0 0 NULL arachnut_stunned_collide DrawFunc1 CK4_ACT_ArachnutRecover0
+#%action CK4_ACT_ArachnutRecover0 0xA9 0xA9 0 0 0 0x4 0 0 NULL arachnut_stunned_collide DrawFunc1 CK4_ACT_ArachnutRecover1
+#%action CK4_ACT_ArachnutRecover1 0xAD 0xAD 0 0 0 0x4 0 0 NULL arachnut_stunned_collide DrawFunc1 CK4_ACT_ArachnutRecover2
+#%action CK4_ACT_ArachnutRecover2 0xA9 0xA9 0 0 0 0x4 0 0 NULL arachnut_stunned_collide DrawFunc1 CK4_ACT_ArachnutRecover3
+#%action CK4_ACT_ArachnutRecover3 0xAD 0xAD 0 0 0 0x4 0 0 NULL arachnut_stunned_collide DrawFunc1 CK4_ACT_ArachnutWalk0
+#%action CK4_ACT_SkypestFly0 0xBB 0xBD 0 0 0 0 0 0 SkypestFly skypest_air_collide draw_skypest CK4_ACT_SkypestFly1
+#%action CK4_ACT_SkypestFly1 0xBC 0xBE 0 0 0 0 0 0 SkypestFly skypest_air_collide draw_skypest CK4_ACT_SkypestFly0
+#%action CK4_ACT_SkypestSquish0 0xC8 0xC8 0 0 0 0 0 0 NULL NULL DrawFunc1 CK4_ACT_SkypestSquish0
+#%action CK4_ACT_SkypestPreen0 0xC7 0xC7 0 0 0 0x4 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen1
+#%action CK4_ACT_SkypestPreen1 0xBF 0xBF 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen2
+#%action CK4_ACT_SkypestPreen2 0xC0 0xC0 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen3
+#%action CK4_ACT_SkypestPreen3 0xC1 0xC1 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen4
+#%action CK4_ACT_SkypestPreen4 0xC2 0xC2 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen5
+#%action CK4_ACT_SkypestPreen5 0xC1 0xC1 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen6
+#%action CK4_ACT_SkypestPreen6 0xC0 0xC0 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen7
+#%action CK4_ACT_SkypestPreen7 0xBF 0xBF 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen8
+#%action CK4_ACT_SkypestPreen8 0xC7 0xC7 0 0 0 0xC 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen9
+#%action CK4_ACT_SkypestPreen9 0xC3 0xC3 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen10
+#%action CK4_ACT_SkypestPreen10 0xC4 0xC4 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen11
+#%action CK4_ACT_SkypestPreen11 0xC5 0xC5 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen12
+#%action CK4_ACT_SkypestPreen12 0xC6 0xC6 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen13
+#%action CK4_ACT_SkypestPreen13 0xC5 0xC5 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen14
+#%action CK4_ACT_SkypestPreen14 0xC4 0xC4 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen15
+#%action CK4_ACT_SkypestPreen15 0xC3 0xC3 0 0 0 $0xA 0 0 NULL skypest_ground_collide DrawFunc1 CK4_ACT_SkypestPreen16
+#%action CK4_ACT_SkypestPreen16 0xC7 0xC7 0 0 0 0x4 0 0 SkypestTakeoff skypest_ground_collide DrawFunc1 CK4_ACT_SkypestFly0
+#%action CK4_ACT_WormmouthMove0 0xC9 0xC9 0 0 0 0 0x0 0 wormmouth_move NULL DrawFunc2 CK4_ACT_WormmouthMove0
+#%action CK4_ACT_WormmouthPeep0 0xCC 0xCC 0 0 0 0x4 0 0 NULL wormmouth_check_shot DrawFunc1 CK4_ACT_WormmouthPeep1
+#%action CK4_ACT_WormmouthPeep1 0xCD 0xCD 0 0 0 0 0 0 NULL wormmouth_check_shot DrawFunc1 CK4_ACT_WormmouthPeep2
+#%action CK4_ACT_WormmouthPeep2 0xCC 0xCC 0 0 0 0x4 0 0 wormmouth_look_left wormmouth_check_shot DrawFunc1 CK4_ACT_WormmouthPeep3
+#%action CK4_ACT_WormmouthPeep3 0xC9 0xC9 0 0 0 0 0 0 NULL wormmouth_check_shot DrawFunc1 CK4_ACT_WormmouthPeep4
+#%action CK4_ACT_WormmouthPeep4 0xCA 0xCA 0 0 0 0x4 0 0 NULL wormmouth_check_shot DrawFunc1 CK4_ACT_WormmouthPeep5
+#%action CK4_ACT_WormmouthPeep5 0xCB 0xCB 0 0 0 0 0 0 NULL wormmouth_check_shot DrawFunc1 CK4_ACT_WormmouthPeep6
+#%action CK4_ACT_WormmouthPeep6 0xCA 0xCA 0 0 0 0x4 0 0 wormmouth_look_right wormmouth_check_shot DrawFunc1 CK4_ACT_WormmouthPeep7
+#%action CK4_ACT_WormmouthPeep7 0xC9 0xC9 0 0 0 0 0 0 wormmouth_go_to_player NULL DrawFunc1 CK4_ACT_WormmouthMove0
+#%action CK4_ACT_WormmouthBite0 0xD1 0xCE 0 0 0 0 0 0 NULL wormmouth_collide DrawFunc1 CK4_ACT_WormmouthBite1
+#%action CK4_ACT_WormmouthBite1 0xD2 0xCF 0 0 0 0 0 0 NULL wormmouth_collide DrawFunc1 CK4_ACT_WormmouthBite2
+#%action CK4_ACT_WormmouthBite2 0xD3 0xD0 0 0 0 0x0 0 0 NULL wormmouth_collide DrawFunc1 CK4_ACT_WormmouthBite3
+#%action CK4_ACT_WormmouthBite3 0xD2 0xCF 0 0 0 0 0 0 NULL wormmouth_collide DrawFunc1 CK4_ACT_WormmouthBite4
+#%action CK4_ACT_WormmouthBite4 0xD1 0xCE 0 0 0 0 0 0 NULL wormmouth_collide DrawFunc1 CK4_ACT_WormmouthMove0
+#%action CK4_ACT_WormmouthStunned0 0xD4 0xD4 0 0 0 $0xA 0 0 Fall NULL DrawFunc4 NULL
+#%action CK4_ACT_CloudDormant0 0xF2 0xF2 0 0 0 0x4 0 0 NULL cloud_collide DrawFunc1 NULL
+#%action CK4_ACT_CloudAwaken0 0xF3 0xF3 0 0 0 0x4 0 0 NULL NULL cloud_draw CK4_ACT_CloudMove0
+#%action CK4_ACT_CloudMove0 0xF3 0xF3 0 0 0 0x4 0 0 cloud_move NULL cloud_draw NULL
+#%action CK4_ACT_CloudCheckStrike0 0xF3 0xF3 0 0 0 0x4 0 0 cloud_check_strike NULL cloud_draw NULL
+#%action CK4_ACT_CloudMoveB0 0xF3 0xF3 0 0 0 0xC 0 0 Glide NULL cloud_draw CK4_ACT_CloudMove0
+#%action CK4_ACT_CloudStrike0 0xF4 0xF4 0 0 0 $0xA 0 0 NULL NULL DrawFunc1 CK4_ACT_CloudStrike1
+#%action CK4_ACT_CloudStrike1 0xF3 0xF3 0 0 0 $0xA 0 0 NULL NULL DrawFunc1 CK4_ACT_CloudStrike2
+#%action CK4_ACT_CloudStrike2 0xF4 0xF4 0 0 0 $0xA 0 0 NULL NULL DrawFunc1 CK4_ACT_CloudStrike3
+#%action CK4_ACT_CloudStrike3 0xF3 0xF3 0 0 0 $0xA 0 0 cloud_strike NULL DrawFunc1 CK4_ACT_CloudStrike4
+#%action CK4_ACT_CloudStrike4 0xF4 0xF4 0 0 0 $0xA 0 0 NULL NULL DrawFunc1 CK4_ACT_CloudStrike5
+#%action CK4_ACT_CloudStrike5 0xF3 0xF3 0 0 0 $0xA 0 0 NULL NULL DrawFunc1 CK4_ACT_CloudStrike6
+#%action CK4_ACT_CloudStrike6 0xF4 0xF4 0 0 0 $0xA 0 0 NULL NULL DrawFunc1 CK4_ACT_CloudStrike7
+#%action CK4_ACT_CloudStrike7 0xF3 0xF3 0 0 0 $0xA 0 0 NULL NULL DrawFunc1 CK4_ACT_CloudStrike8
+#%action CK4_ACT_CloudStrike8 0xF4 0xF4 0 0 0 0x0 0 0 NULL NULL DrawFunc1 CK4_ACT_CloudMoveB0
+#%action CK4_ACT_Lightning0 0xF5 0xF5 0 0 0 0 0 0 NULL SprCol1 DrawFunc1 CK4_ACT_Lightning1
+#%action CK4_ACT_Lightning1 0xF6 0xF6 0 0 0 0 0 0 NULL SprCol1 DrawFunc1 CK4_ACT_Lightning2
+#%action CK4_ACT_Lightning2 0xF5 0xF5 0 0 0 0 0 0 NULL SprCol1 DrawFunc1 CK4_ACT_Lightning3
+#%action CK4_ACT_Lightning3 0xF6 0xF6 0 0 0 0 0 0 NULL SprCol1 DrawFunc1 CK4_ACT_Lightning4
+#%action CK4_ACT_Lightning4 0xF5 0xF5 0 0 0 0 0 0 NULL SprCol1 DrawFunc1 CK4_ACT_Lightning5
+#%action CK4_ACT_Lightning5 0xF6 0xF6 0 0 0 0 0 0 NULL SprCol1 DrawFunc1 NULL
+#%action CK4_ACT_BerkeloidMove0 0xF7 0xFB 0 0 0 0 0 0 berkeloid_move berkeloid_collide berkeloid_draw CK4_ACT_BerkeloidMove1
+#%action CK4_ACT_BerkeloidMove1 0xF8 0xFC 0 0 0 0 0 0 berkeloid_move berkeloid_collide berkeloid_draw CK4_ACT_BerkeloidMove2
+#%action CK4_ACT_BerkeloidMove2 0xF9 0xFD 0 0 0 0 0 0 berkeloid_move berkeloid_collide berkeloid_draw CK4_ACT_BerkeloidMove3
+#%action CK4_ACT_BerkeloidMove3 0xFA 0xFE 0 0 0 0 0 0 berkeloid_move berkeloid_collide berkeloid_draw CK4_ACT_BerkeloidMove0
+#%action CK4_ACT_BerkeloidThrow0 0xFF 0x01 0 0 0 0 0 0 SetDraw berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidThrow1
+#%action CK4_ACT_BerkeloidThrow1 0xFF 0x01 0 0 0 0 0 0 SetDraw berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidThrow2
+#%action CK4_ACT_BerkeloidThrow2 0xFF 0x01 0 0 0 0 0 0 SetDraw berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidThrow3
+#%action CK4_ACT_BerkeloidThrow3 0xFF 0x01 0 0 0 0 0 0 SetDraw berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidThrow4
+#%action CK4_ACT_BerkeloidThrow4 0xFF 0x01 0 0 0 0 0 0 SetDraw berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidThrow5
+#%action CK4_ACT_BerkeloidThrow5 0xFF 0x01 0 0 0 0 0 0 berkeloid_throw berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidThrow6
+#%action CK4_ACT_BerkeloidThrow6 0x00 0x02 0 0 0 0 0 0 SetDraw berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidThrow7
+#%action CK4_ACT_BerkeloidThrow7 0x00 0x02 0 0 0 0 0 0 SetDraw berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidThrow8
+#%action CK4_ACT_BerkeloidThrow8 0x00 0x02 0 0 0 0 0 0 SetDraw berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidThrow9
+#%action CK4_ACT_BerkeloidThrow9 0x00 0x02 0 0 0 0 0 0 SetDraw berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidThrow10
+#%action CK4_ACT_BerkeloidThrow10 0x00 0x02 0 0 0 0 0 0 SetDraw berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidThrow11
+#%action CK4_ACT_BerkeloidThrow11 0x00 0x02 0 0 0 0 0 0 berkeloid_throw_done berkeloid_collide berkeloid_hover CK4_ACT_BerkeloidMove0
+#%action CK4_ACT_FireballAir0 0x03 0x03 0 0 0 0 0 0 Fall2 SprCol1 fireball_draw CK4_ACT_FireballAir1
+#%action CK4_ACT_FireballAir1 0x04 0x04 0 0 0 0 0 0 Fall2 SprCol1 fireball_draw CK4_ACT_FireballAir0
+#%action CK4_ACT_FireballGround0 0x03 0x03 0 0 0 0 0 0 NULL berkeloid_collide DrawFunc1 CK4_ACT_FireballGround1
+#%action CK4_ACT_FireballGround1 0x05 0x05 0 0 0 $0xC 0 0 NULL berkeloid_collide DrawFunc1 CK4_ACT_FireballGround2
+#%action CK4_ACT_FireballGround2 0x06 0x06 0 0 0 $0xC 0 0 NULL berkeloid_collide DrawFunc1 CK4_ACT_FireballGround3
+#%action CK4_ACT_FireballGround3 0x05 0x05 0 0 0 $0xC 0 0 NULL berkeloid_collide DrawFunc1 CK4_ACT_FireballGround4
+#%action CK4_ACT_FireballGround4 0x06 0x06 0 0 0 $0xC 0 0 NULL berkeloid_collide DrawFunc1 CK4_ACT_FireballGround5
+#%action CK4_ACT_FireballGround5 0x03 0x03 0 0 0 $0xC 0 0 NULL berkeloid_collide DrawFunc1 CK4_ACT_FireballGround6
+#%action CK4_ACT_FireballGround6 0x04 0x04 0 0 0 $0xC 0 0 NULL berkeloid_collide DrawFunc1 CK4_ACT_FireballGround7
+#%action CK4_ACT_FireballGround7 0x03 0x03 0 0 0 $0xC 0 0 NULL berkeloid_collide DrawFunc1 CK4_ACT_FireballGround8
+#%action CK4_ACT_FireballGround8 0x04 0x04 0 0 0 $0xC 0 0 NULL berkeloid_collide DrawFunc1 NULL
+#%action CK4_ACT_FootPoof0 0x5E 0x5E 0 0 0 $0xC 0 0 NULL NULL DrawFunc1 CK4_ACT_FootPoof1
+#%action CK4_ACT_FootPoof1 0x5F 0x5F 0 0 0 $0xC 0 0 NULL NULL DrawFunc1 CK4_ACT_FootPoof2
+#%action CK4_ACT_FootPoof2 0x60 0x60 0 0 0 $0xC 0 0 NULL NULL DrawFunc1 CK4_ACT_FootPoof3
+#%action CK4_ACT_FootPoof3 0x61 0x61 0 0 0 $0xC 0 0 NULL NULL DrawFunc1 NULL
+#%action CK4_ACT_Inchworm0 0x4F 0x4D 0 0 0 0xE 0x0 0 inchworm_move inchworm_collide DrawFunc2 CK4_ACT_Inchworm1
+#%action CK4_ACT_Inchworm1 0x50 0x4E 0 0 0 0xE 0x0 0 inchworm_move inchworm_collide DrawFunc2 CK4_ACT_Inchworm0
+#%action CK4_ACT_Foot0 $0xFFFF $0xFFFF 0 0 0 0x0 0 0 NULL NULL DrawFunc1 CK4_ACT_Foot1
+#%action CK4_ACT_Foot1 0x51 0x51 0 0 0 0x530 0 0 NULL foot_collide DrawFunc1 NULL
+#%action CK4_ACT_Bounder0 0xEF 0xEF 0 0 0 0x4 0 0 Fall bounder_check_shot bounder_draw CK4_ACT_Bounder1
+#%action CK4_ACT_Bounder1 0xF0 0xF0 0 0 0 0x4 0 0 Fall bounder_check_shot bounder_draw CK4_ACT_Bounder0
+#%action CK4_ACT_BounderMoveHorz0 0xEB 0xED 0 0 0 0x4 0 0 Fall bounder_check_shot bounder_draw CK4_ACT_BounderMoveHorz1
+#%action CK4_ACT_BounderMoveHorz1 0xEC 0xEE 0 0 0 0x4 0 0 Fall bounder_check_shot bounder_draw CK4_ACT_BounderMoveHorz0
+#%action CK4_ACT_BounderStunned0 0xEF 0xEF 0 0 0 0 0 0 Fall NULL DrawFunc4 CK4_ACT_BounderStunned1
+#%action CK4_ACT_BounderStunned1 0xF1 0xF1 0 0 0 0 0 0 Fall NULL DrawFunc4 NULL
+#%action CK4_ACT_LickHop0 0xD9 0xD5 0 0 0 $0xA 0 0 lick_move lick_check_shot DrawFunc1 CK4_ACT_LickHop1
+#%action CK4_ACT_LickHop1 0xDA 0xD6 0 0 0 0 0 0 Fall lick_check_shot lick_draw CK4_ACT_LickHop2
+#%action CK4_ACT_LickHop2 0xDB 0xD7 0 0 0 0 0 0 Fall lick_check_shot lick_draw NULL
+#%action CK4_ACT_LickHop3 0xDC 0xD8 0 0 0 $0xA 0 0 NULL lick_check_shot DrawFunc1 CK4_ACT_LickHop0
+#%action CK4_ACT_LickFlame0 0xE0 0xDD 0 0 0 0 0 0 NULL lick_collide DrawFunc1 CK4_ACT_LickFlame1
+#%action CK4_ACT_LickFlame1 0xE1 0xDE 0 0 0 0 0 0 NULL lick_collide DrawFunc1 CK4_ACT_LickFlame2
+#%action CK4_ACT_LickFlame2 0xE2 0xDF 0 0 0 0 0 0 NULL lick_collide DrawFunc1 CK4_ACT_LickFlame3
+#%action CK4_ACT_LickFlame3 0xE1 0xDE 0 0 0 0 0 0 NULL lick_collide DrawFunc1 CK4_ACT_LickFlame4
+#%action CK4_ACT_LickFlame4 0xE0 0xDD 0 0 0 0 0 0 NULL lick_collide DrawFunc1 CK4_ACT_LickFlame5
+#%action CK4_ACT_LickFlame5 0xE1 0xDE 0 0 0 0 0 0 NULL lick_collide DrawFunc1 CK4_ACT_LickFlame6
+#%action CK4_ACT_LickFlame6 0xE2 0xDF 0 0 0 0 0 0 NULL lick_collide DrawFunc1 CK4_ACT_LickFlame7
+#%action CK4_ACT_LickFlame7 0xE1 0xDE 0 0 0 0 0 0 NULL lick_collide DrawFunc1 CK4_ACT_LickHop2
+#%action CK4_ACT_LickStunned0 0xE3 0xE3 0 0 0 0 0 0 Fall NULL DrawFunc4 CK4_ACT_LickStunned1
+#%action CK4_ACT_LickStunned1 0xE3 0xE3 0 0 0 0 0 0 Fall NULL DrawFunc4 NULL
+#%action CK4_ACT_Platform0 0xE4 0xE4 0 0 0 0 0 0 platform_move NULL platform_draw NULL
+#%action CK4_ACT_PlatformSit 0xE4 0xE4 0 0 0 0 0 0 platform_sit NULL DrawFunc1 NULL
+#%action CK4_ACT_PlatformDrop 0xE4 0xE4 0 0 0 0 0 0 platform_drop NULL DrawFunc1 NULL
+#%action CK4_ACT_PlatformRise 0xE4 0xE4 0 0 0 0 0 $0xFFE0 platform_rise NULL DrawFunc1 NULL
+#%action CK4_ACT_Smirky0 0x52 0x52 0 0 0 0x4 0 0 NULL smirky_collide DrawFunc1 CK4_ACT_Smirky1
+#%action CK4_ACT_Smirky1 0x53 0x53 0 0 0 0x4 0 0 SmirkySearch smirky_collide DrawFunc1 NULL
+#%action CK4_ACT_SmirkyTele0 0x5E 0x5E 0 0 0 0x4 0 0 NULL smirky_collide DrawFunc1 CK4_ACT_SmirkyTele1
+#%action CK4_ACT_SmirkyTele1 0x5F 0x5F 0 0 0 0x4 0 0 NULL smirky_collide DrawFunc1 CK4_ACT_SmirkyTele2
+#%action CK4_ACT_SmirkyTele2 0x60 0x60 0 0 0 0x4 0 0 NULL smirky_collide DrawFunc1 CK4_ACT_SmirkyTele3
+#%action CK4_ACT_SmirkyTele3 0x61 0x61 0 0 0 0x4 0 0 SmirkyTeleport smirky_collide DrawFunc1 CK4_ACT_SmirkyTele4
+#%action CK4_ACT_SmirkyTele4 0x61 0x61 0 0 0 0x4 0 0 NULL smirky_collide DrawFunc1 CK4_ACT_SmirkyTele5
+#%action CK4_ACT_SmirkyTele5 0x60 0x60 0 0 0 0x4 0 0 NULL smirky_collide DrawFunc1 CK4_ACT_SmirkyTele6
+#%action CK4_ACT_SmirkyTele6 0x5F 0x5F 0 0 0 0x4 0 0 NULL smirky_collide DrawFunc1 CK4_ACT_SmirkyTele7
+#%action CK4_ACT_SmirkyTele7 0x5E 0x5E 0 0 0 0x4 0 0 NULL smirky_collide DrawFunc1 CK4_ACT_SmirkyJump0
+#%action CK4_ACT_SmirkyJump0 0x57 0x54 0 0 0 0 0 0 Fall2 smirky_collide draw_smirky CK4_ACT_SmirkyJump1
+#%action CK4_ACT_SmirkyJump1 0x58 0x55 0 0 0 0 0 0 Fall2 smirky_collide draw_smirky CK4_ACT_SmirkyJump2
+#%action CK4_ACT_SmirkyJump2 0x59 0x56 0 0 0 0 0 0 Fall2 smirky_collide draw_smirky CK4_ACT_SmirkyJump3
+#%action CK4_ACT_SmirkyJump3 0x58 0x55 0 0 0 0 0 0 Fall2 smirky_collide draw_smirky CK4_ACT_SmirkyJump0
+#%action CK4_ACT_SmirkyStunned0 0x57 0x57 0 0 0 0 0 0 Fall NULL DrawFunc4 CK4_ACT_SmirkyStunned1
+#%action CK4_ACT_SmirkyStunned1 0x63 0x63 0 0 0 0 0 0 Fall NULL DrawFunc4 NULL
+#%action CK4_ACT_StolenItem0 0x5A 0x5A 0 0 0 $0xA 0 0 NULL NULL DrawFunc1 CK4_ACT_StolenItem1
+#%action CK4_ACT_StolenItem1 0x5B 0x5B 0 0 0 $0xA 0 0 NULL NULL DrawFunc1 CK4_ACT_StolenItem2
+#%action CK4_ACT_StolenItem2 0x5C 0x5C 0 0 0 $0xA 0 0 NULL NULL DrawFunc1 CK4_ACT_StolenItem3
+#%action CK4_ACT_StolenItem3 0x5D 0x5D 0 0 0 $0xA 0 0 NULL NULL DrawFunc1 NULL
+#%action CK4_ACT_Mimrock0 0x84 0x84 0 0 0 0x4 0 0 mimrock_wait NULL DrawFunc2 CK4_ACT_Mimrock0
+#%action CK4_ACT_MimrockWalk0 0x89 0x85 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide DrawFunc2 CK4_ACT_MimrockWalk1
+#%action CK4_ACT_MimrockWalk1 0x8A 0x86 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide DrawFunc2 CK4_ACT_MimrockWalk2
+#%action CK4_ACT_MimrockWalk2 0x8B 0x87 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide DrawFunc2 CK4_ACT_MimrockWalk3
+#%action CK4_ACT_MimrockWalk3 0x8C 0x88 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide DrawFunc2 CK4_ACT_MimrockWalk4
+#%action CK4_ACT_MimrockWalk4 0x89 0x85 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide DrawFunc2 CK4_ACT_MimrockWalk5
+#%action CK4_ACT_MimrockWalk5 0x8A 0x86 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide DrawFunc2 CK4_ACT_Mimrock0
+#%action CK4_ACT_MimrockJump0 0x90 0x8D 0 0 0 0x8 0 0 Fall2 mimrock_collide_air DrawMimrockJump CK4_ACT_MimrockJump1
+#%action CK4_ACT_MimrockJump1 0x91 0x8E 0 0 0 $0xA 0 0 Fall2 mimrock_collide_air DrawMimrockJump CK4_ACT_MimrockJump2
+#%action CK4_ACT_MimrockJump2 0x92 0x8F 0 0 0 $0xA 0 0 Fall2 mimrock_collide_air DrawMimrockJump CK4_ACT_MimrockJump1
+#%action CK4_ACT_MimrockBounce0 0x92 0x8F 0 0 0 $0xA 0 0 Fall mimrock_collide DrawMimrockBounce NULL
+#%action CK4_ACT_MimrockStunned0 0x92 0x92 0 0 0 $0xC 0 0 Fall NULL DrawFunc4 CK4_ACT_MimrockStunned1
+#%action CK4_ACT_MimrockStunned1 0x93 0x93 0 0 0 $0xC 0 0 Fall NULL DrawFunc4 NULL
+#%action CK4_ACT_DopefishSwim0 0xA2 0x94 0 0 0 0x4 0 0 DopefishMove DopefishCollide DrawFish CK4_ACT_DopefishSwim1
+#%action CK4_ACT_DopefishSwim1 0xA3 0x95 0 0 0 0x4 0 0 DopefishMove DopefishCollide DrawFish CK4_ACT_DopefishSwim0
+#%action CK4_ACT_DopefishEat0 0xA4 0x96 0 0 0 0 0 0 DopefishEat NULL DrawFunc1 NULL
+#%action CK4_ACT_DopefishBurp0 0xA2 0x94 0 0 0 0xC 0 0 NULL NULL DrawFunc1 CK4_ACT_DopefishBurp1
+#%action CK4_ACT_DopefishBurp1 0x97 0x97 0 0 0 0xC 0 0 DopefishBurp NULL DrawFunc1 CK4_ACT_DopefishBurp2
+#%action CK4_ACT_DopefishBurp2 0x98 0x98 0 0 0 0xC 0 0 NULL NULL DrawFunc1 CK4_ACT_DopefishBurp3
+#%action CK4_ACT_DopefishBurp3 0xA2 0x94 0 0 0 0 0 0 DopefishAfterBurp NULL DrawFunc1 CK4_ACT_DopefishSwim0
+#%action CK4_ACT_SchoolfishEaten0 0xA5 0xA7 0 0 0 0 0 0 NULL NULL DrawFunc1 NULL
+#%action CK4_ACT_KeenEaten0 0x39 0x39 0 0 0 0 0 0 NULL NULL DrawFunc1 CK4_ACT_KeenEaten1
+#%action CK4_ACT_KeenEaten1 $0xFFFF $0xFFFF 0 0 0 $0xB4 0 0 UnderwaterDeath NULL DrawFunc1 CK4_ACT_KeenEaten1
+#%action CK4_ACT_DopeBubble0 0x99 0x99 0 0 0 0x4 0 0x4 Bubbles NULL DrawFunc1 CK4_ACT_DopeBubble1
+#%action CK4_ACT_DopeBubble1 0x9A 0x9A 0 0 0 0x4 0 0x4 Bubbles NULL DrawFunc1 CK4_ACT_DopeBubble2
+#%action CK4_ACT_DopeBubble2 0x9B 0x9B 0 0 0 0x4 0 0x4 Bubbles NULL DrawFunc1 CK4_ACT_DopeBubble3
+#%action CK4_ACT_DopeBubble3 0x9C 0x9C 0 0 0 0x4 0 0x4 Bubbles NULL DrawFunc1 CK4_ACT_DopeBubble0
+#%action CK4_ACT_SchoolfishSwim0 0xA5 0xA7 0 0 0 0x4 0 0 SchoolfishMove NULL DrawFish CK4_ACT_SchoolfishSwim1
+#%action CK4_ACT_SchoolfishSwim1 0xA6 0xA8 0 0 0 0x4 0 0 SchoolfishMove NULL DrawFish CK4_ACT_SchoolfishSwim0
+#%action CK4_ACT_Sprite0 0xAF 0xAF 0 0 0 $0xA 0 0 SpritePatrol SprCol1 DrawFunc1 CK4_ACT_Sprite0
+#%action CK4_ACT_SpriteAiming0 0xB0 0xB2 0 0 0 0x8 0 0 SpriteAim SprCol1 DrawFunc1 CK4_ACT_Sprite0
+#%action CK4_ACT_SpriteShooting0 0xB1 0xB3 0 0 0 0x8 0 0 SpriteShoot SprCol1 DrawFunc1 CK4_ACT_SpriteShooting1
+#%action CK4_ACT_SpriteShooting1 0xB1 0xB3 0 0 0 0xE 0 0 NULL SprCol1 DrawFunc1 CK4_ACT_Sprite0
+#%action CK4_ACT_SpriteBullet0 0xB4 0xB4 0 0 0 $0xA 0x0 0 NULL SprCol1 DrawProjectile CK4_ACT_SpriteBullet1
+#%action CK4_ACT_SpriteBullet1 0xB5 0xB5 0 0 0 $0xA 0x0 0 NULL SprCol1 DrawProjectile CK4_ACT_SpriteBullet2
+#%action CK4_ACT_SpriteBullet2 0xB6 0xB6 0 0 0 $0xA 0x0 0 NULL SprCol1 DrawProjectile CK4_ACT_SpriteBullet3
+#%action CK4_ACT_SpriteBullet3 0xB7 0xB7 0 0 0 $0xA 0x0 0 NULL SprCol1 DrawProjectile CK4_ACT_SpriteBullet0
+#%action CK4_ACT_Mine0 0xB8 0xB8 0 0 0 $0xA 0 0 platform_move MineCollide DrawFunc1 CK4_ACT_Mine0
+#%action CK4_ACT_MineExplode0 0xB9 0xB9 0 0 0 0xE 0 0 NULL NULL DrawFunc1 CK4_ACT_MineExplode1
+#%action CK4_ACT_MineExplode1 0xBA 0xBA 0 0 0 0xE 0 0 NULL NULL DrawFunc1 NULL
+#%action CK4_ACT_Lindsey0 0x49 0x49 0 0 0 0x4 0 0 LindseyFloat NULL DrawFunc1 CK4_ACT_Lindsey1
+#%action CK4_ACT_Lindsey1 0x4A 0x4A 0 0 0 0x4 0 0 LindseyFloat NULL DrawFunc1 CK4_ACT_Lindsey2
+#%action CK4_ACT_Lindsey2 0x4B 0x4B 0 0 0 0x4 0 0 LindseyFloat NULL DrawFunc1 CK4_ACT_Lindsey3
+#%action CK4_ACT_Lindsey3 0x4C 0x4C 0 0 0 0x4 0 0 LindseyFloat NULL DrawFunc1 CK4_ACT_Lindsey0
+#%action CK4_ACT_DartGun0 0 0 0 0 0 0x6 0 0 DartGun NULL NULL CK4_ACT_DartGun0
+#%action CK4_ACT_DartHorz0 0x82 0x80 0 0 0 0 0x0 0 NULL SprCol1 DrawProjectile CK4_ACT_DartHorz1
+#%action CK4_ACT_DartHorz1 0x83 0x81 0 0 0 0 0x0 0 NULL SprCol1 DrawProjectile CK4_ACT_DartHorz0
+#%action CK4_ACT_DartUp0 0x7C 0x7C 0 0 0 0 0 0x0 NULL SprCol1 DrawProjectile CK4_ACT_DartUp1
+#%action CK4_ACT_DartUp1 0x7D 0x7D 0 0 0 0 0 0x0 NULL SprCol1 DrawProjectile CK4_ACT_DartUp0
+#%action CK4_ACT_DartDown0 0x7E 0x7E 0 0 0 0 0 0x0 NULL SprCol1 DrawProjectile CK4_ACT_DartDown1
+#%action CK4_ACT_DartDown1 0x7F 0x7F 0 0 0 0 0 0x0 NULL SprCol1 DrawProjectile CK4_ACT_DartDown0
+#%action CK4_ACT_Wetsuit0 0xAE 0xAE 0 0 0 0x530 0 0 NULL WetsuitCollide DrawFunc1 CK4_ACT_Wetsuit0
 #
