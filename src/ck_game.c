@@ -207,7 +207,7 @@ void CK_LoadLevel(bool doCache)
 	RF_NewMap();
 	CA_ClearMarks();
 
-	CK_SetupObjArray();
+  CK_SetupObjArray(); // This is done inside ScanInfoLayer in CK4
   ck_currentEpisode->scanInfoLayer();
 
 	if (ca_mapOn == 0)
@@ -480,7 +480,7 @@ replayLevel:
 		{
 			memset(ck_gameState.keyGems, 0, sizeof (ck_gameState.keyGems));
 			// TODO: This is probably (but not necessarily) Keen 5 specific
-			ck_gameState.securityCard = 0;
+			ck_gameState.ep.ck5.securityCard = 0;
 		}
 
 		//TODO: Some TED launching stuff
@@ -489,12 +489,12 @@ replayLevel:
     ck_lastLevelFinished = -1;
 		switch (ck_gameState.levelState)
 		{
-		case 1:
+		case LS_Died: //1
 			CK_TryAgainMenu();
 			//ck_gameState.currentLevel = ck_nextMapNumber;
 			break;
 
-		case 2:
+		case LS_LevelComplete: // 2:
 		case 7:
 		case 13:
 			if (ca_mapOn == 0)
@@ -533,6 +533,33 @@ replayLevel:
 			IN_ClearKeysDown();
 			return;
 
+    // Episode Specific Level Endings
+    case LS_CouncilRescued: // 3
+      if (ck_currentEpisode->ep == EP_CK4)
+      {
+         if (ca_mapOn)
+           SD_PlaySound(SOUND_LEVELEXIT);
+
+         ck_lastLevelFinished = ca_mapOn;
+         ck_gameState.levelsDone[ca_mapOn] = 1;
+         CK4_ShowCouncilMessage();
+
+         if (ck_gameState.ep.ck4.membersRescued == 8)
+         {
+            // Game won
+            // CK_CacheEndGame();
+            // RF_Reset();
+            // VW_SyncPages();
+            // help_endgame();
+            // CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
+            return;
+         }
+         else
+         {
+           // Back to map
+           ck_gameState.currentLevel = 0;
+         }
+      }
 		case 14:
       if (ck_currentEpisode->ep == EP_CK5)
       {
@@ -545,7 +572,7 @@ replayLevel:
       }
 			break;
 
-		case 15:
+		case LS_DestroyedQED: //15:
 			// The QED was destroyed
 			/*
 			 * purge_chunks()
@@ -567,8 +594,6 @@ replayLevel:
 			break;
 #endif
 
-
-		case 3:
 		case 9:
 		case 10:
 		case 11:
@@ -582,15 +607,14 @@ replayLevel:
 		goto loadLevel; //livesLeft >= 0
 	}	while (true);
 
-#if 0
-	// Keen4/6 simple game over
-	CK_GameOver();
-#endif
-
 	// Keen 5: Blow up the galaxy
   if (ck_currentEpisode->ep == EP_CK5)
   {
     CK5_ExplodeGalaxy();
+  }
+  else
+  {
+    CK_GameOver();
   }
 
 	//TODO: Update High Scores

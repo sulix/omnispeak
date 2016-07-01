@@ -17,9 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include <string.h> /* For memset() */
+
 #include "id_ca.h"
 #include "id_in.h"
 #include "id_rf.h"
+#include "id_vh.h"
 #include "id_vl.h"
 #include "ck_game.h"
 #include "ck_play.h"
@@ -659,14 +662,105 @@ void CK4_SpawnRedStandPlatform(int tileX, int tileY)
 
 
 // TODO: Cache stuff here instead of spawner handlers
+
+#define MAXLUMPS 0x25
+static bool ck4_lumpsNeeded[MAXLUMPS];
+typedef enum
+{
+  Lump_0 = 0,
+  Lump_CouncilMember = 17,
+} CK_Lumptype;
+
+static int16_t ck4_lumpStarts[MAXLUMPS] =
+{
+  88,
+  130,
+  227,
+  229,
+  231,
+  233,
+  235,
+  237,
+  239,
+  251,
+  254,
+  315,
+  325,
+  0,
+  329,
+  333,
+  338,
+  356,// SPR_COUNCILWALK_R1
+  367,
+  388,
+  404,
+  421,
+  425,
+  443,
+  457,
+  469,
+  484,
+  491,
+  498,
+  503,
+  242,
+  380,
+  309,
+  431,
+  440,
+  519,
+  362,
+};
+
+static int16_t ck4_lumpEnds[MAXLUMPS] =
+{
+  103,
+  226,
+  228,
+  230,
+  232,
+  234,
+  236,
+  238,
+  240,
+  252,
+  308,
+  324,
+  328,
+  0,
+  332,
+  337,
+  355,
+  361, // SPR_COUNCILPAUSE2
+  379,
+  403,
+  420,
+  424,
+  429,
+  456,
+  468,
+  483,
+  490,
+  497,
+  502,
+  518,
+  250,
+  387,
+  314,
+  439,
+  442,
+  520,
+  366,
+};
+
 void CK4_ScanInfoLayer()
 {
 
-	//TODO: Work out where to store current map number, etc.
+  memset(ck4_lumpsNeeded, sizeof(ck4_lumpsNeeded), 0);
+
+  //TODO: Work out where to store current map number, etc.
 	int mapW = CA_MapHeaders[ca_mapOn]->width;
 	int mapH = CA_MapHeaders[ca_mapOn]->height;
-
-	ck_gameState.fusesRemaining = 0;
 
 	for (int y = 0; y < mapH; ++y)
 	{
@@ -692,6 +786,11 @@ void CK4_ScanInfoLayer()
 				if (ck_gameState.levelState != 13)
 					CK_SpawnMapKeen(x, y);
 				break;
+
+      case 4:
+        CK4_SpawnCouncilMember(x, y);
+        ck4_lumpsNeeded[Lump_CouncilMember] = true;
+        break;
 
 
 			case 25:
@@ -719,6 +818,7 @@ void CK4_ScanInfoLayer()
 #endif
       case 33:
         CK4_SpawnMiragia(x, y);
+        break;
 
 			case 34:
 				// Spawn extra stunner if Keen has low ammo
@@ -760,11 +860,140 @@ void CK4_ScanInfoLayer()
 		if (obj->active != OBJ_ALWAYS_ACTIVE)
 			obj->active = OBJ_INACTIVE;
 	}
-	// TODO: Some more stuff (including opening elevator after breaking fuses)
 
 	if (ck_gameState.currentLevel == 0)
 	{
 		int keenYTilePos = ck_keenObj->posY >> 8;
 
 	}
+
+  for (int i = 0; i < MAXLUMPS; i++)
+    if (ck4_lumpsNeeded[i])
+      for (int j = ck4_lumpStarts[i]; j <= ck4_lumpEnds[i]; i++)
+        CA_CacheGrChunk(j);
 }
+
+// Dialog Functions
+// These are right after ScanInfoLayer in DOS exe
+void CK4_ShowPrincessMessage(void)
+{
+}
+
+void CK4_ShowJanitorMessage(void)
+{
+}
+
+void CK4_ShowCantSwimMessage(void)
+{
+}
+
+void CK4_ShowWetsuitMessage(void)
+{
+}
+
+char *ck4_councilMessages[] = {
+  "No sweat, oh guardian\n"
+    "of wisdom!",
+
+  "Sounds like a plan,\n"
+    "bearded one!",
+
+  "No problemo.",
+
+  "Great.  You known, you\n"
+    "look a lot like the\n"
+    "last guy I rescued...",
+
+  "Good idea, Gramps.",
+
+  "May the road rise\n"
+    "to meet your feet,\n"
+    "Mr. Member.",
+
+  "Wise plan of action,\n"
+    "your ancientness.",
+
+  "You're the last one,\n"
+    "fella. Let's both\n"
+    "get back to the\n"
+    "Oracle chamber!"
+};
+
+void CK4_ShowCouncilMessage(void)
+{
+  SD_WaitSoundDone();
+  CA_UpLevel();
+
+  CA_MarkGrChunk(0x6E);
+  CA_MarkGrChunk(0x6F);
+  CA_MarkGrChunk(0x70);
+  CA_CacheMarks(0);
+  StartMusic(0xFFFF);
+
+  // VW_SyncPages();
+
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 110);
+  US_SetPrintY(US_GetPrintY() + 6);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetWindowX(US_GetWindowX() + 0x30);
+
+  if (ca_mapOn == 17)
+  {
+     // Underwater level
+    US_CPrint("Ggoh thig you sogh mg\n"
+              "fgor regscuing mgge!\n"
+              "I'gll regur tgo the\n"
+              "Goracle chagber\n"
+              "igmediatggely. Blub.");
+  }
+  else
+  {
+    US_CPrint("Oh thank you so much\n"
+              "for rescuing me!\n"
+              "I'll return to the\n"
+              "Oracle chamber\n"
+              "immediately.");
+  }
+
+  VL_Present();
+  // VL_WaitVBL(60);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 111);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetPrintY(US_GetPrintY() + 12);
+  US_CPrint(ck4_councilMessages[ck_gameState.ep.ck4.membersRescued]);
+  VL_Present(); // VW_UpdateScreen();
+  // VW_WaitVBL(30);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), 112);
+  VL_Present(); // VW_UpdateScreen();
+  // VW_WaitVBL(30);
+  IN_WaitButton();
+  ck_gameState.ep.ck4.membersRescued++;
+  CA_DownLevel();
+  StopMusic();
+
+}
+
+// Scuba Keen
+void CK4_KeenSwim(CK_object *obj)
+{
+}
+
+void CK4_KeenSwimFast(CK_object *obj)
+{
+}
+
+void CK4_KeenSwimCol(CK_object *a, CK_object *b)
+{
+}
+
+void CK4_KeenSwimDraw(CK_object *obj)
+{
+}
+
+

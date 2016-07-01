@@ -172,7 +172,7 @@ void CK_ItemCheat()
 	//RF_Reset();
 	ck_gameState.numShots = 99;
 	ck_gameState.numLives++;
-	ck_gameState.securityCard = 1;
+	ck_gameState.ep.ck5.securityCard = 1;
 	ck_gameState.keyGems[0] =
 		ck_gameState.keyGems[1] =
 		ck_gameState.keyGems[2] =
@@ -600,7 +600,7 @@ bool CK_DebugKeys()
 			ck_gameState.keyGems[i]++;
 
 		ck_gameState.numShots = 99;
-		ck_gameState.securityCard = 1;
+		ck_gameState.ep.ck5.securityCard = 1;
 		VL_Present();
 		IN_WaitButton();
 		CK_IncreaseScore(3000);
@@ -941,17 +941,29 @@ uint16_t *ck_levelMusic;
 
 void StartMusic(uint16_t level)
 {
+  int song;
+
 	if ((level >= 20) && (level != 0xFFFF))
 	{
 		Quit("StartMusic() - bad level number");
 	}
 	SD_MusicOff();
-	if (ck_levelMusic[level] == 0xFFFF)
-		return;
+	if (level == 0xFFFF)
+  {
+    if (ck_currentEpisode->ep == EP_CK4)
+      song = 5;
+    else
+      return;
+  }
+  else
+  {
+    song = ck_levelMusic[level];
+  }
+
 	if (MusicMode != smm_AdLib)
 		return;
 	MM_BombOnError(false);
-	CA_CacheAudioChunk(ca_audInfoE.startMusic + ck_levelMusic[level]);
+	CA_CacheAudioChunk(ca_audInfoE.startMusic + song);
 	MM_BombOnError(true);
 	// TODO: FINISH THIS!
 #if 0
@@ -975,7 +987,7 @@ void StartMusic(uint16_t level)
 			VW_FadeToBlack();
 	}
 #endif
-	SD_StartMusic((MusicGroup *) CA_audio[ca_audInfoE.startMusic + ck_levelMusic[level]]);
+	SD_StartMusic((MusicGroup *) CA_audio[ca_audInfoE.startMusic + song]);
 }
 
 extern int rf_scrollXUnit;

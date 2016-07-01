@@ -608,6 +608,75 @@ void CK_PhysPushY(CK_object *pushee, CK_object *pusher)
 	}
 }
 
+void CK_PhysPushXY(CK_object *passenger, CK_object *platform, bool squish)
+{
+  int16_t dx = platform->deltaPosX - passenger->deltaPosX;
+  ck_nextX = ck_nextY = 0;
+  int16_t dLeft = platform->clipRects.unitX2 - passenger->clipRects.unitX1;
+  int16_t dRight = passenger->clipRects.unitX2 - platform->clipRects.unitX1;
+
+  //Push in all four directions
+
+  if (dLeft > 0 && dx+1 >= dLeft)
+  {
+    ck_nextX = dLeft;
+    passenger->velX = 0;
+    CK_PhysUpdateSimpleObj(passenger);
+
+    if (squish && passenger->leftTI)
+      CK_KillKeen();
+
+    passenger->rightTI = 1;
+    return;
+  }
+
+  if (dRight > 0 && -dx+1 >= dRight)
+  {
+    ck_nextX = -dRight;
+    passenger->velX = 0;
+    CK_PhysUpdateSimpleObj(passenger);
+
+    if (squish && passenger->rightTI)
+      CK_KillKeen();
+
+    passenger->leftTI = 1;
+    return;
+  }
+
+  int16_t dy = passenger->deltaPosY - platform->deltaPosY;
+  int16_t dTop = platform->clipRects.unitY2 - passenger->clipRects.unitY1;
+  int16_t dBottom = passenger->clipRects.unitY2 - platform->clipRects.unitY1;
+
+  if (dBottom >= 0 && dBottom <= dy)
+  {
+     if (passenger == ck_keenObj)
+       ck_keenState.platform = platform;
+
+     ck_nextY = -dBottom;
+     CK_PhysUpdateSimpleObj(passenger);
+
+     if (squish && passenger->bottomTI)
+       CK_KillKeen();
+
+     // Riding the platform, unless passenger hits its head
+     if (!passenger->bottomTI)
+       passenger->topTI = 0x19;
+
+     return;
+  }
+
+  if (dTop >= 0 && dTop <= dy)
+  {
+    ck_nextY = dTop;
+    CK_PhysUpdateNormalObj(passenger);
+    if (squish && passenger->topTI)
+      CK_KillKeen();
+
+    passenger->bottomTI = 0x19;
+    return;
+  }
+}
+
 void CK_SetAction(CK_object *obj, CK_action *act)
 {
 	obj->currentAction = act;

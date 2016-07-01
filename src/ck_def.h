@@ -85,7 +85,7 @@ typedef enum CK_ClassType {
   CT4_Platform = 20,
   CT4_Dopefish = 21,
   CT4_Schoolfish = 22,
-  CT4_0x17 = 23,
+  CT4_Foot = 23,
   CT4_Lindsey = 24,
   CT4_Cloud = 25,
   CT4_Smirky = 26,
@@ -130,11 +130,12 @@ typedef enum CK_LevelState
   LS_LevelComplete = 2,       // Level Completed
   LS_CouncilRescued = 3,      // Rescued Council Member (Keen 4)
   LS_AboutToRecordDemo = 4,   // About to Record Demo
+  LS_Foot = 7,                // Keen exited level by touching foot (keen 4)
   LS_DestroyedQED = 15,       // Destroyed QED (Keen 5)
 } CK_LevelState;
 
 // This struct is 0x58 bytes big in Keen5
-// It must be preserved if omnispeak savegames are to be compatible
+// It must be preserved (or at least negotiated) if omnispeak savegames are to be compatible
 // with those of vanilla keen
 typedef struct CK_GameState
 {
@@ -145,9 +146,26 @@ typedef struct CK_GameState
 	int32_t nextKeenAt;			// Score keen will get a new life at.
 	int16_t numShots;
 	int16_t numVitalin;
-	int16_t securityCard;
-	int16_t word_4729C;
-	int16_t fusesRemaining;
+
+  // The episode-specific variables come here
+  // They were probably conditionally compiled in the DOS version
+  // so that the Gamestate struct is variably sized between eps.
+  union
+  {
+    struct
+    {
+      int16_t wetsuit;
+      int16_t membersRescued;
+    } ck4;
+
+    struct
+    {
+      int16_t securityCard;
+      int16_t word_4729C;
+      int16_t fusesRemaining;
+    } ck5;
+  } ep;
+
 	int16_t keyGems[4];
 	int16_t currentLevel;
 	int16_t numLives;			// Number of lives keen has.

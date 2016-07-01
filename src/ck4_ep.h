@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include "ck_ep.h"
 
+#define SOUND_COUNCILSAVE 31
+
 /*
  * Contains definitions relevant only to Keen 5
  */
@@ -46,8 +48,19 @@ CK_object *CK4_SpawnEnemyShot(int posX, int posY, CK_action *action);
 void CK4_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple);
 void CK4_SpawnRedStandPlatform(int tileX, int tileY);
 
+void CK4_KeenSwimDraw(CK_object *obj);
+void CK4_KeenSwimCol(CK_object *a, CK_object *b);
+void CK4_KeenSwimFast(CK_object *obj);
+void CK4_KeenSwim(CK_object *obj);
+void CK4_ShowCouncilMessage(void);
+void CK4_ShowWetsuitMessage(void);
+void CK4_ShowCantSwimMessage(void);
+void CK4_ShowJanitorMessage(void);
+void CK4_ShowPrincessMessage(void);
+
 /* ck4_obj1.c */
 void CK4_SpawnMiragia(int tileX, int tileY);
+void CK4_SpawnCouncilMember(int tileX, int tileY);
 
 /* ck4_obj2.c */
 

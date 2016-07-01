@@ -22,7 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_play.h"
 #include "ck_act.h"
 #include "id_ca.h"
+#include "id_in.h"
 #include "id_rf.h"
+#include "ck4_ep.h"
 
 #include <stdio.h>
 
@@ -63,6 +65,25 @@ void CK4_Miragia5(CK_object *obj) { RF_ReplaceTileBlock(14, 60, obj->posX, obj->
 void CK4_Miragia6(CK_object *obj) { RF_ReplaceTileBlock(8, 60, obj->posX, obj->posY, 6, 4); }
 void CK4_Miragia7(CK_object *obj) { RF_ReplaceTileBlock(2, 60, obj->posX, obj->posY, 6, 4); }
 
+void CK4_SpawnCouncilMember(int tileX, int tileY)
+{
+   CK_object *obj = CK_GetNewObj(false);
+   obj->type = CT4_CouncilMember;
+   obj->active = OBJ_ACTIVE;
+   obj->zLayer = PRIORITIES - 4;
+   obj->posX = tileX << G_T_SHIFT;
+   obj->posY = (tileY << G_T_SHIFT) - 369;
+   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+   obj->yDirection = IN_motion_Down;
+   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_CouncilWalk0"));
+}
+
+void CK4_CouncilWalk(CK_object *obj)
+{
+  if (SD_GetSpriteSync() << 3 > US_RndT())
+    obj->currentAction = CK_GetActionByName("CK4_ACT_CouncilPause");
+}
+
 
 /*
  * Setup all of the functions in this file.
@@ -77,4 +98,6 @@ void CK4_Obj1_SetupFunctions()
   CK_ACT_AddFunction("CK4_Miragia5", &CK4_Miragia5);
   CK_ACT_AddFunction("CK4_Miragia6", &CK4_Miragia6);
   CK_ACT_AddFunction("CK4_Miragia7", &CK4_Miragia7);
+
+  CK_ACT_AddFunction("CK4_CouncilWalk", &CK4_CouncilWalk);
 }

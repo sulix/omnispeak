@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_act.h"
 
 // TODO: Handle multiple episodes in some way
+#include "ck4_ep.h"
 #include "ck5_ep.h"
 
 #include "id_heads.h"
@@ -64,7 +65,8 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_CLASS(Item))
 	{
-		if (b->user1 > 12)
+    if ((ck_currentEpisode->ep == EP_CK4 && b->user1 > 11) ||
+        (ck_currentEpisode->ep == EP_CK5 && b->user1 > 12))
 			return;
 
 		SD_PlaySound(ck_itemSounds[b->user1]);
@@ -91,7 +93,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		}
 		else if (b->user1 == 12)
 		{
-			ck_gameState.securityCard = 1;
+      ck_gameState.ep.ck5.securityCard = 1;
 		}
 		CK_SetAction2(b, &CK_ACT_itemNotify);
 	}
@@ -100,6 +102,52 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		if (!ck_keenState.platform)
 			CK_PhysPushY(a,b);
 	}
+  else if (ck_currentEpisode->ep == EP_CK4)
+  {
+    if (b->type == CT4_Foot)
+    {
+      ck_gameState.levelState = LS_Foot;
+    }
+    else if (b->type == CT4_StunnedCreature && b->user4 == CT4_Bounder)
+    {
+      if (!ck_keenState.platform)
+        CK_PhysPushY(a,b);
+    }
+    else if (b->type == CT4_Lindsey)
+    {
+       CK4_ShowPrincessMessage();
+       CK_RemoveObj(b);
+       // RF_ForceRefresh();
+    }
+    else if (b->type == CT4_CouncilMember)
+    {
+      if (a->topTI)
+        if (ca_mapOn == 14) // Janitor level
+        {
+          CK4_ShowJanitorMessage();
+          //RF_ForceRefresh();
+          CK_RemoveObj(b);
+        }
+        else
+        {
+           SD_PlaySound(SOUND_COUNCILSAVE);
+           ck_gameState.levelState = LS_CouncilRescued;
+        }
+    }
+    else if (b->type == CT4_Bounder)
+    {
+      CK_PhysPushXY(a, b, false);
+    }
+  }
+  else if (ck_currentEpisode->ep == EP_CK5)
+  {
+
+  }
+  else if (ck_currentEpisode->ep == EP_CK6)
+  {
+
+  }
+
 }
 
 int ck_KeenRunXVels[8] = {0, 0, 4, 4, 8, -4, -4, -8};
@@ -309,9 +357,9 @@ bool CK_KeenPressUp(CK_object *obj)
 			// Is it a security door?
 			if (tileMiscFlag == MISCFLAG_SECURITYDOOR)
 			{
-				if (ck_gameState.securityCard)
+				if (ck_gameState.ep.ck5.securityCard)
 				{
-					ck_gameState.securityCard = 0;
+					ck_gameState.ep.ck5.securityCard = 0;
 					SD_PlaySound(SOUND_OPENSECURITYDOOR);
 					CK_object *newObj = CK_GetNewObj(false);
 					newObj->posX = obj->clipRects.tileXmid - 2;
@@ -1225,7 +1273,7 @@ void CK_KeenPogoThink(CK_object *obj)
 void CK_KeenBreakFuse(int x, int y)
 {
 	CK5_SpawnFuseExplosion(x,y);
-	if (!(--ck_gameState.fusesRemaining))
+	if (!(--ck_gameState.ep.ck5.fusesRemaining))
 	{
 		CK5_SpawnLevelEnd();
 	}

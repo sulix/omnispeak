@@ -789,7 +789,7 @@ void CK5_ScanInfoLayer()
 	int mapW = CA_MapHeaders[ca_mapOn]->width;
 	int mapH = CA_MapHeaders[ca_mapOn]->height;
 
-	ck_gameState.fusesRemaining = 0;
+	ck_gameState.ep.ck5.fusesRemaining = 0;
 
 	for (int y = 0; y < mapH; ++y)
 	{
@@ -910,12 +910,12 @@ void CK5_ScanInfoLayer()
 			case 41:
 				if (ck_gameState.currentLevel == 12)
 				{
-					ck_gameState.fusesRemaining = 4;
+					ck_gameState.ep.ck5.fusesRemaining = 4;
 					CK5_QEDSpawn(x, y);
 				}
 				else
 				{
-					ck_gameState.fusesRemaining++;
+					ck_gameState.ep.ck5.fusesRemaining++;
 				}
 				break;
 			case 44:

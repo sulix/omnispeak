@@ -52,6 +52,7 @@ void CK_PhysFullClipToWalls(struct CK_object *obj);
 void CK_PhysUpdateSimpleObj(struct CK_object *obj);
 void CK_PhysPushX(struct CK_object *pushee, struct CK_object *pusher);
 void CK_PhysPushY(struct CK_object *pushee, struct CK_object *pusher);
+void CK_PhysPushXY(struct CK_object *pushee, struct CK_object *pusher, bool squish);
 void CK_SetAction(struct CK_object *obj, struct CK_action *act);
 void CK_SetAction2(struct CK_object *obj, struct CK_action *act);
 bool CK_ObjectVisible(struct CK_object *obj);
