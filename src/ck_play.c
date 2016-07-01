@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_text.h"
 #include "ck5_ep.h"
 
+#include "ck_cross.h" /* For CK_Cross_SwapLE16 */
+
 #include <stdlib.h> /* For abs() */
 #include <string.h> /* For memset() */
 #include <stdio.h> /* for sscanf() */
@@ -448,8 +450,28 @@ void hackdraw(CK_object *me)
 
 void CK_OverlayForegroundTile(int fgTile, int overlayTile)
 {
-	uint16_t *src = (uint16_t*)ca_graphChunks[ca_gfxInfoE.offTiles16m + overlayTile];
+	// Some random DOSBox memory dump, resolving crashes with NULL pointers and
+	// somewhat emulating the behaviors of vanilla Keen in DOSBox (at least Keen 4)
+	//
+	// Note: CK_WallDebug makes sure dst is never NULL; It's src which may be NULL.
+	static const uint16_t nullTile[80] =
+	{
+		CK_Cross_SwapLE16(0x0162), CK_Cross_SwapLE16(0x01A2), CK_Cross_SwapLE16(0x0008), CK_Cross_SwapLE16(0x0070), CK_Cross_SwapLE16(0x0008), CK_Cross_SwapLE16(0x0070), CK_Cross_SwapLE16(0x0008), CK_Cross_SwapLE16(0x0070),
+		CK_Cross_SwapLE16(0x0008), CK_Cross_SwapLE16(0x0070), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000),
+		CK_Cross_SwapLE16(0x05F5), CK_Cross_SwapLE16(0x1A16), CK_Cross_SwapLE16(0x000B), CK_Cross_SwapLE16(0x1602), CK_Cross_SwapLE16(0xFF55), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000),
+		CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1080), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000),
+		CK_Cross_SwapLE16(0x1320), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1120), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1140), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1160), CK_Cross_SwapLE16(0xF000),
+		CK_Cross_SwapLE16(0x11C0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x11E0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1200), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1240), CK_Cross_SwapLE16(0xF000),
+		CK_Cross_SwapLE16(0x12E0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x12E0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1260), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000),
+		CK_Cross_SwapLE16(0x1280), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0xF0A4), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x0500), CK_Cross_SwapLE16(0xC000),
+		CK_Cross_SwapLE16(0x14A0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x14C0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x20C8), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x0000), CK_Cross_SwapLE16(0x0118),
+		CK_Cross_SwapLE16(0x1AAB), CK_Cross_SwapLE16(0x01A2), CK_Cross_SwapLE16(0x14E0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1500), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1520), CK_Cross_SwapLE16(0xF000),
+	};
+
+	const uint16_t *src = (uint16_t*)ca_graphChunks[ca_gfxInfoE.offTiles16m + overlayTile];
 	uint16_t *dst = (uint16_t*)ca_graphChunks[ca_gfxInfoE.offTiles16m + fgTile];
+
+	src = src ? src : nullTile;
 
 	for (int i = 0; i < 64; i++)
 	{

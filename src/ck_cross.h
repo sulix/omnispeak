@@ -4,15 +4,27 @@
 #define CK_CROSS_H
 
 #include "SDL.h"
+#include <stdint.h>
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define CK_CROSS_IS_BIGENDIAN
+#elif (SDL_BYTEORDER == SDL_LIL_ENDIAN)
+#define CK_CROSS_IS_LITTLEENDIAN
+#else
+#error "ck_cross.h - Unknown platform endianness!"
 #endif
 
-#define CK_Cross_Swap16 SDL_Swap16
-#define CK_Cross_Swap32 SDL_Swap32
-#define CK_Cross_SwapLE16 SDL_SwapLE16
-#define CK_Cross_SwapLE32 SDL_SwapLE32
+#define CK_Cross_Swap16(x) ((uint16_t)(((uint16_t)(x)<<8)|((uint16_t)(x)>>8)))
+
+#define CK_Cross_Swap32(x) ((uint32_t)(((uint32_t)(x)<<24)|(((uint32_t)(x)<<8)&0x00FF0000)|(((uint32_t)(x)>>8)&0x0000FF00)|((uint32_t)(x)>>24)))
+
+#ifdef CK_CROSS_IS_LITTLEENDIAN
+#define CK_Cross_SwapLE16(x) (x)
+#define CK_Cross_SwapLE32(x) (x)
+#else
+#define CK_Cross_SwapLE16(x) CK_Cross_Swap16(x)
+#define CK_Cross_SwapLE32(x) CK_Cross_Swap32(x)
+#endif
 
 typedef enum CK_Log_Message_Class_T {
 	CK_LOG_MSG_NORMAL, CK_LOG_MSG_WARNING, CK_LOG_MSG_ERROR
