@@ -221,8 +221,10 @@
 %action CK4_ACT_SlugSlime0 323 323 UnscaledOnce 0 0 300 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_SlugSlimeEvap0
 %action CK4_ACT_SlugSlimeEvap0 324 324 UnscaledOnce 0 0 60 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
-#%action CK4_ACT_Mushroom0 325 327 0 0 0 0 0 0 mushroom_move mushroom_collide mushroom_draw CK4_ACT_Mushroom1
-#%action CK4_ACT_Mushroom1 326 328 0 0 0 0 0 0 mushroom_move mushroom_collide mushroom_draw CK4_ACT_Mushroom0
+# Mushrooms
+%action CK4_ACT_Mushroom0 325 327 UnscaledFrame 0 0 8 0 0 CK4_MushroomMove CK4_MushroomCol CK4_MushroomDraw CK4_ACT_Mushroom1
+%action CK4_ACT_Mushroom1 326 328 UnscaledFrame 0 0 8 0 0 CK4_MushroomMove CK4_MushroomCol CK4_MushroomDraw CK4_ACT_Mushroom0
+
 #%action CK4_ACT_Egg0 362 362 0 0 0 0 0 0 NULL egg_collide CK_BasicDrawFunc1 NULL
 #%action CK4_ACT_Eggshell0 363 363 0 0 0 0x530 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 #%action CK4_ACT_EggshellBitA0 364 364 0 0 0 0 0 0 Fall NULL DrawEggshell NULL

@@ -134,6 +134,64 @@ void CK4_SlugCol(CK_object *a, CK_object *b)
   }
 }
 
+// Mad Mushrooms
+
+void CK4_SpawnMushroom(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Mushroom;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0xF1;
+  obj->xDirection = IN_motion_Right;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Mushroom0"));
+}
+
+void CK4_MushroomMove(CK_object *obj)
+{
+  obj->xDirection = ck_keenObj->posX > obj->posX ? IN_motion_Right : IN_motion_Left;
+  CK_PhysGravityMid(obj);
+}
+
+void CK4_MushroomCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Stunner)
+  {
+    CK_ShotHit(b);
+  }
+  else if (b->type == CT_Player)
+  {
+     CK_KillKeen();
+  }
+}
+
+void CK4_MushroomDraw(CK_object *obj)
+{
+  if (obj->bottomTI)
+  {
+    obj->velY = 0;
+  }
+
+  if (obj->topTI)
+  {
+    obj->velY = 0;
+    if (++obj->user1 == 3) // Jump counter
+    {
+      obj->user1 = 0;
+      obj->velY = -68;
+      SD_PlaySound(SOUND_MUSHROOMLEAP);
+    }
+    else
+    {
+      SD_PlaySound(SOUND_MUSHROOMHOP);
+      obj->velY = -40;
+    }
+  }
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
 /*
  * Setup all of the functions in this file.
  */
@@ -153,4 +211,8 @@ void CK4_Obj1_SetupFunctions()
   CK_ACT_AddFunction("CK4_SlugMove", &CK4_SlugMove);
   CK_ACT_AddFunction("CK4_SlugSlime", &CK4_SlugSlime);
   CK_ACT_AddColFunction("CK4_SlugCol", &CK4_SlugCol);
+
+  CK_ACT_AddFunction("CK4_MushroomMove", &CK4_MushroomMove);
+  CK_ACT_AddColFunction("CK4_MushroomCol", &CK4_MushroomCol);
+  CK_ACT_AddFunction("CK4_MushroomDraw", &CK4_MushroomDraw);
 }
