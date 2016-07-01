@@ -1690,7 +1690,7 @@ void USL_UpLevel()
 {
 	if (!us_cardStackIndex)
 	{
-		//TODO: Quit?
+		USL_ConfirmComm(US_Comm_Quit);
 		return;
 	}
 
