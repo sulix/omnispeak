@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_ep.h"
 
 #define SOUND_COUNCILSAVE 31
+#define SOUND_SLUGSLIME 46
 
 /*
  * Contains definitions relevant only to Keen 5
@@ -61,6 +62,7 @@ void CK4_ShowPrincessMessage(void);
 /* ck4_obj1.c */
 void CK4_SpawnMiragia(int tileX, int tileY);
 void CK4_SpawnCouncilMember(int tileX, int tileY);
+void CK4_SpawnSlug(int tileX, int tileY);
 
 /* ck4_obj2.c */
 

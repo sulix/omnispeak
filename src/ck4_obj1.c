@@ -84,6 +84,55 @@ void CK4_CouncilWalk(CK_object *obj)
     obj->currentAction = CK_GetActionByName("CK4_ACT_CouncilPause");
 }
 
+// Slugs
+
+void CK4_SpawnSlug(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Slug;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 2;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x71;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_SlugMove0"));
+}
+
+void CK4_SlugMove(CK_object *obj)
+{
+  if (US_RndT() < 0x10)
+  {
+    obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+    obj->currentAction = CK_GetActionByName("CK4_ACT_SlugSliming0");
+    SD_PlaySound(SOUND_SLUGSLIME);
+  }
+}
+
+void CK4_SlugSlime(CK_object *obj)
+{
+  CK_object *slime = CK_GetNewObj(true);
+  slime->type = CT_Friendly;
+  slime->active = OBJ_EXISTS_ONLY_ONSCREEN;
+  slime->zLayer = PRIORITIES - 4;
+  slime->posX = obj->posX;
+  slime->posY = obj->clipRects.unitY2 - 0x80;
+  CK_SetAction(slime, CK_GetActionByName("CK4_ACT_SlugSlime0"));
+}
+
+void CK4_SlugCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    CK_KillKeen();
+  }
+  else if (b->type == CT_Stunner)
+  {
+    CK_StunCreature(a, b, CK_GetActionByName(US_RndT() < 0x80 ? "CK4_ACT_SlugStunned0" : "CK4_ACT_SlugStunned1"));
+    a->velY = -24;
+    a->velX = a->xDirection * 8;
+  }
+}
 
 /*
  * Setup all of the functions in this file.
@@ -100,4 +149,8 @@ void CK4_Obj1_SetupFunctions()
   CK_ACT_AddFunction("CK4_Miragia7", &CK4_Miragia7);
 
   CK_ACT_AddFunction("CK4_CouncilWalk", &CK4_CouncilWalk);
+
+  CK_ACT_AddFunction("CK4_SlugMove", &CK4_SlugMove);
+  CK_ACT_AddFunction("CK4_SlugSlime", &CK4_SlugSlime);
+  CK_ACT_AddColFunction("CK4_SlugCol", &CK4_SlugCol);
 }

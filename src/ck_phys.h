@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
+#define SLOPEMASK 7
+
 typedef struct CK_objPhysData
 {
 	// Unit cliping box

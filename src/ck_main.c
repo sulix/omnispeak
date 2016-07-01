@@ -88,6 +88,8 @@ int SPR_BALL3;
 
 int SPR_DEMOSIGN;
 
+int SPR_STARS1;
+
 int SPR_SECURITYCARD_1;
 int SPR_GEM_A1;
 int SPR_GEM_B1;
@@ -302,6 +304,7 @@ void CK_InitGame()
 	CK_KeenSetupFunctions();
 	CK_OBJ_SetupFunctions();
   CK_Map_SetupFunctions();
+  CK_Misc_SetupFunctions();
 	ck_currentEpisode->setupFunctions();
 	CK_ACT_LoadActions("ACTION.EXT");
 

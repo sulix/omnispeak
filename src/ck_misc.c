@@ -89,6 +89,39 @@ void CK_BasicDrawFunc2(CK_object *obj)
 }
 
 /*
+ * For slugs  (and maybe others???)
+ */
+void CK_BasicDrawFunc3(CK_object *obj)
+{
+	// Hit wall walking right; turn around and go left
+	if (obj->xDirection == IN_motion_Right && obj->leftTI != 0)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Left;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, obj->currentAction);
+	}
+		// Hit wall walking left; turn around and go right
+	else if (obj->xDirection == IN_motion_Left && obj->rightTI != 0)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Right;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, obj->currentAction);
+	}
+		// Walked off of ledge; turn around
+	else if (obj->topTI == 0 || obj->topTI & ~SLOPEMASK)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = -obj->xDirection;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, obj->currentAction);
+	}
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+/*
  * Think function for stunned creatures
  */
 void CK_BasicDrawFunc4(CK_object *obj)
@@ -127,6 +160,23 @@ void CK_BasicDrawFunc4(CK_object *obj)
   if (ck_currentEpisode->ep == EP_CK4)
   {
 
+    switch (obj->user4)
+    {
+
+      case CT4_Slug:
+        starsY = -0x80;
+        break;
+
+      case CT4_Egg:
+        starsX = 0x80;
+        starsY = -0x80;
+
+      case CT4_Wormmouth:
+        starsX = 0x40;
+        starsY = -350;
+
+    }
+
   }
   else if (ck_currentEpisode->ep == EP_CK5)
   {
@@ -153,7 +203,7 @@ void CK_BasicDrawFunc4(CK_object *obj)
 	}
 
 	// FIXME: Will cause problems on 64-bit systems
-	RF_AddSpriteDraw((RF_SpriteDrawEntry**) (&obj->user3), obj->posX + starsX, obj->posY + starsY, obj->user2 + 143, false, 3);
+	RF_AddSpriteDraw((RF_SpriteDrawEntry**) (&obj->user3), obj->posX + starsX, obj->posY + starsY, obj->user2 + SPR_STARS1, false, 3);
 }
 
 void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act)
@@ -165,7 +215,7 @@ void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_cre
 	creature->user1 = creature->user2 = creature->user3 = 0;
 	creature->user4 = creature->type;
 	CK_SetAction2(creature, new_creature_act);
-	creature->type = CT5_StunnedCreature;
+  creature->type = CT_CLASS(StunnedCreature);
 
 	// Make the creature jump up a bit
 	if ((creature->velY -= 0x18) < -0x30)
@@ -182,4 +232,25 @@ void CK_DeadlyCol(CK_object *o1, CK_object *o2)
 	{
 		CK_KillKeen();
 	}
+}
+
+void CK_LethalCol(CK_object *o1, CK_object *o2)
+{
+	if (o2->type == CT_Player)
+	{
+		CK_KillKeen();
+	}
+}
+
+void CK_Misc_SetupFunctions(void)
+{
+	CK_ACT_AddFunction("CK_Fall", &CK_Fall);
+	CK_ACT_AddFunction("CK_Fall2", &CK_Fall2);
+	CK_ACT_AddFunction("CK_Glide", &CK_Glide);
+	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
+	CK_ACT_AddFunction("CK_BasicDrawFunc2", &CK_BasicDrawFunc2);
+	CK_ACT_AddFunction("CK_BasicDrawFunc3", &CK_BasicDrawFunc2);
+	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
+  CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
+  CK_ACT_AddColFunction("CK_LethalCol", &CK_LethalCol);
 }

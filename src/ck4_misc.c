@@ -258,17 +258,10 @@ void CK4_FallPlatRise (CK_object *obj)
 void CK4_SetupFunctions()
 {
 	//Quick hack as we haven't got a deadly function yet
-	CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
 	CK4_Obj1_SetupFunctions();
 	// CK4_Obj2_SetupFunctions();
 	// CK4_Obj3_SetupFunctions();
 	CK4_Map_SetupFunctions();
-	CK_ACT_AddFunction("CK_Fall", &CK_Fall);
-	CK_ACT_AddFunction("CK_Fall2", &CK_Fall2);
-	CK_ACT_AddFunction("CK_Glide", &CK_Glide);
-	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
-	CK_ACT_AddFunction("CK_BasicDrawFunc2", &CK_BasicDrawFunc2);
-	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
 }
 
 // HACK: Sorry, the strings need to be in WRITABLE storage,
@@ -456,6 +449,8 @@ void CK4_DefineConstants(void)
   SPR_BALL3 = 128;
 
   SPR_DEMOSIGN = 129;
+
+  SPR_STARS1 = 164;
 
   SPR_GEM_A1 = 242;
   SPR_GEM_B1 = 244;
@@ -816,6 +811,16 @@ void CK4_ScanInfoLayer()
 				break;
 
 #endif
+
+      case 44:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 43:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 22:
+        CK4_SpawnSlug(x, y);
+        break;
+
+
       case 33:
         CK4_SpawnMiragia(x, y);
         break;

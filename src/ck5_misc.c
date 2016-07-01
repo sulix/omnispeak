@@ -323,17 +323,10 @@ void CK5_LevelEnd(CK_object *obj)
 void CK5_SetupFunctions()
 {
 	//Quick hack as we haven't got a deadly function yet
-	CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
 	CK5_Obj1_SetupFunctions();
 	CK5_Obj2_SetupFunctions();
 	CK5_Obj3_SetupFunctions();
 	CK5_Map_SetupFunctions();
-	CK_ACT_AddFunction("CK_Fall", &CK_Fall);
-	CK_ACT_AddFunction("CK_Fall2", &CK_Fall2);
-	CK_ACT_AddFunction("CK_Glide", &CK_Glide);
-	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
-	CK_ACT_AddFunction("CK_BasicDrawFunc2", &CK_BasicDrawFunc2);
-	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
 	CK_ACT_AddFunction("CK5_RedAxisPlatform", &CK5_RedAxisPlatform);
 	CK_ACT_AddFunction("CK5_PurpleAxisPlatform", &CK5_PurpleAxisPlatform);
 	CK_ACT_AddFunction("CK5_FallPlatSit", &CK5_FallPlatSit);
@@ -521,6 +514,8 @@ void CK5_DefineConstants(void)
   SPR_BALL3 = 106;
 
   SPR_DEMOSIGN = 0x6B;
+
+  SPR_STARS1 = 143;
 
   SPR_SECURITYCARD_1 = 207;
   SPR_GEM_A1 = 224;

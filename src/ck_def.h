@@ -347,14 +347,8 @@ void CK_FlippingFlagSpawn(int tileX, int tileY);
 void CK_Map_SetupFunctions();
 
 /* ck_misc.c */
-void CK_Fall(CK_object *obj);
-void CK_Fall2(CK_object *obj);
-void CK_Glide(CK_object *obj);
-void CK_BasicDrawFunc1(CK_object *obj);
-void CK_BasicDrawFunc2(CK_object *obj);
-void CK_BasicDrawFunc4(CK_object *obj);
 void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act);
-void CK_DeadlyCol(CK_object *o1, CK_object *o2);
+void CK_Misc_SetupFunctions(void);
 
 /* ck_obj.c */
 void CK_SpawnItem(int tileX, int tileY, int itemNumber);
@@ -415,6 +409,8 @@ extern int SPR_BALL2;
 extern int SPR_BALL3;
 
 extern int SPR_DEMOSIGN;
+
+extern int SPR_STARS1;
 
 extern int SPR_SECURITYCARD_1;
 extern int SPR_GEM_A1;
