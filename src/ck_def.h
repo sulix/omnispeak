@@ -71,7 +71,7 @@ typedef enum CK_ClassType {
   CT4_CouncilMember = 6,
   CT4_7 = 7,
   CT4_Egg = 8,
-  CT4_9 = 9,
+  CT4_Mushroom = 9,
   CT4_10 = 10,
   CT4_11 = 11,
   CT4_Wormmouth = 12,

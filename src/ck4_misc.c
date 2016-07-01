@@ -663,6 +663,8 @@ static bool ck4_lumpsNeeded[MAXLUMPS];
 typedef enum
 {
   Lump_0 = 0,
+  Lump_Slug = 11,
+  Lump_Mushroom = 12,
   Lump_CouncilMember = 17,
 } CK_Lumptype;
 
@@ -812,12 +814,20 @@ void CK4_ScanInfoLayer()
 
 #endif
 
+        // Slugs
       case 44:
         if (ck_gameState.difficulty < D_Hard) break;
       case 43:
         if (ck_gameState.difficulty < D_Normal) break;
       case 22:
+        ck4_lumpsNeeded[Lump_Slug] = true;
         CK4_SpawnSlug(x, y);
+        break;
+
+        // Mushrooms
+      case 21:
+        ck4_lumpsNeeded[Lump_Mushroom] = true;
+        CK4_SpawnMushroom(x, y);
         break;
 
 
