@@ -110,9 +110,9 @@ void CK_BasicDrawFunc3(CK_object *obj)
 		CK_SetAction2(obj, obj->currentAction);
 	}
 		// Walked off of ledge; turn around
-	else if (obj->topTI == 0 || obj->topTI & ~SLOPEMASK)
+	else if (obj->topTI == 0 || (obj->topTI & ~SLOPEMASK))
 	{
-		obj->posX -= obj->deltaPosX;
+		obj->posX -= obj->deltaPosX * 2;
 		obj->xDirection = -obj->xDirection;
 		obj->timeUntillThink = US_RndT() / 32;
 		CK_SetAction2(obj, obj->currentAction);
@@ -249,7 +249,7 @@ void CK_Misc_SetupFunctions(void)
 	CK_ACT_AddFunction("CK_Glide", &CK_Glide);
 	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
 	CK_ACT_AddFunction("CK_BasicDrawFunc2", &CK_BasicDrawFunc2);
-	CK_ACT_AddFunction("CK_BasicDrawFunc3", &CK_BasicDrawFunc2);
+	CK_ACT_AddFunction("CK_BasicDrawFunc3", &CK_BasicDrawFunc3);
 	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
   CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
   CK_ACT_AddColFunction("CK_LethalCol", &CK_LethalCol);
