@@ -622,7 +622,7 @@ int VL_NumSurfaces()
 	return vl_numsurfaces;
 }
 
-void VL_InitScreen()
+void VL_InitScreen(void)
 {
 	vl_currentBackend = VL_Impl_GetBackend();
 	vl_memused = 0;
@@ -632,6 +632,15 @@ void VL_InitScreen()
 	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
 	// NOTE: The overscan border color is *not* yet set to cyan here
 	VL_SetPaletteAndBorderColor(vl_palette[3]);
+}
+
+bool vl_isFullScreen;
+bool vl_isAspectCorrected;
+
+void VL_SetParams(bool isFullScreen, bool isAspectCorrected)
+{
+	vl_isFullScreen = isFullScreen;
+	vl_isAspectCorrected = isAspectCorrected;
 }
 
 void *VL_CreateSurface(int w, int h)

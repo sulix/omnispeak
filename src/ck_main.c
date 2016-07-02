@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_play.h"
 #include "ck_game.h"
 #include "ck_act.h"
+#include "ck_cross.h"
 #include "ck4_ep.h"
 #include "ck5_ep.h"
 
@@ -446,33 +447,45 @@ int main(int argc, char *argv[])
 	us_argc = argc;
 	us_argv = (const char **) argv;
 
-  // FIXME: Pick episode 5 if nothing selected
-  ck_currentEpisode = &ck5_episode;
+	// FIXME: Pick episode 5 if nothing selected
+	ck_currentEpisode = &ck5_episode;
+	bool isFullScreen = false;
+	bool isAspectCorrected = true;
 
 	for (int i = 1; i < argc; ++i)
 	{
-		if (!strcmp(argv[i], "/EPISODE"))
+		if (!CK_Cross_strcasecmp(argv[i], "/EPISODE"))
 		{
 			// A bit of stuff from the usual demo loop
-      if (argc >= i+1)
-      {
-        if (!strcmp(argv[i+1], "4"))
-          ck_currentEpisode = &ck4_episode;
-        else if (!strcmp(argv[i+1], "5"))
-          ck_currentEpisode = &ck5_episode;
-        else
-          Quit("Unsupported episode!");
-      }
+			if (argc >= i+1)
+			{
+				if (!strcmp(argv[i+1], "4"))
+					ck_currentEpisode = &ck4_episode;
+				else if (!strcmp(argv[i+1], "5"))
+					ck_currentEpisode = &ck5_episode;
+				else
+				Quit("Unsupported episode!");
+			}
+		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/FULLSCREEN"))
+		{
+			isFullScreen = true;
+		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/FILLED"))
+		{
+			isAspectCorrected = false;
 		}
 	}
 
-  ck_currentEpisode->defineConstants();
+	VL_SetParams(isFullScreen, isAspectCorrected);
+
+	ck_currentEpisode->defineConstants();
 
 	CK_InitGame();
 
 	for (int i = 1; i < argc; ++i)
 	{
-		if (!strcmp(argv[i], "/DEMOFILE"))
+		if (!CK_Cross_strcasecmp(argv[i], "/DEMOFILE"))
 		{
 			// A bit of stuff from the usual demo loop
 			ck_gameState.levelState = 0;

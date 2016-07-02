@@ -138,6 +138,17 @@ const char *pxprog = 	"#version 110\n"\
 
 void VL_SDL2GL_SetIcon(SDL_Window *wnd);
 
+// Here is how the dimensions of the window are currently picked:
+// 1. The emulated 320x200 sub-window is first zoomed
+// by a factor of 3 (for each dimension) to 960x600.
+// 2. The height is then multiplied by 1.2, so the internal contents
+// (without the borders) have the aspect ratio of 4:3.
+//
+// There are a few more tricks in use to handle the overscan border
+// and VGA line doubling.
+#define VL_SDL2GL_DEFAULT_WINDOW_WIDTH (VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER*3/VL_VGA_GFX_WIDTH_SCALEFACTOR)
+#define VL_SDL2GL_DEFAULT_WINDOW_HEIGHT (6*VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER*3/(5*VL_VGA_GFX_HEIGHT_SCALEFACTOR))
+
 static void VL_SDL2GL_SetVideoMode(int mode)
 {
 	assert(mode == 0xD);
@@ -150,9 +161,8 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 	// There are a few more tricks in use to handle the overscan border
 	// and VGA line doubling.
 	vl_sdl2gl_window = SDL_CreateWindow(VL_WINDOW_TITLE,SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-	                                    VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER*3/VL_VGA_GFX_WIDTH_SCALEFACTOR,
-	                                    6*VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER*3/(5*VL_VGA_GFX_HEIGHT_SCALEFACTOR),
-	                                    SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+	                                    VL_SDL2GL_DEFAULT_WINDOW_WIDTH, VL_SDL2GL_DEFAULT_WINDOW_HEIGHT,
+	                                    SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE|(vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 	vl_sdl2gl_context = SDL_GL_CreateContext(vl_sdl2gl_window);
 	vl_sdl2gl_screenWidth = VL_EGAVGA_GFX_WIDTH;
 	vl_sdl2gl_screenHeight = VL_EGAVGA_GFX_HEIGHT;
@@ -213,6 +223,9 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 	vl_sdl2gl_framebufferHeight = vl_sdl2gl_screenHeight;
 	vl_sdl2gl_framebufferTexture = 0;
 	vl_sdl2gl_framebufferObject = 0;
+
+	// Hide mouse cursor
+	SDL_ShowCursor(0);
 }
 
 static void VL_SDL2GL_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
@@ -248,6 +261,15 @@ static long VL_SDL2GL_GetSurfaceMemUse(void *surface)
 	return surf->w*surf->h;
 }
 
+static void VL_SDL2GL_SetGLClearColorFromBorder(void)
+{
+	glClearColor((GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][0]/255,
+	             (GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][1]/255,
+	             (GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][2]/255,
+	             1.0f
+	);
+}
+
 static void VL_SDL2GL_RefreshPaletteAndBorderColor(void *screen)
 {
 	static uint8_t sdl2gl_palette[16][3];
@@ -262,11 +284,7 @@ static void VL_SDL2GL_RefreshPaletteAndBorderColor(void *screen)
 	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 16, GL_RGB, GL_UNSIGNED_BYTE, sdl2gl_palette);
 	id_glActiveTexture(GL_TEXTURE0);
 
-	glClearColor((GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][0]/255,
-	             (GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][1]/255,
-	             (GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][2]/255,
-	             1.0f
-	);
+	VL_SDL2GL_SetGLClearColorFromBorder();
 }
 
 static void VL_SDL2GL_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour)
@@ -355,22 +373,66 @@ static void VL_SDL2GL_BitInvBlitToSurface(void *src, void *dst_surface, int x, i
 static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 {
 	int realWinW, realWinH;
+	SDL_Rect wholeWinRect;
 	SDL_Rect borderedWinRect;
 	// Get the real window size
 	SDL_GetWindowSize(vl_sdl2gl_window, &realWinW, &realWinH);
-	borderedWinRect.x = realWinW * vl_sdl2gl_scaledBorders.left / (vl_sdl2gl_screenHorizScaleFactor*vl_sdl2gl_screenWidth + vl_sdl2gl_scaledBorders.left + vl_sdl2gl_scaledBorders.right);
-	borderedWinRect.y = realWinH * vl_sdl2gl_scaledBorders.top / (vl_sdl2gl_screenVertScaleFactor*vl_sdl2gl_screenHeight + vl_sdl2gl_scaledBorders.top + vl_sdl2gl_scaledBorders.bottom);
+
+	if (vl_isAspectCorrected)
+	{
+		/* HACK: Naturally, the ratio to compare to may be 4:3,
+		 * but we use the default window dimensions instead
+		 * (so 4:3 covers the contents without the overscan border).
+		 */
+		if (realWinW * VL_SDL2GL_DEFAULT_WINDOW_HEIGHT > realWinH * VL_SDL2GL_DEFAULT_WINDOW_WIDTH) // Wider than default ratio
+		{
+			wholeWinRect.w = realWinH * VL_SDL2GL_DEFAULT_WINDOW_WIDTH / VL_SDL2GL_DEFAULT_WINDOW_HEIGHT;
+			wholeWinRect.h = realWinH;
+			wholeWinRect.x = (realWinW - wholeWinRect.w) / 2;
+			wholeWinRect.y = 0;
+		}
+		else // Thinner or equal to default ratio
+		{
+			wholeWinRect.w = realWinW;
+			wholeWinRect.h = realWinW * VL_SDL2GL_DEFAULT_WINDOW_HEIGHT / VL_SDL2GL_DEFAULT_WINDOW_WIDTH;
+			wholeWinRect.x = 0;
+			wholeWinRect.y = (realWinH - wholeWinRect.h) / 2;
+		}
+	}
+	else
+	{
+		wholeWinRect.w = realWinW;
+		wholeWinRect.h = realWinH;
+		wholeWinRect.x = 0;
+		wholeWinRect.y = 0;
+	}
+
+	borderedWinRect.x = wholeWinRect.x + wholeWinRect.w * vl_sdl2gl_scaledBorders.left / (vl_sdl2gl_screenHorizScaleFactor*vl_sdl2gl_screenWidth + vl_sdl2gl_scaledBorders.left + vl_sdl2gl_scaledBorders.right);
+	borderedWinRect.y = wholeWinRect.y + wholeWinRect.h * vl_sdl2gl_scaledBorders.top / (vl_sdl2gl_screenVertScaleFactor*vl_sdl2gl_screenHeight + vl_sdl2gl_scaledBorders.top + vl_sdl2gl_scaledBorders.bottom);
 	// Tricky calculations that preserve symmetry for the VGA
-	borderedWinRect.w = realWinW - borderedWinRect.x - realWinW * vl_sdl2gl_scaledBorders.right / (vl_sdl2gl_screenHorizScaleFactor*vl_sdl2gl_screenWidth + vl_sdl2gl_scaledBorders.left + vl_sdl2gl_scaledBorders.right);
-	borderedWinRect.h = realWinH - borderedWinRect.y - realWinH * vl_sdl2gl_scaledBorders.bottom / (vl_sdl2gl_screenVertScaleFactor*vl_sdl2gl_screenHeight + vl_sdl2gl_scaledBorders.top + vl_sdl2gl_scaledBorders.bottom);
+	borderedWinRect.w = wholeWinRect.w - (borderedWinRect.x - wholeWinRect.x) - wholeWinRect.w * vl_sdl2gl_scaledBorders.right / (vl_sdl2gl_screenHorizScaleFactor*vl_sdl2gl_screenWidth + vl_sdl2gl_scaledBorders.left + vl_sdl2gl_scaledBorders.right);
+	borderedWinRect.h = wholeWinRect.h - (borderedWinRect.y - wholeWinRect.y) - wholeWinRect.h * vl_sdl2gl_scaledBorders.bottom / (vl_sdl2gl_screenVertScaleFactor*vl_sdl2gl_screenHeight + vl_sdl2gl_scaledBorders.top + vl_sdl2gl_scaledBorders.bottom);
+
+	if (vl_isAspectCorrected)
+	{
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		VL_SDL2GL_SetGLClearColorFromBorder();
+		glScissor(wholeWinRect.x, realWinH-wholeWinRect.y-wholeWinRect.h, wholeWinRect.w, wholeWinRect.h);
+		glEnable(GL_SCISSOR_TEST);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glDisable(GL_SCISSOR_TEST);
+	}
+	else
+		glClear(GL_COLOR_BUFFER_BIT);
 
 #ifndef max
 #define max(a,b) (((a)>(b))?(a):(b))
 #endif
+
 	int integerScaleX = max((borderedWinRect.w/vl_sdl2gl_screenWidth)*vl_sdl2gl_screenWidth,vl_sdl2gl_screenWidth);
 	int integerScaleY = max((borderedWinRect.h/vl_sdl2gl_screenHeight)*vl_sdl2gl_screenHeight,vl_sdl2gl_screenHeight);
 
-	glClear(GL_COLOR_BUFFER_BIT);
 
 	// If our gfx hardware supports it, render into an offscreen framebuffer for the final linear phase of scaling.
 	if (SDL_GL_ExtensionSupported("GL_EXT_framebuffer_object"))
