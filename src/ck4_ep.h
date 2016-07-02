@@ -68,6 +68,7 @@ void CK4_SpawnSlug(int tileX, int tileY);
 void CK4_SpawnMushroom(int tileX, int tileY);
 void CK4_SpawnEgg(int tileX, int tileY);
 void CK4_SpawnBird(int tileX, int tileY);
+void CK4_SpawnArachnut(int tileX, int tileY);
 
 /* ck4_obj2.c */
 

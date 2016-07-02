@@ -248,15 +248,17 @@
 %action CK4_ACT_BirdRecover3 379 379 UnscaledOnce 0 0 20 0 0 CK4_HatchEgg CK4_BirdHatchedCol CK_BasicDrawFunc1 CK4_ACT_BirdWalk0
 
 # Arachnut
-#%action CK4_ACT_ArachnutWalk0 425 428 0 0 0 0 0x0 0 NULL arachnut_collide CK_BasicDrawFunc2 CK4_ACT_ArachnutWalk1
-#%action CK4_ACT_ArachnutWalk1 426 427 0 0 0 0 0x0 0 NULL arachnut_collide CK_BasicDrawFunc2 CK4_ACT_ArachnutWalk2
-#%action CK4_ACT_ArachnutWalk2 427 426 0 0 0 0 0x0 0 NULL arachnut_collide CK_BasicDrawFunc2 CK4_ACT_ArachnutWalk3
-#%action CK4_ACT_ArachnutWalk3 428 425 0 0 0 0 0x0 0 ArachnutSearch arachnut_collide CK_BasicDrawFunc2 CK4_ACT_ArachnutWalk0
-#%action CK4_ACT_ArachnutStunned0 429 429 0 0 0 $0xF0 0 0 NULL arachnut_stunned_collide CK_BasicDrawFunc1 CK4_ACT_ArachnutRecover0
-#%action CK4_ACT_ArachnutRecover0 425 425 0 0 0 0x4 0 0 NULL arachnut_stunned_collide CK_BasicDrawFunc1 CK4_ACT_ArachnutRecover1
-#%action CK4_ACT_ArachnutRecover1 429 429 0 0 0 0x4 0 0 NULL arachnut_stunned_collide CK_BasicDrawFunc1 CK4_ACT_ArachnutRecover2
-#%action CK4_ACT_ArachnutRecover2 425 425 0 0 0 0x4 0 0 NULL arachnut_stunned_collide CK_BasicDrawFunc1 CK4_ACT_ArachnutRecover3
-#%action CK4_ACT_ArachnutRecover3 429 429 0 0 0 0x4 0 0 NULL arachnut_stunned_collide CK_BasicDrawFunc1 CK4_ACT_ArachnutWalk0
+%action CK4_ACT_ArachnutWalk0 425 428 UnscaledOnce 0 1 6 0x80 0 NULL CK4_ArachnutCol CK_BasicDrawFunc2 CK4_ACT_ArachnutWalk1
+%action CK4_ACT_ArachnutWalk1 426 427 UnscaledOnce 0 1 6 0x80 0 NULL CK4_ArachnutCol CK_BasicDrawFunc2 CK4_ACT_ArachnutWalk2
+%action CK4_ACT_ArachnutWalk2 427 426 UnscaledOnce 0 1 6 0x80 0 NULL CK4_ArachnutCol CK_BasicDrawFunc2 CK4_ACT_ArachnutWalk3
+%action CK4_ACT_ArachnutWalk3 428 425 UnscaledOnce 0 1 6 0x80 0 CK4_ArachnutSearch CK4_ArachnutCol CK_BasicDrawFunc2 CK4_ACT_ArachnutWalk0
+%action CK4_ACT_ArachnutStunned0 429 429 UnscaledOnce 0 1 240 0 0 NULL CK4_ArachnutStunnedCol CK_BasicDrawFunc1 CK4_ACT_ArachnutRecover0
+%action CK4_ACT_ArachnutRecover0 425 425 UnscaledOnce 0 1 20 0 0 NULL CK4_ArachnutStunnedCol CK_BasicDrawFunc1 CK4_ACT_ArachnutRecover1
+%action CK4_ACT_ArachnutRecover1 429 429 UnscaledOnce 0 1 20 0 0 NULL CK4_ArachnutStunnedCol CK_BasicDrawFunc1 CK4_ACT_ArachnutRecover2
+%action CK4_ACT_ArachnutRecover2 425 425 UnscaledOnce 0 1 20 0 0 NULL CK4_ArachnutStunnedCol CK_BasicDrawFunc1 CK4_ACT_ArachnutRecover3
+%action CK4_ACT_ArachnutRecover3 429 429 UnscaledOnce 0 1 20 0 0 NULL CK4_ArachnutStunnedCol CK_BasicDrawFunc1 CK4_ACT_ArachnutWalk0
+
+
 #%action CK4_ACT_SkypestFly0 443 445 0 0 0 0 0 0 SkypestFly skypest_air_collide draw_skypest CK4_ACT_SkypestFly1
 #%action CK4_ACT_SkypestFly1 444 446 0 0 0 0 0 0 SkypestFly skypest_air_collide draw_skypest CK4_ACT_SkypestFly0
 #%action CK4_ACT_SkypestSquish0 456 456 0 0 0 0 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_SkypestSquish0

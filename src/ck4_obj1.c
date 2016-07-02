@@ -409,6 +409,46 @@ void CK4_BirdFlyingDraw(CK_object *obj)
 
 // Arachnut
 
+void CK4_SpawnArachnut(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Arachnut;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = (tileX << G_T_SHIFT);
+  obj->posY = (tileY << G_T_SHIFT) - 0x171;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_ArachnutWalk0"));
+}
+
+void CK4_ArachnutSearch(CK_object *obj)
+{
+  obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+}
+
+void CK4_ArachnutCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Stunner)
+  {
+    CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_ArachnutStunned0"));
+  }
+  else if (b->type == CT_Player)
+  {
+    CK_KillKeen();
+  }
+}
+
+void CK4_ArachnutStunnedCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Stunner)
+  {
+    CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_ArachnutStunned0"));
+  }
+}
+
+
+
 /*
  * Setup all of the functions in this file.
  */
@@ -443,4 +483,8 @@ void CK4_Obj1_SetupFunctions()
   CK_ACT_AddFunction("CK4_BirdLandingDraw",&CK4_BirdLandingDraw);
   CK_ACT_AddFunction("CK4_EggshellDraw",&CK4_EggshellDraw);
   CK_ACT_AddFunction("CK4_BirdFlyingDraw",&CK4_BirdFlyingDraw);
+
+  CK_ACT_AddFunction("CK4_ArachnutSearch", &CK4_ArachnutSearch);
+  CK_ACT_AddColFunction("CK4_ArachnutCol", &CK4_ArachnutCol);
+  CK_ACT_AddColFunction("CK4_ArachnutStunnedCol", &CK4_ArachnutStunnedCol);
 }
