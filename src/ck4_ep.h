@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_ep.h"
 
 #define SOUND_MUSHROOMLEAP 16
+#define SOUND_SKYPESTSQUISH 22
 #define SOUND_MUSHROOMHOP 28
 #define SOUND_COUNCILSAVE 31
 #define SOUND_SLUGSLIME 46
@@ -69,6 +70,7 @@ void CK4_SpawnMushroom(int tileX, int tileY);
 void CK4_SpawnEgg(int tileX, int tileY);
 void CK4_SpawnBird(int tileX, int tileY);
 void CK4_SpawnArachnut(int tileX, int tileY);
+void CK4_SpawnSkypest(int tileX, int tileY);
 
 /* ck4_obj2.c */
 

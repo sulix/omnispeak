@@ -258,27 +258,30 @@
 %action CK4_ACT_ArachnutRecover2 425 425 UnscaledOnce 0 1 20 0 0 NULL CK4_ArachnutStunnedCol CK_BasicDrawFunc1 CK4_ACT_ArachnutRecover3
 %action CK4_ACT_ArachnutRecover3 429 429 UnscaledOnce 0 1 20 0 0 NULL CK4_ArachnutStunnedCol CK_BasicDrawFunc1 CK4_ACT_ArachnutWalk0
 
+# Skypest
+%action CK4_ACT_SkypestFly0 443 445 UnscaledFrame 1 0 5 0 0 CK4_SkypestFly CK4_SkypestAirCol CK4_SkypestDraw CK4_ACT_SkypestFly1
+%action CK4_ACT_SkypestFly1 444 446 UnscaledFrame 1 0 5 0 0 CK4_SkypestFly CK4_SkypestAirCol CK4_SkypestDraw CK4_ACT_SkypestFly0
+%action CK4_ACT_SkypestSquish0 456 456 Frame 0 0 0 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_SkypestSquish0
+%action CK4_ACT_SkypestPreen0 455 455 UnscaledOnce 0 0 100 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen1
+%action CK4_ACT_SkypestPreen1 447 447 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen2
+%action CK4_ACT_SkypestPreen2 448 448 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen3
+%action CK4_ACT_SkypestPreen3 449 449 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen4
+%action CK4_ACT_SkypestPreen4 450 450 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen5
+%action CK4_ACT_SkypestPreen5 449 449 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen6
+%action CK4_ACT_SkypestPreen6 448 448 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen7
+%action CK4_ACT_SkypestPreen7 447 447 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen8
+%action CK4_ACT_SkypestPreen8 455 455 UnscaledOnce 0 0 60 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen9
+%action CK4_ACT_SkypestPreen9 451 451 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen10
+%action CK4_ACT_SkypestPreen10 452 452 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen11
+%action CK4_ACT_SkypestPreen11 453 453 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen12
+%action CK4_ACT_SkypestPreen12 454 454 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen13
+%action CK4_ACT_SkypestPreen13 453 453 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen14
+%action CK4_ACT_SkypestPreen14 452 452 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen15
+%action CK4_ACT_SkypestPreen15 451 451 UnscaledOnce 0 0 10 0 0 NULL CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestPreen16
+%action CK4_ACT_SkypestPreen16 455 455 UnscaledOnce 0 0 100 0 0 CK4_SkypestTakeoff CK4_SkypestGroundCol CK_BasicDrawFunc1 CK4_ACT_SkypestFly0
 
-#%action CK4_ACT_SkypestFly0 443 445 0 0 0 0 0 0 SkypestFly skypest_air_collide draw_skypest CK4_ACT_SkypestFly1
-#%action CK4_ACT_SkypestFly1 444 446 0 0 0 0 0 0 SkypestFly skypest_air_collide draw_skypest CK4_ACT_SkypestFly0
-#%action CK4_ACT_SkypestSquish0 456 456 0 0 0 0 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_SkypestSquish0
-#%action CK4_ACT_SkypestPreen0 455 455 0 0 0 0x4 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen1
-#%action CK4_ACT_SkypestPreen1 447 447 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen2
-#%action CK4_ACT_SkypestPreen2 448 448 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen3
-#%action CK4_ACT_SkypestPreen3 449 449 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen4
-#%action CK4_ACT_SkypestPreen4 450 450 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen5
-#%action CK4_ACT_SkypestPreen5 449 449 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen6
-#%action CK4_ACT_SkypestPreen6 448 448 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen7
-#%action CK4_ACT_SkypestPreen7 447 447 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen8
-#%action CK4_ACT_SkypestPreen8 455 455 0 0 0 0xC 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen9
-#%action CK4_ACT_SkypestPreen9 451 451 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen10
-#%action CK4_ACT_SkypestPreen10 452 452 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen11
-#%action CK4_ACT_SkypestPreen11 453 453 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen12
-#%action CK4_ACT_SkypestPreen12 454 454 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen13
-#%action CK4_ACT_SkypestPreen13 453 453 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen14
-#%action CK4_ACT_SkypestPreen14 452 452 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen15
-#%action CK4_ACT_SkypestPreen15 451 451 0 0 0 $0xA 0 0 NULL skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestPreen16
-#%action CK4_ACT_SkypestPreen16 455 455 0 0 0 0x4 0 0 SkypestTakeoff skypest_ground_collide CK_BasicDrawFunc1 CK4_ACT_SkypestFly0
+# ck4_obj2.c
+# Wormmouth
 #%action CK4_ACT_WormmouthMove0 457 457 0 0 0 0 0x0 0 wormmouth_move NULL CK_BasicDrawFunc2 CK4_ACT_WormmouthMove0
 #%action CK4_ACT_WormmouthPeep0 460 460 0 0 0 0x4 0 0 NULL wormmouth_check_shot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep1
 #%action CK4_ACT_WormmouthPeep1 461 461 0 0 0 0 0 0 NULL wormmouth_check_shot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep2

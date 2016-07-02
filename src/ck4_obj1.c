@@ -447,6 +447,105 @@ void CK4_ArachnutStunnedCol(CK_object *a, CK_object *b)
   }
 }
 
+// Skypests
+
+void CK4_SpawnSkypest(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Skypest;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = tileY << G_T_SHIFT;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = US_RndT() < 0x80 ? IN_motion_Down : IN_motion_Right;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_SkypestFly0"));
+}
+
+void CK4_SkypestFly(CK_object *obj)
+{
+  if (US_RndT() < SD_GetSpriteSync())
+    obj->xDirection = -obj->xDirection;
+
+  if (obj->yDirection == IN_motion_Up && US_RndT() < SD_GetSpriteSync())
+    obj->yDirection = IN_motion_Down;
+
+  if (obj->yDirection == IN_motion_Down && US_RndT() < SD_GetSpriteSync() * 2)
+    obj->yDirection = -obj->yDirection;
+
+  CK_PhysAccelHorz(obj, obj->xDirection, 20);
+  CK_PhysAccelVert1(obj, obj->yDirection, 20);
+}
+
+void CK4_SkypestAirCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    CK_KillKeen();
+  }
+  else if (b->type == CT_Stunner)
+  {
+    if (b->xDirection == IN_motion_Right)
+      a->velX = 20;
+    else if (b->xDirection == IN_motion_Left)
+      a->velX = -20;
+    else if (b->yDirection = IN_motion_Down)
+      a->velY = 20;
+    else if (b->yDirection = IN_motion_Up)
+      a->velY = -20;
+
+    CK_ShotHit(b);
+  }
+}
+
+void CK4_SkypestGroundCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player && (
+      b->currentAction == CK_GetActionByName("CK_ACT_keenPogo1") ||
+      b->currentAction == CK_GetActionByName("CK_ACT_keenPogo2") ||
+      b->currentAction == CK_GetActionByName("CK_ACT_keenPogo3")))
+  {
+    CK_SetAction2(a, CK_GetActionByName("CK4_ACT_SkypestSquish0"));
+    SD_PlaySound(SOUND_SKYPESTSQUISH);
+    a->type = CT_Friendly;
+  }
+}
+
+void CK4_SkypestTakeoff(CK_object *obj)
+{
+  obj->yDirection = IN_motion_Up;
+  obj->velY = -16;
+  ck_nextY = -144;
+}
+
+void CK4_SkypestDraw(CK_object *obj)
+{
+  if (obj->bottomTI)
+  {
+    obj->velY = 8;
+    obj->yDirection = IN_motion_Down;
+  }
+
+  if (obj->topTI && !obj->rightTI && !obj->leftTI)
+  {
+    obj->posY += 0x80;
+    CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_SkypestPreen0"));
+  }
+
+  if (obj->leftTI)
+  {
+     obj->velX = 0;
+     obj->xDirection = IN_motion_Left;
+  }
+
+  if (obj->rightTI)
+  {
+    obj->velX = 0;
+    obj->xDirection = IN_motion_Right;
+  }
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
 
 
 /*
@@ -487,4 +586,10 @@ void CK4_Obj1_SetupFunctions()
   CK_ACT_AddFunction("CK4_ArachnutSearch", &CK4_ArachnutSearch);
   CK_ACT_AddColFunction("CK4_ArachnutCol", &CK4_ArachnutCol);
   CK_ACT_AddColFunction("CK4_ArachnutStunnedCol", &CK4_ArachnutStunnedCol);
+
+  CK_ACT_AddFunction("CK4_SkypestFly", &CK4_SkypestFly);
+  CK_ACT_AddColFunction("CK4_SkypestAirCol", &CK4_SkypestAirCol);
+  CK_ACT_AddColFunction("CK4_SkypestGroundCol", &CK4_SkypestGroundCol);
+  CK_ACT_AddFunction("CK4_SkypestTakeoff", &CK4_SkypestTakeoff);
+  CK_ACT_AddFunction("CK4_SkypestDraw", &CK4_SkypestDraw);
 }

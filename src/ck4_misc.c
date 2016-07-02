@@ -668,6 +668,7 @@ typedef enum
   Lump_CouncilMember = 17,
   Lump_Bird = 18,
   Lump_Arachnut = 22,
+  Lump_Skypest = 23,
   Lump_Egg = 36,
 } CK_Lumptype;
 
@@ -696,7 +697,7 @@ static int16_t ck4_lumpStarts[MAXLUMPS] =
   404,
   421,
   425,  // SPR_ARACHNUTWALK_1
-  443,
+  443,  // SPR_SKYPESTFLYL1
   457,
   469,
   484,
@@ -737,7 +738,7 @@ static int16_t ck4_lumpEnds[MAXLUMPS] =
   420,
   424,
   429, // SPR_ARACHNUTSTUNNED
-  456,
+  456, // SPR_SKYPESTSQUISH
   468,
   483,
   490,
@@ -855,6 +856,17 @@ void CK4_ScanInfoLayer()
       case 20:
         ck4_lumpsNeeded[Lump_Arachnut] = true;
         CK4_SpawnArachnut(x, y);
+        break;
+
+        // Skypest
+        //
+      case 46:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 45:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 8:
+        ck4_lumpsNeeded[Lump_Skypest] = true;
+        CK4_SpawnSkypest(x, y);
         break;
 
 
