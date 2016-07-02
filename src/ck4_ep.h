@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_ep.h"
 
 #define SOUND_WORMMOUTHBITE 5
+#define SOUND_LIGHTNINGBOLT 39
 #define SOUND_MUSHROOMLEAP 16
 #define SOUND_SKYPESTSQUISH 22
 #define SOUND_MUSHROOMHOP 28
@@ -75,6 +76,8 @@ void CK4_SpawnSkypest(int tileX, int tileY);
 
 /* ck4_obj2.c */
 void CK4_SpawnWormmouth(int tileX, int tileY);
+void CK4_SpawnCloud(int tileX, int tileY);
+
 
 /* ck4_obj3.c */
 

@@ -298,26 +298,30 @@
 %action CK4_ACT_WormmouthBite4 465 462 UnscaledOnce 0 0 8 0 0 NULL CK4_WormmouthCol CK_BasicDrawFunc1 CK4_ACT_WormmouthMove0
 %action CK4_ACT_WormmouthStunned0 468 468 Frame 0 0 10 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
 
-#%action CK4_ACT_CloudDormant0 498 498 0 0 0 0x4 0 0 NULL cloud_collide CK_BasicDrawFunc1 NULL
-#%action CK4_ACT_CloudAwaken0 499 499 0 0 0 0x4 0 0 NULL NULL cloud_draw CK4_ACT_CloudMove0
-#%action CK4_ACT_CloudMove0 499 499 0 0 0 0x4 0 0 cloud_move NULL cloud_draw NULL
-#%action CK4_ACT_CloudCheckStrike0 499 499 0 0 0 0x4 0 0 cloud_check_strike NULL cloud_draw NULL
-#%action CK4_ACT_CloudMoveB0 499 499 0 0 0 0xC 0 0 Glide NULL cloud_draw CK4_ACT_CloudMove0
-#%action CK4_ACT_CloudStrike0 500 500 0 0 0 $0xA 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike1
-#%action CK4_ACT_CloudStrike1 499 499 0 0 0 $0xA 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike2
-#%action CK4_ACT_CloudStrike2 500 500 0 0 0 $0xA 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike3
-#%action CK4_ACT_CloudStrike3 499 499 0 0 0 $0xA 0 0 cloud_strike NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike4
-#%action CK4_ACT_CloudStrike4 500 500 0 0 0 $0xA 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike5
-#%action CK4_ACT_CloudStrike5 499 499 0 0 0 $0xA 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike6
-#%action CK4_ACT_CloudStrike6 500 500 0 0 0 $0xA 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike7
-#%action CK4_ACT_CloudStrike7 499 499 0 0 0 $0xA 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike8
-#%action CK4_ACT_CloudStrike8 500 500 0 0 0 0x0 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudMoveB0
-#%action CK4_ACT_Lightning0 501 501 0 0 0 0 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Lightning1
-#%action CK4_ACT_Lightning1 502 502 0 0 0 0 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Lightning2
-#%action CK4_ACT_Lightning2 501 501 0 0 0 0 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Lightning3
-#%action CK4_ACT_Lightning3 502 502 0 0 0 0 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Lightning4
-#%action CK4_ACT_Lightning4 501 501 0 0 0 0 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Lightning5
-#%action CK4_ACT_Lightning5 502 502 0 0 0 0 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 NULL
+#Clouds
+%action CK4_ACT_CloudDormant0 498 498 Frame 0 0 20 0 0 NULL CK4_CloudCol CK_BasicDrawFunc1 NULL
+%action CK4_ACT_CloudAwaken0 499 499 UnscaledOnce 0 0 100 0 0 NULL NULL CK4_CloudDraw CK4_ACT_CloudMove0
+%action CK4_ACT_CloudMove0 499 499 Frame 0 0 20 0 0 CK4_CloudMove NULL CK4_CloudDraw NULL
+%action CK4_ACT_CloudCheckStrike0 499 499 Frame 0 0 20 0 0 CK4_CloudCheckStrike NULL CK4_CloudDraw NULL
+%action CK4_ACT_CloudMoveB0 499 499 UnscaledFrame 0 0 60 0 0 CK_Glide NULL CK4_CloudDraw CK4_ACT_CloudMove0
+%action CK4_ACT_CloudStrike0 500 500 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike1
+%action CK4_ACT_CloudStrike1 499 499 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike2
+%action CK4_ACT_CloudStrike2 500 500 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike3
+%action CK4_ACT_CloudStrike3 499 499 UnscaledOnce 0 0 10 0 0 CK4_CloudStrike NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike4
+%action CK4_ACT_CloudStrike4 500 500 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike5
+%action CK4_ACT_CloudStrike5 499 499 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike6
+%action CK4_ACT_CloudStrike6 500 500 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike7
+%action CK4_ACT_CloudStrike7 499 499 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudStrike8
+%action CK4_ACT_CloudStrike8 500 500 UnscaledOnce 0 0 48 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_CloudMoveB0
+
+%action CK4_ACT_Lightning0 501 501 UnscaledOnce 0 0 8 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Lightning1
+%action CK4_ACT_Lightning1 502 502 UnscaledOnce 0 0 8 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Lightning2
+%action CK4_ACT_Lightning2 501 501 UnscaledOnce 0 0 8 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Lightning3
+%action CK4_ACT_Lightning3 502 502 UnscaledOnce 0 0 8 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Lightning4
+%action CK4_ACT_Lightning4 501 501 UnscaledOnce 0 0 8 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Lightning5
+%action CK4_ACT_Lightning5 502 502 UnscaledOnce 0 0 8 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 NULL
+
+#Berkeloids
 #%action CK4_ACT_BerkeloidMove0 503 507 0 0 0 0 0 0 berkeloid_move berkeloid_collide berkeloid_draw CK4_ACT_BerkeloidMove1
 #%action CK4_ACT_BerkeloidMove1 504 508 0 0 0 0 0 0 berkeloid_move berkeloid_collide berkeloid_draw CK4_ACT_BerkeloidMove2
 #%action CK4_ACT_BerkeloidMove2 505 509 0 0 0 0 0 0 berkeloid_move berkeloid_collide berkeloid_draw CK4_ACT_BerkeloidMove3

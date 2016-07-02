@@ -669,6 +669,7 @@ typedef enum
   Lump_Arachnut = 22,
   Lump_Skypest = 23,
   Lump_Wormmouth = 24,
+  Lump_Cloud = 28,
   Lump_Egg = 36,
 } CK_Lumptype;
 
@@ -702,8 +703,8 @@ static int16_t ck4_lumpStarts[MAXLUMPS] =
   469,
   484,
   491,
-  498,
-  503,
+  498,  // SPR_CLOUD1
+  503,  // SPR_BERKELOIDL1
   242,
   380,
   309,
@@ -743,7 +744,7 @@ static int16_t ck4_lumpEnds[MAXLUMPS] =
   483,
   490,
   497,
-  502,
+  502, // SPR_BOLT2
   518,
   250,
   387,
@@ -878,6 +879,12 @@ void CK4_ScanInfoLayer()
       case 7:
         ck4_lumpsNeeded[Lump_Wormmouth] = true;
         CK4_SpawnWormmouth(x, y);
+        break;
+
+        // Clouds
+      case 9:
+        ck4_lumpsNeeded[Lump_Cloud] = true;
+        CK4_SpawnCloud(x, y);
         break;
 
 
