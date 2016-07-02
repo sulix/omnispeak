@@ -59,7 +59,7 @@ void CK_GameOver()
 {
 	// VW_FixRefreshBuffer(); // Omnispeak TODO - This was originally called
 	US_CenterWindow(16, 3);
-	US_CPrint("Game Over!");
+	US_PrintCentered("Game Over!");
 	VL_Present(); // VW_UpdateScreen();
 	IN_ClearKeysDown();
 	IN_UserInput(4*70, false);
