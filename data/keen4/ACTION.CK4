@@ -282,21 +282,22 @@
 
 # ck4_obj2.c
 # Wormmouth
-#%action CK4_ACT_WormmouthMove0 457 457 0 0 0 0 0x0 0 wormmouth_move NULL CK_BasicDrawFunc2 CK4_ACT_WormmouthMove0
-#%action CK4_ACT_WormmouthPeep0 460 460 0 0 0 0x4 0 0 NULL wormmouth_check_shot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep1
-#%action CK4_ACT_WormmouthPeep1 461 461 0 0 0 0 0 0 NULL wormmouth_check_shot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep2
-#%action CK4_ACT_WormmouthPeep2 460 460 0 0 0 0x4 0 0 wormmouth_look_left wormmouth_check_shot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep3
-#%action CK4_ACT_WormmouthPeep3 457 457 0 0 0 0 0 0 NULL wormmouth_check_shot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep4
-#%action CK4_ACT_WormmouthPeep4 458 458 0 0 0 0x4 0 0 NULL wormmouth_check_shot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep5
-#%action CK4_ACT_WormmouthPeep5 459 459 0 0 0 0 0 0 NULL wormmouth_check_shot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep6
-#%action CK4_ACT_WormmouthPeep6 458 458 0 0 0 0x4 0 0 wormmouth_look_right wormmouth_check_shot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep7
-#%action CK4_ACT_WormmouthPeep7 457 457 0 0 0 0 0 0 wormmouth_go_to_player NULL CK_BasicDrawFunc1 CK4_ACT_WormmouthMove0
-#%action CK4_ACT_WormmouthBite0 465 462 0 0 0 0 0 0 NULL wormmouth_collide CK_BasicDrawFunc1 CK4_ACT_WormmouthBite1
-#%action CK4_ACT_WormmouthBite1 466 463 0 0 0 0 0 0 NULL wormmouth_collide CK_BasicDrawFunc1 CK4_ACT_WormmouthBite2
-#%action CK4_ACT_WormmouthBite2 467 464 0 0 0 0x0 0 0 NULL wormmouth_collide CK_BasicDrawFunc1 CK4_ACT_WormmouthBite3
-#%action CK4_ACT_WormmouthBite3 466 463 0 0 0 0 0 0 NULL wormmouth_collide CK_BasicDrawFunc1 CK4_ACT_WormmouthBite4
-#%action CK4_ACT_WormmouthBite4 465 462 0 0 0 0 0 0 NULL wormmouth_collide CK_BasicDrawFunc1 CK4_ACT_WormmouthMove0
-#%action CK4_ACT_WormmouthStunned0 468 468 0 0 0 $0xA 0 0 Fall NULL CK_BasicDrawFunc4 NULL
+%action CK4_ACT_WormmouthMove0 457 457 ScaledOnce 1 1 4 0x10 0 CK4_WormmouthMove NULL CK_BasicDrawFunc2 CK4_ACT_WormmouthMove0
+%action CK4_ACT_WormmouthPeep0 460 460 UnscaledOnce 0 0 20 0 0 NULL CK4_WormmouthCheckShot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep1
+%action CK4_ACT_WormmouthPeep1 461 461 UnscaledOnce 0 0 8 0 0 NULL CK4_WormmouthCheckShot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep2
+%action CK4_ACT_WormmouthPeep2 460 460 UnscaledOnce 0 0 20 0 0 CK4_WormmouthLookLeft CK4_WormmouthCheckShot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep3
+%action CK4_ACT_WormmouthPeep3 457 457 UnscaledOnce 0 0 8 0 0 NULL CK4_WormmouthCheckShot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep4
+%action CK4_ACT_WormmouthPeep4 458 458 UnscaledOnce 0 0 20 0 0 NULL CK4_WormmouthCheckShot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep5
+%action CK4_ACT_WormmouthPeep5 459 459 UnscaledOnce 0 0 8 0 0 NULL CK4_WormmouthCheckShot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep6
+%action CK4_ACT_WormmouthPeep6 458 458 UnscaledOnce 0 0 20 0 0 CK4_WormmouthLookRight CK4_WormmouthCheckShot CK_BasicDrawFunc1 CK4_ACT_WormmouthPeep7
+%action CK4_ACT_WormmouthPeep7 457 457 UnscaledOnce 0 0 8 0 0 CK4_WormmouthGoToPlayer NULL CK_BasicDrawFunc1 CK4_ACT_WormmouthMove0
+%action CK4_ACT_WormmouthBite0 465 462 UnscaledOnce 0 0 8 0 0 NULL CK4_WormmouthCol CK_BasicDrawFunc1 CK4_ACT_WormmouthBite1
+%action CK4_ACT_WormmouthBite1 466 463 UnscaledOnce 0 0 8 0 0 NULL CK4_WormmouthCol CK_BasicDrawFunc1 CK4_ACT_WormmouthBite2
+%action CK4_ACT_WormmouthBite2 467 464 UnscaledOnce 0 0 16 0 0 NULL CK4_WormmouthCol CK_BasicDrawFunc1 CK4_ACT_WormmouthBite3
+%action CK4_ACT_WormmouthBite3 466 463 UnscaledOnce 0 0 8 0 0 NULL CK4_WormmouthCol CK_BasicDrawFunc1 CK4_ACT_WormmouthBite4
+%action CK4_ACT_WormmouthBite4 465 462 UnscaledOnce 0 0 8 0 0 NULL CK4_WormmouthCol CK_BasicDrawFunc1 CK4_ACT_WormmouthMove0
+%action CK4_ACT_WormmouthStunned0 468 468 Frame 0 0 10 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+
 #%action CK4_ACT_CloudDormant0 498 498 0 0 0 0x4 0 0 NULL cloud_collide CK_BasicDrawFunc1 NULL
 #%action CK4_ACT_CloudAwaken0 499 499 0 0 0 0x4 0 0 NULL NULL cloud_draw CK4_ACT_CloudMove0
 #%action CK4_ACT_CloudMove0 499 499 0 0 0 0x4 0 0 cloud_move NULL cloud_draw NULL
