@@ -852,7 +852,7 @@ void CA_Startup(void)
 	char checkFile[] = "EGAGRAPH.EXT";
 
 #if SDL_VERSION_ATLEAST(2,0,1)
-	if (!CAL_AdjustFilenameCase(checkFile))
+	if (!CAL_AdjustExtension(checkFile))
 	{
 		chdir(SDL_GetBasePath());
 	}

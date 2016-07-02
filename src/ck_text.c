@@ -575,7 +575,8 @@ AZ:
 #endif
 	US_SetPrintFont(0);
 
-	StartMusic(19);
+	if (ck_currentEpisode->ep == EP_CK5)
+		StartMusic(19);
 
 	while ( 1 )
 	{
@@ -595,7 +596,8 @@ AZ:
 			US_SetPrintFont(oldfont);
 			VL_ClearScreen(4);
 			// RF_Reset();
-			StopMusic();
+			if (ck_currentEpisode->ep == EP_CK5)
+				StopMusic();
 			return;
 		}
 
