@@ -196,8 +196,8 @@
 
 #ck_obj.c
 # Items
-%action CK_ACT_item 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_act_item2
-%action CK_ACT_item2 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_act_item
+%action CK_ACT_item 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item2
+%action CK_ACT_item2 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item
 
 # Vitalins
 %action CK_ACT_CentilifeNotify1 203 203 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify2
