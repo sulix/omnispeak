@@ -666,6 +666,8 @@ typedef enum
   Lump_Slug = 11,
   Lump_Mushroom = 12,
   Lump_CouncilMember = 17,
+  Lump_Bird = 18,
+  Lump_Egg = 36,
 } CK_Lumptype;
 
 static int16_t ck4_lumpStarts[MAXLUMPS] =
@@ -688,7 +690,7 @@ static int16_t ck4_lumpStarts[MAXLUMPS] =
   333,
   338,
   356,// SPR_COUNCILWALK_R1
-  367,
+  367,  // SPR_BIRDWALK_R1
   388,
   404,
   421,
@@ -706,7 +708,7 @@ static int16_t ck4_lumpStarts[MAXLUMPS] =
   431,
   440,
   519,
-  362,
+  362, // SPR_EGG1
 };
 
 static int16_t ck4_lumpEnds[MAXLUMPS] =
@@ -729,7 +731,7 @@ static int16_t ck4_lumpEnds[MAXLUMPS] =
   337,
   355,
   361, // SPR_COUNCILPAUSE2
-  379,
+  379, // SPR_BIRDSTUNNED
   403,
   420,
   424,
@@ -747,7 +749,7 @@ static int16_t ck4_lumpEnds[MAXLUMPS] =
   439,
   442,
   520,
-  366,
+  366, // SPR_EGGBIT4
 };
 
 void CK4_ScanInfoLayer()
@@ -829,6 +831,22 @@ void CK4_ScanInfoLayer()
         ck4_lumpsNeeded[Lump_Mushroom] = true;
         CK4_SpawnMushroom(x, y);
         break;
+
+        // Birds
+      case 13:
+        ck4_lumpsNeeded[Lump_Egg] = true;
+        CK4_SpawnEgg(x, y);
+        break;
+
+      case 78:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 77:
+        if (ck_gameState.difficulty < D_Normal) break;
+        ck4_lumpsNeeded[Lump_Bird] = true;
+        CK4_SpawnBird(x, y);
+        break;
+
+
 
 
       case 33:

@@ -192,6 +192,223 @@ void CK4_MushroomDraw(CK_object *obj)
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
+// Bluebird
+
+void CK4_SpawnEgg(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Egg;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 2;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x71;
+  obj->xDirection = IN_motion_Right;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Egg0"));
+}
+
+void CK4_HatchEgg(CK_object *obj)
+{
+   obj->type = CT4_Bird;
+}
+
+void CK4_SpawnBird(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(true);
+  obj->type = CT4_Bird;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 2;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0xF1;
+  obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_BirdHatched0"));
+}
+
+void CK4_EggCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player || b->type == CT_Stunner)
+  {
+    if (b->type == CT_Stunner)
+      CK_ShotHit(b);
+
+    a->type = CT_Friendly;
+    a->active = OBJ_EXISTS_ONLY_ONSCREEN;
+    CK_SetAction(a, CK_GetActionByName("CK4_ACT_Eggshell0"));
+
+    // Spawn bird
+    CK_object *bird = CK_GetNewObj(true);
+    bird->active = OBJ_ACTIVE;
+    bird->posX = a->posX;
+    bird->posY = a->posY - 0x80;
+    bird->xDirection = a->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+    bird->yDirection = IN_motion_Down;
+    CK_SetAction(bird, CK_GetActionByName("CK4_ACT_BirdHatched0"));
+
+    // Shell bits
+    CK_object *shell = CK_GetNewObj(true);
+    shell->type = CT_Friendly;
+    shell->active = OBJ_EXISTS_ONLY_ONSCREEN;
+    shell->posX = a->posX;
+    shell->posY = a->posY;
+    shell->velX = -28;
+    shell->velY = -40;
+    CK_SetAction(shell, CK_GetActionByName("CK4_ACT_EggshellBitA0"));
+
+    shell = CK_GetNewObj(true);
+    shell->type = CT_Friendly;
+    shell->active = OBJ_EXISTS_ONLY_ONSCREEN;
+    shell->posX = a->posX;
+    shell->posY = a->posY;
+    shell->velX = 28;
+    shell->velY = -40;
+    CK_SetAction(shell, CK_GetActionByName("CK4_ACT_EggshellBitB0"));
+
+    shell = CK_GetNewObj(true);
+    shell->type = CT_Friendly;
+    shell->active = OBJ_EXISTS_ONLY_ONSCREEN;
+    shell->posX = a->posX;
+    shell->posY = a->posY;
+    shell->velX = 0;
+    shell->velY = -56;
+    CK_SetAction(shell, CK_GetActionByName("CK4_ACT_EggshellBitB0"));
+  }
+}
+
+void CK4_BirdWalk(CK_object *obj)
+{
+  obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+  if (obj->clipRects.unitY2 >= ck_keenObj->clipRects.unitY2 + 0x300 &&
+      ck_keenObj->topTI &&
+      CK_PreviewClipRects(obj, CK_GetActionByName("CK4_ACT_BirdFly0"))
+      )
+  {
+    obj->currentAction = CK_GetActionByName("CK4_ACT_BirdFly0");
+    obj->clipped = CLIP_simple;
+    obj->velY = -8;
+    obj->user1 = 0;
+  }
+}
+
+void CK4_BirdFly(CK_object *obj)
+{
+  if (obj->user1)
+    obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+
+  CK_PhysAccelHorz2(obj, obj->xDirection, 16);
+
+  if (obj->posY < ck_keenObj->posY)
+    CK_PhysAccelVert1(obj, 1, 16);
+  else
+    CK_PhysAccelVert1(obj, -1, 16);
+}
+
+void CK4_BirdCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    CK_KillKeen();
+  }
+  else if (b->type == CT_Stunner)
+  {
+    a->velX = 0;
+    a->clipped = CLIP_normal;
+    CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_BirdStunned0"));
+  }
+}
+
+void CK4_BirdHatchedCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Stunner)
+  {
+    a->velX = 0;
+    CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_BirdStunned0"));
+  }
+}
+
+void CK4_BirdDraw(CK_object *obj)
+{
+	// Hit wall walking right; turn around and go left
+	if (obj->xDirection == IN_motion_Right && obj->leftTI != 0)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Left;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, obj->currentAction);
+	}
+		// Hit wall walking left; turn around and go right
+	else if (obj->xDirection == IN_motion_Left && obj->rightTI != 0)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Right;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, obj->currentAction);
+	}
+
+  if (!obj->topTI)
+  {
+    obj->velY = -16;
+    obj->clipped = CLIP_simple;
+    CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_BirdFly0"));
+  }
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+void CK4_BirdLandingDraw(CK_object *obj)
+{
+  if (obj->topTI)
+    CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_BirdWalk0"));
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+void CK4_EggshellDraw(CK_object *obj)
+{
+  if (obj->topTI)
+    obj->velX = obj->velY = 0;
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+void CK4_BirdFlyingDraw(CK_object *obj)
+{
+  if (obj->bottomTI || obj->topTI)
+    if (!obj->user1)
+      obj->user1++;
+
+  if (obj->rightTI && obj->velX < 0 || obj->leftTI && obj->velX > 0)
+  {
+    obj->velX = 0;
+    obj->xDirection = -obj->xDirection;
+  }
+
+  if (obj->topTI == 1 && ck_keenObj->clipRects.unitY2 - obj->clipRects.unitY2 < 0x80)
+  {
+    // Attempt to land, and remain flying if can't
+    CK_action *act = obj->currentAction;
+    obj->clipped = CLIP_normal;
+    CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_BirdWalk0"));
+    ck_nextX = 0;
+    ck_nextY = 0x80;
+    CK_PhysUpdateSimpleObj(obj);
+    if (!obj->topTI)
+    {
+      obj->clipped = CLIP_simple;
+      CK_SetAction2(obj, act);
+    }
+    // Shouldn't we draw here?
+    return;
+  }
+
+  if (!obj->bottomTI && !obj->topTI)
+    obj->user1 = 0;
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+// Arachnut
+
 /*
  * Setup all of the functions in this file.
  */
@@ -215,4 +432,15 @@ void CK4_Obj1_SetupFunctions()
   CK_ACT_AddFunction("CK4_MushroomMove", &CK4_MushroomMove);
   CK_ACT_AddColFunction("CK4_MushroomCol", &CK4_MushroomCol);
   CK_ACT_AddFunction("CK4_MushroomDraw", &CK4_MushroomDraw);
+
+  CK_ACT_AddFunction("CK4_HatchEgg",&CK4_HatchEgg);
+  CK_ACT_AddColFunction("CK4_EggCol",&CK4_EggCol);
+  CK_ACT_AddFunction("CK4_BirdWalk",&CK4_BirdWalk);
+  CK_ACT_AddFunction("CK4_BirdFly",&CK4_BirdFly);
+  CK_ACT_AddColFunction("CK4_BirdCol",&CK4_BirdCol);
+  CK_ACT_AddColFunction("CK4_BirdHatchedCol",&CK4_BirdHatchedCol);
+  CK_ACT_AddFunction("CK4_BirdDraw",&CK4_BirdDraw);
+  CK_ACT_AddFunction("CK4_BirdLandingDraw",&CK4_BirdLandingDraw);
+  CK_ACT_AddFunction("CK4_EggshellDraw",&CK4_EggshellDraw);
+  CK_ACT_AddFunction("CK4_BirdFlyingDraw",&CK4_BirdFlyingDraw);
 }

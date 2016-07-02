@@ -236,6 +236,32 @@ bool CK_NotStuckInWall(CK_object *obj)
 	return true;
 }
 
+// Similar to CK_ResetClipRects, but checks if new action will get object stuck in wall
+// Only seems to be used in CK4 in a Bluebird think function
+bool CK_PreviewClipRects(CK_object *obj, CK_action *act)
+{
+  obj->gfxChunk = obj->xDirection < 0 ? act->chunkLeft : act->chunkRight;
+	int spriteNumber = obj->gfxChunk - ca_gfxInfoE.offSprites;
+
+	VH_SpriteTableEntry ste = VH_GetSpriteTableEntry(spriteNumber);
+
+	obj->clipRects.unitX1 = obj->posX + ste.xl;
+	obj->clipRects.unitX2 = obj->posX + ste.xh;
+	obj->clipRects.unitY1 = obj->posY + ste.yl;
+	obj->clipRects.unitY2 = obj->posY + ste.yh;
+
+	obj->clipRects.unitXmid = (obj->clipRects.unitX2 - obj->clipRects.unitX1) / 2 + obj->clipRects.unitX1;
+
+	obj->clipRects.tileX1 = obj->clipRects.unitX1 >> 8;
+	obj->clipRects.tileX2 = obj->clipRects.unitX2 >> 8;
+	obj->clipRects.tileY1 = obj->clipRects.unitY1 >> 8;
+	obj->clipRects.tileY2 = obj->clipRects.unitY2 >> 8;
+
+	obj->clipRects.tileXmid = obj->clipRects.unitXmid >> 8;
+
+  return CK_NotStuckInWall(obj);
+}
+
 void CK_PhysClipVert(CK_object *obj)
 {
 	int midTileXOffset = (obj->clipRects.unitXmid >> 4) & 0x0F;
@@ -859,5 +885,51 @@ void CK_PhysAccelHorz(CK_object *obj, int16_t accX, int16_t velLimit)
 			}
 		}
 		ck_nextX += obj->velX;
+	}
+}
+
+void CK_PhysAccelHorz2(CK_object *obj, int16_t accX, int16_t velLimit)
+{
+  int32_t lastTimeCount = SD_GetLastTimeCount();
+	for (int32_t tickCount = lastTimeCount - SD_GetSpriteSync(); tickCount < lastTimeCount; tickCount++)
+  {
+		// Every odd tic...
+		if (tickCount & 1)
+		{
+			obj->velX += accX;
+
+			if (obj->velX > velLimit)
+			{
+				obj->velX = velLimit;
+			}
+			else if (obj->velX < -velLimit)
+			{
+				obj->velX = -velLimit;
+			}
+		}
+		ck_nextX += obj->velX;
+	}
+}
+
+void CK_PhysAccelVert1(CK_object *obj, int16_t accY, int16_t velLimit)
+{
+  int32_t lastTimeCount = SD_GetLastTimeCount();
+	for (int32_t tickCount = lastTimeCount - SD_GetSpriteSync(); tickCount < lastTimeCount; tickCount++)
+  {
+		// Every odd tic...
+		if (tickCount & 1)
+		{
+			obj->velY += accY;
+
+			if (obj->velY > velLimit)
+			{
+				obj->velY = velLimit;
+			}
+			else if (obj->velY < -velLimit)
+			{
+				obj->velY = -velLimit;
+			}
+		}
+		ck_nextY += obj->velY;
 	}
 }

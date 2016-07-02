@@ -225,26 +225,29 @@
 %action CK4_ACT_Mushroom0 325 327 UnscaledFrame 0 0 8 0 0 CK4_MushroomMove CK4_MushroomCol CK4_MushroomDraw CK4_ACT_Mushroom1
 %action CK4_ACT_Mushroom1 326 328 UnscaledFrame 0 0 8 0 0 CK4_MushroomMove CK4_MushroomCol CK4_MushroomDraw CK4_ACT_Mushroom0
 
-#%action CK4_ACT_Egg0 362 362 0 0 0 0 0 0 NULL egg_collide CK_BasicDrawFunc1 NULL
-#%action CK4_ACT_Eggshell0 363 363 0 0 0 0x530 0 0 NULL NULL CK_BasicDrawFunc1 NULL
-#%action CK4_ACT_EggshellBitA0 364 364 0 0 0 0 0 0 Fall NULL DrawEggshell NULL
-#%action CK4_ACT_EggshellBitB0 365 365 0 0 0 0 0 0 Fall NULL DrawEggshell NULL
-#%action CK4_ACT_EggshellBitC0 366 366 0 0 0 0 0 0 Fall NULL DrawEggshell NULL
-#%action CK4_ACT_BirdHatched0 371 367 0 0 0 0x8 0x0 0 NULL BirdHatchedCollide BluebirdDraw CK4_ACT_BirdWalk1
-#%action CK4_ACT_BirdWalk0 371 367 0 0 0 0 0x0 0 NULL BirdCollide BluebirdDraw CK4_ACT_BirdWalk1
-#%action CK4_ACT_BirdWalk1 372 368 0 0 0 0 0x0 0 NULL BirdCollide BluebirdDraw CK4_ACT_BirdWalk2
-#%action CK4_ACT_BirdWalk2 373 369 0 0 0 0 0x0 0 NULL BirdCollide BluebirdDraw CK4_ACT_BirdWalk3
-#%action CK4_ACT_BirdWalk3 374 370 0 0 0 0 0x0 0 BirdWalk BirdCollide BluebirdDraw CK4_ACT_BirdWalk0
-#%action CK4_ACT_BirdFly0 375 375 0 0 0 0 0 0 BirdFly BirdCollide BluebirdFlyingDraw CK4_ACT_BirdFly1
-#%action CK4_ACT_BirdFly1 376 376 0 0 0 0 0 0 BirdFly BirdCollide BluebirdFlyingDraw CK4_ACT_BirdFly2
-#%action CK4_ACT_BirdFly2 377 377 0 0 0 0 0 0 BirdFly BirdCollide BluebirdFlyingDraw CK4_ACT_BirdFly3
-#%action CK4_ACT_BirdFly3 378 378 0 0 0 0 0 0 BirdFly BirdCollide BluebirdFlyingDraw CK4_ACT_BirdFly0
-#%action CK4_ACT_BirdLand0 378 378 0 0 0 0 0x0 0 Fall2 BirdCollide DrawBirdLanding NULL
-#%action CK4_ACT_BirdStunned0 379 379 0 0 0 $0xF0 0 0 Fall BirdHatchedCollide CK_BasicDrawFunc1 CK4_ACT_BirdRecover0
-#%action CK4_ACT_BirdRecover0 371 367 0 0 0 0x4 0 0 NULL BirdHatchedCollide CK_BasicDrawFunc1 CK4_ACT_BirdRecover1
-#%action CK4_ACT_BirdRecover1 379 379 0 0 0 0x4 0 0 NULL BirdHatchedCollide CK_BasicDrawFunc1 CK4_ACT_BirdRecover2
-#%action CK4_ACT_BirdRecover2 371 367 0 0 0 0x4 0 0 NULL BirdHatchedCollide CK_BasicDrawFunc1 CK4_ACT_BirdRecover3
-#%action CK4_ACT_BirdRecover3 379 379 0 0 0 0x4 0 0 hatch_egg BirdHatchedCollide CK_BasicDrawFunc1 CK4_ACT_BirdWalk0
+# Bird
+%action CK4_ACT_Egg0 362 362 Frame 0 1 8 0 0 NULL CK4_EggCol CK_BasicDrawFunc1 NULL
+%action CK4_ACT_Eggshell0 363 363 UnscaledOnce 0 0 30000 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+%action CK4_ACT_EggshellBitA0 364 364 Frame 0 0 0 0 0 CK_Fall NULL CK4_EggshellDraw NULL
+%action CK4_ACT_EggshellBitB0 365 365 Frame 0 0 0 0 0 CK_Fall NULL CK4_EggshellDraw NULL
+%action CK4_ACT_EggshellBitC0 366 366 Frame 0 0 0 0 0 CK_Fall NULL CK4_EggshellDraw NULL
+%action CK4_ACT_BirdHatched0 371 367 UnscaledOnce 0 1 120 0x80 0 NULL CK4_BirdHatchedCol CK4_BirdDraw CK4_ACT_BirdWalk1
+%action CK4_ACT_BirdWalk0 371 367 UnscaledOnce 0 1 7 0x80 0 NULL CK4_BirdCol CK4_BirdDraw CK4_ACT_BirdWalk1
+%action CK4_ACT_BirdWalk1 372 368 UnscaledOnce 0 1 7 0x80 0 NULL CK4_BirdCol CK4_BirdDraw CK4_ACT_BirdWalk2
+%action CK4_ACT_BirdWalk2 373 369 UnscaledOnce 0 1 7 0x80 0 NULL CK4_BirdCol CK4_BirdDraw CK4_ACT_BirdWalk3
+%action CK4_ACT_BirdWalk3 374 370 UnscaledOnce 0 1 7 0x80 0 CK4_BirdWalk CK4_BirdCol CK4_BirdDraw CK4_ACT_BirdWalk0
+%action CK4_ACT_BirdFly0 375 375 ScaledFrame 0 0 8 0 0 CK4_BirdFly CK4_BirdCol CK4_BirdFlyingDraw CK4_ACT_BirdFly1
+%action CK4_ACT_BirdFly1 376 376 ScaledFrame 0 0 8 0 0 CK4_BirdFly CK4_BirdCol CK4_BirdFlyingDraw CK4_ACT_BirdFly2
+%action CK4_ACT_BirdFly2 377 377 ScaledFrame 0 0 8 0 0 CK4_BirdFly CK4_BirdCol CK4_BirdFlyingDraw CK4_ACT_BirdFly3
+%action CK4_ACT_BirdFly3 378 378 ScaledFrame 0 0 8 0 0 CK4_BirdFly CK4_BirdCol CK4_BirdFlyingDraw CK4_ACT_BirdFly0
+%action CK4_ACT_BirdLand0 378 378 Frame 0 0 8 0 0 CK_Fall2 CK4_BirdCol CK4_BirdLandingDraw NULL
+%action CK4_ACT_BirdStunned0 379 379 UnscaledFrame 0 0 240 0 0 CK_Fall CK4_BirdHatchedCol CK_BasicDrawFunc1 CK4_ACT_BirdRecover0
+%action CK4_ACT_BirdRecover0 371 367 UnscaledOnce 0 0 20 0 0 NULL CK4_BirdHatchedCol CK_BasicDrawFunc1 CK4_ACT_BirdRecover1
+%action CK4_ACT_BirdRecover1 379 379 UnscaledOnce 0 0 20 0 0 NULL CK4_BirdHatchedCol CK_BasicDrawFunc1 CK4_ACT_BirdRecover2
+%action CK4_ACT_BirdRecover2 371 367 UnscaledOnce 0 0 20 0 0 NULL CK4_BirdHatchedCol CK_BasicDrawFunc1 CK4_ACT_BirdRecover3
+%action CK4_ACT_BirdRecover3 379 379 UnscaledOnce 0 0 20 0 0 CK4_HatchEgg CK4_BirdHatchedCol CK_BasicDrawFunc1 CK4_ACT_BirdWalk0
+
+# Arachnut
 #%action CK4_ACT_ArachnutWalk0 425 428 0 0 0 0 0x0 0 NULL arachnut_collide CK_BasicDrawFunc2 CK4_ACT_ArachnutWalk1
 #%action CK4_ACT_ArachnutWalk1 426 427 0 0 0 0 0x0 0 NULL arachnut_collide CK_BasicDrawFunc2 CK4_ACT_ArachnutWalk2
 #%action CK4_ACT_ArachnutWalk2 427 426 0 0 0 0 0x0 0 NULL arachnut_collide CK_BasicDrawFunc2 CK4_ACT_ArachnutWalk3

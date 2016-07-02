@@ -66,6 +66,8 @@ void CK4_SpawnMiragia(int tileX, int tileY);
 void CK4_SpawnCouncilMember(int tileX, int tileY);
 void CK4_SpawnSlug(int tileX, int tileY);
 void CK4_SpawnMushroom(int tileX, int tileY);
+void CK4_SpawnEgg(int tileX, int tileY);
+void CK4_SpawnBird(int tileX, int tileY);
 
 /* ck4_obj2.c */
 

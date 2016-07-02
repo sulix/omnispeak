@@ -48,6 +48,7 @@ struct CK_object;
 struct CK_action;
 
 bool CK_NotStuckInWall(struct CK_object *obj);
+bool CK_PreviewClipRects(struct CK_object *obj, struct CK_action *act);
 
 void CK_PhysUpdateNormalObj(struct CK_object *obj);
 void CK_PhysFullClipToWalls(struct CK_object *obj);
@@ -63,6 +64,8 @@ void CK_PhysGravityMid(struct CK_object *obj);
 void CK_PhysGravityLow(struct CK_object *obj);
 void CK_PhysDampHorz(struct CK_object *obj);
 void CK_PhysAccelHorz(struct CK_object *obj, int16_t accX, int16_t velLimit);
+void CK_PhysAccelHorz2(struct CK_object *obj, int16_t accX, int16_t velLimit);
+void CK_PhysAccelVert1(struct CK_object *obj, int16_t accY, int16_t velLimit);
 
 void CK_ResetClipRects(struct CK_object *obj);
 #endif
