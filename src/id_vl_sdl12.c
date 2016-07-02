@@ -54,6 +54,8 @@ static void VL_SDL12_SetVideoMode(int mode)
 		vl_sdl12_screenBorderedRect.h = VL_EGAVGA_GFX_HEIGHT;
 	}
 	SDL_WM_SetCaption(VL_WINDOW_TITLE, VL_WINDOW_TITLE);
+	// Hide mouse cursor
+	SDL_ShowCursor(0);
 }
 
 static void VL_SDL12_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);

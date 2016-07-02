@@ -223,6 +223,9 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 	vl_sdl2gl_framebufferHeight = vl_sdl2gl_screenHeight;
 	vl_sdl2gl_framebufferTexture = 0;
 	vl_sdl2gl_framebufferObject = 0;
+
+	// Hide mouse cursor
+	SDL_ShowCursor(0);
 }
 
 static void VL_SDL2GL_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
