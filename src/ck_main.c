@@ -446,33 +446,33 @@ int main(int argc, char *argv[])
 	us_argc = argc;
 	us_argv = (const char **) argv;
 
-  // FIXME: Pick episode 5 if nothing selected
-  ck_currentEpisode = &ck5_episode;
+	// FIXME: Pick episode 5 if nothing selected
+	ck_currentEpisode = &ck5_episode;
 
 	for (int i = 1; i < argc; ++i)
 	{
-		if (!strcmp(argv[i], "/EPISODE"))
+		if (!CK_Cross_strcasecmp(argv[i], "/EPISODE"))
 		{
 			// A bit of stuff from the usual demo loop
-      if (argc >= i+1)
-      {
-        if (!strcmp(argv[i+1], "4"))
-          ck_currentEpisode = &ck4_episode;
-        else if (!strcmp(argv[i+1], "5"))
-          ck_currentEpisode = &ck5_episode;
-        else
-          Quit("Unsupported episode!");
-      }
+			if (argc >= i+1)
+			{
+				if (!strcmp(argv[i+1], "4"))
+					ck_currentEpisode = &ck4_episode;
+				else if (!strcmp(argv[i+1], "5"))
+					ck_currentEpisode = &ck5_episode;
+				else
+				Quit("Unsupported episode!");
+			}
 		}
 	}
 
-  ck_currentEpisode->defineConstants();
+	ck_currentEpisode->defineConstants();
 
 	CK_InitGame();
 
 	for (int i = 1; i < argc; ++i)
 	{
-		if (!strcmp(argv[i], "/DEMOFILE"))
+		if (!CK_Cross_strcasecmp(argv[i], "/DEMOFILE"))
 		{
 			// A bit of stuff from the usual demo loop
 			ck_gameState.levelState = 0;
