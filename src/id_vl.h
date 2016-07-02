@@ -97,7 +97,8 @@ typedef struct VL_Backend
 	void (*present)(void *surface, int scrollXpx, int scrollYpx);
 } VL_Backend;
 
-void VL_InitScreen();
+void VL_InitScreen(void);
+void VL_SetParams(bool isFullScreen, bool isAspectCorrected);
 void *VL_CreateSurface(int w, int h);
 void VL_SurfaceRect(void *dst, int x, int y, int w, int h, int colour);
 void VL_ScreenRect(int x, int y, int w, int h, int colour);

@@ -65,5 +65,8 @@ typedef struct VL_EGAVGAAdapter {
 
 extern VL_EGAVGAAdapter vl_emuegavgaadapter;
 
+extern bool vl_isFullScreen;
+extern bool vl_isAspectCorrected;
+
 #endif
 

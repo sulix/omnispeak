@@ -152,7 +152,7 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 	vl_sdl2gl_window = SDL_CreateWindow(VL_WINDOW_TITLE,SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 	                                    VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER*3/VL_VGA_GFX_WIDTH_SCALEFACTOR,
 	                                    6*VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER*3/(5*VL_VGA_GFX_HEIGHT_SCALEFACTOR),
-	                                    SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+	                                    SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE|(vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 	vl_sdl2gl_context = SDL_GL_CreateContext(vl_sdl2gl_window);
 	vl_sdl2gl_screenWidth = VL_EGAVGA_GFX_WIDTH;
 	vl_sdl2gl_screenHeight = VL_EGAVGA_GFX_HEIGHT;
@@ -367,6 +367,20 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 #ifndef max
 #define max(a,b) (((a)>(b))?(a):(b))
 #endif
+	if (vl_isAspectCorrected)
+	{
+		if (borderedWinRect.w * 3 > borderedWinRect.h * 4) // Wider than 4:3
+		{
+			borderedWinRect.w = borderedWinRect.h * 4 / 3;
+			borderedWinRect.x = (realWinW - borderedWinRect.w) / 2;
+		}
+		else // Thinner than 4:3
+		{
+			borderedWinRect.h = borderedWinRect.w * 3 / 4;
+			borderedWinRect.y = (realWinH - borderedWinRect.h) / 2;
+		}
+	}
+
 	int integerScaleX = max((borderedWinRect.w/vl_sdl2gl_screenWidth)*vl_sdl2gl_screenWidth,vl_sdl2gl_screenWidth);
 	int integerScaleY = max((borderedWinRect.h/vl_sdl2gl_screenHeight)*vl_sdl2gl_screenHeight,vl_sdl2gl_screenHeight);
 

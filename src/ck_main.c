@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_play.h"
 #include "ck_game.h"
 #include "ck_act.h"
+#include "ck_cross.h"
 #include "ck4_ep.h"
 #include "ck5_ep.h"
 
@@ -448,6 +449,8 @@ int main(int argc, char *argv[])
 
 	// FIXME: Pick episode 5 if nothing selected
 	ck_currentEpisode = &ck5_episode;
+	bool isFullScreen = false;
+	bool isAspectCorrected = true;
 
 	for (int i = 1; i < argc; ++i)
 	{
@@ -464,7 +467,17 @@ int main(int argc, char *argv[])
 				Quit("Unsupported episode!");
 			}
 		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/FULLSCREEN"))
+		{
+			isFullScreen = true;
+		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/FILLED"))
+		{
+			isAspectCorrected = false;
+		}
 	}
+
+	VL_SetParams(isFullScreen, isAspectCorrected);
 
 	ck_currentEpisode->defineConstants();
 
