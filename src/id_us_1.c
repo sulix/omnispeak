@@ -145,9 +145,9 @@ void USL_PrintInCenter(const char *str, uint16_t x1, uint16_t y1, uint16_t x2, u
 	uint16_t w, h, rw, rh, px, py;
 	VH_MeasurePropString(str, &w, &h, us_printFont);
 	rw = x2 - x1;
-	rh = y2 - y2;
+	rh = y2 - y1;
 	px = x1 + (rw - w) / 2;
-	py = y1 + (rh - h) / 2 + h;
+	py = y1 + (rh - h) / 2;
 	VH_DrawPropString(str, px, py, us_printFont, us_printColour);
 }
 
