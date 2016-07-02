@@ -670,6 +670,7 @@ typedef enum
   Lump_Skypest = 23,
   Lump_Wormmouth = 24,
   Lump_Cloud = 28,
+  Lump_Berkeloid = 29,
   Lump_Egg = 36,
 } CK_Lumptype;
 
@@ -887,6 +888,15 @@ void CK4_ScanInfoLayer()
         CK4_SpawnCloud(x, y);
         break;
 
+        // Berks
+      case 50:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 49:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 5:
+        ck4_lumpsNeeded[Lump_Berkeloid] = true;
+        CK4_SpawnBerkeloid(x, y);
+        break;
 
 
 

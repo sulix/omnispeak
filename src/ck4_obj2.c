@@ -193,6 +193,151 @@ void CK4_CloudCol(CK_object *a, CK_object *b)
     CK_SetAction2(a, CK_GetActionByName("CK4_ACT_CloudAwaken0"));
 }
 
+// Berkeloids
+// user1 = vertical offset for floating behaviour
+// user2 = instantaneous floating velocity
+
+void CK4_SpawnBerkeloid(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Berkeloid;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 2;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x200;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  obj->user2 = 8;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_BerkeloidMove0"));
+}
+
+void CK4_BerkeloidMove(CK_object *obj)
+{
+  if (US_RndT() < 0x20)
+    obj->xDirection = ck_keenObj->posX < obj->posX ? IN_motion_Left : IN_motion_Right;
+
+  if (US_RndT() < 8)
+  {
+    obj->currentAction = CK_GetActionByName("CK4_ACT_BerkeloidThrow0");
+  }
+  else if (US_RndT() < 0x40)
+  {
+    int16_t dx = ck_keenObj->posX - obj->posX;
+    int16_t dy = ck_keenObj->posY - obj->posY;
+
+    if (dy >= -0x100 && dy <= 0x100) {
+      if (obj->xDirection == IN_motion_Right && dx > 0 ||
+          obj->xDirection == IN_motion_Left && dx < 0)
+      {
+        obj->currentAction = CK_GetActionByName("CK4_ACT_BerkeloidThrow0");
+        SD_PlaySound(SOUND_BERKELOIDTHROW);
+      }
+    }
+  }
+}
+
+void CK4_BerkeloidThrow(CK_object *obj)
+{
+  CK_object *ball = CK_GetNewObj(true);
+  ball->active = OBJ_EXISTS_ONLY_ONSCREEN;
+  ball->type = CT4_Berkeloid;
+  ball->posY = obj->posY + 0x80;
+  ball->velY = -8;
+  if (obj->xDirection == IN_motion_Right)
+  {
+    ball->velX = 48;
+    ball->posX = obj->posX + 0x200;
+    ball->xDirection = IN_motion_Right;
+  }
+  else
+  {
+     ball->velX = -48;
+     ball->posX = obj->posX - 0x100;
+     ball->xDirection = IN_motion_Left;
+  }
+
+  CK_SetAction(ball, CK_GetActionByName("CK4_ACT_FireballAir0"));
+  obj->visible = true;
+}
+
+void CK4_BerkeloidThrowDone(CK_object *obj)
+{
+  obj->timeUntillThink = 4;
+  obj->visible = true;
+}
+
+void CK4_BerkeloidCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Stunner)
+  {
+    CK_ShotHit(b);
+  }
+  else if (b->type == CT_Player)
+  {
+     CK_KillKeen();
+  }
+}
+
+void CK4_FireballDraw(CK_object *obj)
+{
+  if (obj->rightTI || obj->leftTI)
+    obj->velX = 0;
+
+  if (obj->topTI)
+  {
+     SD_PlaySound(SOUND_FIREBALLLAND);
+     CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_FireballGround0"));
+  }
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+void CK4_BerkeloidHover(CK_object *obj)
+{
+  obj->user1 = obj->user2 * SD_GetSpriteSync() + obj->user1;
+  if (obj->user1 > 0)
+  {
+    obj->user1 = 0;
+    obj->user2 = -8;
+  }
+  else if (obj->user1 < -0x100)
+  {
+    obj->user1 = -0x100;
+    obj->user2 = 8;
+  }
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY + obj->user1, obj->gfxChunk, false, obj->zLayer);
+}
+
+void CK4_BerkeloidDraw(CK_object *obj)
+{
+  // DrawFunc2 with hovering added
+	if (obj->xDirection == IN_motion_Right && obj->leftTI != 0)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Left;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, obj->currentAction);
+	}
+		// Hit wall walking left; turn around and go right
+	else if (obj->xDirection == IN_motion_Left && obj->rightTI != 0)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Right;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, obj->currentAction);
+	}
+	else if (obj->topTI == 0)
+	{
+		obj->posX -= obj->deltaPosX * 2;
+		obj->xDirection = -obj->xDirection;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, obj->currentAction);
+	}
+
+  CK4_BerkeloidHover(obj);
+}
+
 /*
  * Setup all of the functions in this file.
  */
@@ -211,5 +356,13 @@ void CK4_Obj2_SetupFunctions()
   CK_ACT_AddFunction("CK4_CloudCheckStrike", &CK4_CloudCheckStrike);
   CK_ACT_AddFunction("CK4_CloudStrike", &CK4_CloudStrike);
   CK_ACT_AddColFunction("CK4_CloudCol", &CK4_CloudCol);
+
+  CK_ACT_AddFunction("CK4_BerkeloidMove", &CK4_BerkeloidMove);
+  CK_ACT_AddFunction("CK4_BerkeloidThrow", &CK4_BerkeloidThrow);
+  CK_ACT_AddFunction("CK4_BerkeloidThrowDone", &CK4_BerkeloidThrowDone);
+  CK_ACT_AddColFunction("CK4_BerkeloidCol", &CK4_BerkeloidCol);
+  CK_ACT_AddFunction("CK4_FireballDraw", &CK4_FireballDraw);
+  CK_ACT_AddFunction("CK4_BerkeloidHover", &CK4_BerkeloidHover);
+  CK_ACT_AddFunction("CK4_BerkeloidDraw", &CK4_BerkeloidDraw);
 
 }

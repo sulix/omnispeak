@@ -28,8 +28,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck5_ep.h"
 #include <stdio.h>
 
-// Think function for adding gravity
+void CK_SetDraw(CK_object *obj)
+{
+  obj->visible = true;
+}
 
+// Think function for adding gravity
 void CK_Fall(CK_object *obj)
 {
 	CK_PhysGravityHigh(obj);
@@ -244,6 +248,7 @@ void CK_LethalCol(CK_object *o1, CK_object *o2)
 
 void CK_Misc_SetupFunctions(void)
 {
+  CK_ACT_AddFunction("CK_SetDraw", &CK_SetDraw);
 	CK_ACT_AddFunction("CK_Fall", &CK_Fall);
 	CK_ACT_AddFunction("CK_Fall2", &CK_Fall2);
 	CK_ACT_AddFunction("CK_Glide", &CK_Glide);
