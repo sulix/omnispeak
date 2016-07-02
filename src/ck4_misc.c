@@ -397,7 +397,7 @@ int16_t ck4_itemShadows[] = {250, 250, 250, 250, 219, 220, 221, 222, 223, 224, 2
 int ck4_mapKeenFrames[] = { 0x103, 0x112, 0x100, 0x109, 0x106, 0x10c, 0xFD, 0x10f };
 
 // ck_play.c
-uint16_t ck4_levelMusic[] ={0, 4, 3, 3, 2, 2, 4, 3, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 3, -1};
+int16_t ck4_levelMusic[] ={0, 4, 3, 3, 2, 2, 4, 3, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 3, -1};
 
 void CK4_DefineConstants(void)
 {
@@ -996,7 +996,7 @@ void CK4_ShowCouncilMessage(void)
   CA_MarkGrChunk(0x6F);
   CA_MarkGrChunk(0x70);
   CA_CacheMarks(0);
-  StartMusic(0xFFFF);
+  StartMusic(-1);
 
   // VW_SyncPages();
 

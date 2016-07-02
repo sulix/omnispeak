@@ -35,7 +35,7 @@ ifeq ($(BUILDASCPP), 0)
 	INTCXXFLAGS+= -std=c99
 endif
 
-OUTBIN=../bin-osx/omnispeak5e$(EXE_EXT)
+OUTBIN=../bin-osx/omnispeak$(EXE_EXT)
 
 LIBS=
 WITH_SDL2=1

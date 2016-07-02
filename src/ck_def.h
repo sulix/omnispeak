@@ -302,7 +302,7 @@ void CK_HandleDemoKeys();
 void CK_KeenRidePlatform(CK_object *obj);
 void CK_KeenSetupFunctions();
 
-void StartMusic(uint16_t level);
+void StartMusic(int16_t level);
 void StopMusic(void);
 
 void CK_NewGame(void);

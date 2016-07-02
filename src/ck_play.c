@@ -59,8 +59,6 @@ int ck_activeY1Tile;
 
 
 void CK_KeenCheckSpecialTileInfo(CK_object *obj);
-void StartMusic(uint16_t level);
-void StopMusic(void);
 
 CK_GameState ck_gameState;
 
@@ -959,30 +957,26 @@ void StopMusic(void)
 			MM_SetPurge((void **) &CA_audio[ca_audInfoE.startMusic + i], 3);
 }
 
-uint16_t *ck_levelMusic;
+int16_t *ck_levelMusic;
 
-void StartMusic(uint16_t level)
+void StartMusic(int16_t level)
 {
-  int song;
+	int16_t song;
 
-	if ((level >= 20) && (level != 0xFFFF))
+	if ((level >= 20) && (level != -1))
 	{
 		Quit("StartMusic() - bad level number");
 	}
 	SD_MusicOff();
-	if (level == 0xFFFF)
-  {
-    if (ck_currentEpisode->ep == EP_CK4)
-      song = 5;
-    else
-      return;
-  }
-  else
-  {
-    song = ck_levelMusic[level];
-  }
 
-	if (MusicMode != smm_AdLib)
+	// NOTE: For buffer overflow emulation in Keen 5,
+	// consider assigning in_kbdControls.fire as the song number
+	if ((level == -1) && (ck_currentEpisode->ep == EP_CK4))
+		song = 5;
+	else
+		song = ck_levelMusic[level];
+
+	if ((song == -1) || (MusicMode != smm_AdLib))
 		return;
 	MM_BombOnError(false);
 	CA_CacheAudioChunk(ca_audInfoE.startMusic + song);

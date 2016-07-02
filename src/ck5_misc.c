@@ -463,7 +463,7 @@ int16_t ck5_itemShadows[] = {232, 232, 232, 232, 195, 196, 197,  198,  199,  200
 int ck5_mapKeenFrames[] = { 0xF7, 0x106, 0xF4, 0xFD, 0xFA, 0x100, 0xF1, 0x103 };
 
 // ck_play.c
-uint16_t ck5_levelMusic[] ={11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
+int16_t ck5_levelMusic[] ={11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
 
 void CK5_DefineConstants(void)
 {
