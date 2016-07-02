@@ -8,7 +8,7 @@ disassembly/decompilation efforts.
 The source is in the src/ directory. You'll want to run 'make' from within there
 to get it compiling. You'll need gcc or a compatible compiler, and the Simple
 Directmedia Layer (libSDL) version 1.2 or 2.0 (http://libsdl.org/). When
-compiled, an 'omnispeak5e' binary will appear in 'bin/'. You'll need to copy the
+compiled, an 'omnispeak' binary will appear in 'bin/'. You'll need to copy the
 game's data files, including some resources extracted from the executable.
 You'll find those in the 'data/keen5' directory.
 
@@ -19,7 +19,7 @@ in the same directory as the binary:
 	* AUDIO.CK5
 
 To run the game, simply switch to the directory with the data files, and run:
-./omnispeak5e
+./omnispeak
 
 There's also a basic webpage for this at:
 http://davidgow.net/keen/omnispeak.html

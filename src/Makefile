@@ -39,7 +39,7 @@ ifeq ($(BUILDASCPP), 0)
 	INTCXXFLAGS+= -std=c99
 endif
 
-OUTBIN=../bin/omnispeak5e$(EXE_EXT)
+OUTBIN=../bin/omnispeak$(EXE_EXT)
 
 LIBS=
 WITH_SDL2=1

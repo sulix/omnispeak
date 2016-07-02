@@ -11,7 +11,7 @@ BEGIN
       VALUE "CompanyName", "Omnispeak Developers"
       VALUE "FileDescription", "The Armageddon Machine"
       VALUE "FileVersion", "0.5"
-      VALUE "InternalName", "omnispeak5e"
+      VALUE "InternalName", "omnispeak"
       VALUE "LegalCopyright", "(C) 2012-2014 Omnispeak Developers. Commander Keen is (C) id Software"
       VALUE "OriginalFilename", "keen5e.exe"
       VALUE "ProductName", "Omnispeak: Commander Keen 5"
