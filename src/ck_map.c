@@ -274,6 +274,34 @@ static int word_417BA[] ={ 2, 3, 1, 3, 4, 6, 0, 2};
 
 void CK_SpawnMapKeen(int tileX, int tileY)
 {
+  if (ck_currentEpisode->ep == EP_CK4 && ck_gameState.levelState == LS_Foot)
+  {
+    ck_keenObj->clipped = CLIP_not;
+    ck_keenObj->type = CT_Player;
+    ck_keenObj->posX = ck_gameState.mapPosX;
+    ck_keenObj->posY = ck_gameState.mapPosY;
+    ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
+    ck_keenObj->zLayer = PRIORITIES - 1;
+    ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None;
+
+    if (ck_gameState.mapPosX < 0x1400)
+    {
+      // Going to pyramid of forbidden at 1E, 37
+      ck_keenObj->user1 = 280;
+      ck_keenObj->velX = (0x1E00 - ck_keenObj->posX) / 280 + 1;
+      ck_keenObj->velY = (0x3700 - ck_keenObj->posY) / 280 + 1;
+    }
+    else
+    {
+      // Return flight to 0x10, 0x2F
+      ck_keenObj->user1 = 140;
+      ck_keenObj->velX = (0x1000 - ck_keenObj->posX) / 140 + 1;
+      ck_keenObj->velY = (0x2F00 - ck_keenObj->posY) / 140 + 1;
+    }
+
+    CK_SetAction(ck_keenObj, CK_GetActionByName("CK4_ACT_MapKeenFoot0"));
+    return;
+  }
 
 	ck_keenObj->type = 2;
 	if (ck_gameState.mapPosX == 0)

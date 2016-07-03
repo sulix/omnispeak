@@ -159,8 +159,8 @@
 %action CK_ACT_MapFlag2 307 307 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag3
 %action CK_ACT_MapFlag3 308 308 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag0
 
-#%action a_MapKeenFoot0 0x2EE71492 28W 28W W W W EW W W MapKeenFoot NULL DrawFunc1 a_MapKeenFoot1
-#%action a_MapKeenFoot1 0x2EE714B0 29W 29W W W W EW W W MapKeenFoot NULL DrawFunc1 a_MapKeenFoot0
+%action CK4_ACT_MapKeenFoot0 296 296 UnscaledFrame 0 0 30 0 0 CK4_MapKeenFoot NULL CK_BasicDrawFunc1 CK4_ACT_MapKeenFoot1
+%action CK4_ACT_MapKeenFoot1 297 297 UnscaledFrame 0 0 30 0 0 CK4_MapKeenFoot NULL CK_BasicDrawFunc1 CK4_ACT_MapKeenFoot0
 #
 #%action a_MapKeenSwim0 0x2EE714CE W W W W W W 0W 0W MapKeenSwim NULL DrawFunc1 a_MapKeenSwim0
 #
@@ -350,14 +350,17 @@
 %action CK4_ACT_FireballGround7 515 515 UnscaledOnce 0 0 12 0 0 NULL CK4_BerkeloidCol CK_BasicDrawFunc1 CK4_ACT_FireballGround8
 %action CK4_ACT_FireballGround8 516 516 UnscaledOnce 0 0 12 0 0 NULL CK4_BerkeloidCol CK_BasicDrawFunc1 NULL
 
-#%action CK4_ACT_FootPoof0 350 350 0 0 0 $0xC 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_FootPoof1
-#%action CK4_ACT_FootPoof1 351 351 0 0 0 $0xC 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_FootPoof2
-#%action CK4_ACT_FootPoof2 352 352 0 0 0 $0xC 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_FootPoof3
-#%action CK4_ACT_FootPoof3 353 353 0 0 0 $0xC 0 0 NULL NULL CK_BasicDrawFunc1 NULL
-#%action CK4_ACT_Inchworm0 335 333 0 0 0 0xE 0x0 0 inchworm_move inchworm_collide CK_BasicDrawFunc2 CK4_ACT_Inchworm1
-#%action CK4_ACT_Inchworm1 336 334 0 0 0 0xE 0x0 0 inchworm_move inchworm_collide CK_BasicDrawFunc2 CK4_ACT_Inchworm0
-#%action CK4_ACT_Foot0 65791 $0x100FF 0 0 0 0x0 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_Foot1
-#%action CK4_ACT_Foot1 337 337 0 0 0 0x530 0 0 NULL foot_collide CK_BasicDrawFunc1 NULL
+# Monty Python gag
+%action CK4_ACT_FootPoof0 350 350 UnscaledOnce 0 0 12 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_FootPoof1
+%action CK4_ACT_FootPoof1 351 351 UnscaledOnce 0 0 12 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_FootPoof2
+%action CK4_ACT_FootPoof2 352 352 UnscaledOnce 0 0 12 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_FootPoof3
+%action CK4_ACT_FootPoof3 353 353 UnscaledOnce 0 0 12 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+
+%action CK4_ACT_Inchworm0 335 333 UnscaledOnce 0 1 30 0x80 0 CK4_InchwormMove CK4_InchwormCol CK_BasicDrawFunc2 CK4_ACT_Inchworm1
+%action CK4_ACT_Inchworm1 336 334 UnscaledOnce 0 1 30 0x80 0 CK4_InchwormMove CK4_InchwormCol CK_BasicDrawFunc2 CK4_ACT_Inchworm0
+%action CK4_ACT_Foot0 -1 -1 UnscaledOnce 0 0 48 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_Foot1
+%action CK4_ACT_Foot1 337 337 Frame 0 0 30000 0 0 NULL CK4_FootCol CK_BasicDrawFunc1 NULL
+
 #%action CK4_ACT_Bounder0 495 495 0 0 0 0x4 0 0 Fall bounder_check_shot bounder_draw CK4_ACT_Bounder1
 #%action CK4_ACT_Bounder1 496 496 0 0 0 0x4 0 0 Fall bounder_check_shot bounder_draw CK4_ACT_Bounder0
 #%action CK4_ACT_BounderMoveHorz0 491 493 0 0 0 0x4 0 0 Fall bounder_check_shot bounder_draw CK4_ACT_BounderMoveHorz1

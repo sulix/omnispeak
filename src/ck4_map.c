@@ -32,6 +32,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string.h>
 #include <stdio.h>
 
+// =========================================================================
+
+void CK4_MapKeenFoot(CK_object *obj)
+{
+  int spriteSync = SD_GetSpriteSync();
+  obj->user1 -= spriteSync;
+  ck_nextX = spriteSync * obj->velX;
+  ck_nextY = spriteSync * obj->velY;
+  if (obj->user1 <= 0)
+  {
+    ck_nextX -= obj->velX * -obj->user1;
+    ck_nextY -= obj->velY * -obj->user1;
+    obj->zLayer = PRIORITIES - 3;
+    obj->user1 = 6;
+    obj->user2 = 3;
+    obj->user3 = 0;
+    ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None;  // use global pointer for some reason
+    obj->currentAction = CK_GetActionByName("CK_ACT_MapKeenStart");
+    obj->gfxChunk = 256;
+    obj->clipped = CLIP_normal;
+  }
+}
+
+
 void CK4_Map_SetupFunctions()
 {
+  CK_ACT_AddFunction("CK4_MapKeenFoot", &CK4_MapKeenFoot);
 }

@@ -338,6 +338,100 @@ void CK4_BerkeloidDraw(CK_object *obj)
   CK4_BerkeloidHover(obj);
 }
 
+// Foot and worms
+void CK4_SpawnInchworm(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Inchworm;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 2;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = tileY << G_T_SHIFT;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Inchworm0"));
+  obj->actionTimer = US_RndT() / 32; // So the worms don't all inch in unison?
+}
+
+void CK4_SpawnFoot(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Foot;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = tileY - 3 << G_T_SHIFT;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Foot1"));
+}
+
+void CK4_InchwormMove(CK_object *obj)
+{
+  obj->xDirection = obj->posX > ck_keenObj->posX ? IN_motion_Left : IN_motion_Right;
+}
+
+void CK4_InchwormCol(CK_object *a, CK_object *b)
+{
+	int32_t lastTimeCount = SD_GetLastTimeCount();
+
+  if (b->type == CT4_Inchworm)
+  {
+    // Here, DOS keen stores the low word of the 32-bit lastTimeCount = user1
+    // Omnispeak can store the whole thing. Either way, it's irrelevant, because
+    // user1 is just being used as a "static" variable for this function for this frame
+    if (a->user1 != lastTimeCount)
+    {
+      a->user1 = lastTimeCount;
+      a->user2 = 0;
+    }
+
+    if (++a->user2 == 11)
+    {
+      // Turn worm into foot
+      SD_PlaySound(SOUND_FOOTAPPEAR);
+      a->posY -= 0x500;
+      a->type = CT4_Foot;
+      CK_SetAction2(a, CK_GetActionByName("CK4_ACT_Foot1"));
+
+      // Spawn Foot poofs
+      CK_object *poof = CK_GetNewObj(true);
+      poof->posX = a->posX - 0x80;
+      poof->posY = a->posY + 0x100;
+      poof->zLayer = PRIORITIES - 1;
+      CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
+
+      poof = CK_GetNewObj(true);
+      poof->posX = a->posX + 0x100;
+      poof->posY = a->posY + 0x180;
+      poof->zLayer = PRIORITIES - 1;
+      CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
+
+      poof = CK_GetNewObj(true);
+      poof->posX = a->posX + 0x280;
+      poof->posY = a->posY + 0x100;
+      poof->zLayer = PRIORITIES - 1;
+      CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
+
+      poof = CK_GetNewObj(true);
+      poof->posX = a->posX;
+      poof->posY = a->posY - 0x80;
+      poof->zLayer = PRIORITIES - 1;
+      CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
+
+      // Remove all other worms on level
+      for (CK_object *o = ck_keenObj; o; o = o->next)
+      {
+        if (o->type == CT4_Inchworm)
+          CK_RemoveObj(o);
+      }
+    }
+  }
+}
+
+void CK4_FootCol(CK_object *a, CK_object *b)
+{
+  // Just an empty function :(
+}
+
 /*
  * Setup all of the functions in this file.
  */
@@ -364,5 +458,9 @@ void CK4_Obj2_SetupFunctions()
   CK_ACT_AddFunction("CK4_FireballDraw", &CK4_FireballDraw);
   CK_ACT_AddFunction("CK4_BerkeloidHover", &CK4_BerkeloidHover);
   CK_ACT_AddFunction("CK4_BerkeloidDraw", &CK4_BerkeloidDraw);
+
+  CK_ACT_AddFunction("CK4_InchwormMove", &CK4_InchwormMove);
+  CK_ACT_AddColFunction("CK4_InchwormCol", &CK4_InchwormCol);
+  CK_ACT_AddColFunction("CK4_FootCol", &CK4_FootCol);
 
 }

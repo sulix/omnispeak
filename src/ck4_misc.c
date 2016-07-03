@@ -664,6 +664,7 @@ typedef enum
   Lump_0 = 0,
   Lump_Slug = 11,
   Lump_Mushroom = 12,
+  Lump_FootWorm = 15,
   Lump_CouncilMember = 17,
   Lump_Bird = 18,
   Lump_Arachnut = 22,
@@ -691,7 +692,7 @@ static int16_t ck4_lumpStarts[MAXLUMPS] =
   325,
   0,
   329,
-  333,
+  333,  // SPR_INCHWORM_R1
   338,
   356,// SPR_COUNCILWALK_R1
   367,  // SPR_BIRDWALK_R1
@@ -732,7 +733,7 @@ static int16_t ck4_lumpEnds[MAXLUMPS] =
   328,
   0,
   332,
-  337,
+  337, // SPR_FOOT
   355,
   361, // SPR_COUNCILPAUSE2
   379, // SPR_BIRDSTUNNED
@@ -896,6 +897,25 @@ void CK4_ScanInfoLayer()
       case 5:
         ck4_lumpsNeeded[Lump_Berkeloid] = true;
         CK4_SpawnBerkeloid(x, y);
+        break;
+
+        // Inchworms
+      case 10:
+        ck4_lumpsNeeded[Lump_FootWorm] = true;
+        CK4_SpawnFoot(x, y);
+        goto cachePoofs;
+
+      case 11:
+        ck4_lumpsNeeded[Lump_FootWorm] = true;
+        CK4_SpawnInchworm(x, y);
+        goto cachePoofs;
+
+cachePoofs:
+
+        for (int i = 350; i < 353; i++)
+        {
+          CA_MarkGrChunk(i);
+        }
         break;
 
 
