@@ -532,6 +532,87 @@ void CK4_BounderDraw(CK_object *obj)
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
+// Licks
+
+void CK4_SpawnLick(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Lick;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 2;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = tileY << G_T_SHIFT;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  obj->timeUntillThink = US_RndT() / 0x40;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_LickHop2"));
+}
+
+void CK4_LickMove(CK_object *obj)
+{
+  obj->xDirection = obj->posX > ck_keenObj->posX ? IN_motion_Left : IN_motion_Right;
+
+  int16_t dx = ck_keenObj->posX - obj->posX;
+  int16_t dy = ck_keenObj->posY - obj->posY;
+
+  if (dy >= -0x100 && dy <= 0x100)
+  {
+    if (obj->xDirection == IN_motion_Right && dx > -0x20 && dx < 0x180 ||
+        obj->xDirection == IN_motion_Left && dx < 0x20 && dx > -0x200)
+    {
+      SD_PlaySound(SOUND_LICKFLAME);
+      CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_LickFlame0"));
+      return;
+    }
+  }
+
+  if (ABS(dx) > 0x300)
+  {
+    obj->velX = obj->xDirection * 32;
+    obj->velY = -32;
+  }
+  else
+  {
+    obj->velX = (obj->xDirection * 32) / 2;
+    obj->velY = -16;
+  }
+}
+
+void CK4_LickCheckShot(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Stunner)
+  {
+    CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_LickStunned0"));
+    a->velY -= 16;
+  }
+}
+
+void CK4_LickCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    if (a->xDirection == IN_motion_Right && ck_keenObj->posX > a->posX ||
+        a->xDirection == IN_motion_Left && ck_keenObj->posX < a->posX)
+    {
+      CK_KillKeen();
+      return;
+    }
+  }
+
+  CK4_LickCheckShot(a,b);
+}
+
+void CK4_LickDraw(CK_object *obj)
+{
+  if (obj->topTI)
+  {
+    CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_LickHop3"));
+  }
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+
 /*
  * Setup all of the functions in this file.
  */
@@ -565,5 +646,10 @@ void CK4_Obj2_SetupFunctions()
 
   CK_ACT_AddColFunction("CK4_BounderCheckShot", &CK4_BounderCheckShot);
   CK_ACT_AddFunction("CK4_BounderDraw", &CK4_BounderDraw);
+
+  CK_ACT_AddFunction("CK4_LickMove", &CK4_LickMove);
+  CK_ACT_AddColFunction("CK4_LickCheckShot", &CK4_LickCheckShot);
+  CK_ACT_AddColFunction("CK4_LickCol", &CK4_LickCol);
+  CK_ACT_AddFunction("CK4_LickDraw", &CK4_LickDraw);
 
 }

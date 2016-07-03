@@ -30,7 +30,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 extern int ck_ticsThisFrame;
 
+#ifndef ABS
 #define ABS(x) ((x)>0?(x):(-(x)))
+#endif
 
 // Shikadi Mine Funcs
 int CK5_Walk(CK_object *obj, CK_Controldir dir);

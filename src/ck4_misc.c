@@ -670,6 +670,7 @@ typedef enum
   Lump_Arachnut = 22,
   Lump_Skypest = 23,
   Lump_Wormmouth = 24,
+  Lump_Lick = 25,
   Lump_Bounder = 27,
   Lump_Cloud = 28,
   Lump_Berkeloid = 29,
@@ -703,7 +704,7 @@ static int16_t ck4_lumpStarts[MAXLUMPS] =
   425,  // SPR_ARACHNUTWALK_1
   443,  // SPR_SKYPESTFLYL1
   457,  // wormouth
-  469,
+  469,  // SPR_LICKR1
   484,
   491,  // SPR_BOUNDERL1
   498,  // SPR_CLOUD1
@@ -744,7 +745,7 @@ static int16_t ck4_lumpEnds[MAXLUMPS] =
   429, // SPR_ARACHNUTSTUNNED
   456, // SPR_SKYPESTSQUISH
   468, // wormmouth
-  483,
+  483, // SPR_LICKSTUNNED
   490,
   497, // SPR_BOUNDERSTUNNED
   502, // SPR_BOLT2
@@ -923,6 +924,16 @@ cachePoofs:
       case 12:
         ck4_lumpsNeeded[Lump_Bounder] = true;
         CK4_SpawnBounder(x, y);
+        break;
+
+      // Licks
+      case 48:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 47:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 14:
+        ck4_lumpsNeeded[Lump_Lick] = true;
+        CK4_SpawnLick(x, y);
         break;
 
       case 33:

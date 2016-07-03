@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SOUND_SKYPESTSQUISH 22
 #define SOUND_MUSHROOMHOP 28
 #define SOUND_COUNCILSAVE 31
+#define SOUND_LICKFLAME 32
 #define SOUND_BERKELOIDTHROW 33
 #define SOUND_LIGHTNINGBOLT 39
 #define SOUND_FIREBALLLAND 40
@@ -84,6 +85,7 @@ void CK4_SpawnBerkeloid(int tileX, int tileY);
 void CK4_SpawnInchworm(int tileX, int tileY);
 void CK4_SpawnFoot(int tileX, int tileY);
 void CK4_SpawnBounder(int tileX, int tileY);
+void CK4_SpawnLick(int tileX, int tileY);
 
 
 /* ck4_obj3.c */

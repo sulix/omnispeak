@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define CK_MAX_OBJECTS 100
 
+#define ABS(x) ((x) > 0? (x) : (-x))
+
 struct CK_object;
 
 struct RF_SpriteDrawEntry;
@@ -79,8 +81,8 @@ typedef enum CK_ClassType {
   CT4_Berkeloid = 14,
   CT4_Bounder = 15,
   CT4_Inchworm = 16,
-  CT4_0x11 = 17,
-  CT4_0x12 = 18,
+  CT4_0x11 = 17, // what was this?
+  CT4_Lick = 18,
   CT4_Mimrock = 19,
   CT4_Platform = 20,
   CT4_Dopefish = 21,

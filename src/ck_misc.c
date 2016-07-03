@@ -191,7 +191,7 @@ void CK_BasicDrawFunc4(CK_object *obj)
         starsY = -0x80;
         break;
 
-      case CT4_0x12:
+      case CT4_Lick:
         starsY = -0x80;
         break;
 

@@ -370,20 +370,21 @@
 %action CK4_ACT_BounderStunned1 497 497 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
 
 # Licks
-#%action CK4_ACT_LickHop0 473 469 0 0 0 $0xA 0 0 lick_move lick_check_shot CK_BasicDrawFunc1 CK4_ACT_LickHop1
-#%action CK4_ACT_LickHop1 474 470 0 0 0 0 0 0 Fall lick_check_shot lick_draw CK4_ACT_LickHop2
-#%action CK4_ACT_LickHop2 475 471 0 0 0 0 0 0 Fall lick_check_shot lick_draw NULL
-#%action CK4_ACT_LickHop3 476 472 0 0 0 $0xA 0 0 NULL lick_check_shot CK_BasicDrawFunc1 CK4_ACT_LickHop0
-#%action CK4_ACT_LickFlame0 480 477 0 0 0 0 0 0 NULL lick_collide CK_BasicDrawFunc1 CK4_ACT_LickFlame1
-#%action CK4_ACT_LickFlame1 481 478 0 0 0 0 0 0 NULL lick_collide CK_BasicDrawFunc1 CK4_ACT_LickFlame2
-#%action CK4_ACT_LickFlame2 482 479 0 0 0 0 0 0 NULL lick_collide CK_BasicDrawFunc1 CK4_ACT_LickFlame3
-#%action CK4_ACT_LickFlame3 481 478 0 0 0 0 0 0 NULL lick_collide CK_BasicDrawFunc1 CK4_ACT_LickFlame4
-#%action CK4_ACT_LickFlame4 480 477 0 0 0 0 0 0 NULL lick_collide CK_BasicDrawFunc1 CK4_ACT_LickFlame5
-#%action CK4_ACT_LickFlame5 481 478 0 0 0 0 0 0 NULL lick_collide CK_BasicDrawFunc1 CK4_ACT_LickFlame6
-#%action CK4_ACT_LickFlame6 482 479 0 0 0 0 0 0 NULL lick_collide CK_BasicDrawFunc1 CK4_ACT_LickFlame7
-#%action CK4_ACT_LickFlame7 481 478 0 0 0 0 0 0 NULL lick_collide CK_BasicDrawFunc1 CK4_ACT_LickHop2
-#%action CK4_ACT_LickStunned0 483 483 0 0 0 0 0 0 Fall NULL CK_BasicDrawFunc4 CK4_ACT_LickStunned1
-#%action CK4_ACT_LickStunned1 483 483 0 0 0 0 0 0 Fall NULL CK_BasicDrawFunc4 NULL
+%action CK4_ACT_LickHop0 473 469 UnscaledOnce 0 0 10 0 0 CK4_LickMove CK4_LickCheckShot CK_BasicDrawFunc1 CK4_ACT_LickHop1
+%action CK4_ACT_LickHop1 474 470 Frame 0 0 0 0 0 CK_Fall CK4_LickCheckShot CK4_LickDraw CK4_ACT_LickHop2
+%action CK4_ACT_LickHop2 475 471 Frame 0 0 0 0 0 CK_Fall CK4_LickCheckShot CK4_LickDraw NULL
+%action CK4_ACT_LickHop3 476 472 UnscaledOnce 0 0 10 0 0 NULL CK4_LickCheckShot CK_BasicDrawFunc1 CK4_ACT_LickHop0
+%action CK4_ACT_LickFlame0 480 477 UnscaledOnce 0 0 4 0 0 NULL CK4_LickCol CK_BasicDrawFunc1 CK4_ACT_LickFlame1
+%action CK4_ACT_LickFlame1 481 478 UnscaledOnce 0 0 4 0 0 NULL CK4_LickCol CK_BasicDrawFunc1 CK4_ACT_LickFlame2
+%action CK4_ACT_LickFlame2 482 479 UnscaledOnce 0 0 4 0 0 NULL CK4_LickCol CK_BasicDrawFunc1 CK4_ACT_LickFlame3
+%action CK4_ACT_LickFlame3 481 478 UnscaledOnce 0 0 4 0 0 NULL CK4_LickCol CK_BasicDrawFunc1 CK4_ACT_LickFlame4
+%action CK4_ACT_LickFlame4 480 477 UnscaledOnce 0 0 4 0 0 NULL CK4_LickCol CK_BasicDrawFunc1 CK4_ACT_LickFlame5
+%action CK4_ACT_LickFlame5 481 478 UnscaledOnce 0 0 4 0 0 NULL CK4_LickCol CK_BasicDrawFunc1 CK4_ACT_LickFlame6
+%action CK4_ACT_LickFlame6 482 479 UnscaledOnce 0 0 4 0 0 NULL CK4_LickCol CK_BasicDrawFunc1 CK4_ACT_LickFlame7
+%action CK4_ACT_LickFlame7 481 478 UnscaledOnce 0 0 4 0 0 NULL CK4_LickCol CK_BasicDrawFunc1 CK4_ACT_LickHop2
+%action CK4_ACT_LickStunned0 483 483 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 CK4_ACT_LickStunned1
+%action CK4_ACT_LickStunned1 483 483 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+
 #%action CK4_ACT_Platform0 484 484 0 0 0 0 0 0 platform_move NULL platform_draw NULL
 #%action CK4_ACT_PlatformSit 484 484 0 0 0 0 0 0 platform_sit NULL CK_BasicDrawFunc1 NULL
 #%action CK4_ACT_PlatformDrop 484 484 0 0 0 0 0 0 platform_drop NULL CK_BasicDrawFunc1 NULL
