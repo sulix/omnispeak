@@ -47,8 +47,8 @@ void CK4_WormmouthLookRight(CK_object *obj)
 {
   if (ck_keenObj->posX > obj->posX)
   {
-     obj->xDirection = IN_motion_Right;
-     obj->currentAction = CK_GetActionByName("CK4_ACT_WormmouthMove0");
+    obj->xDirection = IN_motion_Right;
+    obj->currentAction = CK_GetActionByName("CK4_ACT_WormmouthMove0");
   }
 }
 
@@ -136,7 +136,7 @@ void CK4_CloudMove(CK_object *obj)
       obj->clipRects.unitX1 < ck_keenObj->clipRects.unitX2 &&
       obj->clipRects.unitX2 > ck_keenObj->clipRects.unitX1)
   {
-     obj->currentAction = CK_GetActionByName("CK4_ACT_CloudCheckStrike0");
+    obj->currentAction = CK_GetActionByName("CK4_ACT_CloudCheckStrike0");
   }
 }
 
@@ -172,7 +172,7 @@ void CK4_CloudDraw(CK_object *obj)
     obj->xDirection = IN_motion_Right;
   }
 
-	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
 void CK4_CloudStrike(CK_object *obj)
@@ -251,9 +251,9 @@ void CK4_BerkeloidThrow(CK_object *obj)
   }
   else
   {
-     ball->velX = -48;
-     ball->posX = obj->posX - 0x100;
-     ball->xDirection = IN_motion_Left;
+    ball->velX = -48;
+    ball->posX = obj->posX - 0x100;
+    ball->xDirection = IN_motion_Left;
   }
 
   CK_SetAction(ball, CK_GetActionByName("CK4_ACT_FireballAir0"));
@@ -274,7 +274,7 @@ void CK4_BerkeloidCol(CK_object *a, CK_object *b)
   }
   else if (b->type == CT_Player)
   {
-     CK_KillKeen();
+    CK_KillKeen();
   }
 }
 
@@ -285,11 +285,11 @@ void CK4_FireballDraw(CK_object *obj)
 
   if (obj->topTI)
   {
-     SD_PlaySound(SOUND_FIREBALLLAND);
-     CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_FireballGround0"));
+    SD_PlaySound(SOUND_FIREBALLLAND);
+    CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_FireballGround0"));
   }
 
-	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
 void CK4_BerkeloidHover(CK_object *obj)
@@ -306,34 +306,34 @@ void CK4_BerkeloidHover(CK_object *obj)
     obj->user2 = 8;
   }
 
-	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY + obj->user1, obj->gfxChunk, false, obj->zLayer);
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY + obj->user1, obj->gfxChunk, false, obj->zLayer);
 }
 
 void CK4_BerkeloidDraw(CK_object *obj)
 {
   // DrawFunc2 with hovering added
-	if (obj->xDirection == IN_motion_Right && obj->leftTI != 0)
-	{
-		obj->posX -= obj->deltaPosX;
-		obj->xDirection = IN_motion_Left;
-		obj->timeUntillThink = US_RndT() / 32;
-		CK_SetAction2(obj, obj->currentAction);
-	}
-		// Hit wall walking left; turn around and go right
-	else if (obj->xDirection == IN_motion_Left && obj->rightTI != 0)
-	{
-		obj->posX -= obj->deltaPosX;
-		obj->xDirection = IN_motion_Right;
-		obj->timeUntillThink = US_RndT() / 32;
-		CK_SetAction2(obj, obj->currentAction);
-	}
-	else if (obj->topTI == 0)
-	{
-		obj->posX -= obj->deltaPosX * 2;
-		obj->xDirection = -obj->xDirection;
-		obj->timeUntillThink = US_RndT() / 32;
-		CK_SetAction2(obj, obj->currentAction);
-	}
+  if (obj->xDirection == IN_motion_Right && obj->leftTI != 0)
+  {
+    obj->posX -= obj->deltaPosX;
+    obj->xDirection = IN_motion_Left;
+    obj->timeUntillThink = US_RndT() / 32;
+    CK_SetAction2(obj, obj->currentAction);
+  }
+  // Hit wall walking left; turn around and go right
+  else if (obj->xDirection == IN_motion_Left && obj->rightTI != 0)
+  {
+    obj->posX -= obj->deltaPosX;
+    obj->xDirection = IN_motion_Right;
+    obj->timeUntillThink = US_RndT() / 32;
+    CK_SetAction2(obj, obj->currentAction);
+  }
+  else if (obj->topTI == 0)
+  {
+    obj->posX -= obj->deltaPosX * 2;
+    obj->xDirection = -obj->xDirection;
+    obj->timeUntillThink = US_RndT() / 32;
+    CK_SetAction2(obj, obj->currentAction);
+  }
 
   CK4_BerkeloidHover(obj);
 }
@@ -371,7 +371,7 @@ void CK4_InchwormMove(CK_object *obj)
 
 void CK4_InchwormCol(CK_object *a, CK_object *b)
 {
-	int32_t lastTimeCount = SD_GetLastTimeCount();
+  int32_t lastTimeCount = SD_GetLastTimeCount();
 
   if (b->type == CT4_Inchworm)
   {
@@ -529,7 +529,7 @@ void CK4_BounderDraw(CK_object *obj)
     obj->velX = -obj->velX;
   }
 
-	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
 // Licks
@@ -609,40 +609,40 @@ void CK4_LickDraw(CK_object *obj)
     CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_LickHop3"));
   }
 
-	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
 // Platforms (CK4-unique behaviour)
 
 void CK4_SpawnAxisPlatform(int tileX, int tileY, int direction)
 {
-	CK_object *obj = CK_GetNewObj(false);
+  CK_object *obj = CK_GetNewObj(false);
 
   obj->type = CT4_Platform;
-	obj->active = OBJ_ALWAYS_ACTIVE;
-	obj->zLayer = 0;
-	obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
+  obj->active = OBJ_ALWAYS_ACTIVE;
+  obj->zLayer = 0;
+  obj->posX = tileX << 8;
+  obj->posY = tileY << 8;
 
-	switch (direction)
-	{
-	case 0:
-		obj->xDirection = 0;
-		obj->yDirection = -1;
-		break;
-	case 1:
-		obj->xDirection = 1;
-		obj->yDirection = 0;
-		break;
-	case 2:
-		obj->xDirection = 0;
-		obj->yDirection = 1;
-		break;
-	case 3:
-		obj->xDirection = -1;
-		obj->yDirection = 0;
-		break;
-	}
+  switch (direction)
+  {
+    case 0:
+      obj->xDirection = 0;
+      obj->yDirection = -1;
+      break;
+    case 1:
+      obj->xDirection = 1;
+      obj->yDirection = 0;
+      break;
+    case 2:
+      obj->xDirection = 0;
+      obj->yDirection = 1;
+      break;
+    case 3:
+      obj->xDirection = -1;
+      obj->yDirection = 0;
+      break;
+  }
 
   CK_SetAction(obj, CK_GetActionByName("CK_ACT_AxisPlatform"));
 }
@@ -651,7 +651,7 @@ void CK4_SpawnAxisPlatform(int tileX, int tileY, int direction)
 
 void CK4_PlatformDraw(CK_object *obj)
 {
-	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 
   // Draw the flames
 
