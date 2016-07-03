@@ -355,6 +355,7 @@ void CK_Misc_SetupFunctions(void);
 /* ck_obj.c */
 void CK_SpawnItem(int tileX, int tileY, int itemNumber);
 void CK_SpawnCentilifeNotify(int tileX, int tileY);
+void CK_SpawnFallPlat(int tileX, int tileY);
 
 /* ck_text.c */
 void HelpScreens(void);

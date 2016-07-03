@@ -176,9 +176,10 @@
 %action CK5_ACT_LevelEnd -1 -1 UnscaledOnce 0x0 0x0 0x3c 0x0 0x0 CK5_LevelEnd NULL CK_BasicDrawFunc1 NULL
 
 # Platforms
-%action CK5_act_redAxisPlatform 446 446 Frame 0 0 0 0 0 CK5_RedAxisPlatform NULL CK_BasicDrawFunc1 NULL
-%action CK5_act_purpleAxisPlatform 422 422 UnscaledFrame 0 0 0 0 0 CK5_PurpleAxisPlatform NULL CK_BasicDrawFunc1 CK5_act_purpleAxisPlatform2
-%action CK5_act_purpleAxisPlatform2 423 423 UnscaledFrame 0 0 0 0 0 CK5_PurpleAxisPlatform NULL CK_BasicDrawFunc1 CK5_act_purpleAxisPlatform
+%action CK_ACT_AxisPlatform 446 446 Frame 0 0 0 0 0 CK_AxisPlatform NULL CK_BasicDrawFunc1 NULL
+
+%action CK5_ACT_purpleAxisPlatform 422 422 UnscaledFrame 0 0 0 0 0 CK5_PurpleAxisPlatform NULL CK_BasicDrawFunc1 CK5_ACT_purpleAxisPlatform2
+%action CK5_ACT_purpleAxisPlatform2 423 423 UnscaledFrame 0 0 0 0 0 CK5_PurpleAxisPlatform NULL CK_BasicDrawFunc1 CK5_ACT_purpleAxisPlatform
 
 %action CK5_ACT_sneakPlatWait 0x1BE 0x1BE Frame 0 0 0 0 0 CK5_SneakPlatThink NULL CK_BasicDrawFunc1 NULL
 %action CK5_ACT_sneakPlatSneak 0x1BE 0x1BE ScaledOnce 0 0 48 32 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_sneakPlatReturn
@@ -188,9 +189,9 @@
 %action CK5_ACT_purpleGoPlat 422 422 UnscaledFrame 0 0 0 0 0 CK5_PurpleGoPlatThink NULL CK_BasicDrawFunc1 CK5_ACT_purpleGoPlat2
 %action CK5_ACT_purpleGoPlat2 423 423 UnscaledFrame 0 0 0 0 0 CK5_PurpleGoPlatThink NULL CK_BasicDrawFunc1 CK5_ACT_purpleGoPlat
 
-%action CK5_ACT_FallPlat0 0x1be 0x1be Frame 0x0 0x0 0x0 0x0 0x0 CK5_FallPlatSit NULL CK_BasicDrawFunc1 NULL
-%action CK5_ACT_FallPlat1 0x1be 0x1be Frame 0x0 0x0 0x0 0x0 0x0 CK5_FallPlatFall NULL CK_BasicDrawFunc1 NULL
-%action CK5_ACT_FallPlat2 0x1be 0x1be ScaledFrame 0x0 0x0 0x0 0x0 -32 CK5_FallPlatRise NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_FallPlat0 0x1be 0x1be Frame 0x0 0x0 0x0 0x0 0x0 CK_FallPlatSit NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_FallPlat1 0x1be 0x1be Frame 0x0 0x0 0x0 0x0 0x0 CK_FallPlatFall NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_FallPlat2 0x1be 0x1be ScaledFrame 0x0 0x0 0x0 0x0 -32 CK_FallPlatRise NULL CK_BasicDrawFunc1 NULL
 
 %action CK5_ACT_redStandPlatform 446 446 UnscaledOnce 0 0 32000 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_redStandPlatform
 
@@ -274,7 +275,7 @@
 %action CK5_ACT_AmptonStunned0 0x1a0 0x1a0 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
 
 # Slice Star
-%action CK5_ACT_Slice0 0x181 0x181 Frame 0x0 0x0 0x0 0x0 0x0 CK5_RedAxisPlatform CK5_SliceCol CK_BasicDrawFunc1 NULL
+%action CK5_ACT_Slice0 0x181 0x181 Frame 0x0 0x0 0x0 0x0 0x0 CK_AxisPlatform CK5_SliceCol CK_BasicDrawFunc1 NULL
 %action CK5_ACT_SliceDiag0 0x181 0x181 ScaledOnce 0x0 0x0 0x0 0x18 0x18 NULL CK5_SliceCol CK5_SliceDiagTileCol CK5_ACT_SliceDiag0
 %action CK5_ACT_SliceDie0 0x182 0x182 UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
 

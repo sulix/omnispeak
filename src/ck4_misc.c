@@ -40,219 +40,7 @@ CK_EpisodeDef ck4_episode ={
   &CK4_DefineConstants
 };
 
-
 // Contains some keen-4 specific functions.
-
-void CK4_RedAxisPlatform(CK_object *obj)
-{
-	uint16_t nextPosUnit, nextPosTile;
-
-	if (ck_nextX || ck_nextY)
-	{
-		return;
-	}
-	//TODO: Implement properly.
-	ck_nextX = obj->xDirection * 12 * SD_GetSpriteSync();
-	ck_nextY = obj->yDirection * 12 * SD_GetSpriteSync();
-
-	if (obj->xDirection == 1)
-	{
-		nextPosUnit = obj->clipRects.unitX2 + ck_nextX;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
-		{
-			obj->xDirection = -1;
-			//TODO: Change DeltaVelocity
-			ck_nextX -= (nextPosUnit & 255);
-		}
-	}
-	else if (obj->xDirection == -1)
-	{
-		nextPosUnit = obj->clipRects.unitX1 + ck_nextX;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
-		{
-			obj->xDirection = 1;
-			//TODO: Change DeltaVelocity
-			//CK_PhysUpdateX(obj, 256 - nextPosUnit&255);
-			ck_nextX += (256 - nextPosUnit) & 255;
-		}
-	}
-	else if (obj->yDirection == 1)
-	{
-		nextPosUnit = obj->clipRects.unitY2 + ck_nextY;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
-		{
-			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile - 2, 2) == 0x1F)
-			{
-				//Stop the platform.
-				obj->visible = true;
-				ck_nextY = 0;
-			}
-			else
-			{
-				obj->yDirection = -1;
-				//TODO: Change DeltaVelocity
-				ck_nextY -= ( nextPosUnit & 255);
-			}
-		}
-	}
-	else if (obj->yDirection == -1)
-	{
-		nextPosUnit = obj->clipRects.unitY1 + ck_nextY;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
-		{
-			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile + 2, 2) == 0x1F)
-			{
-				// Stop the platform.
-				obj->visible = true;
-				ck_nextY = 0;
-			}
-			else
-			{
-				obj->yDirection = 1;
-				//TODO: Change DeltaVelocity
-				ck_nextY +=  256 - (nextPosUnit & 255);
-			}
-		}
-	}
-}
-
-void CK4_PurpleAxisPlatform(CK_object *obj)
-{
-	uint16_t nextPosUnit, nextPosTile;
-
-	if (ck_nextX || ck_nextY)
-	{
-		return;
-	}
-	//TODO: Implement properly.
-	ck_nextX = obj->xDirection * 12 * SD_GetSpriteSync();
-	ck_nextY = obj->yDirection * 12 * SD_GetSpriteSync();
-
-	if (obj->xDirection == 1)
-	{
-		nextPosUnit = obj->clipRects.unitX2 + ck_nextX;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
-		{
-			obj->xDirection = -1;
-			//TODO: Change DeltaVelocity
-			ck_nextX -= (nextPosUnit & 255);
-		}
-	}
-	else if (obj->xDirection == -1)
-	{
-		nextPosUnit = obj->clipRects.unitX1 + ck_nextX;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
-		{
-			obj->xDirection = 1;
-			//TODO: Change DeltaVelocity
-			//CK_PhysUpdateX(obj, 256 - nextPosUnit&255);
-			ck_nextX += (256 - nextPosUnit) & 255;
-		}
-	}
-	else if (obj->yDirection == 1)
-	{
-		nextPosUnit = obj->clipRects.unitY2 + ck_nextY;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
-		{
-			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile - 2, 2) == 0x1F)
-			{
-				//Stop the platform.
-				obj->visible = true;
-				ck_nextY = 0;
-			}
-			else
-			{
-				obj->yDirection = -1;
-				//TODO: Change DeltaVelocity
-				ck_nextY -= ( nextPosUnit & 255);
-			}
-		}
-	}
-	else if (obj->yDirection == -1)
-	{
-		nextPosUnit = obj->clipRects.unitY1 + ck_nextY;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
-		{
-			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile + 2, 2) == 0x1F)
-			{
-				// Stop the platform.
-				obj->visible = true;
-				ck_nextY = 0;
-			}
-			else
-			{
-				obj->yDirection = 1;
-				//TODO: Change DeltaVelocity
-				ck_nextY +=  256 - (nextPosUnit & 255);
-			}
-		}
-	}
-}
-
-void CK4_SpawnFallPlat(int tileX, int tileY)
-{
-	CK_object *new_object = CK_GetNewObj(false);
-	new_object->type = CT_CLASS(Platform);
-	new_object->active = OBJ_ALWAYS_ACTIVE;
-	new_object->zLayer = 0;
-	new_object->posX = tileX << 8;
-	new_object->user1 = new_object->posY = tileY << 8;
-	new_object->xDirection = IN_motion_None;
-	new_object->yDirection = IN_motion_Down;
-	new_object->clipped = CLIP_not;
-	CK_SetAction(new_object, CK_GetActionByName("CK4_ACT_FallPlat0"));
-}
-
-void CK4_FallPlatSit (CK_object *obj)
-{
-
-	if (obj == ck_keenState.platform)
-	{
-		ck_nextY = SD_GetSpriteSync() * 16;
-		obj->velY = 0;
-		if ((unsigned)(obj->posY + ck_nextY - obj->user1) >= 0x80)
-			obj->currentAction = CK_GetActionByName("CK4_ACT_FallPlat1");
-	}
-}
-
-void CK4_FallPlatFall (CK_object *obj)
-{
-	uint16_t newY, newYT;
-
-	CK_PhysGravityHigh(obj);
-	newY = obj->clipRects.unitY2 + ck_nextY;
-	newYT = newY >> 8;
-
-	// Stop falling if platform hits a block
-	if ((obj->clipRects.tileY2 != newYT) && (CA_TileAtPos(obj->clipRects.tileX1, newYT, 2) == 0x1F))
-	{
-		ck_nextY = 0xFF - (obj->clipRects.unitY2 & 0xFF);
-		if (ck_keenState.platform != obj)
-			obj->currentAction = CK_GetActionByName("CK4_ACT_FallPlat2");
-	}
-}
-
-void CK4_FallPlatRise (CK_object *obj)
-{
-	if (ck_keenState.platform == obj)
-	{
-		obj->velY = 0;
-		obj->currentAction = CK_GetActionByName("CK4_ACT_FallPlat1");
-	}
-	else if ((unsigned) obj->posY <= (unsigned) obj->user1)
-	{
-		ck_nextY = obj->user1 - obj->posY;
-		obj->currentAction = CK_GetActionByName("CK4_ACT_FallPlat0");
-	}
-}
 
 // Level Ending Object Spawn
 void CK4_SetupFunctions()
@@ -589,72 +377,6 @@ CK_object *CK4_SpawnEnemyShot(int posX, int posY, CK_action *action)
 	}
 }
 
-void CK4_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
-{
-	CK_object *obj = CK_GetNewObj(false);
-
-	obj->type = 6;
-	obj->active = OBJ_ALWAYS_ACTIVE;
-	obj->zLayer = 0;
-	obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
-
-	switch (direction)
-	{
-	case 0:
-		obj->xDirection = 0;
-		obj->yDirection = -1;
-		break;
-	case 1:
-		obj->xDirection = 1;
-		obj->yDirection = 0;
-		break;
-	case 2:
-		obj->xDirection = 0;
-		obj->yDirection = 1;
-		break;
-	case 3:
-		obj->xDirection = -1;
-		obj->yDirection = 0;
-		break;
-	}
-
-	if (purple)
-	{
-		obj->posX += 0x40;
-		obj->posY += 0x40;
-		CK_SetAction(obj, CK_GetActionByName("CK4_act_purpleAxisPlatform"));
-	}
-	else
-	{
-
-		CK_SetAction(obj, CK_GetActionByName("CK4_act_redAxisPlatform"));
-	}
-	// TODO: These should *not* be done here.
-	obj->gfxChunk = obj->currentAction->chunkLeft;
-	CA_CacheGrChunk(obj->gfxChunk);
-	CK_ResetClipRects(obj);
-}
-
-void CK4_SpawnRedStandPlatform(int tileX, int tileY)
-{
-	CK_object *obj = CK_GetNewObj(false);
-
-	obj->type = 6;
-	obj->active = OBJ_ACTIVE;
-	obj->zLayer = 0;
-	obj->posX = tileX << 8;
-	obj->posY = obj->user1 = tileY << 8;
-	obj->xDirection = 0;
-	obj->yDirection = 1;
-	obj->clipped = CLIP_not;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_redStandPlatform"));
-	obj->gfxChunk = obj->currentAction->chunkLeft;
-	CA_CacheGrChunk(obj->gfxChunk);
-	CK_ResetClipRects(obj);
-}
-
-
 // TODO: Cache stuff here instead of spawner handlers
 
 #define MAXLUMPS 0x25
@@ -671,6 +393,7 @@ typedef enum
   Lump_Skypest = 23,
   Lump_Wormmouth = 24,
   Lump_Lick = 25,
+  Lump_Platform = 26,
   Lump_Bounder = 27,
   Lump_Cloud = 28,
   Lump_Berkeloid = 29,
@@ -705,7 +428,7 @@ static int16_t ck4_lumpStarts[MAXLUMPS] =
   443,  // SPR_SKYPESTFLYL1
   457,  // wormouth
   469,  // SPR_LICKR1
-  484,
+  484,  // SPR_PLATFORM
   491,  // SPR_BOUNDERL1
   498,  // SPR_CLOUD1
   503,  // SPR_BERKELOIDL1
@@ -746,7 +469,7 @@ static int16_t ck4_lumpEnds[MAXLUMPS] =
   456, // SPR_SKYPESTSQUISH
   468, // wormmouth
   483, // SPR_LICKSTUNNED
-  490,
+  490, // SPR_PLATFORMFLAMES_BOT2
   497, // SPR_BOUNDERSTUNNED
   502, // SPR_BOLT2
   518,
@@ -802,26 +525,14 @@ void CK4_ScanInfoLayer()
 			case 25:
 				RF_SetScrollBlock(x, y, true);
 				break;
-#if 0
-			case 27:
-			case 28:
-			case 29:
-			case 30:
-				CK4_SpawnAxisPlatform(x, y, infoValue - 27, false);
-				break;
-			case 32:
-				CK4_SpawnFallPlat(x, y);
+			case 26:
+        RF_SetScrollBlock(x, y, false);
 				break;
 
-			case 33:
-				if (ck_gameState.difficulty > D_Easy) break;
-			case 34:
-				if (ck_gameState.difficulty > D_Normal) break;
-			case 35:
-				CK4_SpawnRedStandPlatform(x, y);
-				break;
-
-#endif
+      // Miragia
+      case 33:
+        CK4_SpawnMiragia(x, y);
+        break;
 
         // Slugs
       case 44:
@@ -936,9 +647,23 @@ cachePoofs:
         CK4_SpawnLick(x, y);
         break;
 
-      case 33:
-        CK4_SpawnMiragia(x, y);
+        // Plats
+			case 27:
+			case 28:
+			case 29:
+			case 30:
+				CK4_SpawnAxisPlatform(x, y, infoValue - 27);
+        ck4_lumpsNeeded[Lump_Platform] = true;
+				break;
+
+      case 31:
+        // B Block
         break;
+
+			case 32:
+				CK_SpawnFallPlat(x, y);
+        ck4_lumpsNeeded[Lump_Platform] = true;
+				break;
 
 			case 34:
 				// Spawn extra stunner if Keen has low ammo
@@ -959,15 +684,6 @@ cachePoofs:
 			case 68:
 				CK_SpawnItem(x, y, infoValue - 57);
 				break;
-#if 0
-
-			case 84:
-			case 85:
-			case 86:
-			case 87:
-				CK4_SpawnAxisPlatform(x, y, infoValue - 84, true);
-				break;
-#endif
 
       default:
 				break;

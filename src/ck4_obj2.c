@@ -612,6 +612,88 @@ void CK4_LickDraw(CK_object *obj)
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
+// Platforms (CK4-unique behaviour)
+
+void CK4_SpawnAxisPlatform(int tileX, int tileY, int direction)
+{
+	CK_object *obj = CK_GetNewObj(false);
+
+  obj->type = CT4_Platform;
+	obj->active = OBJ_ALWAYS_ACTIVE;
+	obj->zLayer = 0;
+	obj->posX = tileX << 8;
+	obj->posY = tileY << 8;
+
+	switch (direction)
+	{
+	case 0:
+		obj->xDirection = 0;
+		obj->yDirection = -1;
+		break;
+	case 1:
+		obj->xDirection = 1;
+		obj->yDirection = 0;
+		break;
+	case 2:
+		obj->xDirection = 0;
+		obj->yDirection = 1;
+		break;
+	case 3:
+		obj->xDirection = -1;
+		obj->yDirection = 0;
+		break;
+	}
+
+  CK_SetAction(obj, CK_GetActionByName("CK_ACT_AxisPlatform"));
+}
+
+// AxisPlatformMove in ck_obj.c
+
+void CK4_PlatformDraw(CK_object *obj)
+{
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+
+  // Draw the flames
+
+  int16_t di = (SD_GetLastTimeCount() / 4)&1;
+
+  if (obj->xDirection == IN_motion_Right)
+  {
+    RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user2), obj->posX - 0x10, obj->posY + 0x30, di + 485, false, PRIORITIES - 4);
+    if (obj->user3) {
+      RF_RemoveSpriteDraw((RF_SpriteDrawEntry**)&(obj->user3));
+    }
+  }
+  else if (obj->xDirection == IN_motion_Left)
+  {
+    if (obj->user2) {
+      RF_RemoveSpriteDraw((RF_SpriteDrawEntry**)&(obj->user2));
+    }
+    RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3), obj->posX + 0x300, obj->posY + 0x50, di + 485, false, PRIORITIES - 3);
+  }
+  else if (obj->yDirection == IN_motion_Up)
+  {
+    RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user2), obj->posX + 0x20, obj->posY + 0x90, di + 489, false, PRIORITIES - 4);
+    RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3), obj->posX + 0x2E0, obj->posY + 0x80, di + 487, false, PRIORITIES - 4);
+  }
+  else if (obj->yDirection == IN_motion_Down)
+  {
+    if (di)
+    {
+      RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user2), obj->posX + 0x20, obj->posY + 0x90, di + 489, false, PRIORITIES - 4);
+      RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3), obj->posX + 0x2E0, obj->posY + 0x80, di + 487, false, PRIORITIES - 4);
+    }
+    else
+    {
+      if (obj->user2)
+        RF_RemoveSpriteDraw((RF_SpriteDrawEntry**)&(obj->user2));
+      if (obj->user3)
+        RF_RemoveSpriteDraw((RF_SpriteDrawEntry**)&(obj->user3));
+    }
+  }
+}
+
+
 
 /*
  * Setup all of the functions in this file.
@@ -652,4 +734,5 @@ void CK4_Obj2_SetupFunctions()
   CK_ACT_AddColFunction("CK4_LickCol", &CK4_LickCol);
   CK_ACT_AddFunction("CK4_LickDraw", &CK4_LickDraw);
 
+  CK_ACT_AddFunction("CK4_PlatformDraw", &CK4_PlatformDraw);
 }

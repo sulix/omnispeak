@@ -385,10 +385,15 @@
 %action CK4_ACT_LickStunned0 483 483 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 CK4_ACT_LickStunned1
 %action CK4_ACT_LickStunned1 483 483 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
 
-#%action CK4_ACT_Platform0 484 484 0 0 0 0 0 0 platform_move NULL platform_draw NULL
-#%action CK4_ACT_PlatformSit 484 484 0 0 0 0 0 0 platform_sit NULL CK_BasicDrawFunc1 NULL
-#%action CK4_ACT_PlatformDrop 484 484 0 0 0 0 0 0 platform_drop NULL CK_BasicDrawFunc1 NULL
-#%action CK4_ACT_PlatformRise 484 484 0 0 0 0 0 $0xFFE0 platform_rise NULL CK_BasicDrawFunc1 NULL
+# Platforms
+%action CK_ACT_AxisPlatform 484 484 Frame 0 0 0 0 0 CK_AxisPlatform NULL CK4_PlatformDraw NULL
+
+%action CK_ACT_FallPlat0 484 484 Frame 0x0 0x0 0x0 0x0 0x0 CK_FallPlatSit NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_FallPlat1 484 484 Frame 0x0 0x0 0x0 0x0 0x0 CK_FallPlatFall NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_FallPlat2 484 484 ScaledFrame 0x0 0x0 0x0 0x0 -32 CK_FallPlatRise NULL CK_BasicDrawFunc1 NULL
+
+#ck4_obj3.c
+
 #%action CK4_ACT_Smirky0 338 338 0 0 0 0x4 0 0 NULL smirky_collide CK_BasicDrawFunc1 CK4_ACT_Smirky1
 #%action CK4_ACT_Smirky1 339 339 0 0 0 0x4 0 0 SmirkySearch smirky_collide CK_BasicDrawFunc1 NULL
 #%action CK4_ACT_SmirkyTele0 350 350 0 0 0 0x4 0 0 NULL smirky_collide CK_BasicDrawFunc1 CK4_ACT_SmirkyTele1

@@ -86,6 +86,7 @@ void CK4_SpawnInchworm(int tileX, int tileY);
 void CK4_SpawnFoot(int tileX, int tileY);
 void CK4_SpawnBounder(int tileX, int tileY);
 void CK4_SpawnLick(int tileX, int tileY);
+void CK4_SpawnAxisPlatform(int tileX, int tileY, int direction);
 
 
 /* ck4_obj3.c */
