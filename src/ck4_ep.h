@@ -83,6 +83,7 @@ void CK4_SpawnCloud(int tileX, int tileY);
 void CK4_SpawnBerkeloid(int tileX, int tileY);
 void CK4_SpawnInchworm(int tileX, int tileY);
 void CK4_SpawnFoot(int tileX, int tileY);
+void CK4_SpawnBounder(int tileX, int tileY);
 
 
 /* ck4_obj3.c */

@@ -432,6 +432,106 @@ void CK4_FootCol(CK_object *a, CK_object *b)
   // Just an empty function :(
 }
 
+// Bounder
+
+void CK4_SpawnBounder(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Bounder;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x80;
+  obj->yDirection = IN_motion_Down;
+  obj->xDirection = IN_motion_None;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Bounder0"));
+}
+
+void CK4_BounderCheckShot(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Stunner)
+  {
+    a->user1 = a->user2 = a->user3 = 0;
+    a->user4 = a->type;
+    CK_ShotHit(b);
+    CK_SetAction2(a, CK_GetActionByName("CK4_ACT_BounderStunned0"));
+    a->type = CT4_StunnedCreature;
+    a->velY -= 32;
+  }
+}
+
+void CK4_BounderDraw(CK_object *obj)
+{
+  if (obj->bottomTI)
+    obj->velY = 0;
+
+  if (obj->topTI)
+  {
+    obj->user2++;
+    if (CK_ObjectVisible(obj))
+      SD_PlaySound(SOUND_MUSHROOMLEAP);
+
+    obj->velY = -50;
+
+    if (ck_keenState.platform == obj)
+    {
+      obj->user2 = 0;
+      if (ck_keenObj->clipRects.unitX1 < obj->clipRects.unitX1 - 0x40 )
+      {
+        obj->xDirection = IN_motion_Left;
+      }
+      else if (ck_keenObj->clipRects.unitX2 > obj->clipRects.unitX2 + 0x40)
+      {
+        obj->xDirection = IN_motion_Right;
+      }
+      else
+      {
+        obj->xDirection = IN_motion_None;
+      }
+      obj->velX = obj->xDirection * 24;
+    }
+    else if (obj->user2 > 2 && obj->user1)
+    {
+      // Change direction every third bounce, and not if just changed direction
+      obj->user1 = 0;
+      int16_t r = US_RndT();
+      if (r < 100)
+        obj->xDirection = IN_motion_Left;
+      else if (r < 200)
+        obj->xDirection = IN_motion_Right;
+      else
+        obj->xDirection = IN_motion_None;
+
+      obj->velX = obj->xDirection * 24;
+    }
+    else
+    {
+      // Bounce in same direction; can potentially change direction on next bounce
+      obj->user1 = 1;
+      obj->velX = 0;
+      obj->xDirection = IN_motion_None;
+      CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_Bounder0"));
+    }
+
+    if (obj->xDirection != IN_motion_None)
+    {
+      CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_BounderMoveHorz0"));
+    }
+    else
+    {
+      CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_Bounder0"));
+    }
+  }
+
+  if (obj->leftTI || obj->rightTI)
+  {
+    obj->xDirection = -obj->xDirection;
+    obj->velX = -obj->velX;
+  }
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
 /*
  * Setup all of the functions in this file.
  */
@@ -462,5 +562,8 @@ void CK4_Obj2_SetupFunctions()
   CK_ACT_AddFunction("CK4_InchwormMove", &CK4_InchwormMove);
   CK_ACT_AddColFunction("CK4_InchwormCol", &CK4_InchwormCol);
   CK_ACT_AddColFunction("CK4_FootCol", &CK4_FootCol);
+
+  CK_ACT_AddColFunction("CK4_BounderCheckShot", &CK4_BounderCheckShot);
+  CK_ACT_AddFunction("CK4_BounderDraw", &CK4_BounderDraw);
 
 }

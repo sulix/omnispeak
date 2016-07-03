@@ -174,13 +174,31 @@ void CK_BasicDrawFunc4(CK_object *obj)
       case CT4_Egg:
         starsX = 0x80;
         starsY = -0x80;
+        break;
 
       case CT4_Wormmouth:
         starsX = 0x40;
         starsY = -350;
+        break;
 
+      case CT4_Bounder:
+        starsX = 0x40;
+        starsY = -0x80;
+        break;
+
+      case CT4_Inchworm:
+        starsX = -0x40;
+        starsY = -0x80;
+        break;
+
+      case CT4_0x12:
+        starsY = -0x80;
+        break;
+
+      case CT4_Smirky:
+        starsX = 0x80;
+        break;
     }
-
   }
   else if (ck_currentEpisode->ep == EP_CK5)
   {

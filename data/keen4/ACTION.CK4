@@ -361,12 +361,15 @@
 %action CK4_ACT_Foot0 -1 -1 UnscaledOnce 0 0 48 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_Foot1
 %action CK4_ACT_Foot1 337 337 Frame 0 0 30000 0 0 NULL CK4_FootCol CK_BasicDrawFunc1 NULL
 
-#%action CK4_ACT_Bounder0 495 495 0 0 0 0x4 0 0 Fall bounder_check_shot bounder_draw CK4_ACT_Bounder1
-#%action CK4_ACT_Bounder1 496 496 0 0 0 0x4 0 0 Fall bounder_check_shot bounder_draw CK4_ACT_Bounder0
-#%action CK4_ACT_BounderMoveHorz0 491 493 0 0 0 0x4 0 0 Fall bounder_check_shot bounder_draw CK4_ACT_BounderMoveHorz1
-#%action CK4_ACT_BounderMoveHorz1 492 494 0 0 0 0x4 0 0 Fall bounder_check_shot bounder_draw CK4_ACT_BounderMoveHorz0
-#%action CK4_ACT_BounderStunned0 495 495 0 0 0 0 0 0 Fall NULL CK_BasicDrawFunc4 CK4_ACT_BounderStunned1
-#%action CK4_ACT_BounderStunned1 497 497 0 0 0 0 0 0 Fall NULL CK_BasicDrawFunc4 NULL
+# Bounders
+%action CK4_ACT_Bounder0 495 495 UnscaledFrame 0 0 20 0 0 CK_Fall CK4_BounderCheckShot CK4_BounderDraw CK4_ACT_Bounder1
+%action CK4_ACT_Bounder1 496 496 UnscaledFrame 0 0 20 0 0 CK_Fall CK4_BounderCheckShot CK4_BounderDraw CK4_ACT_Bounder0
+%action CK4_ACT_BounderMoveHorz0 491 493 UnscaledFrame 0 0 20 0 0 CK_Fall CK4_BounderCheckShot CK4_BounderDraw CK4_ACT_BounderMoveHorz1
+%action CK4_ACT_BounderMoveHorz1 492 494 UnscaledFrame 0 0 20 0 0 CK_Fall CK4_BounderCheckShot CK4_BounderDraw CK4_ACT_BounderMoveHorz0
+%action CK4_ACT_BounderStunned0 495 495 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 CK4_ACT_BounderStunned1
+%action CK4_ACT_BounderStunned1 497 497 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+
+# Licks
 #%action CK4_ACT_LickHop0 473 469 0 0 0 $0xA 0 0 lick_move lick_check_shot CK_BasicDrawFunc1 CK4_ACT_LickHop1
 #%action CK4_ACT_LickHop1 474 470 0 0 0 0 0 0 Fall lick_check_shot lick_draw CK4_ACT_LickHop2
 #%action CK4_ACT_LickHop2 475 471 0 0 0 0 0 0 Fall lick_check_shot lick_draw NULL

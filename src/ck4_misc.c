@@ -670,6 +670,7 @@ typedef enum
   Lump_Arachnut = 22,
   Lump_Skypest = 23,
   Lump_Wormmouth = 24,
+  Lump_Bounder = 27,
   Lump_Cloud = 28,
   Lump_Berkeloid = 29,
   Lump_Egg = 36,
@@ -704,7 +705,7 @@ static int16_t ck4_lumpStarts[MAXLUMPS] =
   457,  // wormouth
   469,
   484,
-  491,
+  491,  // SPR_BOUNDERL1
   498,  // SPR_CLOUD1
   503,  // SPR_BERKELOIDL1
   242,
@@ -745,7 +746,7 @@ static int16_t ck4_lumpEnds[MAXLUMPS] =
   468, // wormmouth
   483,
   490,
-  497,
+  497, // SPR_BOUNDERSTUNNED
   502, // SPR_BOLT2
   518,
   250,
@@ -918,8 +919,11 @@ cachePoofs:
         }
         break;
 
-
-
+      // Bounders
+      case 12:
+        ck4_lumpsNeeded[Lump_Bounder] = true;
+        CK4_SpawnBounder(x, y);
+        break;
 
       case 33:
         CK4_SpawnMiragia(x, y);
