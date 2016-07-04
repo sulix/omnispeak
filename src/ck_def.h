@@ -125,6 +125,40 @@ typedef enum CK_ClassType {
 #define CT_CLASS(type) \
   (ck_currentEpisode->ep == EP_CK4 ? CT4_##type : (ck_currentEpisode->ep == EP_CK5 ? CT5_##type : CT_Nothing))
 
+typedef enum CK_MiscFlag
+{
+  MF_Nil,
+  MF_Pole,
+  MF_Door,
+  MF_Deadly,
+  MF_Centilife,
+  MF_SwitchOff,
+  MF_SwitchOn,
+  MF_KeyholderA,
+  MF_KeyholderB,
+  MF_KeyholderC,
+  MF_KeyholderD,
+  MF_BridgeSwitch = 15,
+  MF_Moon = 16,
+  MF_PathArrow = 17,
+  MF_Bridge = 18,
+  MF_ZapperOn = 19,
+  MF_Teleporter = 20,
+  MF_Points100,
+  MF_Points200,
+  MF_Points500,
+  MF_Points1000,
+  MF_Points2000,
+  MF_Points5000,
+  MF_1UP,
+  MF_Stunner,
+  MF_ZapperOff = 30,
+  MF_AmptonComputer = 31,
+  MF_KeycardDoor = 32,
+  MF_MapElevatorLeft = 33,
+  MF_MapElevatorRight = 34
+} CK_MiscFlag;
+
 typedef enum CK_LevelState
 {
   LS_Playing = 0,             // In Level

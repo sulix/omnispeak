@@ -394,26 +394,28 @@
 
 #ck4_obj3.c
 
-#%action CK4_ACT_Smirky0 338 338 0 0 0 0x4 0 0 NULL smirky_collide CK_BasicDrawFunc1 CK4_ACT_Smirky1
-#%action CK4_ACT_Smirky1 339 339 0 0 0 0x4 0 0 SmirkySearch smirky_collide CK_BasicDrawFunc1 NULL
-#%action CK4_ACT_SmirkyTele0 350 350 0 0 0 0x4 0 0 NULL smirky_collide CK_BasicDrawFunc1 CK4_ACT_SmirkyTele1
-#%action CK4_ACT_SmirkyTele1 351 351 0 0 0 0x4 0 0 NULL smirky_collide CK_BasicDrawFunc1 CK4_ACT_SmirkyTele2
-#%action CK4_ACT_SmirkyTele2 352 352 0 0 0 0x4 0 0 NULL smirky_collide CK_BasicDrawFunc1 CK4_ACT_SmirkyTele3
-#%action CK4_ACT_SmirkyTele3 353 353 0 0 0 0x4 0 0 SmirkyTeleport smirky_collide CK_BasicDrawFunc1 CK4_ACT_SmirkyTele4
-#%action CK4_ACT_SmirkyTele4 353 353 0 0 0 0x4 0 0 NULL smirky_collide CK_BasicDrawFunc1 CK4_ACT_SmirkyTele5
-#%action CK4_ACT_SmirkyTele5 352 352 0 0 0 0x4 0 0 NULL smirky_collide CK_BasicDrawFunc1 CK4_ACT_SmirkyTele6
-#%action CK4_ACT_SmirkyTele6 351 351 0 0 0 0x4 0 0 NULL smirky_collide CK_BasicDrawFunc1 CK4_ACT_SmirkyTele7
-#%action CK4_ACT_SmirkyTele7 350 350 0 0 0 0x4 0 0 NULL smirky_collide CK_BasicDrawFunc1 CK4_ACT_SmirkyJump0
-#%action CK4_ACT_SmirkyJump0 343 340 0 0 0 0 0 0 Fall2 smirky_collide draw_smirky CK4_ACT_SmirkyJump1
-#%action CK4_ACT_SmirkyJump1 344 341 0 0 0 0 0 0 Fall2 smirky_collide draw_smirky CK4_ACT_SmirkyJump2
-#%action CK4_ACT_SmirkyJump2 345 342 0 0 0 0 0 0 Fall2 smirky_collide draw_smirky CK4_ACT_SmirkyJump3
-#%action CK4_ACT_SmirkyJump3 344 341 0 0 0 0 0 0 Fall2 smirky_collide draw_smirky CK4_ACT_SmirkyJump0
-#%action CK4_ACT_SmirkyStunned0 343 343 0 0 0 0 0 0 Fall NULL CK_BasicDrawFunc4 CK4_ACT_SmirkyStunned1
-#%action CK4_ACT_SmirkyStunned1 355 355 0 0 0 0 0 0 Fall NULL CK_BasicDrawFunc4 NULL
-#%action CK4_ACT_StolenItem0 346 346 0 0 0 $0xA 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem1
-#%action CK4_ACT_StolenItem1 347 347 0 0 0 $0xA 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem2
-#%action CK4_ACT_StolenItem2 348 348 0 0 0 $0xA 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem3
-#%action CK4_ACT_StolenItem3 349 349 0 0 0 $0xA 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+# Smirkies
+%action CK4_ACT_Smirky0 338 338 UnscaledOnce 0 0 20 0 0 NULL CK4_SmirkyCol CK_BasicDrawFunc1 CK4_ACT_Smirky1
+%action CK4_ACT_Smirky1 339 339 UnscaledOnce 0 0 20 0 0 CK4_SmirkySearch CK4_SmirkyCol CK_BasicDrawFunc1 NULL
+%action CK4_ACT_SmirkyTele0 350 350 UnscaledOnce 0 0 20 0 0 NULL CK4_SmirkyCol CK_BasicDrawFunc1 CK4_ACT_SmirkyTele1
+%action CK4_ACT_SmirkyTele1 351 351 UnscaledOnce 0 0 20 0 0 NULL CK4_SmirkyCol CK_BasicDrawFunc1 CK4_ACT_SmirkyTele2
+%action CK4_ACT_SmirkyTele2 352 352 UnscaledOnce 0 0 20 0 0 NULL CK4_SmirkyCol CK_BasicDrawFunc1 CK4_ACT_SmirkyTele3
+%action CK4_ACT_SmirkyTele3 353 353 UnscaledOnce 0 0 20 0 0 CK4_SmirkyTeleport CK4_SmirkyCol CK_BasicDrawFunc1 CK4_ACT_SmirkyTele4
+%action CK4_ACT_SmirkyTele4 353 353 UnscaledOnce 0 0 20 0 0 NULL CK4_SmirkyCol CK_BasicDrawFunc1 CK4_ACT_SmirkyTele5
+%action CK4_ACT_SmirkyTele5 352 352 UnscaledOnce 0 0 20 0 0 NULL CK4_SmirkyCol CK_BasicDrawFunc1 CK4_ACT_SmirkyTele6
+%action CK4_ACT_SmirkyTele6 351 351 UnscaledOnce 0 0 20 0 0 NULL CK4_SmirkyCol CK_BasicDrawFunc1 CK4_ACT_SmirkyTele7
+%action CK4_ACT_SmirkyTele7 350 350 UnscaledOnce 0 0 20 0 0 NULL CK4_SmirkyCol CK_BasicDrawFunc1 CK4_ACT_SmirkyJump0
+%action CK4_ACT_SmirkyJump0 343 340 UnscaledFrame 0 0 6 0 0 CK_Fall2 CK4_SmirkyCol CK4_SmirkyDraw CK4_ACT_SmirkyJump1
+%action CK4_ACT_SmirkyJump1 344 341 UnscaledFrame 0 0 6 0 0 CK_Fall2 CK4_SmirkyCol CK4_SmirkyDraw CK4_ACT_SmirkyJump2
+%action CK4_ACT_SmirkyJump2 345 342 UnscaledFrame 0 0 6 0 0 CK_Fall2 CK4_SmirkyCol CK4_SmirkyDraw CK4_ACT_SmirkyJump3
+%action CK4_ACT_SmirkyJump3 344 341 UnscaledFrame 0 0 6 0 0 CK_Fall2 CK4_SmirkyCol CK4_SmirkyDraw CK4_ACT_SmirkyJump0
+%action CK4_ACT_SmirkyStunned0 343 343 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 CK4_ACT_SmirkyStunned1
+%action CK4_ACT_SmirkyStunned1 355 355 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+%action CK4_ACT_StolenItem0 346 346 0 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem1
+%action CK4_ACT_StolenItem1 347 347 0 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem2
+%action CK4_ACT_StolenItem2 348 348 0 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem3
+%action CK4_ACT_StolenItem3 349 349 0 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+
 #%action CK4_ACT_Mimrock0 388 388 0 0 0 0x4 0 0 mimrock_wait NULL CK_BasicDrawFunc2 CK4_ACT_Mimrock0
 #%action CK4_ACT_MimrockWalk0 393 389 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide CK_BasicDrawFunc2 CK4_ACT_MimrockWalk1
 #%action CK4_ACT_MimrockWalk1 394 390 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide CK_BasicDrawFunc2 CK4_ACT_MimrockWalk2

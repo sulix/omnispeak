@@ -387,6 +387,7 @@ typedef enum
   Lump_Slug = 11,
   Lump_Mushroom = 12,
   Lump_FootWorm = 15,
+  Lump_Smirky = 16,
   Lump_CouncilMember = 17,
   Lump_Bird = 18,
   Lump_Arachnut = 22,
@@ -418,7 +419,7 @@ static int16_t ck4_lumpStarts[MAXLUMPS] =
   0,
   329,
   333,  // SPR_INCHWORM_R1
-  338,
+  338,  // SPR_SMIRKY_LOOKLEFT
   356,// SPR_COUNCILWALK_R1
   367,  // SPR_BIRDWALK_R1
   388,
@@ -459,7 +460,7 @@ static int16_t ck4_lumpEnds[MAXLUMPS] =
   0,
   332,
   337, // SPR_FOOT
-  355,
+  355, // SPR_SMIRKYSTUNNED
   361, // SPR_COUNCILPAUSE2
   379, // SPR_BIRDSTUNNED
   403,
@@ -664,6 +665,12 @@ cachePoofs:
 				CK_SpawnFallPlat(x, y);
         ck4_lumpsNeeded[Lump_Platform] = true;
 				break;
+
+        //Smirkies
+      case 18:
+        CK4_SpawnSmirky(x,y);
+        ck4_lumpsNeeded[Lump_Smirky] = true;
+        break;
 
 			case 34:
 				// Spawn extra stunner if Keen has low ammo

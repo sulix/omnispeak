@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SOUND_MUSHROOMLEAP 16
 #define SOUND_SKYPESTSQUISH 22
 #define SOUND_MUSHROOMHOP 28
+#define SOUND_SMIRKYSTEAL 29
+#define SOUND_SMIRKYTELE 30
 #define SOUND_COUNCILSAVE 31
 #define SOUND_LICKFLAME 32
 #define SOUND_BERKELOIDTHROW 33
@@ -90,6 +92,7 @@ void CK4_SpawnAxisPlatform(int tileX, int tileY, int direction);
 
 
 /* ck4_obj3.c */
+void CK4_SpawnSmirky(int tileX, int tileY);
 
 /* ck4_map.c */
 void CK_DemoSignSpawn();
