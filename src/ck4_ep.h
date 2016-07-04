@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_ep.h"
 
 #define SOUND_WORMMOUTHBITE 5
+#define SOUND_MIMROCKJUMP 15
 #define SOUND_MUSHROOMLEAP 16
 #define SOUND_SKYPESTSQUISH 22
 #define SOUND_MUSHROOMHOP 28
@@ -93,6 +94,7 @@ void CK4_SpawnAxisPlatform(int tileX, int tileY, int direction);
 
 /* ck4_obj3.c */
 void CK4_SpawnSmirky(int tileX, int tileY);
+void CK4_SpawnMimrock(int tileX, int tileY);
 
 /* ck4_map.c */
 void CK_DemoSignSpawn();

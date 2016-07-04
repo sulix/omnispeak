@@ -416,19 +416,22 @@
 %action CK4_ACT_StolenItem2 348 348 0 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem3
 %action CK4_ACT_StolenItem3 349 349 0 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
-#%action CK4_ACT_Mimrock0 388 388 0 0 0 0x4 0 0 mimrock_wait NULL CK_BasicDrawFunc2 CK4_ACT_Mimrock0
-#%action CK4_ACT_MimrockWalk0 393 389 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide CK_BasicDrawFunc2 CK4_ACT_MimrockWalk1
-#%action CK4_ACT_MimrockWalk1 394 390 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide CK_BasicDrawFunc2 CK4_ACT_MimrockWalk2
-#%action CK4_ACT_MimrockWalk2 395 391 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide CK_BasicDrawFunc2 CK4_ACT_MimrockWalk3
-#%action CK4_ACT_MimrockWalk3 396 392 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide CK_BasicDrawFunc2 CK4_ACT_MimrockWalk4
-#%action CK4_ACT_MimrockWalk4 393 389 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide CK_BasicDrawFunc2 CK4_ACT_MimrockWalk5
-#%action CK4_ACT_MimrockWalk5 394 390 0 0 0 0 0x0 0 mimrock_check_jump mimrock_collide CK_BasicDrawFunc2 CK4_ACT_Mimrock0
-#%action CK4_ACT_MimrockJump0 400 397 0 0 0 0x8 0 0 Fall2 mimrock_collide_air DrawMimrockJump CK4_ACT_MimrockJump1
-#%action CK4_ACT_MimrockJump1 401 398 0 0 0 $0xA 0 0 Fall2 mimrock_collide_air DrawMimrockJump CK4_ACT_MimrockJump2
-#%action CK4_ACT_MimrockJump2 402 399 0 0 0 $0xA 0 0 Fall2 mimrock_collide_air DrawMimrockJump CK4_ACT_MimrockJump1
-#%action CK4_ACT_MimrockBounce0 402 399 0 0 0 $0xA 0 0 Fall mimrock_collide DrawMimrockBounce NULL
-#%action CK4_ACT_MimrockStunned0 402 402 0 0 0 $0xC 0 0 Fall NULL CK_BasicDrawFunc4 CK4_ACT_MimrockStunned1
-#%action CK4_ACT_MimrockStunned1 403 403 0 0 0 $0xC 0 0 Fall NULL CK_BasicDrawFunc4 NULL
+# Mimrocks
+%action CK4_ACT_Mimrock0 388 388 UnscaledOnce 0 1 20 0 0 CK4_MimrockWait NULL CK_BasicDrawFunc2 CK4_ACT_Mimrock0
+%action CK4_ACT_MimrockWalk0 393 389 UnscaledOnce 0 1 6 0x40 0 CK4_MimrockCheckJump CK4_MimrockCol CK_BasicDrawFunc2 CK4_ACT_MimrockWalk1
+%action CK4_ACT_MimrockWalk1 394 390 UnscaledOnce 0 1 6 0x40 0 CK4_MimrockCheckJump CK4_MimrockCol CK_BasicDrawFunc2 CK4_ACT_MimrockWalk2
+%action CK4_ACT_MimrockWalk2 395 391 UnscaledOnce 0 1 6 0x40 0 CK4_MimrockCheckJump CK4_MimrockCol CK_BasicDrawFunc2 CK4_ACT_MimrockWalk3
+%action CK4_ACT_MimrockWalk3 396 392 UnscaledOnce 0 1 6 0x40 0 CK4_MimrockCheckJump CK4_MimrockCol CK_BasicDrawFunc2 CK4_ACT_MimrockWalk4
+%action CK4_ACT_MimrockWalk4 393 389 UnscaledOnce 0 1 6 0x40 0 CK4_MimrockCheckJump CK4_MimrockCol CK_BasicDrawFunc2 CK4_ACT_MimrockWalk5
+%action CK4_ACT_MimrockWalk5 394 390 UnscaledOnce 0 1 6 0x40 0 CK4_MimrockCheckJump CK4_MimrockCol CK_BasicDrawFunc2 CK4_ACT_Mimrock0
+%action CK4_ACT_MimrockJump0 400 397 UnscaledFrame 0 0 24 0 0 CK_Fall2 CK4_MimrockAirCol CK4_MimrockJumpDraw CK4_ACT_MimrockJump1
+%action CK4_ACT_MimrockJump1 401 398 UnscaledFrame 0 0 10 0 0 CK_Fall2 CK4_MimrockAirCol CK4_MimrockJumpDraw CK4_ACT_MimrockJump2
+%action CK4_ACT_MimrockJump2 402 399 Frame 0 0 10 0 0 CK_Fall2 CK4_MimrockAirCol CK4_MimrockJumpDraw CK4_ACT_MimrockJump1
+%action CK4_ACT_MimrockBounce0 402 399 Frame 0 0 10 0 0 CK_Fall CK4_MimrockCol CK4_MimrockBounceDraw NULL
+%action CK4_ACT_MimrockStunned0 402 402 Frame 0 0 12 0 0 CK_Fall NULL CK_BasicDrawFunc4 CK4_ACT_MimrockStunned1
+%action CK4_ACT_MimrockStunned1 403 403 Frame 0 0 12 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+
+# Dopefish
 #%action CK4_ACT_DopefishSwim0 418 404 0 0 0 0x4 0 0 DopefishMove DopefishCollide DrawFish CK4_ACT_DopefishSwim1
 #%action CK4_ACT_DopefishSwim1 419 405 0 0 0 0x4 0 0 DopefishMove DopefishCollide DrawFish CK4_ACT_DopefishSwim0
 #%action CK4_ACT_DopefishEat0 420 406 0 0 0 0 0 0 DopefishEat NULL CK_BasicDrawFunc1 NULL

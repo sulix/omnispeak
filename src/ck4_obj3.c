@@ -204,6 +204,128 @@ void CK4_SmirkyDraw(CK_object *obj)
   RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
+
+// Mimrocks
+
+
+void CK4_SpawnMimrock(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Mimrock;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 1;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0xD0;
+  obj->xDirection = IN_motion_Right;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Mimrock0"));
+}
+
+void CK4_MimrockWait(CK_object *obj)
+{
+  if (ABS((int16_t)(obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2)) < 0x500)
+  {
+    if (ABS((int16_t)(obj->posX - ck_keenObj->posX)) > 0x300)
+    {
+      if (ck_keenObj->posX < obj->posX)
+      {
+        if (ck_keenObj->xDirection == IN_motion_Left)
+        {
+          obj->xDirection = IN_motion_Left;
+          obj->currentAction = CK_GetActionByName("CK4_ACT_MimrockWalk0");
+        }
+      }
+      else
+      {
+        if (ck_keenObj->xDirection == IN_motion_Right)
+        {
+          obj->xDirection = IN_motion_Right;
+          obj->currentAction = CK_GetActionByName("CK4_ACT_MimrockWalk0");
+        }
+      }
+    }
+  }
+}
+
+void CK4_MimrockCheckJump(CK_object *obj)
+{
+  if (ABS(obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2) < 0x500)
+  {
+    if (obj->xDirection == ck_keenObj->xDirection &&
+        ABS(obj->posX - ck_keenObj->posX) < 0x400)
+    {
+      obj->velX = obj->xDirection * 20;
+      obj->velY = -40;
+      ck_nextY = obj->velY * SD_GetSpriteSync();
+      obj->currentAction = CK_GetActionByName("CK4_ACT_MimrockJump0");
+    }
+  }
+  else
+  {
+    obj->currentAction = CK_GetActionByName("CK4_ACT_Mimrock0");
+  }
+}
+
+void CK4_MimrockCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Stunner)
+  {
+    a->user1 = a->user2 = a->user3 = 0;
+    a->user4 = a->type;
+    a->type = CT4_StunnedCreature;
+    CK_ShotHit(b);
+    CK_SetAction2(a, CK_GetActionByName("CK4_ACT_MimrockStunned0"));
+    a->velY -= 16;
+  }
+}
+
+void CK4_MimrockAirCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    CK_KillKeen();
+  }
+  else
+  {
+    CK4_MimrockCol(a,b);
+  }
+}
+
+void CK4_MimrockJumpDraw(CK_object *obj)
+{
+  if (obj->topTI)
+  {
+    SD_PlaySound(SOUND_MIMROCKJUMP);
+    obj->velY = -20;
+    CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_MimrockBounce0"));
+  }
+
+  if (obj->leftTI || obj->topTI)
+    obj->velX = 0;
+
+  if (obj->topTI || obj->bottomTI)
+    obj->velY = 0;
+
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+void CK4_MimrockBounceDraw(CK_object *obj)
+{
+  if (obj->topTI)
+  {
+    SD_PlaySound(SOUND_MIMROCKJUMP);
+    CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_Mimrock0"));
+  }
+
+  if (obj->leftTI || obj->topTI)
+    obj->velX = 0;
+
+  if (obj->topTI)
+    obj->velY = 0;
+
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
 /*
  * Setup all of the functions in this file.
  */
@@ -214,4 +336,11 @@ void CK4_Obj3_SetupFunctions()
   CK_ACT_AddFunction("CK4_SmirkyTeleport", &CK4_SmirkyTeleport);
   CK_ACT_AddColFunction("CK4_SmirkyCol", &CK4_SmirkyCol);
   CK_ACT_AddFunction("CK4_SmirkyDraw", &CK4_SmirkyDraw);
+
+  CK_ACT_AddFunction("CK4_MimrockWait", &CK4_MimrockWait);
+  CK_ACT_AddFunction("CK4_MimrockCheckJump", &CK4_MimrockCheckJump);
+  CK_ACT_AddColFunction("CK4_MimrockCol", &CK4_MimrockCol);
+  CK_ACT_AddColFunction("CK4_MimrockAirCol", &CK4_MimrockAirCol);
+  CK_ACT_AddFunction("CK4_MimrockJumpDraw", &CK4_MimrockJumpDraw);
+  CK_ACT_AddFunction("CK4_MimrockBounceDraw", &CK4_MimrockBounceDraw);
 }

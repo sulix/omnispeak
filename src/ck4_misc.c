@@ -390,6 +390,7 @@ typedef enum
   Lump_Smirky = 16,
   Lump_CouncilMember = 17,
   Lump_Bird = 18,
+  Lump_Mimrock = 19,
   Lump_Arachnut = 22,
   Lump_Skypest = 23,
   Lump_Wormmouth = 24,
@@ -422,7 +423,7 @@ static int16_t ck4_lumpStarts[MAXLUMPS] =
   338,  // SPR_SMIRKY_LOOKLEFT
   356,// SPR_COUNCILWALK_R1
   367,  // SPR_BIRDWALK_R1
-  388,
+  388,  // SPR_MIMROCK
   404,
   421,
   425,  // SPR_ARACHNUTWALK_1
@@ -463,7 +464,7 @@ static int16_t ck4_lumpEnds[MAXLUMPS] =
   355, // SPR_SMIRKYSTUNNED
   361, // SPR_COUNCILPAUSE2
   379, // SPR_BIRDSTUNNED
-  403,
+  403, // SPR_MIMROCKSTUNNED
   420,
   424,
   429, // SPR_ARACHNUTSTUNNED
@@ -670,6 +671,12 @@ cachePoofs:
       case 18:
         CK4_SpawnSmirky(x,y);
         ck4_lumpsNeeded[Lump_Smirky] = true;
+        break;
+
+        //Mimrocks
+      case 19:
+        CK4_SpawnMimrock(x,y);
+        ck4_lumpsNeeded[Lump_Mimrock] = true;
         break;
 
 			case 34:
