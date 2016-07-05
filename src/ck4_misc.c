@@ -49,6 +49,7 @@ void CK4_SetupFunctions()
 	CK4_Obj2_SetupFunctions();
 	CK4_Obj3_SetupFunctions();
 	CK4_Map_SetupFunctions();
+  CK4_Misc_SetupFunctions();
 }
 
 // HACK: Sorry, the strings need to be in WRITABLE storage,
@@ -172,6 +173,7 @@ const char *ck4_levelNames[] = {
 	"Pyramid of the Moons",
 	"Pyramid of Shadows",
 	"Pyramid of the\nGnosticene Ancients",
+  "Pyramid of the Forbidden",
 	"Isle of Tar",
   "Isle of Fire",
   "Well of Wishes",
@@ -391,6 +393,8 @@ typedef enum
   Lump_CouncilMember = 17,
   Lump_Bird = 18,
   Lump_Mimrock = 19,
+  Lump_Dopefish = 20,
+  Lump_Schoolfish = 21,
   Lump_Arachnut = 22,
   Lump_Skypest = 23,
   Lump_Wormmouth = 24,
@@ -399,6 +403,9 @@ typedef enum
   Lump_Bounder = 27,
   Lump_Cloud = 28,
   Lump_Berkeloid = 29,
+  Lump_ScubaKeen = 32,
+  Lump_Sprite = 33,
+  Lump_Mine = 34,
   Lump_Egg = 36,
 } CK_Lumptype;
 
@@ -424,8 +431,8 @@ static int16_t ck4_lumpStarts[MAXLUMPS] =
   356,// SPR_COUNCILWALK_R1
   367,  // SPR_BIRDWALK_R1
   388,  // SPR_MIMROCK
-  404,
-  421,
+  404,  // SPR_DOPEFISHR1
+  421,  // SPR_SCHOOLFISHL1
   425,  // SPR_ARACHNUTWALK_1
   443,  // SPR_SKYPESTFLYL1
   457,  // wormouth
@@ -508,6 +515,14 @@ void CK4_ScanInfoLayer()
 			case 2:
 				CK_SpawnKeen(x, y, -1);
 				CK_DemoSignSpawn();
+				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
+				break;
+
+        // ScubaKeen
+			case 42:
+				CK4_SpawnScubaKeen(x, y);
+				CK_DemoSignSpawn();
+        ck4_lumpsNeeded[Lump_ScubaKeen] = true;
 				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
 				break;
 
@@ -679,6 +694,41 @@ cachePoofs:
         ck4_lumpsNeeded[Lump_Mimrock] = true;
         break;
 
+      // Dopefish
+      case 88:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 87:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 15:
+        ck4_lumpsNeeded[Lump_Dopefish] = true;
+        CK4_SpawnDopefish(x, y);
+        break;
+
+        // Schoolfish
+      case 16:
+        ck4_lumpsNeeded[Lump_Schoolfish] = true;
+        CK4_SpawnSchoolfish(x, y);
+        break;
+
+      // Sprites
+      case 24:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 23:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 17:
+        ck4_lumpsNeeded[Lump_Sprite] = true;
+        CK4_SpawnSprite(x, y);
+        break;
+
+        // Mines
+      case 69:
+      case 70:
+      case 71:
+      case 72:
+        ck4_lumpsNeeded[Lump_Mine] = true;
+        CK4_SpawnMine(x, y, infoValue - 69);
+        break;
+
 			case 34:
 				// Spawn extra stunner if Keen has low ammo
 				if (ck_gameState.numShots >= 5)
@@ -829,21 +879,225 @@ void CK4_ShowCouncilMessage(void)
 
 }
 
+void CK4_SpawnKeenBubble(CK_object *);
+
 // Scuba Keen
+void CK4_SpawnScubaKeen (int tileX, int tileY)
+{
+  ck_keenObj->type = CT_Player;
+  ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
+  ck_keenObj->zLayer = PRIORITIES - 3;
+  ck_keenObj->posX = tileX << G_T_SHIFT;
+  ck_keenObj->posY = tileY << G_T_SHIFT;
+  ck_keenObj->xDirection = IN_motion_Right;
+  ck_keenObj->yDirection = IN_motion_Down;
+  ck_keenObj->clipped = CLIP_simple;
+  CK_SetAction(ck_keenObj, CK_GetActionByName("CK4_ACT_KeenSwim0"));
+}
+
+void CK4_SpawnKeenBubble(CK_object *obj)
+{
+  obj->user4 = 0;
+  CK_object *bubble = CK_GetNewObj(true);
+  bubble->posX = obj->xDirection == IN_motion_Left ? obj->posX : obj->posX + 0x180;
+
+  bubble->posY = obj->posY;
+  bubble->type = CT_Friendly;
+  bubble->zLayer = PRIORITIES - 1;
+  bubble->active = OBJ_EXISTS_ONLY_ONSCREEN;
+  bubble->clipped = CLIP_not;
+  bubble->velY = -24;
+  bubble->velX = 4;
+
+  switch (US_RndT() / 64)
+  {
+    case 0:
+      CK_SetAction(bubble, CK_GetActionByName("CK4_ACT_Bubble0"));
+      break;
+
+    case 1:
+      CK_SetAction(bubble, CK_GetActionByName("CK4_ACT_Bubble1"));
+      break;
+
+    case 2:
+      CK_SetAction(bubble, CK_GetActionByName("CK4_ACT_Bubble2"));
+      break;
+
+    case 3:
+      CK_SetAction(bubble, CK_GetActionByName("CK4_ACT_Bubble3"));
+      break;
+  }
+
+  SD_PlaySound(SOUND_KEENBUBBLE);
+}
+
 void CK4_KeenSwim(CK_object *obj)
 {
+  int movingLeft = obj->velX < 0 ? 1 : 0;
+  int movingUp = obj->velY < 4 ? 1 : 0;
+
+  if ((obj->user4 += SD_GetSpriteSync()) > 60)
+    CK4_SpawnKeenBubble(obj);
+
+  if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
+  {
+    ck_keenState.jumpWasPressed = true;
+    if (ck_inputFrame.xDirection)
+      obj->velX = ck_inputFrame.xDirection * 18;
+    if (ck_inputFrame.yDirection)
+      obj->velY = ck_inputFrame.yDirection * 18;
+
+    if (obj->currentAction->next)
+      obj->currentAction = obj->currentAction->next;
+  }
+
+  if (ck_inputFrame.xDirection)
+    obj->xDirection = ck_inputFrame.xDirection;
+
+  int32_t lastTimeCount = SD_GetLastTimeCount();
+  int32_t tic = lastTimeCount - SD_GetSpriteSync();
+  while (tic < lastTimeCount)
+  {
+    if (!(tic & 7))
+    {
+      int dx;
+      if (obj->velX > 12)
+        dx = -3;
+      else if (obj->velX > 0)
+        dx = -1;
+      else if (obj->velX > -12)
+        dx = 1;
+      else
+        dx = 3;
+
+      dx += 2 * ck_inputFrame.xDirection;
+      obj->velX += dx;
+
+      if (!ck_inputFrame.xDirection)
+      {
+        int stillMovingLeft = obj->velX < 0 ? 1 : 0;
+
+        if (stillMovingLeft != movingLeft)
+          obj->velX = 0;
+      }
+
+      int dy;
+      if (obj->velY > 12)
+        dy = -3;
+      else if (obj->velY > 4)
+        dy = -1;
+      else if (obj->velY > -12)
+        dy = 1;
+      else
+        dy = 3;
+
+      dy += 2 * ck_inputFrame.yDirection;
+      obj->velY += dy;
+
+      if (!ck_inputFrame.yDirection)
+      {
+        if (obj->velY > 4 && movingUp)
+          obj->velY = 0;
+      }
+    }
+
+    ck_nextX += obj->velX;
+    ck_nextY += obj->velY;
+    tic++;
+  }
 }
 
 void CK4_KeenSwimFast(CK_object *obj)
 {
+  if ((obj->user4 += SD_GetSpriteSync()) > 60)
+    CK4_SpawnKeenBubble(obj);
+
+  if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
+  {
+     ck_keenState.jumpWasPressed = true;
+     obj->velX = ck_inputFrame.xDirection * 18;
+
+     if (ck_inputFrame.yDirection)
+       obj->velY = ck_inputFrame.yDirection * 18;
+  }
+
+  if (obj->currentAction == CK_GetActionByName("CK4_ACT_KeenSwimFast0"))
+    obj->currentAction = CK_GetActionByName("CK4_ACT_KeenSwimFast1");
+  else
+    obj->currentAction = CK_GetActionByName("CK4_ACT_KeenSwimFast0");
+
+  ck_nextX += obj->velX * SD_GetSpriteSync();
+  ck_nextY += obj->velY * SD_GetSpriteSync();
+
+  if (ck_nextX > 0)
+    obj->xDirection = IN_motion_Right;
+  else if (ck_nextX < 0)
+    obj->xDirection = IN_motion_Left;
+
+  ck_nextY += SD_GetSpriteSync() * 4;
 }
+
+extern CK_action CK_ACT_itemNotify;
+extern int ck_itemPoints[];
 
 void CK4_KeenSwimCol(CK_object *a, CK_object *b)
 {
+  if (b->type == CT4_Item)
+	{
+    if (b->user1 > 11)
+			return;
+
+		SD_PlaySound(ck_itemSounds[b->user1]);
+
+		b->type = CT_Friendly;
+		b->zLayer = PRIORITIES - 1;
+		b->gfxChunk = ck_itemShadows[b->user1];
+
+		CK_IncreaseScore(ck_itemPoints[b->user1]);
+
+		//b->yDirection = -1;
+
+		if (b->user1 < 4)
+		{
+			ck_gameState.keyGems[b->user1]++;
+		}
+		else if (b->user1 == 10)
+		{
+			ck_gameState.numLives++;
+		}
+		else if (b->user1 == 11)
+		{
+			ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
+		}
+		else if (b->user1 == 12)
+		{
+      ck_gameState.ep.ck5.securityCard = 1;
+		}
+		CK_SetAction2(b, &CK_ACT_itemNotify);
+	}
+  else if (b->type == CT4_CouncilMember)
+  {
+    ck_gameState.levelState = LS_CouncilRescued;
+  }
 }
 
 void CK4_KeenSwimDraw(CK_object *obj)
 {
+  if (obj->rightTI || obj->leftTI)
+    obj->velX = 0;
+
+  if (obj->topTI && obj->velY > 0 ||
+      obj->bottomTI && obj->velY < 0)
+    obj->velY = 0;
+
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
 
+void CK4_Misc_SetupFunctions()
+{
+  CK_ACT_AddFunction("CK4_KeenSwim", &CK4_KeenSwim);
+  CK_ACT_AddFunction("CK4_KeenSwimFast", &CK4_KeenSwimFast);
+  CK_ACT_AddColFunction("CK4_KeenSwimCol", &CK4_KeenSwimCol);
+  CK_ACT_AddFunction("CK4_KeenSwimDraw", &CK4_KeenSwimDraw);
+}

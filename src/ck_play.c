@@ -1429,7 +1429,7 @@ int CK_PlayLoop()
 		}
 
 		// Follow the player with the camera.
-		if (ca_mapOn == 0)
+		if (ca_mapOn == 0 || ck_currentEpisode->ep == EP_CK4 && ca_mapOn == 17)
 			CK_MapCamera(ck_keenObj);
 		else
 			CK_NormalCamera(ck_keenObj);
@@ -1478,11 +1478,19 @@ int CK_PlayLoop()
 			CK_CheckKeys();
 		}
 		// End-Of-Game cheat
-		if (IN_GetKeyState(IN_SC_E) && IN_GetKeyState(IN_SC_N) && IN_GetKeyState(IN_SC_D))
-		{
-			ck_gameState.levelState = 15;
-		}
-	}
+    if (IN_GetKeyState(IN_SC_E) && IN_GetKeyState(IN_SC_N) && IN_GetKeyState(IN_SC_D))
+    {
+      if (ck_currentEpisode->ep == EP_CK4)
+      {
+        ck_gameState.ep.ck4.membersRescued = 7;
+        ck_gameState.levelState = LS_CouncilRescued;
+      }
+      else if (ck_currentEpisode->ep == EP_CK5)
+      {
+        ck_gameState.levelState = 15;
+      }
+    }
+  }
 	game_in_progress = 0;
 	StopMusic();
 }

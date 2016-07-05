@@ -81,12 +81,6 @@ void CK5_TurretShoot(CK_object *obj)
 	//CK_SetAction(obj, &CK5_ACT_turretWait);
 }
 
-void CK5_Glide(CK_object *obj)
-{
-	ck_nextX = obj->velX * SD_GetSpriteSync();
-	ck_nextY = obj->velY * SD_GetSpriteSync();
-}
-
 void CK5_TurretShotCol(CK_object *me, CK_object *other)
 {
 	if (other->type == CT_Player)
@@ -561,7 +555,6 @@ void CK5_VolteCol(CK_object *volte, CK_object *other)
 void CK5_Obj1_SetupFunctions()
 {
 	CK_ACT_AddFunction("CK5_TurretShoot", &CK5_TurretShoot);
-	CK_ACT_AddFunction("CK5_Glide", &CK5_Glide);
 	CK_ACT_AddColFunction("CK5_TurretShotCol", &CK5_TurretShotCol);
 	CK_ACT_AddFunction("CK5_TurretShotDraw", &CK5_TurretShotDraw);
 	CK_ACT_AddFunction("CK5_SneakPlatThink", &CK5_SneakPlatThink);

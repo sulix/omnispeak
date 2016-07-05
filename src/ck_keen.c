@@ -1469,14 +1469,28 @@ void CK_KillKeen()
 	ck_scrollDisabled = true;
 	obj->clipped = CLIP_not;
 	obj->zLayer = 3;
-	if (US_RndT() < 0x80)
-	{
-		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie0"));
-	}
-	else
-	{
-		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie1"));
-	}
+  if ((ck_currentEpisode->ep == EP_CK4) && ca_mapOn == 17)
+  {
+    if (US_RndT() < 0x80)
+    {
+      CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_KeenSwimDie0"));
+    }
+    else
+    {
+      CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_KeenSwimDie1"));
+    }
+  }
+  else
+  {
+    if (US_RndT() < 0x80)
+    {
+      CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie0"));
+    }
+    else
+    {
+      CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie1"));
+    }
+  }
 
 	SD_PlaySound(SOUND_KEENDIE);
 

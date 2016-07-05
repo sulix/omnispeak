@@ -47,11 +47,6 @@
 %action CK_ACT_keenDie0 162 162 Frame 0 0 0x64 0 0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_keenDie0
 %action CK_ACT_keenDie1 163 163 Frame 0 0 0x64 0 0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_keenDie1
 
-#
-#%action a_KeenSwimDie0 0x2EE70D2E 39W 39W W W W 4W W W KeenDeath NULL DrawFunc1 a_KeenSwimDie0
-#%action a_KeenSwimDie1 0x2EE70D4C 3AW 3AW W W W 4W W W KeenDeath NULL DrawFunc1 a_KeenSwimDie1
-#
-
 %action CK_ACT_keenRun1 139 131 ScaledFrame 1 1 6 24 0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun2
 %action CK_ACT_keenRun2 140 132 ScaledFrame 1 1 6 24 0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun3
 %action CK_ACT_keenRun3 141 133 ScaledFrame 1 1 6 24 0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun4
@@ -161,10 +156,10 @@
 
 %action CK4_ACT_MapKeenFoot0 296 296 UnscaledFrame 0 0 30 0 0 CK4_MapKeenFoot NULL CK_BasicDrawFunc1 CK4_ACT_MapKeenFoot1
 %action CK4_ACT_MapKeenFoot1 297 297 UnscaledFrame 0 0 30 0 0 CK4_MapKeenFoot NULL CK_BasicDrawFunc1 CK4_ACT_MapKeenFoot0
-#
+
 #%action a_MapKeenSwim0 0x2EE714CE W W W W W W 0W 0W MapKeenSwim NULL DrawFunc1 a_MapKeenSwim0
-#
-#
+
+
 %action CK_ACT_MapFlagFlips0 298 298 Frame 0 0 6 0 0 CK_MapFlagThrown NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips1
 %action CK_ACT_MapFlagFlips1 298 298 ScaledFrame 0 0 12 0 0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips2
 %action CK_ACT_MapFlagFlips2 299 299 ScaledFrame 0 0 12 0 0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips3
@@ -172,17 +167,21 @@
 %action CK_ACT_MapFlagFlips4 301 301 ScaledFrame 0 0 12 0 0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips5
 %action CK_ACT_MapFlagFlips5 302 302 ScaledFrame 0 0 12 0 0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips6
 %action CK_ACT_MapFlagFlips6 303 303 ScaledFrame 1 0 1 0 0 CK_MapFlagLand NULL CK_BasicDrawFunc1 CK_ACT_MapFlag0
-#
-#
-#%action a_KeenSwim0 0x2EE719EC 35W 37W W W W 2W W W KeenSwim KeenSwimCollide KeenSwimDraw a_KeenSwim1
-#%action a_KeenSwim1 0x2EE71A0A 36W 38W W W W 2W W W KeenSwim KeenSwimCollide KeenSwimDraw a_KeenSwim0
-#%action a_KeenSwimFast0 0x2EE71A28 35W 37W W W W 2W W W KeenSwimFast KeenSwimCollide KeenSwimDraw a_KeenSwim1
-#%action a_KeenSwimFast1 0x2EE71A46 36W 38W W W W 2W W W KeenSwimFast KeenSwimCollide KeenSwimDraw a_KeenSwim0
-#%action a_Bubble0 0x2EE71A64 9DW 9DW W W W 4W W 8W Bubbles NULL DrawFunc1 a_Bubble0
-#%action a_Bubble1 0x2EE71A82 9EW 9EW W W W 4W W 8W Bubbles NULL DrawFunc1 a_Bubble1
-#%action a_Bubble2 0x2EE71AA0 9FW 9FW W W W 4W W 8W Bubbles NULL DrawFunc1 a_Bubble2
-#%action a_Bubble3 0x2EE71ABE A0W A0W W W W 4W W 8W Bubbles NULL DrawFunc1 a_Bubble3
-#
+
+
+# Scuba Keen
+%action CK4_ACT_KeenSwim0 0x135 0x137 UnscaledFrame 0 0 50 0 0 CK4_KeenSwim CK4_KeenSwimCol CK4_KeenSwimDraw CK4_ACT_KeenSwim1
+%action CK4_ACT_KeenSwim1 0x136 0x138 UnscaledFrame 0 0 50 0 0 CK4_KeenSwim CK4_KeenSwimCol CK4_KeenSwimDraw CK4_ACT_KeenSwim0
+%action CK4_ACT_KeenSwimFast0 0x135 0x137 UnscaledFrame 0 0 50 0 0 CK4_KeenSwimFast CK4_KeenSwimCol CK4_KeenSwimDraw CK4_ACT_KeenSwim1
+%action CK4_ACT_KeenSwimFast1 0x136 0x138 UnscaledFrame 0 0 50 0 0 CK4_KeenSwimFast CK4_KeenSwimCol CK4_KeenSwimDraw CK4_ACT_KeenSwim0
+%action CK4_ACT_Bubble0 0x19D 0x19D Frame 0 0 20 0 36 CK4_Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_Bubble0
+%action CK4_ACT_Bubble1 0x19E 0x19E Frame 0 0 20 0 36 CK4_Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_Bubble1
+%action CK4_ACT_Bubble2 0x19F 0x19F Frame 0 0 20 0 36 CK4_Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_Bubble2
+%action CK4_ACT_Bubble3 0x1A0 0x1A0 Frame 0 0 20 0 36 CK4_Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_Bubble3
+
+%action CK4_ACT_KeenSwimDie0 0x139W 0x139W Frame 0 0 100 0 0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK4_ACT_KeenSwimDie0
+%action CK4_ACT_KeenSwimDie1 0x13AW 0x13AW Frame 0 0 100 0 0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK4_ACT_KeenSwimDie1
+
 
 # ck_obj.c
 # Items
@@ -411,10 +410,10 @@
 %action CK4_ACT_SmirkyJump3 344 341 UnscaledFrame 0 0 6 0 0 CK_Fall2 CK4_SmirkyCol CK4_SmirkyDraw CK4_ACT_SmirkyJump0
 %action CK4_ACT_SmirkyStunned0 343 343 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 CK4_ACT_SmirkyStunned1
 %action CK4_ACT_SmirkyStunned1 355 355 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
-%action CK4_ACT_StolenItem0 346 346 0 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem1
-%action CK4_ACT_StolenItem1 347 347 0 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem2
-%action CK4_ACT_StolenItem2 348 348 0 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem3
-%action CK4_ACT_StolenItem3 349 349 0 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+%action CK4_ACT_StolenItem0 346 346 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem1
+%action CK4_ACT_StolenItem1 347 347 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem2
+%action CK4_ACT_StolenItem2 348 348 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_StolenItem3
+%action CK4_ACT_StolenItem3 349 349 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
 # Mimrocks
 %action CK4_ACT_Mimrock0 388 388 UnscaledOnce 0 1 20 0 0 CK4_MimrockWait NULL CK_BasicDrawFunc2 CK4_ACT_Mimrock0
@@ -431,44 +430,54 @@
 %action CK4_ACT_MimrockStunned0 402 402 Frame 0 0 12 0 0 CK_Fall NULL CK_BasicDrawFunc4 CK4_ACT_MimrockStunned1
 %action CK4_ACT_MimrockStunned1 403 403 Frame 0 0 12 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
 
-# Dopefish
-#%action CK4_ACT_DopefishSwim0 418 404 0 0 0 0x4 0 0 DopefishMove DopefishCollide DrawFish CK4_ACT_DopefishSwim1
-#%action CK4_ACT_DopefishSwim1 419 405 0 0 0 0x4 0 0 DopefishMove DopefishCollide DrawFish CK4_ACT_DopefishSwim0
-#%action CK4_ACT_DopefishEat0 420 406 0 0 0 0 0 0 DopefishEat NULL CK_BasicDrawFunc1 NULL
-#%action CK4_ACT_DopefishBurp0 418 404 0 0 0 0xC 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_DopefishBurp1
-#%action CK4_ACT_DopefishBurp1 407 407 0 0 0 0xC 0 0 DopefishBurp NULL CK_BasicDrawFunc1 CK4_ACT_DopefishBurp2
-#%action CK4_ACT_DopefishBurp2 408 408 0 0 0 0xC 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_DopefishBurp3
-#%action CK4_ACT_DopefishBurp3 418 404 0 0 0 0 0 0 DopefishAfterBurp NULL CK_BasicDrawFunc1 CK4_ACT_DopefishSwim0
-#%action CK4_ACT_SchoolfishEaten0 421 423 0 0 0 0 0 0 NULL NULL CK_BasicDrawFunc1 NULL
-#%action CK4_ACT_KeenEaten0 313 313 0 0 0 0 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_KeenEaten1
-#%action CK4_ACT_KeenEaten1 65791 $0x100FF 0 0 0 $0xB4 0 0 UnderwaterDeath NULL CK_BasicDrawFunc1 CK4_ACT_KeenEaten1
-#%action CK4_ACT_DopeBubble0 409 409 0 0 0 0x4 0 0x4 Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_DopeBubble1
-#%action CK4_ACT_DopeBubble1 410 410 0 0 0 0x4 0 0x4 Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_DopeBubble2
-#%action CK4_ACT_DopeBubble2 411 411 0 0 0 0x4 0 0x4 Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_DopeBubble3
-#%action CK4_ACT_DopeBubble3 412 412 0 0 0 0x4 0 0x4 Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_DopeBubble0
-#%action CK4_ACT_SchoolfishSwim0 421 423 0 0 0 0x4 0 0 SchoolfishMove NULL DrawFish CK4_ACT_SchoolfishSwim1
-#%action CK4_ACT_SchoolfishSwim1 422 424 0 0 0 0x4 0 0 SchoolfishMove NULL DrawFish CK4_ACT_SchoolfishSwim0
-#%action CK4_ACT_Sprite0 431 431 0 0 0 $0xA 0 0 SpritePatrol CK_DeadlyCol CK_BasicDrawFunc1 CK4_ACT_Sprite0
-#%action CK4_ACT_SpriteAiming0 432 434 0 0 0 0x8 0 0 SpriteAim CK_DeadlyCol CK_BasicDrawFunc1 CK4_ACT_Sprite0
-#%action CK4_ACT_SpriteShooting0 433 435 0 0 0 0x8 0 0 SpriteShoot CK_DeadlyCol CK_BasicDrawFunc1 CK4_ACT_SpriteShooting1
-#%action CK4_ACT_SpriteShooting1 433 435 0 0 0 0xE 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK4_ACT_Sprite0
-#%action CK4_ACT_SpriteBullet0 436 436 0 0 0 $0xA 0x0 0 NULL CK_DeadlyCol DrawProjectile CK4_ACT_SpriteBullet1
-#%action CK4_ACT_SpriteBullet1 437 437 0 0 0 $0xA 0x0 0 NULL CK_DeadlyCol DrawProjectile CK4_ACT_SpriteBullet2
-#%action CK4_ACT_SpriteBullet2 438 438 0 0 0 $0xA 0x0 0 NULL CK_DeadlyCol DrawProjectile CK4_ACT_SpriteBullet3
-#%action CK4_ACT_SpriteBullet3 439 439 0 0 0 $0xA 0x0 0 NULL CK_DeadlyCol DrawProjectile CK4_ACT_SpriteBullet0
-#%action CK4_ACT_Mine0 440 440 0 0 0 $0xA 0 0 platform_move MineCollide CK_BasicDrawFunc1 CK4_ACT_Mine0
-#%action CK4_ACT_MineExplode0 441 441 0 0 0 0xE 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_MineExplode1
-#%action CK4_ACT_MineExplode1 442 442 0 0 0 0xE 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+# Dopefish and Schoolfish
+%action CK4_ACT_DopefishSwim0 418 404 UnscaledFrame 0 0 20 0 0 CK4_DopefishMove CK4_DopefishCol CK4_FishDraw CK4_ACT_DopefishSwim1
+%action CK4_ACT_DopefishSwim1 419 405 UnscaledFrame 0 0 20 0 0 CK4_DopefishMove CK4_DopefishCol CK4_FishDraw CK4_ACT_DopefishSwim0
+%action CK4_ACT_DopefishEat0 420 406 Frame 0 0 0 0 0 CK4_DopefishEat NULL CK_BasicDrawFunc1 NULL
+%action CK4_ACT_DopefishBurp0 418 404 UnscaledOnce 0 0 60 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_DopefishBurp1
+%action CK4_ACT_DopefishBurp1 407 407 UnscaledOnce 0 0 60 0 0 CK4_DopefishBurp NULL CK_BasicDrawFunc1 CK4_ACT_DopefishBurp2
+%action CK4_ACT_DopefishBurp2 408 408 UnscaledOnce 0 0 60 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_DopefishBurp3
+%action CK4_ACT_DopefishBurp3 418 404 Frame 0 0 0 0 0 CK4_DopefishAfterBurp NULL CK_BasicDrawFunc1 CK4_ACT_DopefishSwim0
+%action CK4_ACT_KeenEaten0 313 313 Frame 0 0 0 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_KeenEaten1
+%action CK4_ACT_KeenEaten1 -1 -1 UnscaledOnce 0 0 180 0 0 CK4_KillKeenUnderwater NULL CK_BasicDrawFunc1 CK4_ACT_KeenEaten1
+%action CK4_ACT_DopeBubble0 409 409 Frame 0 0 20 0 20 CK4_Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_DopeBubble1
+%action CK4_ACT_DopeBubble1 410 410 Frame 0 0 20 0 20 CK4_Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_DopeBubble2
+%action CK4_ACT_DopeBubble2 411 411 Frame 0 0 20 0 20 CK4_Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_DopeBubble3
+%action CK4_ACT_DopeBubble3 412 412 Frame 0 0 20 0 20 CK4_Bubbles NULL CK_BasicDrawFunc1 CK4_ACT_DopeBubble0
+%action CK4_ACT_SchoolfishSwim0 421 423 UnscaledFrame 0 0 20 0 0 CK4_SchoolfishMove NULL CK4_FishDraw CK4_ACT_SchoolfishSwim1
+%action CK4_ACT_SchoolfishSwim1 422 424 UnscaledFrame 0 0 20 0 0 CK4_SchoolfishMove NULL CK4_FishDraw CK4_ACT_SchoolfishSwim0
+%action CK4_ACT_SchoolfishEaten0 421 423 Frame 0 0 0 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+
+# Underwater Sprites
+%action CK4_ACT_Sprite0 431 431 Frame 0 0 10 0 0 CK4_SpritePatrol CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Sprite0
+%action CK4_ACT_SpriteAiming0 432 434 UnscaledOnce 0 0 40 0 0 CK4_SpriteAim CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Sprite0
+%action CK4_ACT_SpriteShooting0 433 435 UnscaledOnce 0 0 40 0 0 CK4_SpriteShoot CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_SpriteShooting1
+%action CK4_ACT_SpriteShooting1 433 435 UnscaledOnce 0 0 30 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_Sprite0
+%action CK4_ACT_SpriteBullet0 436 436 ScaledOnce 0 0 10 0x40 0 NULL CK_LethalCol CK4_ProjectileDraw CK4_ACT_SpriteBullet1
+%action CK4_ACT_SpriteBullet1 437 437 ScaledOnce 0 0 10 0x40 0 NULL CK_LethalCol CK4_ProjectileDraw CK4_ACT_SpriteBullet2
+%action CK4_ACT_SpriteBullet2 438 438 ScaledOnce 0 0 10 0x40 0 NULL CK_LethalCol CK4_ProjectileDraw CK4_ACT_SpriteBullet3
+%action CK4_ACT_SpriteBullet3 439 439 ScaledOnce 0 0 10 0x40 0 NULL CK_LethalCol CK4_ProjectileDraw CK4_ACT_SpriteBullet0
+
+# Mines
+%action CK4_ACT_Mine0 440 440 Frame 0 0 10 0 0 CK_AxisPlatform CK4_MineCol CK_BasicDrawFunc1 CK4_ACT_Mine0
+%action CK4_ACT_MineExplode0 441 441 UnscaledOnce 0 0 30 0 0 NULL NULL CK_BasicDrawFunc1 CK4_ACT_MineExplode1
+%action CK4_ACT_MineExplode1 442 442 UnscaledOnce 0 0 30 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+
+# Lindsey
 #%action CK4_ACT_Lindsey0 329 329 0 0 0 0x4 0 0 LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey1
 #%action CK4_ACT_Lindsey1 330 330 0 0 0 0x4 0 0 LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey2
 #%action CK4_ACT_Lindsey2 331 331 0 0 0 0x4 0 0 LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey3
 #%action CK4_ACT_Lindsey3 332 332 0 0 0 0x4 0 0 LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey0
+
+# Dartguns
 #%action CK4_ACT_DartGun0 256 256 0 0 0 0x6 0 0 DartGun NULL NULL CK4_ACT_DartGun0
-#%action CK4_ACT_DartHorz0 386 384 0 0 0 0 0x0 0 NULL CK_DeadlyCol DrawProjectile CK4_ACT_DartHorz1
-#%action CK4_ACT_DartHorz1 387 385 0 0 0 0 0x0 0 NULL CK_DeadlyCol DrawProjectile CK4_ACT_DartHorz0
-#%action CK4_ACT_DartUp0 380 380 0 0 0 0 0 0x0 NULL CK_DeadlyCol DrawProjectile CK4_ACT_DartUp1
-#%action CK4_ACT_DartUp1 381 381 0 0 0 0 0 0x0 NULL CK_DeadlyCol DrawProjectile CK4_ACT_DartUp0
-#%action CK4_ACT_DartDown0 382 382 0 0 0 0 0 0x0 NULL CK_DeadlyCol DrawProjectile CK4_ACT_DartDown1
-#%action CK4_ACT_DartDown1 383 383 0 0 0 0 0 0x0 NULL CK_DeadlyCol DrawProjectile CK4_ACT_DartDown0
+#%action CK4_ACT_DartHorz0 386 384 0 0 0 0 0x0 0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartHorz1
+#%action CK4_ACT_DartHorz1 387 385 0 0 0 0 0x0 0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartHorz0
+#%action CK4_ACT_DartUp0 380 380 0 0 0 0 0 0x0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartUp1
+#%action CK4_ACT_DartUp1 381 381 0 0 0 0 0 0x0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartUp0
+#%action CK4_ACT_DartDown0 382 382 0 0 0 0 0 0x0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartDown1
+#%action CK4_ACT_DartDown1 383 383 0 0 0 0 0 0x0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartDown0
+
+# Wetsuit
 #%action CK4_ACT_Wetsuit0 430 430 0 0 0 0x530 0 0 NULL WetsuitCollide CK_BasicDrawFunc1 CK4_ACT_Wetsuit0
 #

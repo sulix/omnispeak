@@ -81,13 +81,13 @@ typedef enum CK_ClassType {
   CT4_Berkeloid = 14,
   CT4_Bounder = 15,
   CT4_Inchworm = 16,
-  CT4_0x11 = 17, // what was this?
+  CT4_Foot = 17, // what was this?
   CT4_Lick = 18,
   CT4_Mimrock = 19,
   CT4_Platform = 20,
   CT4_Dopefish = 21,
   CT4_Schoolfish = 22,
-  CT4_Foot = 23,
+  CT4_Sprite = 23,
   CT4_Lindsey = 24,
   CT4_Bolt = 25,
   CT4_Smirky = 26,
@@ -96,7 +96,7 @@ typedef enum CK_ClassType {
   CT4_0x1D = 29,
   CT4_0x1E = 30,
   CT4_EnemyShot = 31,
-  CT4_0x20 = 32,
+  CT4_Mine = 32,
   CT4_StunnedCreature = 33,
   CT4_MapFlag = 34,
 
@@ -385,6 +385,7 @@ void CK_Map_SetupFunctions();
 /* ck_misc.c */
 void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act);
 void CK_Misc_SetupFunctions(void);
+void CK_Glide(CK_object *obj);
 
 /* ck_obj.c */
 void CK_SpawnItem(int tileX, int tileY, int itemNumber);

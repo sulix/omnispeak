@@ -488,12 +488,52 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 	obj->visible = true;
 
 	//TODO: Verify object class (need callback to episode struct)
-  if (ck_currentEpisode->ep == EP_CK5 && ((obj->type != CT5_SliceStar) && (obj->type != CT5_Sphereful)))
-	{
-		Quit("FullClipToWalls: Bad obclass");
-	}
+  int16_t delX, delY;
 
-	int16_t delX = 512, delY = 512;
+  switch (ck_currentEpisode->ep)
+  {
+    case EP_CK4:
+      if (obj->type == CT4_Schoolfish)
+      {
+        delX = 0x100;
+        delY = 0x80;
+      }
+      else if (obj->type == CT4_Dopefish)
+      {
+        delX = 0x580;
+        delY = 0x400;
+      }
+      else if (obj->type == CT4_Bird)
+      {
+        delX = 0x400;
+        delY = 0x200;
+      }
+      else if (obj->type == CT_Player)
+      {
+        // Scubakeen
+        delX = 0x280;
+        delY = 0x180;
+      }
+      break;
+    case EP_CK5:
+      if (obj->type == CT5_SliceStar || obj->type == CT5_Sphereful)
+      {
+        delX = delY = 512;
+      }
+      else
+      {
+        goto badobjclass;
+      }
+      break;
+
+    default:
+      break;
+
+badobjclass:
+		Quit("FullClipToWalls: Bad obclass");
+  }
+
+
 	obj->clipRects.unitX2 = obj->posX + delX;
 	obj->clipRects.unitX1 = obj->posX;
 	obj->clipRects.unitY1 = obj->posY;

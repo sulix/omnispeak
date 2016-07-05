@@ -27,12 +27,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SOUND_MIMROCKJUMP 15
 #define SOUND_MUSHROOMLEAP 16
 #define SOUND_SKYPESTSQUISH 22
+#define SOUND_DOPEFISHBURP 26
 #define SOUND_MUSHROOMHOP 28
 #define SOUND_SMIRKYSTEAL 29
 #define SOUND_SMIRKYTELE 30
 #define SOUND_COUNCILSAVE 31
 #define SOUND_LICKFLAME 32
 #define SOUND_BERKELOIDTHROW 33
+#define SOUND_KEENBUBBLE 36
+#define SOUND_CK4MINEEXPLODE 37
+#define SOUND_SPRITESHOOT 38
 #define SOUND_LIGHTNINGBOLT 39
 #define SOUND_FIREBALLLAND 40
 #define SOUND_FOOTAPPEAR 45
@@ -48,6 +52,7 @@ void CK4_Obj1_SetupFunctions(void);
 void CK4_Obj2_SetupFunctions(void);
 void CK4_Obj3_SetupFunctions(void);
 void CK4_Map_SetupFunctions(void);
+void CK4_Misc_SetupFunctions(void);
 void CK4_SetupFunctions(void);
 void CK4_DefineConstants(void);
 
@@ -58,13 +63,8 @@ void CK4_ScanInfoLayer();
 /* ck4_misc.c */
 void CK4_SpawnLevelEnd(void);
 CK_object *CK4_SpawnEnemyShot(int posX, int posY, CK_action *action);
-void CK4_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple);
-void CK4_SpawnRedStandPlatform(int tileX, int tileY);
+void CK4_SpawnScubaKeen (int tileX, int tileY);
 
-void CK4_KeenSwimDraw(CK_object *obj);
-void CK4_KeenSwimCol(CK_object *a, CK_object *b);
-void CK4_KeenSwimFast(CK_object *obj);
-void CK4_KeenSwim(CK_object *obj);
 void CK4_ShowCouncilMessage(void);
 void CK4_ShowWetsuitMessage(void);
 void CK4_ShowCantSwimMessage(void);
@@ -91,10 +91,13 @@ void CK4_SpawnBounder(int tileX, int tileY);
 void CK4_SpawnLick(int tileX, int tileY);
 void CK4_SpawnAxisPlatform(int tileX, int tileY, int direction);
 
-
 /* ck4_obj3.c */
 void CK4_SpawnSmirky(int tileX, int tileY);
 void CK4_SpawnMimrock(int tileX, int tileY);
+void CK4_SpawnDopefish(int tileX, int tileY);
+void CK4_SpawnSchoolfish(int tileX, int tileY);
+void CK4_SpawnMine(int tileX, int tileY, int direction);
+void CK4_SpawnSprite(int tileX, int tileY);
 
 /* ck4_map.c */
 void CK_DemoSignSpawn();
