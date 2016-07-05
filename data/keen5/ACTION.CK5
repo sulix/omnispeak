@@ -217,10 +217,10 @@
 
 
 # Turret Shots
-%action CK5_ACT_turretShot1 0xEC 0xEC UnscaledFrame 0 0 8 0 0 CK5_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot2
-%action CK5_ACT_turretShot2 0xED 0xED UnscaledFrame 0 0 8 0 0 CK5_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot3
-%action CK5_ACT_turretShot3 0xEE 0xEE UnscaledFrame 0 0 8 0 0 CK5_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot4
-%action CK5_ACT_turretShot4 0xEF 0xEF UnscaledFrame 0 0 8 0 0 CK5_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot1
+%action CK5_ACT_turretShot1 0xEC 0xEC UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot2
+%action CK5_ACT_turretShot2 0xED 0xED UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot3
+%action CK5_ACT_turretShot3 0xEE 0xEE UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot4
+%action CK5_ACT_turretShot4 0xEF 0xEF UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot1
 
 %action CK5_ACT_turretShotHit1 0xF0 0xF0 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_turretShotHit2
 %action CK5_ACT_turretShotHit2 0xF1 0xF1 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
@@ -399,8 +399,8 @@
 %action CK5_ACT_Shocksund2 0x159 0x155 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund3
 %action CK5_ACT_Shocksund3 0x15a 0x156 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_ShocksundSearch CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund0
 %action CK5_ACT_ShocksundJump0 0x15b 0x15c Frame 0x0 0x0 0x8 0x80 0x0 CK_Fall CK5_ShocksundCol CK5_ShocksundJumpTileCol CK5_ACT_Shocksund1
-%action CK5_ACT_BarkShot0 0x162 0x162 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_Glide CK5_BarkShotCol CK5_BarkShotTileCol CK5_ACT_BarkShot1
-%action CK5_ACT_BarkShot1 0x163 0x163 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_Glide CK5_BarkShotCol CK5_BarkShotTileCol CK5_ACT_BarkShot0
+%action CK5_ACT_BarkShot0 0x162 0x162 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Glide CK5_BarkShotCol CK5_BarkShotTileCol CK5_ACT_BarkShot1
+%action CK5_ACT_BarkShot1 0x163 0x163 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Glide CK5_BarkShotCol CK5_BarkShotTileCol CK5_ACT_BarkShot0
 %action CK5_ACT_BarkShotDie0 0x164 0x164 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_BarkShotDie1
 %action CK5_ACT_BarkShotDie1 0x165 0x165 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
 %action CK5_ACT_ShocksundStun0 0x161 0x161 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
