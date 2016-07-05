@@ -388,6 +388,7 @@ typedef enum
   Lump_0 = 0,
   Lump_Slug = 11,
   Lump_Mushroom = 12,
+  Lump_Lindsey = 14,
   Lump_FootWorm = 15,
   Lump_Smirky = 16,
   Lump_CouncilMember = 17,
@@ -403,6 +404,8 @@ typedef enum
   Lump_Bounder = 27,
   Lump_Cloud = 28,
   Lump_Berkeloid = 29,
+  // 30??
+  Lump_Dart = 31,
   Lump_ScubaKeen = 32,
   Lump_Sprite = 33,
   Lump_Mine = 34,
@@ -729,6 +732,58 @@ cachePoofs:
         CK4_SpawnMine(x, y, infoValue - 69);
         break;
 
+        // Lindsey
+      case 6:
+        ck4_lumpsNeeded[Lump_Lindsey] = true;
+        CK4_SpawnLindsey(x, y);
+        break;
+
+			case 83:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 79:
+				if (ck_gameState.difficulty < D_Normal) break;
+			case 53:
+				CK4_SpawnDartGun(x, y, 0);
+        ck4_lumpsNeeded[Lump_Dart] = true;
+				break;
+
+			case 84:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 80:
+				if (ck_gameState.difficulty < D_Normal) break;
+			case 54:
+				CK4_SpawnDartGun(x, y, 1);
+        ck4_lumpsNeeded[Lump_Dart] = true;
+				break;
+
+			case 85:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 81:
+				if (ck_gameState.difficulty < D_Normal) break;
+			case 55:
+				CK4_SpawnDartGun(x, y, 2);
+        ck4_lumpsNeeded[Lump_Dart] = true;
+				break;
+
+			case 86:
+				if (ck_gameState.difficulty < D_Hard) break;
+			case 82:
+				if (ck_gameState.difficulty < D_Normal) break;
+			case 56:
+				CK4_SpawnDartGun(x, y, 3);
+        ck4_lumpsNeeded[Lump_Dart] = true;
+				break;
+
+
+
+
+        // Wetsuit
+      case 35:
+        CK4_SpawnWetsuit(x, y);
+        CA_MarkGrChunk(0x1AE);
+        break;
+
+
 			case 34:
 				// Spawn extra stunner if Keen has low ammo
 				if (ck_gameState.numShots >= 5)
@@ -777,18 +832,187 @@ cachePoofs:
 // These are right after ScanInfoLayer in DOS exe
 void CK4_ShowPrincessMessage(void)
 {
+  SD_WaitSoundDone();
+  StopMusic();
+  CA_UpLevel();
+
+  CA_MarkGrChunk(0x72);
+  CA_MarkGrChunk(0x6F);
+  CA_MarkGrChunk(0x70);
+  CA_CacheMarks(0);
+
+  // VW_SyncPages();
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x72);
+  US_SetPrintY(US_GetPrintY() + 6);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetWindowX(US_GetWindowX() + 0x30);
+  US_CPrint("Princess Lindsey says:\n");
+
+  if (ca_mapOn == 7)
+    US_CPrint("There's gear to help\n"
+              "you swim in Three-Tooth\n"
+              "Lake. It is hidden in\n"
+              "Miragia.\n");
+  else
+    US_CPrint("The way to the Pyramid\n"
+              "of the Forbidden lines\n"
+              "under the Pyramid of\n"
+              "Moons.\n");
+
+  VL_Present(); // VW_UpdateScreen();
+  SD_PlaySound(SOUND_FOOTAPPEAR);
+  // VW_WaitVBL(60);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetPrintY(US_GetPrintY() + 12);
+
+  if (ca_mapOn == 7)
+    US_CPrint("Thanks, your Highness!");
+  else
+    US_CPrint("Thanks for the\n"
+              "mysterious clue,\n"
+              "Princess!\n");
+
+  VL_Present(); // VW_UpdateScreen();
+  /// VW_WaitVBL(30);
+
+  IN_ClearKeysDown();
+  IN_WaitButton();
+
+  VH_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x70);
+  VL_Present(); // VW_UpdateScreen();
+  // VW_WaitVBL(30);
+
+  IN_ClearKeysDown();
+  IN_WaitButton();
+  CA_DownLevel();
+
+  StartMusic(ck_gameState.currentLevel);
+  ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
 }
 
 void CK4_ShowJanitorMessage(void)
 {
+  SD_WaitSoundDone();
+  CA_UpLevel();
+  CA_MarkGrChunk(0x6E);
+  CA_MarkGrChunk(0x6F);
+  CA_MarkGrChunk(0x71);
+  CA_CacheMarks(0);
+
+  // VW_SyncPages();
+  StartMusic(0xFFFF);
+
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
+  US_SetPrintY(US_GetPrintY() + 6);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetWindowX(US_GetWindowX() + 0x30);
+  US_CPrint("Thanks for going to all\n"
+            "that trouble, but I'm\n"
+            "just the janitor for the\n"
+            "High Council.");
+  VL_Present(); // VW_UpdateScreen();
+  // VW_WaitVBL(60);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
+  US_SetPrintY(US_GetPrintY() + 6);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetWindowX(US_GetWindowX() + 0x30);
+  US_CPrint("I tried to tell the\n"
+            "Shikadi that but they\n"
+            "just wouldn't listen...");
+  VL_Present(); // VW_UpdateScreen();
+  // VW_WaitVBL(60);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetPrintY(US_GetPrintY() + 12);
+  US_CPrint("This had better\n"
+            "be a joke.");
+  VL_Present(); // VW_UpdateScreen();
+  // VW_WaitVBL(60);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
+  US_SetPrintY(US_GetPrintY() + 6);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetWindowX(US_GetWindowX() + 0x30);
+  US_CPrint("Sorry.  You aren't\n"
+            "mad, are you?");
+  VL_Present(); // VW_UpdateScreen();
+  // VW_WaitVBL(60);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x28, US_GetWindowY() + 0x18, 0x71);
+  VL_Present(); // VW_UpdateScreen();
+  // VW_WaitVBL(30);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+
+  StopMusic();
+  CA_DownLevel();
+  StartMusic(ck_gameState.currentLevel);
 }
 
 void CK4_ShowCantSwimMessage(void)
 {
+  SD_WaitSoundDone();
+  CA_UpLevel();
+  CA_CacheGrChunk(0x6F);
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetPrintY(US_GetPrintY() + 6);
+  US_CPrint("I can't swim!");
+  VL_Present(); // VW_UpdateScreen();
+  // VL_WaitVBL(30);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+  CA_DownLevel();
 }
 
 void CK4_ShowWetsuitMessage(void)
 {
+  SD_WaitSoundDone();
+  CA_UpLevel();
+  CA_MarkGrChunk(0x6F);
+  CA_MarkGrChunk(0x70);
+  CA_CacheMarks(0);
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetPrintY(US_GetPrintY() + 6);
+  US_CPrint("Cool!  I can breathe\n"
+            "under water now!");
+  VL_Present(); // VW_UpdateScreen();
+  // VL_WaitVBL(30);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x70);
+  VL_Present(); // VW_UpdateScreen();
+  // VL_WaitVBL(30);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+
+  CA_DownLevel();
 }
 
 char *ck4_councilMessages[] = {

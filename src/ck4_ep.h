@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SOUND_SPRITESHOOT 38
 #define SOUND_LIGHTNINGBOLT 39
 #define SOUND_FIREBALLLAND 40
+#define SOUND_DARTSHOOT 41
 #define SOUND_FOOTAPPEAR 45
 #define SOUND_SLUGSLIME 46
 
@@ -98,6 +99,9 @@ void CK4_SpawnDopefish(int tileX, int tileY);
 void CK4_SpawnSchoolfish(int tileX, int tileY);
 void CK4_SpawnMine(int tileX, int tileY, int direction);
 void CK4_SpawnSprite(int tileX, int tileY);
+void CK4_SpawnLindsey(int tileX, int tileY);
+void CK4_SpawnDartGun(int tileX, int tileY, int direction);
+void CK4_SpawnWetsuit(int tileX, int tileY);
 
 /* ck4_map.c */
 void CK_DemoSignSpawn();

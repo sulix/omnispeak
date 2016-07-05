@@ -94,7 +94,7 @@ typedef enum CK_ClassType {
   CT4_Bird = 27,
   CT4_0x1C = 28,
   CT4_0x1D = 29,
-  CT4_0x1E = 30,
+  CT4_Wetsuit = 30,
   CT4_EnemyShot = 31,
   CT4_Mine = 32,
   CT4_StunnedCreature = 33,

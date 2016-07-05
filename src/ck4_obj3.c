@@ -662,6 +662,126 @@ void CK4_MineCol(CK_object *a, CK_object *b)
   }
 }
 
+// Lindsey
+
+void CK4_SpawnLindsey(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Lindsey;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->user1 = obj->posY = (tileY << G_T_SHIFT) - 0x100;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Lindsey0"));
+}
+
+void CK4_LindseyFloat(CK_object *obj)
+{
+  CK_PhysAccelVert1(obj, obj->yDirection, 8);
+  if (obj->user1 - obj->posY > 0x20)
+    obj->yDirection = IN_motion_Down;
+
+  if (obj->posY - obj->user1 > 0x20)
+    obj->yDirection = IN_motion_Up;
+}
+
+void CK4_SpawnDartGun(int tileX, int tileY, int direction)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT_Friendly;
+  obj->active = OBJ_ACTIVE;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = tileY << G_T_SHIFT;
+  obj->clipped = CLIP_not;
+  obj->user1 = direction;
+  switch (direction)
+  {
+    case 0:
+      obj->posY -= 0x30;
+      obj->posX += 0x90;
+      obj->gfxChunk = 0x17C;
+      break;
+
+    case 1:
+      obj->posX += 0x80;
+      obj->posY += 0x50;
+      obj->gfxChunk = 0x180;
+      break;
+
+    case 2:
+      obj->posX += 0x90;
+      obj->gfxChunk -0x17E;
+      break;
+
+    case 3:
+      obj->posY += 0x70;
+      obj->posX -= 0x30;
+      obj->gfxChunk = 0x182;
+      break;
+  }
+
+  CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_DartGun0"));
+}
+
+void CK4_DartGun(CK_object *obj)
+{
+  CK_object *dart = CK_GetNewObj(true);
+  dart->posX = obj->posX;
+  dart->posY = obj->posY;
+  dart->type = CT4_EnemyShot;
+  dart->active = OBJ_EXISTS_ONLY_ONSCREEN;
+
+  switch (obj->user1)
+  {
+    case 0:
+      dart->xDirection = IN_motion_None;
+      dart->yDirection = IN_motion_Up;
+      CK_SetAction(dart, CK_GetActionByName("CK4_ACT_DartUp0"));
+      break;
+    case 1:
+      dart->xDirection = IN_motion_Right;
+      dart->yDirection = IN_motion_None;
+      CK_SetAction(dart, CK_GetActionByName("CK4_ACT_DartHorz0"));
+      break;
+    case 2:
+      dart->xDirection = IN_motion_None;
+      dart->yDirection = IN_motion_Down;
+      CK_SetAction(dart, CK_GetActionByName("CK4_ACT_DartDown0"));
+      break;
+    case 3:
+      dart->xDirection = IN_motion_None;
+      dart->yDirection = IN_motion_Left;
+      CK_SetAction(dart, CK_GetActionByName("CK4_ACT_DartHorz0"));
+      break;
+  }
+
+  SD_PlaySound(SOUND_DARTSHOOT);
+}
+
+// Wetsuit
+void CK4_SpawnWetsuit(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT4_Wetsuit;
+  obj->active = OBJ_ACTIVE;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x100;
+  CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Wetsuit0"));
+}
+
+void CK4_WetsuitCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player && !b->topTI)
+  {
+    ck_gameState.ep.ck4.wetsuit = true;
+    SD_PlaySound(SOUND_FOOTAPPEAR);
+    CK4_ShowWetsuitMessage();
+    //RF_ForceRefresh();
+    ck_gameState.levelState = LS_LevelComplete;
+  }
+}
+
 /*
  * Setup all of the functions in this file.
  */
@@ -694,5 +814,13 @@ void CK4_Obj3_SetupFunctions()
   CK_ACT_AddFunction("CK4_SpriteAim", &CK4_SpriteAim);
   CK_ACT_AddFunction("CK4_SpriteShoot", &CK4_SpriteShoot);
   CK_ACT_AddFunction("CK4_ProjectileDraw", &CK4_ProjectileDraw);
+
   CK_ACT_AddColFunction("CK4_MineCol", &CK4_MineCol);
+
+  CK_ACT_AddFunction("CK4_LindseyFloat", &CK4_LindseyFloat);
+
+  CK_ACT_AddFunction("CK4_DartGun", &CK4_DartGun);
+
+  CK_ACT_AddColFunction("CK4_WetsuitCol", &CK4_WetsuitCol);
+
 }

@@ -464,20 +464,20 @@
 %action CK4_ACT_MineExplode1 442 442 UnscaledOnce 0 0 30 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
 # Lindsey
-#%action CK4_ACT_Lindsey0 329 329 0 0 0 0x4 0 0 LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey1
-#%action CK4_ACT_Lindsey1 330 330 0 0 0 0x4 0 0 LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey2
-#%action CK4_ACT_Lindsey2 331 331 0 0 0 0x4 0 0 LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey3
-#%action CK4_ACT_Lindsey3 332 332 0 0 0 0x4 0 0 LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey0
+%action CK4_ACT_Lindsey0 329 329 UnscaledFrame 0 0 20 0 0 CK4_LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey1
+%action CK4_ACT_Lindsey1 330 330 UnscaledFrame 0 0 20 0 0 CK4_LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey2
+%action CK4_ACT_Lindsey2 331 331 UnscaledFrame 0 0 20 0 0 CK4_LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey3
+%action CK4_ACT_Lindsey3 332 332 UnscaledFrame 0 0 20 0 0 CK4_LindseyFloat NULL CK_BasicDrawFunc1 CK4_ACT_Lindsey0
 
 # Dartguns
-#%action CK4_ACT_DartGun0 256 256 0 0 0 0x6 0 0 DartGun NULL NULL CK4_ACT_DartGun0
-#%action CK4_ACT_DartHorz0 386 384 0 0 0 0 0x0 0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartHorz1
-#%action CK4_ACT_DartHorz1 387 385 0 0 0 0 0x0 0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartHorz0
-#%action CK4_ACT_DartUp0 380 380 0 0 0 0 0 0x0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartUp1
-#%action CK4_ACT_DartUp1 381 381 0 0 0 0 0 0x0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartUp0
-#%action CK4_ACT_DartDown0 382 382 0 0 0 0 0 0x0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartDown1
-#%action CK4_ACT_DartDown1 383 383 0 0 0 0 0 0x0 NULL CK_LethalCol DrawProjectile CK4_ACT_DartDown0
+%action CK4_ACT_DartGun0 256 256 UnscaledOnce 0 0 150 0 0 CK4_DartGun NULL NULL CK4_ACT_DartGun0
+%action CK4_ACT_DartHorz0 386 384 ScaledOnce 0 0 0 0x40 0 NULL CK_LethalCol CK4_ProjectileDraw CK4_ACT_DartHorz1
+%action CK4_ACT_DartHorz1 387 385 ScaledOnce 0 0 0 0x40 0 NULL CK_LethalCol CK4_ProjectileDraw CK4_ACT_DartHorz0
+%action CK4_ACT_DartUp0 380 380 ScaledOnce 0 0 0 0 0x40 NULL CK_LethalCol CK4_ProjectileDraw CK4_ACT_DartUp1
+%action CK4_ACT_DartUp1 381 381 ScaledOnce 0 0 0 0 0x40 NULL CK_LethalCol CK4_ProjectileDraw CK4_ACT_DartUp0
+%action CK4_ACT_DartDown0 382 382 ScaledOnce 0 0 0 0 0x40 NULL CK_LethalCol CK4_ProjectileDraw CK4_ACT_DartDown1
+%action CK4_ACT_DartDown1 383 383 ScaledOnce 0 0 0 0 0x40 NULL CK_LethalCol CK4_ProjectileDraw CK4_ACT_DartDown0
 
 # Wetsuit
-#%action CK4_ACT_Wetsuit0 430 430 0 0 0 0x530 0 0 NULL WetsuitCollide CK_BasicDrawFunc1 CK4_ACT_Wetsuit0
+%action CK4_ACT_Wetsuit0 430 430 UnscaledOnce 0 0 30000 0 0 NULL CK4_WetsuitCol CK_BasicDrawFunc1 CK4_ACT_Wetsuit0
 #
