@@ -75,6 +75,7 @@ void CK5_SpawnKorath(int tileX, int tileY);
 void CK5_QEDSpawn(int tileX, int tileY);
 
 /* ck5_map.c */
+void CK5_MapMiscFlagsCheck(CK_object *keen);
 void CK_SpawnMapKeen(int tileX, int tileY);
 void CK5_MapKeenTeleSpawn(int tileX, int tileY);
 

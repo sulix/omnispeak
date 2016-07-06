@@ -620,7 +620,10 @@ bool CK_DebugKeys()
 			ck_gameState.keyGems[i]++;
 
 		ck_gameState.numShots = 99;
-		ck_gameState.ep.ck5.securityCard = 1;
+    if (ck_currentEpisode->ep == EP_CK4)
+      ck_gameState.ep.ck4.wetsuit = 1;
+    else if (ck_currentEpisode->ep == EP_CK5)
+      ck_gameState.ep.ck5.securityCard = 1;
 		VL_Present();
 		IN_WaitButton();
 		CK_IncreaseScore(3000);
@@ -1395,7 +1398,7 @@ int CK_PlayLoop()
 		//TODO: If not world map, check keen -> item-tile collision.
 
 		if (ca_mapOn == 0)
-			CK_MapMiscFlagsCheck(ck_keenObj);
+      ck_currentEpisode->mapMiscFlagsCheck(ck_keenObj);
 		else
 			CK_KeenCheckSpecialTileInfo(ck_keenObj);
 

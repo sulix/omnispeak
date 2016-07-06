@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CK_EP_H
 #define CK_EP_H
 
+struct CK_object;
+
 typedef enum CK_Episode
 {
   EP_Nil,
@@ -46,6 +48,9 @@ typedef struct CK_EpisodeDef
 
   // Faux-#define episode-dependent constants
 	void (*defineConstants)();
+
+  // World map miscflags check function
+  void (*mapMiscFlagsCheck)(struct CK_object*);
 } CK_EpisodeDef;
 
 extern CK_EpisodeDef *ck_currentEpisode;

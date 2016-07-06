@@ -34,7 +34,8 @@ CK_EpisodeDef ck5_episode ={
 	"CK5",
 	&CK5_SetupFunctions,
 	&CK5_ScanInfoLayer,
-  &CK5_DefineConstants
+  &CK5_DefineConstants,
+  &CK5_MapMiscFlagsCheck,
 };
 
 

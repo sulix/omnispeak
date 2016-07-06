@@ -34,6 +34,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // =========================================================================
 
+//Thisis called from playloop
+
+#define MISCFLAG_TELEPORT 0x14
+#define MISCFLAG_LEFTELEVATOR 0x21
+#define MISCFLAG_RIGHTELEVATOR 0x22
+
+void CK5_MapMiscFlagsCheck(CK_object *keen)
+{
+
+	int midTileX, midTileY;
+
+	if (keen->user3)
+		return;
+
+	midTileX = keen->clipRects.tileXmid;
+	midTileY = ((keen->clipRects.unitY2 - keen->clipRects.unitY1) / 2 + keen->clipRects.unitY1) >> 8;
+
+	switch (TI_ForeMisc(CA_TileAtPos(midTileX, midTileY, 1)))
+	{
+
+	case MISCFLAG_TELEPORT:
+		CK5_AnimateMapTeleporter(midTileX, midTileY);
+		break;
+
+	case MISCFLAG_LEFTELEVATOR:
+		CK5_AnimateMapElevator(midTileX, midTileY, 0);
+		break;
+
+	case MISCFLAG_RIGHTELEVATOR:
+		CK5_AnimateMapElevator(midTileX, midTileY, -1);
+		break;
+	}
+}
+
+
 void CK5_MapKeenTeleSpawn(int tileX, int tileY)
 {
 

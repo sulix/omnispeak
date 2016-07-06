@@ -138,6 +138,10 @@ typedef enum CK_MiscFlag
   MF_KeyholderB,
   MF_KeyholderC,
   MF_KeyholderD,
+  MF_WaterN,
+  MF_WaterE,
+  MF_WaterS,
+  MF_WaterW,
   MF_BridgeSwitch = 15,
   MF_Moon = 16,
   MF_PathArrow = 17,
@@ -377,7 +381,7 @@ int *ck_mapKeenFrames;
 
 void CK_DemoSignSpawn();
 void CK_UpdateScoreBox(CK_object *scorebox);
-void CK_MapMiscFlagsCheck(CK_object *keen);
+void CK_SpawnMapKeen(int tileX, int tileY);
 void CK_MapFlagSpawn(int tileX, int tileY);
 void CK_FlippingFlagSpawn(int tileX, int tileY);
 void CK_Map_SetupFunctions();

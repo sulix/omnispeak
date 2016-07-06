@@ -27,7 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SOUND_MIMROCKJUMP 15
 #define SOUND_MUSHROOMLEAP 16
 #define SOUND_SKYPESTSQUISH 22
-#define SOUND_DOPEFISHBURP 26
+#define SOUND_KEENSWIMHI 26
+#define SOUND_KEENSWIMLO 27
 #define SOUND_MUSHROOMHOP 28
 #define SOUND_SMIRKYSTEAL 29
 #define SOUND_SMIRKYTELE 30
@@ -40,6 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SOUND_LIGHTNINGBOLT 39
 #define SOUND_FIREBALLLAND 40
 #define SOUND_DARTSHOOT 41
+#define SOUND_DOPEFISHBURP 42
 #define SOUND_FOOTAPPEAR 45
 #define SOUND_SLUGSLIME 46
 
@@ -104,9 +106,7 @@ void CK4_SpawnDartGun(int tileX, int tileY, int direction);
 void CK4_SpawnWetsuit(int tileX, int tileY);
 
 /* ck4_map.c */
-void CK_DemoSignSpawn();
-void CK_UpdateScoreBox(CK_object *scorebox);
-void CK_SpawnMapKeen(int tileX, int tileY);
+void CK4_MapMiscFlagsCheck(CK_object *keen);
 
 /* Map functions */
 void CK_MapMiscFlagsCheck(CK_object *keen);

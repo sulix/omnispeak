@@ -414,39 +414,6 @@ void CK_MapKeenWalk(CK_object * obj)
 	}
 }
 
-//Thisis called from playloop
-
-#define MISCFLAG_TELEPORT 0x14
-#define MISCFLAG_LEFTELEVATOR 0x21
-#define MISCFLAG_RIGHTELEVATOR 0x22
-
-void CK_MapMiscFlagsCheck(CK_object *keen)
-{
-
-	int midTileX, midTileY;
-
-	if (keen->user3)
-		return;
-
-	midTileX = keen->clipRects.tileXmid;
-	midTileY = ((keen->clipRects.unitY2 - keen->clipRects.unitY1) / 2 + keen->clipRects.unitY1) >> 8;
-
-	switch (TI_ForeMisc(CA_TileAtPos(midTileX, midTileY, 1)))
-	{
-
-	case MISCFLAG_TELEPORT:
-		CK5_AnimateMapTeleporter(midTileX, midTileY);
-		break;
-
-	case MISCFLAG_LEFTELEVATOR:
-		CK5_AnimateMapElevator(midTileX, midTileY, 0);
-		break;
-
-	case MISCFLAG_RIGHTELEVATOR:
-		CK5_AnimateMapElevator(midTileX, midTileY, -1);
-		break;
-	}
-}
 
 // =========================================================================
 // Map Flags

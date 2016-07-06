@@ -481,7 +481,8 @@ replayLevel:
 		{
 			memset(ck_gameState.keyGems, 0, sizeof (ck_gameState.keyGems));
 			// TODO: This is probably (but not necessarily) Keen 5 specific
-			ck_gameState.ep.ck5.securityCard = 0;
+      if (ck_currentEpisode->ep == EP_CK5)
+        ck_gameState.ep.ck5.securityCard = 0;
 		}
 
 		//TODO: Some TED launching stuff

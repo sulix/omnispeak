@@ -157,7 +157,7 @@
 %action CK4_ACT_MapKeenFoot0 296 296 UnscaledFrame 0 0 30 0 0 CK4_MapKeenFoot NULL CK_BasicDrawFunc1 CK4_ACT_MapKeenFoot1
 %action CK4_ACT_MapKeenFoot1 297 297 UnscaledFrame 0 0 30 0 0 CK4_MapKeenFoot NULL CK_BasicDrawFunc1 CK4_ACT_MapKeenFoot0
 
-#%action a_MapKeenSwim0 0x2EE714CE W W W W W W 0W 0W MapKeenSwim NULL DrawFunc1 a_MapKeenSwim0
+%action CK4_ACT_MapKeenSwim0 0 0 ScaledOnce 1 0 6 0x10 0x10 CK4_MapKeenSwim NULL CK_BasicDrawFunc1 CK4_ACT_MapKeenSwim0
 
 
 %action CK_ACT_MapFlagFlips0 298 298 Frame 0 0 6 0 0 CK_MapFlagThrown NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips1
