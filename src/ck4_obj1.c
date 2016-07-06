@@ -458,7 +458,7 @@ void CK4_SpawnSkypest(int tileX, int tileY)
   obj->posX = tileX << G_T_SHIFT;
   obj->posY = tileY << G_T_SHIFT;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
-  obj->yDirection = US_RndT() < 0x80 ? IN_motion_Down : IN_motion_Right;
+  obj->yDirection = US_RndT() < 0x80 ? IN_motion_Down : IN_motion_Up;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_SkypestFly0"));
 }
 
