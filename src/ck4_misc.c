@@ -533,8 +533,7 @@ void CK4_ScanInfoLayer()
 			case 3:
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
-				if (ck_gameState.levelState != 13)
-					CK_SpawnMapKeen(x, y);
+				CK_SpawnMapKeen(x, y);
 				break;
 
       case 4:

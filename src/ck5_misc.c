@@ -672,7 +672,7 @@ void CK5_ScanInfoLayer()
 			case 3:
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
-				if (ck_gameState.levelState != 13)
+				if (ck_gameState.levelState != LS_TeleportToKorath)
 					CK_SpawnMapKeen(x, y);
 				break;
 
@@ -737,7 +737,7 @@ void CK5_ScanInfoLayer()
 				break;
 			case 26:
 				//RF_SetScrollBlock(x, y, false);
-				if (ck_gameState.levelState == 13)
+				if (ck_gameState.levelState == LS_TeleportToKorath)
 					CK5_MapKeenTeleSpawn(x, y);
 				break;
 			case 27:

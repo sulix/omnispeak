@@ -171,6 +171,7 @@ typedef enum CK_LevelState
   LS_CouncilRescued = 3,      // Rescued Council Member (Keen 4)
   LS_AboutToRecordDemo = 4,   // About to Record Demo
   LS_Foot = 7,                // Keen exited level by touching foot (keen 4)
+  LS_TeleportToKorath = 13,   // Keen teleported to Korath III Base (Keen 5)
   LS_DestroyedQED = 15,       // Destroyed QED (Keen 5)
 } CK_LevelState;
 

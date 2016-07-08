@@ -451,18 +451,21 @@ void CK_KeenEnterDoor(CK_object *obj)
 {
 	uint16_t destination = CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2, 2);
 
-	if (destination == 0x0000)
+	if (ck_currentEpisode->ep == EP_CK5)
 	{
-		ck_gameState.levelState = 13;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenEnteredDoor");
-		return;
-	}
+		if (destination == 0x0000)
+		{
+			ck_gameState.levelState = LS_TeleportToKorath;
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenEnteredDoor");
+			return;
+		}
 
-	if (destination == 0xB1B1)
-	{
-		ck_gameState.levelState = 2;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenEnteredDoor");
-		return;
+		if (destination == 0xB1B1)
+		{
+			ck_gameState.levelState = LS_LevelComplete;
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenEnteredDoor");
+			return;
+		}
 	}
 
 	obj->posY = ((destination&0xFF) << 8) - 256 + 15;
