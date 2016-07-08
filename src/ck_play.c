@@ -424,7 +424,7 @@ void CK_RunAction(CK_object *obj)
 	{
 		obj->gfxChunk = (obj->xDirection > 0) ? prevAction->chunkRight : prevAction->chunkLeft;
 	}
-	if (obj->gfxChunk == -1)
+	if (obj->gfxChunk == (uint16_t)-1)
 	{
 		obj->gfxChunk = 0;
 	}
