@@ -28,20 +28,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 typedef struct CK_objPhysData
 {
 	// Unit cliping box
-	int unitX1;
-	int unitY1;
-	int unitX2;
-	int unitY2;
-	int unitXmid;
+	uint16_t unitX1;
+	uint16_t unitY1;
+	uint16_t unitX2;
+	uint16_t unitY2;
+	uint16_t unitXmid;
 
 
 	// Tile clipping box
-	int tileX1;
-	int tileY1;
-	int tileX2;
-	int tileY2;
-	int tileXmid;
+	uint16_t tileX1;
+	uint16_t tileY1;
+	uint16_t tileX2;
+	uint16_t tileY2;
+	uint16_t tileXmid;
 } CK_objPhysData;
+
+typedef struct CK_objPhysDataDelta
+{
+	int16_t unitX1;
+	int16_t unitY1;
+	int16_t unitX2;
+	int16_t unitY2;
+	int16_t unitXmid;
+} CK_objPhysDataDelta;
 
 
 struct CK_object;

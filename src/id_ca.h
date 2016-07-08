@@ -117,9 +117,9 @@ extern void	(*ca_finishCacheBox)	(void);
 
 
 void CA_CacheMap(int mapIndex);
-uint16_t *CA_TilePtrAtPos(int x, int y, int plane);
-uint16_t CA_TileAtPos(int x, int y, int plane);
-void CA_SetTileAtPos(int x, int y, int plane, int value);
+uint16_t *CA_TilePtrAtPos(int16_t x, int16_t y, int16_t plane);
+uint16_t CA_TileAtPos(int16_t x, int16_t y, int16_t plane);
+void CA_SetTileAtPos(int16_t x, int16_t y, int16_t plane, uint16_t value);
 uint16_t CA_GetMapHeight();
 uint16_t CA_GetMapWidth();
 

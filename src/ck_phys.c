@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdio.h>
 #include <stdlib.h> /* For abs() */
 
-static int ck_physSlopeHeight[8][16] ={
+static int16_t ck_physSlopeHeight[8][16] ={
 	{ 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100 },
 	{   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0,   0x0 },
 	{   0x0,   0x8,  0x10,  0x18,  0x20,  0x28,  0x30,  0x38,  0x40,  0x48,  0x50,  0x58,  0x60,  0x68,  0x70,  0x78 },
@@ -40,9 +40,9 @@ static int ck_physSlopeHeight[8][16] ={
 };
 
 CK_objPhysData ck_oldRects;
-CK_objPhysData ck_deltaRects;
-int ck_nextX;
-int ck_nextY;
+CK_objPhysDataDelta ck_deltaRects;
+int16_t ck_nextX;
+int16_t ck_nextY;
 
 extern CK_object *ck_keenObj;
 
@@ -97,7 +97,7 @@ void CK_SetDeltaClipRects(CK_object *obj)
 	// We don't calculate tile deltas.
 }
 
-void CK_PhysUpdateX(CK_object *obj, int deltaUnitX)
+void CK_PhysUpdateX(CK_object *obj, int16_t deltaUnitX)
 {
 	obj->posX += deltaUnitX;
 	obj->clipRects.unitX1 += deltaUnitX;
@@ -111,7 +111,7 @@ void CK_PhysUpdateX(CK_object *obj, int deltaUnitX)
 	obj->clipRects.tileX2 = obj->clipRects.unitX2 >> 8;
 }
 
-void CK_PhysUpdateY(CK_object *obj, int deltaUnitY)
+void CK_PhysUpdateY(CK_object *obj, int16_t deltaUnitY)
 {
 	obj->posY += deltaUnitY;
 	obj->clipRects.unitY1 += deltaUnitY;
@@ -124,11 +124,11 @@ void CK_PhysUpdateY(CK_object *obj, int deltaUnitY)
 void CK_PhysKeenClipDown(CK_object *obj)
 {
 	// Amount we're moving in each direction.
-	int deltaX, deltaY;
+	int16_t deltaX, deltaY;
 	// The part of the slope we care about (in px)
-	int midTileXOffset;
+	int16_t midTileXOffset;
 	// The top of the tile at Keen's feet.
-	int topTI;
+	int16_t topTI;
 	// Is there space above the slope?
 	bool spaceAbove = false;
 
@@ -170,8 +170,8 @@ void CK_PhysKeenClipDown(CK_object *obj)
 	// on a slope before doing slope calculations. Something fishy, methinks.
 	if (spaceAbove && (topTI == 1))
 	{
-		int slope = ck_physSlopeHeight[(topTI & 7)][midTileXOffset];
-		int deltaY = (obj->clipRects.tileY2 << 8) + slope - 1 - obj->clipRects.unitY2;
+		int16_t slope = ck_physSlopeHeight[(topTI & 7)][midTileXOffset];
+		int16_t deltaY = (obj->clipRects.tileY2 << 8) + slope - 1 - obj->clipRects.unitY2;
 		if (deltaY <= 0 && -(ck_deltaRects.unitY2) <= deltaY)
 		{
 			obj->topTI = topTI;
@@ -183,9 +183,9 @@ void CK_PhysKeenClipDown(CK_object *obj)
 
 void CK_PhysKeenClipUp(CK_object *obj)
 {
-	int deltaX, deltaY;
-	int midTileXOffset;
-	int bottomTI;
+	int16_t deltaX, deltaY;
+	int16_t midTileXOffset;
+	int16_t bottomTI;
 	bool spaceBelow;
 
 	if (obj->xDirection == 1)
@@ -211,7 +211,7 @@ void CK_PhysKeenClipUp(CK_object *obj)
 
 	if (spaceBelow && bottomTI)
 	{
-		int slopeAmt = ck_physSlopeHeight[bottomTI & 0x07][midTileXOffset];
+		int16_t slopeAmt = ck_physSlopeHeight[bottomTI & 0x07][midTileXOffset];
 		deltaY = ((obj->clipRects.tileY1 + 1) << 8) - slopeAmt - obj->clipRects.unitY1;
 		if (deltaY >= 0 && (-ck_deltaRects.unitY1) >= deltaY)
 		{
@@ -264,26 +264,26 @@ bool CK_PreviewClipRects(CK_object *obj, CK_action *act)
 
 void CK_PhysClipVert(CK_object *obj)
 {
-	int midTileXOffset = (obj->clipRects.unitXmid >> 4) & 0x0F;
+	int16_t midTileXOffset = (obj->clipRects.unitXmid >> 4) & 0x0F;
 
 
 
 
-	int vertDisplace = -abs(ck_deltaRects.unitXmid) - ck_deltaRects.unitY2 - 16;	// Move above slope first.
+	int16_t vertDisplace = -abs(ck_deltaRects.unitXmid) - ck_deltaRects.unitY2 - 16;	// Move above slope first.
 
 
 
-	for (int y = ck_oldRects.tileY2 - 1; obj->clipRects.tileY2 >= y; ++y)
+	for (uint16_t y = ck_oldRects.tileY2 - 1; obj->clipRects.tileY2 >= y; ++y)
 	{
-		int tile = CA_TileAtPos(obj->clipRects.tileXmid, y, 1);
+		int16_t tile = CA_TileAtPos(obj->clipRects.tileXmid, y, 1);
 		if (TI_ForeTop(tile))
 		{
 
-			int slopeAmt = ck_physSlopeHeight[TI_ForeTop(tile)&0x07][midTileXOffset];
+			int16_t slopeAmt = ck_physSlopeHeight[TI_ForeTop(tile)&0x07][midTileXOffset];
 
-			int objYOffset = obj->clipRects.unitY2 - (y * 256);
+			int16_t objYOffset = obj->clipRects.unitY2 - (y * 256);
 
-			int dy = (slopeAmt - objYOffset) - 1;
+			int16_t dy = (slopeAmt - objYOffset) - 1;
 			if ((dy < 0) && (dy >= vertDisplace))
 			{
 				obj->topTI = TI_ForeTop(tile);
@@ -295,16 +295,16 @@ void CK_PhysClipVert(CK_object *obj)
 	}
 	vertDisplace = abs(ck_deltaRects.unitXmid) - ck_deltaRects.unitY1 + 16;
 
-	for (int y = ck_oldRects.tileY1 + 1; y >= obj->clipRects.tileY1; --y)
+	for (uint16_t y = ck_oldRects.tileY1 + 1; y >= obj->clipRects.tileY1; --y)
 	{
-		int tile = CA_TileAtPos(obj->clipRects.tileXmid, y, 1);
+		int16_t tile = CA_TileAtPos(obj->clipRects.tileXmid, y, 1);
 
 		if (TI_ForeBottom(tile))
 		{
 
-			int objYOffset = obj->clipRects.unitY1 - ((y + 1) << 8);
+			int16_t objYOffset = obj->clipRects.unitY1 - ((y + 1) << 8);
 
-			int slopeAmt = -ck_physSlopeHeight[TI_ForeBottom(tile)&0x07][midTileXOffset];
+			int16_t slopeAmt = -ck_physSlopeHeight[TI_ForeBottom(tile)&0x07][midTileXOffset];
 
 			if ((slopeAmt - objYOffset > 0) && ((slopeAmt - objYOffset) <= vertDisplace) && ((ck_nextY + slopeAmt - objYOffset) < 256) && ((ck_nextY + slopeAmt - objYOffset) > -256))
 			{
@@ -317,8 +317,8 @@ void CK_PhysClipVert(CK_object *obj)
 
 void CK_PhysClipHorz(CK_object *obj)
 {
-	int tileY1 = obj->clipRects.tileY1;
-	int tileY2 = obj->clipRects.tileY2;
+	uint16_t tileY1 = obj->clipRects.tileY1;
+	uint16_t tileY2 = obj->clipRects.tileY2;
 
 	//TODO: Increment on topFlags, bottomFlags.
 	if (obj->topTI > 1)	//If we're on a slope
@@ -332,9 +332,9 @@ void CK_PhysClipHorz(CK_object *obj)
 
 
 	//Check if our left side is intersecting with a wall.
-	for (int y = tileY1; y <= tileY2; ++y)
+	for (uint16_t y = tileY1; y <= tileY2; ++y)
 	{
-		int tile = CA_TileAtPos(obj->clipRects.tileX1, y, 1);
+		int16_t tile = CA_TileAtPos(obj->clipRects.tileX1, y, 1);
 		obj->rightTI = TI_ForeRight(tile);
 		if (obj->rightTI)
 		{
@@ -346,9 +346,9 @@ void CK_PhysClipHorz(CK_object *obj)
 	}
 
 	//Similarly for the right side (left side of instersecting tile).
-	for (int y = tileY1; y <= tileY2; ++y)
+	for (uint16_t y = tileY1; y <= tileY2; ++y)
 	{
-		int tile = CA_TileAtPos(obj->clipRects.tileX2, y, 1);
+		int16_t tile = CA_TileAtPos(obj->clipRects.tileX2, y, 1);
 		obj->leftTI = TI_ForeLeft(tile);
 		if (obj->leftTI)
 		{
@@ -364,7 +364,7 @@ void CK_PhysClipHorz(CK_object *obj)
 
 void CK_PhysUpdateNormalObj(CK_object *obj)
 {
-	int oldUnitX, oldUnitY;
+	uint16_t oldUnitX, oldUnitY;
 	bool wasNotOnPlatform = false;
 	oldUnitX = obj->posX;
 	oldUnitY = obj->posY;
@@ -471,8 +471,8 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 
 void CK_PhysFullClipToWalls(CK_object *obj)
 {
-	int16_t oldUnitX = obj->posX;
-	int16_t oldUnitY = obj->posY;
+	uint16_t oldUnitX = obj->posX;
+	uint16_t oldUnitY = obj->posY;
 
 	if (ck_nextX > 239)
 		ck_nextX = 239;
@@ -585,7 +585,7 @@ badobjclass:
 
 void CK_PhysUpdateSimpleObj(CK_object *obj)
 {
-	int oldUnitX, oldUnitY;
+	uint16_t oldUnitX, oldUnitY;
 	oldUnitX = obj->posX;
 	oldUnitY = obj->posY;
 

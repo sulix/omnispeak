@@ -1001,17 +1001,17 @@ void CA_LoadAllSounds(void)
 //extern int ck_currentMapNumber;
 //UPDATE (Mar 6 2014): The var above is now ck_gameState.currentLevel.
 
-uint16_t *CA_TilePtrAtPos(int x, int y, int plane)
+uint16_t *CA_TilePtrAtPos(int16_t x, int16_t y, int16_t plane)
 {
 	return &CA_mapPlanes[plane][y*CA_MapHeaders[ca_mapOn]->width+x];
 }
 
-uint16_t CA_TileAtPos(int x, int y, int plane)
+uint16_t CA_TileAtPos(int16_t x, int16_t y, int16_t plane)
 {
 	return CA_mapPlanes[plane][y*CA_MapHeaders[ca_mapOn]->width+x];
 }
 
-void CA_SetTileAtPos(int x, int y, int plane, int value)
+void CA_SetTileAtPos(int16_t x, int16_t y, int16_t plane, uint16_t value)
 {
 	CA_mapPlanes[plane][y*CA_MapHeaders[ca_mapOn]->width+x] = value;
 }

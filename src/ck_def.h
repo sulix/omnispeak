@@ -258,23 +258,23 @@ typedef enum CK_clipped
 
 typedef struct CK_object
 {
-	int type;
+	int16_t type;
 	CK_objActive active;
 	bool visible;
 	CK_ClipType clipped;
-	int timeUntillThink;
-	int posX;
-	int posY;
-	int xDirection;
-	int yDirection;
-	int deltaPosX;
-	int deltaPosY;
-	int velX;
-	int velY;
-	int actionTimer;
+	uint16_t timeUntillThink;
+	uint16_t posX;
+	uint16_t posY;
+	int16_t xDirection;
+	int16_t yDirection;
+	int16_t deltaPosX;
+	int16_t deltaPosY;
+	int16_t velX;
+	int16_t velY;
+	int16_t actionTimer;
 	CK_action *currentAction;
-	int gfxChunk;
-	int zLayer;
+	uint16_t gfxChunk;
+	int16_t zLayer;
 
 	CK_objPhysData clipRects;
 
@@ -289,7 +289,7 @@ typedef struct CK_object
 #endif
 
 	//TileInfo for surrounding tiles.
-	int topTI, bottomTI, leftTI, rightTI;
+	int16_t topTI, bottomTI, leftTI, rightTI;
 
 
 	struct RF_SpriteDrawEntry *sde;
@@ -304,9 +304,9 @@ typedef struct CK_object
 } CK_object;
 
 extern CK_objPhysData ck_oldrects;
-extern CK_objPhysData ck_deltarects;
-extern int ck_nextX;
-extern int ck_nextY;
+extern CK_objPhysDataDelta ck_deltarects;
+extern int16_t ck_nextX;
+extern int16_t ck_nextY;
 
 typedef struct CK_keenState
 {
