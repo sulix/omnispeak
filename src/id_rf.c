@@ -755,6 +755,7 @@ void RF_RepositionLimit(int scrollXunit, int scrollYunit)
 		{
 			// reposition ourselves to be above it.
 			rf_scrollYUnit = (rf_vertScrollBlocks[scrollBlockID] << 8) - 0xD00;
+			break;
 		}
 	}
 
