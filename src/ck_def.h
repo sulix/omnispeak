@@ -278,16 +278,6 @@ typedef struct CK_object
 
 	CK_objPhysData clipRects;
 
-	// In real keen, these are shared, so we're moving them out.
-#if 0
-	CK_objPhysData oldRects;
-
-	CK_objPhysData deltaRects;
-
-	int nextX;
-	int nextY;
-#endif
-
 	//TileInfo for surrounding tiles.
 	int16_t topTI, bottomTI, leftTI, rightTI;
 
