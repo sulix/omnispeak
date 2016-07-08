@@ -483,7 +483,9 @@ void CK4_SkypestAirCol(CK_object *a, CK_object *b)
   {
     CK_KillKeen();
   }
-  else if (b->type == CT_Stunner)
+  // There's no "else" in the original Keen 4 EXE so, so let's omit it for
+  // the sake of consistency, even if there's no change to behaviors
+  if (b->type == CT_Stunner)
   {
     if (b->xDirection == IN_motion_Right)
       a->velX = 20;
@@ -500,10 +502,9 @@ void CK4_SkypestAirCol(CK_object *a, CK_object *b)
 
 void CK4_SkypestGroundCol(CK_object *a, CK_object *b)
 {
-  if (b->type == CT_Player && (
-      b->currentAction == CK_GetActionByName("CK_ACT_keenPogo1") ||
+  if (b->currentAction == CK_GetActionByName("CK_ACT_keenPogo1") ||
       b->currentAction == CK_GetActionByName("CK_ACT_keenPogo2") ||
-      b->currentAction == CK_GetActionByName("CK_ACT_keenPogo3")))
+      b->currentAction == CK_GetActionByName("CK_ACT_keenPogo3"))
   {
     CK_SetAction2(a, CK_GetActionByName("CK4_ACT_SkypestSquish0"));
     SD_PlaySound(SOUND_SKYPESTSQUISH);
