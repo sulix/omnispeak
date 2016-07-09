@@ -341,6 +341,7 @@ void CK_ExitMenu(void);
 
 /* ck_inter.c */
 extern bool ck_inHighScores;
+extern uint8_t *ck_starWarsPalette;
 
 void CK_DrawTerminator(void);
 void CK_DrawStarWars(void);

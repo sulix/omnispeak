@@ -53,6 +53,11 @@ void CK4_SetupFunctions()
   CK4_Misc_SetupFunctions();
 }
 
+// ck_inter.c
+uint8_t ck4_starWarsPalette[] = {
+	0x00, 0x01, 0x02, 0x03, 0x04, 0x10, 0x06, 0x07,
+	0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x00};
+
 // HACK: Sorry, the strings need to be in WRITABLE storage,
 // because US_CPrint (temporarily) modifies them.
 
@@ -180,6 +185,8 @@ const char *ck4_levelNames[] = {
   "Well of Wishes",
   "Bean-with-Bacon\nMegarocket"
 };
+
+// ck_keen.c
 
 soundnames ck4_itemSounds[]  = { 19, 19, 19, 19, 8,8,8,8,8,8, 17, 9, 55 };
 int16_t ck4_itemShadows[] = {250, 250, 250, 250, 219, 220, 221, 222, 223, 224, 225, 226};
@@ -333,6 +340,9 @@ void CK4_DefineConstants(void)
   LASTSOUND = 52;
 
   STR_EXIT_TO_MAP = "Exit to Shadowlands";
+
+  // ck_inter.c
+  ck_starWarsPalette = ck4_starWarsPalette;
 
   // ck_game.c
   ck_levelEntryTexts = ck4_levelEntryTexts;

@@ -200,6 +200,11 @@ void CK5_SetupFunctions()
 	CK_ACT_AddFunction("CK5_LevelEnd", &CK5_LevelEnd);
 }
 
+// ck_inter.c
+uint8_t ck5_starWarsPalette[] = {
+	0x00, 0x01, 0x18, 0x1E, 0x1F, 0x1C, 0x06, 0x07,
+	0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x00};
+
 // HACK: Sorry, the strings need to be in WRITABLE storage,
 // because US_CPrint (temporarily) modifies them.
 
@@ -315,6 +320,7 @@ const char *ck5_levelNames[] = {
 };
 
 // ck_keen.c
+
 /*
 soundnames ck5_itemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM,
                                SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,
@@ -502,6 +508,9 @@ void CK5_DefineConstants(void)
   LASTMUSTRACK = 14;
 
   STR_EXIT_TO_MAP = "Exit to Armageddon";
+
+  // ck_inter.c
+  ck_starWarsPalette = ck5_starWarsPalette;
 
   // ck_game.c
   ck_levelEntryTexts = ck5_levelEntryTexts;
