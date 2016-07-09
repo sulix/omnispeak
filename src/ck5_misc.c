@@ -328,7 +328,7 @@ soundnames ck5_itemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND
 };
 */
 soundnames ck5_itemSounds[]  = { 19, 19, 19, 19, 8,8,8,8,8,8, 17, 9, 55 };
-int16_t ck5_itemShadows[] = {232, 232, 232, 232, 195, 196, 197,  198,  199,  200, 201, 202, 209};
+uint16_t ck5_itemShadows[] = {232, 232, 232, 232, 195, 196, 197,  198,  199,  200, 201, 202, 209};
 
 // ck_map.c
 int ck5_mapKeenFrames[] = { 0xF7, 0x106, 0xF4, 0xFD, 0xFA, 0x100, 0xF1, 0x103 };

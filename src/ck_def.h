@@ -355,8 +355,8 @@ void CK_SubmitHighScore(int score, uint16_t arg4);
 void CK_DoHighScores();
 
 /* ck_keen.c */
-soundnames *ck_itemSounds;
-uint16_t *ck_itemShadows;
+extern soundnames *ck_itemSounds;
+extern uint16_t *ck_itemShadows;
 
 void CK_IncreaseScore(int score);
 void CK_KillKeen();
@@ -369,7 +369,7 @@ void CK_OBJ_SetupFunctions();
 void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h);
 
 /* ck_map.c */
-int *ck_mapKeenFrames;
+extern int *ck_mapKeenFrames;
 
 void CK_DemoSignSpawn();
 void CK_UpdateScoreBox(CK_object *scorebox);

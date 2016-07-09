@@ -64,7 +64,7 @@ PFN_ID_GLBLITFRAMEBUFFEREXTPROC id_glBlitFramebufferEXT = 0;
 static bool VL_SDL2GL_LoadGLProcs()
 {
 	int majorGLVersion = 0;
-	const char *GLVersion = glGetString(GL_VERSION);
+	const char *GLVersion = (const char *)glGetString(GL_VERSION);
 	sscanf(GLVersion, "%d", &majorGLVersion);
 	if (majorGLVersion < 2) return false;
 	// OpenGL 1.3

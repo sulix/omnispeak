@@ -189,7 +189,7 @@ const char *ck4_levelNames[] = {
 // ck_keen.c
 
 soundnames ck4_itemSounds[]  = { 19, 19, 19, 19, 8,8,8,8,8,8, 17, 9, 55 };
-int16_t ck4_itemShadows[] = {250, 250, 250, 250, 219, 220, 221, 222, 223, 224, 225, 226};
+uint16_t ck4_itemShadows[] = {250, 250, 250, 250, 219, 220, 221, 222, 223, 224, 225, 226};
 
 // ck_map.c
 int ck4_mapKeenFrames[] = { 0x103, 0x112, 0x100, 0x109, 0x106, 0x10c, 0xFD, 0x10f };

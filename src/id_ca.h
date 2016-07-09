@@ -38,7 +38,7 @@ typedef struct ca_audinfo
   uint16_t startPCSounds, startAdlibSounds, startDigiSounds, startMusic;
 } ca_audinfo;
 
-ca_audinfo ca_audInfoE;
+extern ca_audinfo ca_audInfoE;
 
 void CA_CacheAudioChunk(int16_t chunk);
 void CA_LoadAllSounds(void);
