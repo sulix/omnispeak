@@ -197,12 +197,12 @@ void US_CPrint(const char *str)
 			strInLine++;
 		}
 		lastChar = *strInLine;
-		*strInLine = '\0'; // Hence, strLineStart is not const
+		*strInLine = '\0';
 		US_CPrintLine(strLineStart);
 		strLineStart = strInLine;
 		if (lastChar)
 		{
-			*strInLine = lastChar; // Again not const
+			*strInLine = lastChar;
 			strLineStart++;
 		}
 	}
