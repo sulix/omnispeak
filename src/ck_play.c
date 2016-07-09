@@ -128,15 +128,10 @@ void CK_CountActiveObjects()
 
 void CK_DebugMemory()
 {
-	// HACK: US_CPrint modifies strings. So don't use
-	// literals directly. (char * is NOT ok; Use char arrays.)
-	static char memoryUsageString[] = "Memory Usage:";
-	static char memoryUsageBarString[] = "-------------";
-
 	US_CenterWindow(16, 10);
 
-	US_CPrint(memoryUsageString);
-	US_CPrint(memoryUsageBarString);
+	US_CPrint("Memory Usage:");
+	US_CPrint("-------------");
 	US_PrintF("In Use      : %dk", MM_UsedMemory() / 1024);
 	US_PrintF("Blocks      : %d", MM_UsedBlocks());
 	US_PrintF("Purgable    : %d", MM_PurgableBlocks());
@@ -149,10 +144,6 @@ void CK_DebugMemory()
 
 void CK_ItemCheat()
 {
-	// HACK: US_CPrint modifies strings. So don't use
-	// literals directly. (char * is NOT ok; Use char arrays.)
-	static char cheatOptionString[] = "Cheat Option!\n\nYou just got all\nthe keys, 99 shots,\nand an extra keen!";
-
 	int i;
 
 	for (i = IN_SC_A; i <= IN_SC_Z; i++)
@@ -166,7 +157,7 @@ void CK_ItemCheat()
 
 	US_CenterWindow(20, 7);
 	// TODO: PrintY+=2;
-	US_CPrint(cheatOptionString);
+	US_CPrint("Cheat Option!\n\nYou just got all\nthe keys, 99 shots,\nand an extra keen!");
 	VL_Present();
 	IN_WaitButton();
 	//RF_Reset();
