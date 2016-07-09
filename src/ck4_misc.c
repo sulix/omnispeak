@@ -58,110 +58,68 @@ uint8_t ck4_starWarsPalette[] = {
 	0x00, 0x01, 0x02, 0x03, 0x04, 0x10, 0x06, 0x07,
 	0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x00};
 
-// HACK: Sorry, the strings need to be in WRITABLE storage,
-// because US_CPrint (temporarily) modifies them.
-
 // ck_game.c
-char ck4_levelEntryText_0[] =
+const char *ck4_levelEntryTexts[] = {
 	"Keen enters the\n"
-	"Shadowlands\n";
+	"Shadowlands\n",
 
-char ck4_levelEntryText_1[] =
 	"Keen makes a run for\n"
-	"the Border Village";
+	"the Border Village",
 
-char ck4_levelEntryText_2[] =
-  "Keen slips into\n"
-	"Slug Village";
+	"Keen slips into\n"
+	"Slug Village",
 
-char ck4_levelEntryText_3[] =
 	"Keen plummets into\n"
-	"the The Perilous Pit";
+	"the The Perilous Pit",
 
-char ck4_levelEntryText_4[] =
 	"Keen plods down into\n"
 	"the Cave of the\n"
-	"Descendents";
+	"Descendents",
 
-char ck4_levelEntryText_5[] =
 	"Keen shivers along\n"
-	"the Chasm of Chills";
+	"the Chasm of Chills",
 
-char ck4_levelEntryText_6[] =
 	"Keen reflects upon\n"
-	"entering Crystalus";
+	"entering Crystalus",
 
-char ck4_levelEntryText_7[] =
 	"Keen stumbles upon\n"
-	"Hillville";
+	"Hillville",
 
-char ck4_levelEntryText_8[] =
 	"Keen grits his teeth\n"
-	"and enters Sand Yego";
+	"and enters Sand Yego",
 
-char ck4_levelEntryText_9[] =
 	"Keen disappears into\n"
-	"Miragia";
+	"Miragia",
 
-char ck4_levelEntryText_10[] =
 	"Keen crawls into\n"
-	"Lifewater Oasis";
+	"Lifewater Oasis",
 
-char ck4_levelEntryText_11[] =
 	"Keen backs into the\n"
-	"Pyramid of the Moons";
+	"Pyramid of the Moons",
 
-char ck4_levelEntryText_12[] =
-  "Keen move silently in\n"
-	"the Pyramid of Shadows";
+	"Keen move silently in\n"
+	"the Pyramid of Shadows",
 
-char ck4_levelEntryText_13[] =
 	"Keen reverently enters\n"
 	"the Pyramid of the\n"
-	"Gnosticene Ancients";
+	"Gnosticene Ancients",
 
-char ck4_levelEntryText_14[] =
 	"Keen hesitantly crosses\n"
 	"into the Pyramid of the\n"
-	"Forbidden";
+	"Forbidden",
 
-char ck4_levelEntryText_15[] =
 	"Keen mucks along the\n"
-	"Isle of Tar";
+	"Isle of Tar",
 
-char ck4_levelEntryText_16[] =
 	"Keen blazes across the\n"
-	"Isle of Fire";
+	"Isle of Fire",
 
-char ck4_levelEntryText_17[] =
 	"Keen hopefully enters\n"
-	"the Well of Wishes";
+	"the Well of Wishes",
 
-char ck4_levelEntryText_18[] =
 	"Keen launches into the\n"
-  "Bean-with-Bacon\n"
-  "Megarocket";
-
-const char *ck4_levelEntryTexts[] = {
-	ck4_levelEntryText_0,
-	ck4_levelEntryText_1,
-	ck4_levelEntryText_2,
-	ck4_levelEntryText_3,
-	ck4_levelEntryText_4,
-	ck4_levelEntryText_5,
-	ck4_levelEntryText_6,
-	ck4_levelEntryText_7,
-	ck4_levelEntryText_8,
-	ck4_levelEntryText_9,
-	ck4_levelEntryText_10,
-	ck4_levelEntryText_11,
-	ck4_levelEntryText_12,
-	ck4_levelEntryText_13,
-	ck4_levelEntryText_14,
-	ck4_levelEntryText_15,
-	ck4_levelEntryText_16,
-	ck4_levelEntryText_17,
-	ck4_levelEntryText_18,
+	"Bean-with-Bacon\n"
+	"Megarocket",
 };
 
 const char *ck4_levelNames[] = {

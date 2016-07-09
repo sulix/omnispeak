@@ -205,99 +205,63 @@ uint8_t ck5_starWarsPalette[] = {
 	0x00, 0x01, 0x18, 0x1E, 0x1F, 0x1C, 0x06, 0x07,
 	0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x00};
 
-// HACK: Sorry, the strings need to be in WRITABLE storage,
-// because US_CPrint (temporarily) modifies them.
-
 // ck_game.c
-char ck5_levelEntryText_0[] =
+const char *ck5_levelEntryTexts[] = {
 	"Keen purposefully\n"
 	"wanders about the\n"
-	"Omegamatic";
+	"Omegamatic",
 
-char ck5_levelEntryText_1[] =
 	"Keen investigates the\n"
-	"Ion Ventilation System";
+	"Ion Ventilation System",
 
-char ck5_levelEntryText_2[] =
 	"Keen struts through\n"
-	"the Security Center";
+	"the Security Center",
 
-char ck5_levelEntryText_3[] =
 	"Keen invades\n"
-	"Defense Tunnel Vlook";
+	"Defense Tunnel Vlook",
 
-char ck5_levelEntryText_4[] =
 	"Keen engages\n"
-	"Energy Flow Systems";
+	"Energy Flow Systems",
 
-char ck5_levelEntryText_5[] =
 	"Keen barrels into\n"
-	"Defense Tunnel Burrh";
+	"Defense Tunnel Burrh",
 
-char ck5_levelEntryText_6[] =
 	"Keen goes nuts in\n"
 	"the Regulation\n"
-	"Control Center";
+	"Control Center",
 
-char ck5_levelEntryText_7[] =
 	"Keen regrets entering\n"
-	"Defense Tunnel Sorra";
+	"Defense Tunnel Sorra",
 
-char ck5_levelEntryText_8[] =
 	"Keen blows through\n"
 	"the Neutrino\n"
-	"Burst Injector";
+	"Burst Injector",
 
-char ck5_levelEntryText_9[] =
 	"Keen trots through\n"
-	"Defense Tunnel Teln";
+	"Defense Tunnel Teln",
 
-char ck5_levelEntryText_10[] =
 	"Keen breaks into\n"
 	"the Brownian\n"
-	"Motion Inducer";
+	"Motion Inducer",
 
-char ck5_levelEntryText_11[] =
 	"Keen hurries through\n"
 	"the Gravitational\n"
-	"Damping Hub";
+	"Damping Hub",
 
-char ck5_levelEntryText_12[] =
 	"Keen explodes into\n"
 	"the Quantum\n"
-	"Explosion Dynamo";
+	"Explosion Dynamo",
 
-char ck5_levelEntryText_13[] =
 	"Keen faces danger\n"
 	"in the secret\n"
-	"Korath III Base";
+	"Korath III Base",
 
-char ck5_levelEntryText_14[] =
 	"Keen will not be\n"
-	"in the BWBMegarocket";
+	"in the BWBMegarocket",
 
-char ck5_levelEntryText_15[] =
 	"Keen unexplainedly\n"
 	"find himself by\n"
-	"theHigh Scores";
-
-const char *ck5_levelEntryTexts[] = {
-	ck5_levelEntryText_0,
-	ck5_levelEntryText_1,
-	ck5_levelEntryText_2,
-	ck5_levelEntryText_3,
-	ck5_levelEntryText_4,
-	ck5_levelEntryText_5,
-	ck5_levelEntryText_6,
-	ck5_levelEntryText_7,
-	ck5_levelEntryText_8,
-	ck5_levelEntryText_9,
-	ck5_levelEntryText_10,
-	ck5_levelEntryText_11,
-	ck5_levelEntryText_12,
-	ck5_levelEntryText_13,
-	ck5_levelEntryText_14,
-	ck5_levelEntryText_15,
+	"theHigh Scores",
 };
 
 const char *ck5_levelNames[] = {
