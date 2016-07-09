@@ -281,7 +281,7 @@ char ck5_levelEntryText_15[] =
 	"find himself by\n"
 	"theHigh Scores";
 
-char *ck5_levelEntryTexts[] = {
+const char *ck5_levelEntryTexts[] = {
 	ck5_levelEntryText_0,
 	ck5_levelEntryText_1,
 	ck5_levelEntryText_2,

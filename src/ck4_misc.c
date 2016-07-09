@@ -142,7 +142,7 @@ char ck4_levelEntryText_18[] =
   "Bean-with-Bacon\n"
   "Megarocket";
 
-char *ck4_levelEntryTexts[] = {
+const char *ck4_levelEntryTexts[] = {
 	ck4_levelEntryText_0,
 	ck4_levelEntryText_1,
 	ck4_levelEntryText_2,

@@ -186,7 +186,7 @@ void CK_BeginFadeDrawing(void)
 }
 
 
-char **ck_levelEntryTexts;
+const char **ck_levelEntryTexts;
 const char **ck_levelNames;
 
 void CK_LoadLevel(bool doCache)

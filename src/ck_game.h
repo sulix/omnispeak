@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CK_GAME_H
 #define CK_GAME_H
 
-extern char **ck_levelEntryTexts;
+extern const char **ck_levelEntryTexts;
 extern const char **ck_levelNames;
 
 extern int ck_lastLevelFinished;
