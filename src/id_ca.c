@@ -130,11 +130,8 @@ uint8_t ca_graphChunkNeeded[CA_MAX_GRAPH_CHUNKS] = {0};
 ca_gfxinfo ca_gfxInfoE;
 mm_ptr_t ca_graphChunks[CA_MAX_GRAPH_CHUNKS];
 
-/* Keen: custom cachebox hooks
- * NOTE: The string may be temporarily modified
- * by US_CPrint, so it's non-const.
- */
-void	(*ca_beginCacheBox)	(char *title, int numcache);
+// Keen: custom cachebox hooks
+void	(*ca_beginCacheBox)	(const char *title, int numcache);
 void	(*ca_updateCacheBox)	(void);
 void	(*ca_finishCacheBox)	(void);
 
@@ -601,8 +598,7 @@ void CA_MarkGrChunk(int chunk)
 	ca_graphChunkNeeded[chunk] |= ca_levelbit;
 }
 
-// The string may be temporarily modified by US_CPrint, hence it's non-const.
-void CA_CacheMarks(char *msg)
+void CA_CacheMarks(const char *msg)
 {
 	bool isMessage = msg? true : false;
 	int numChunksToCache = 0;

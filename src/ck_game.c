@@ -253,8 +253,7 @@ void CK_LoadLevel(bool doCache)
 
 static int ck_cacheCountdownNum, ck_cacheBoxChunksPerPic, ck_cacheBoxChunkCounter;
 
-// The string may be temporarily modified by US_CPrint, hence it's non-const.
-void CK_BeginCacheBox (char *title, int numChunks)
+void CK_BeginCacheBox (const char *title, int numChunks)
 {
 	int totalfree;
 	uint16_t w, h;

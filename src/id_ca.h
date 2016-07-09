@@ -81,8 +81,7 @@ void CA_SetGrPurge(void);
 void CA_MarkGrChunk(int chunk);
 void CA_LockGrChunk(int chunk);
 
-// The string may be temporarily modified by US_CPrint, hence it's non-const.
-void CA_CacheMarks(char *msg);
+void CA_CacheMarks(const char *msg);
 void CA_UpLevel(void);
 void CA_DownLevel(void);
 
@@ -107,11 +106,8 @@ extern uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
 
 extern uint8_t *CA_audio[CA_MAX_AUDIO_CHUNKS];
 
-/* Keen: custom cachebox hooks
- * NOTE: The string may be temporarily modified
- * by US_CPrint, so it's non-const.
- */
-extern void	(*ca_beginCacheBox)	(char *title, int numcache);
+// Keen: custom cachebox hooks
+extern void	(*ca_beginCacheBox)	(const char *title, int numcache);
 extern void	(*ca_updateCacheBox)	(void);
 extern void	(*ca_finishCacheBox)	(void);
 

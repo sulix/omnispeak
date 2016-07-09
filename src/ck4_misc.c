@@ -1025,7 +1025,7 @@ void CK4_ShowWetsuitMessage(void)
   CA_DownLevel();
 }
 
-char *ck4_councilMessages[] = {
+const char *ck4_councilMessages[] = {
   "No sweat, oh guardian\n"
     "of wisdom!",
 

@@ -210,7 +210,7 @@ int FANFARE_MUS;
 int BRINGEROFWAR_MUS;
 int LASTMUSTRACK;
 
-char *STR_EXIT_TO_MAP;
+const char *STR_EXIT_TO_MAP;
 
 /*
  * Measure the containing box size of a string that spans multiple lines

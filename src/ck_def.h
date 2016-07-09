@@ -568,5 +568,5 @@ extern int FANFARE_MUS;
 extern int BRINGEROFWAR_MUS;
 extern int LASTMUSTRACK;
 
-extern char *STR_EXIT_TO_MAP;
+extern const char *STR_EXIT_TO_MAP;
 #endif
