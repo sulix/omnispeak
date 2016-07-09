@@ -338,7 +338,7 @@ void CK_ScanForLevelEntry(CK_object * obj)
 		for (tx = obj->clipRects.tileX1; tx <= obj->clipRects.tileX2; tx++)
 		{
 			int infotile =CA_TileAtPos(tx, ty, 2);
-			if (infotile > 0xC000 && infotile < 0xC012)
+			if (infotile > 0xC000 && infotile <= 0xC012)
 			{
 				// Vanilla keen stores the current map loaded in the cache manager
 				// and the "current_map" variable stored in the gamestate
