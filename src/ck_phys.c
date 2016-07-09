@@ -750,7 +750,7 @@ void CK_SetAction(CK_object *obj, CK_action *act)
 	if (act->chunkRight && obj->xDirection > 0) obj->gfxChunk = act->chunkRight;
 	else if (act->chunkLeft) obj->gfxChunk = act->chunkLeft;
 
-	if (obj->gfxChunk == -1) obj->gfxChunk = 0;
+	if (obj->gfxChunk == (uint16_t)-1) obj->gfxChunk = 0;
 
 	ck_nextX = 0;
 	ck_nextY = 0;
@@ -781,7 +781,7 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 	if (act->chunkRight && obj->xDirection > 0) obj->gfxChunk = act->chunkRight;
 	else if (act->chunkLeft) obj->gfxChunk = act->chunkLeft;
 #endif
-	if (obj->gfxChunk == -1) obj->gfxChunk = 0;
+	if (obj->gfxChunk == (uint16_t)-1) obj->gfxChunk = 0;
 
 	obj->visible = true;
 	ck_nextX = 0;
