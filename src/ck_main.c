@@ -91,6 +91,8 @@ int SPR_DEMOSIGN;
 
 int SPR_STARS1;
 
+int SPR_CENTILIFE1UPSHADOW;
+
 int SPR_SECURITYCARD_1;
 int SPR_GEM_A1;
 int SPR_GEM_B1;
@@ -299,7 +301,6 @@ void CK_InitGame()
 	MM_SetLock(&ca_graphChunks[MPIC_STATUSLEFT], true);
 	MM_SetLock(&ca_graphChunks[MPIC_STATUSRIGHT], true);
 
-
 	// Compile the actions
 	CK_ACT_SetupFunctions();
 	CK_KeenSetupFunctions();
@@ -313,6 +314,7 @@ void CK_InitGame()
 	VL_InitScreen();
 	// TODO: Palette initialization should be done in the terminator code
 	VL_SetDefaultPalette();
+
 
 	// Setup input
 	IN_Startup();
@@ -329,6 +331,9 @@ void CK_InitGame()
 	VL_ColorBorder(3);
 	VL_ClearScreen(0);
 	VL_Present();
+
+  // Create a surface for the dropdown menu
+  ck_statusSurface = VL_CreateSurface(STATUS_W+64, STATUS_H+16);
 }
 
 /*

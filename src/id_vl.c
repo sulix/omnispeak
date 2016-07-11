@@ -183,7 +183,7 @@ void VL_UnmaskedToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 		{
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * w + sx) & 7));
-			
+
 			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
 					((srcptr_r[plane_off] & plane_bit)?4:0) |
 					((srcptr_g[plane_off] & plane_bit)?2:0) |
@@ -195,9 +195,9 @@ void VL_UnmaskedToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] = VL_EGAPalette[pixel].r;
 			dstptr[(sy+y)*pitch+(sx+x)*4+3] = 0xFF;
 		}
-	}	
+	}
 }
-#endif	
+#endif
 
 void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h)
 {
@@ -213,7 +213,7 @@ void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int
 		{
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * w + sx) & 7));
-			
+
 			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
 					((srcptr_r[plane_off] & plane_bit)?4:0) |
 					((srcptr_g[plane_off] & plane_bit)?2:0) |
@@ -221,7 +221,7 @@ void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int
 
 			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
 		}
-	}		
+	}
 }
 
 #if 0
@@ -240,7 +240,7 @@ void VL_MaskedToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h
 		{
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * w + sx) & 7));
-			
+
 			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
 					((srcptr_r[plane_off] & plane_bit)?4:0) |
 					((srcptr_g[plane_off] & plane_bit)?2:0) |
@@ -252,7 +252,7 @@ void VL_MaskedToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] = VL_EGAPalette[pixel].r;
 			dstptr[(sy+y)*pitch+(sx+x)*4+3] = ((srcptr_a[plane_off] & plane_bit)?0xFF:0x00);
 		}
-	}		
+	}
 }
 #endif
 
@@ -271,7 +271,7 @@ void VL_MaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h
 		{
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * w + sx) & 7));
-			
+
 			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
 					((srcptr_r[plane_off] & plane_bit)?4:0) |
 					((srcptr_g[plane_off] & plane_bit)?2:0) |
@@ -279,7 +279,7 @@ void VL_MaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h
 
 			dstptr[(sy+y)*pitch+(sx+x)] = pixel & ((srcptr_a[plane_off] & plane_bit)?0xF0:0x00);
 		}
-	}		
+	}
 }
 
 #if 0
@@ -298,8 +298,8 @@ void VL_MaskedBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, in
 		{
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * w + sx) & 7));
-			
-			
+
+
 			if ((srcptr_a[plane_off] & plane_bit) != 0) {
 				continue;
 			}
@@ -314,7 +314,7 @@ void VL_MaskedBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, in
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] = VL_EGAPalette[pixel].r;
 			dstptr[(sy+y)*pitch+(sx+x)*4+3] = 0xFF;
 		}
-	}		
+	}
 }
 #endif
 
@@ -333,8 +333,8 @@ void VL_MaskedBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, i
 		{
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * w + sx) & 7));
-			
-			
+
+
 			if ((srcptr_a[plane_off] & plane_bit) != 0) {
 				continue;
 			}
@@ -345,7 +345,7 @@ void VL_MaskedBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, i
 
 			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
 		}
-	}		
+	}
 }
 
 #if 0
@@ -368,8 +368,8 @@ void VL_MaskedBlitClipToRGB(void *src,void *dest, int x, int y, int pitch, int w
 		{
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * w + sx) & 7));
-			
-			
+
+
 			if ((srcptr_a[plane_off] & plane_bit) != 0) {
 				continue;
 			}
@@ -384,7 +384,7 @@ void VL_MaskedBlitClipToRGB(void *src,void *dest, int x, int y, int pitch, int w
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] = VL_EGAPalette[pixel].r;
 			dstptr[(sy+y)*pitch+(sx+x)*4+3] = 0xFF;
 		}
-	}		
+	}
 }
 #endif
 
@@ -407,8 +407,8 @@ void VL_MaskedBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int 
 		{
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * w + sx) & 7));
-			
-			
+
+
 			if ((srcptr_a[plane_off] & plane_bit) != 0) {
 				continue;
 			}
@@ -419,7 +419,7 @@ void VL_MaskedBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int 
 
 			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
 		}
-	}		
+	}
 }
 
 
@@ -435,7 +435,7 @@ void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, 
 		{
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * w + sx) & 7));
-			
+
 			int pixel = ((srcptr[plane_off] & plane_bit)?colour:0);
 
 			// ARGB LE output
@@ -444,7 +444,7 @@ void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, 
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] = VL_EGAPalette[pixel].r;
 			dstptr[(sy+y)*pitch+(sx+x)*4+3] = ((srcptr[plane_off] & plane_bit)?0xFF:0x00);
 		}
-	}		
+	}
 }
 #endif
 
@@ -459,12 +459,12 @@ void VL_1bppToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, 
 		{
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * w + sx) & 7));
-			
+
 			int pixel = ((srcptr[plane_off] & plane_bit)?colour:colour&0xF0);
 
 			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
 		}
-	}		
+	}
 }
 
 #if 0
@@ -481,9 +481,9 @@ void VL_1bppXorWithRGB(void *src,void *dest, int x, int y, int pitch, int w, int
 		{
 			int plane_off = (sy * spitch + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
-			
+
 			if (!(srcptr[plane_off] & plane_bit)) continue;
-			
+
 			// XRGB LE output
 			// TODO: Doesn't it seem a bit hackish?
 			dstptr[(sy+y)*pitch+(sx+x)*4+0] ^= VL_EGAPalette[colour].b;
@@ -491,9 +491,9 @@ void VL_1bppXorWithRGB(void *src,void *dest, int x, int y, int pitch, int w, int
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] ^= VL_EGAPalette[colour].r;
 			//dstptr[(sy+y)*pitch+(sx+x)*4+3] = 0xFF;
 		}
-	}	
+	}
 }
-#endif	
+#endif
 
 void VL_1bppXorWithPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
@@ -508,12 +508,12 @@ void VL_1bppXorWithPAL8(void *src,void *dest, int x, int y, int pitch, int w, in
 		{
 			int plane_off = (sy * spitch + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
-			
+
 			if (!(srcptr[plane_off] & plane_bit)) continue;
 
 			dstptr[(sy+y)*pitch+(sx+x)] ^= colour;
 		}
-	}		
+	}
 }
 
 #if 0
@@ -530,9 +530,9 @@ void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 		{
 			int plane_off = (sy * spitch + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
-			
+
 			if (!(srcptr[plane_off] & plane_bit)) continue;
-			
+
 			int pixel = ((srcptr[plane_off] & plane_bit)?colour:0);
 
 			// XRGB LE output
@@ -541,7 +541,7 @@ void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 			dstptr[(sy+y)*pitch+(sx+x)*4+2] = VL_EGAPalette[pixel].r;
 			dstptr[(sy+y)*pitch+(sx+x)*4+3] = 0xFF;
 		}
-	}		
+	}
 }
 #endif
 
@@ -558,12 +558,12 @@ void VL_1bppBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int
 		{
 			int plane_off = (sy * spitch + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
-			
+
 			if (!(srcptr[plane_off] & plane_bit)) continue;
-			
+
 			dstptr[(sy+y)*pitch+(sx+x)] = colour;
 		}
-	}		
+	}
 }
 
 // This is used in VH_DrawSpriteMask.
@@ -580,12 +580,12 @@ void VL_1bppInvBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, 
 		{
 			int plane_off = (sy * spitch + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
-			
+
 			if ((srcptr[plane_off] & plane_bit)) continue;
-			
+
 			dstptr[(sy+y)*pitch+(sx+x)] = colour;
 		}
-	}		
+	}
 }
 
 void VL_1bppInvBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh, int colour)
@@ -604,12 +604,12 @@ void VL_1bppInvBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int
 		{
 			int plane_off = (sy * spitch + sx) >> 3;
 			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
-			
+
 			if ((srcptr[plane_off] & plane_bit)) continue;
-			
+
 			dstptr[(sy+y)*pitch+(sx+x)] = colour;
 		}
-	}		
+	}
 }
 
 int VL_MemUsed()
@@ -755,6 +755,16 @@ void VL_SetScrollCoords(int x, int y)
 {
 	vl_scrollXpixels = x;
 	vl_scrollYpixels = y;
+}
+
+int VL_GetScrollX(void)
+{
+  return vl_scrollXpixels;
+}
+
+int VL_GetScrollY(void)
+{
+  return vl_scrollYpixels;
 }
 
 void VL_ClearScreen(int colour)

@@ -352,6 +352,8 @@ void CK5_DefineConstants(void)
 
   SPR_STARS1 = 143;
 
+  SPR_CENTILIFE1UPSHADOW = 194;
+
   SPR_SECURITYCARD_1 = 207;
   SPR_GEM_A1 = 224;
   SPR_GEM_B1 = 226;

@@ -140,7 +140,7 @@ void RF_SetScrollBlock(int tileX, int tileY, bool vertical)
 void RFL_SetupOnscreenAnimList()
 {
 	rf_freeOnscreenAnimTile = rf_onscreenAnimTiles;
-	
+
 	for (int i = 0; i < RF_MAX_ONSCREENANIMTILES - 1; ++i)
 	{
 		rf_onscreenAnimTiles[i].next = &rf_onscreenAnimTiles[i+1];
@@ -191,7 +191,7 @@ void RF_MarkTileGraphics()
 					if (CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX])
 						Quit("RF_MarkTileGraphics: Info plane above animated bg tile in use.");
 
-			
+
 					for (int i = 0; i < rf_numAnimTileTimers; ++i)
 					{
 						if (rf_animTileTimers[i].tileNumber == backTile)
@@ -203,7 +203,7 @@ void RF_MarkTileGraphics()
 						}
 					}
 
-					if (needNewTimer) 
+					if (needNewTimer)
 					{
 						if (rf_numAnimTileTimers >= RF_MAX_ANIMTILETIMERS)
 							Quit("RF_MarkTileGraphics: Too many unique animations");
@@ -247,11 +247,11 @@ void RF_MarkTileGraphics()
 						}
 					}
 
-					if (needNewTimer) 
+					if (needNewTimer)
 					{
 						if (rf_numAnimTileTimers >= RF_MAX_ANIMTILETIMERS)
 							Quit("RF_MarkTileGraphics: Too many unique animations");
-				
+
 						rf_animTileTimers[rf_numAnimTileTimers].tileNumber = foreTile | 0x8000;
 						rf_animTileTimers[rf_numAnimTileTimers].timeToSwitch = TI_ForeAnimTime(foreTile);
 						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = rf_numAnimTileTimers | 0xfe00;
@@ -293,7 +293,7 @@ void RFL_CheckForAnimTile(int tileX, int tileY)
 
 		RF_OnscreenAnimTile *ost = rf_freeOnscreenAnimTile;
 		rf_freeOnscreenAnimTile = rf_freeOnscreenAnimTile->next;
-	
+
 		ost->tileX = tileX;
 		ost->tileY = tileY;
 		ost->tile = backTile;
@@ -313,7 +313,7 @@ void RFL_CheckForAnimTile(int tileX, int tileY)
 
 		RF_OnscreenAnimTile *ost = rf_freeOnscreenAnimTile;
 		rf_freeOnscreenAnimTile = rf_freeOnscreenAnimTile->next;
-	
+
 		ost->tileX = tileX;
 		ost->tileY = tileY;
 		ost->tile = foreTile;
@@ -384,7 +384,7 @@ void RFL_RemoveAnimRow(int tileY)
 	RF_OnscreenAnimTile *ost, *prev;
 
 	prev = 0;
-	
+
 	ost = rf_firstOnscreenAnimTile;
 
 	while (ost)
@@ -491,7 +491,7 @@ void RF_NewMap(void)
 	//RF_MarkTileGraphics();
 
 	rf_freeSpriteEraserIndex = 0;
-	
+
 	// Set-up a two-tile wide border
 	RF_SetScrollBlock(0,1,true);
 	RF_SetScrollBlock(0,CA_MapHeaders[ca_mapOn]->height-2,true);
@@ -515,9 +515,16 @@ void RF_RenderTile16m(int x, int y, int tile)
 	VL_MaskedBlitToSurface(ca_graphChunks[ca_gfxInfoE.offTiles16m+tile],rf_tileBuffer,x*16,y*16,16,16);
 }
 
+void RF_ForceRefresh(void)
+{
+  RF_Reposition(rf_scrollXUnit, rf_scrollYUnit);
+  RF_Refresh();
+  RF_Refresh();
+}
+
 /*
  * Copy a rectangle of tiles, in all planes, from one source coordinate on the map
- * to another destination coordinate 
+ * to another destination coordinate
  */
 void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, int height)
 {
@@ -529,7 +536,7 @@ void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, in
 
 	RFL_RemoveAnimRect(destx, desty, width, height);
 
-	// 
+	//
 	src_offset = srcy * rf_mapWidthTiles + srcx;
 	dst_offset = desty * rf_mapWidthTiles + desty;
 	src_bgtile_ptr = CA_mapPlanes[0] + src_offset;
@@ -603,7 +610,7 @@ void RF_ReplaceTiles(uint16_t *tilePtr, int plane, int dstX, int dstY, int width
 		{
 			int dstTileX = dstX + x;
 			int dstTileY = dstY + y;
-		
+
 			int tileScreenX = dstTileX - (rf_scrollXUnit >> 8);
 			int tileScreenY = dstTileY - (rf_scrollYUnit >> 8);
 			int oldTile = CA_mapPlanes[plane][dstTileY*rf_mapWidthTiles+dstTileX];
@@ -888,7 +895,7 @@ void RF_SmoothScroll(int scrollXdelta, int scrollYdelta)
 	RFL_SmoothScrollLimit(scrollXdelta,scrollYdelta);
 	int scrollXTileDelta = (rf_scrollXUnit >> 8) - oldScrollXTile;
 	int scrollYTileDelta = (rf_scrollYUnit >> 8) - oldScrollYTile;
-	
+
 
 	// If we're not moving to a new tile at all, we can quit now.
 	if (scrollXTileDelta == 0 && scrollYTileDelta == 0)
@@ -954,7 +961,7 @@ void RF_PlaceEraser(int pxX, int pxY, int pxW, int pxH)
 
 void RF_EraseRegion(int pxX, int pxY, int pxW, int pxH)
 {
-	
+
 }
 
 
@@ -993,7 +1000,7 @@ void RFL_ProcessSpriteErasers()
 		int y = rf_spriteErasers[i].pxY - (rf_scrollYUnit >> 4);
 		VL_SurfaceToScreen(rf_tileBuffer, x, y, x, y, rf_spriteErasers[i].pxW, rf_spriteErasers[i].pxH);
 	}
-	
+
 	//Reset
 	rf_freeSpriteEraserIndex = 0;
 }
@@ -1044,7 +1051,7 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	if (insertNeeded)
 	{
 		if (rf_firstSpriteTableEntry[zLayer])
-			rf_firstSpriteTableEntry[zLayer]->prevNextPtr = &sde->next;	
+			rf_firstSpriteTableEntry[zLayer]->prevNextPtr = &sde->next;
 		sde->next = rf_firstSpriteTableEntry[zLayer];
 		rf_firstSpriteTableEntry[zLayer] = sde;
 		sde->prevNextPtr = &rf_firstSpriteTableEntry[zLayer];
@@ -1059,7 +1066,7 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 
 	int sprite_number = chunk - ca_gfxInfoE.offSprites;
 
-	
+
 
 	sde->chunk = chunk;
 	sde->zLayer = zLayer;
@@ -1068,7 +1075,7 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	sde->sw = VH_GetSpriteTableEntry(sprite_number).width*8;
 	sde->sh = VH_GetSpriteTableEntry(sprite_number).height;
 	sde->maskOnly = allWhite;
-	
+
 	//TODO: Work out how to do scrolling before doing this.
 #if 0
 	rf_spriteErasers[rf_freeSpriteEraserIndex].pxX = sde->x;
@@ -1078,7 +1085,7 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	rf_freeSpriteEraserIndex++;
 #endif
 	*drawEntry = sde;
-}		
+}
 
 void RFL_DrawSpriteList()
 {
@@ -1087,12 +1094,12 @@ void RFL_DrawSpriteList()
 		// All but the final z layer (3) are below fore-foreground tiles.
 		if (zLayer == 3)
 			RFL_RenderForeTiles();
-		
+
 		for (RF_SpriteDrawEntry *sde = rf_firstSpriteTableEntry[zLayer]; sde; sde=sde->next)
 		{
 			int pixelX = sde->x - (rf_scrollXUnit >> 8)*16;
 			int pixelY = sde->y - (rf_scrollYUnit >> 8)*16;
-			
+
 			if (sde->maskOnly)
 			{
 				VH_DrawSpriteMask(pixelX, pixelY, sde->chunk, 15);
@@ -1115,7 +1122,7 @@ void RF_Refresh()
 
 	//TODO: Work out how to do scrolling before using this
 	//RFL_ProcessSpriteErasers();
-	
+
 	RFL_DrawSpriteList();
 
 	if (rf_drawFunc)

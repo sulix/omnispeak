@@ -60,6 +60,9 @@ int ck_activeY1Tile;
 
 void CK_KeenCheckSpecialTileInfo(CK_object *obj);
 
+// Set to enable F10 debugging tools
+bool ck_debugActive = false;
+
 CK_GameState ck_gameState;
 
 static bool ck_slowMotionEnabled = false;
@@ -744,7 +747,9 @@ void CK_CheckKeys()
 	// Drop down status
 	if (IN_GetKeyState(IN_SC_Enter))
 	{
-
+    CK_ShowStatusWindow();
+    RF_ForceRefresh(); // Reanimate the tiles
+    SD_SetLastTimeCount(SD_GetTimeCount());
 	}
 
 	// TODO: If Paused
@@ -838,7 +843,7 @@ void CK_CheckKeys()
 	// Debug Keys
 	if (IN_GetKeyState(IN_SC_F10))
 	{
-		if (CK_DebugKeys())
+		if (ck_debugActive && CK_DebugKeys())
 		{
 			//RF_ResetScreen();
 			SD_SetLastTimeCount(SD_GetTimeCount());
@@ -999,6 +1004,447 @@ void StartMusic(int16_t level)
 #endif
 	SD_StartMusic((MusicGroup *) CA_audio[ca_audInfoE.startMusic + song]);
 }
+
+//===========================================================================
+//
+// DROPDOWN STATUS WINDOW
+//
+//===========================================================================
+
+
+#define SOUND_STATUSDOWN 34
+#define SOUND_STATUSUP 35
+
+void *ck_statusSurface;
+
+// The status window is drawn to scratch area in the video buffer
+// Then it is copied from the scratch to the screen using the RF_ Hook
+
+void CK_DrawLongRight(int x, int y, int digits, int zerotile, int value);
+void CK_DrawStatusWindow(void);
+void CK_ScrollStatusWindow(void);
+void CK_ShowStatusWindow(void);
+
+// extern const char **ck_levelNames;
+int ck_statusWindowYPx;
+bool ck_statusDown;
+unsigned statusWindowOfs;  // screen buffer
+
+
+void CK_DrawLongRight(int x, int y, int digits, int zerotile, int value)
+{
+	char s[20];
+	int len,i;
+
+
+		sprintf(s, "%d", value);
+	// itoa(value, s, 10);
+	len = strlen(s);
+
+	for (i = digits; i > len; i--)
+	{
+		VH_DrawTile8(x, y, zerotile);
+		x+=8;
+	}
+
+	while (i > 0)
+	{
+		VH_DrawTile8(x,y,zerotile + s[len-i] - 47);
+		i--;
+		x+=8;
+	}
+
+}
+
+void CK_DrawStatusWindow(void)
+{
+	int si, i, oldcolor;
+
+
+	// Draw the backdrop
+	int var2 = 64;
+	int di = 16;
+	int statusWidth = STATUS_W-8;
+	int statusHeight = STATUS_H-8;
+
+
+	VH_DrawTile8(var2, di, 54);
+	VH_DrawTile8(var2, di+statusHeight, 60);
+	si = var2 + 8;
+
+	while (var2 + statusWidth - 8 >= si)
+	{
+
+		VH_DrawTile8(si, di, 55);
+		VH_DrawTile8(si, di + statusHeight, 61);
+		si += 8;
+	}
+
+	VH_DrawTile8(si, di, 56);
+	VH_DrawTile8(si, di + statusHeight, 62);
+
+	si = di + 8;
+
+	while (di + statusHeight - 8 >= si)
+	{
+
+		VH_DrawTile8(var2, si, 57);
+		VH_DrawTile8(var2+statusWidth, si, 59);
+		si += 8;
+	}
+
+	VH_Bar(72, 24, 176, 136, 7);
+
+	// Print the stuff
+	oldcolor = US_GetPrintColour();
+
+	// Level
+  uint16_t strW, strH;
+  char str[256];
+	US_SetPrintY(28);
+	US_SetWindowX(80);
+	US_SetWindowW(160);
+	US_SetPrintColour(15);
+	US_CPrint("LOCATION");
+	VH_Bar(79, 38, 162, 20, 15);
+  strcpy(str, ck_levelNames[ca_mapOn]);
+	CK_MeasureMultiline(str, &strW, &strH);
+	US_SetPrintY ((20 - strH)/2 + 40 - 2);
+	US_CPrint(str);
+
+	// Score
+	US_SetPrintY(61);
+	US_SetWindowX(80);
+	US_SetWindowW(64);
+	US_SetPrintColour(15);
+	US_CPrint("SCORE");
+
+	VH_Bar(79, 71, 66, 10, 0);
+	CK_DrawLongRight(80, 72, 8, 41, ck_gameState.keenScore);
+
+	// Extra man
+	US_SetPrintY(61);
+	US_SetWindowX(176);
+	US_SetWindowW(64);
+	US_CPrint("EXTRA");
+	VH_Bar(175, 71, 66, 10, 0);
+	CK_DrawLongRight(176, 72, 8, 41, ck_gameState.nextKeenAt);
+
+  // Episode-dependent field
+  switch (ck_currentEpisode->ep)
+  {
+    case EP_CK4:
+      US_SetPrintY(85);
+      US_SetWindowX(80);
+      US_SetWindowW(64);
+      US_CPrint("RESCUED");
+
+      VH_Bar(79, 95, 66, 10, 0);
+      for (int i = 0; i < ck_gameState.ep.ck4.membersRescued; i++) {
+        VH_DrawTile8(80 + 8 * i, 96, 40);
+      }
+      break;
+
+    case EP_CK5:
+      US_SetPrintY(91);
+      US_SetPrintX(80);
+      US_Print("KEYCARD");
+
+      VH_Bar(135, 90, 10, 10, 0);
+      if (ck_gameState.ep.ck5.securityCard)
+        VH_DrawTile8(136, 91, 40);
+      break;
+  }
+
+	// Difficulty
+	US_SetPrintY(85);
+	US_SetWindowX(176);
+	US_SetWindowW(64);
+	US_SetPrintColour(15);
+	US_CPrint("LEVEL");
+	VH_Bar(175, 95, 66, 10, 15);
+
+	US_SetPrintY(96);
+	US_SetWindowX(176);
+	US_SetWindowW(64);
+	US_SetPrintColour(15);
+
+	switch (ck_gameState.difficulty)
+	{
+	case 1:
+		US_CPrint("Easy");
+		break;
+	case 2:
+		US_CPrint("Normal");
+		break;
+	case 3:
+		US_CPrint("Hard");
+		break;
+	}
+
+	// Key gems
+	US_SetPrintX(80);
+	US_SetPrintY(112);
+	US_SetPrintColour(15);
+	US_Print("KEYS");
+
+	VH_Bar(119, 111, 34, 10, 0);
+
+	for (i = 0; i < 4; i++)
+	{
+		if (ck_gameState.keyGems[i])
+			VH_DrawTile8(120+i*8, 112, 36+i);
+	}
+
+	// AMMO
+	US_SetPrintX(176);
+	US_SetPrintY(112);
+	US_Print("AMMO");
+	VH_Bar(215, 111, 26, 10, 0);
+	CK_DrawLongRight(216, 112, 3, 41, ck_gameState.numShots);
+
+	// Lives
+	US_SetPrintX(80);
+	US_SetPrintY(128);
+	US_Print("KEENS");
+	VH_Bar(127, 127, 18, 10, 0);
+	CK_DrawLongRight(128, 128, 2, 41, ck_gameState.numLives);
+
+	// Lifeups
+	US_SetPrintX(176);
+	US_SetPrintY(128);
+  switch (ck_currentEpisode->ep)
+  {
+    case EP_CK4:
+      US_Print("DROPS");
+      break;
+    case EP_CK5:
+      US_Print("VITALIN");
+      break;
+  }
+	VH_Bar(224, 127, 16, 10, 0);
+	CK_DrawLongRight(224, 128, 2, 41, ck_gameState.numCentilife);
+
+  // Episode-dependent field
+  int addX = 0;
+  switch (ck_currentEpisode->ep)
+  {
+
+    case EP_CK4:
+
+      // Wetsuit
+      VH_Bar(79, 143, 66, 10, 15);
+
+      US_SetPrintY(144);
+      US_SetWindowX(80);
+      US_SetWindowW(64);
+      US_SetPrintColour(15);
+      if (ck_gameState.ep.ck4.wetsuit)
+        US_CPrint("???");
+      else
+        US_CPrint("Wetsuit");
+
+      addX = 5;
+
+    case EP_CK5:
+
+      for (int y = 0; y < 2; y++)
+        for (int x = 0; x < 10; x++)
+          VH_DrawTile8(120 + 8 * (x + addX), 140 + 8 * y, 72 + y*10+x);
+
+      break;
+  }
+
+	US_SetPrintColour(oldcolor);
+}
+
+void CK_ScrollStatusWindow(void)
+{
+	int dest, height, source;
+  int dx, dy, sx, sy;
+
+  int scrX = VL_GetScrollX();
+  int scrY = VL_GetScrollY();
+
+	if (ck_statusWindowYPx > 152)
+	{
+    // In DOS keen, the bit of tilemap behind the status window would need to be
+    // redrawn after the top border of the status window scrolled on to the screen
+#if 0
+		height = ck_statusWindowYPx - 152;
+		source = statusWindowOfs + panadjust + 8;
+		dest = bufferofs + panadjust + 8;
+		VW_ScreenToScreen(source, dest, 24, height);
+#endif
+
+    // MPic atop the statusbox
+		// VW_ClipDrawMPic((pansx + 136)/8, pansy - (16-height), STATUSTOPPICM);
+		height = 152;
+		sx = 64; sy = 16; // source = statusWindowOfs + panadjust + 0x408;
+    dx = 64; dy = ck_statusWindowYPx - height; // dest = bufferofs + panadjust + (height << 6) + 8;
+
+    VH_DrawMaskedBitmap(136 + scrX % 16, 16-dy + scrY % 16, MPIC_STATUSRIGHT);
+	}
+	else
+	{
+		// source = statusWindowOfs + panadjust + ((152-ck_statusWindowYPx)<<6) + 0x408;
+		// dest = bufferofs + panadjust + 8;
+
+		height = ck_statusWindowYPx;
+
+    dx = 64;
+    dy = 0;
+    sx = 64;
+    sy = 16 + STATUS_H - height;
+
+	}
+
+	if (height > 0)
+  {
+		//VW_ScreenToScreen(source, dest, 24, height);
+    VL_SurfaceToScreen(ck_statusSurface, dx + scrX % 16, dy + scrY % 16, sx, sy, STATUS_W, height);
+  }
+
+	// Draw the tile map underneath the scrolling status box
+#if 0
+	if (ck_statusDown)
+	{
+		// Coming back up, need to redraw the map back underneath
+		height = 168 - ck_statusWindowYPx;
+		source = masterofs + panadjust + (ck_statusWindowYPx << 6) + 8;
+		dest = bufferofs + panadjust + (ck_statusWindowYPx << 6) + 8;
+		VW_ScreenToScreen(source, dest, 24, height);
+
+		// Draw underneath the left masked pic
+		height = ck_statusWindowYPx;
+		source = statusWindowOfs + panadjust + 8 - 3;
+		dest = bufferofs + panadjust + 8 - 3;
+
+		if (height > 0)
+			VW_ScreenToScreen(source, dest, 3, height);
+
+	}
+	else
+	{
+		// Going down
+		height = ck_statusWindowYPx - 72;
+
+		if (height > 0)
+		{
+			source = statusWindowOfs + panadjust + 8 - 3;
+			dest = bufferofs + panadjust + 8 - 3;
+			// if (height > 0) // ??
+				VW_ScreenToScreen(source, dest, 3, height);
+		}
+	}
+#endif
+
+	if (ck_statusWindowYPx >= 72)
+		//VW_ClipDrawMPic((pansx + 40)/8, pansy + ck_statusWindowYPx - 168, STATUSLEFTPICM);
+    VH_DrawMaskedBitmap(40 + scrX % 16, ck_statusWindowYPx - 168 + scrY % 16, MPIC_STATUSLEFT);
+
+  VL_Present();//VW_UpdateScreen();
+}
+
+extern void RFL_SetupOnscreenAnimList();
+#include "id_vl_private.h"
+void CK_ShowStatusWindow(void)
+{
+
+	// int oldBufferofs;
+
+	US_SetWindowX(0);
+	US_SetWindowW(320);
+	US_SetWindowY(0);
+	US_SetWindowH(200);
+
+	// This function is called when enter pressed; check for A+2 to enable debug mode
+	if (IN_GetKeyState(IN_SC_A) && IN_GetKeyState(IN_SC_Two))
+	{
+		US_CenterWindow(20, 2);
+		US_SetPrintY(US_GetPrintY()+2);
+		US_Print("Debug keys active");
+    VL_Present(); //VW_UpdateScreen();
+		IN_WaitButton();
+		ck_debugActive = true;
+	}
+
+	RF_Refresh();
+
+	// Clear out all animating tiles
+  RFL_SetupOnscreenAnimList();
+
+	// Draw the status window to scratch area in the buffer
+#if 0
+	oldBufferofs = bufferofs;
+	bufferofs = statusWindowOfs = RF_FindFreeBuffer();
+	VW_ScreenToScreen(displayofs, displayofs, 44, 224);
+	VW_ScreenToScreen(displayofs, masterofs, 44, 224);
+	VW_ScreenToScreen(displayofs, bufferofs, 44, 168);
+#endif
+
+  // Omnispeak: make a surface and set it as the screen, temporarily,
+  // in order to use the VH_ functions for drawing
+  void *screen = vl_emuegavgaadapter.screen;
+	vl_emuegavgaadapter.screen = ck_statusSurface;
+	CK_DrawStatusWindow();
+	vl_emuegavgaadapter.screen = screen;
+	// bufferofs = oldBufferofs;
+	RF_Refresh();
+
+	// Scroll the window down
+	SD_PlaySound(SOUND_STATUSDOWN);
+	ck_statusWindowYPx = 16;
+	ck_statusDown = false;
+	RF_SetDrawFunc(CK_ScrollStatusWindow);
+	do
+	{
+		RF_Refresh();
+		if (ck_statusWindowYPx == 168)
+			break;
+
+
+		if ((ck_statusWindowYPx += SD_GetSpriteSync()*8) <= 168)
+			continue;
+
+		ck_statusWindowYPx = 168;
+
+	} while (1);
+
+	RF_Refresh();
+	RF_SetDrawFunc(NULL);
+	IN_ClearKeysDown();
+	IN_WaitButton();//IN_Ack();
+
+
+	// Scroll the window up
+	SD_PlaySound(SOUND_STATUSUP);
+	ck_statusWindowYPx -= 16;
+	ck_statusDown = true;
+	RF_SetDrawFunc(CK_ScrollStatusWindow);
+
+	do
+	{
+		RF_Refresh();
+		if (ck_statusWindowYPx == 0)
+			break;
+
+
+		if ((ck_statusWindowYPx -= SD_GetSpriteSync()*8) >= 0)
+			continue;
+
+		ck_statusWindowYPx = 0;
+
+	} while (1);
+
+	RF_SetDrawFunc(NULL);
+
+	ck_scoreBoxObj->posX = 0;
+}
+
+
+// ===========================================================================
+
 
 extern int rf_scrollXUnit;
 extern int rf_scrollYUnit;

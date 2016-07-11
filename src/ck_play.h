@@ -23,6 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
+#define STATUS_W 192
+#define STATUS_H 152
+
 struct CK_object;
 
 extern int ck_activeX0Tile;
@@ -33,6 +36,8 @@ extern int ck_activeY1Tile;
 extern bool ck_scrollDisabled;
 
 extern bool ck_godMode;
+
+extern bool ck_debugActive;
 
 extern int16_t ck_invincibilityTimer;
 
@@ -59,6 +64,10 @@ void CK_RunAction(struct CK_object *obj);
 void CK_CentreCamera(struct CK_object *obj);
 void CK_MapCamera(struct CK_object *keen);
 void CK_NormalCamera(struct CK_object *obj);
+
+// Status Window
+void *ck_statusSurface;
+void CK_ShowStatusWindow(void);
 
 // Playing
 void CK_PlayDemo(int demoChunk);

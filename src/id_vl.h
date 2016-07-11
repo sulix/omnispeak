@@ -105,7 +105,7 @@ void VL_ScreenRect(int x, int y, int w, int h, int colour);
 void VL_SurfaceToSurface(void *src, void *dst, int x, int y, int sx, int sy, int sw, int sh);
 void VL_SurfaceToScreen(void *src, int x, int y, int sx, int sy, int sw, int sh);
 void VL_SurfaceToSelf(void *surf, int x, int y, int sx, int sy, int sw, int sh);
-void VL_UnmaskedToSurface(void *src, void *dest, int x, int y, int w, int h); 
+void VL_UnmaskedToSurface(void *src, void *dest, int x, int y, int w, int h);
 void VL_UnmaskedToScreen(void *src, int x, int y, int w, int h);
 void VL_MaskedToSurface(void *src, void *dest, int x, int y, int w, int h);
 void VL_MaskedBlitToSurface(void *src, void *dest, int x, int y, int w, int h);
@@ -119,6 +119,8 @@ void VL_1bppInvBlitToScreen(void *src, int x, int y, int w, int h, int colour);
 void VL_DelayTics(int tics);
 int VL_GetTics(int wait);
 void VL_SetScrollCoords(int x, int y);
+int VL_GetScrollX(void);
+int VL_GetScrollY(void);
 void VL_ClearScreen(int colour);
 void VL_Present();
 

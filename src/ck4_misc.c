@@ -207,6 +207,8 @@ void CK4_DefineConstants(void)
 
   SPR_STARS1 = 164;
 
+  SPR_CENTILIFE1UPSHADOW = 218;
+
   SPR_GEM_A1 = 242;
   SPR_GEM_B1 = 244;
   SPR_GEM_C1 = 246;

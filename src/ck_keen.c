@@ -214,7 +214,23 @@ void CK_KeenGetTileCentilife(int tileX, int tileY)
 	RF_ReplaceTiles(&emptyTile, 1, tileX, tileY, 1, 1);
 	SD_PlaySound(SOUND_GOTCENTILIFE);
 	CK_SpawnCentilifeNotify(tileX, tileY);
-	// TODO: Complete this
+  if (++ck_gameState.numCentilife == 100)
+  {
+    ck_gameState.numCentilife = 0;
+    SD_PlaySound(SOUND_GOTEXTRALIFE);
+    ck_gameState.numLives++;
+
+    // Spawn a 1up shadow
+    CK_object *obj = CK_GetNewObj(true);
+    obj->type = CT_Friendly;
+    obj->zLayer = PRIORITIES - 1;
+    obj->posX = tileX << G_T_SHIFT;
+    obj->posY = tileY << G_T_SHIFT;
+    obj->yDirection = IN_motion_Up;
+    obj->user2 = obj->gfxChunk = SPR_CENTILIFE1UPSHADOW;
+    CK_SetAction(obj, &CK_ACT_itemNotify);
+    obj->clipped = CLIP_not;
+  }
 }
 
 void CK_KeenCheckSpecialTileInfo(CK_object *obj)

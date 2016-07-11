@@ -186,7 +186,7 @@ typedef struct CK_GameState
 	int32_t keenScore;			// Keen's score. (This _is_ signed, by the looks of all the 'jl' instructions)
 	int32_t nextKeenAt;			// Score keen will get a new life at.
 	int16_t numShots;
-	int16_t numVitalin;
+  int16_t numCentilife;
 
   // The episode-specific variables come here
   // They were probably conditionally compiled in the DOS version
@@ -445,6 +445,8 @@ extern int SPR_BALL3;
 extern int SPR_DEMOSIGN;
 
 extern int SPR_STARS1;
+
+extern int SPR_CENTILIFE1UPSHADOW;
 
 extern int SPR_SECURITYCARD_1;
 extern int SPR_GEM_A1;
