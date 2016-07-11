@@ -1239,10 +1239,7 @@ void CK_DrawStatusWindow(void)
       US_SetWindowX(80);
       US_SetWindowW(64);
       US_SetPrintColour(15);
-      if (ck_gameState.ep.ck4.wetsuit)
-        US_CPrint("???");
-      else
-        US_CPrint("Wetsuit");
+      US_CPrint(ck_gameState.ep.ck4.wetsuit ? "Wetsuit" : "???");
 
       addX = 5;
 
