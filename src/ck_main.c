@@ -356,8 +356,6 @@ void CK_DemoLoop()
 
 	if (us_tedLevel)
 	{
-		us_noWait = true; // ?
-
 		CK_NewGame();
 		CA_LoadAllSounds();
 		ck_gameState.currentLevel = us_tedLevelNumber;
@@ -499,6 +497,9 @@ int main(int argc, char *argv[])
 			Quit(0);
 		}
 	}
+
+	if (us_noWait || us_tedLevel)
+		ck_debugActive = true;
 
 	// Draw the ANSI "Press Key When Ready Screen" here
 	CK_DemoLoop();
