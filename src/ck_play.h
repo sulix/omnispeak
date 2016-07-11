@@ -66,7 +66,7 @@ void CK_MapCamera(struct CK_object *keen);
 void CK_NormalCamera(struct CK_object *obj);
 
 // Status Window
-void *ck_statusSurface;
+extern void *ck_statusSurface;
 void CK_ShowStatusWindow(void);
 
 // Playing

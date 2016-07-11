@@ -356,6 +356,7 @@ void CK_DoHighScores();
 
 /* ck_keen.c */
 extern soundnames *ck_itemSounds;
+extern uint16_t ck_itemPoints[];
 extern uint16_t *ck_itemShadows;
 
 void CK_IncreaseScore(int score);

@@ -1233,7 +1233,6 @@ void CK4_KeenSwimFast(CK_object *obj)
 }
 
 extern CK_action CK_ACT_itemNotify;
-extern int ck_itemPoints[];
 
 void CK4_KeenSwimCol(CK_object *a, CK_object *b)
 {
