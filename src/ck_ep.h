@@ -51,6 +51,9 @@ typedef struct CK_EpisodeDef
 
   // World map miscflags check function
   void (*mapMiscFlagsCheck)(struct CK_object*);
+
+  // Limit in tiles beyond which active objects become inactive
+  int activeLimit;
 } CK_EpisodeDef;
 
 extern CK_EpisodeDef *ck_currentEpisode;

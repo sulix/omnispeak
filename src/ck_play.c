@@ -1488,10 +1488,10 @@ void CK_CentreCamera(CK_object *obj)
 		RF_Reposition(screenX, screenY);
 
 	//TODO: This is 4 in Andy's disasm.
-	ck_activeX0Tile = max((rf_scrollXUnit >> 8) - 6, 0);
-	ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + 6, 0);
-	ck_activeY0Tile = max((rf_scrollYUnit >> 8) - 6, 0);
-	ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + 6, 0);
+	ck_activeX0Tile = max((rf_scrollXUnit >> 8) - ck_currentEpisode->activeLimit, 0);
+	ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + ck_currentEpisode->activeLimit, 0);
+	ck_activeY0Tile = max((rf_scrollYUnit >> 8) - ck_currentEpisode->activeLimit, 0);
+	ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + ck_currentEpisode->activeLimit, 0);
 }
 
 /*
@@ -1544,10 +1544,10 @@ void CK_MapCamera( CK_object *keen )
 		 */
 
 		//TODO: This is 4 in Andy's disasm.
-		ck_activeX0Tile = max((rf_scrollXUnit >> 8) - 6, 0);
-		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + 6, 0);
-		ck_activeY0Tile = max((rf_scrollYUnit >> 8) - 6, 0);
-		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + 6, 0);
+    ck_activeX0Tile = max((rf_scrollXUnit >> 8) - ck_currentEpisode->activeLimit, 0);
+		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + ck_currentEpisode->activeLimit, 0);
+		ck_activeY0Tile = max((rf_scrollYUnit >> 8) - ck_currentEpisode->activeLimit, 0);
+		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + ck_currentEpisode->activeLimit, 0);
 	}
 }
 
@@ -1712,10 +1712,10 @@ void CK_NormalCamera(CK_object *obj)
 		RF_SmoothScroll(deltaX, deltaY);
 
 		// Update the rectangle of active objects
-		ck_activeX0Tile = max((rf_scrollXUnit >> 8) - 6, 0);
-		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + 6, 0);
-		ck_activeY0Tile = max((rf_scrollYUnit >> 8) - 6, 0);
-		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + 6, 0);
+    ck_activeX0Tile = max((rf_scrollXUnit >> 8) - ck_currentEpisode->activeLimit, 0);
+		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + ck_currentEpisode->activeLimit, 0);
+		ck_activeY0Tile = max((rf_scrollYUnit >> 8) - ck_currentEpisode->activeLimit, 0);
+		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + ck_currentEpisode->activeLimit, 0);
 	}
 }
 

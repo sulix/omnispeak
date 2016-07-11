@@ -214,7 +214,7 @@
 # Slugs
 %action CK4_ACT_SlugMove0 320 315 UnscaledOnce 0 1 8 0x40 0 NULL CK4_SlugCol CK_BasicDrawFunc3 CK4_ACT_SlugMove1
 %action CK4_ACT_SlugMove1 321 316 UnscaledOnce 0 1 8 0x40 0 CK4_SlugMove CK4_SlugCol CK_BasicDrawFunc3 CK4_ACT_SlugMove0
-%action CK4_ACT_SlugSliming0 322 317 UnscaledOnce 0 1 60 0 0 CK4_SlugSlime CK4_SlugCol CK_BasicDrawFunc3 CK4_ACT_SlugMove0
+%action CK4_ACT_SlugSliming0 322 317 UnscaledOnce 0 1 60 0x40 0 CK4_SlugSlime CK4_SlugCol CK_BasicDrawFunc3 CK4_ACT_SlugMove0
 %action CK4_ACT_SlugStunned0 318 318 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
 %action CK4_ACT_SlugStunned1 319 319 Frame 0 0 0 0 0 CK_Fall NULL CK_BasicDrawFunc4 NULL
 %action CK4_ACT_SlugSlime0 323 323 UnscaledOnce 0 0 300 0 0 NULL CK_LethalCol CK_BasicDrawFunc1 CK4_ACT_SlugSlimeEvap0
