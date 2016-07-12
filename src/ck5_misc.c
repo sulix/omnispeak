@@ -37,6 +37,7 @@ CK_EpisodeDef ck5_episode ={
   &CK5_DefineConstants,
   &CK5_MapMiscFlagsCheck,
   6,
+  15
 };
 
 

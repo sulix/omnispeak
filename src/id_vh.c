@@ -32,7 +32,7 @@ typedef struct VH_Font
 	uint8_t width[256];
 } __attribute((__packed__)) VH_Font;
 
-bool vh_dirtyBlocks[RF_BUFFER_WIDTH_TILES*RF_BUFFER_HEIGHT_TILES]; 
+bool vh_dirtyBlocks[RF_BUFFER_WIDTH_TILES*RF_BUFFER_HEIGHT_TILES];
 
 //TODO: Should these functions cache the bitmap tables?
 VH_BitmapTableEntry VH_GetBitmapTableEntry(int bitmapNumber)
@@ -86,7 +86,7 @@ void VH_DrawTile8M(int x, int y, int tile)
 }
 
 void VH_DrawTile16(int x, int y, int tile)
-{	
+{
 	VL_UnmaskedToScreen(ca_graphChunks[ca_gfxInfoE.offTiles16 + tile], x, y, 16, 16);
 }
 
@@ -99,9 +99,9 @@ void VH_DrawTile16M(int x, int y, int tile)
 void VH_DrawBitmap(int x, int y, int chunk)
 {
 	int bitmapNumber = chunk - ca_gfxInfoE.offBitmaps;
-	
+
 	VH_BitmapTableEntry dimensions = VH_GetBitmapTableEntry(bitmapNumber);
-	
+
 	VL_UnmaskedToScreen(ca_graphChunks[chunk], x, y, dimensions.width*8, dimensions.height);
 }
 
@@ -117,7 +117,7 @@ void VH_DrawMaskedBitmap(int x, int y, int chunk)
 void VH_DrawSprite(int x, int y, int chunk)
 {
 	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
-	
+
 	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
 
 	int shiftMask = ~(4-spr.shifts) & ~1;
@@ -129,7 +129,7 @@ void VH_DrawSprite(int x, int y, int chunk)
 void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
 {
 	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
-	
+
 	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
 
 	int shiftMask = ~(4-spr.shifts) & ~1;
@@ -142,7 +142,7 @@ void VH_DrawPropChar(int x, int y, int chunk, unsigned char c, int colour)
 {
 	VH_Font *fnt = (VH_Font*)ca_graphChunks[chunk+3];
 
-	uint8_t *chardata = (uint8_t *)fnt + fnt->location[c]; 
+	uint8_t *chardata = (uint8_t *)fnt + fnt->location[c];
 
 
 	VL_1bppXorWithScreen(chardata, x, y, fnt->width[c], fnt->height, colour);
@@ -154,7 +154,7 @@ void VH_MeasureString(const char *string, uint16_t *width, uint16_t *height, VH_
 
 	for (*width = 0; *string; string++)
 	{
-		*width += fnt->width[*string];
+		*width += fnt->width[(uint8_t)*string];
 	}
 }
 
@@ -172,7 +172,7 @@ void VH_DrawPropString(const char *string,int x, int y, int chunk, int colour)
 	{
 		// FIXME: Bad cast to unsigned char, even if it seems to make sense
 		VH_DrawPropChar(x+w,y,chunk,(unsigned)(*string),colour);
-		w += font->width[*string];
+    w += font->width[(uint8_t)*string];
 	}
 }
 

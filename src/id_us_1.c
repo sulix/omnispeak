@@ -110,7 +110,6 @@ void US_Print(const char *str)
 		}
 
 		uint16_t w, h;
-		CA_CacheGrChunk(3); // TODO: Why is that done here?
 		// TODO: Should us_printFont and us_printColour
 		// be passed as arguments or not?
 		VH_MeasurePropString(strbuf, &w, &h, us_printFont);
@@ -119,12 +118,14 @@ void US_Print(const char *str)
 
 		if (ch)
 		{
+      // strbuf[sboff] = ch
+      // str++;
 			us_printX = us_windowX;
 			us_printY += h;
 		}
 		else
 		{
-			us_printY += h;
+			us_printX += w;
 			break;
 		}
 	}
@@ -720,7 +721,7 @@ void US_LoadConfig(void)
 		CK_Cross_freadBoolFrom16LE(&ck_gamePadEnabled, 1, f);
 		CK_Cross_freadInt16LE(in_gamepadButtons, 4, f);
 		fclose(f);
-		//word_49EE1 = 0; // Unused?
+		//ck_highScoresDirty = 0; // Unused?
 		configFileLoaded = true;
 	}
 	else
@@ -731,7 +732,7 @@ void US_LoadConfig(void)
 		ck_scoreBoxEnabled = true;
 		ck_twoButtonFiring = false;
 		configFileLoaded = false;
-		//word_49EE1 = 1; // Unused?
+		//ck_highScoresDirty = 1; // Unused?
 	}
 	SD_Default(configFileLoaded && (hadAdlib == AdLibPresent), sd, sm);
 	IN_Default(configFileLoaded, inputDevice);

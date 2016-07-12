@@ -1481,10 +1481,8 @@ void CK_CentreCamera(CK_object *obj)
 			screenY = obj->clipRects.unitY2 - (140 << 4);
 	}
 
-#if 0
 	// TODO: Find out why this is locking the game up
 	if (!ck_inHighScores)
-#endif
 		RF_Reposition(screenX, screenY);
 
 	//TODO: This is 4 in Andy's disasm.

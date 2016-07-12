@@ -40,6 +40,7 @@ CK_EpisodeDef ck4_episode ={
   &CK4_DefineConstants,
   &CK4_MapMiscFlagsCheck,
   4,
+  19,
 };
 
 // Contains some keen-4 specific functions.

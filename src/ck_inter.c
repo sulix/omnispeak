@@ -480,10 +480,8 @@ void CK_PlayDemo(int demoNumber)
 
 
 
-#if 0
 	if (ck_inHighScores)
 		CK_OverlayHighScores();
-#endif
 
 	CK_PlayLoop();
 	IN_DemoStopPlaying();
@@ -516,21 +514,56 @@ CK_HighScore ck_highScores[8] =
 };
 
 // Draw the high scores overtop the level
+extern void *rf_tileBuffer;
+#include "id_vl_private.h"
 void CK_OverlayHighScores()
 {
+  // Omnispeak
+  int topMargin = ck_currentEpisode->ep == EP_CK4 ? 0x33 :
+    ck_currentEpisode->ep == EP_CK5 ? 0x23 :
+    0;
+
+  int rightMargin = ck_currentEpisode->ep == EP_CK4 ? 0x128 :
+    ck_currentEpisode->ep == EP_CK5 ? 0x118 :
+    0;
+
+  int leftMargin = ck_currentEpisode->ep == EP_CK4 ? 0x18 :
+    ck_currentEpisode->ep == EP_CK5 ? 0x28 :
+    0;
 
 	RF_Reposition (0,0);
-	// var8 = bufferofs;
-	// word_49EEE = bufferofs;
 
-	US_SetPrintColour(12);
+  // DOS: Set the back buffer to the master tilebuffer
+  // The print routines draw to the backbuffer
+	// oldbufferofs = bufferofs;
+	// bufferofs = masterofs;
+
+  // Simulate this in Omnispeak by replacing the tilebuffer surface
+  // for the screen surface
+
+  void *screen = vl_emuegavgaadapter.screen;
+	vl_emuegavgaadapter.screen = rf_tileBuffer;
+
+  if (ck_currentEpisode->ep == EP_CK5)
+    US_SetPrintColour(12);
 
 	for (int entry = 0; entry < 8; entry++)
 	{
 		// Print the name
-		US_SetPrintY(16*entry+0x23);
-		US_SetPrintX(0x28);
+		US_SetPrintY(16*entry+topMargin);
+		US_SetPrintX(leftMargin);
 		US_Print(ck_highScores[entry].name);
+
+    // Keen 4: print the councilmembers rescued
+    if (ck_currentEpisode->ep == EP_CK4)
+    {
+      US_SetPrintX(0x98);
+      for (int i = 0; i < ck_highScores[entry].arg4; i++)
+      {
+        VH_DrawTile8(US_GetPrintX(), US_GetPrintY()+1, 0x47);
+        US_SetPrintX(US_GetPrintX() + 8);
+      }
+    }
 
 		// Print the score, right aligned in the second
 		// column of the table
@@ -546,21 +579,36 @@ void CK_OverlayHighScores()
 		// Align it
 		uint16_t w, h;
 		VH_MeasurePropString(buf, &w, &h, US_GetPrintFont());
-		US_SetPrintX(0x118-w);
+    US_SetPrintX(rightMargin-w);
 		US_Print(buf);
 	}
 
 	US_SetPrintColour(15);
-	// bufferofs = var8;
+
+  // restore the backbuffer
+	// bufferofs = oldbufferofs;  // DOS
+	vl_emuegavgaadapter.screen = screen;
 
 }
 
 // Enter name if a high score has been achieved
-static bool word_49EE1;
+static bool ck_highScoresDirty;
 void CK_SubmitHighScore(int score, uint16_t arg_4)
 {
+  // Omnispeak
+  int topMargin = ck_currentEpisode->ep == EP_CK4 ? 0x33 :
+    ck_currentEpisode->ep == EP_CK5 ? 0x23 :
+    0;
 
-	int entry, var6, var4;
+  int rightMargin = ck_currentEpisode->ep == EP_CK4 ? 0x128 :
+    ck_currentEpisode->ep == EP_CK5 ? 0x118 :
+    0;
+
+  int leftMargin = ck_currentEpisode->ep == EP_CK4 ? 0x18 :
+    ck_currentEpisode->ep == EP_CK5 ? 0x28 :
+    0;
+
+	int entry, entryRank;
 
 	CK_HighScore newHighScore;
 	strcpy(newHighScore.name, "");
@@ -570,10 +618,10 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 
 
 	// Check if this entry made the high scores
-	var6 = -1;
+	entryRank = -1;
 	for (entry = 0; entry < 8; entry++)
 	{
-		if (ck_highScores[entry].score < newHighScore.score)
+		if (ck_highScores[entry].score >= newHighScore.score)
 			continue;
 
 		if (newHighScore.score == ck_highScores[entry].score)
@@ -581,34 +629,38 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 			if (ck_highScores[entry].arg4 >= newHighScore.arg4)
 				continue;
 		}
+
+    // Made it in!
+    // Insert the new high score into the proper slot
+    for (int e = 8; --e > entry; )
+      memcpy(&ck_highScores[e], &ck_highScores[e-1], sizeof(newHighScore));
+
+    memcpy(&ck_highScores[entry], &newHighScore, sizeof(newHighScore));
+    entryRank = entry;
+    ck_highScoresDirty = true;
+
+
+    break;
 	}
 
-	// Insert the new high score into the proper slot
-	for (var4 = 8; --var4 > entry; )
-		memcpy(&ck_highScores[var4], &ck_highScores[var4-1], 64);
 
-	memcpy(&ck_highScores[entry], &newHighScore, 64);
-	var6 = entry;
-	word_49EE1 = true;
-
-	if (var6 != -1)
+	if (entryRank != -1)
 	{
 		ck_inHighScores = true;
-		ck_gameState.currentLevel = 15;
+		ck_gameState.currentLevel = ck_currentEpisode->highScoreLevel;
 		CK_LoadLevel(true);
 		CK_OverlayHighScores();
-		US_SetPrintColour(12);
+    if (ck_currentEpisode->ep == EP_CK5)
+      US_SetPrintColour(12);
 
-#if 0
 		// FIXME: Calling these causes segfault
 		RF_Refresh();
 		RF_Refresh();
-#endif
 
-		US_SetPrintY(entry*16 + 0x23);
-		US_SetPrintX(0x28);
+		US_SetPrintY(entry*16 + topMargin);
+		US_SetPrintX(leftMargin);
 
-		US_LineInput(US_GetPrintX(), US_GetPrintY(), ck_highScores[var6].name, 0, 1, 0x39, 0x70);
+		US_LineInput(US_GetPrintX(), US_GetPrintY(), ck_highScores[entryRank].name, 0, 1, 0x39, 0x70);
 
 		ck_inHighScores = false;
 	}

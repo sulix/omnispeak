@@ -552,7 +552,7 @@ replayLevel:
             // RF_Reset();
             // VW_SyncPages();
             // help_endgame();
-            // CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
+            CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
             return;
          }
          else
@@ -619,7 +619,8 @@ replayLevel:
   }
 
 	//TODO: Update High Scores
-#if 0
-	CK_SubmitHighScore(ck_gameState.keenScore, 0);
-#endif
+  if (ck_currentEpisode->ep == EP_CK4)
+    CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
+  else
+    CK_SubmitHighScore(ck_gameState.keenScore, 0);
 }

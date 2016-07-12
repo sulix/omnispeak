@@ -54,6 +54,9 @@ typedef struct CK_EpisodeDef
 
   // Limit in tiles beyond which active objects become inactive
   int activeLimit;
+
+  int highScoreLevel;
+
 } CK_EpisodeDef;
 
 extern CK_EpisodeDef *ck_currentEpisode;

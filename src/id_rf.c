@@ -48,7 +48,7 @@ static int rf_vertScrollBlocks[RF_MAX_SCROLLBLOCKS];
 static int rf_numHorzScrollBlocks;
 static int rf_numVertScrollBlocks;
 
-static void *rf_tileBuffer;
+void *rf_tileBuffer;
 //static void *rf_screenBuffer;
 static int rf_mapWidthTiles;
 static int rf_mapHeightTiles;
