@@ -26,6 +26,10 @@
 %action CK_ACT_keenBored5 148 148 UnscaledFrame 0 1 0x5A 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored6
 %action CK_ACT_keenBored6 149 149 UnscaledFrame 0 1 0x46 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
 
+%action CK_ACT_keenMoon1 519 519 UnscaledFrame 0 1 20 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenMoon2
+%action CK_ACT_keenMoon2 520 520 UnscaledFrame 0 1 90 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenMoon3
+%action CK_ACT_keenMoon3 519 519 UnscaledFrame 0 1 20 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
+
 %action CK_ACT_keenOpenBook1 150 150 UnscaledOnce 0 1 16 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenOpenBook2
 %action CK_ACT_keenOpenBook2 151 151 UnscaledOnce 0 1 16 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenOpenBook3
 %action CK_ACT_keenOpenBook3 152 152 UnscaledOnce 0 1 16 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenOpenBook4
@@ -38,10 +42,6 @@
 %action CK_ACT_keenStowBook1 157 157 UnscaledOnce 0 1 12 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStowBook2
 %action CK_ACT_keenStowBook2 158 158 UnscaledOnce 0 1 12 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStowBook3
 %action CK_ACT_keenStowBook3 159 159 UnscaledOnce 0 1 12 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
-
-#%action CK_ACT_keenMoon1 0x2EE70A7C 07W 07W W W W 4W W W KeenStill KeenSprCol KeenDrawFunc a_KeenMoon1
-#%action CK_ACT_keenMoon2 0x2EE70A9A 08W 08W W W W AW W W KeenStill KeenSprCol KeenDrawFunc a_KeenMoon2
-#%action CK_ACT_keenMoon3 0x2EE70AB8 07W 07W W W W 4W W W KeenStill KeenSprCol KeenDrawFunc a_KeenStand0
 
 %action CK_ACT_keenNot -1 -1 Frame 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 %action CK_ACT_keenDie0 162 162 Frame 0 0 0x64 0 0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_keenDie0

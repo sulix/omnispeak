@@ -61,6 +61,8 @@ soundnames *ck_itemSounds;
 uint16_t ck_itemPoints[]  = {  0,   0,   0,   0, 100, 200, 500, 1000, 2000, 5000,   0,   0,   0};
 uint16_t *ck_itemShadows;
 
+int16_t ck_keenMoon;
+
 void CK_KeenColFunc(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_CLASS(Item))
@@ -235,6 +237,8 @@ void CK_KeenGetTileCentilife(int tileX, int tileY)
 
 void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 {
+	if (ck_keenMoon == 1)
+		ck_keenMoon = 0; // Yes, also set in Keen 5
 	for (int y = obj->clipRects.tileY1; y <= obj->clipRects.tileY2; ++y)
 	{
 		for (int x = obj->clipRects.tileX1; x <= obj->clipRects.tileX2; ++x)
@@ -269,6 +273,10 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 					}
 				}
 				return;
+			case 16:
+				if (ck_keenMoon == 0)
+					ck_keenMoon = 1; // Yes, also set in Keen 5
+				break;
 			case 21:
 			case 22:
 			case 23:
@@ -811,7 +819,15 @@ void CK_KeenStandingThink(CK_object *obj)
 	if (obj->user2 == 1 && obj->user1 > 300)
 	{
 		obj->user2++;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenBored1");
+		if ((ck_currentEpisode->ep == EP_CK4) && (ck_keenMoon == 1))
+		{
+			ck_keenMoon = 2;
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenMoon1");
+		}
+		else
+		{
+			obj->currentAction = CK_GetActionByName("CK_ACT_keenBored1");
+		}
 		obj->user1 = 0;
 		return;
 	}
@@ -1483,7 +1499,8 @@ void CK_KillKeen()
 		return;
 	}
 
-	//TODO: ACTION_KEENNOT, KeenMoon
+	//TODO: ACTION_KEENNOT
+	ck_keenMoon = 0; // Yes, also set in Keen 5
 	ck_invincibilityTimer = 30;
 	ck_scrollDisabled = true;
 	obj->clipped = CLIP_not;
