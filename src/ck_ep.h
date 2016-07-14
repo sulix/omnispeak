@@ -56,6 +56,7 @@ typedef struct CK_EpisodeDef
   int activeLimit;
 
   int highScoreLevel;
+  int endSongLevel;
 
 } CK_EpisodeDef;
 

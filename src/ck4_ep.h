@@ -116,5 +116,6 @@ void CK_MapFlagSpawn(int tileX, int tileY);
 
 /* ck4_misc.c */
 void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act);
+void CK4_EndingPurge(void);
 
 #endif

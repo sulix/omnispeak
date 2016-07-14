@@ -41,6 +41,7 @@ CK_EpisodeDef ck4_episode ={
   &CK4_MapMiscFlagsCheck,
   4,
   19,
+  7
 };
 
 // Contains some keen-4 specific functions.
@@ -1294,6 +1295,24 @@ void CK4_KeenSwimDraw(CK_object *obj)
     obj->velY = 0;
 
   RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+// ===========================================================================
+
+// Purge stuff for endgame
+void CK4_EndingPurge()
+{
+  for (int i = ca_gfxInfoE.offSprites; i < ca_gfxInfoE.offTiles8; i++)
+  {
+    if (ca_graphChunks[i])
+      MM_SetPurge(ca_graphChunks + i, 1);
+  }
+
+  for (int i = ca_gfxInfoE.offTiles16; i < ca_gfxInfoE.offBinaries; i++)
+  {
+    if (ca_graphChunks[i])
+      MM_SetPurge(ca_graphChunks + i, 1);
+  }
 }
 
 

@@ -97,16 +97,19 @@ void ParseTimedCommand( void )
 
 void TimedPicCommand( void )
 {
-	int timeCount = 0;
+	// int timeCount = 0;
 
 	ParseTimedCommand();
 	// VW_WaitVBL( 1 );
 	VL_GetTics(1);
 	// VWL_ScreenToScreen( AZ : A7B4, AZ : A7B2, 40, 200 );
+  VL_Present();
 	// (long) TimeCount = 0;
+  // SD_SetTimeCount(0);
 
-	while ( timeCount+=VL_GetTics(1) < help_delay )
-		;
+	//while ( timeCount+=VL_GetTics(1) < help_delay )
+		//;
+  VL_DelayTics(help_delay);
 	VH_DrawBitmap( help_x & 0xFFF8, help_y, help_pic );
 }
 
@@ -691,14 +694,16 @@ void help_endgame( void )
 	CacheLayoutGraphics();
 
 	/* Play some music */
-	StartMusic( 14 );
+  StartMusic( ck_currentEpisode->endSongLevel );
 
 	while ( help_cur_page < help_num_pages )
 	{
 		/* Draw the current page (which also advances to the next page) */
 		PageLayout( 0 );
 		IN_ClearKeysDown();
-		//sub_679( AZ : A7B4, 0 );
+		//VW_SetScreen( AZ : A7B4, 0 );
+
+    // This looks like it was written with a GOTO instead of an "advancePage" variable
 		bool advancePage = false;
 		while ( !advancePage )
 		{
@@ -706,13 +711,14 @@ void help_endgame( void )
 			VH_DrawBitmap( 0x12A, 0xB8, PIC_ARROWDIM );
 			for ( i = 0; i < 70; i++ )
 			{
-				if ( IN_GetLastScan() != IN_SC_None )
+				IN_PumpEvents();
+				if (IN_CheckAck())
 				{
+          // DOS: goto loop top...
 					advancePage = true;
 					break;
 				}
 				VL_Present();
-				IN_PumpEvents();
 				VL_GetTics( 1 );
 			}
 
@@ -720,13 +726,13 @@ void help_endgame( void )
 			VH_DrawBitmap( 0x12A, 0xB8, PIC_ARROWBRIGHT );
 			for ( i = 0; i < 70; i++ )
 			{
-				if ( IN_GetLastScan() != IN_SC_None )
+				IN_PumpEvents();
+				if (IN_CheckAck())
 				{
 					advancePage = true;
 					break;
 				}
 				VL_Present();
-				IN_PumpEvents();
 				VL_GetTics( 1 );
 			}
 		}

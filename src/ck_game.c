@@ -548,10 +548,10 @@ replayLevel:
          if (ck_gameState.ep.ck4.membersRescued == 8)
          {
             // Game won
-            // CK_CacheEndGame();
+            CK4_EndingPurge();
             // RF_Reset();
             // VW_SyncPages();
-            // help_endgame();
+            help_endgame();
             CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
             return;
          }

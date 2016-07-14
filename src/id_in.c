@@ -148,7 +148,7 @@ IN_ScanCode INL_SDLKToScanCode(int sdlKey)
 		INL_MapKey(SDLK_END, IN_SC_End);
 		INL_MapKey(SDLK_PAGEUP, IN_SC_PgUp);
 		INL_MapKey(SDLK_PAGEDOWN, IN_SC_PgDown);
-		
+
 		INL_MapKey(SDLK_PAUSE, IN_SC_Pause);
 
 		INL_MapKey(SDLK_F1, IN_SC_F1);
@@ -328,7 +328,7 @@ static void INL_HandleSDLEvent(SDL_Event *event)
 					if (in_keyStates[IN_SC_LeftShift] || in_keyStates[IN_SC_RightShift])	// If shifted
 					{
 						c = in_shiftNames[sc];
-#if 0	
+#if 0
 						if ((c >= 'A') && (c <= 'Z') && CapsLock)
 							c += 'a' - 'A';
 #endif
@@ -587,7 +587,7 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 
 		if (IN_GetKeyState(in_kbdControls.jump)) controls->jump = true;
 		if (IN_GetKeyState(in_kbdControls.pogo)) controls->pogo = true;
-		// TODO: Handle fire input separately? (e.g. two-button firing)	
+		// TODO: Handle fire input separately? (e.g. two-button firing)
 		if (IN_GetKeyState(in_kbdControls.fire)) controls->button2 = true;
 
 		controls->dir = in_dirTable[3 * (controls->yDirection + 1) + controls->xDirection + 1];
@@ -636,7 +636,7 @@ int IN_CheckAck()
 	di = IN_GetLastScan();
 
 #if 0
-	if (MousePresent && INL_GetMouseButtons)
+	if (MousePresent && INL_GetMouseButtons())
 		di = 1;
 
 	for (int i = 0; i < 2; i++)
@@ -645,18 +645,18 @@ int IN_CheckAck()
 			if (INL_GetJoyButtons)
 				di = 1;
 	}
-		
-#endif 
+
+#endif
 
 	return di;
 
 }
 
-bool IN_UserInput(int tics, bool waitPress) 
+bool IN_UserInput(int tics, bool waitPress)
 {
 	int lasttime = SD_GetTimeCount();
 
-	do 
+	do
 	{
 		IN_PumpEvents();
 
