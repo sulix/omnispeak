@@ -406,15 +406,10 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 		if (cursorvis)
 			USL_XORICursor(x, y, s, cursor);
 
-		/*
-		sc = LastScan;
-		LastScan = sc_None;
-		c = LastASCII;
-		LastASCII = key_None;
-		*/
 		sc = IN_GetLastScan();
+    IN_SetLastScan(IN_SC_None);
 		c = IN_GetLastASCII();
-		IN_ClearKeysDown();
+    IN_SetLastASCII(0);
 
 		switch (sc)
 		{

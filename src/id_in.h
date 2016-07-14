@@ -218,6 +218,7 @@ bool IN_GetKeyState(IN_ScanCode scanCode);
 IN_ScanCode IN_GetLastScan(void);
 void IN_SetLastScan(IN_ScanCode scanCode);
 char IN_GetLastASCII(void);
+void IN_SetLastASCII(char c);
 void IN_Startup(void);
 void IN_Default(bool gotit, int16_t inputChoice);
 void IN_DemoStartPlaying(uint8_t *data, int len);

@@ -477,6 +477,11 @@ char IN_GetLastASCII(void)
 	return in_lastASCII;
 }
 
+void IN_SetLastASCII(char c)
+{
+  in_lastASCII = c;
+}
+
 void IN_Startup(void)
 {
 	for (int i = 0; i < 256; ++i)
