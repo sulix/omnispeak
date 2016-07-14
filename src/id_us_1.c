@@ -390,11 +390,8 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 	cursorvis = done = false;
 	lasttime = SD_GetTimeCount();
 
-	/*
-	LastASCII = key_None;
-	LastScan = sc_None;
-	 */
-	IN_ClearKeysDown();
+	IN_SetLastASCII(IN_KP_None);
+	IN_SetLastScan(IN_SC_None);
 
 	while (!done)
 	{
@@ -407,9 +404,9 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 			USL_XORICursor(x, y, s, cursor);
 
 		sc = IN_GetLastScan();
-    IN_SetLastScan(IN_SC_None);
+		IN_SetLastScan(IN_SC_None);
 		c = IN_GetLastASCII();
-    IN_SetLastASCII(0);
+		IN_SetLastASCII(IN_KP_None);
 
 		switch (sc)
 		{

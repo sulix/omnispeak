@@ -267,6 +267,8 @@ IN_ScanCode *key_controls[] ={
 	&in_kbdControls.downLeft, &in_kbdControls.left
 };
 
+static	bool		CapsLock;
+
 static IN_Direction	in_dirTable[] =		// Quick lookup for total direction
 {
 	IN_dir_NorthWest,	IN_dir_North,	IN_dir_NorthEast,
@@ -317,29 +319,23 @@ static void INL_HandleSDLEvent(SDL_Event *event)
 					c = in_specialNames[sc];
 				else
 				{
-#if 0
-					if (sc == sc_CapsLock)
+					if (sc == IN_SC_CapsLock)
 					{
-						// CapsLock ^= true;
+						CapsLock ^= true;
 						// DEBUG - make caps lock light work
 					}
-#endif
 
 					if (in_keyStates[IN_SC_LeftShift] || in_keyStates[IN_SC_RightShift])	// If shifted
 					{
 						c = in_shiftNames[sc];
-#if 0
 						if ((c >= 'A') && (c <= 'Z') && CapsLock)
 							c += 'a' - 'A';
-#endif
 					}
 					else
 					{
 						c = in_ASCIINames[sc];
-#if 0
 						if ((c >= 'a') && (c <= 'z') && CapsLock)
 							c -= 'a' - 'A';
-#endif
 					}
 				}
 				if (c)
@@ -479,7 +475,7 @@ char IN_GetLastASCII(void)
 
 void IN_SetLastASCII(char c)
 {
-  in_lastASCII = c;
+	in_lastASCII = c;
 }
 
 void IN_Startup(void)
