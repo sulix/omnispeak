@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_def.h"
 #include "ck_game.h"
 #include "ck_play.h"
+#include "id_in.h"
 #include "id_rf.h"
 #include "id_us.h"
 #include "id_vh.h"
@@ -76,38 +77,50 @@ void CK_HandleDemoKeys()
  * Terminator Intro Text
  */
 
+// I think this is how this works:
+// The terminator line width is set to be a little bit wider than the KEEN graphic
+// The Keen graphic is moved into Video memory, Once, before the scrolling starts.
+// The top left of the screen is initialized to draw just to the right of the KEEN graphic,
+// and it scrolls left until the Keen graphic has moved off the right edge of the screen
+//
+// While this is happening, the visible part of the COMMANDER graphic is drawn, but it does not
+// actually affect the KEEN graphic in video memory.  The COMMANDER graphic itself is loaded into
+// main memory before the scrolling routine starts, in 8 different shifts for smooth scrolling
+
+// On top of this, the scrolling credits are drawn (again so that they don't modify the KEEN)
+// in Video memory
+//
+
+// Once all of this is finished, the zoomout routine runs.
+// It dynamically scales a bitmap that is composed of the two COMMANDER and KEEN graphics
+
 #define TERMINATORSCREENWIDTH 248
-#if 0
 
 // Pointers to the two monochrome bitmaps that are scrolled during the intro
 
 typedef struct introbmptypestruct {
 	int height, width;
-	unsigned linestarts[200];
+	uint16_t linestarts[200];
 	uint8_t data[];
 } introbmptype;
 
-
-
-introbmptype _seg *ck_introKeen;
-introbmptype _seg *ck_introCommander;
+introbmptype *ck_introKeen;
+introbmptype *ck_introCommander;
 
 // segment pointers to various graphic chunks
-memptr introbuffer;
-memptr introbuffer2;
-memptr shiftedCmdrBMPsegs[8];
+mm_ptr_t introbuffer;
+mm_ptr_t introbuffer2;
+mm_ptr_t shiftedCmdrBMPsegs[8];
 
-#endif
 uint8_t terminator_blackmasks[] = {0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
 uint8_t terminator_lightmasks[] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE};
 uint8_t terminator_palette1[17] = {0,4,4,0x1c,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,4,0};
 uint8_t terminator_palette2[17] = {0,1,1,0x11,1,1,1,1,0x04,0x04,0x04,0x04,0x14,0x14,0x14,0x14,0};
-#if 0
 
 // chunk #'s for the vertically scrolling pics
-int terminator_pics[4] = {I_IDMODPIC, I_ARRANGEDPIC, I_HELPFROMPIC, I_CATFACEPIC};
+int *terminator_pics[4] = {&PIC_CREDIT1, &PIC_CREDIT2, &PIC_CREDIT3, &PIC_CREDIT4};
 // storage for the vertically scrolling pics
-memptr terminator_pic_memptrs[4];
+mm_ptr_t terminator_pic_memptrs[4];
 
 
 unsigned ck_introCommanderWidth;
@@ -126,7 +139,7 @@ int ck_termCreditStage;
 // int rowsToDraw;
 
 unsigned *word_499D1;
-memptr ck_currentTermPicSeg;
+mm_ptr_t ck_currentTermPicSeg;
 
 unsigned word_499CB;
 // unknown vairables
@@ -148,7 +161,6 @@ uint16_t ck_currentTermPicWidth;
 uint16_t ck_termPicHeights[5];
 uint16_t ck_termPicWidths[5];
 
-uint16_t word_499FF;
 
 
 
@@ -156,11 +168,13 @@ void DoubleSizeTerminatorPics(int pic);
 int AdvanceTerminatorCredit(int elapsedTime);
 void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel);
 void AnimateTerminator(void);
-void TerminatorExpandRLE(uint16_t far *src, uint8_t far *dest);
+void TerminatorExpandRLE(uint16_t *src, uint8_t *dest);
 void JoinTerminatorPics(void);
-void ZoomOutTerminator_1(uint16_t far *arg0, uint16_t arg4, int leftOffset, uint16_t far *arg8);
+void ZoomOutTerminator_1(uint16_t *arg0, uint16_t arg4, int leftOffset, uint16_t *arg8);
 void ZoomOutTerminator(void);
-void FinishPage(void);
+void CK_FizzleFade(void);
+
+#if 0
 
 // Caches vertically scrolling terminator pics
 // and unsignedly extends each uint8_t of the pic to a uint16_t
@@ -176,7 +190,7 @@ void DoubleSizeTerminatorPics(int pic)
 	int picchunk, pictableindex;
 
 	// Cache the standard-sized picture
-	picchunk = terminator_pics[pic];
+	picchunk = *terminator_pics[pic];
 	CA_CacheGrChunk(picchunk);
 
 	// Allocate memory for the expanded picture
@@ -188,14 +202,14 @@ void DoubleSizeTerminatorPics(int pic)
 	MM_GetPtr(&terminator_pic_memptrs[pic], size * 2);
 
 	// Copy the data to the expanded buffer
-	picptr = grsegs[picchunk];
+	picptr = ca_graphChunks[picchunk];
 	double_picptr = (uint16_t far *)terminator_pic_memptrs[pic];
 
 	for (i = 0; i < size; i++)
 		*double_picptr++ = *picptr++ * 2;
 
 	// Free the standard-sized picture
-	MM_FreePtr(&grsegs[picchunk]);
+	MM_FreePtr(&ca_graphChunks[picchunk]);
 }
 
 // Returns the Y-position of the terminator credit
@@ -407,6 +421,7 @@ asm		mov ds, ax;
 
 }
 
+#endif
 
 // Does the terminator scrolling
 void AnimateTerminator(void)
@@ -432,49 +447,51 @@ void AnimateTerminator(void)
 	// start of the visible area in the screen buffer
 	unsigned screenofs;
 
-	unsigned elapsedTime;
+	uint16_t elapsedTime;
 
 	// The pixel modulo 8 that the left edge of the scrolling CMDR graphic is aligned to,
 	// relative to the left edge of the buffer
 	int cmdrBMPpelpan;
 
 	// Which of the shifted "COMMANDER" graphics to use
-	memptr bmpsrcseg;
+	mm_ptr_t bmpsrcseg;
 
 	// variables of unknown type
-	int screenWidthInPx, maxTime, var18, var1A, var1C, var1E, var20, var22;
+	int screenWidthInPx, maxTime, var18, leftMarginBlackWords, cmdrWords, rightMarginBlackWords, offscreenCmdrPixels, var22;
 
-	EGAWRITEMODE(0);
-	EGAREADMAP(0);
+	// EGAWRITEMODE(0);
+	// EGAREADMAP(0);
 	ck_introScreenWidth = ck_introKeen->width + 200;
 
-	EGAREADMAP(1);
+	// EGAREADMAP(1);
 
 	finalCmdrPos = 120 - ck_introCommander->width;
 	screenWidthInPx = 320;
 	totalCmdrScrollDist = finalCmdrPos - screenWidthInPx;
-	maxTime = ABS(totalCmdrScrollDist);
+	maxTime = abs(totalCmdrScrollDist);
 
 	terminatorPageOn = terminatorOfs = 0;
 
 	// delay for a tic before starting
-	lasttimecount = TimeCount;
-	while (lasttimecount == TimeCount)
+	SD_SetTimeCount(SD_GetTimeCount());
+	while (SD_GetLastTimeCount() == SD_GetTimeCount())
 		;
 
-	lasttimecount = TimeCount;
+	SD_SetLastTimeCount(SD_GetTimeCount());
 
 	// Update the terminator
-	for (elapsedTime = 0; elapsedTime <= maxTime; elapsedTime += tics)
+	for (elapsedTime = 0; elapsedTime <= maxTime; elapsedTime += SD_GetSpriteSync())
 	{
 
 		// Reposition the left edge of the screen in direct proportionality to time elapsed
-		xpixel = ((long)ck_introScreenWidth*(long)(maxTime-elapsedTime)) / (long)maxTime;
+		xpixel = (ck_introScreenWidth*(maxTime-elapsedTime)) / maxTime;
 
 		// Scroll the Credits graphics
+#if 0
 		ScrollTerminatorCredits(elapsedTime, xpixel);
+#endif
 
-		elapsedCmdrScrollDist = screenWidthInPx + ((long)totalCmdrScrollDist * (long)elapsedTime)/ (long)maxTime;
+		elapsedCmdrScrollDist = screenWidthInPx + (totalCmdrScrollDist * elapsedTime)/ maxTime;
 		elapsedCmdrScrollDist += xpixel&7;
 
 		var6 = (elapsedCmdrScrollDist + 0x800) / 8 - 0x100;
@@ -488,38 +505,38 @@ void AnimateTerminator(void)
 		if (var6 > 0)
 		{
 			// The COMMANDER graphic has not started to scroll off the left edge of the screen
-			var1A = (var6+1)/2;
+			leftMarginBlackWords = (var6+1)/2;
 
 			if (var6 & 1)
 				screenofs--;
 
-			var1C = 21 - var1A;
-			var1E = 0;
+			cmdrWords = 21 - leftMarginBlackWords;
+			rightMarginBlackWords = 0;
 		}
 		else if (var6 > (int)(320/8 - ck_introCommanderWidth))
 		{
 			// The COMMANDER graphic is clipped on both left and right edges
-			var1A = 0;
-			var1C = 21;
-			var1E = 0;
+			leftMarginBlackWords = 0;
+			cmdrWords = 21; // 42 * 8 pixels = 336
+			rightMarginBlackWords = 0;
 			var18 -= var6;
 		}
 		else
 		{
 			// The COMMANDER graphic is only clipped by the left side of the screen
-			var1A = 0;
-			var1C = (ck_introCommanderWidth+var6)/2;
-			var1E = 21 - var1C;
+			leftMarginBlackWords = 0;
+			cmdrWords = (ck_introCommanderWidth+var6)/2;
+			rightMarginBlackWords = 21 - cmdrWords;
 			var18 -= var6;
 		}
 
 		// loc_1445B:
-		var20 = ck_introCommanderWidth - (var1C<<1);
-		var22 = TERMINATORSCREENWIDTH - ((var1A + var1C + var1E) << 1);
+		offscreenCmdrPixels = ck_introCommanderWidth - (cmdrWords<<1);
+		var22 = TERMINATORSCREENWIDTH - ((leftMarginBlackWords + cmdrWords + rightMarginBlackWords) << 1);
 
-		EGAMAPMASK(2);
+		// EGAMAPMASK(2);
 
-
+#if 0
 asm		mov di, screenofs;
 asm		mov es, screenseg;
 asm		mov si, var18;
@@ -532,16 +549,16 @@ asm		mov dx, 200;
 loopb0:
 // Write black pixels to the left of COMMANDER
 asm		xor ax, ax;
-asm		mov cx, var1A;
+asm		mov cx, leftMarginBlackWords;
 asm		rep stosw;
 
 // Write COMMANDER bmp data
-asm		mov cx, var1C;
+asm		mov cx, cmdrWords;
 asm		rep movsw;
 
 // Write black pixels to the right of COMMANDER
 asm		xor ax, ax;
-asm		mov cx, var1E;
+asm		mov cx, rightMarginBlackWords;
 asm		rep stosw;
 
 
@@ -553,7 +570,7 @@ asm		mov si, ss:word_499FF;
 asm		jmp ahead;
 
 odd:
-asm		add si, var20;
+asm		add si, offscreenCmdrPixels;
 asm		mov ss:word_499FF, si;
 
 ahead:
@@ -564,11 +581,39 @@ asm		jnz loopb0;
 
 asm		mov ax, ss;
 asm		mov ds, ax;
+#endif
 
+uint16_t *screenptr, *srcptr;
 
+// register shortage necessitated static declaration in DOS
+static uint16_t *word_499FF;
 
-		// Flip to the back page while panning the screen to the left
-		VW_SetScreen(xpixel/8 + terminatorOfs,xpixel&7);
+for (int row = 200; row > 0; row--)
+{
+  for (int i = leftMarginBlackWords; i > 0; i--)
+    *screenptr++ = 0;
+
+  for (int i = cmdrWords; i > 0; i--)
+    *screenptr++ = *srcptr++;
+
+  for (int i = rightMarginBlackWords; i > 0; i--)
+    *screenptr++ = 0;
+
+  if (row&1)
+  {
+    srcptr += offscreenCmdrPixels;
+    word_499FF = srcptr;
+  }
+  else
+  {
+    srcptr = word_499FF;
+  }
+
+  screenptr += var22;
+}
+
+		// DOS: Flip to the back page while panning the screen to the left
+		// VW_SetScreen(xpixel/8 + terminatorOfs,xpixel&7);
 
 		// Set the new back page
 		if (terminatorPageOn ^=1)
@@ -579,25 +624,24 @@ asm		mov ds, ax;
 
 		// Delay
 		do {
-			delaytime = TimeCount;
-		} while ((tics = delaytime - lasttimecount) < 2);
+			delaytime = SD_GetTimeCount();
+      SD_SetSpriteSync(delaytime - SD_GetLastTimeCount());
+		} while (SD_GetSpriteSync() < 2);
 
-		lasttimecount = delaytime;
+  SD_SetLastTimeCount(delaytime);
 
 
 		// Stop drawing if key pressed
-		if (IN_IsUserInput() && LastScan == sc_F1)
-			LastScan = sc_Space;
+		if (IN_CheckAck() /*IN_IsUserInput()*/ && IN_GetLastScan() == IN_SC_F1)
+			IN_SetLastScan(IN_SC_Space);
 
-		if (LastScan)
+		if (IN_GetLastScan())
 			return;
-
 	}
 
 	word_499C7 = xpixel/8;
 
 }
-#endif
 
 // RLE-Expands one line of monochrome terminator BMP data
 // Each source line is a sequence of WORD data, terminated with an 0xFFFF flag
@@ -1225,18 +1269,16 @@ void CK_FizzleFade()
 void CK_DrawTerminator(void)
 {
 
-#if 0
 unsigned i,j;
 unsigned cmdrWidthX100;
 
-uint16_t far *linestart;
-uint8_t far *vidPtr; // perhaps srcPtr, destPtr, respectively
+uint16_t *srcptr;
+uint8_t *destptr;
 
 
-uint16_t unkptrs[200];
+uint8_t *unkptrs[200];
 
 
-#endif
 bool terminator_complete = false;
 #if 0
 CA_SetAllPurge();
@@ -1254,34 +1296,36 @@ geninterrupt(0x10);
 
 #if 0
 VW_SetLineWidth(TERMINATORSCREENWIDTH);
+#endif
 
 
 // Cache Intro Bitmaps
-CA_CacheGrChunk(TITLEPIC);
-CA_CacheGrChunk(I_COMMANDEREXTERN);
-CA_CacheGrChunk(I_KEENEXTERN);
+CA_CacheGrChunk(PIC_TITLESCREEN);
+CA_CacheGrChunk(EXTERN_COMMANDER);
+CA_CacheGrChunk(EXTERN_KEEN);
 
 
-ck_introKeen = grsegs[I_KEENEXTERN];
-ck_introCommander = grsegs[I_COMMANDEREXTERN];
+ck_introKeen = ca_graphChunks[EXTERN_KEEN];
+ck_introCommander = ca_graphChunks[EXTERN_COMMANDER];
 
-EGAMAPMASK(1);
-
+// DOS: Only writing to plane 0 of display memory
+// EGAMAPMASK(1);
 
 // Because "KEEN" needs to end up on the right side of the screen,
 // an extra padding amount is added to the left side of the Keen graphic
 ck_introScreenWidth = ck_introKeen->width + 25 * 8;
 
+#if 0
 // Set the screen to the right of the "KEEN" graphic
 VW_SetScreen(ck_introScreenWidth/8 + 1, 0);
 
 // Copy each line of the KEEN graphic into video memory, accounting for the padding amount
 for (i = 0; i < 200; i++)
 {
-linestart = MK_FP(ck_introKeen,  ck_introKeen->linestarts[i]);
-vidPtr = MK_FP(0xA000 , ylookup[i] + 25);
+srcptr = MK_FP(ck_introKeen,  ck_introKeen->linestarts[i]);
+destptr = MK_FP(0xA000 , ylookup[i] + 25);
 
-TerminatorExpandRLE(linestart, vidPtr);
+TerminatorExpandRLE(srcptr, destptr);
 }
 
 // Copy the KEEN graphic to the second page
@@ -1296,8 +1340,8 @@ for (j = 0; j < 8; j++)
 MM_GetPtr(&shiftedCmdrBMPsegs[j],cmdrWidthX100);
 
 
-ck_introKeen = grsegs[I_KEENEXTERN];
-ck_introCommander = grsegs[I_COMMANDEREXTERN];
+ck_introKeen = ca_graphChunks[I_KEENEXTERN];
+ck_introCommander = ca_graphChunks[I_COMMANDEREXTERN];
 
 
 for (i = 0; i < 100; i++)
@@ -1305,10 +1349,10 @@ for (i = 0; i < 100; i++)
 
 unkptrs[2*i] = unkptrs[2*i+1] = i * ck_introCommanderWidth;
 
-linestart = MK_FP(ck_introCommander, ck_introCommander->linestarts[2*i]);
-vidPtr = MK_FP(shiftedCmdrBMPsegs[0],unkptrs[2*i]);
+srcptr = MK_FP(ck_introCommander, ck_introCommander->linestarts[2*i]);
+destptr = MK_FP(shiftedCmdrBMPsegs[0],unkptrs[2*i]);
 
-TerminatorExpandRLE(linestart, vidPtr);
+TerminatorExpandRLE(srcptr, destptr);
 
 }
 #endif
@@ -1368,11 +1412,11 @@ ck_termCreditStage = -1;
 // AnimateTerminator();
 
 
-for (i = 0; i < 4; i++)
-MM_FreePtr(&terminator_pic_memptrs[i]);
+  for (int i = 0; i < 4; i++)
+    MM_FreePtr(&terminator_pic_memptrs[i]);
 
-for (j = 0; j < 8; j++)
-MM_FreePtr(&shiftedCmdrBMPsegs[j]);
+  for (j = 0; j < 8; j++)
+    MM_FreePtr(&shiftedCmdrBMPsegs[j]);
 
 
 
@@ -1390,8 +1434,8 @@ MM_FreePtr(&shiftedCmdrBMPsegs[j]);
 	}
 
 	// Free the COMMANDER and KEEN bitmaps
-	// MM_SetPurge(4922, 3);
-	// MM_SetPurge(4923, 3);
+	MM_SetPurge(ca_graphChunks + EXTERN_COMMANDER, 3);
+	MM_SetPurge(ca_graphChunks + EXTERN_KEEN, 3);
 
 	// Restore video mode to normal
 	VL_ClearScreen(0);

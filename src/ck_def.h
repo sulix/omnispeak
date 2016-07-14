@@ -426,6 +426,10 @@ extern int PIC_PADDLEWAR;
 extern int PIC_DEBUGCARD;
 
 extern int PIC_WRISTWATCH;
+extern int PIC_CREDIT1;
+extern int PIC_CREDIT2;
+extern int PIC_CREDIT3;
+extern int PIC_CREDIT4;
 
 extern int PIC_STARWARS;
 extern int PIC_TITLESCREEN;
@@ -483,6 +487,9 @@ extern int TEXT_ABOUTID;
 extern int TEXT_END;
 extern int TEXT_SECRETEND;
 extern int TEXT_ORDER;
+
+extern int EXTERN_KEEN;
+extern int EXTERN_COMMANDER;
 
 extern int DEMOSTART;
 
