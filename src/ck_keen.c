@@ -55,8 +55,6 @@ CK_keenState ck_keenState;
 
 void CK_BasicDrawFunc1(CK_object *obj);
 
-CK_action CK_ACT_itemNotify = {0, 0, AT_ScaledOnce, 0, 0, 40, 0, 8, 0, 0, CK_BasicDrawFunc1, 0};
-
 soundnames *ck_itemSounds;
 uint16_t ck_itemPoints[]  = {  0,   0,   0,   0, 100, 200, 500, 1000, 2000, 5000,   0,   0,   0};
 uint16_t *ck_itemShadows;
@@ -93,11 +91,11 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		{
 			ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
 		}
-		else if (b->user1 == 12)
+		else if ((ck_currentEpisode->ep == EP_CK5) && (b->user1 == 12))
 		{
-      ck_gameState.ep.ck5.securityCard = 1;
+			ck_gameState.ep.ck5.securityCard = 1;
 		}
-		CK_SetAction2(b, &CK_ACT_itemNotify);
+		CK_SetAction2(b, CK_GetActionByName("CK_ACT_itemNotify"));
 	}
 	else if (b->type == CT_CLASS(Platform)) //Platform
 	{
@@ -207,7 +205,7 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 	notify->yDirection = -1;
 	notify->user2 = ck_itemShadows[itemNumber];
 	notify->gfxChunk = notify->user2;
-	CK_SetAction(notify, &CK_ACT_itemNotify);
+	CK_SetAction(notify, CK_GetActionByName("CK_ACT_itemNotify"));
 	notify->clipped = CLIP_not;
 }
 
@@ -230,7 +228,7 @@ void CK_KeenGetTileCentilife(int tileX, int tileY)
     obj->posY = tileY << G_T_SHIFT;
     obj->yDirection = IN_motion_Up;
     obj->user2 = obj->gfxChunk = SPR_CENTILIFE1UPSHADOW;
-    CK_SetAction(obj, &CK_ACT_itemNotify);
+    CK_SetAction(obj, CK_GetActionByName("CK_ACT_itemNotify"));
     obj->clipped = CLIP_not;
   }
 }
@@ -391,7 +389,7 @@ bool CK_KeenPressUp(CK_object *obj)
 					newObj->active = OBJ_ALWAYS_ACTIVE;
 					newObj->type = 1;
 					CK_SetAction(newObj, CK_GetActionByName("CK_ACT_SecurityDoorOpen"));
-					obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor1");
+					obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterSecurityDoor");
 					obj->zLayer = 0;
 					ck_keenState.keenSliding = true;
 					return true;
@@ -407,7 +405,7 @@ bool CK_KeenPressUp(CK_object *obj)
 			else
 			{
 				ck_invincibilityTimer = 110;
-				obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor2");
+				obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor0");
 				obj->zLayer = 0;
 
 				if ((ck_currentEpisode->ep == EP_CK5) && !CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY1, 2))
@@ -1489,17 +1487,11 @@ void CK_KeenDeathThink(CK_object *obj)
 void CK_KillKeen()
 {
 	CK_object *obj = ck_keenObj;
-	if (ck_invincibilityTimer)
+	if (ck_invincibilityTimer || ck_godMode || (obj->currentAction == CK_GetActionByName("CK_ACT_keenNot")))
 	{
 		return;
 	}
 
-	if (ck_godMode)
-	{
-		return;
-	}
-
-	//TODO: ACTION_KEENNOT
 	ck_keenMoon = 0; // Yes, also set in Keen 5
 	ck_invincibilityTimer = 30;
 	ck_scrollDisabled = true;
@@ -1693,6 +1685,12 @@ void CK_KeenPoleDownDrawFunc(CK_object *obj)
 	}
 
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
+}
+
+// Defined for a seemingly unused state
+void CK_KeenSetClipped(CK_object *obj)
+{
+	obj->clipped = CLIP_normal;
 }
 
 // Shooting
@@ -1951,6 +1949,7 @@ void CK_KeenSetupFunctions()
 	CK_ACT_AddFunction("CK_KeenPoleUpThink",&CK_KeenPoleUpThink);
 	CK_ACT_AddFunction("CK_KeenPoleDownThink",&CK_KeenPoleDownThink);
 	CK_ACT_AddFunction("CK_KeenPoleDownDrawFunc",&CK_KeenPoleDownDrawFunc);
+	CK_ACT_AddFunction("CK_KeenSetClipped",&CK_KeenSetClipped);
 	CK_ACT_AddColFunction("CK_KeenColFunc",&CK_KeenColFunc);
 	CK_ACT_AddFunction("CK_KeenDeathThink",&CK_KeenDeathThink);
 	CK_ACT_AddFunction("CK_KeenSpawnShot", &CK_KeenSpawnShot);
