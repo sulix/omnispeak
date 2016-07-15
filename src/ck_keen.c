@@ -1390,7 +1390,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 
 void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 {
-  if (other->type == CT_CLASS(Platform))
+	if (other->type == CT_CLASS(Platform))
 	{
 		obj->clipped = CLIP_normal;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
@@ -1398,9 +1398,16 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		obj->velX = 0;
 		obj->velY = 0;
 		CK_PhysPushY(obj,other);
-		return;
 	}
-  else if (ck_currentEpisode->ep == EP_CK5 && (other->type == CT5_Ampton || other->type == CT5_Korath))
+	else if ((ck_currentEpisode->ep == EP_CK4) &&
+		 ((other->type == CT4_Mushroom) || (other->type == CT4_Arachnut) || (other->type == CT4_Berkeloid))
+	)
+	{
+		CK_KillKeen();
+	}
+	else if (((ck_currentEpisode->ep == EP_CK4) && (other->type == CT4_Bounder)) ||
+	         ((ck_currentEpisode->ep == EP_CK5) && ((other->type == CT5_Ampton) || (other->type == CT5_Korath)))
+	)
 	{
 		obj->zLayer = 1;
 		obj->clipped = CLIP_normal;
@@ -1408,7 +1415,8 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		ck_keenState.jumpTimer = 0;
 		obj->velX = 0;
 		obj->velY = 0;
-		return;
+		if (ck_currentEpisode->ep == EP_CK4)
+			CK_PhysPushXY(obj, other, false);
 	}
 
 }
@@ -1911,12 +1919,6 @@ void CK_KeenSpawnShot(CK_object *obj)
 	}
 }
 
-void CK_KeenFall(CK_object *obj)
-{
-	CK_PhysGravityHigh(obj);
-	ck_nextX = obj->velX * SD_GetSpriteSync();
-}
-
 void CK_KeenSetupFunctions()
 {
 	CK_ACT_AddFunction("CK_KeenSlide",&CK_KeenSlide);
@@ -1955,5 +1957,4 @@ void CK_KeenSetupFunctions()
 	CK_ACT_AddFunction("CK_KeenSpawnShot", &CK_KeenSpawnShot);
 	CK_ACT_AddFunction("CK_ShotThink", &CK_ShotThink);
 	CK_ACT_AddFunction("CK_ShotDrawFunc", &CK_ShotDrawFunc);
-	CK_ACT_AddFunction("CK_KeenFall",&CK_KeenFall);
 }

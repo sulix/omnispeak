@@ -569,7 +569,7 @@ int main(int argc, char *argv[])
 
 	// HACK
 	extern STR_Table *ck_actionTable;
-	for (int i = 0; i < ck_actionTable->size; ++i)
+	for (int i = 0, count = 0; i < ck_actionTable->size; ++i)
 	{
 		if (ck_actionTable->arr[i].str == NULL)
 			continue;
@@ -579,31 +579,33 @@ int main(int argc, char *argv[])
 
 		char *dataToCompare = &dsegBuffer[act->compatDosPointer];
 		if (*(int16_t *)dataToCompare != act->chunkLeft)
-			printf("chunkLeft mismatch found for action: %s\n", name);
+			printf("chunkLeft mismatch found for action no. %d: %s\n", count, name);
 		if (*(int16_t *)(dataToCompare+2) != act->chunkRight)
-			printf("chunkRight mismatch found for action: %s\n", name);
+			printf("chunkRight mismatch found for action no. %d: %s\n", count, name);
 		if (*(int16_t *)(dataToCompare+4) != act->type)
-			printf("type mismatch found for action: %s\n", name);
+			printf("type mismatch found for action no. %d: %s\n", count, name);
 		if (*(int16_t *)(dataToCompare+6) != act->protectAnimation)
-			printf("protectAnimation mismatch found for action: %s\n", name);
+			printf("protectAnimation mismatch found for action no. %d: %s\n", count, name);
 		if (*(int16_t *)(dataToCompare+8) != act->stickToGround)
-			printf("stickToGround mismatch found for action: %s\n", name);
+			printf("stickToGround mismatch found for action no. %d: %s\n", count, name);
 		if (*(int16_t *)(dataToCompare+10) != act->timer)
-			printf("timer mismatch found for action: %s\n", name);
+			printf("timer mismatch found for action no. %d: %s\n", count, name);
 		if (*(int16_t *)(dataToCompare+12) != act->velX)
-			printf("velX mismatch found for action: %s\n", name);
+			printf("velX mismatch found for action no. %d: %s\n", count, name);
 		if (*(int16_t *)(dataToCompare+14) != act->velY)
-			printf("velY mismatch found for action: %s\n", name);
+			printf("velY mismatch found for action no. %d: %s\n", count, name);
 		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+16), act->think))
-			printf("think mismatch found for action: %s\n", name);
+			printf("think mismatch found (possibly) for action no. %d: %s\n", count, name);
 		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+20), act->collide))
-			printf("collide mismatch found for action: %s\n", name);
+			printf("collide mismatch found (possibly) for action no. %d: %s\n", count, name);
 		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+24), act->draw))
-			printf("draw mismatch found for action: %s\n", name);
+			printf("draw mismatch found (possibly) for action no. %d: %s\n", count, name);
 		if (((act->next == NULL) && (*(uint16_t *)(dataToCompare+28) != 0)) ||
 		    ((act->next != NULL) && (*(uint16_t *)(dataToCompare+28) != act->next->compatDosPointer))
 		)
-			printf("next mismatch found for action: %s\n", name);
+			printf("next mismatch found for action no. %d: %s\n", count, name);
+
+		++count;
 	}
 	return 0;
 }

@@ -1640,37 +1640,6 @@ void CK5_SpherefulTileCol(CK_object *obj)
 
 // Korath Funcs
 
-void CK5_KorathDraw(CK_object *obj)
-{
-	if (obj->xDirection == 1 && obj->leftTI)
-	{
-		obj->posX -= obj->deltaPosX;
-		obj->xDirection = -1;
-		obj->timeUntillThink = US_RndT() / 32;
-		CK_SetAction2(obj, obj->currentAction);
-	}
-	else if (obj->xDirection == -1 && obj->rightTI)
-	{
-		obj->posX -= obj->deltaPosX;
-		obj->xDirection = 1;
-		obj->timeUntillThink = US_RndT() / 32;
-		CK_SetAction2(obj, obj->currentAction);
-	}
-	else if (!obj->topTI)
-	{
-
-		obj->posX -= obj->deltaPosX;
-		obj->xDirection = -obj->xDirection;
-		obj->timeUntillThink = US_RndT() / 32;
-		ck_nextX = 0;
-
-		CK_SetAction2(obj, obj->currentAction);
-	}
-
-	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0,
-									obj->zLayer);
-}
-
 void CK5_KorathWalk(CK_object *obj)
 {
 	if (US_RndT() < 10)
@@ -1786,7 +1755,6 @@ void CK5_Obj3_SetupFunctions()
 	CK_ACT_AddFunction("CK5_SpherefulTileCol", &CK5_SpherefulTileCol);
 
 	// Korath
-	CK_ACT_AddFunction("CK5_KorathDraw", &CK5_KorathDraw);
 	CK_ACT_AddFunction("CK5_KorathWalk", &CK5_KorathWalk);
 	CK_ACT_AddColFunction("CK5_KorathColFunc", &CK5_KorathColFunc);
 
