@@ -240,6 +240,11 @@ typedef struct CK_action
 	void (*collide)(struct CK_object *obj, struct CK_object *other);
 	void (*draw)(struct CK_object *obj);
 	struct CK_action *next;
+	// Omnispeak - backwards compatibility:
+	// Given an instance of this type, stores what would be
+	// the 16-bit offset pointer in the dseg while using the
+	// original 16-bit DOS executable (corresponding version).
+	uint16_t compatDosPointer;
 } CK_action;
 
 typedef enum CK_objActive
