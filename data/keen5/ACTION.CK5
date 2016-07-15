@@ -65,6 +65,10 @@
 %action CK_ACT_keenSlide 175 175 Frame 0 0 0 0 0 CK_KeenSlide NULL CK_BasicDrawFunc1 NULL
 
 %action CK_ACT_keenEnterSecurityDoor 175 175 UnscaledOnce 0 0 0x2D 0 -64 NULL NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor0
+
+# Another unused state
+%action CK_ACT_keenCantEnterDoor 126 126 Frame 0 0 0 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+
 %action CK_ACT_keenEnterDoor0 175 175 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor1
 %action CK_ACT_keenEnterDoor1 176 176 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor1 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor2
 %action CK_ACT_keenEnterDoor2 177 177 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor3
@@ -168,6 +172,11 @@
 # Items
 %action CK_ACT_item 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item2
 %action CK_ACT_item2 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item
+
+# Unused in Keen 5, but might be used in 6 (for dropped gems)
+%action CK_ACT_fallingitem 0 0 UnscaledFrame 0 0 20 0 0 CK_FallingItem NULL CK_BasicDrawFunc1 CK_ACT_fallingitem2
+%action CK_ACT_fallingitem2 0 0 UnscaledFrame 0 0 20 0 0 CK_FallingItem NULL CK_BasicDrawFunc1 CK_ACT_fallingitem
+
 %action CK_ACT_itemNotify 0 0 ScaledOnce 0 0 40 0 8 NULL NULL CK_BasicDrawFunc1 NULL
 
 # Vitalins
