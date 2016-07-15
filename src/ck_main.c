@@ -594,11 +594,11 @@ int main(int argc, char *argv[])
 			printf("velX mismatch found for action no. %d: %s\n", count, name);
 		if (*(int16_t *)(dataToCompare+14) != act->velY)
 			printf("velY mismatch found for action no. %d: %s\n", count, name);
-		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+16), act->think))
+		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+16), (void *)(act->think)))
 			printf("think mismatch found (possibly) for action no. %d: %s\n", count, name);
-		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+20), act->collide))
+		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+20), (void *)(act->collide)))
 			printf("collide mismatch found (possibly) for action no. %d: %s\n", count, name);
-		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+24), act->draw))
+		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+24), (void *)(act->draw)))
 			printf("draw mismatch found (possibly) for action no. %d: %s\n", count, name);
 		if (((act->next == NULL) && (*(uint16_t *)(dataToCompare+28) != 0)) ||
 		    ((act->next != NULL) && (*(uint16_t *)(dataToCompare+28) != act->next->compatDosPointer))

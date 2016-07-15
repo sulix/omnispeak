@@ -1305,8 +1305,8 @@ CA_CacheGrChunk(EXTERN_COMMANDER);
 CA_CacheGrChunk(EXTERN_KEEN);
 
 
-ck_introKeen = ca_graphChunks[EXTERN_KEEN];
-ck_introCommander = ca_graphChunks[EXTERN_COMMANDER];
+ck_introKeen = (introbmptype *)ca_graphChunks[EXTERN_KEEN];
+ck_introCommander = (introbmptype *)ca_graphChunks[EXTERN_COMMANDER];
 
 // DOS: Only writing to plane 0 of display memory
 // EGAMAPMASK(1);
