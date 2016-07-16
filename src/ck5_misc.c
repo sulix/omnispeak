@@ -39,6 +39,8 @@ CK_EpisodeDef ck5_episode ={
   6,
   15,
   14,
+  0x9E6F,
+  0xBC3B,
 };
 
 

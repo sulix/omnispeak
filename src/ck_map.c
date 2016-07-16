@@ -130,12 +130,8 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		return;
 
 
-	// NOTE: Score is stored in user1 and user2 in original keen
-	// Can just use user1 here, but be careful about loading/saving games!
-
-
 	// Draw the score if it's changed
-	if (scorebox->user1 != ck_gameState.keenScore)
+	if ((scorebox->user1 != (ck_gameState.keenScore>>16)) || (scorebox->user2 != (ck_gameState.keenScore&0xFFFF)))
 	{
 		int place, len, planeSize;
 		char buf[16];
@@ -149,7 +145,7 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		dest += (planeSize = box.width * box.height);
 		dest += box.width * 4 + 1;
 
-		sprintf(buf, "%d", ck_gameState.keenScore);
+		sprintf(buf, "%d", (int)ck_gameState.keenScore);
 		len = strlen(buf);
 
 		// Draw the leading emptiness
@@ -165,7 +161,8 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 
 		}
 
-		scorebox->user1 = ck_gameState.keenScore;
+		scorebox->user1 = ck_gameState.keenScore>>16;
+		scorebox->user2 = ck_gameState.keenScore&0xFFFF;
 		updated = true;
 
 	}

@@ -242,8 +242,7 @@ void CK_RemoveObj(CK_object *obj)
 
 	if (obj->type == CT_CLASS(StunnedCreature))
 	{
-		// FIXME: This cast is bad on 64-bit platforms
-		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & obj->user3);
+		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & obj->user3Ptr);
 	}
 
 	if (obj == ck_lastObject)
@@ -257,6 +256,28 @@ void CK_RemoveObj(CK_object *obj)
 	obj->prev = ck_freeObject;
 	ck_freeObject = obj;
 	ck_numObjects--;
+}
+
+/*** Used for saved games compatibility ***/
+#define COMPAT_ORIG_OBJ_SIZE 76
+uint16_t CK_ConvertObjPointerTo16BitOffset(CK_object *obj)
+{
+	if ((obj >= ck_objArray) && (obj < ck_objArray + CK_MAX_OBJECTS))
+		return (obj-ck_objArray)*COMPAT_ORIG_OBJ_SIZE+ck_currentEpisode->objArrayOffset;
+	if (obj == &tempObj)
+		return ck_currentEpisode->tempObjOffset;
+	return 0;
+}
+
+CK_object *CK_ConvertObj16BitOffsetToPointer(uint16_t offset)
+{
+	uint16_t objArrayOffset = ck_currentEpisode->objArrayOffset;
+	// Original size of each object was 76 bytes
+	if ((offset >= objArrayOffset) && (offset < objArrayOffset + COMPAT_ORIG_OBJ_SIZE * CK_MAX_OBJECTS))
+		return ck_objArray+(offset-objArrayOffset)/COMPAT_ORIG_OBJ_SIZE;
+	if (offset == ck_currentEpisode->tempObjOffset)
+		return &tempObj;
+	return NULL;
 }
 
 int16_t CK_ActionThink(CK_object *obj, int16_t time)
@@ -1787,7 +1808,7 @@ int CK_PlayLoop()
 						{
 							RF_RemoveSpriteDraw(&currentObj->sde);
 							if (currentObj->type == CT_CLASS(StunnedCreature))
-								RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & currentObj->user3);
+								RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & currentObj->user3Ptr);
 							currentObj->active = OBJ_INACTIVE;
 							continue;
 						}

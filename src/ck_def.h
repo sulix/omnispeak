@@ -290,10 +290,25 @@ typedef struct CK_object
 
 	struct RF_SpriteDrawEntry *sde;
 
-	intptr_t user1;
-	intptr_t user2;
-	intptr_t user3;
-	intptr_t user4;
+	// *** OMNISPEAK - NOTES ABOUT USAGE OF USER VARIABLES: ***
+	//
+	// These variables should be used wisely, in order to preserve
+	// compatibility with games saved/loaded by original DOS versions.
+	// Here is a simple set of rules of usage of the user1* variables,
+	// also applying to 2-4:
+	//
+	// - If user1 should be used only in numeric form, then simply use
+	// the usual 16-bit integer "user1" variable.
+	// - If user1 is *exclusively* used as a pointer, and its value is
+	// *discarded* after loading a saved game (e.g., Keen 5 Sphereful),
+	// then use the "user1Ptr" variable.
+	// - For any other pointer, *convert* it to the 16-bit offset pointer
+	// expected by the DOS version, to be stored in the usual (numeric)
+	// "user1" variable. Additionally, the actual pointer may
+	// optionally be stored in "user1Ptr", but be consistent!
+
+	int16_t user1, user2, user3, user4;
+	void *user1Ptr, *user2Ptr, *user3Ptr, *user4Ptr;
 
 	struct CK_object *next;
 	struct CK_object *prev;
@@ -393,6 +408,9 @@ void CK_Glide(CK_object *obj);
 void CK_SpawnItem(int tileX, int tileY, int itemNumber);
 void CK_SpawnCentilifeNotify(int tileX, int tileY);
 void CK_SpawnFallPlat(int tileX, int tileY);
+/*** Used for saved games compatibility ***/
+uint16_t CK_ConvertObjPointerTo16BitOffset(CK_object *obj);
+CK_object *CK_ConvertObj16BitOffsetToPointer(uint16_t offset);
 
 /* ck_text.c */
 void HelpScreens(void);
