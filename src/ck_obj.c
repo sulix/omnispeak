@@ -116,6 +116,16 @@ void CK_PointItem(CK_object *obj)
 		obj->gfxChunk = obj->user2;
 }
 
+// Keen 6 specific (but also appears to be present in the Keen 5 EXE)
+void CK_FallingItem(CK_object *obj)
+{
+	if (obj->topTI)
+		CK_SetAction(obj, CK_GetActionByName("CK_ACT_item"));
+	if (++obj->gfxChunk == obj->user3)
+		obj->gfxChunk = obj->user2;
+	CK_PhysGravityHigh(obj);
+}
+
 // Platforms
 
 // CK4: ck4_obj2.c
@@ -259,7 +269,8 @@ void CK_OBJ_SetupFunctions()
 {
 	CK_ACT_AddFunction("CK_DoorOpen", &CK_DoorOpen);
 	CK_ACT_AddFunction("CK_SecurityDoorOpen", &CK_SecurityDoorOpen);
-  CK_ACT_AddFunction("CK_PointItem", &CK_PointItem);
+	CK_ACT_AddFunction("CK_PointItem", &CK_PointItem);
+	CK_ACT_AddFunction("CK_FallingItem", &CK_FallingItem);
 
 	CK_ACT_AddFunction("CK_AxisPlatform", &CK_AxisPlatform);
 

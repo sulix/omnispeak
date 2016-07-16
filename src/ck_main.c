@@ -451,6 +451,167 @@ void CK_DemoLoop()
 
 }
 
+/* Basically a set of hacks: By commenting out the relevant "define" line,
+ * this code piece can be used to build a validator that checks that the
+ * contents of an ACTION.EXT file match the ones from an original
+ * (but unpacked) DOS executable, to find any missed difference.
+ * Note that the validation of function pointers isn't precise, but it
+ * is checked that different occurrences of the same function pointer in
+ * a DOS EXE always map to the exact same function in the ACTION.EXT file.
+ */
+
+//#define CK_RUN_ACTION_VALIDATOR
+
+#ifdef CK_RUN_ACTION_VALIDATOR
+
+#ifndef CK_CROSS_IS_LITTLEENDIAN
+#error "Error - Action validator is compatible with little-endian only!"
+#endif
+
+#include <stdio.h>
+#include "id_str.h"
+
+#define MAX_NUM_OF_FUNCTIONS 256
+
+extern STR_Table *ck_functionTable; // HACK
+
+typedef struct
+{
+	uint32_t farPtr;
+	void *nativePtr;
+} CK_FuncPtrPair;
+
+// Using an array for the sake of simplicity
+static CK_FuncPtrPair ck_funcPtrPairsArray[MAX_NUM_OF_FUNCTIONS];
+static int g_numOfFunctPtrPairs = 0;
+
+static bool compareFunctionDOSPtrToNativePtr(uint32_t farPtr, void *nativePtr)
+{
+	if ((farPtr == 0) || (nativePtr == NULL))
+		return ((farPtr == 0) && (nativePtr == NULL));
+
+	int i;
+	CK_FuncPtrPair *funcPtrPair = ck_funcPtrPairsArray;
+	for (i = 0; i < g_numOfFunctPtrPairs; ++i, ++funcPtrPair)
+		if (funcPtrPair->farPtr == farPtr)
+			return (funcPtrPair->nativePtr == nativePtr);
+
+	// First time we encounter this function, so add a mapping if there's the room
+	if (i == MAX_NUM_OF_FUNCTIONS)
+	{
+		fprintf(stderr, "Function pointers pairs array is full: DOS pointer is %u\n", (unsigned int)farPtr);
+		exit(1);
+	}
+	funcPtrPair->farPtr = farPtr;
+	funcPtrPair->nativePtr = nativePtr;
+	++g_numOfFunctPtrPairs;
+	return true;
+}
+
+int main(int argc, char *argv[])
+{
+	if (argc != 4)
+	{
+		printf("Action validator - Usage:\n");
+		printf("%s <UNPACKED.EXT> <ACTION.EXT> <EPISODENUM>\n", argv[0]);
+		return 0;
+	}
+
+
+	switch (atoi(argv[3]))
+	{
+	case 4:
+		ck_currentEpisode = &ck4_episode;
+		break;
+	case 5:
+		ck_currentEpisode = &ck5_episode;
+		break;
+	default:
+		fprintf(stderr, "Invalid episode selected - only 4 or 5 is valid!\n");
+		return 1;
+	}
+
+	FILE *exeFp = fopen(argv[1], "rb");
+	if (exeFp == NULL)
+	{
+		fprintf(stderr, "Couldn't open DOS EXE file! %s:\n", argv[1]);
+		return 1;
+	}
+	fseek(exeFp, 0L, SEEK_END);
+	long int fSize = ftell(exeFp);
+	fseek(exeFp, 0L, SEEK_SET);
+
+	char *fileBuffer = (char *)malloc(fSize);
+	if (!fileBuffer)
+	{
+		fprintf(stderr, "Couldn't allocate memory for DOS EXE!\n");
+		fclose(exeFp);
+		return 1;
+	}
+
+	fread(fileBuffer, fSize, 1, exeFp);
+	fclose(exeFp);
+
+	// We need this here
+	MM_Startup();
+
+	// Compile the actions
+	CK_ACT_SetupFunctions();
+	CK_KeenSetupFunctions();
+	CK_OBJ_SetupFunctions();
+	CK_Map_SetupFunctions();
+	CK_Misc_SetupFunctions();
+	ck_currentEpisode->setupFunctions();
+	CK_ACT_LoadActions(argv[2]);
+
+	char *exeImage = fileBuffer + 16 * (*(uint16_t *)(fileBuffer + 8));
+	char *dsegBuffer = exeImage + 16 * (*(uint16_t *)(exeImage + 1)); // HUGE HACK for fetching dseg
+
+	// HACK
+	extern STR_Table *ck_actionTable;
+	for (int i = 0, count = 0; i < ck_actionTable->size; ++i)
+	{
+		if (ck_actionTable->arr[i].str == NULL)
+			continue;
+
+		const char *name = ck_actionTable->arr[i].str;
+		CK_action *act = (CK_action *)(ck_actionTable->arr[i].ptr);
+
+		char *dataToCompare = &dsegBuffer[act->compatDosPointer];
+		if (*(int16_t *)dataToCompare != act->chunkLeft)
+			printf("chunkLeft mismatch found for action no. %d: %s\n", count, name);
+		if (*(int16_t *)(dataToCompare+2) != act->chunkRight)
+			printf("chunkRight mismatch found for action no. %d: %s\n", count, name);
+		if (*(int16_t *)(dataToCompare+4) != act->type)
+			printf("type mismatch found for action no. %d: %s\n", count, name);
+		if (*(int16_t *)(dataToCompare+6) != act->protectAnimation)
+			printf("protectAnimation mismatch found for action no. %d: %s\n", count, name);
+		if (*(int16_t *)(dataToCompare+8) != act->stickToGround)
+			printf("stickToGround mismatch found for action no. %d: %s\n", count, name);
+		if (*(int16_t *)(dataToCompare+10) != act->timer)
+			printf("timer mismatch found for action no. %d: %s\n", count, name);
+		if (*(int16_t *)(dataToCompare+12) != act->velX)
+			printf("velX mismatch found for action no. %d: %s\n", count, name);
+		if (*(int16_t *)(dataToCompare+14) != act->velY)
+			printf("velY mismatch found for action no. %d: %s\n", count, name);
+		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+16), (void *)(act->think)))
+			printf("think mismatch found (possibly) for action no. %d: %s\n", count, name);
+		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+20), (void *)(act->collide)))
+			printf("collide mismatch found (possibly) for action no. %d: %s\n", count, name);
+		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+24), (void *)(act->draw)))
+			printf("draw mismatch found (possibly) for action no. %d: %s\n", count, name);
+		if (((act->next == NULL) && (*(uint16_t *)(dataToCompare+28) != 0)) ||
+		    ((act->next != NULL) && (*(uint16_t *)(dataToCompare+28) != act->next->compatDosPointer))
+		)
+			printf("next mismatch found for action no. %d: %s\n", count, name);
+
+		++count;
+	}
+	return 0;
+}
+
+#else // !CK_RUN_ACTION_VALIDATOR
+
 int main(int argc, char *argv[])
 {
 	// Send the cmd-line args to the User Manager.
@@ -512,3 +673,5 @@ int main(int argc, char *argv[])
 	CK_DemoLoop();
 	CK_ShutdownID();
 }
+
+#endif // CK_RUN_ACTION_VALIDATOR

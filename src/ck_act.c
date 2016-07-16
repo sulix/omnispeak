@@ -225,6 +225,8 @@ bool CK_ACT_ParseAction(CK_ACT_ParserState *ps)
 	const char *actName = CK_ACT_GetToken(ps);
 
 	CK_action *act = CK_GetOrCreateActionByName(actName);
+
+	act->compatDosPointer = CK_ACT_GetInteger(ps);
 	
 	act->chunkLeft = CK_ACT_GetInteger(ps);
 

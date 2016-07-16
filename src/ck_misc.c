@@ -126,6 +126,14 @@ void CK_BasicDrawFunc3(CK_object *obj)
 }
 
 /*
+ * Some weird placeholder
+ */
+void CK_ObjBadstate(CK_object *obj)
+{
+	Quit("Object with bad state!");
+}
+
+/*
  * Think function for stunned creatures
  */
 void CK_BasicDrawFunc4(CK_object *obj)
@@ -273,6 +281,7 @@ void CK_Misc_SetupFunctions(void)
 	CK_ACT_AddFunction("CK_BasicDrawFunc1", &CK_BasicDrawFunc1);
 	CK_ACT_AddFunction("CK_BasicDrawFunc2", &CK_BasicDrawFunc2);
 	CK_ACT_AddFunction("CK_BasicDrawFunc3", &CK_BasicDrawFunc3);
+	CK_ACT_AddFunction("CK_ObjBadstate", &CK_ObjBadstate);
 	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
   CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
   CK_ACT_AddColFunction("CK_LethalCol", &CK_LethalCol);

@@ -1242,8 +1242,6 @@ void CK4_KeenSwimFast(CK_object *obj)
   ck_nextY += SD_GetSpriteSync() * 4;
 }
 
-extern CK_action CK_ACT_itemNotify;
-
 void CK4_KeenSwimCol(CK_object *a, CK_object *b)
 {
   if (b->type == CT4_Item)
@@ -1273,11 +1271,7 @@ void CK4_KeenSwimCol(CK_object *a, CK_object *b)
 		{
 			ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
 		}
-		else if (b->user1 == 12)
-		{
-      ck_gameState.ep.ck5.securityCard = 1;
-		}
-		CK_SetAction2(b, &CK_ACT_itemNotify);
+		CK_SetAction2(b, CK_GetActionByName("CK_ACT_itemNotify"));
 	}
   else if (b->type == CT4_CouncilMember)
   {

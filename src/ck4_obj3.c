@@ -711,7 +711,7 @@ void CK4_SpawnDartGun(int tileX, int tileY, int direction)
 
     case 2:
       obj->posX += 0x90;
-      obj->gfxChunk -0x17E;
+      obj->gfxChunk = 0x17E;
       break;
 
     case 3:
@@ -750,8 +750,8 @@ void CK4_DartGun(CK_object *obj)
       CK_SetAction(dart, CK_GetActionByName("CK4_ACT_DartDown0"));
       break;
     case 3:
-      dart->xDirection = IN_motion_None;
-      dart->yDirection = IN_motion_Left;
+      dart->xDirection = IN_motion_Left;
+      dart->yDirection = IN_motion_None;
       CK_SetAction(dart, CK_GetActionByName("CK4_ACT_DartHorz0"));
       break;
   }
