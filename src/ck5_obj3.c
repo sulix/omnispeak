@@ -251,7 +251,7 @@ void CK5_MineMove(CK_object *obj)
 	{
 		SD_PlaySound(SOUND_MINEEXPLODE);
 		obj->currentAction = CK_GetActionByName("CK5_ACT_MineExplode0");
-		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & obj->user4);
+		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & obj->user4Ptr);
 		return;
 	}
 
@@ -341,7 +341,7 @@ void CK5_MineMoveDotsToCenter(CK_object *obj)
 	{
 		SD_PlaySound(SOUND_MINEEXPLODE);
 		obj->currentAction = CK_GetActionByName("CK5_ACT_MineExplode0");
-		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & obj->user4);
+		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & obj->user4Ptr);
 		return;
 	}
 
@@ -406,7 +406,7 @@ void CK5_MineMoveDotsToSides(CK_object *obj)
 	{
 		SD_PlaySound(SOUND_MINEEXPLODE);
 		obj->currentAction = CK_GetActionByName("CK5_ACT_MineExplode0");
-		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & obj->user4);
+		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & obj->user4Ptr);
 		return;
 	}
 
@@ -547,7 +547,7 @@ void CK5_MineTileCol(CK_object *obj)
 
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0,
 									obj->zLayer); //mine
-	RF_AddSpriteDraw((RF_SpriteDrawEntry **) & obj->user4, obj->posX + obj->user2,
+	RF_AddSpriteDraw((RF_SpriteDrawEntry **) & obj->user4Ptr, obj->posX + obj->user2,
 									obj->posY + obj->user3, 0x17B, 0, 2); //dot
 	return;
 }
@@ -1622,19 +1622,19 @@ void CK5_SpherefulTileCol(CK_object *obj)
 	zLayer = (time >= 8) ? 2 : 0;
 
 	//topleft
-	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user1, obj->posX + diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
+	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user1Ptr, obj->posX + diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
 
 	//topright
-	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user2, obj->posX + 0x180 - diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
+	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user2Ptr, obj->posX + 0x180 - diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
 
 	time = (time + 8) & 0xF;
 	zLayer = (time >= 8) ? 2 : 0;
 
 	//botleft
-	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user3, obj->posX + diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
+	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user3Ptr, obj->posX + diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
 
 	//botright
-	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user4, obj->posX + 0x180 - diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
+	RF_AddSpriteDraw((RF_SpriteDrawEntry **)&obj->user4Ptr, obj->posX + 0x180 - diamondpos[time], obj->posY + diamondpos[time], diamond_chunk, 0, zLayer);
 }
 
 

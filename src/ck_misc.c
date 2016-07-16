@@ -232,8 +232,7 @@ void CK_BasicDrawFunc4(CK_object *obj)
 			obj->user2 = 0;
 	}
 
-	// FIXME: Will cause problems on 64-bit systems
-	RF_AddSpriteDraw((RF_SpriteDrawEntry**) (&obj->user3), obj->posX + starsX, obj->posY + starsY, obj->user2 + SPR_STARS1, false, 3);
+	RF_AddSpriteDraw((RF_SpriteDrawEntry**) (&obj->user3Ptr), obj->posX + starsX, obj->posY + starsY, obj->user2 + SPR_STARS1, false, 3);
 }
 
 void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act)

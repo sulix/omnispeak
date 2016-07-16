@@ -1413,6 +1413,9 @@ cmdrWidthX100 = ck_introCommanderWidth * 100;
 for (int i = 0; i < 8; i++)
   MM_GetPtr(&shiftedCmdrBMPsegs[i],cmdrWidthX100);
 
+ck_introKeen = (introbmptype *)ca_graphChunks[EXTERN_KEEN];
+ck_introCommander = (introbmptype *)ca_graphChunks[EXTERN_COMMANDER];
+
 for (int i = 0; i < 100; i++)
 {
   cmdrLineStarts[2*i] = cmdrLineStarts[2*i+1] = i * ck_introCommanderWidth;
