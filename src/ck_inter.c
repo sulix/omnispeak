@@ -1395,8 +1395,8 @@ for (int i = 0; i < 8; i++)
 #endif
 
 
-ck_introKeen = ca_graphChunks[EXTERN_KEEN];
-ck_introCommander = ca_graphChunks[EXTERN_COMMANDER];
+ck_introKeen = (introbmptype *)ca_graphChunks[EXTERN_KEEN];
+ck_introCommander = (introbmptype *)ca_graphChunks[EXTERN_COMMANDER];
 
 #if 0
 
