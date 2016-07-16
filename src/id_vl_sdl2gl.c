@@ -125,7 +125,7 @@ typedef struct VL_SDL2GL_Surface
 	GLuint textureHandle;
 	int w, h;
 	void *data;
-} VL_SDL2GL_Surface;	
+} VL_SDL2GL_Surface;
 
 const char *pxprog = 	"#version 110\n"\
 			"\n"\
@@ -296,6 +296,23 @@ static void VL_SDL2GL_SurfaceRect(void *dst_surface, int x, int y, int w, int h,
 	}
 }
 
+static void VL_SDL2GL_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int h, int colour, int mapmask)
+{
+  mapmask &= 0xF;
+  colour &= mapmask;
+
+	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface*) dst_surface;
+	for (int _y = y; _y < y+h; ++_y)
+	{
+    for (int _x = x; _x < x+w; ++ _x)
+    {
+      uint8_t *p = ((uint8_t*)surf->data) + _y*surf->w + _x;
+      *p &= ~mapmask;
+      *p |= colour;
+    }
+	}
+}
+
 static void VL_SDL2GL_SurfaceToSurface(void *src_surface, void *dst_surface, int x, int y, int sx, int sy, int sw, int sh)
 {
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)src_surface;
@@ -319,7 +336,7 @@ static void VL_SDL2GL_SurfaceToSelf(void *surface, int x, int y, int sx, int sy,
 			memmove(((uint8_t*)srf->data)+((yi+y)*srf->w+x),((uint8_t*)srf->data)+((sy+yi)*srf->w+sx),sw);
 		}
 	}
-	else	
+	else
 	{
 		for (int yi = sh-1; yi >= 0; --yi)
 		{
@@ -332,6 +349,11 @@ static void VL_SDL2GL_SurfaceToSelf(void *surface, int x, int y, int sx, int sy,
 static void VL_SDL2GL_UnmaskedToSurface(void *src, void *dst_surface, int x, int y, int w, int h) {
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)dst_surface;
 	VL_UnmaskedToPAL8(src, surf->data, x, y, surf->w, w, h);
+}
+
+static void VL_SDL2GL_UnmaskedToSurface_PM(void *src, void *dst_surface, int x, int y, int w, int h, int mapmask) {
+	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)dst_surface;
+	VL_UnmaskedToPAL8_PM(src, surf->data, x, y, surf->w, w, h, mapmask);
 }
 
 static void VL_SDL2GL_MaskedToSurface(void *src, void *dst_surface, int x, int y, int w, int h)
@@ -350,6 +372,12 @@ static void VL_SDL2GL_BitToSurface(void *src, void *dst_surface, int x, int y, i
 {
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)dst_surface;
 	VL_1bppToPAL8(src, surf->data, x, y, surf->w, w, h, colour);
+}
+
+static void VL_SDL2GL_BitToSurface_PM(void *src, void *dst_surface, int x, int y, int w, int h, int colour, int mapmask)
+{
+	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)dst_surface;
+	VL_1bppToPAL8_PM(src, surf->data, x, y, surf->w, w, h, colour, mapmask);
 }
 
 static void VL_SDL2GL_BitXorWithSurface(void *src, void *dst_surface, int x, int y, int w, int h, int colour)
@@ -476,9 +504,9 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 		{
 			id_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
 		}
-		
+
 		glViewport(0, 0, integerScaleX, integerScaleY);
-		
+
 	}
 	else
 	{
@@ -492,7 +520,7 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, surf->w, surf->h, GL_RED, GL_UNSIGNED_BYTE, surf->data);
-	
+
 	float scaleX = (float)vl_sdl2gl_screenWidth/((float)surf->w);
 	float scaleY = (float)vl_sdl2gl_screenHeight/((float)surf->h);
 	float offX = (float)(scrlX)/(float)(surf->w);
@@ -524,7 +552,7 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 		{
 			id_glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
 			id_glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
-			
+
 			id_glBlitFramebufferEXT(0, 0, integerScaleX, integerScaleY,
 						borderedWinRect.x, realWinH-borderedWinRect.y-borderedWinRect.h, borderedWinRect.x+borderedWinRect.w, realWinH-borderedWinRect.y,
 						GL_COLOR_BUFFER_BIT,
@@ -555,12 +583,15 @@ VL_Backend vl_sdl2gl_backend =
 	/*.getSurfaceMemUse =*/ &VL_SDL2GL_GetSurfaceMemUse,
 	/*.refreshPaletteAndBorderColor =*/ &VL_SDL2GL_RefreshPaletteAndBorderColor,
 	/*.surfaceRect =*/ &VL_SDL2GL_SurfaceRect,
+	/*.surfaceRect_PM =*/ &VL_SDL2GL_SurfaceRect_PM,
 	/*.surfaceToSurface =*/ &VL_SDL2GL_SurfaceToSurface,
 	/*.surfaceToSelf =*/ &VL_SDL2GL_SurfaceToSelf,
 	/*.unmaskedToSurface =*/ &VL_SDL2GL_UnmaskedToSurface,
+	/*.unmaskedToSurface_PM =*/ &VL_SDL2GL_UnmaskedToSurface_PM,
 	/*.maskedToSurface =*/ &VL_SDL2GL_MaskedToSurface,
 	/*.maskedBlitToSurface =*/ &VL_SDL2GL_MaskedBlitToSurface,
 	/*.bitToSurface =*/ &VL_SDL2GL_BitToSurface,
+	/*.bitToSurface_PM =*/ &VL_SDL2GL_BitToSurface_PM,
 	/*.bitXorWithSurface =*/ &VL_SDL2GL_BitXorWithSurface,
 	/*.bitBlitToSurface =*/ &VL_SDL2GL_BitBlitToSurface,
 	/*.bitInvBlitToSurface =*/ &VL_SDL2GL_BitInvBlitToSurface,
