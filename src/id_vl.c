@@ -634,6 +634,15 @@ void VL_InitScreen(void)
 	VL_SetPaletteAndBorderColor(vl_palette[3]);
 }
 
+void VL_ResizeScreen(int w, int h)
+{
+	vl_memused -= vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
+  vl_currentBackend->destroySurface(vl_emuegavgaadapter.screen);
+
+	vl_emuegavgaadapter.screen = vl_currentBackend->createSurface(w,h,VL_SurfaceUsage_FrontBuffer);
+	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
+}
+
 bool vl_isFullScreen;
 bool vl_isAspectCorrected;
 
