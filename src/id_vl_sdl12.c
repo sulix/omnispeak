@@ -96,7 +96,7 @@ static void VL_SDL12_RefreshPaletteAndBorderColor(void *screen)
 		    VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][1],
 		    VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][2]
 		)
-	);	
+	);
 }
 
 static void VL_SDL12_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour)
@@ -104,6 +104,21 @@ static void VL_SDL12_SurfaceRect(void *dst_surface, int x, int y, int w, int h, 
 	SDL_Surface *surf = (SDL_Surface*) dst_surface;
 	SDL_Rect rect = {x,y,w,h};
 	SDL_FillRect(surf,&rect,colour);
+}
+
+static void VL_SDL12_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int h, int colour, int mapmask)
+{
+  mapmask &= 0xF;
+  colour &= mapmask;
+
+	SDL_Surface *surf = (SDL_Surface*) dst_surface;
+  for (int py = y, py < y + h; py++)
+    for (int px = x; px < x + w; px++)
+    {
+      uint8_t *p = ((uint8_t*)surf->pixels)+py*surf->w+px;
+      *p &= ~mapmask;
+      *p |= colour;
+    }
 }
 
 static void VL_SDL12_SurfaceToSurface(void *src_surface, void *dst_surface, int x, int y, int sx, int sy, int sw, int sh)
@@ -137,7 +152,7 @@ static void VL_SDL12_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, 
 			memmove((uint8_t *)srf->pixels+((yi+y)*srf->pitch+x),(uint8_t *)srf->pixels+((sy+yi)*srf->pitch+sx),sw);
 		}
 	}
-	else	
+	else
 	{
 		for (int yi = sh-1; yi >= 0; --yi)
 		{
@@ -154,6 +169,13 @@ static void VL_SDL12_UnmaskedToSurface(void *src, void *dst_surface, int x, int 
 	SDL_Surface *surf = (SDL_Surface *)dst_surface;
 	SDL_LockSurface(surf);
 	VL_UnmaskedToPAL8(src, surf->pixels, x, y, surf->pitch, w, h);
+	SDL_UnlockSurface(surf);
+}
+
+static void VL_SDL12_UnmaskedToSurface_PM(void *src, void *dst_surface, int x, int y, int w, int h, int mapmask) {
+	SDL_Surface *surf = (SDL_Surface *)dst_surface;
+	SDL_LockSurface(surf);
+	VL_UnmaskedToPAL8_PM(src, surf->pixels, x, y, surf->pitch, w, h, mapmask);
 	SDL_UnlockSurface(surf);
 }
 
@@ -178,6 +200,14 @@ static void VL_SDL12_BitToSurface(void *src, void *dst_surface, int x, int y, in
 	SDL_Surface *surf = (SDL_Surface *)dst_surface;
 	SDL_LockSurface(surf);
 	VL_1bppToPAL8(src, surf->pixels, x, y, surf->pitch, w, h, colour);
+	SDL_UnlockSurface(surf);
+}
+
+static void VL_SDL12_BitToSurface_PM(void *src, void *dst_surface, int x, int y, int w, int h, int colour, int mapmask)
+{
+	SDL_Surface *surf = (SDL_Surface *)dst_surface;
+	SDL_LockSurface(surf);
+	VL_1bppToPAL8_PM(src, surf->pixels, x, y, surf->pitch, w, h, colour, mapmask);
 	SDL_UnlockSurface(surf);
 }
 
@@ -224,12 +254,15 @@ VL_Backend vl_sdl12_backend =
 	/*.getSurfaceMemUse =*/ &VL_SDL12_GetSurfaceMemUse,
 	/*.refreshPaletteAndBorderColor =*/ &VL_SDL12_RefreshPaletteAndBorderColor,
 	/*.surfaceRect =*/ &VL_SDL12_SurfaceRect,
+	/*.surfaceRect_PM =*/ &VL_SDL12_SurfaceRect_PM,
 	/*.surfaceToSurface =*/ &VL_SDL12_SurfaceToSurface,
 	/*.surfaceToSelf =*/ &VL_SDL12_SurfaceToSelf,
 	/*.unmaskedToSurface =*/ &VL_SDL12_UnmaskedToSurface,
+	/*.unmaskedToSurface_PM =*/ &VL_SDL12_UnmaskedToSurface_PM,
 	/*.maskedToSurface =*/ &VL_SDL12_MaskedToSurface,
 	/*.maskedBlitToSurface =*/ &VL_SDL12_MaskedBlitToSurface,
 	/*.bitToSurface =*/ &VL_SDL12_BitToSurface,
+	/*.bitToSurface_PM =*/ &VL_SDL12_BitToSurface_PM,
 	/*.bitXorWithSurface =*/ &VL_SDL12_BitXorWithSurface,
 	/*.bitBlitToSurface =*/ &VL_SDL12_BitBlitToSurface,
 	/*.bitInvBlitToSurface =*/ &VL_SDL12_BitInvBlitToSurface,

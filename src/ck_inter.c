@@ -128,8 +128,10 @@ int *terminator_pics[4] = {&PIC_CREDIT1, &PIC_CREDIT2, &PIC_CREDIT3, &PIC_CREDIT
 mm_ptr_t terminator_pic_memptrs[4];
 
 
-unsigned ck_introCommanderWidth;
-unsigned ck_introScreenWidth;
+// Width of the COMMANDER graphic, in BYTES
+int ck_introCommanderWidth;
+
+int ck_introScreenWidth;
 
 
 // type-identified variables
@@ -432,16 +434,14 @@ asm		mov ds, ax;
 void AnimateTerminator(void)
 {
 
-	int var6;
+	int cmdrLeftEdgeFromScreenLeft;
 	int delaytime;
 
 	// At the end of the terminator scrolling, left edge of the commander graphic is
-	// this many pixels from the Left edge of the Visible screen
+	// this many pixels from the Left/Right edge of the Visible screen
 	// (i.e., a negative value means an offset to the left)
-	int finalCmdrPos;
-
-	// The COMMANDER graphic scrolls this many pixels to the left
-	int totalCmdrScrollDist;
+	int finalCmdrPosFromScreenLeft;
+	int finalCmdrPosFromScreenRight;
 
 	// How far it's currently scrolled
 	int elapsedCmdrScrollDist;
@@ -452,7 +452,7 @@ void AnimateTerminator(void)
 	// start of the visible area in the screen buffer
 	unsigned screenofs;
 
-	uint16_t elapsedTime;
+	int elapsedTime;
 
 	// The pixel modulo 8 that the left edge of the scrolling CMDR graphic is aligned to,
 	// relative to the left edge of the buffer
@@ -466,21 +466,18 @@ void AnimateTerminator(void)
   int cmdrLeftDrawStart;
 
 	// variables of unknown type
-	int screenWidthInPx, maxTime, leftMarginBlackWords, cmdrWords, rightMarginBlackWords, offscreenCmdrPixels, var22;
+	int screenWidthInPx, maxTime, leftMarginBlackWords, cmdrWords, rightMarginBlackWords, offscreenCmdrPixels, nextRowDist;
 
 	// EGAWRITEMODE(0);
 	// EGAREADMAP(0);
-	ck_introScreenWidth = ck_introKeen->width + 200;
+	ck_introScreenWidth = ck_introKeen->width + 25 * 8;
 
-  // In EGA read mode 0; only reading from Plane 1
-  // Remember that the KEEN graphic was only written to plane 0 in display memory
-  //
 	// EGAREADMAP(1);
 
-	finalCmdrPos = 120 - ck_introCommander->width;
+	finalCmdrPosFromScreenLeft = 120 - ck_introCommander->width;
 	screenWidthInPx = 320;
-	totalCmdrScrollDist = finalCmdrPos - screenWidthInPx;
-	maxTime = abs(totalCmdrScrollDist);
+	finalCmdrPosFromScreenRight = finalCmdrPosFromScreenLeft - screenWidthInPx;
+	maxTime = abs(finalCmdrPosFromScreenRight);
 
 	terminatorPageOn = terminatorOfs = 0;
 
@@ -503,55 +500,57 @@ void AnimateTerminator(void)
 		ScrollTerminatorCredits(elapsedTime, xpixel);
 #endif
 
-		elapsedCmdrScrollDist = screenWidthInPx + (totalCmdrScrollDist * elapsedTime)/ maxTime;
+		elapsedCmdrScrollDist = screenWidthInPx + (finalCmdrPosFromScreenRight * elapsedTime)/ maxTime;
 		elapsedCmdrScrollDist += xpixel&7;
 
-		var6 = (elapsedCmdrScrollDist + 0x800) / 8 - 0x100;
+		cmdrLeftEdgeFromScreenLeft = (elapsedCmdrScrollDist + 0x800) / 8 - 0x100;
 		cmdrBMPpelpan = ((elapsedCmdrScrollDist + 0x800) & 7);
 
 		bmpsrcseg = shiftedCmdrBMPsegs[cmdrBMPpelpan];
 		cmdrLeftDrawStart = 0;
 
     // DOS: Move the screen start address
-     // screenofs = terminatorOfs + xpixel/8;
+    // screenofs = terminatorOfs + xpixel/8;
+    screenofs = xpixel/8;  // Omnispeak
 
      // Omnispeak: pan the screen to the appropriate spot over the KEEN surface
     VL_SetScrollCoords(xpixel, 0);
 
-		if (var6 > 0)
+		if (cmdrLeftEdgeFromScreenLeft > 0)
 		{
 			// The COMMANDER graphic has not started to scroll off the left edge of the screen
-			leftMarginBlackWords = (var6+1)/2;
+			leftMarginBlackWords = (cmdrLeftEdgeFromScreenLeft+1)/2;
 
-			if (var6 & 1)
+			if (cmdrLeftEdgeFromScreenLeft & 1)
 				screenofs--;
 
 			cmdrWords = 21 - leftMarginBlackWords;
 			rightMarginBlackWords = 0;
 		}
-		else if (var6 > (int)(320/8 - ck_introCommanderWidth))
+		else if (cmdrLeftEdgeFromScreenLeft > (320/8 - ck_introCommanderWidth))
 		{
 			// The COMMANDER graphic is clipped on both left and right edges
 			leftMarginBlackWords = 0;
 			cmdrWords = 21; // 42 * 8 pixels = 336
 			rightMarginBlackWords = 0;
-			cmdrLeftDrawStart -= var6;
+			cmdrLeftDrawStart -= cmdrLeftEdgeFromScreenLeft;
 		}
 		else
 		{
 			// The COMMANDER graphic is only clipped by the left side of the screen
 			leftMarginBlackWords = 0;
-			cmdrWords = (ck_introCommanderWidth+var6)/2;
+			cmdrWords = (ck_introCommanderWidth+cmdrLeftEdgeFromScreenLeft)/2;
 			rightMarginBlackWords = 21 - cmdrWords;
-			cmdrLeftDrawStart -= var6;
+			cmdrLeftDrawStart -= cmdrLeftEdgeFromScreenLeft;
 		}
 
 		// loc_1445B:
 		offscreenCmdrPixels = ck_introCommanderWidth - (cmdrWords<<1);
-		var22 = TERMINATORSCREENWIDTH - ((leftMarginBlackWords + cmdrWords + rightMarginBlackWords) << 1);
+		nextRowDist = TERMINATORSCREENWIDTH - ((leftMarginBlackWords + cmdrWords + rightMarginBlackWords) << 1);
 
     // DOS: Only draw to Plane 1 of EGA memory
 		// EGAMAPMASK(2);
+    VL_SetMapMask(2);
 
 #if 0
 asm		mov di, screenofs;
@@ -591,7 +590,7 @@ asm		add si, offscreenCmdrPixels;
 asm		mov ss:word_499FF, si;
 
 ahead:
-asm		add di, var22;
+asm		add di, nextRowDist;
 asm		dec dx;
 asm		jnz loopb0;
 
@@ -608,7 +607,7 @@ uint16_t *screenptr, *srcptr;
 // srcptr = ...
 
 // register shortage necessitates static declaration in DOS
-static uint16_t *word_499FF;
+// static uint16_t *word_499FF = ...;
 
 for (int row = 200; row > 0; row--)
 {
@@ -631,16 +630,35 @@ for (int row = 200; row > 0; row--)
     srcptr = word_499FF;
   }
 
-  screenptr += var22;
+  screenptr += nextRowDist;
 }
 #endif
 
 // Omnispeak:
 // Just draw the visible part of the COMMANDER surface atop the KEEN surface
+int rowptr = 0;
+for (int row = 0; row < 200; row++)
 {
-  int x1 = cmdrLeftDrawStart * 8;
-  int w = cmdrWords * 16;
-  // TODO: figure this out... VL_SurfaceToScreen or something
+
+  /*
+  VL_ScreenRect_PM(screenofs*8, row, leftMarginBlackWords*16, 1, 0x0);
+  VL_1bppToScreen_PM((uint8_t*)(shiftedCmdrBMPsegs[0])+rowptr+cmdrLeftDrawStart, screenofs*8+leftMarginBlackWords*16, row, cmdrWords*16, 1, 0xF);
+  VL_ScreenRect_PM(screenofs*8+(leftMarginBlackWords+cmdrWords)*16, row, rightMarginBlackWords*16, 1, 0x0);
+  */
+
+  VL_ScreenRect_PM(screenofs*8, row, leftMarginBlackWords*16, 1, 0x0);
+  VL_1bppToScreen_PM((uint8_t*)bmpsrcseg+rowptr+cmdrLeftDrawStart, screenofs*8+leftMarginBlackWords*16, row, cmdrWords*16, 1, 0xF);
+  VL_ScreenRect_PM(screenofs*8+(leftMarginBlackWords+cmdrWords)*16, row, rightMarginBlackWords*16, 1, 0x0);
+
+  if (row&1)
+  {
+    rowptr += ck_introCommanderWidth;//offscreenCmdrPixels;
+  }
+  else
+  {
+    rowptr = rowptr;
+  }
+
 }
 
 
@@ -1309,14 +1327,13 @@ void CK_FizzleFade()
 void CK_DrawTerminator(void)
 {
 
-unsigned i,j;
 unsigned cmdrWidthX100;
 
 uint16_t *srcptr;
 uint8_t *destptr;
 
 
-uint8_t *cmdrLineStarts[200];
+int cmdrLineStarts[200];
 
 
 bool terminator_complete = false;
@@ -1351,6 +1368,9 @@ ck_introCommander = (introbmptype *)ca_graphChunks[EXTERN_COMMANDER];
 // DOS: Only writing to plane 0 of display memory
 // EGAMAPMASK(1);
 
+// Omnispeak: Replicate that in software
+VL_SetMapMask(1);
+
 // Because "KEEN" needs to end up on the right side of the screen,
 // an extra padding amount is added to the left side of the Keen graphic
 ck_introScreenWidth = ck_introKeen->width + 25 * 8;
@@ -1365,7 +1385,7 @@ VL_SetScrollCoords(ck_introScreenWidth+1, 0);
 // Copy each line of the KEEN graphic into video memory, accounting for the padding amount
 {
 uint8_t *destbuf = (uint8_t *)calloc(ck_introScreenWidth/8+1, sizeof(uint8_t));
-for (i = 0; i < 200; i++)
+for (int i = 0; i < 200; i++)
 {
   //srcptr = MK_FP(ck_introKeen,  ck_introKeen->linestarts[i]);
   // destptr = MK_FP(0xA000 , ylookup[i] + 25); // Left margin of KEEN is 25*8 = 200 pixels
@@ -1373,7 +1393,7 @@ for (i = 0; i < 200; i++)
   // Omnispeak: RLE-Expand into temp buffer, then copy into video memory
   srcptr = (uint16_t*)((uint8_t *)ck_introKeen + ck_introKeen->linestarts[i]);
   TerminatorExpandRLE(srcptr, destbuf + 25);
-  VL_1bppToScreen(destbuf, 0, i, ck_introScreenWidth, 1, 0xF);
+  VL_1bppToScreen_PM(destbuf, 0, i, ck_introScreenWidth, 1, 0xF);
 }
 
 free (destbuf);
@@ -1388,30 +1408,26 @@ free (destbuf);
 // each EVEN row of source graphics is duplicated
 ck_introCommanderWidth = (ck_introCommander->width+7)>>3;
 ck_introCommanderWidth = (ck_introCommanderWidth+3)&0xFFFE;
-#if 0
+
 cmdrWidthX100 = ck_introCommanderWidth * 100;
 for (int i = 0; i < 8; i++)
   MM_GetPtr(&shiftedCmdrBMPsegs[i],cmdrWidthX100);
-#endif
 
-
-ck_introKeen = ca_graphChunks[EXTERN_KEEN];
-ck_introCommander = ca_graphChunks[EXTERN_COMMANDER];
-
-#if 0
+ck_introKeen = (introbmptype *)ca_graphChunks[EXTERN_KEEN];
+ck_introCommander = (introbmptype *)ca_graphChunks[EXTERN_COMMANDER];
 
 for (int i = 0; i < 100; i++)
 {
+  cmdrLineStarts[2*i] = cmdrLineStarts[2*i+1] = i * ck_introCommanderWidth;
 
-cmdrLineStarts[2*i] = cmdrLineStarts[2*i+1] = i * ck_introCommanderWidth;
+  //Dos
+  //srcptr = MK_FP(ck_introCommander, ck_introCommander->linestarts[2*i]);
+  //destptr = MK_FP(shiftedCmdrBMPsegs[0],cmdrLineStarts[2*i]);
 
-srcptr = MK_FP(ck_introCommander, ck_introCommander->linestarts[2*i]);
-destptr = MK_FP(shiftedCmdrBMPsegs[0],cmdrLineStarts[2*i]);
-
-TerminatorExpandRLE(srcptr, destptr);
-
+  srcptr = (uint16_t*)((uint8_t *)ck_introCommander + ck_introCommander->linestarts[i*2]);
+  destptr = (uint8_t*)shiftedCmdrBMPsegs[0] + cmdrLineStarts[2*i];
+  TerminatorExpandRLE(srcptr, destptr);
 }
-#endif
 
 
 // loc_150A5
@@ -1429,17 +1445,32 @@ asm		clc;
 asm		xor si, si;
 asm		xor di, di;
 
-nextrow:
+nextb:
 asm		lodsb;
 asm		rcr al, 1;
 asm		stosb;
-asm		loop nextrow;
+asm		loop nextb;
 
 asm		mov ax, ss;
 asm		mov ds, ax;
 }
 #endif
 
+for (int i = 1; i < 8; i++)
+{
+  uint8_t* last = (uint8_t*)shiftedCmdrBMPsegs[i -1];
+  uint8_t* next = (uint8_t*)shiftedCmdrBMPsegs[i];
+
+  int c = 0;
+  for (int j = 0; j < cmdrWidthX100; j++)
+  {
+    uint8_t d = *last++;
+    *next++ = (d >> 1) | c;
+    c = (d << 7);
+  }
+}
+
+#if 0
 // Omnispeak
 // We don't need to make 8 shifts of the COMMANDER graphic
 // Instead, just allocate a single surface for it
@@ -1460,6 +1491,7 @@ for (i = 0; i < 100; i++)
 
 free (destbuf);
 }
+#endif
 
 
 #if 0

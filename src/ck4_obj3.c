@@ -365,7 +365,7 @@ void CK4_DopefishEat(CK_object *obj)
 {
   CK_object *si = obj;
 
-  si = (CK_object *)obj->user4;
+  si = CK_ConvertObj16BitOffsetToPointer(obj->user4);
   int16_t dy = si->posY - 0x100 - obj->posY;
   int16_t dx;
   if (obj->xDirection == IN_motion_Right)
@@ -499,7 +499,7 @@ void CK4_DopefishCol(CK_object *a, CK_object *b)
 
   a->user2 = a->posX;
   a->user3 = a->posY;
-  a->user4 = (intptr_t)b;
+  a->user4 = CK_ConvertObjPointerTo16BitOffset(b);
   a->xDirection = b->clipRects.unitXmid < a->clipRects.unitXmid ? IN_motion_Left : IN_motion_Right;
   CK_SetAction2(a, CK_GetActionByName("CK4_ACT_DopefishEat0"));
   a->clipped = CLIP_not;

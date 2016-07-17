@@ -68,6 +68,8 @@ uint16_t vl_border_color = 0; // An extra variable used in vanilla Keen code
 
 static VL_Backend *vl_currentBackend;
 
+static int vl_mapMask = 0xF;
+
 #if 0
 VL_EGAPaletteEntry VL_EGAPalette[16];
 
@@ -220,6 +222,35 @@ void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int
 					((srcptr_b[plane_off] & plane_bit)?1:0);
 
 			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
+		}
+	}
+}
+
+// Used by the Terminator and Star Wars sequences to draw bitmaps to select planes
+void VL_UnmaskedToPAL8_PM(void *src,void *dest, int x, int y, int pitch, int w, int h, int mapmask)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr_b = (uint8_t*)src;
+	uint8_t *srcptr_g = srcptr_b + (w/8)*h;
+	uint8_t *srcptr_r = srcptr_g + (w/8)*h;
+	uint8_t *srcptr_i = srcptr_r + (w/8)*h;
+
+  mapmask &= 0xF;
+
+	for(int sy = 0; sy < h; ++sy)
+	{
+		for(int sx = 0; sx < w; ++sx)
+		{
+			int plane_off = (sy * w + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+
+			int pixel = ((mapmask&8)&&(srcptr_i[plane_off] & plane_bit)?8:0) |
+					((mapmask&4)&&(srcptr_r[plane_off] & plane_bit)?4:0) |
+					((mapmask&2)&&(srcptr_g[plane_off] & plane_bit)?2:0) |
+					((mapmask&1)&&(srcptr_b[plane_off] & plane_bit)?1:0);
+
+			dstptr[(sy+y)*pitch+(sx+x)] &= ~mapmask;
+			dstptr[(sy+y)*pitch+(sx+x)] |= pixel;
 		}
 	}
 }
@@ -467,6 +498,28 @@ void VL_1bppToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, 
 	}
 }
 
+void VL_1bppToPAL8_PM(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour, int mapmask)
+{
+	uint8_t *dstptr = (uint8_t*)dest;
+	uint8_t *srcptr= (uint8_t*)src;
+
+  mapmask &= 0xF;
+
+	for(int sy = 0; sy < h; ++sy)
+	{
+		for(int sx = 0; sx < w; ++sx)
+		{
+			int plane_off = (sy * w + sx) >> 3;
+			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+
+			int pixel = ((srcptr[plane_off] & plane_bit)?colour:colour&0xF0) & mapmask;
+
+			dstptr[(sy+y)*pitch+(sx+x)] &= ~mapmask;
+			dstptr[(sy+y)*pitch+(sx+x)] |= pixel;
+		}
+	}
+}
+
 #if 0
 void VL_1bppXorWithRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
@@ -670,6 +723,11 @@ void VL_ScreenRect(int x, int y, int w, int h, int colour)
 	vl_currentBackend->surfaceRect(vl_emuegavgaadapter.screen,x,y,w,h,colour);
 }
 
+void VL_ScreenRect_PM(int x, int y, int w, int h, int colour)
+{
+	vl_currentBackend->surfaceRect_PM(vl_emuegavgaadapter.screen,x,y,w,h,colour, vl_mapMask);
+}
+
 void VL_SurfaceToSurface(void *src, void *dst, int x, int y, int sx, int sy, int sw, int sh)
 {
 	vl_currentBackend->surfaceToSurface(src, dst, x, y, sx, sy, sw, sh);
@@ -693,6 +751,11 @@ void VL_UnmaskedToSurface(void *src, void *dest, int x, int y, int w, int h)
 void VL_UnmaskedToScreen(void *src, int x, int y, int w, int h)
 {
 	vl_currentBackend->unmaskedToSurface(src, vl_emuegavgaadapter.screen, x, y, w, h);
+}
+
+void VL_UnmaskedToScreen_PM(void *src, int x, int y, int w, int h)
+{
+	vl_currentBackend->unmaskedToSurface_PM(src, vl_emuegavgaadapter.screen, x, y, w, h, vl_mapMask);
 }
 
 void VL_MaskedToSurface(void *src, void *dest, int x, int y, int w, int h)
@@ -720,6 +783,11 @@ void VL_MaskedBlitToScreen(void *src, int x, int y, int w, int h)
 void VL_1bppToScreen(void *src, int x, int y, int w, int h, int colour)
 {
 	vl_currentBackend->bitToSurface(src, vl_emuegavgaadapter.screen, x, y, w, h, colour);
+}
+
+void VL_1bppToScreen_PM(void *src, int x, int y, int w, int h, int colour)
+{
+  vl_currentBackend->bitToSurface_PM(src, vl_emuegavgaadapter.screen, x, y, w, h, colour, vl_mapMask);
 }
 
 void VL_1bppXorWithScreen(void *src, int x, int y, int w, int h, int colour)
@@ -779,6 +847,11 @@ int VL_GetScrollY(void)
 void VL_ClearScreen(int colour)
 {
 	VL_ScreenRect(0, 0, 320, 200, colour);
+}
+
+void VL_SetMapMask(int mapmask)
+{
+  vl_mapMask = mapmask & 0xF;
 }
 
 void VL_Present()

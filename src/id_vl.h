@@ -57,10 +57,12 @@ void VL_1bppInvBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, i
 //TODO: 1bppInvBlitClipToRGB
 
 void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h);
+void VL_UnmaskedToPAL8_PM(void *src,void *dest, int x, int y, int pitch, int w, int h, int mapmask);
 void VL_MaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h);
 void VL_MaskedBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h);
 void VL_MaskedBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh);
 void VL_1bppToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_1bppToPAL8_PM(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour, int mapmask);
 void VL_1bppXorWithPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 void VL_1bppBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
 void VL_1bppInvBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
@@ -85,12 +87,15 @@ typedef struct VL_Backend
 	long (*getSurfaceMemUse)(void *surface);
 	void (*refreshPaletteAndBorderColor)(void *screen);
 	void (*surfaceRect)(void *dst_surface, int x, int y, int w, int h, int colour);
+  void (*surfaceRect_PM)(void *dst_surface, int x, int y, int w, int h, int colour, int mapmask);
 	void (*surfaceToSurface)(void *src_surface, void *dst_surface, int x, int y, int sx, int sy, int sw, int sh);
 	void (*surfaceToSelf)(void *surface, int x, int y, int sx, int sy, int sw, int sh);
 	void (*unmaskedToSurface)(void *src, void *dst_surface, int x, int y, int w, int h);
+	void (*unmaskedToSurface_PM)(void *src, void *dst_surface, int x, int y, int w, int h, int mapmask);
 	void (*maskedToSurface)(void *src, void *dst_surface, int x, int y, int w, int h);
 	void (*maskedBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h);
 	void (*bitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
+	void (*bitToSurface_PM)(void *src, void *dst_surface, int x, int y, int w, int h, int colour, int mapmask);
 	void (*bitXorWithSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*bitBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*bitInvBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
@@ -103,16 +108,19 @@ void VL_SetParams(bool isFullScreen, bool isAspectCorrected);
 void *VL_CreateSurface(int w, int h);
 void VL_SurfaceRect(void *dst, int x, int y, int w, int h, int colour);
 void VL_ScreenRect(int x, int y, int w, int h, int colour);
+void VL_ScreenRect_PM(int x, int y, int w, int h, int colour);
 void VL_SurfaceToSurface(void *src, void *dst, int x, int y, int sx, int sy, int sw, int sh);
 void VL_SurfaceToScreen(void *src, int x, int y, int sx, int sy, int sw, int sh);
 void VL_SurfaceToSelf(void *surf, int x, int y, int sx, int sy, int sw, int sh);
 void VL_UnmaskedToSurface(void *src, void *dest, int x, int y, int w, int h);
 void VL_UnmaskedToScreen(void *src, int x, int y, int w, int h);
+void VL_UnmaskedToScreen_PM(void *src, int x, int y, int w, int h);
 void VL_MaskedToSurface(void *src, void *dest, int x, int y, int w, int h);
 void VL_MaskedBlitToSurface(void *src, void *dest, int x, int y, int w, int h);
 void VL_MaskedToScreen(void *src, int x, int y, int w, int h);
 void VL_MaskedBlitToScreen(void *src, int x, int y, int w, int h);
 void VL_1bppToScreen(void *src, int x, int y, int w, int h, int colour);
+void VL_1bppToScreen_PM(void *src, int x, int y, int w, int h, int colour);
 void VL_1bppXorWithScreen(void *src, int x, int y, int w, int h, int colour);
 void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour);
 void VL_1bppInvBlitToScreen(void *src, int x, int y, int w, int h, int colour);
@@ -123,6 +131,7 @@ void VL_SetScrollCoords(int x, int y);
 int VL_GetScrollX(void);
 int VL_GetScrollY(void);
 void VL_ClearScreen(int colour);
+void VL_SetMapMask(int mapmask);
 void VL_Present();
 
 VL_Backend *VL_Impl_GetBackend(void);
