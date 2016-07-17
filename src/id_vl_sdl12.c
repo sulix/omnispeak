@@ -245,6 +245,10 @@ static void VL_SDL12_Present(void *surface, int scrlX, int scrlY)
 	SDL_Flip(vl_sdl12_screenSurface);
 }
 
+static void VL_SDL12_FlushParams()
+{
+}
+
 // Unfortunately, we can't take advantage of designated initializers in C++.
 VL_Backend vl_sdl12_backend =
 {
@@ -266,7 +270,8 @@ VL_Backend vl_sdl12_backend =
 	/*.bitXorWithSurface =*/ &VL_SDL12_BitXorWithSurface,
 	/*.bitBlitToSurface =*/ &VL_SDL12_BitBlitToSurface,
 	/*.bitInvBlitToSurface =*/ &VL_SDL12_BitInvBlitToSurface,
-	/*.present =*/ &VL_SDL12_Present
+	/*.present =*/ &VL_SDL12_Present,
+	/*.flushParams =*/ &VL_SDL12_FlushParams
 };
 
 VL_Backend *VL_Impl_GetBackend()

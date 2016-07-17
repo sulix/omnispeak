@@ -290,6 +290,10 @@ static void INL_HandleSDLEvent(SDL_Event *event)
 		break;
 	case SDL_KEYDOWN:
 
+		//Use F11 to toggle fullscreen.
+		if (event->key.keysym.sym == SDLK_F11)
+			VL_ToggleFullscreen();
+
 		sc = INL_SDLKToScanCode(event->key.keysym.sym);
 		in_keyStates[sc] = 1;
 		in_lastKeyScanned = sc;

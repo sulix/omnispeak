@@ -703,6 +703,18 @@ void VL_SetParams(bool isFullScreen, bool isAspectCorrected)
 {
 	vl_isFullScreen = isFullScreen;
 	vl_isAspectCorrected = isAspectCorrected;
+	if (vl_currentBackend)
+		vl_currentBackend->flushParams();
+}
+
+void VL_ToggleFullscreen()
+{
+	VL_SetParams(!vl_isFullScreen, vl_isAspectCorrected);
+}
+
+void VL_ToggleAspect()
+{
+	VL_SetParams(vl_isFullScreen, !vl_isAspectCorrected);
 }
 
 void *VL_CreateSurface(int w, int h)

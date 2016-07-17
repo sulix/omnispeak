@@ -574,6 +574,11 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	SDL_GL_SwapWindow(vl_sdl2gl_window);
 }
 
+void VL_SDL2GL_FlushParams()
+{
+	SDL_SetWindowFullscreen(vl_sdl2gl_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+}
+
 // Unfortunately, we can't take advantage of designated initializers in C++.
 VL_Backend vl_sdl2gl_backend =
 {
@@ -595,7 +600,8 @@ VL_Backend vl_sdl2gl_backend =
 	/*.bitXorWithSurface =*/ &VL_SDL2GL_BitXorWithSurface,
 	/*.bitBlitToSurface =*/ &VL_SDL2GL_BitBlitToSurface,
 	/*.bitInvBlitToSurface =*/ &VL_SDL2GL_BitInvBlitToSurface,
-	/*.present =*/ &VL_SDL2GL_Present
+	/*.present =*/ &VL_SDL2GL_Present,
+	/*.flushParams =*/ &VL_SDL2GL_FlushParams
 };
 
 VL_Backend *VL_Impl_GetBackend()
