@@ -197,4 +197,9 @@ extern US_Savefile us_savefiles[6];
 
 void US_GetSavefiles();
 
+// Text-mode order screen functions
+bool US_TerminalOk();
+void US_PrintB8000Text(const uint8_t *textscreen, int numChars);
+
+
 #endif //ID_US_H

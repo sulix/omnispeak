@@ -373,6 +373,7 @@ void CK_OBJ_SetupFunctions();
 
 /* ck_main.c */
 void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h);
+void CK_ShutdownID();
 
 /* ck_map.c */
 extern int *ck_mapKeenFrames;
@@ -493,6 +494,7 @@ extern int TEXT_END;
 extern int TEXT_SECRETEND;
 extern int TEXT_ORDER;
 
+extern int EXTERN_ORDERSCREEN;
 extern int EXTERN_KEEN;
 extern int EXTERN_COMMANDER;
 
@@ -584,4 +586,5 @@ extern int BRINGEROFWAR_MUS;
 extern int LASTMUSTRACK;
 
 extern const char *STR_EXIT_TO_MAP;
+
 #endif
