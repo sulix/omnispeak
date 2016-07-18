@@ -181,7 +181,6 @@ void ZoomOutTerminator_1(uint16_t *arg0, uint16_t arg4, int leftOffset, uint16_t
 void ZoomOutTerminator(void);
 void CK_FizzleFade(void);
 
-#if 0
 
 // Caches vertically scrolling terminator pics
 // and unsignedly extends each uint8_t of the pic to a uint16_t
@@ -190,11 +189,12 @@ void CK_FizzleFade(void);
 void DoubleSizeTerminatorPics(int pic)
 {
 
-	uint8_t far *picptr;
-	uint16_t far *double_picptr;
+	uint8_t *picptr;
+	uint16_t *double_picptr;
 	int width, height;
-	unsigned i, size;
+	int i, size;
 	int picchunk, pictableindex;
+  VH_BitmapTableEntry bmp;
 
 	// Cache the standard-sized picture
 	picchunk = *terminator_pics[pic];
@@ -202,15 +202,14 @@ void DoubleSizeTerminatorPics(int pic)
 
 	// Allocate memory for the expanded picture
 	// and save its dimensions
-	pictableindex = picchunk - STARTPICS;
-	ck_termPicWidths[pic] = width = (pictable + (pictableindex))->width;
-	ck_termPicHeights[pic] = height = (pictable + (pictableindex))->height;
-	size = width * height * 2;
+  bmp = VH_GetBitmapTableEntry(picchunk - ca_gfxInfoE.offBitmaps);
+
+	size = bmp.width * bmp.height * 2;
 	MM_GetPtr(&terminator_pic_memptrs[pic], size * 2);
 
 	// Copy the data to the expanded buffer
 	picptr = ca_graphChunks[picchunk];
-	double_picptr = (uint16_t far *)terminator_pic_memptrs[pic];
+	double_picptr = (uint16_t *)terminator_pic_memptrs[pic];
 
 	for (i = 0; i < size; i++)
 		*double_picptr++ = *picptr++ * 2;
@@ -234,7 +233,7 @@ int AdvanceTerminatorCredit(int elapsedTime)
 		ck_currentTermPicWidth = ck_termPicWidths[ck_currentTerminatorCredit];
 		ck_currentTermPicHalfWidth = (ck_currentTermPicWidth+3)>>1;
 		ck_currentTermPicHeight = ck_termPicHeights[ck_currentTerminatorCredit];
-		ck_currentTermPicNextLineDist = linewidth - (ck_currentTermPicWidth+1);
+		// ck_currentTermPicNextLineDist = linewidth - (ck_currentTermPicWidth+1);
 		ck_currentTermPicSize = (ck_currentTermPicWidth * ck_currentTermPicHeight) << 1;
 		ck_termCreditStage++;
 
@@ -299,7 +298,7 @@ int AdvanceTerminatorCredit(int elapsedTime)
 
 void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 {
-	uint16_t pelpan, var4, varC,var10;
+	int pelpan, var4, numrows,var10;
 
 	// Vars are static because BP is used during ASM draw routine
 	static int rowsToDraw;
@@ -308,9 +307,10 @@ void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 	int creditY1, varA, creditY2, var12, varE;
 
 	pelpan = xpixel & 7;
-	var4 = terminatorOfs + (xpixel>>3) + (20 - ck_currentTermPicWidth/2);
+	var4 = /*terminatorOfs +*/ (xpixel>>3) + (20 - ck_currentTermPicWidth/2);
 
-	EGAMAPMASK(0xC);
+	// EGAMAPMASK(0xC);
+  VL_SetMapMask(0xC);
 
 	creditY1 = AdvanceTerminatorCredit(elapsedTime);
 	creditY2 = creditY1 + ck_currentTermPicHeight;
@@ -323,15 +323,16 @@ void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 	// Erasing the area underneath the credit
 	if (creditY2 < 200 && varA > creditY2)
 	{
-		varC = varA - creditY2;
-		var10 = ylookup[creditY2] + var4;
+		numrows = varA - creditY2;
+		// var10 = ylookup[creditY2] + var4;
 
+#if 0
 asm		mov es, screenseg;
 asm		mov bx, linewidth;				// bx = next line distance
 asm		sub bx, ck_currentTermPicHalfWidth;
 asm		sub bx, ck_currentTermPicHalfWidth;
 asm		mov di, var10;
-asm		mov dx, varC;
+asm		mov dx, numrows;
 asm		mov si, ck_currentTermPicHalfWidth;
 asm		xor ax, ax;
 
@@ -342,6 +343,11 @@ asm		rep stosw;
 asm		add di, bx;
 asm		dec dx;
 asm		jnz nextrow1;
+#endif
+
+    // Omnispeak: Just draw an empty rectangle over the area
+    VL_ScreenRect_PM(var4 + pelpan, 0, ck_currentTermPicHalfWidth*16, 200, 0xF);
+    VL_ScreenRect_PM(var4 + pelpan, creditY1, ck_currentTermPicHalfWidth*16, numrows, 0x0);
 	}
 
 	// loc_140AB
@@ -366,6 +372,7 @@ asm		jnz nextrow1;
 		rowsToDraw = 200 - creditY1;
 	}
 
+#if 0
 
 	// loc_14108
 	word_499CB = varE + ck_currentTermPicSize;
@@ -426,9 +433,9 @@ asm		mov ds, ax;
 
 	}
 
+#endif
 }
 
-#endif
 
 // Does the terminator scrolling
 void AnimateTerminator(void)
@@ -496,9 +503,7 @@ void AnimateTerminator(void)
 		xpixel = (ck_introScreenWidth*(maxTime-elapsedTime)) / maxTime;
 
 		// Scroll the Credits graphics
-#if 0
 		ScrollTerminatorCredits(elapsedTime, xpixel);
-#endif
 
 		elapsedCmdrScrollDist = screenWidthInPx + (finalCmdrPosFromScreenRight * elapsedTime)/ maxTime;
 		elapsedCmdrScrollDist += xpixel&7;
@@ -639,12 +644,6 @@ for (int row = 200; row > 0; row--)
 int rowptr = 0;
 for (int row = 0; row < 200; row++)
 {
-
-  /*
-  VL_ScreenRect_PM(screenofs*8, row, leftMarginBlackWords*16, 1, 0x0);
-  VL_1bppToScreen_PM((uint8_t*)(shiftedCmdrBMPsegs[0])+rowptr+cmdrLeftDrawStart, screenofs*8+leftMarginBlackWords*16, row, cmdrWords*16, 1, 0xF);
-  VL_ScreenRect_PM(screenofs*8+(leftMarginBlackWords+cmdrWords)*16, row, rightMarginBlackWords*16, 1, 0x0);
-  */
 
   VL_ScreenRect_PM(screenofs*8, row, leftMarginBlackWords*16, 1, 0x0);
   VL_1bppToScreen_PM((uint8_t*)bmpsrcseg+rowptr+cmdrLeftDrawStart, screenofs*8+leftMarginBlackWords*16, row, cmdrWords*16, 1, 0xF);
@@ -1471,30 +1470,6 @@ for (int i = 1; i < 8; i++)
 }
 
 #if 0
-// Omnispeak
-// We don't need to make 8 shifts of the COMMANDER graphic
-// Instead, just allocate a single surface for it
-// This will be drawn directly to the screen as the terminator screen is scrolled
-void *commanderSurface = VL_CreateSurface(ck_introCommanderWidth*8, 200);
-
-// Like with KEEN, decompress to Buffer, then copy to surface
-// remembering to duplicate the even rows
-{
-uint8_t *destbuf = (uint8_t *)calloc(ck_introCommanderWidth, sizeof(uint8_t));
-for (i = 0; i < 100; i++)
-{
-  srcptr = (uint16_t*)((uint8_t *)ck_introCommander + ck_introCommander->linestarts[i*2]);
-  TerminatorExpandRLE(srcptr, destbuf);
-  VL_UnmaskedToSurface(destbuf, commanderSurface, 0, 2*i, ck_introCommanderWidth*8, 1);
-  VL_UnmaskedToSurface(destbuf, commanderSurface, 0, 2*i+1, ck_introCommanderWidth*8, 1);
-}
-
-free (destbuf);
-}
-#endif
-
-
-#if 0
 
 // Set the terminator palette
 terminator_palette2[16] = bordercolor;
@@ -1508,10 +1483,8 @@ _AX = 0x1002;
 geninterrupt(0x10);
 #endif
 
-#if 0
-for (i = 0; i < 4; i++)
-DoubleSizeTerminatorPics(i);
-#endif
+for (int i = 0; i < 4; i++)
+  DoubleSizeTerminatorPics(i);
 
 
 
