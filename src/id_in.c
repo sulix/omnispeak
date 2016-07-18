@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_in.h"
 #include "id_sd.h"
 #include "id_us.h"
+#include "id_vl.h"
 
 #include <string.h>
 #include <SDL.h>
@@ -290,10 +291,6 @@ static void INL_HandleSDLEvent(SDL_Event *event)
 		break;
 	case SDL_KEYDOWN:
 
-		//Use F11 to toggle fullscreen.
-		if (event->key.keysym.sym == SDLK_F11)
-			VL_ToggleFullscreen();
-
 		sc = INL_SDLKToScanCode(event->key.keysym.sym);
 		in_keyStates[sc] = 1;
 		in_lastKeyScanned = sc;
@@ -352,6 +349,10 @@ static void INL_HandleSDLEvent(SDL_Event *event)
 
 		break;
 	case SDL_KEYUP:
+		//Use F11 to toggle fullscreen.
+		if (event->key.keysym.sym == SDLK_F11)
+			VL_ToggleFullscreen();
+
 		sc = INL_SDLKToScanCode(event->key.keysym.sym);
 		in_keyStates[sc] = 0;
 		break;
