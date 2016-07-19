@@ -708,7 +708,7 @@ void help_endgame( void )
 		while ( !advancePage )
 		{
 			/* Draw the dim arrow and wait a short time */
-			VH_DrawBitmap( 0x12A, 0xB8, PIC_ARROWDIM );
+			VH_DrawBitmap( 0x12A & ~3, 0xB8, PIC_ARROWDIM );
 			for ( i = 0; i < 70; i++ )
 			{
 				IN_PumpEvents();
@@ -723,7 +723,7 @@ void help_endgame( void )
 			}
 
       /* Draw the bright arrow and wait a short time */
-			VH_DrawBitmap( 0x12A, 0xB8, PIC_ARROWBRIGHT );
+			VH_DrawBitmap( 0x12A & ~3, 0xB8, PIC_ARROWBRIGHT );
 			for ( i = 0; i < 70; i++ )
 			{
 				IN_PumpEvents();
