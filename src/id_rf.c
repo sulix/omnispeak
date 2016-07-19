@@ -130,6 +130,8 @@ int rf_dirtyBlocks[RF_BUFFER_WIDTH_TILES * RF_BUFFER_HEIGHT_TILES];
 
 void RFL_MarkBlockDirty(int x, int y, int val)
 {
+	if (x >= RF_BUFFER_WIDTH_TILES || y >= RF_BUFFER_HEIGHT_TILES)
+		return;
 	rf_dirtyBlocks[y*RF_BUFFER_WIDTH_TILES+x] = val; 
 }
 
@@ -982,6 +984,8 @@ void RF_SmoothScroll(int scrollXdelta, int scrollYdelta)
 void RF_PlaceEraser(int pxX, int pxY, int pxW, int pxH)
 {
 #ifndef ALWAYS_REDRAW
+	if (rf_freeSpriteEraserIndex == RF_MAX_SPRITETABLEENTRIES)
+		Quit("Too many sprite erasers.");
 	rf_spriteErasers[rf_freeSpriteEraserIndex].pxX = pxX;
 	rf_spriteErasers[rf_freeSpriteEraserIndex].pxY = pxY;
 	rf_spriteErasers[rf_freeSpriteEraserIndex].pxW = pxW;
@@ -1020,7 +1024,9 @@ void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
 		(*drawEntry)->prev->next = (*drawEntry)->next;
 
 #endif
-	RF_PlaceEraser((*drawEntry)->x, (*drawEntry)->y, (*drawEntry)->sw, (*drawEntry)->sh);
+	int old_sprite_number = (*drawEntry)->chunk - ca_gfxInfoE.offSprites;
+	VH_SpriteTableEntry oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
+	RF_PlaceEraser((*drawEntry)->x + (oldSprite.originX >> 4), (*drawEntry)->y + (oldSprite.originY >> 4), (*drawEntry)->sw, (*drawEntry)->sh);
 
 	if ((*drawEntry)->next)
 		(*drawEntry)->next->prevNextPtr = (*drawEntry)->prevNextPtr;
@@ -1040,8 +1046,8 @@ void RFL_ProcessSpriteErasers()
 		rf_spriteErasers[i].pxY -= (rf_scrollYUnit >> 8)*16;
 		int x = MAX(rf_spriteErasers[i].pxX - 8, 0);
 		int y = MAX(rf_spriteErasers[i].pxY - 8, 0);
-		int x2 = MIN(rf_spriteErasers[i].pxX+rf_spriteErasers[i].pxW + 8, RF_BUFFER_WIDTH_PIXELS);
-		int y2 = MIN(rf_spriteErasers[i].pxY+rf_spriteErasers[i].pxH + 8, RF_BUFFER_HEIGHT_PIXELS);
+		int x2 = MIN(rf_spriteErasers[i].pxX+rf_spriteErasers[i].pxW + 8, RF_BUFFER_WIDTH_PIXELS-1);
+		int y2 = MIN(rf_spriteErasers[i].pxY+rf_spriteErasers[i].pxH + 8, RF_BUFFER_HEIGHT_PIXELS-1);
 
 		// Only process if on-screen.
 		if (x2 < x || y2 < y)
@@ -1059,7 +1065,7 @@ void RFL_ProcessSpriteErasers()
 		{
 			for (int tx = tileX1; tx <= tileX2; ++tx)
 			{
-				RFL_MarkBlockDirty(tx, ty, 1);
+				RFL_MarkBlockDirty(tx, ty, 2);
 			}
 		}
 	}
@@ -1081,7 +1087,9 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 
 	if (sde)
 	{
-		RF_PlaceEraser(sde->x, sde->y, sde->sw, sde->sh);
+		int old_sprite_number = sde->chunk - ca_gfxInfoE.offSprites;
+		VH_SpriteTableEntry oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
+		RF_PlaceEraser(sde->x + (oldSprite.originX >> 4), sde->y + (oldSprite.originY >> 4), sde->sw, sde->sh);
 
 		//TODO: Support changing zLayers properly.
 		if (zLayer == sde->zLayer)
@@ -1234,8 +1242,8 @@ void RF_Refresh()
 #endif
 
 	//TODO: Work out how to do scrolling before using this
-	RFL_ProcessSpriteErasers();
 	RFL_UpdateTiles();
+	RFL_ProcessSpriteErasers();
 
 	RFL_DrawSpriteList();
 
