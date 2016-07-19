@@ -35,12 +35,12 @@ CK_EpisodeDef ck6_episode ={
 	&CK6_SetupFunctions,
 	&CK6_ScanInfoLayer,
   &CK6_DefineConstants,
-  NULL, //&CK6_MapMiscFlagsCheck,
+  &CK6_MapMiscFlagsCheck,
   4,
   15,
   14,
-  0x9E6F,
-  0xBC3B,
+  0x75CE,
+  0x939E,
 };
 
 

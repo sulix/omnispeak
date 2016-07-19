@@ -1,445 +1,330 @@
-##
-## Action database for Keen 6 (v1.4)
-##
 #
-## ck_phys.c
-#%action CK_ACT_NULL 0x0788 0 0 Frame 0 0 0 0 0 NULL NULL NULL NULL
-#
-## ck_misc.c
-#%action CK_ACT_objBadState 0x07A6 0 0 Frame 0 0 0 0 0 CK_ObjBadstate CK_ObjBadstate CK_ObjBadstate NULL
-#
-## ck_keen.c: Apart from sprite numbers these should work across all keen versions
-#
-#%action CK_ACT_keenStanding 0x0888 116 108 UnscaledFrame 0 1 4 0 32 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
-#
-#%action CK_ACT_keenRidePlatform 0x08A6 0x8B 0x8B UnscaledFrame 0 1 4 0 32 CK_HandleInputOnGround CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenRidePlatform
-#
-#%action CK_ACT_keenIdle 0x08C4 124 124 UnscaledFrame 0 1 0x3C 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
-#
-#%action CK_ACT_keenBored1 0x08E2 126 126 UnscaledFrame 0 1 0x5A 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored2
-#%action CK_ACT_keenBored2 0x0900 125 125 UnscaledFrame 0 1 10 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored3
-#%action CK_ACT_keenBored3 0x091E 126 126 UnscaledFrame 0 1 0x5A 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored4
-#%action CK_ACT_keenBored4 0x093C 125 125 UnscaledFrame 0 1 10 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored5
-#%action CK_ACT_keenBored5 0x095A 126 126 UnscaledFrame 0 1 0x5A 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored6
-#%action CK_ACT_keenBored6 0x0978 127 127 UnscaledFrame 0 1 0x46 0 0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
-#
-#%action CK_ACT_keenOpenBook1 0x0996 128 128 UnscaledOnce 0 1 16 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenOpenBook2
-#%action CK_ACT_keenOpenBook2 0x09B4 129 129 UnscaledOnce 0 1 16 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenOpenBook3
-#%action CK_ACT_keenOpenBook3 0x09D2 130 130 UnscaledOnce 0 1 16 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenOpenBook4
-#%action CK_ACT_keenOpenBook4 0x09F0 131 131 UnscaledOnce 0 1 16 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenReadBook1
-#
-#%action CK_ACT_keenReadBook1 0x0A0E 132 132 UnscaledFrame 0 1 300 0 0 CK_KeenReadThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenReadBook2
-#%action CK_ACT_keenReadBook2 0x0A2C 133 133 UnscaledFrame 0 1 16 0 0 CK_KeenReadThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenReadBook3
-#%action CK_ACT_keenReadBook3 0x0A4A 134 134 UnscaledFrame 0 1 16 0 0 CK_KeenReadThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenReadBook1
-#
-#%action CK_ACT_keenStowBook1 0x0A68 135 135 UnscaledOnce 0 1 12 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStowBook2
-#%action CK_ACT_keenStowBook2 0x0A86 136 136 UnscaledOnce 0 1 12 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStowBook3
-#%action CK_ACT_keenStowBook3 0x0AA4 129 129 UnscaledOnce 0 1 12 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
-#
-#%action CK_ACT_keenLookUp1 0x0AC2 124 124 UnscaledFrame 0 1 30 0 0 CK_KeenLookUpThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenLookUp2
-#%action CK_ACT_keenLookUp2 0x0AE0 124 124 Frame 0 1 0 0 0 CK_KeenLookUpThink CK_KeenSpecialColFunc CK_KeenDrawFunc NULL
-#
-#%action CK_ACT_keenLookDown1 0x0AFE 137 137 UnscaledFrame 0 1 6 0 0 CK_KeenLookDownThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenLookDown2
-#%action CK_ACT_keenLookDown2 0x0B1C 138 138 UnscaledFrame 0 1 0x18 0 0 CK_KeenLookDownThink CK_KeenSpecialColFunc CK_KeenDrawFunc CK_ACT_keenLookDown3
-#%action CK_ACT_keenLookDown3 0x0B3A 138 138 Frame 0 1 0 0 0 CK_KeenLookDownThink CK_KeenSpecialColFunc CK_KeenDrawFunc NULL
-#%action CK_ACT_keenLookDown4 0x0B58 137 137 UnscaledOnce 0 1 6 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
-#
-## Some unused state
-#%action CK_ACT_keenLookDown5 0x0B76 137 137 UnscaledOnce 0 0 0 0 0 CK_KeenSetClipped CK_KeenColFunc CK_KeenSpecialDrawFunc CK_ACT_keenFall1
-#
-#%action CK_ACT_keenNot 0x0B94 -1 -1 Frame 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
-#%action CK_ACT_keenDie0 0x0BB2 0x8C 0x8C Frame 0 0 0x64 0 0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_keenDie0
-#%action CK_ACT_keenDie1 0x0BD0 0x8D 0x8D Frame 0 0 0x64 0 0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_keenDie1
-#
-#%action CK_ACT_keenShoot1 0x0BEE 146 151 UnscaledOnce 0 1 9 0 0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenShoot2
-#%action CK_ACT_keenShoot2 0x0C0C 146 151 UnscaledOnce 0 1 6 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
-#
-#%action CK_ACT_keenShootUp1 0x0C2A 150 150 UnscaledOnce 0 1 9 0 0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenShootUp2
-#%action CK_ACT_keenShootUp2 0x0C48 150 150 UnscaledOnce 0 1 6 0 0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenLookUp1
-#
-#%action CK_ACT_keenPressSwitch1 0x0C66 175 175 UnscaledOnce 0 1 8 0 0 CK_KeenPressSwitchThink NULL CK_KeenDrawFunc CK_ACT_keenPressSwitch2
-#%action CK_ACT_keenPressSwitch2 0x0C84 175 175 UnscaledOnce 0 1 8 0 0 NULL NULL CK_KeenDrawFunc CK_ACT_keenStanding
-#
-#%action CK_ACT_keenPlaceGem 0x0CA2 175 175 UnscaledOnce 0 1 6 0 0 CK_KeenPlaceGem NULL CK_KeenDrawFunc CK_ACT_keenPressSwitch2
-#
-#%action CK_ACT_keenSlide 0x0CC0 175 175 Frame 0 0 0 0 0 CK_KeenSlide NULL CK_BasicDrawFunc1 NULL
-#
-#%action CK_ACT_keenEnterSecurityDoor 0x0CDE 175 175 UnscaledOnce 0 0 0x2D 0 -64 NULL NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor0
-#
-## Another unused state
-#%action CK_ACT_keenCantEnterDoor 0x0CFC 126 126 Frame 0 0 0 0 0 NULL NULL CK_BasicDrawFunc1 NULL
-#
-#%action CK_ACT_keenEnterDoor0 0x0D1A 175 175 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor1
-#%action CK_ACT_keenEnterDoor1 0x0D38 176 176 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor1 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor2
-#%action CK_ACT_keenEnterDoor2 0x0D56 177 177 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor3
-#%action CK_ACT_keenEnterDoor3 0x0D74 178 178 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor1 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor4
-#%action CK_ACT_keenEnterDoor4 0x0D92 179 179 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor NULL CK_BasicDrawFunc1 CK_ACT_keenStanding
-#%action CK_ACT_keenEnteredDoor 0x0DB0 -1 -1 UnscaledOnce 0 0 9 0 -64 CK_KeenEnterDoor NULL CK_BasicDrawFunc1 CK_ACT_keenStanding
-#
-#%action CK_ACT_keenPoleSit 0x0DCE 166 159 Frame 0 0 0 0 0 CK_KeenPoleSitThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleSit
-#%action CK_ACT_keenPoleUp1 0x0DEC 166 159 ScaledFrame 0 0 8 0 8 CK_KeenPoleUpThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleUp2
-#%action CK_ACT_keenPoleUp2 0x0E0A 167 160 ScaledFrame 0 0 8 0 8 CK_KeenPoleUpThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleUp3
-#%action CK_ACT_keenPoleUp3 0x0E28 168 161 ScaledFrame 0 0 8 0 8 CK_KeenPoleUpThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleUp1
-#%action CK_ACT_keenPoleDown1 0x0E46 162 162 ScaledOnce 0 0 8 0 24 CK_KeenPoleDownThink CK_KeenSpecialColFunc CK_KeenPoleDownDrawFunc CK_ACT_keenPoleDown2
-#%action CK_ACT_keenPoleDown2 0x0E64 163 163 ScaledOnce 0 0 8 0 24 CK_KeenPoleDownThink CK_KeenSpecialColFunc CK_KeenPoleDownDrawFunc CK_ACT_keenPoleDown3
-#%action CK_ACT_keenPoleDown3 0x0E82 164 164 ScaledOnce 0 0 8 0 24 CK_KeenPoleDownThink CK_KeenSpecialColFunc CK_KeenPoleDownDrawFunc CK_ACT_keenPoleDown4
-#%action CK_ACT_keenPoleDown4 0x0EA0 165 165 ScaledOnce 0 0 8 0 24 CK_KeenPoleDownThink CK_KeenSpecialColFunc CK_KeenPoleDownDrawFunc CK_ACT_keenPoleDown1
-#
-#%action CK_ACT_keenPoleShoot1 0x0EBE 173 174 UnscaledOnce 0 0 9 0 0 CK_KeenSpawnShot CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleShoot2
-#%action CK_ACT_keenPoleShoot2 0x0EDC 173 174 UnscaledOnce 0 0 6 0 0 NULL CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleSit
-#%action CK_ACT_keenPoleShootUp1 0x0EFA 169 170 UnscaledOnce 0 0 9 0 0 CK_KeenSpawnShot CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleShootUp2
-#%action CK_ACT_keenPoleShootUp2 0x0F18 169 170 UnscaledOnce 0 0 6 0 0 NULL CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleSit
-#%action CK_ACT_keenPoleShootDown1 0x0F36 172 171 UnscaledOnce 0 0 9 0 0 CK_KeenSpawnShot CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleShootDown2
-#%action CK_ACT_keenPoleShootDown2 0x0F54 172 171 UnscaledOnce 0 0 6 0 0 NULL CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleSit
-#
-#%action CK_ACT_keenRun1 0x0F72 117 109 ScaledFrame 1 1 6 24 0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun2
-#%action CK_ACT_keenRun2 0x0F90 118 110 ScaledFrame 1 1 6 24 0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun3
-#%action CK_ACT_keenRun3 0x0FAE 119 111 ScaledFrame 1 1 6 24 0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun4
-#%action CK_ACT_keenRun4 0x0FCC 120 112 ScaledFrame 1 1 6 24 0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun1
-#
-#%action CK_ACT_keenPogo1 0x0FEA 193 191 UnscaledOnce 1 0 1 0 0 CK_KeenPogoBounceThink CK_KeenColFunc CK_KeenPogoDrawFunc CK_ACT_keenPogo2
-#%action CK_ACT_keenPogo2 0x1008 193 191 Frame 1 0 0 0 0 CK_KeenPogoThink CK_KeenColFunc CK_KeenPogoDrawFunc CK_ACT_keenPogo3
-#%action CK_ACT_keenPogo3 0x1026 192 190 Frame 1 0 0 0 0 CK_KeenPogoThink CK_KeenColFunc CK_KeenPogoDrawFunc NULL
-#
-#%action CK_ACT_keenJump1 0x1044 121 113 Frame 0 0 0 0 0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJump2
-#%action CK_ACT_keenJump2 0x1062 122 114 Frame 0 0 0 0 0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
-#
-#%action CK_ACT_keenFall1 0x1080 123 115 UnscaledFrame 0 0 0x32 0 0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall2
-#%action CK_ACT_keenFall2 0x109E 122 114 UnscaledFrame 0 0 0x28 0 0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
-#
-#%action CK_ACT_keenJumpShoot1 0x10BC 147 152 UnscaledFrame 0 0 9 0 0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShoot2
-#%action CK_ACT_keenJumpShoot2 0x10DA 147 152 UnscaledFrame 1 0 1 0 0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShoot3
-#%action CK_ACT_keenJumpShoot3 0x10F8 147 152 UnscaledFrame 0 0 6 0 0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
-#
-#%action CK_ACT_keenJumpShootUp1 0x1116 149 149 UnscaledFrame 0 0 9 0 0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShootUp2
-#%action CK_ACT_keenJumpShootUp2 0x1134 149 149 UnscaledFrame 1 0 1 0 0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShootUp3
-#%action CK_ACT_keenJumpShootUp3 0x1152 149 149 UnscaledFrame 0 0 6 0 0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
-#
-#%action CK_ACT_keenJumpShootDown1 0x1170 148 148 UnscaledFrame 0 0 9 0 0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShootDown2
-#%action CK_ACT_keenJumpShootDown2 0x118E 148 148 UnscaledFrame 1 0 1 0 0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShootDown3
-#%action CK_ACT_keenJumpShootDown3 0x11AC 148 148 UnscaledFrame 0 0 6 0 0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
-#
-#%action CK_ACT_keenHang1 0x11CA 180 181 UnscaledOnce 0 0 12 0 0 NULL CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenHang2
-#%action CK_ACT_keenHang2 0x11E8 180 181 Frame 0 0 0 0 0 CK_KeenHangThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc NULL
-#
-#%action CK_ACT_keenPull1 0x1206 182 186 UnscaledOnce 0 0 10 0 0 CK_KeenPullThink1 CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPull2
-#%action CK_ACT_keenPull2 0x1224 183 187 UnscaledOnce 0 0 10 0 0 CK_KeenPullThink2 CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPull3
-#%action CK_ACT_keenPull3 0x1242 184 188 UnscaledOnce 0 0 10 0 0 CK_KeenPullThink3 CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPull4
-#%action CK_ACT_keenPull4 0x1260 185 189 UnscaledOnce 0 0 10 0 0 CK_KeenPullThink4 CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPull5
-#%action CK_ACT_keenPull5 0x127E 116 108 UnscaledOnce 0 0 6 0 0 NULL CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenStanding
-#
-## ck_map.c
-#
-##ScoreBox
-#%action CK_ACT_ScoreBox 0x133E 0 0 Frame 0 0 0 0 0 NULL NULL NULL NULL
-#
-##DemoSign
-#%action CK_ACT_DemoSign 0x135C 0x6B 0x6B Frame 0 0 0 0 0 NULL NULL NULL NULL
-#
-## Mapkeen
-#%action CK5_ACT_MapKeenElevator 0x137A -1 -1 Frame 1 0 6 16 16 CK5_MapKeenElevator NULL CK_BasicDrawFunc1 NULL
-#%action CK_ACT_MapKeenStart 0x1398 0x0 0x0 UnscaledFrame 0x0 0x0 0x168 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave0
-#%action CK_ACT_MapKeenWave0 0x13B6 0x10A 0x10A UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave1
-#%action CK_ACT_MapKeenWave1 0x13D4 0x10B 0x10B UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave2
-#%action CK_ACT_MapKeenWave2 0x13F2 0x10A 0x10A UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave3
-#%action CK_ACT_MapKeenWave3 0x1410 0x10B 0x10B UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave4
-#%action CK_ACT_MapKeenWave4 0x142E 0x10A 0x10A UnscaledFrame 0x0 0x0 0x14 0x0 0x0 CK_MapKeenWalk NULL CK_BasicDrawFunc1 CK_ACT_MapKeenStart
-#%action CK_ACT_MapKeenWalk0 0x144C 0x0 0x0 ScaledOnce 0x1 0x0 0x4 0x18 0x18 CK_MapKeenWalk NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWalk0
-#%action CK_ACT_MapFlag0 0x148A 0x113 0x113 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag1
-#%action CK_ACT_MapFlag1 0x14A8 0x114 0x114 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag2
-#%action CK_ACT_MapFlag2 0x14C6 0x115 0x115 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag3
-#%action CK_ACT_MapFlag3 0x14E4 0x116 0x116 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag0
-#
-#
-## Keen shots
-#%action CK_ACT_keenShot1 0x1502 153 153 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink NULL CK_ShotDrawFunc CK_ACT_keenShot2
-#%action CK_ACT_keenShot2 0x1520 154 154 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink NULL CK_ShotDrawFunc CK_ACT_keenShot3
-#%action CK_ACT_keenShot3 0x153E 155 155 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink NULL CK_ShotDrawFunc CK_ACT_keenShot4
-#%action CK_ACT_keenShot4 0x155C 156 156 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink NULL CK_ShotDrawFunc CK_ACT_keenShot1
-#
-#%action CK_ACT_keenShotHit1 0x157A 157 157 UnscaledOnce 0 0 0xC 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_keenShotHit2
-#%action CK_ACT_keenShotHit2 0x1598 158 158 UnscaledOnce 0 0 0xC 0 0 NULL NULL CK_BasicDrawFunc1 NULL
-#
-## Again ck_misc.c
-#%action CK_ACT_DoorOpen1 0x15B6 0 0 UnscaledOnce 0 0 10 0 0 CK_DoorOpen NULL NULL CK_ACT_DoorOpen2
-#%action CK_ACT_DoorOpen2 0x15D4 0 0 UnscaledOnce 0 0 10 0 0 CK_DoorOpen NULL NULL CK_ACT_DoorOpen3
-#%action CK_ACT_DoorOpen3 0x15F2 0 0 UnscaledOnce 0 0 10 0 0 CK_DoorOpen NULL NULL NULL
-#
-#%action CK_ACT_SecurityDoorOpen 0x1610 0 0 UnscaledOnce 0 0 15 0 0 CK_SecurityDoorOpen NULL NULL CK_ACT_SecurityDoorOpen
-#
-#
-##ck_obj.c
-## Items
-#%action CK_ACT_item 0x1946 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item2
-#%action CK_ACT_item2 0x1964 0 0 UnscaledOnce 0 0 20 0 0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item
-#
-## Unused in Keen 5, but might be used in 6 (for dropped gems)
-#%action CK_ACT_fallingitem 0x1982 0 0 UnscaledFrame 0 0 20 0 0 CK_FallingItem NULL CK_BasicDrawFunc1 CK_ACT_fallingitem2
-#%action CK_ACT_fallingitem2 0x19A0 0 0 UnscaledFrame 0 0 20 0 0 CK_FallingItem NULL CK_BasicDrawFunc1 CK_ACT_fallingitem
-#
-#%action CK_ACT_itemNotify 0x19BE 0 0 ScaledOnce 0 0 40 0 8 NULL NULL CK_BasicDrawFunc1 NULL
-#
-## Vitalins
-#%action CK_ACT_CentilifeNotify1 0x19DC 203 203 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify2
-#%action CK_ACT_CentilifeNotify2 0x19FA 204 204 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify3
-#%action CK_ACT_CentilifeNotify3 0x1A18 205 205 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify4
-#%action CK_ACT_CentilifeNotify4 0x1A36 206 206 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 NULL
-#
-#
-#### Keen5 Stuff
-## ck5_misc.c
-#
-## Teleporter Lightning
-#%action CK5_ACT_LightningH0 0x1A6E 0x122 0x122 UnscaledOnce 0x0 0x0 0x6 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_LightningH1
-#%action CK5_ACT_LightningH1 0x1A8C 0x123 0x123 UnscaledOnce 0x0 0x0 0x6 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_LightningH0
-#%action CK5_ACT_LightningV0 0x1AAA 0x124 0x124 UnscaledOnce 0x0 0x0 0x6 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_LightningV1
-#%action CK5_ACT_LightningV1 0x1AC8 0x125 0x125 UnscaledOnce 0x0 0x0 0x6 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_LightningV0
-#
-## Fuse Explosion
-#%action CK5_ACT_FuseExplosion0 0x1AE6 0x11b 0x11b UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_FuseExplosion1
-#%action CK5_ACT_FuseExplosion1 0x1B04 0x11c 0x11c UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_FuseExplosion2
-#%action CK5_ACT_FuseExplosion2 0x1B22 0x11d 0x11d UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
-#
-## Level End Object
-#%action CK5_ACT_LevelEnd 0x1B40 -1 -1 UnscaledOnce 0x0 0x0 0x3c 0x0 0x0 CK5_LevelEnd NULL CK_BasicDrawFunc1 NULL
-#
-## Platforms
-#%action CK_ACT_AxisPlatform 0x1B5E 446 446 Frame 0 0 0 0 0 CK_AxisPlatform NULL CK_BasicDrawFunc1 NULL
-#
-#%action CK5_ACT_purpleAxisPlatform 0x1B7C 422 422 UnscaledFrame 0 0 0 0 0 CK5_PurpleAxisPlatform NULL CK_BasicDrawFunc1 CK5_ACT_purpleAxisPlatform2
-#%action CK5_ACT_purpleAxisPlatform2 0x1B9A 423 423 UnscaledFrame 0 0 0 0 0 CK5_PurpleAxisPlatform NULL CK_BasicDrawFunc1 CK5_ACT_purpleAxisPlatform
-#
-#%action CK_ACT_FallPlat0 0x1BB8 0x1be 0x1be Frame 0x0 0x0 0x0 0x0 0x0 CK_FallPlatSit NULL CK_BasicDrawFunc1 NULL
-#%action CK_ACT_FallPlat1 0x1BD6 0x1be 0x1be Frame 0x0 0x0 0x0 0x0 0x0 CK_FallPlatFall NULL CK_BasicDrawFunc1 NULL
-#%action CK_ACT_FallPlat2 0x1BF4 0x1be 0x1be ScaledFrame 0x0 0x0 0x0 0x0 -32 CK_FallPlatRise NULL CK_BasicDrawFunc1 NULL
-#
-#%action CK5_ACT_redStandPlatform 0x1C12 446 446 UnscaledOnce 0 0 32000 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_redStandPlatform
-#
-#%action CK5_ACT_redGoPlat 0x1C30 446 446 Frame 0 0 0 0 0 CK5_RedGoPlatThink NULL CK_BasicDrawFunc1 NULL
-#%action CK5_ACT_purpleGoPlat 0x1C4E 422 422 UnscaledFrame 0 0 0 0 0 CK5_PurpleGoPlatThink NULL CK_BasicDrawFunc1 CK5_ACT_purpleGoPlat2
-#%action CK5_ACT_purpleGoPlat2 0x1C6C 423 423 UnscaledFrame 0 0 0 0 0 CK5_PurpleGoPlatThink NULL CK_BasicDrawFunc1 CK5_ACT_purpleGoPlat
-#
-## ck5_obj1.c
-#
-## VolteFaces
-#%action CK5_ACT_Volte0 0x1CCC 0x1A1 0x1A1 UnscaledFrame 0 0 6 0 0 CK5_VolteMove CK5_VolteCol CK_BasicDrawFunc1 CK5_ACT_Volte1
-#%action CK5_ACT_Volte1 0x1CEA 0x1A2 0x1A2 UnscaledFrame 0 0 6 0 0 CK5_VolteMove CK5_VolteCol CK_BasicDrawFunc1 CK5_ACT_Volte2
-#%action CK5_ACT_Volte2 0x1D08 0x1A3 0x1A3 UnscaledFrame 0 0 6 0 0 CK5_VolteMove CK5_VolteCol CK_BasicDrawFunc1 CK5_ACT_Volte3
-#%action CK5_ACT_Volte3 0x1D26 0x1A4 0x1A4 UnscaledFrame 0 0 6 0 0 CK5_VolteMove CK5_VolteCol CK_BasicDrawFunc1 CK5_ACT_Volte0
-#%action CK5_ACT_VolteStunned 0x1D44 0x1A5 0x1A5 UnscaledOnce 0 0 0x12C 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_Volte0
-#
-## Again ck_misc5.c
-#%action CK5_ACT_sneakPlatWait 0x1DA4 0x1BE 0x1BE Frame 0 0 0 0 0 CK5_SneakPlatThink NULL CK_BasicDrawFunc1 NULL
-#%action CK5_ACT_sneakPlatSneak 0x1DC2 0x1BE 0x1BE ScaledOnce 0 0 48 32 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_sneakPlatReturn
-#%action CK5_ACT_sneakPlatReturn 0x1DE0 446 446 ScaledOnce 0 0 96 -16 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_sneakPlatWait
-#
-## Back to ck5_obj1.c
-#
-##Turrets
-#%action CK5_ACT_turretWait 0x1DFE 0 0 UnscaledOnce 0 0 0x78 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_turretShoot
-#%action CK5_ACT_turretShoot 0x1E1C 0 0 UnscaledOnce 1 0 1 0 0 CK5_TurretShoot NULL CK_BasicDrawFunc1 CK5_ACT_turretWait
-#
-## Turret Shots
-#%action CK5_ACT_turretShot1 0x1E3A 0xEC 0xEC UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot2
-#%action CK5_ACT_turretShot2 0x1E58 0xED 0xED UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot3
-#%action CK5_ACT_turretShot3 0x1E76 0xEE 0xEE UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot4
-#%action CK5_ACT_turretShot4 0x1E94 0xEF 0xEF UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot1
-#
-#%action CK5_ACT_turretShotHit1 0x1EB2 0xF0 0xF0 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_turretShotHit2
-#%action CK5_ACT_turretShotHit2 0x1ED0 0xF1 0xF1 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
-#
-## ck5_obj2.c
-#
-#%action CK5_ACT_Sparky0 0x1F0C 0x16e 0x175 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_SparkyWait CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_Sparky1
-#%action CK5_ACT_Sparky1 0x1F2A 0x16f 0x176 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_Sparky2
-#%action CK5_ACT_Sparky2 0x1F48 0x170 0x177 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_Sparky3
-#%action CK5_ACT_Sparky3 0x1F66 0x171 0x178 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_Sparky0
-#%action CK5_ACT_SparkySearch0 0x1F84 0x172 0x172 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch1
-#%action CK5_ACT_SparkySearch1 0x1FA2 0x173 0x173 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch2
-#%action CK5_ACT_SparkySearch2 0x1FC0 0x174 0x174 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch3
-#%action CK5_ACT_SparkySearch3 0x1FDE 0x175 0x175 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 CK5_SparkySearchLeft CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkySearch4
-#%action CK5_ACT_SparkySearch4 0x1FFC 0x174 0x174 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch5
-#%action CK5_ACT_SparkySearch5 0x201A 0x173 0x174 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch6
-#%action CK5_ACT_SparkySearch6 0x2038 0x172 0x174 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkySearch7
-#%action CK5_ACT_SparkySearch7 0x2056 0x16e 0x175 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 CK5_SparkySearchRight CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_Sparky1
-#%action CK5_ACT_SparkyPrepCharge0 0x2074 0x16e 0x175 UnscaledOnce 0x1 0x1 0x4 0x0 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyPrepCharge1
-#%action CK5_ACT_SparkyPrepCharge1 0x2092 0x16f 0x176 UnscaledOnce 0x1 0x1 0x4 0x0 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyPrepCharge2
-#%action CK5_ACT_SparkyPrepCharge2 0x20B0 0x170 0x177 UnscaledOnce 0x1 0x1 0x4 0x0 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyPrepCharge3
-#%action CK5_ACT_SparkyPrepCharge3 0x20CE 0x171 0x178 UnscaledOnce 0x1 0x1 0x4 0x0 0x0 CK5_SparkyPrepareCharge CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyPrepCharge0
-#%action CK5_ACT_SparkyCharge0 0x20EC 0x16e 0x175 UnscaledOnce 0x1 0x1 0x4 0x80 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyCharge1
-#%action CK5_ACT_SparkyCharge1 0x210A 0x16f 0x176 UnscaledOnce 0x1 0x1 0x4 0x80 0x0 CK5_SparkyCharge0 CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyCharge2
-#%action CK5_ACT_SparkyCharge2 0x2128 0x170 0x177 UnscaledOnce 0x1 0x1 0x4 0x80 0x0 NULL CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyCharge3
-#%action CK5_ACT_SparkyCharge3 0x2146 0x171 0x178 UnscaledOnce 0x1 0x1 0x4 0x80 0x0 CK5_SparkyCharge1 CK5_SparkyCol CK5_SparkyTileCol CK5_ACT_SparkyCharge0
-#%action CK5_ACT_SparkyTurn0 0x2164 0x174 0x172 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkyTurn1
-#%action CK5_ACT_SparkyTurn1 0x2182 0x173 0x173 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_SparkyTurn2
-#%action CK5_ACT_SparkyTurn2 0x21A0 0x172 0x174 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_SparkyCol CK_BasicDrawFunc1 CK5_ACT_Sparky0
-#%action CK5_ACT_SparkyStunned0 0x21BE 0x179 0x179 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
-#
-## Little Ampton
-#%action CK5_ACT_Ampton0 0x21DC 0x19c 0x195 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_AmptonWalk CK5_AmptonCol CK5_AmptonTileCol CK5_ACT_Ampton1
-#%action CK5_ACT_Ampton1 0x21FA 0x19d 0x196 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_AmptonWalk CK5_AmptonCol CK5_AmptonTileCol CK5_ACT_Ampton2
-#%action CK5_ACT_Ampton2 0x2218 0x19e 0x197 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_AmptonWalk CK5_AmptonCol CK5_AmptonTileCol CK5_ACT_Ampton3
-#%action CK5_ACT_Ampton3 0x2236 0x19f 0x198 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_AmptonWalk CK5_AmptonCol CK5_AmptonTileCol CK5_ACT_Ampton0
-#%action CK5_ACT_AmptonTurn0 0x2254 0x199 0x199 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_Ampton0
-#%action CK5_ACT_AmptonPole0 0x2272 0x19a 0x19a UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonPole1
-#%action CK5_ACT_AmptonPole1 0x2290 0x19b 0x19b UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonPole2
-#%action CK5_ACT_AmptonPole2 0x22AE 0x19b 0x19b ScaledFrame 0x0 0x0 0x0 0x0 0x20 CK5_AmptonPoleClimb CK5_AmptonCol CK_BasicDrawFunc1 NULL
-#%action CK5_ACT_AmptonDismount0 0x22CC 0x19b 0x19b UnscaledOnce 0x0 0x0 0x8 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonDismount1
-#%action CK5_ACT_AmptonDismount1 0x22EA 0x19a 0x19a UnscaledOnce 0x0 0x0 0x8 0x0 0x0 CK5_AmptonSwitch CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_Ampton0
-#%action CK5_ACT_AmptonComp0 0x2308 0x19a 0x19a UnscaledOnce 0x0 0x1 0xc 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonComp1
-#%action CK5_ACT_AmptonComp1 0x2326 0x19b 0x19b UnscaledOnce 0x0 0x1 0xc 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonComp2
-#%action CK5_ACT_AmptonComp2 0x2344 0x19a 0x19a UnscaledOnce 0x0 0x1 0xc 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonComp3
-#%action CK5_ACT_AmptonComp3 0x2362 0x19b 0x19b UnscaledOnce 0x0 0x1 0xc 0x0 0x0 NULL CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_AmptonComp4
-#%action CK5_ACT_AmptonComp4 0x2380 0x19a 0x19a UnscaledOnce 0x0 0x1 0xc 0x0 0x0 CK5_AmptonSwitch CK5_AmptonCol CK_BasicDrawFunc1 CK5_ACT_Ampton0
-#%action CK5_ACT_AmptonStunned0 0x239E 0x1a0 0x1a0 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
-#
-## Slice Star
-#%action CK5_ACT_Slice0 0x23BC 0x181 0x181 Frame 0x0 0x0 0x0 0x0 0x0 CK_AxisPlatform CK5_SliceCol CK_BasicDrawFunc1 NULL
-#%action CK5_ACT_SliceDiag0 0x23DA 0x181 0x181 ScaledOnce 0x0 0x0 0x0 0x18 0x18 NULL CK5_SliceCol CK5_SliceDiagTileCol CK5_ACT_SliceDiag0
-#%action CK5_ACT_SliceDie0 0x23F8 0x182 0x182 UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
-#
-## Shelly
-#%action CK5_ACT_Shelly0 0x2416 0x1b0 0x1ac UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShellyCol CK5_ShellyGroundTileCol CK5_ACT_Shelly1
-#%action CK5_ACT_Shelly1 0x2434 0x1b1 0x1ad UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShellyCol CK5_ShellyGroundTileCol CK5_ACT_Shelly2
-#%action CK5_ACT_Shelly2 0x2452 0x1b2 0x1ae UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShellyCol CK5_ShellyGroundTileCol CK5_ACT_Shelly3
-#%action CK5_ACT_Shelly3 0x2470 0x1b3 0x1af UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShellyCol CK5_ShellyGroundTileCol CK5_ACT_Shelly0
-#%action CK5_ACT_ShellyWait0 0x248E 0x1b1 0x1ad UnscaledFrame 0x0 0x1 0x64 0x0 0x0 CK5_ShellyWait CK5_ShellyCol CK_BasicDrawFunc1 CK5_ACT_ShellyWait1
-#%action CK5_ACT_ShellyWait1 0x24AC 0x1b1 0x1ad UnscaledOnce 0x1 0x1 0x1 0x0 0x0 CK5_ShellyStartJump CK5_ShellyCol CK_BasicDrawFunc1 CK5_ACT_Shelly0
-#%action CK5_ACT_ShellyDive0 0x24CA 0x1b6 0x1b4 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK5_ShellyCol CK5_ShellyAirTileCol CK5_ACT_ShellyDive1
-#%action CK5_ACT_ShellyDive1 0x24E8 0x1b7 0x1b5 Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK5_ShellyCol CK5_ShellyAirTileCol NULL
-#%action CK5_ACT_ShellyDieAir 0x2506 0x1b7 0x1b5 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 CK5_SpawnShellyBits NULL CK5_ShellyAirTileCol NULL
-#%action CK5_ACT_ShellyDieGround 0x2524 0x1b1 0x1ad UnscaledOnce 0x0 0x0 0x8 0x0 0x0 CK5_SpawnShellyBits NULL CK5_ShellyAirTileCol NULL
-#%action CK5_ACT_ShellyExplode0 0x2542 0x1b8 0x1b8 UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_ShellyExplode1
-#%action CK5_ACT_ShellyExplode1 0x2560 0x1b9 0x1b9 UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_ShellyExplode2
-#%action CK5_ACT_ShellyExplode2 0x257E 0x1ba 0x1ba UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_ShellyExplode3
-#%action CK5_ACT_ShellyExplode3 0x259C 0x1bb 0x1bb UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 NULL
-#%action CK5_ACT_ShellyBits0 0x25BA 0x1bc 0x1bc Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK_DeadlyCol CK5_ShrapnelTileCol NULL
-#%action CK5_ACT_ShellyBits1 0x25D8 0x1bd 0x1bd Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK_DeadlyCol CK5_ShrapnelTileCol NULL
-#
-## ck5_obj3.c
-#
-## Shikadi Mine
-#%action CK5_ACT_Mine0 0x2608 0x17A 0x17A Frame 0x0 0x0 0x8 0x0 0x0 CK5_MineMove CK5_MineCol CK5_MineTileCol NULL
-#%action CK5_ACT_Mine1 0x2626 0x17A 0x17A Frame 0x0 0x0 0x0 0x0 0x0 CK5_MineMoveDotsToCenter CK5_MineCol CK5_MineTileCol CK5_ACT_Mine2
-#%action CK5_ACT_Mine2 0x2644 0x17A 0x17A Frame 0x0 0x0 0x0 0x0 0x0 CK5_MineMoveDotsToSides CK5_MineCol CK5_MineTileCol CK5_ACT_Mine0
-#%action CK5_ACT_MineExplode0 0x2662 0x17C 0x17C UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineCol CK_BasicDrawFunc1 CK5_ACT_MineExplode1
-#%action CK5_ACT_MineExplode1 0x2680 0x17D 0x17D UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineCol CK_BasicDrawFunc1 CK5_ACT_MineExplode2
-#%action CK5_ACT_MineExplode2 0x269E 0x17C 0x17C UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL CK5_MineCol CK_BasicDrawFunc1 CK5_ACT_MineExplode3
-#%action CK5_ACT_MineExplode3 0x26BC 0x17D 0x17D UnscaledOnce 0x0 0x0 0xa 0x0 0x0 CK5_MineExplode CK5_MineCol CK_BasicDrawFunc1 CK5_ACT_MineExplode4
-#%action CK5_ACT_MineExplode4 0x26DA 0x17E 0x17E UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_MineExplode5
-#%action CK5_ACT_MineExplode5 0x26F8 0x17F 0x17F UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 NULL
-#%action CK5_ACT_MineShrap0 0x2716 0x180 0x180 Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK5_MineShrapCol CK5_ShrapnelTileCol NULL
-#
-##Robo Red
-#%action CK5_ACT_Robo0 0x2734 0x184 0x183 UnscaledOnce 0x0 0x1 0x6 0x40 0x0 CK5_RoboMove CK5_RoboCol CK_BasicDrawFunc2 CK5_ACT_Robo0
-#%action CK5_ACT_RoboShoot0 0x2752 0x184 0x183 UnscaledOnce 0x1 0x1 0x28 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_RoboShoot1
-#%action CK5_ACT_RoboShoot1 0x2770 0x184 0x183 UnscaledOnce 0x1 0x1 0x4 0x40 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_RoboShoot2
-#%action CK5_ACT_RoboShoot2 0x278E 0x184 0x183 UnscaledOnce 0x0 0x1 0x6 0x0 0x0 CK5_RoboShoot CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_RoboShoot1
-#%action CK5_ACT_RoboShot0 0x27AC 0x185 0x185 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Glide CK5_RoboShotCol CK5_RoboShotTileCol CK5_ACT_RoboShot1
-#%action CK5_ACT_RoboShot1 0x27CA 0x186 0x186 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Glide CK5_RoboShotCol CK5_RoboShotTileCol CK5_ACT_RoboShot0
-#%action CK5_ACT_RoboShotHit0 0x27E8 0x187 0x187 UnscaledOnce 0x0 0x0 0xA 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_RoboShotHit1
-#%action CK5_ACT_RoboShotHit1 0x2806 0x188 0x188 UnscaledOnce 0x0 0x0 0xA 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
-#
-## Spirogrip
-#%action CK5_ACT_SpirogripAttachDown 0x2824 0x189 0x189 UnscaledOnce 0 0 150 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripReleaseDown
-#%action CK5_ACT_SpirogripReleaseDown 0x2842 0x189 0x189 ScaledOnce 0 0 64 0 -16 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin6
-#
-#%action CK5_ACT_SpirogripAttachLeft 0x2860 0x18A 0x18A UnscaledOnce 0 0 150 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripReleaseLeft
-#%action CK5_ACT_SpirogripReleaseLeft 0x287E 0x18A 0x18A ScaledOnce 0 0 64 16 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin8
-#
-#%action CK5_ACT_SpirogripAttachRight 0x289C 0x18C 0x18C UnscaledOnce 0 0 150 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripReleaseRight
-#%action CK5_ACT_SpirogripReleaseRight 0x28BA 0x18C 0x18C ScaledOnce 0 0 64 -16 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin4
-#
-#%action CK5_ACT_SpirogripAttachUp 0x28D8 0x18B 0x18B UnscaledOnce 0 0 150 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripReleaseUp
-#%action CK5_ACT_SpirogripReleaseUp 0x28F6 0x18B 0x18B ScaledOnce 0 0 64 0 16 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin2
-#
-#%action CK5_ACT_SpirogripSpin8 0x2914 0x18D 0x18D UnscaledOnce 0 0 8 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin1
-#%action CK5_ACT_SpirogripSpin1 0x2932 0x193 0x193 UnscaledOnce 0 0 8 0 0 CK5_SpirogripSpin CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin2
-#%action CK5_ACT_SpirogripSpin2 0x2950 0x18E 0x18E UnscaledOnce 0 0 8 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin3
-#%action CK5_ACT_SpirogripSpin3 0x296E 0x194 0x194 UnscaledOnce 0 0 8 0 0 CK5_SpirogripSpin CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin4
-#%action CK5_ACT_SpirogripSpin4 0x298C 0x18F 0x18F UnscaledOnce 0 0 8 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin5
-#%action CK5_ACT_SpirogripSpin5 0x29AA 0x191 0x191 UnscaledOnce 0 0 8 0 0 CK5_SpirogripSpin CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin6
-#%action CK5_ACT_SpirogripSpin6 0x29C8 0x190 0x190 UnscaledOnce 0 0 8 0 0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin7
-#%action CK5_ACT_SpirogripSpin7 0x29E6 0x192 0x192 UnscaledOnce 0 0 8 0 0 CK5_SpirogripSpin CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_SpirogripSpin8
-#
-#%action CK5_ACT_SpirogripFlyDown 0x2A04 0x189 0x189 ScaledOnce 0 0 0 0 48 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachDown
-#%action CK5_ACT_SpirogripFlyLeft 0x2A22 0x18A 0x18A ScaledOnce 0 0 0 -48 0 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachLeft
-#%action CK5_ACT_SpirogripFlyRight 0x2A40 0x18C 0x18C ScaledOnce 0 0 0 48 0 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachRight
-#%action CK5_ACT_SpirogripFlyUp 0x2A5E 0x18B 0x18B ScaledOnce 0 0 0 0 -48 NULL CK_DeadlyCol CK5_SpirogripFlyDraw CK5_ACT_SpirogripAttachUp
-#
-#
-#
-#
-## Spindred
-#%action CK5_ACT_Spindred0 0x2A7C 0x1a8 0x1a8 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_SpindredBounce CK_DeadlyCol CK5_SpindredTileCol CK5_ACT_Spindred1
-#%action CK5_ACT_Spindred1 0x2A9A 0x1a9 0x1a9 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_SpindredBounce CK_DeadlyCol CK5_SpindredTileCol CK5_ACT_Spindred2
-#%action CK5_ACT_Spindred2 0x2AB8 0x1aa 0x1aa UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_SpindredBounce CK_DeadlyCol CK5_SpindredTileCol CK5_ACT_Spindred3
-#%action CK5_ACT_Spindred3 0x2AD6 0x1ab 0x1ab UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK5_SpindredBounce CK_DeadlyCol CK5_SpindredTileCol CK5_ACT_Spindred0
-#
-## Shikadi Master
-#%action CK5_ACT_Master0 0x2AF4 0x130 0x130 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 NULL CK5_MasterCol CK_BasicDrawFunc1 CK5_ACT_Master1
-#%action CK5_ACT_Master1 0x2B12 0x131 0x131 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 NULL CK5_MasterCol CK_BasicDrawFunc1 CK5_ACT_Master2
-#%action CK5_ACT_Master2 0x2B30 0x132 0x132 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 NULL CK5_MasterCol CK_BasicDrawFunc1 CK5_ACT_Master3
-#%action CK5_ACT_Master3 0x2B4E 0x133 0x133 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 CK5_MasterStand CK5_MasterCol CK_BasicDrawFunc1 CK5_ACT_Master0
-#%action CK5_ACT_MasterShoot0 0x2B6C 0x137 0x136 UnscaledOnce 0x0 0x0 0x1e 0x0 0x0 CK5_MasterShoot CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_MasterShoot1
-#%action CK5_ACT_MasterShoot1 0x2B8A 0x137 0x136 UnscaledOnce 0x0 0x0 0x8 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_Master0
-#%action CK5_ACT_MasterTele0 0x2BA8 0x134 0x134 UnscaledOnce 0x0 0x1 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_MasterTele1
-#%action CK5_ACT_MasterTele1 0x2BC6 0x135 0x135 UnscaledOnce 0x0 0x1 0x14 0x0 0x0 CK5_MasterTele CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_MasterTele2
-#%action CK5_ACT_MasterTele2 0x2BE4 0x135 0x135 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK5_MasterTeleTileCol CK5_ACT_MasterTele3
-#%action CK5_ACT_MasterTele3 0x2C02 0x135 0x135 UnscaledOnce 0x0 0x0 0x3c 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_Master0
-#%action CK5_ACT_MasterBall0 0x2C20 0x13f 0x13c UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Fall2 CK5_MasterBallCol CK5_MasterBallTileCol CK5_ACT_MasterBall1
-#%action CK5_ACT_MasterBall1 0x2C3E 0x13e 0x13d UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Fall2 CK5_MasterBallCol CK5_MasterBallTileCol CK5_ACT_MasterBall2
-#%action CK5_ACT_MasterBall2 0x2C5C 0x13d 0x13e UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Fall2 CK5_MasterBallCol CK5_MasterBallTileCol CK5_ACT_MasterBall3
-#%action CK5_ACT_MasterBall3 0x2C7A 0x13c 0x13f UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Fall2 CK5_MasterBallCol CK5_MasterBallTileCol CK5_ACT_MasterBall0
-#%action CK5_ACT_MasterSparks0 0x2C98 0x138 0x138 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK_Fall CK5_MasterBallCol CK5_MasterSparksTileCol CK5_ACT_MasterSparks1
-#%action CK5_ACT_MasterSparks1 0x2CB6 0x139 0x139 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK_Fall CK5_MasterBallCol CK5_MasterSparksTileCol CK5_ACT_MasterSparks2
-#%action CK5_ACT_MasterSparks2 0x2CD4 0x13a 0x13a UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK_Fall CK5_MasterBallCol CK5_MasterSparksTileCol CK5_ACT_MasterSparks3
-#%action CK5_ACT_MasterSparks3 0x2CF2 0x13b 0x13b UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK_Fall CK5_MasterBallCol CK5_MasterSparksTileCol CK5_ACT_MasterSparks0
-#
-## Shikadi
-#%action CK5_ACT_ShikadiStand0 0x2D10 0x140 0x140 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiStand1
-#%action CK5_ACT_ShikadiStand1 0x2D2E 0x141 0x141 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiStand2
-#%action CK5_ACT_ShikadiStand2 0x2D4C 0x142 0x142 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiStand3
-#%action CK5_ACT_ShikadiStand3 0x2D6A 0x143 0x143 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk0
-#%action CK5_ACT_ShikadiWalk0 0x2D88 0x14c 0x148 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_ShikadiWalk CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk1
-#%action CK5_ACT_ShikadiWalk1 0x2DA6 0x14d 0x149 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_ShikadiWalk CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk2
-#%action CK5_ACT_ShikadiWalk2 0x2DC4 0x14e 0x14a UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_ShikadiWalk CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk3
-#%action CK5_ACT_ShikadiWalk3 0x2DE2 0x14f 0x14b UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_ShikadiWalk CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk0
-#%action CK5_ACT_ShikadiPole0 0x2E00 0x145 0x144 UnscaledOnce 0x0 0x1 0x14 0x0 0x0 CK5_ShikadiPole CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiPole1
-#%action CK5_ACT_ShikadiPole1 0x2E1E 0x145 0x144 UnscaledOnce 0x0 0x1 0x14 0x0 0x0 NULL CK5_ShikadiCol CK5_ShikadiTileCol CK5_ACT_ShikadiWalk0
-#%action CK5_ACT_ShikadiStun0 0x2E3C 0x150 0x150 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
-#%action CK5_ACT_PoleZap0 0x2E5A 0x146 0x146 UnscaledFrame 0x0 0x0 0x0 0x0 0x0 CK5_PoleZap CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_PoleZap1
-#%action CK5_ACT_PoleZap1 0x2E78 0x146 0x146 UnscaledFrame 0x0 0x0 0x0 0x0 0x0 CK5_PoleZap CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_PoleZap0
-#
-## Shocksund
-#%action CK5_ACT_ShocksundStand0 0x2E96 0x151 0x151 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_ShocksundStand1
-#%action CK5_ACT_ShocksundStand1 0x2EB4 0x152 0x152 UnscaledOnce 0x0 0x1 0x8 0x0 0x0 CK5_ShocksundStand CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_ShocksundStand0
-#%action CK5_ACT_ShocksundShoot0 0x2ED2 0x15f 0x15d UnscaledOnce 0x0 0x1 0x8 0x0 0x0 NULL CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_ShocksundShoot1
-#%action CK5_ACT_ShocksundShoot1 0x2EF0 0x160 0x15e UnscaledOnce 0x0 0x1 0x8 0x0 0x0 CK5_ShocksundShoot CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund0
-#%action CK5_ACT_Shocksund0 0x2F0E 0x157 0x153 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund1
-#%action CK5_ACT_Shocksund1 0x2F2C 0x158 0x154 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund2
-#%action CK5_ACT_Shocksund2 0x2F4A 0x159 0x155 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 NULL CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund3
-#%action CK5_ACT_Shocksund3 0x2F68 0x15a 0x156 UnscaledOnce 0x0 0x1 0x8 0x80 0x0 CK5_ShocksundSearch CK5_ShocksundCol CK5_ShocksundGroundTileCol CK5_ACT_Shocksund0
-#%action CK5_ACT_ShocksundJump0 0x2F86 0x15b 0x15c Frame 0x0 0x0 0x8 0x80 0x0 CK_Fall CK5_ShocksundCol CK5_ShocksundJumpTileCol CK5_ACT_Shocksund1
-#%action CK5_ACT_BarkShot0 0x2FA4 0x162 0x162 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Glide CK5_BarkShotCol CK5_BarkShotTileCol CK5_ACT_BarkShot1
-#%action CK5_ACT_BarkShot1 0x2FC2 0x163 0x163 UnscaledFrame 0x0 0x0 0x8 0x0 0x0 CK_Glide CK5_BarkShotCol CK5_BarkShotTileCol CK5_ACT_BarkShot0
-#%action CK5_ACT_BarkShotDie0 0x2FE0 0x164 0x164 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_BarkShotDie1
-#%action CK5_ACT_BarkShotDie1 0x2FFE 0x165 0x165 UnscaledOnce 0x0 0x0 0xa 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
-#%action CK5_ACT_ShocksundStun0 0x301C 0x161 0x161 Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
-#
-## Sphereful
-#%action CK5_ACT_Sphereful0 0x303A 0x166 0x166 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK5_SpherefulBounce CK_DeadlyCol CK5_SpherefulTileCol CK5_ACT_Sphereful1
-#%action CK5_ACT_Sphereful1 0x3058 0x167 0x167 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK5_SpherefulBounce CK_DeadlyCol CK5_SpherefulTileCol CK5_ACT_Sphereful2
-#%action CK5_ACT_Sphereful2 0x3076 0x168 0x168 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK5_SpherefulBounce CK_DeadlyCol CK5_SpherefulTileCol CK5_ACT_Sphereful3
-#%action CK5_ACT_Sphereful3 0x3094 0x169 0x169 UnscaledFrame 0x0 0x0 0x6 0x0 0x0 CK5_SpherefulBounce CK_DeadlyCol CK5_SpherefulTileCol CK5_ACT_Sphereful0
-#
-## Koraths
-#%action CK5_ACT_KorathWalk1 0x30D2 0x126 0x12A UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK_BasicDrawFunc2 CK5_ACT_KorathWalk2
-#%action CK5_ACT_KorathWalk2 0x30F0 0x127 0x12B UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK_BasicDrawFunc2 CK5_ACT_KorathWalk3
-#%action CK5_ACT_KorathWalk3 0x310E 0x128 0x12C UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK_BasicDrawFunc2 CK5_ACT_KorathWalk4
-#%action CK5_ACT_KorathWalk4 0x312C 0x129 0x12D UnscaledOnce 0 1 8 128 0 CK5_KorathWalk CK5_KorathColFunc CK_BasicDrawFunc2 CK5_ACT_KorathWalk1
-#%action CK5_ACT_KorathWait 0x314A 0x12E 0x12E UnscaledOnce 0 1 0x1E 0 0 NULL CK5_KorathColFunc CK_BasicDrawFunc2 CK5_ACT_KorathWalk1
-#%action CK5_ACT_KorathStun0 0x3168 0x12f 0x12f Frame 0x0 0x0 0x0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
-#
-##QED
-#%action CK5_ACT_QED 0x3186 -1 -1 UnscaledOnce 0 1 8 0x80 0 NULL NULL NULL CK5_ACT_QED
+# Action database for Keen 6 (v1.5)
+#
+
+#%action NULL 0x0 0W 0W 0W 0W 0W 0W 0W 0W NULL NULL NULL NULL
+#%action CK_ACT_keenStanding 0x089A 60 52 UnscaledFrame 0 1 4 0x0 0x20 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
+#%action CK_ACT_keenIdle 0x08B8 68 68 UnscaledFrame 0 1 60 0x0 0x0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
+#%action CK_ACT_keenBored1 0x08D6 70 70 UnscaledFrame 0 1 90 0x0 0x0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored2
+#%action CK_ACT_keenBored2 0x08F4 69 69 UnscaledFrame 0 1 10 0x0 0x0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored3
+#%action CK_ACT_keenBored3 0x0912 70 70 UnscaledFrame 0 1 90 0x0 0x0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored4
+#%action CK_ACT_keenBored4 0x0930 69 69 UnscaledFrame 0 1 10 0x0 0x0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored5
+#%action CK_ACT_keenBored5 0x094E 70 70 UnscaledFrame 0 1 90 0x0 0x0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored6
+#%action CK_ACT_keenBored6 0x096C 71 71 UnscaledFrame 0 1 70 0x0 0x0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
+#%action CK_ACT_keenOpenBook1 0x098A 72 72 UnscaledOnce 0 1 16 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenOpenBook2
+#%action CK_ACT_keenOpenBook2 0x09A8 73 73 UnscaledOnce 0 1 16 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenOpenBook3
+#%action CK_ACT_keenOpenBook3 0x09C6 74 74 UnscaledOnce 0 1 16 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenOpenBook4
+#%action CK_ACT_keenOpenBook4 0x09E4 75 75 UnscaledOnce 0 1 16 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenReadBook1
+#%action CK_ACT_keenReadBook1 0x0A02 76 76 UnscaledFrame 0 1 300 0x0 0x0 CK_KeenReadThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenReadBook2
+#%action CK_ACT_keenReadBook2 0x0A20 77 77 UnscaledFrame 0 1 16 0x0 0x0 CK_KeenReadThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenReadBook3
+#%action CK_ACT_keenReadBook3 0x0A3E 78 78 UnscaledFrame 0 1 16 0x0 0x0 CK_KeenReadThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenReadBook1
+#%action CK_ACT_keenStowBook1 0x0A5C 79 79 UnscaledOnce 0 1 12 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStowBook2
+#%action CK_ACT_keenStowBook2 0x0A7A 80 80 UnscaledOnce 0 1 12 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStowBook3
+#%action CK_ACT_keenStowBook3 0x0A98 73 73 UnscaledOnce 0 1 12 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
+#%action CK_ACT_keenLookUp1 0x0AB6 68 68 UnscaledFrame 0 1 30 0x0 0x0 CK_KeenLookUpThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenLookUp2
+#%action CK_ACT_keenLookUp2 0x0AD4 68 68 Frame 0 1 0 0x0 0x0 CK_KeenLookUpThink CK_KeenSpecialColFunc CK_KeenDrawFunc NULL
+#%action CK_ACT_keenLookDown1 0x0AF2 81 81 UnscaledFrame 0 1 6 0x0 0x0 CK_KeenLookDownThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenLookDown2
+#%action CK_ACT_keenLookDown2 0x0B10 82 82 UnscaledFrame 0 1 24 0x0 0x0 CK_KeenLookDownThink CK_KeenSpecialColFunc CK_KeenDrawFunc CK_ACT_keenLookDown3
+#%action CK_ACT_keenLookDown3 0x0B2E 82 82 Frame 0 1 0 0x0 0x0 CK_KeenLookDownThink CK_KeenSpecialColFunc CK_KeenDrawFunc NULL
+#%action CK_ACT_keenLookDown4 0x0B4C 81 81 UnscaledOnce 0 1 6 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
+#%action CK_ACT_keenLookDown5 0x0B6A 81 81 UnscaledOnce 0 0 0 0x0 0x0 CK_KeenJumpDownThink CK_KeenColFunc CK_KeenSpecialDrawFunc CK_ACT_keenFall1
+#%action CK_ACT_keenNot 0x0B88 -1 -1 Frame 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+#%action CK_ACT_KeenDie0 0x0BA6 83 83 Frame 0 0 100 0x0 0x0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_KeenDie0
+#%action CK_ACT_KeenDie1 0x0BC4 84 84 Frame 0 0 100 0x0 0x0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_KeenDie1
+#%action CK_ACT_keenShoot1 0x0BE2 89 94 UnscaledOnce 0 1 9 0x0 0x0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenShoot2
+#%action CK_ACT_keenShoot2 0x0C00 89 94 UnscaledOnce 0 1 6 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
+#%action CK_ACT_keenShootUp1 0x0C1E 93 93 UnscaledOnce 0 1 9 0x0 0x0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenShootUp2
+#%action CK_ACT_keenShootUp2 0x0C3C 93 93 UnscaledOnce 0 1 6 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenLookUp1
+#%action CK_ACT_keenPressSwitch1 0x0C5A 118 118 UnscaledOnce 0 1 8 0x0 0x0 CK_KeenPressSwitchThink NULL CK_KeenDrawFunc CK_ACT_keenPressSwitch2
+#%action CK_ACT_keenPressSwitch2 0x0C78 118 118 UnscaledOnce 0 1 8 0x0 0x0 NULL NULL CK_KeenDrawFunc CK_ACT_keenStanding
+#%action CK_ACT_keenPlaceGem 0x0C96 118 118 UnscaledOnce 0 1 6 0x0 0x0 CK_PlaceGemThink NULL CK_KeenDrawFunc CK_ACT_keenPressSwitch2
+#%action CK_ACT_keenSlide 0x0CB4 118 118 Frame 0 0 0 0x0 0x0 CK_KeenSlide NULL CK_BasicDrawFunc1 NULL
+#%action CK_ACT_keenEnterDoor0 0x0CD2 118 118 UnscaledOnce 0 0 9 0x0 0xFFC0 CK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor1
+#%action CK_ACT_keenEnterDoor1 0x0CF0 119 119 UnscaledOnce 0 0 9 0x0 0xFFC0 CK_KeenEnterDoor1 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor2
+#%action CK_ACT_keenEnterDoor2 0x0D0E 120 120 UnscaledOnce 0 0 9 0x0 0xFFC0 CK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor3
+#%action CK_ACT_keenEnterDoor3 0x0D2C 121 121 UnscaledOnce 0 0 9 0x0 0xFFC0 CK_KeenEnterDoor1 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor4
+#%action CK_ACT_keenEnterDoor4 0x0D4A 122 122 UnscaledOnce 0 0 9 0x0 0xFFC0 CK_KeenEnterDoor NULL CK_BasicDrawFunc1 CK_ACT_keenStanding
+#%action CK_ACT_keenPoleSit 0x0D68 109 102 Frame 0 0 0 0x0 0x0 CK_KeenPoleSitThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleSit
+#%action CK_ACT_keenPoleUp1 0x0D86 109 102 ScaledFrame 0 0 8 0x0 0x8 CK_KeenPoleUpThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleUp2
+#%action CK_ACT_keenPoleUp2 0x0DA4 110 103 ScaledFrame 0 0 8 0x0 0x8 CK_KeenPoleUpThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleUp3
+#%action CK_ACT_keenPoleUp3 0x0DC2 111 104 ScaledFrame 0 0 8 0x0 0x8 CK_KeenPoleUpThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleUp1
+#%action CK_ACT_keenPoleDown1 0x0DE0 105 105 ScaledOnce 0 0 8 0x0 0x18 CK_KeenPoleDownThink CK_KeenSpecialColFunc CK_KeenPoleDownDrawFunc CK_ACT_keenPoleDown2
+#%action CK_ACT_keenPoleDown2 0x0DFE 106 106 ScaledOnce 0 0 8 0x0 0x18 CK_KeenPoleDownThink CK_KeenSpecialColFunc CK_KeenPoleDownDrawFunc CK_ACT_keenPoleDown3
+#%action CK_ACT_keenPoleDown3 0x0E1C 107 107 ScaledOnce 0 0 8 0x0 0x18 CK_KeenPoleDownThink CK_KeenSpecialColFunc CK_KeenPoleDownDrawFunc CK_ACT_keenPoleDown4
+#%action CK_ACT_keenPoleDown4 0x0E3A 108 108 ScaledOnce 0 0 8 0x0 0x18 CK_KeenPoleDownThink CK_KeenSpecialColFunc CK_KeenPoleDownDrawFunc CK_ACT_keenPoleDown1
+#%action CK_ACT_keenPoleShoot1 0x0E58 116 117 UnscaledOnce 0 0 9 0x0 0x0 CK_KeenSpawnShot CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleShoot2
+#%action CK_ACT_keenPoleShoot2 0x0E76 116 117 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleSit
+#%action CK_ACT_keenPoleShootUp1 0x0E94 112 113 UnscaledOnce 0 0 9 0x0 0x0 CK_KeenSpawnShot CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleShootUp2
+#%action CK_ACT_keenPoleShootUp2 0x0EB2 112 113 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleSit
+#%action CK_ACT_keenPoleShootDown1 0x0ED0 115 114 UnscaledOnce 0 0 9 0x0 0x0 CK_KeenSpawnShot CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleShootDown2
+#%action CK_ACT_keenPoleShootDown2 0x0EEE 115 114 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleSit
+#%action CK_ACT_keenRun1 0x0F0C 61 53 ScaledFrame 1 1 6 0x18 0x0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun2
+#%action CK_ACT_keenRun2 0x0F2A 62 54 ScaledFrame 1 1 6 0x18 0x0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun3
+#%action CK_ACT_keenRun3 0x0F48 63 55 ScaledFrame 1 1 6 0x18 0x0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun4
+#%action CK_ACT_keenRun4 0x0F66 64 56 ScaledFrame 1 1 6 0x18 0x0 CK_KeenRunningThink CK_KeenColFunc CK_KeenRunDrawFunc CK_ACT_keenRun1
+#%action CK_ACT_keenPogo1 0x0F84 136 134 UnscaledOnce 1 0 1 0x0 0x0 CK_KeenPogoBounceThink CK_KeenColFunc CK_KeenPogoDrawFunc CK_ACT_keenPogo2
+#%action CK_ACT_keenPogo2 0x0FA2 136 134 Frame 1 0 0 0x0 0x0 CK_KeenPogoThink CK_KeenColFunc CK_KeenPogoDrawFunc CK_ACT_keenPogo3
+#%action CK_ACT_keenPogo3 0x0FC0 135 133 Frame 1 0 0 0x0 0x0 CK_KeenPogoThink CK_KeenColFunc CK_KeenPogoDrawFunc NULL
+#%action CK_ACT_keenJump1 0x0FDE 65 57 Frame 0 0 0 0x0 0x0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJump2
+#%action CK_ACT_keenJump2 0x0FFC 66 58 Frame 0 0 0 0x0 0x0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
+#%action CK_ACT_keenFall1 0x101A 67 59 UnscaledFrame 0 0 50 0x0 0x0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall2
+#%action CK_ACT_keenFall2 0x1038 66 58 UnscaledFrame 0 0 40 0x0 0x0 CK_KeenJumpThink CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
+#%action CK_ACT_keenJumpShoot1 0x1056 90 95 UnscaledFrame 0 0 9 0x0 0x0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShoot2
+#%action CK_ACT_keenJumpShoot2 0x1074 90 95 UnscaledFrame 1 0 1 0x0 0x0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShoot3
+#%action CK_ACT_keenJumpShoot3 0x1092 90 95 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
+#%action CK_ACT_keenJumpShootUp1 0x10B0 92 92 UnscaledFrame 0 0 9 0x0 0x0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShootUp2
+#%action CK_ACT_keenJumpShootUp2 0x10CE 92 92 UnscaledFrame 1 0 1 0x0 0x0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShootUp3
+#%action CK_ACT_keenJumpShootUp3 0x10EC 92 92 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
+#%action CK_ACT_keenJumpShootDown1 0x110A 91 91 UnscaledFrame 0 0 9 0x0 0x0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShootDown2
+#%action CK_ACT_keenJumpShootDown2 0x1128 91 91 UnscaledFrame 1 0 1 0x0 0x0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenJumpShootDown3
+#%action CK_ACT_keenJumpShootDown3 0x1146 91 91 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK_KeenColFunc CK_KeenJumpDrawFunc CK_ACT_keenFall1
+#%action CK_ACT_keenHang1 0x1164 123 124 UnscaledOnce 0 0 12 0x0 0x0 NULL CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenHang2
+#%action CK_ACT_keenHang2 0x1182 123 124 Frame 0 0 0 0x0 0x0 CK_KeenHangThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc NULL
+#%action CK_ACT_keenPull1 0x11A0 125 129 UnscaledOnce 0 0 10 0x0 0x0 CK_KeenPullThink1 CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPull2
+#%action CK_ACT_keenPull2 0x11BE 126 130 UnscaledOnce 0 0 10 0x0 0x0 CK_KeenPullThink2 CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPull3
+#%action CK_ACT_keenPull3 0x11DC 127 131 UnscaledOnce 0 0 10 0x0 0x0 CK_KeenPullThink3 CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPull4
+#%action CK_ACT_keenPull4 0x11FA 128 132 UnscaledOnce 0 0 10 0x0 0x0 CK_KeenPullThink4 CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPull5
+#%action CK_ACT_keenPull5 0x1218 60 52 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenStanding
+#%action CK_ACT_MapKeenStart 0x130A 0 0 UnscaledFrame 0 0 360 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave0
+#%action CK_ACT_MapKeenWave0 0x1328 208 208 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave1
+#%action CK_ACT_MapKeenWave1 0x1346 209 209 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave2
+#%action CK_ACT_MapKeenWave2 0x1364 208 208 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave3
+#%action CK_ACT_MapKeenWave3 0x1382 209 209 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave4
+#%action CK_ACT_MapKeenWave4 0x13A0 208 208 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenWalk NULL CK_BasicDrawFunc1 CK_ACT_MapKeenStart
+#%action CK_ACT_MapKeenWalk0 0x13BE 0 0 ScaledOnce 1 0 4 0x18 0x18 CK_MapKeenWalk NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWalk0
+#%action CK_ACT_MapFlag0 0x13F4 235 235 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag1
+#%action CK_ACT_MapFlag1 0x1412 236 236 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag2
+#%action CK_ACT_MapFlag2 0x1430 237 237 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag3
+#%action CK_ACT_MapFlag3 0x144E 238 238 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag0
+#%action CK_ACT_MapFlagFlips0 0x146C 228 228 Frame 0 0 6 0x0 0x0 CK_MapFlagThrown NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips1
+#%action CK_ACT_MapFlagFlips1 0x148A 228 228 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips2
+#%action CK_ACT_MapFlagFlips2 0x14A8 229 229 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips3
+#%action CK_ACT_MapFlagFlips3 0x14C6 230 230 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips4
+#%action CK_ACT_MapFlagFlips4 0x14E4 231 231 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips5
+#%action CK_ACT_MapFlagFlips5 0x1502 233 233 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips6
+#%action CK_ACT_MapFlagFlips6 0x1520 233 233 UnscaledFrame 1 0 1 0x0 0x0 CK_MapFlagLand NULL CK_BasicDrawFunc1 CK_ACT_MapFlag0
+#%action CK_ACT_keenShot1 0x153E 96 96 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink NULL CK_ShotDrawFunc CK_ACT_keenShot2
+#%action CK_ACT_keenShot2 0x155C 97 97 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink NULL CK_ShotDrawFunc CK_ACT_keenShot3
+#%action CK_ACT_keenShot3 0x157A 98 98 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink NULL CK_ShotDrawFunc CK_ACT_keenShot4
+#%action CK_ACT_keenShot4 0x1598 99 99 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink NULL CK_ShotDrawFunc CK_ACT_keenShot1
+#%action CK_ACT_keenShotHit1 0x15B6 100 100 UnscaledOnce 0 0 12 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_keenShotHit2
+#%action CK_ACT_keenShotHit2 0x15D4 101 101 UnscaledOnce 0 0 12 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+#%action CK_ACT_DoorOpen1 0x15F2 0 0 UnscaledOnce 0 0 10 0x0 0x0 CK_OpenDoor NULL NULL CK_ACT_DoorOpen2
+#%action CK_ACT_DoorOpen2 0x1610 0 0 UnscaledOnce 0 0 10 0x0 0x0 CK_OpenDoor NULL NULL CK_ACT_DoorOpen3
+#%action CK_ACT_DoorOpen3 0x162E 0 0 UnscaledOnce 0 0 10 0x0 0x0 CK_OpenDoor NULL NULL NULL
+#%action CK_ACT_item 0x196A 0 0 UnscaledOnce 0 0 20 0x0 0x0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item2
+#%action CK_ACT_item2 0x1988 0 0 UnscaledOnce 0 0 20 0x0 0x0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item
+#%action CK6_ACT_bloogletItem1 0x19A6 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK6_BloogletItem NULL CK_BasicDrawFunc1 CK6_ACT_bloogletItem2
+#%action CK6_ACT_bloogletItem2 0x19C4 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK6_BloogletItem NULL CK_BasicDrawFunc1 CK6_ACT_bloogletItem1
+#%action CK6_ACT_itemNotify1 0x19E2 0 0 ScaledOnce 0 0 40 0x0 0x8 NULL NULL CK_BasicDrawFunc1 NULL
+#%action CK_ACT_CentilifeNotify1 0x1A00 146 146 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify2
+#%action CK_ACT_CentilifeNotify2 0x1A1E 147 147 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify3
+#%action CK_ACT_CentilifeNotify3 0x1A3C 148 148 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify4
+#%action CK_ACT_CentilifeNotify4 0x1A5A 149 149 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_GrabbiterHungry0 0x1A90 217 217 UnscaledOnce 0 0 12 0x0 0x0 NULL CK6_Grabbiter CK_BasicDrawFunc1 CK6_ACT_GrabbiterHungry1
+#%action CK6_ACT_GrabbiterHungry1 0x1AAE 218 218 UnscaledOnce 0 0 12 0x0 0x0 NULL CK6_Grabbiter CK_BasicDrawFunc1 CK6_ACT_GrabbiterHungry0
+#%action CK6_ACT_GrabbiterNapping0 0x1ACC 219 219 UnscaledOnce 0 0 12 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_GrabbiterNapping1
+#%action CK6_ACT_GrabbiterNapping1 0x1AEA 220 220 UnscaledOnce 0 0 12 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_GrabbiterNapping0
+#%action CK6_ACT_RocketSit0 0x1B08 210 210 Frame 0 0 0 0x0 0x0 NULL CK6_RocketCol CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_RocketFly0 0x1B26 211 211 UnscaledFrame 0 0 8 0x0 0x0 CK6_RocketFly CK6_RocketFlyCol CK_BasicDrawFunc1 CK6_ACT_RocketFly1
+#%action CK6_ACT_RocketFly1 0x1B44 212 212 UnscaledFrame 0 0 8 0x0 0x0 CK6_RocketFly CK6_RocketFlyCol CK_BasicDrawFunc1 CK6_ACT_RocketFly0
+#%action CK6_ACT_MapKeenRocketSit0 0x1B62 0 0 Frame 0 0 0 0x0 0x0 CK6_Rocket NULL CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_MapKeenRocketFly0 0x1B80 -1 -1 Frame 0 0 0 0x0 0x0 NULL CK6_MapKeenRocketFlyCol CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_MapKeenThrowRope0 0x1B9E 221 221 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenThrowRope1
+#%action CK6_ACT_MapKeenThrowRope1 0x1BBC 222 222 UnscaledOnce 0 0 8 0x0 0x0 CK6_MapKeenThrowRope NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenStart
+#%action CK6_ACT_MapKeenClimbRope0 0x1BDA 223 223 ScaledOnce 1 0 4 0x0 0x10 NULL NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenClimbRope1
+#%action CK6_ACT_MapKeenClimbRope1 0x1BF8 224 224 ScaledOnce 1 0 4 0x0 0x10 CK6_MapKeenClimb NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenClimbRope0
+#%action CK6_ACT_RopeOnMap0 0x1C16 226 226 Frame 0 0 0 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_RopeThrown0 0x1C34 225 225 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_RopeThrown0
+#%action CK6_ACT_RopeInvisible0 0x1C52 -1 -1 Frame 0 0 0 0x0 0x0 NULL NULL NULL NULL
+#%action CK6_ACT_KeenSatellite0 0x1C70 227 227 Frame 0 0 0 0x0 0x0 NULL NULL sub_1FF36 NULL
+#%action CK6_ACT_Satellite0 0x1C8E 213 213 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite1
+#%action CK6_ACT_Satellite1 0x1CAC 214 214 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite2
+#%action CK6_ACT_Satellite2 0x1CCA 215 215 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite3
+#%action CK6_ACT_Satellite3 0x1CE8 216 216 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite0
+#%action CK6_ACT_Sandwich0 0x1D06 182 182 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_Rope0 0x1D24 183 183 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_Passcard0 0x1D42 435 435 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_Molly0 0x1D60 433 433 UnscaledOnce 0 0 20 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly1
+#%action CK6_ACT_Molly1 0x1D7E 434 434 UnscaledOnce 0 0 40 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly2
+#%action CK6_ACT_Molly2 0x1D9C 433 433 UnscaledOnce 0 0 40 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly3
+#%action CK6_ACT_Molly3 0x1DBA 434 434 UnscaledOnce 0 0 20 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly0
+#%action CK_ACT_AxisPlatform 0x1DD8 424 424 Frame 0 0 0 0x0 0x0 CK_AxisPlatform NULL CK_BasicDrawFunc1 NULL
+#%action CK_ACT_FallPlat0 0x1DF6 424 424 Frame 0 0 0 0x0 0x0 CK_FallPlatSit NULL CK_BasicDrawFunc1 NULL
+#%action CK_ACT_FallPlat1 0x1E14 424 424 Frame 0 0 0 0x0 0x0  NULL CK_BasicDrawFunc1 NULL
+#%action CK_ACT_FallPlat2 0x1E32 424 424 ScaledFrame 0 0 0 0x0 0xFFE0  NULL CK_BasicDrawFunc1 NULL
+#%action CK_ACT_StandPlat0 0x1E50 424 424 UnscaledOnce 0 0 32000 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_StandPlat0
+#%action CK_ACT_GoPlat0 0x1E6E 424 424 Frame 0 0 0 0x0 0x0 CK6_GoPlatThink NULL CK6_GoPlatDraw NULL
+#%action CK_ACT_sneakPlatWait 0x1E8C 424 424 Frame 0 0 0 0x0 0x0  NULL CK_BasicDrawFunc1 NULL
+#%action CK_ACT_sneakPlatSneak 0x1EAA 424 424 ScaledOnce 0 0 48 0x20 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatReturn
+#%action CK_ACT_sneakPlatReturn 0x1EC8 424 424 ScaledOnce 0 0 96 0xFFF0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatWait
+#%action CK6_ACT_BloogWalk0 0x1EE6 346 342 UnscaledOnce 0 1 10 0x80 0x0   CK_BasicDrawFunc2 CK6_ACT_BloogWalk1
+#%action CK6_ACT_BloogWalk1 0x1F04 347 343 UnscaledOnce 0 1 10 0x80 0x0   CK_BasicDrawFunc2 CK6_ACT_BloogWalk2
+#%action CK6_ACT_BloogWalk2 0x1F22 348 344 UnscaledOnce 0 1 10 0x80 0x0   CK_BasicDrawFunc2 CK6_ACT_BloogWalk3
+#%action CK6_ACT_BloogWalk3 0x1F40 349 345 UnscaledOnce 0 1 10 0x80 0x0   CK_BasicDrawFunc2 CK6_ACT_BloogWalk0
+#%action CK6_ACT_BloogStunned0 0x1F5E 350 350 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_BloogStunned0
+#%action CK6_ACT_BloogguardWalk0 0x1F7C 254 258 UnscaledOnce 0 1 9 0x80 0x0    CK6_ACT_BloogguardWalk1
+#%action CK6_ACT_BloogguardWalk1 0x1F9A 255 259 UnscaledOnce 0 1 9 0x80 0x0    CK6_ACT_BloogguardWalk2
+#%action CK6_ACT_BloogguardWalk2 0x1FB8 256 260 UnscaledOnce 0 1 9 0x80 0x0    CK6_ACT_BloogguardWalk3
+#%action CK6_ACT_BloogguardWalk3 0x1FD6 257 261 UnscaledOnce 0 1 9 0x80 0x0    CK6_ACT_BloogguardWalk0
+#%action CK6_ACT_BloogguardClub0 0x1FF4 262 265 UnscaledOnce 0 1 30 0x0 0x0 NULL   CK6_ACT_BloogguardClub1
+#%action CK6_ACT_BloogguardClub1 0x2012 263 266 UnscaledOnce 0 1 9 0x0 0x0 NULL   CK6_ACT_BloogguardClub2
+#%action CK6_ACT_BloogguardClub2 0x2030 264 267 UnscaledOnce 1 1 1 0x0 0x0    CK6_ACT_BloogguardClub3
+#%action CK6_ACT_BloogguardClub3 0x204E 264 267 UnscaledOnce 0 1 9 0x0 0x0 NULL   CK6_ACT_BloogguardWalk0
+#%action CK6_ACT_BloogguardStunned0 0x206C 268 268 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_BloogguardStunned0
+#%action CK6_ACT_BloogletRRun0 0x208A 355 351 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletRRun1
+#%action CK6_ACT_BloogletRRun1 0x20A8 356 352 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletRRun2
+#%action CK6_ACT_BloogletRRun2 0x20C6 357 353 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletRRun3
+#%action CK6_ACT_BloogletRRun3 0x20E4 358 354 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletRRun0
+#%action CK6_ACT_BloogletRStunned0 0x2102 359 359 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+#%action CK6_ACT_BloogletYRun0 0x2120 364 360 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletYRun1
+#%action CK6_ACT_BloogletYRun1 0x213E 365 361 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletYRun2
+#%action CK6_ACT_BloogletYRun2 0x215C 366 362 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletYRun3
+#%action CK6_ACT_BloogletYRun3 0x217A 367 363 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletYRun0
+#%action CK6_ACT_BloogletYStunned0 0x2198 368 368 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+#%action CK6_ACT_BloogletBRun0 0x21B6 373 369 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletBRun1
+#%action CK6_ACT_BloogletBRun1 0x21D4 374 370 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletBRun2
+#%action CK6_ACT_BloogletBRun2 0x21F2 375 371 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletBRun3
+#%action CK6_ACT_BloogletBRun3 0x2210 376 372 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletBRun0
+#%action CK6_ACT_BloogletBStunned0 0x222E 377 377 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+#%action CK6_ACT_BloogletGRun0 0x224C 382 378 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletGRun1
+#%action CK6_ACT_BloogletGRun1 0x226A 383 379 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletGRun2
+#%action CK6_ACT_BloogletGRun2 0x2288 384 380 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletGRun3
+#%action CK6_ACT_BloogletGRun3 0x22A6 385 381 UnscaledOnce 0 1 5 0x80 0x0  CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletGRun0
+#%action CK6_ACT_BloogletGStunned0 0x22C4 386 386 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+#%action CK6_ACT_NospikeSit0 0x2460 298 298 UnscaledOnce 0 1 90 0x0 0x0 NULL CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk0
+#%action CK6_ACT_NospikeWalk0 0x247E 311 307 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk1
+#%action CK6_ACT_NospikeWalk1 0x249C 312 308 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk2
+#%action CK6_ACT_NospikeWalk2 0x24BA 313 309 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk3
+#%action CK6_ACT_NospikeWalk3 0x24D8 314 310 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk0
+#%action CK6_ACT_NospikeCharge0 0x24F6 303 299 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge1
+#%action CK6_ACT_NospikeCharge1 0x2514 304 300 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge2
+#%action CK6_ACT_NospikeCharge2 0x2532 305 301 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge3
+#%action CK6_ACT_NospikeCharge3 0x2550 306 302 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge0
+#%action CK6_ACT_NospikeFall0 0x256E 298 298 UnscaledOnce 0 0 20 0x0 0x1 NULL NULL CK_BasicDrawFunc1 CK6_ACT_NospikeFall1
+#%action CK6_ACT_NospikeFall1 0x258C 298 298 UnscaledOnce 0 0 90 0x0 0x0 CK6_NospikeFall NULL CK6_NospikeFallDraw CK6_ACT_NospikeFall2
+#%action CK6_ACT_NospikeFall2 0x25AA 298 298 UnscaledOnce 0 0 20 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_NospikeFall3
+#%action CK6_ACT_NospikeFall3 0x25C8 298 298 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK6_NospikeFallDraw2 NULL
+#%action CK6_ACT_NospikeStunned0 0x25E6 315 315 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_NospikeStunned0
+#%action CK6_ACT_GikWalk0 0x2604 390 387 UnscaledOnce 0 1 10 0x80 0x0 CK6_GikWalk CK6_GikDraw CK_BasicDrawFunc2 CK6_ACT_GikWalk1
+#%action CK6_ACT_GikWalk1 0x2622 391 388 UnscaledOnce 0 1 10 0x80 0x0 CK6_GikWalk CK6_GikDraw CK_BasicDrawFunc2 CK6_ACT_GikWalk2
+#%action CK6_ACT_GikWalk2 0x2640 392 389 UnscaledOnce 0 1 10 0x80 0x0 CK6_GikWalk CK6_GikDraw CK_BasicDrawFunc2 CK6_ACT_GikWalk0
+#%action CK6_ACT_GikJump0 0x265E 393 394 Frame 0 0 0 0x0 0x0 CK_Fall CK6_GikJump CK6_GikJumpDraw CK6_ACT_GikSlide0
+#%action CK6_ACT_GikSlide0 0x267C 397 395 UnscaledFrame 0 0 6 0x0 0x0 CK6_GikSlide CK_LethalCol CK6_GikSlideDraw CK6_ACT_GikSlide1
+#%action CK6_ACT_GikSlide1 0x269A 398 396 UnscaledFrame 0 0 6 0x0 0x0 CK6_GikSlide CK_LethalCol CK6_GikSlideDraw CK6_ACT_GikSlide0
+#%action CK6_ACT_GikEndSlide0 0x26B8 397 395 UnscaledOnce 0 1 20 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc2 CK6_ACT_GikWalk0
+#%action CK_ACT_turretWait 0x26F6 0 0 UnscaledOnce 0 0 120 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_turretShoot
+#%action CK_ACT_turretShoot 0x2714 0 0 UnscaledOnce 1 0 1 0x0 0x0 CK6_TurretShoot NULL CK_BasicDrawFunc1 CK_ACT_turretWait
+#%action CK_ACT_turretShot1 0x2732 176 176 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK6_TurretShotDraw CK6_TurretShotCol CK_ACT_turretShot2
+#%action CK_ACT_turretShot2 0x2750 177 177 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK6_TurretShotDraw CK6_TurretShotCol CK_ACT_turretShot3
+#%action CK_ACT_turretShot3 0x276E 178 178 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK6_TurretShotDraw CK6_TurretShotCol CK_ACT_turretShot4
+#%action CK_ACT_turretShot4 0x278C 179 179 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK6_TurretShotDraw CK6_TurretShotCol CK_ACT_turretShot1
+#%action CK_ACT_turretShotHit1 0x27AA 180 180 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_turretShotHit2
+#%action CK_ACT_turretShotHit2 0x27C8 181 181 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_OrbatrixFloat0 0x27E6 333 335 ScaledOnce 0 1 12 0x10 0x0    CK6_ACT_OrbatrixFloat1
+#%action CK6_ACT_OrbatrixFloat1 0x2804 334 336 ScaledOnce 0 1 12 0x10 0x0    CK6_ACT_OrbatrixFloat0
+#%action CK6_ACT_OrbatrixCurl0 0x2822 329 329 UnscaledFrame 0 1 12 0x0 0x0 NULL   CK6_ACT_OrbatrixCurl1
+#%action CK6_ACT_OrbatrixCurl1 0x2840 341 341 UnscaledFrame 0 1 12 0x0 0x0 NULL   CK6_ACT_OrbatrixCurl2
+#%action CK6_ACT_OrbatrixCurl2 0x285E 341 341 Frame 0 1 12 0x0 0x0    CK6_ACT_OrbatrixBounce0
+#%action CK6_ACT_OrbatrixUncurl0 0x287C 337 337 Frame 0 0 12 0x0 0x0   CK_BasicDrawFunc1 CK6_ACT_OrbatrixUncurl1
+#%action CK6_ACT_OrbatrixUncurl1 0x289A 341 341 UnscaledOnce 0 0 12 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_OrbatrixUncurl2
+#%action CK6_ACT_OrbatrixUncurl2 0x28B8 329 329 UnscaledFrame 0 1 12 0x0 0x0 NULL   CK6_ACT_OrbatrixUncurl3
+#%action CK6_ACT_OrbatrixUncurl3 0x28D6 330 330 UnscaledFrame 0 1 12 0x0 0x0 NULL   CK6_ACT_OrbatrixUncurl4
+#%action CK6_ACT_OrbatrixUncurl4 0x28F4 331 331 UnscaledFrame 0 1 12 0x0 0x0 NULL   CK6_ACT_OrbatrixUncurl5
+#%action CK6_ACT_OrbatrixUncurl5 0x2912 332 332 UnscaledFrame 0 1 12 0x0 0x0 NULL   CK6_ACT_OrbatrixFloat0
+#%action CK6_ACT_OrbatrixBounce0 0x2930 340 337 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall   CK6_ACT_OrbatrixBounce1
+#%action CK6_ACT_OrbatrixBounce1 0x294E 339 338 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall   CK6_ACT_OrbatrixBounce2
+#%action CK6_ACT_OrbatrixBounce2 0x296C 338 339 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall   CK6_ACT_OrbatrixBounce3
+#%action CK6_ACT_OrbatrixBounce3 0x298A 337 340 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall   CK6_ACT_OrbatrixBounce0
+#%action CK6_ACT_BipStand0 0x29A8 414 414 UnscaledOnce 0 1 30 0x0 0x0 NULL  CK_BasicDrawFunc2 CK6_ACT_BipWalk0
+#%action CK6_ACT_BipWalk0 0x29C6 419 415 UnscaledOnce 1 1 4 0x20 0x0   CK_BasicDrawFunc2 CK6_ACT_BipWalk1
+#%action CK6_ACT_BipWalk1 0x29E4 420 416 UnscaledOnce 1 1 4 0x20 0x0   CK_BasicDrawFunc2 CK6_ACT_BipWalk2
+#%action CK6_ACT_BipWalk2 0x2A02 421 417 UnscaledOnce 1 1 4 0x20 0x0   CK_BasicDrawFunc2 CK6_ACT_BipWalk3
+#%action CK6_ACT_BipWalk3 0x2A20 422 418 UnscaledOnce 1 1 4 0x20 0x0   CK_BasicDrawFunc2 CK6_ACT_BipWalk0
+#%action CK6_ACT_BipSquished0 0x2A3E 423 423 Frame 0 1 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_BipshipFly0 0x2A5C 274 269 Frame 0 1 0 0x0 0x0   CK_BasicDrawFunc1 CK6_ACT_BipshipFly0
+#%action CK6_ACT_BipShot0 0x2A7A 284 284 Frame 0 0 0 0x0 0x0 CK_Glide CK_LethalCol  NULL
+#%action CK6_ACT_BipshipTurn0 0x2A98 270 275 UnscaledFrame 0 1 10 0x0 0x0   CK_BasicDrawFunc1 CK6_ACT_BipshipTurn1
+#%action CK6_ACT_BipshipTurn1 0x2AB6 271 276 UnscaledFrame 0 1 10 0x0 0x0   CK_BasicDrawFunc1 CK6_ACT_BipshipTurn2
+#%action CK6_ACT_BipshipTurn2 0x2AD4 272 277 UnscaledFrame 0 1 10 0x0 0x0   CK_BasicDrawFunc1 CK6_ACT_BipshipTurn3
+#%action CK6_ACT_BipshipTurn3 0x2AF2 273 278 UnscaledFrame 0 1 10 0x0 0x0   CK_BasicDrawFunc1 CK6_ACT_BipshipFly0
+#%action CK6_ACT_BipshipHit0 0x2B10 280 279 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK6_BipshipHit CK6_ACT_BipshipHit1
+#%action CK6_ACT_BipshipHit1 0x2B2E 280 279 UnscaledOnce 1 0 1 0x0 0x0  NULL CK6_BipshipHit CK6_ACT_BipshipHit2
+#%action CK6_ACT_BipshipHit2 0x2B4C 283 283 UnscaledOnce 1 0 30000 0x0 0x0 NULL NULL CK6_BipshipHit CK6_ACT_BipshipHit2
+#%action CK6_ACT_BipshipSmoke0 0x2B6A 281 281 UnscaledOnce 1 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BipshipSmoke1
+#%action CK6_ACT_BipshipSmoke1 0x2B88 282 282 UnscaledOnce 1 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_FlectTurn0 0x2BA6 323 318 Frame 0 1 60 0x0 0x0    CK6_ACT_FlectWalk0
+#%action CK6_ACT_FlectTurn1 0x2BC4 317 317 UnscaledOnce 0 1 8 0x0 0x0 NULL   CK6_ACT_FlectWalk0
+#%action CK6_ACT_FlectWalk0 0x2BE2 324 319 UnscaledOnce 0 1 10 0x80 0x0    CK6_ACT_FlectWalk1
+#%action CK6_ACT_FlectWalk1 0x2C00 325 320 UnscaledOnce 0 1 10 0x80 0x0    CK6_ACT_FlectWalk2
+#%action CK6_ACT_FlectWalk2 0x2C1E 326 321 UnscaledOnce 0 1 10 0x80 0x0    CK6_ACT_FlectWalk3
+#%action CK6_ACT_FlectWalk3 0x2C3C 327 322 UnscaledOnce 0 1 10 0x80 0x0    CK6_ACT_FlectWalk0
+#%action CK6_ACT_FlectStunned0 0x2C5A 328 328 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_FlectStunned0
+#%action CK6_ACT_FleexWalk0 0x2C78 241 239 UnscaledOnce 0 1 7 0x80 0x0    CK6_ACT_FleexWalk1
+#%action CK6_ACT_FleexWalk1 0x2C96 242 240 UnscaledOnce 0 1 7 0x80 0x0    CK6_ACT_FleexWalk0
+#%action CK6_ACT_FleexTrack0 0x2CB4 241 239 UnscaledOnce 0 1 7 0x80 0x0 NULL   CK6_ACT_FleexTrack1
+#%action CK6_ACT_FleexTrack1 0x2CD2 242 240 UnscaledOnce 0 1 7 0x80 0x0 NULL   CK6_ACT_FleexTrack2
+#%action CK6_ACT_FleexTrack2 0x2CF0 241 239 UnscaledOnce 0 1 7 0x80 0x0 NULL   CK6_ACT_FleexTrack3
+#%action CK6_ACT_FleexTrack3 0x2D0E 242 240 UnscaledOnce 0 1 7 0x80 0x0 NULL   CK6_ACT_FleexWalk0
+#%action CK6_ACT_FleexSearch0 0x2D2C 243 243 UnscaledOnce 0 1 60 0x0 0x0 NULL   CK6_ACT_FleexSearch1
+#%action CK6_ACT_FleexSearch1 0x2D4A 244 244 UnscaledOnce 0 1 60 0x0 0x0    CK6_ACT_FleexTrack0
+#%action CK6_ACT_FleexStunned0 0x2D68 245 245 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+#%action CK6_ACT_BobbaJump0 0x2D86 403 406 UnscaledFrame 0 0 8 0x0 0x0 CK_Fall   CK6_ACT_BobbaJump1
+#%action CK6_ACT_BobbaJump1 0x2DA4 404 407 Frame 0 0 8 0x0 0x0 CK_Fall   CK6_ACT_BobbaJump1
+#%action CK6_ACT_BobbaStand0 0x2DC2 402 405 UnscaledOnce 0 0 20 0x0 0x0   CK_BasicDrawFunc1 CK6_ACT_BobbaJump0
+#%action CK6_ACT_BobbaShoot0 0x2DE0 402 405 UnscaledOnce 0 0 40 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_BobbaJump0
+#%action CK6_ACT_BobbaTwinkle0 0x2DFE 408 408 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaTwinkle1
+#%action CK6_ACT_BobbaTwinkle1 0x2E1C 409 409 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaTwinkle2
+#%action CK6_ACT_BobbaTwinkle2 0x2E3A 408 408 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaTwinkle3
+#%action CK6_ACT_BobbaTwinkle3 0x2E58 409 409 UnscaledOnce 0 0 8 0x0 0x0  NULL CK_BasicDrawFunc1 CK6_ACT_BobbaFireball0
+#%action CK6_ACT_BobbaFireball0 0x2E76 410 410 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol  CK6_ACT_BobbaFireball1
+#%action CK6_ACT_BobbaFireball1 0x2E94 411 411 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol  CK6_ACT_BobbaFireball2
+#%action CK6_ACT_BobbaFireball2 0x2EB2 412 412 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol  CK6_ACT_BobbaFireball3
+#%action CK6_ACT_BobbaFireball3 0x2ED0 413 413 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol  CK6_ACT_BobbaFireball0
+#%action CK6_ACT_BobbaFireballHits0 0x2EEE 413 413 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaFireballHits1
+#%action CK6_ACT_BobbaFireballHits1 0x2F0C 413 413 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaFireballHits2
+#%action CK6_ACT_BobbaFireballHits2 0x2F2A 413 413 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_BabobbaJump0 0x2F48 286 289 UnscaledFrame 0 0 8 0x0 0x0 CK_Fall   CK6_ACT_BabobbaJump1
+#%action CK6_ACT_BabobbaJump1 0x2F66 287 290 Frame 0 0 8 0x0 0x0 CK_Fall   CK6_ACT_BabobbaJump1
+#%action CK6_ACT_BabobbaSit0 0x2F84 285 288 UnscaledOnce 0 0 20 0x0 0x0   CK_BasicDrawFunc1 CK6_ACT_BabobbaJump0
+#%action CK6_ACT_BabobbaSit1 0x2FA2 285 288 UnscaledOnce 0 0 70 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_BabobbaSit0
+#%action CK6_ACT_BabobbaStunned0 0x2FC0 286 289 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_BabobbaStunned1
+#%action CK6_ACT_BabobbaStunned1 0x2FDE 293 293 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+#%action CK6_ACT_BabobbaNap0 0x2FFC 294 294 UnscaledOnce 0 0 15 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_BabobbaNap1
+#%action CK6_ACT_BabobbaNap1 0x301A 295 295 UnscaledOnce 0 0 15 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_BabobbaNap2
+#%action CK6_ACT_BabobbaNap2 0x3038 296 296 UnscaledOnce 0 0 15 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_BabobbaNap3
+#%action CK6_ACT_BabobbaNap3 0x3056 297 297 UnscaledOnce 0 0 500 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_BabobbaNap4
+#%action CK6_ACT_BabobbaNap4 0x3074 296 296 UnscaledOnce 0 0 15 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_BabobbaNap5
+#%action CK6_ACT_BabobbaNap5 0x3092 295 295 UnscaledOnce 0 0 15 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_BabobbaNap6
+#%action CK6_ACT_BabobbaNap6 0x30B0 294 294 UnscaledOnce 0 0 15 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_BabobbaSit0
+#%action CK6_ACT_BabobbaShotStart0 0x30CE 291 291 Frame 0 0 0 0x0 0x0 CK_Fall CK_LethalCol CK6_BabobbaShot CK6_ACT_BabobbaShot0
+#%action CK6_ACT_BabobbaShot0 0x30EC 292 292 UnscaledOnce 0 0 8 0x0 0x0  CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_BabobbaShot1
+#%action CK6_ACT_BabobbaShot1 0x310A 291 291 UnscaledOnce 0 0 8 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_BabobbaShot0
+#%action CK6_ACT_BabobbaShotVanish0 0x3128 292 292 UnscaledOnce 0 0 8 0x0 0x0  CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_BabobbaShotVanish1
+#%action CK6_ACT_BabobbaShotVanish1 0x3146 -1 -1 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BabobbaShotVanish0
+#%action CK6_ACT_Blorb0 0x3164 399 399 ScaledOnce 0 0 20 0x8 0x8 NULL CK_LethalCol  CK6_ACT_Blorb1
+#%action CK6_ACT_Blorb1 0x3182 400 400 ScaledOnce 0 0 20 0x8 0x8 NULL CK_LethalCol  CK6_ACT_Blorb2
+#%action CK6_ACT_Blorb2 0x31A0 401 401 ScaledOnce 0 0 20 0x8 0x8 NULL CK_LethalCol  CK6_ACT_Blorb0
+#%action CK6_ACT_CeilickWait0 0x31BE 248 248 Frame 0 0 20 0x0 0x0  NULL CK_BasicDrawFunc1 NULL
+#%action CK6_ACT_CeilickStrike00 0x31DC 248 248 UnscaledOnce 0 0 6 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_CeilickStrike0
+#%action CK6_ACT_CeilickStrike0 0x31FA 249 249 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike1
+#%action CK6_ACT_CeilickStrike1 0x3218 250 250 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike2
+#%action CK6_ACT_CeilickStrike2 0x3236 251 251 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike3
+#%action CK6_ACT_CeilickStrike3 0x3254 252 252 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike4
+#%action CK6_ACT_CeilickStrike4 0x3272 251 251 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike5
+#%action CK6_ACT_CeilickStrike5 0x3290 250 250 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike6
+#%action CK6_ACT_CeilickStrike6 0x32AE 251 251 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike7
+#%action CK6_ACT_CeilickStrike7 0x32CC 252 252 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike8
+#%action CK6_ACT_CeilickStrike8 0x32EA 249 249 UnscaledOnce 0 0 10 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike9
+#%action CK6_ACT_CeilickStrike9 0x3308 248 248 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_CeilickStrike10
+#%action CK6_ACT_CeilickStrike10 0x3326 246 246 ScaledOnce 1 0 16 0x0 0x10   CK_BasicDrawFunc1 CK6_ACT_CeilickStrike11
+#%action CK6_ACT_CeilickStrike11 0x3344 247 247 UnscaledOnce 1 0 10 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_CeilickStrike12
+#%action CK6_ACT_CeilickStrike12 0x3362 246 246 UnscaledOnce 1 0 10 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_CeilickStrike13
+#%action CK6_ACT_CeilickStrike13 0x3380 247 247 UnscaledOnce 1 0 10 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_CeilickStrike14
+#%action CK6_ACT_CeilickStrike14 0x339E 246 246 UnscaledOnce 1 0 10 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_CeilickStrike15
+#%action CK6_ACT_CeilickStrike15 0x33BC 247 247 UnscaledOnce 1 0 10 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_CeilickStrike16
+#%action CK6_ACT_CeilickStrike16 0x33DA 246 246 UnscaledOnce 1 0 10 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_CeilickStrike17
+#%action CK6_ACT_CeilickStrike17 0x33F8 246 246 ScaledOnce 1 0 16 0x0 0xFFF0 NULL  CK_BasicDrawFunc1 CK6_ACT_CeilickStrike18
+#%action CK6_ACT_CeilickStrike18 0x3416 -1 -1 UnscaledOnce 1 0 60 0x0 0x0 NULL  CK_BasicDrawFunc1 CK6_ACT_CeilickWait0
+#%action CK6_ACT_CeilickStunned0 0x3434 253 253 Frame 1 0 0 0x0 0x0  NULL CK_BasicDrawFunc4 NULL
+
