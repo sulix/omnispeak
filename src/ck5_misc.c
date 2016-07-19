@@ -210,6 +210,9 @@ uint8_t ck5_starWarsPalette[] = {
 	0x00, 0x01, 0x18, 0x1E, 0x1F, 0x1C, 0x06, 0x07,
 	0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x00};
 
+uint8_t ck5_terminator_palette1[] = {0,4,4,0x1c,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,0x13,0};
+uint8_t ck5_terminator_palette2[] = {0,4,4,0x1c,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,4,0};
+
 // ck_game.c
 const char *ck5_levelEntryTexts[] = {
 	"Keen purposefully\n"
@@ -490,6 +493,8 @@ void CK5_DefineConstants(void)
 
   // ck_inter.c
   ck_starWarsPalette = ck5_starWarsPalette;
+  ck_terminator_palette1 = ck5_terminator_palette1;
+  ck_terminator_palette2 = ck5_terminator_palette2;
 
   // ck_game.c
   ck_levelEntryTexts = ck5_levelEntryTexts;

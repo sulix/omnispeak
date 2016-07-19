@@ -119,8 +119,8 @@ mm_ptr_t shiftedCmdrBMPsegs[8];
 
 uint8_t terminator_blackmasks[] = {0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
 uint8_t terminator_lightmasks[] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE};
-uint8_t terminator_palette1[17] = {0,4,4,0x1c,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,4,0};
-uint8_t terminator_palette2[17] = {0,1,1,0x11,1,1,1,1,0x04,0x04,0x04,0x04,0x14,0x14,0x14,0x14,0};
+uint8_t *ck_terminator_palette1;
+uint8_t *ck_terminator_palette2;
 
 // chunk #'s for the vertically scrolling pics
 int *terminator_pics[4] = {&PIC_CREDIT1, &PIC_CREDIT2, &PIC_CREDIT3, &PIC_CREDIT4};
@@ -1017,7 +1017,7 @@ void ZoomOutTerminator(void)
 	// Set the palette
 asm	mov     ax, ds;
 asm	mov	es, ax;
-asm	mov	dx, offset terminator_palette1;
+asm	mov	dx, offset ck_terminator_palette1;
 asm	mov	ax, 0x1002;
 asm 	int	0x10;
 
@@ -1469,19 +1469,12 @@ for (int i = 1; i < 8; i++)
   }
 }
 
-#if 0
 
 // Set the terminator palette
-terminator_palette2[16] = bordercolor;
-terminator_palette1[16] = bordercolor;
+ck_terminator_palette2[16] = vl_border_color;
+ck_terminator_palette1[16] = vl_border_color;
 
-// and the border.
-_AX = _DS;
-_ES = _AX;
-_DX = (int)&terminator_palette2;
-_AX = 0x1002;
-geninterrupt(0x10);
-#endif
+VL_SetPaletteAndBorderColor(ck_terminator_palette1);
 
 for (int i = 0; i < 4; i++)
   DoubleSizeTerminatorPics(i);
