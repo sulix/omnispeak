@@ -38,131 +38,129 @@ CK_EpisodeDef ck6_episode ={
   &CK6_MapMiscFlagsCheck,
   4,
   15,
-  14,
+  1,
   0x75CE,
   0x939E,
 };
 
-
-// Contains some keen-5 specific functions.
-
-//StartSprites +
 int16_t CK6_ItemSpriteChunks[] ={
-	224, 226, 228, 230,
-	210, 212, 214, 216, 218, 220,
-	222, 233, 207
+	164, 166, 168, 170,
+	150, 152, 154, 156, 158, 160,
+	162, 173
 };
 
 void CK6_SetupFunctions()
 {
-	//Quick hack as we haven't got a deadly function yet
-#if 0
 	CK6_Obj1_SetupFunctions();
 	CK6_Obj2_SetupFunctions();
 	CK6_Obj3_SetupFunctions();
 	CK6_Map_SetupFunctions();
-#endif
 }
 
 // ck_inter.c
 uint8_t ck6_starWarsPalette[] = {
-	0x00, 0x01, 0x18, 0x1E, 0x1F, 0x1C, 0x06, 0x07,
-	0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x00};
+	0x00, 0x01, 0x18, 0x19, 0x04, 0x1C, 0x06, 0x07,
+	0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x00};
 
 // ck_game.c
 const char *ck6_levelEntryTexts[] = {
-	"Keen purposefully\n"
-	"wanders about the\n"
-	"Omegamatic",
+	"Keen attacks\n"
+	"Fribbulus Xax",
 
-	"Keen investigates the\n"
-	"Ion Ventilation System",
+	"Keen hops across\n"
+	"Bloogwaters\n"
+	"Crossing",
 
-	"Keen struts through\n"
-	"the Security Center",
+  "Keen fights his way\n"
+	"through Guard Post One",
 
-	"Keen invades\n"
-	"Defense Tunnel Vlook",
+	"Keen crosses into the\n"
+	"First Dome of Darkness",
 
-	"Keen engages\n"
-	"Energy Flow Systems",
+	"Keen dares to enter the\n"
+	"Second Dome of Darkness",
 
-	"Keen barrels into\n"
-	"Defense Tunnel Burrh",
+	"Keen foolishly enters\n"
+	"the Bloogdome",
 
-	"Keen goes nuts in\n"
-	"the Regulation\n"
-	"Control Center",
+	"Keen makes his way\n"
+	"into Bloogton\n"
+	"Manufacturing",
 
-	"Keen regrets entering\n"
-	"Defense Tunnel Sorra",
+	"Keen ascends\n"
+	"Bloogton Tower",
 
-	"Keen blows through\n"
-	"the Neutrino\n"
-	"Burst Injector",
+	"Keen hungrily enters\n"
+	"Bloogfoods, Inc.",
 
-	"Keen trots through\n"
-	"Defense Tunnel Teln",
+	"Keen smashes through\n"
+	"Guard Post Two",
 
-	"Keen breaks into\n"
-	"the Brownian\n"
-	"Motion Inducer",
+	"Keen seeks thrills\n"
+	"in Bloogville",
 
-	"Keen hurries through\n"
-	"the Gravitational\n"
-	"Damping Hub",
+	"Keen rockets into the\n"
+	"Bloog Aeronautics and\n"
+	"Space Administration",
 
-	"Keen explodes into\n"
-	"the Quantum\n"
-	"Explosion Dynamo",
+	"Keen boldly assaults\n"
+	"Guard Post Three",
 
-	"Keen faces danger\n"
-	"in the secret\n"
-	"Korath III Base",
+	"Keen whoops it up in\n"
+	"the Bloogbae\n"
+	"Recreational District",
 
-	"Keen will not be\n"
-	"in the BWBMegarocket",
+	"Keen purposefully struts\n"
+	"into the Bloogbase\n"
+	"Management District",
 
-	"Keen unexplainedly\n"
-	"find himself by\n"
-	"theHigh Scores",
+	"Keen bravely enters the\n"
+	"Bloog Control Center,\n"
+	"looking for Molly",
+
+	"Keen warily enters\n"
+	"Blooglab Space\n"
+	"Station",
+
+	"Keen returns to the\n"
+	"Bean-with-Bacon\n"
+	"Megarocket",
+
+	"Keen is in the High\n"
+  "Score screen. Call Id!",
 };
 
 const char *ck6_levelNames[] = {
-	"Omegamatic",
-	"Ion Ventilation System",
-	"Security Center",
-	"Defense Tunnel Vlook",
-	"Energy Flow Systems",
-	"Defense Tunnel Burrh",
-	"Regulation\nControl Center",
-	"Defense Tunnel Sorra",
-	"Neutrino\nBurst Injector",
-	"Defense Tunnel Teln",
-	"Brownian\nMotion Inducer",
-	"Gravitational\nDamping Hub",
-	"Quantum\nExplosion Dynamo",
-	"Korath III Base",
-	"BWBMegarocket",
+	"Fribbulus Xax",
+	"Bloogwaters\nCrossing",
+	"Guard Post One",
+  "First Dome\nof Darkness",
+	"Second Dome\nof Darkness",
+	"The Bloogdome",
+	"Bloogton Mfg.,\nIncorporated",
+	"Bloogton Tower",
+	"Bloogfoods, Inc.",
+	"Bloogville",
+	"BASA",
+	"Guard Post Three",
+	"Bloogbase Rec\nDistrict",
+	"Bloogbase Mgmt.\nDistrict",
+	"Bloog Control Center",
+	"Blooglab",
+	"Bean-with-Bacon\nMegarocket",
 	"High Scores",
 };
 
 // ck_keen.c
 
-/*
-soundnames ck6_itemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM,
-                               SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,
-                               SOUND_GOTEXTRALIFE, SOUND_GOTSTUNNER, SOUND_GOTKEYCARD
-};
-*/
-soundnames ck6_itemSounds[]  = { 19, 19, 19, 19, 8,8,8,8,8,8, 17, 9, 55 };
-uint16_t ck6_itemShadows[] = {232, 232, 232, 232, 195, 196, 197,  198,  199,  200, 201, 202, 209};
+soundnames ck6_itemSounds[]  = { 19, 19, 19, 19, 8,8,8,8,8,8, 17, 9 };
+uint16_t ck6_itemShadows[] = {166, 166, 166, 166, 138, 139, 140,  141,  142,  143, 144, 145,};
 
 // ck_map.c
-int ck6_mapKeenFrames[] = { 0xF7, 0x106, 0xF4, 0xFD, 0xFA, 0x100, 0xF1, 0x103 };
+int ck6_mapKeenFrames[] = { 189, 204, 186, 195, 192, 198, 183, 201};
 
 // ck_play.c
-int16_t ck6_levelMusic[] ={11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
+int16_t ck6_levelMusic[] ={5,3,1,8,8,8,7,2,7,1,3,2,1,4,4,6,2,0,0,0};
 
 void CK6_DefineConstants(void)
 {
@@ -202,9 +200,9 @@ void CK6_DefineConstants(void)
 
   PIC_STARWARS = 33;
   PIC_TITLESCREEN = 34;
-  PIC_COUNTDOWN5 = 92;
-  PIC_COUNTDOWN4 = 93;
-  PIC_COUNTDOWN0 = 97;
+  PIC_COUNTDOWN5 = 37;
+  PIC_COUNTDOWN4 = 38;
+  PIC_COUNTDOWN0 = 42;
 
   MPIC_WRISTWATCHSCREEN = 43;
   MPIC_STATUSLEFT = 44;
@@ -466,19 +464,18 @@ void CK6_ScanInfoLayer()
 			case 1:
 				CK_SpawnKeen(x, y, 1);
 				CK_DemoSignSpawn();
-				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
+				ca_graphChunkNeeded[175] |= ca_levelbit;
 				break;
 			case 2:
 				CK_SpawnKeen(x, y, -1);
 				CK_DemoSignSpawn();
-				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
+				ca_graphChunkNeeded[175] |= ca_levelbit;
 				break;
 
 			case 3:
 				CK_DemoSignSpawn();
-				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
-				if (ck_gameState.levelState != LS_TeleportToKorath)
-					CK_SpawnMapKeen(x, y);
+				ca_graphChunkNeeded[175] |= ca_levelbit;
+        CK_SpawnMapKeen(x, y);
 				break;
 
 #if 0

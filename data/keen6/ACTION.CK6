@@ -85,24 +85,31 @@
 #%action CK_ACT_keenPull3 0x11DC 127 131 UnscaledOnce 0 0 10 0x0 0x0 CK_KeenPullThink3 CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPull4
 #%action CK_ACT_keenPull4 0x11FA 128 132 UnscaledOnce 0 0 10 0x0 0x0 CK_KeenPullThink4 CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPull5
 #%action CK_ACT_keenPull5 0x1218 60 52 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenStanding
-#%action CK_ACT_MapKeenStart 0x130A 0 0 UnscaledFrame 0 0 360 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave0
-#%action CK_ACT_MapKeenWave0 0x1328 208 208 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave1
-#%action CK_ACT_MapKeenWave1 0x1346 209 209 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave2
-#%action CK_ACT_MapKeenWave2 0x1364 208 208 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave3
-#%action CK_ACT_MapKeenWave3 0x1382 209 209 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave4
-#%action CK_ACT_MapKeenWave4 0x13A0 208 208 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenWalk NULL CK_BasicDrawFunc1 CK_ACT_MapKeenStart
-#%action CK_ACT_MapKeenWalk0 0x13BE 0 0 ScaledOnce 1 0 4 0x18 0x18 CK_MapKeenWalk NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWalk0
-#%action CK_ACT_MapFlag0 0x13F4 235 235 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag1
-#%action CK_ACT_MapFlag1 0x1412 236 236 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag2
-#%action CK_ACT_MapFlag2 0x1430 237 237 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag3
-#%action CK_ACT_MapFlag3 0x144E 238 238 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag0
-#%action CK_ACT_MapFlagFlips0 0x146C 228 228 Frame 0 0 6 0x0 0x0 CK_MapFlagThrown NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips1
-#%action CK_ACT_MapFlagFlips1 0x148A 228 228 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips2
-#%action CK_ACT_MapFlagFlips2 0x14A8 229 229 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips3
-#%action CK_ACT_MapFlagFlips3 0x14C6 230 230 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips4
-#%action CK_ACT_MapFlagFlips4 0x14E4 231 231 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips5
-#%action CK_ACT_MapFlagFlips5 0x1502 233 233 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips6
-#%action CK_ACT_MapFlagFlips6 0x1520 233 233 UnscaledFrame 1 0 1 0x0 0x0 CK_MapFlagLand NULL CK_BasicDrawFunc1 CK_ACT_MapFlag0
+#
+#ScoreBox
+%action CK_ACT_ScoreBox 0x12CE 0 0 Frame 0 0 0 0 0 NULL NULL NULL NULL
+
+#DemoSign
+%action CK_ACT_DemoSign 0x12EC 0x33 0x33 Frame 0 0 0 0 0 NULL NULL NULL NULL
+
+%action CK_ACT_MapKeenStart 0x130A 0 0 UnscaledFrame 0 0 360 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave0
+%action CK_ACT_MapKeenWave0 0x1328 208 208 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave1
+%action CK_ACT_MapKeenWave1 0x1346 209 209 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave2
+%action CK_ACT_MapKeenWave2 0x1364 208 208 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave3
+%action CK_ACT_MapKeenWave3 0x1382 209 209 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenStill NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWave4
+%action CK_ACT_MapKeenWave4 0x13A0 208 208 UnscaledFrame 0 0 20 0x0 0x0 CK_MapKeenWalk NULL CK_BasicDrawFunc1 CK_ACT_MapKeenStart
+%action CK_ACT_MapKeenWalk0 0x13BE 0 0 ScaledOnce 1 0 4 0x18 0x18 CK_MapKeenWalk NULL CK_BasicDrawFunc1 CK_ACT_MapKeenWalk0
+%action CK_ACT_MapFlag0 0x13F4 235 235 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag1
+%action CK_ACT_MapFlag1 0x1412 236 236 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag2
+%action CK_ACT_MapFlag2 0x1430 237 237 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag3
+%action CK_ACT_MapFlag3 0x144E 238 238 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_MapFlag0
+%action CK_ACT_MapFlagFlips0 0x146C 228 228 Frame 0 0 6 0x0 0x0 CK_MapFlagThrown NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips1
+%action CK_ACT_MapFlagFlips1 0x148A 228 228 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips2
+%action CK_ACT_MapFlagFlips2 0x14A8 229 229 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips3
+%action CK_ACT_MapFlagFlips3 0x14C6 230 230 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips4
+%action CK_ACT_MapFlagFlips4 0x14E4 231 231 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips5
+%action CK_ACT_MapFlagFlips5 0x1502 233 233 UnscaledFrame 0 0 12 0x0 0x0 CK_MapFlagFall NULL CK_BasicDrawFunc1 CK_ACT_MapFlagFlips6
+%action CK_ACT_MapFlagFlips6 0x1520 233 233 UnscaledFrame 1 0 1 0x0 0x0 CK_MapFlagLand NULL CK_BasicDrawFunc1 CK_ACT_MapFlag0
 #%action CK_ACT_keenShot1 0x153E 96 96 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink NULL CK_ShotDrawFunc CK_ACT_keenShot2
 #%action CK_ACT_keenShot2 0x155C 97 97 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink NULL CK_ShotDrawFunc CK_ACT_keenShot3
 #%action CK_ACT_keenShot3 0x157A 98 98 ScaledOnce 0 0 6 0x40 0x40 CK_ShotThink NULL CK_ShotDrawFunc CK_ACT_keenShot4

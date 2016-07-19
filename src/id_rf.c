@@ -130,7 +130,7 @@ int rf_dirtyBlocks[RF_BUFFER_WIDTH_TILES * RF_BUFFER_HEIGHT_TILES];
 
 void RFL_MarkBlockDirty(int x, int y, int val)
 {
-	rf_dirtyBlocks[y*RF_BUFFER_WIDTH_TILES+x] = val; 
+	rf_dirtyBlocks[y*RF_BUFFER_WIDTH_TILES+x] = val;
 }
 
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical)
