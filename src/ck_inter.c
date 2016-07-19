@@ -208,7 +208,7 @@ void DoubleSizeTerminatorPics(int pic)
 	MM_GetPtr(&terminator_pic_memptrs[pic], size * 2);
 
 	// Copy the data to the expanded buffer
-	picptr = ca_graphChunks[picchunk];
+	picptr = (uint8_t *)ca_graphChunks[picchunk];
 	double_picptr = (uint16_t *)terminator_pic_memptrs[pic];
 
 	for (i = 0; i < size; i++)
