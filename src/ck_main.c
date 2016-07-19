@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_cross.h"
 #include "ck4_ep.h"
 #include "ck5_ep.h"
+#include "ck6_ep.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -635,6 +636,8 @@ int main(int argc, char *argv[])
 					ck_currentEpisode = &ck4_episode;
 				else if (!strcmp(argv[i+1], "5"))
 					ck_currentEpisode = &ck5_episode;
+				else if (!strcmp(argv[i+1], "6"))
+					ck_currentEpisode = &ck6_episode;
 				else
 				Quit("Unsupported episode!");
 			}

@@ -205,6 +205,11 @@ typedef struct CK_GameState
       int16_t word_4729C;
       int16_t fusesRemaining;
     } ck5;
+
+    struct
+    {
+      int16_t sandwich;
+    } ck6;
   } ep;
 
 	int16_t keyGems[4];
