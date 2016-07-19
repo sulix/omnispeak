@@ -29,7 +29,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_ca.h"
 #include "id_rf.h"
+#include "ck_act.h"
+#include "ck_cross.h"
 #include "ck_def.h"
+#include "ck_game.h"
 #include "ck_play.h"
 #include "ck_text.h"
 #include "ck4_ep.h"
@@ -65,10 +68,200 @@ void CK_GameOver()
 	IN_UserInput(4*70, false);
 }
 
-//TODO: Save Game
-bool CK_SaveGame (int handle)
+// OMNISPEAK - New cross-platform methods for reading/writing objects from/to saved games
+static bool CK_SaveObject(FILE *fp, CK_object *o)
 {
-int cmplen, bufsize, i;
+	int16_t dummy = 0;
+	// Convert a few enums
+	int16_t activeInt = (int16_t)(o->active);
+	int16_t clippedInt = (int16_t)(o->clipped);
+	// BACKWARD COMPATIBILITY
+	uint16_t statedosoffset = o->currentAction ? o->currentAction->compatDosPointer : 0;
+	// Just tells if "o->next" is zero or not
+	int16_t isnext = o->next ? 1 : 0;
+	// Now writing
+	return ((CK_Cross_fwriteInt16LE(&o->type, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&activeInt, 1, fp) == 1)
+	        && (CK_Cross_fwriteBoolTo16LE(&o->visible, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&clippedInt, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->timeUntillThink, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->posX, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->posY, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->xDirection, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->yDirection, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->deltaPosX, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->deltaPosY, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->velX, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->velY, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->actionTimer, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&statedosoffset, 1, fp) == 1) // BACKWARD COMPATIBILITY
+	        && (CK_Cross_fwriteInt16LE(&o->gfxChunk, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->zLayer, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->clipRects.unitX1, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->clipRects.unitY1, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->clipRects.unitX2, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->clipRects.unitY2, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->clipRects.unitXmid, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->clipRects.tileX1, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->clipRects.tileY1, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->clipRects.tileX2, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->clipRects.tileY2, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->clipRects.tileXmid, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->topTI, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->rightTI, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->bottomTI, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->leftTI, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->user1, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->user2, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->user3, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&o->user4, 1, fp) == 1)
+	        // No need to write sde, prev pointers as-is,
+	        // these are ignored on loading. So write dummy value.
+	        // Furthermore, all we need to know about next on loading is
+	        // if it's zero or not.
+	        && (CK_Cross_fwriteInt16LE(&dummy, 1, fp) == 1) // sde
+	        && (CK_Cross_fwriteInt16LE(&isnext, 1, fp) == 1) // next
+	        && (CK_Cross_fwriteInt16LE(&dummy, 1, fp) == 1) // prev
+	);
+}
+
+static bool CK_LoadObject(FILE *fp, CK_object *o)
+{
+	int16_t dummy;
+	// Convert a few enums
+	int16_t activeInt, clippedInt;
+	// BACKWARD COMPATIBILITY
+	uint16_t statedosoffset;
+	// Just tells if "o->next" is zero or not
+	int16_t isnext;
+	// Now reading
+	if ((CK_Cross_freadInt16LE(&o->type, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&activeInt, 1, fp) != 1)
+	    || (CK_Cross_freadBoolFrom16LE(&o->visible, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&clippedInt, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->timeUntillThink, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->posX, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->posY, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->xDirection, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->yDirection, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->deltaPosX, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->deltaPosY, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->velX, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->velY, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->actionTimer, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&statedosoffset, 1, fp) != 1) // BACKWARD COMPATIBILITY
+	    || (CK_Cross_freadInt16LE(&o->gfxChunk, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->zLayer, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->clipRects.unitX1, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->clipRects.unitY1, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->clipRects.unitX2, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->clipRects.unitY2, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->clipRects.unitXmid, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->clipRects.tileX1, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->clipRects.tileY1, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->clipRects.tileX2, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->clipRects.tileY2, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->clipRects.tileXmid, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->topTI, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->rightTI, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->bottomTI, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->leftTI, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->user1, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->user2, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->user3, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&o->user4, 1, fp) != 1)
+	    // No need to read sde, prev pointers as-is,
+	    // these are ignored on loading. So read dummy value.
+	    // Furthermore, all we need to know about next on loading is
+	    // if it's zero or not.
+	    || (CK_Cross_freadInt16LE(&dummy, 1, fp) != 1) // sde
+	    || (CK_Cross_freadInt16LE(&isnext, 1, fp) != 1) // next
+	    || (CK_Cross_freadInt16LE(&dummy, 1, fp) != 1) // prev
+	)
+		return false;
+
+	o->active = (CK_objActive)activeInt;
+	o->clipped = (CK_ClipType)clippedInt;
+	o->currentAction = CK_LookupActionFrom16BitOffset(statedosoffset);
+	// HACK: All we need to know is if next was originally NULL or not
+	o->next = isnext ? o : NULL;
+	return true;
+}
+
+// Similar new methods for writing/reading game state
+static bool CK_SaveGameState(FILE* fp, CK_GameState *state)
+{
+	int16_t difficultyInt = (int16_t)state->difficulty; // Convert enum
+	// TODO - platform should be a part of the game state
+	uint16_t platformObjOffset = CK_ConvertObjPointerTo16BitOffset(ck_keenState.platform);
+	return ((CK_Cross_fwriteInt16LE(&state->mapPosX, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&state->mapPosY, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(state->levelsDone, sizeof(state->levelsDone)/2, fp) == sizeof(state->levelsDone)/2)
+	        && (CK_Cross_fwriteInt32LE(&state->keenScore, 2, fp) == 2)
+	        && (CK_Cross_fwriteInt32LE(&state->nextKeenAt, 2, fp) == 2)
+	        && (CK_Cross_fwriteInt16LE(&state->numShots, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&state->numCentilife, 1, fp) == 1)
+	        && (((ck_currentEpisode->ep == EP_CK4)
+	            && (CK_Cross_fwriteInt16LE(&state->ep.ck4.wetsuit, 1, fp) == 1)
+	            && (CK_Cross_fwriteInt16LE(&state->ep.ck4.membersRescued, 1, fp) == 1)
+	         )
+	         || ((ck_currentEpisode->ep == EP_CK5)
+	            && (CK_Cross_fwriteInt16LE(&state->ep.ck5.securityCard, 1, fp) == 1)
+	            && (CK_Cross_fwriteInt16LE(&state->ep.ck5.word_4729C, 1, fp) == 1)
+	            && (CK_Cross_fwriteInt16LE(&state->ep.ck5.fusesRemaining, 1, fp) == 1)
+	         )
+	        )
+	        && (CK_Cross_fwriteInt16LE(state->keyGems, sizeof(state->keyGems)/2, fp) == sizeof(state->keyGems)/2)
+	        && (CK_Cross_fwriteInt16LE(&state->currentLevel, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&state->numLives, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&difficultyInt, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&platformObjOffset, 1, fp) == 1) // BACKWARDS COMPATIBILITY
+	);
+}
+
+static bool CK_LoadGameState(FILE* fp, CK_GameState *state)
+{
+	int16_t difficultyInt; // Convert num
+	uint16_t platformObjOffset;
+	if ((CK_Cross_freadInt16LE(&state->mapPosX, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&state->mapPosY, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(state->levelsDone, sizeof(state->levelsDone)/2, fp) != sizeof(state->levelsDone)/2)
+	    || (CK_Cross_freadInt32LE(&state->keenScore, 2, fp) != 2)
+	    || (CK_Cross_freadInt32LE(&state->nextKeenAt, 2, fp) != 2)
+	    || (CK_Cross_freadInt16LE(&state->numShots, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&state->numCentilife, 1, fp) != 1)
+	    || ((ck_currentEpisode->ep == EP_CK4) &&
+	       (
+	        (CK_Cross_freadInt16LE(&state->ep.ck4.wetsuit, 1, fp) != 1)
+	        || (CK_Cross_freadInt16LE(&state->ep.ck4.membersRescued, 1, fp) != 1)
+	     )
+	    )
+	    || ((ck_currentEpisode->ep == EP_CK5) &&
+	       (
+	        (CK_Cross_freadInt16LE(&state->ep.ck5.securityCard, 1, fp) != 1)
+	        || (CK_Cross_freadInt16LE(&state->ep.ck5.word_4729C, 1, fp) != 1)
+	        || (CK_Cross_freadInt16LE(&state->ep.ck5.fusesRemaining, 1, fp) != 1)
+	     )
+	    )
+	    || (CK_Cross_freadInt16LE(state->keyGems, sizeof(state->keyGems)/2, fp) != sizeof(state->keyGems)/2)
+	    || (CK_Cross_freadInt16LE(&state->currentLevel, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&state->numLives, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&difficultyInt, 1, fp) != 1)
+	    || (CK_Cross_freadInt16LE(&platformObjOffset, 1, fp) != 1) // BACKWARDS COMPATIBILITY
+	)
+		return false;
+
+	state->difficulty = (CK_Difficulty)difficultyInt;
+	// TODO - platform should be a part of the game state
+	ck_keenState.platform = CK_ConvertObj16BitOffsetToPointer(platformObjOffset);
+	return true;
+}
+
+// FIXME - This is Little Endian compatible only!
+bool CK_SaveGame (FILE *fp)
+{
+	int i;
+	uint16_t cmplen, bufsize;
 	CK_object *obj;
 	uint8_t *buf;
 
@@ -76,40 +269,176 @@ int cmplen, bufsize, i;
 
 	/* Write out Keen stats */
 	ck_keenState.platform = NULL;
-	if( !CA_FarWrite( handle, (uint8_t*)&ck_gameState, 86 ) )
+	if (!CK_SaveGameState(fp, &ck_gameState))
 		return false;
 
 	bufsize = CA_GetMapWidth() * CA_GetMapHeight() * 2;
-	MM_GetPtr( (mm_ptr_t *)buf, bufsize/*, 0*/ ); /* or ( &buf, (long)bufsize ); -- allocate mem */
+	MM_GetPtr((mm_ptr_t *)&buf, bufsize);
 
 	/* Compress and save the current level */
-	for( i = 0; i < 3; i++ ) {
+	for (i = 0; i < 3; i++)
+	{
 		cmplen = CAL_RLEWCompress( CA_TilePtrAtPos(0,0,i), bufsize, buf + 2, 0xABCD );
 
 		/* Write the size of the compressed level */
-		*((uint32_t *)buf) = cmplen;
-		if( !CA_FarWrite( handle, buf, cmplen + 2 ) ) {
+		*((uint16_t *)buf) = cmplen;
+		if (CK_Cross_fwriteInt8LE(buf, cmplen + 2, fp) != cmplen + 2)
+		{
 			/* Free the buffer and return failure */
-			MM_FreePtr( (mm_ptr_t *)buf );
+			MM_FreePtr((mm_ptr_t *)&buf);
 			return false;
 		}
 	}
 
 	/* Save all the objects */
-	for( obj = ck_keenObj; obj != NULL; obj = obj->next ) {
-		if( !CA_FarWrite( handle, (uint8_t *)obj, 76 ) ) {
+	for (obj = ck_keenObj; obj != NULL; obj = obj->next)
+	{
+		if (!CK_SaveObject(fp, obj))
+		{
 			/* Free the buffer and return failure */
-			MM_FreePtr( (mm_ptr_t *)buf );
+			MM_FreePtr((mm_ptr_t *)&buf);
 			return false;
 		}
 	}
 
 	/* Free the buffer and return success */
-	MM_FreePtr( (mm_ptr_t *)buf );
+	MM_FreePtr((mm_ptr_t *)&buf);
 	return true;
 
 }
-//TODO: Load Game
+
+bool CK_LoadGame (FILE *fp)
+{
+	int i;
+	uint16_t cmplen, bufsize;
+	int16_t prevFuses;
+	CK_object *obj, *objprev, *objnext, *moreObj;
+	uint8_t *buf;
+
+	if (!CK_LoadGameState(fp, &ck_gameState))
+		return false;
+
+	if (ck_currentEpisode->ep == EP_CK5)
+		prevFuses = ck_gameState.ep.ck5.fusesRemaining;
+
+	ca_levelbit >>= 1;
+	ca_levelnum--;
+	CK_LoadLevel(false);
+	// TODO - REIMPLEMENT
+/*
+	if (mmerror)
+	{
+		mmerror = false;
+		US_CenterWindow(20, 8);
+		US_SetPrintY(20);
+		US_Print("Not enough memory\nto load game!");
+		VL_Present(); //VW_UpdateScreen();
+		IN_Ack();
+		return false;
+	}
+*/
+	ca_levelbit << 1;
+	ca_levelnum++;
+
+	bufsize = CA_GetMapWidth() * CA_GetMapHeight() * 2;
+	// MM_BombOnError(true) // TODO
+	MM_GetPtr((mm_ptr_t *)&buf, bufsize);
+	// TODO
+/*
+	MM_BombOnError(false)
+	if (mmerror)
+	{
+		mmerror = false;
+		US_CenterWindow(20, 8);
+		US_SetPrintY(20);
+		US_Print("Not enough memory\nto load game!");
+		VL_Present(); //VW_UpdateScreen();
+		IN_Ack();
+		return false;
+	}
+*/
+	/* Decompress and load the level */
+	for (i = 0; i < 3; i++ )
+	{
+		if (CK_Cross_freadInt16LE(&cmplen, 1, fp) != 1)
+		{
+			MM_FreePtr((mm_ptr_t *)&buf);
+			return false;
+		}
+		if (CK_Cross_freadInt8LE(buf, cmplen, fp) != cmplen)
+		{
+			MM_FreePtr((mm_ptr_t *)&buf);
+			return false;
+		}
+
+		CAL_RLEWExpand(buf, CA_TilePtrAtPos(0,0,i), bufsize, 0xABCD );
+	}
+
+	MM_FreePtr((mm_ptr_t *)&buf);
+
+	CK_SetupObjArray();
+	CK_object *newObj = ck_keenObj;
+
+	/* Read the first object (keen) from the list */
+	objprev = newObj->prev;
+	objnext = newObj->next;
+	if (!CK_LoadObject(fp, newObj))
+		return false;
+	newObj->prev = objprev;
+	newObj->next = objnext;
+
+	newObj->visible = true;
+	newObj->sde = NULL;
+	newObj = ck_scoreBoxObj;
+
+	while (1)
+	{
+		/* Read the object from the file and put it in the list */
+		objprev = newObj->prev;
+		objnext = newObj->next;
+		if (!CK_LoadObject(fp, newObj))
+			return 0;
+		moreObj = newObj->next;
+		newObj->prev = objprev;
+		newObj->next = objnext;
+
+		newObj->visible = true;
+		newObj->sde = NULL;
+
+		/* Omit stale sprite draw pointers */
+		if (newObj->type == CT_CLASS(StunnedCreature))
+			newObj->user3Ptr = NULL;
+		else if (ck_currentEpisode->ep == EP_CK4)
+		{
+			if (newObj->type == CT4_Platform)
+				newObj->user2Ptr = newObj->user3Ptr = NULL;
+		}
+		else if (ck_currentEpisode->ep == EP_CK5)
+		{
+			if (newObj->type == CT5_Mine)
+				newObj->user4Ptr = NULL;
+			else if (newObj->type == CT5_Sphereful)
+				newObj->user1Ptr = newObj->user2Ptr = newObj->user3Ptr = newObj->user4Ptr = NULL;
+		}
+
+		/* If this is the last object in the saved list, exit the loop */
+		if (!moreObj)
+			break;
+
+		/* Otherwise we add a new object */
+		newObj = CK_GetNewObj( false );
+	}
+
+	ck_scoreBoxObj->user1 = -1;
+	ck_scoreBoxObj->user2 = -1;
+	ck_scoreBoxObj->user3 = -1;
+	ck_scoreBoxObj->user4 = -1;
+
+	if (ck_currentEpisode->ep == EP_CK5)
+		ck_gameState.ep.ck5.fusesRemaining = prevFuses;
+
+	return true;
+}
 
 
 //TODO: KillKeen

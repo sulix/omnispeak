@@ -263,6 +263,16 @@ bool CK_ACT_ParseAction(CK_ACT_ParserState *ps)
 	return true;
 }
 
+// POTENTIALLY SLOW function - Use in game loading only!
+CK_action *CK_LookupActionFrom16BitOffset(uint16_t offset)
+{
+	for (int i = 0; i < ck_actionsUsed; ++i)
+		if (ck_actionData[i].compatDosPointer == offset)
+			return &ck_actionData[i];
+
+	return NULL;
+}
+
 
 void CK_ACT_LoadActions(const char *filename)
 {

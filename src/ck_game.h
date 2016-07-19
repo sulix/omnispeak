@@ -23,8 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 extern const char **ck_levelEntryTexts;
 extern const char **ck_levelNames;
 
-extern int ck_lastLevelFinished;
-
 void CK_GameLoop();
 void CK_LoadLevel(bool unknown);
 
