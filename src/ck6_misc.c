@@ -327,7 +327,7 @@ void CK6_DefineConstants(void)
   SOUND_UNKNOWN63 = 63;
   LASTSOUND = 64;
 
-  STR_EXIT_TO_MAP = "Exit to Armageddon";
+  STR_EXIT_TO_MAP = "Exit to Fribbulus Xax";
 
   // ck_inter.c
   ck_starWarsPalette = ck6_starWarsPalette;
@@ -611,6 +611,15 @@ void CK6_ScanInfoLayer()
         CK_SpawnMapKeen(x, y);
 				break;
 
+      // Bobbas
+      case 43:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 42:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 41:
+        ck6_lumpsNeeded[Lump_Bobba] = true;
+        CK6_SpawnBobba(x, y);
+        break;
 
       // Blorbs
       case 81:

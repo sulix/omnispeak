@@ -280,21 +280,24 @@
 #%action CK6_ACT_FleexSearch0 0x2D2C 243 243 UnscaledOnce 0 1 60 0x0 0x0 NULL CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexSearch1
 #%action CK6_ACT_FleexSearch1 0x2D4A 244 244 UnscaledOnce 0 1 60 0x0 0x0 CK6_FleexSearch CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexTrack0
 #%action CK6_ACT_FleexStunned0 0x2D68 245 245 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
-#%action CK6_ACT_BobbaJump0 0x2D86 403 406 UnscaledFrame 0 0 8 0x0 0x0 CK_Fall CK6_BobbaCol CK6_BobbaJumpDraw CK6_ACT_BobbaJump1
-#%action CK6_ACT_BobbaJump1 0x2DA4 404 407 Frame 0 0 8 0x0 0x0 CK_Fall CK6_BobbaCol CK6_BobbaJumpDraw CK6_ACT_BobbaJump1
-#%action CK6_ACT_BobbaStand0 0x2DC2 402 405 UnscaledOnce 0 0 20 0x0 0x0 CK6_Bobba CK6_BobbaCol CK_BasicDrawFunc1 CK6_ACT_BobbaJump0
-#%action CK6_ACT_BobbaShoot0 0x2DE0 402 405 UnscaledOnce 0 0 40 0x0 0x0 NULL CK6_BobbaCol CK_BasicDrawFunc1 CK6_ACT_BobbaJump0
-#%action CK6_ACT_BobbaTwinkle0 0x2DFE 408 408 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaTwinkle1
-#%action CK6_ACT_BobbaTwinkle1 0x2E1C 409 409 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaTwinkle2
-#%action CK6_ACT_BobbaTwinkle2 0x2E3A 408 408 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaTwinkle3
-#%action CK6_ACT_BobbaTwinkle3 0x2E58 409 409 UnscaledOnce 0 0 8 0x0 0x0 CK6_BobbaFireball NULL CK_BasicDrawFunc1 CK6_ACT_BobbaFireball0
-#%action CK6_ACT_BobbaFireball0 0x2E76 410 410 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol CK6_BobbaFireballDraw CK6_ACT_BobbaFireball1
-#%action CK6_ACT_BobbaFireball1 0x2E94 411 411 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol CK6_BobbaFireballDraw CK6_ACT_BobbaFireball2
-#%action CK6_ACT_BobbaFireball2 0x2EB2 412 412 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol CK6_BobbaFireballDraw CK6_ACT_BobbaFireball3
-#%action CK6_ACT_BobbaFireball3 0x2ED0 413 413 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol CK6_BobbaFireballDraw CK6_ACT_BobbaFireball0
-#%action CK6_ACT_BobbaFireballHits0 0x2EEE 413 413 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaFireballHits1
-#%action CK6_ACT_BobbaFireballHits1 0x2F0C 413 413 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaFireballHits2
-#%action CK6_ACT_BobbaFireballHits2 0x2F2A 413 413 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+
+#Bobbas
+%action CK6_ACT_BobbaJump0 0x2D86 403 406 UnscaledFrame 0 0 8 0x0 0x0 CK_Fall CK6_BobbaCol CK6_BobbaJumpDraw CK6_ACT_BobbaJump1
+%action CK6_ACT_BobbaJump1 0x2DA4 404 407 Frame 0 0 8 0x0 0x0 CK_Fall CK6_BobbaCol CK6_BobbaJumpDraw CK6_ACT_BobbaJump1
+%action CK6_ACT_BobbaStand0 0x2DC2 402 405 UnscaledOnce 0 0 20 0x0 0x0 CK6_Bobba CK6_BobbaCol CK_BasicDrawFunc1 CK6_ACT_BobbaJump0
+%action CK6_ACT_BobbaShoot0 0x2DE0 402 405 UnscaledOnce 0 0 40 0x0 0x0 NULL CK6_BobbaCol CK_BasicDrawFunc1 CK6_ACT_BobbaJump0
+%action CK6_ACT_BobbaTwinkle0 0x2DFE 408 408 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaTwinkle1
+%action CK6_ACT_BobbaTwinkle1 0x2E1C 409 409 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaTwinkle2
+%action CK6_ACT_BobbaTwinkle2 0x2E3A 408 408 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaTwinkle3
+%action CK6_ACT_BobbaTwinkle3 0x2E58 409 409 UnscaledOnce 0 0 8 0x0 0x0 CK6_BobbaFireball NULL CK_BasicDrawFunc1 CK6_ACT_BobbaFireball0
+%action CK6_ACT_BobbaFireball0 0x2E76 410 410 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol CK6_BobbaFireballDraw CK6_ACT_BobbaFireball1
+%action CK6_ACT_BobbaFireball1 0x2E94 411 411 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol CK6_BobbaFireballDraw CK6_ACT_BobbaFireball2
+%action CK6_ACT_BobbaFireball2 0x2EB2 412 412 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol CK6_BobbaFireballDraw CK6_ACT_BobbaFireball3
+%action CK6_ACT_BobbaFireball3 0x2ED0 413 413 ScaledOnce 0 0 8 0x30 0x0 NULL CK_LethalCol CK6_BobbaFireballDraw CK6_ACT_BobbaFireball0
+%action CK6_ACT_BobbaFireballHits0 0x2EEE 413 413 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaFireballHits1
+%action CK6_ACT_BobbaFireballHits1 0x2F0C 413 413 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BobbaFireballHits2
+%action CK6_ACT_BobbaFireballHits2 0x2F2A 413 413 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+
 %action CK6_ACT_BabobbaJump0 0x2F48 286 289 UnscaledFrame 0 0 8 0x0 0x0 CK_Fall CK6_BabobbaCol CK6_BabobbaJumpDraw CK6_ACT_BabobbaJump1
 %action CK6_ACT_BabobbaJump1 0x2F66 287 290 Frame 0 0 8 0x0 0x0 CK_Fall CK6_BabobbaCol CK6_BabobbaJumpDraw CK6_ACT_BabobbaJump1
 %action CK6_ACT_BabobbaSit0 0x2F84 285 288 UnscaledOnce 0 0 20 0x0 0x0 CK6_BabobbaSit CK6_BabobbaCol CK_BasicDrawFunc1 CK6_ACT_BabobbaJump0

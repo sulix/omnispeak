@@ -125,6 +125,7 @@ typedef enum CK_ClassType {
   CT6_Item = 5,
   CT6_Platform = 6,
   CT6_Babobba = 13,
+  CT6_Bobba = 14,
   CT6_Blorb = 22,
   CT6_Ceilick = 23,
   CT6_StunnedCreature = 25,

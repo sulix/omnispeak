@@ -34,6 +34,116 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * Setup all of the functions in this file.
  */
 
+// Bobbas
+
+void CK6_SpawnBobba(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Bobba;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x200;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BobbaJump0"));
+}
+
+#define SOUND_BOBBAFIREBALL 0x1F
+void CK6_BobbaFireball(CK_object *obj)
+{
+  SD_PlaySound(SOUND_BOBBAFIREBALL);
+}
+
+#define SOUND_BOBBAJUMP 0x1A
+void CK6_Bobba(CK_object *obj)
+{
+  if (++obj->user1 == 3)
+  {
+    // Shoot every third hop
+    obj->user1 = 0;
+    CK_object *shot = CK_GetNewObj(true);
+    shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
+    shot->type = CT6_EnemyShot;
+    shot->posY = obj->posY + 0xB0;
+    shot->xDirection = obj->xDirection;
+    shot->posX = obj->xDirection == IN_motion_Right ? obj->posX + 0x100 : obj->posX + 0xB0;
+    CK_SetAction(shot, CK_GetActionByName("CK6_ACT_BobbaTwinkle0"));
+    shot->zLayer = PRIORITIES - 2;
+
+    obj->currentAction = CK_GetActionByName("CK6_ACT_BobbaShoot0");
+  }
+  else
+  {
+    // Turn around if there's no where to jump
+    uint16_t *tile = CA_TilePtrAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2+1, 1);
+    for (int i = 0; i < 4; i++)
+    {
+      int w = CA_GetMapWidth();
+      if (!TI_ForeTop(*tile) && !TI_ForeTop(*(tile-w)) && !TI_ForeTop(*(tile + w)))
+      {
+        obj->xDirection = -obj->xDirection;
+        break;
+      }
+
+      tile += obj->xDirection;
+    }
+
+    obj->velX = obj->xDirection * 32;
+    obj->velY = -32;
+    SD_PlaySound(SOUND_BOBBAJUMP);
+  }
+}
+
+void CK6_BobbaCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    CK_KillKeen();
+  }
+  else if (b->type == CT_Stunner)
+  {
+    CK_ShotHit(b);
+    a->xDirection = -a->xDirection;
+  }
+}
+
+#define SOUND_BOBBALAND 0x1B
+void CK6_BobbaJumpDraw(CK_object *obj)
+{
+  if (obj->rightTI)
+  {
+    obj->xDirection = IN_motion_Right;
+    obj->velX = -obj->velX;
+  }
+  else if (obj->leftTI)
+  {
+    obj->xDirection = IN_motion_Left;
+    obj->velX = -obj->velX;
+  }
+
+  if (obj->bottomTI)
+    obj->velY = 0;
+
+  if (obj->topTI)
+  {
+    SD_PlaySound(SOUND_BOBBALAND);
+    CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_BobbaStand0"));
+  }
+
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+void CK6_BobbaFireballDraw(CK_object *obj)
+{
+
+  if (obj->topTI || obj->bottomTI || obj->rightTI || obj->leftTI)
+    CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_BobbaFireballHits0"));
+
+
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
 // Babobbas
 
 void CK6_SpawnBabobba(int tileX, int tileY)
@@ -66,7 +176,7 @@ void CK6_BabobbaSit(CK_object *obj)
     shot->type = CT6_EnemyShot;
     shot->posY = obj->posY + 0x40;
     shot->xDirection = obj->xDirection;
-    shot->posX = obj->xDirection == IN_motion_Right ? obj->posX + 0x100 : obj->posX - 0xB0;
+    shot->posX = obj->xDirection == IN_motion_Right ? obj->posX + 0x100 : obj->posX + 0xB0;
     shot->velX = shot->xDirection * 32;
     CK_SetAction(shot, CK_GetActionByName("CK6_ACT_BabobbaShotStart0"));
     shot->zLayer = PRIORITIES - 2;
@@ -80,7 +190,7 @@ void CK6_BabobbaSit(CK_object *obj)
     for (int i = 0; i < 4; i++)
     {
       int w = CA_GetMapWidth();
-      if (!TI_ForeTop(*tile) && !TI_ForeTop(*(tile+w) && !TI_ForeTop(*(tile + w * 2))))
+      if (!TI_ForeTop(*tile) && !TI_ForeTop(*(tile-w)) && !TI_ForeTop(*(tile + w)))
       {
         obj->xDirection = -obj->xDirection;
         break;
@@ -247,12 +357,11 @@ void CK6_CeilickCol(CK_object *a, CK_object *b)
 void CK6_Obj3_SetupFunctions()
 {
 
-  CK_ACT_AddFunction("CK6_Ceilick", &CK6_Ceilick);
-  CK_ACT_AddFunction("CK6_CeilickDescend", &CK6_CeilickDescend);
-  CK_ACT_AddFunction("CK6_CeilickStunned", &CK6_CeilickStunned);
-  CK_ACT_AddColFunction("CK6_CeilickCol", &CK6_CeilickCol);
-
-  CK_ACT_AddFunction("CK6_BlorbDraw", &CK6_BlorbDraw);
+  CK_ACT_AddFunction("CK6_BobbaFireball", &CK6_BobbaFireball);
+  CK_ACT_AddFunction("CK6_Bobba", &CK6_Bobba);
+  CK_ACT_AddColFunction("CK6_BobbaCol", &CK6_BobbaCol);
+  CK_ACT_AddFunction("CK6_BobbaJumpDraw", &CK6_BobbaJumpDraw);
+  CK_ACT_AddFunction("CK6_BobbaFireballDraw", &CK6_BobbaFireballDraw);
 
   CK_ACT_AddFunction("CK6_BabobbaSit", &CK6_BabobbaSit);
   CK_ACT_AddColFunction("CK6_BabobbaCol", &CK6_BabobbaCol);
@@ -260,4 +369,13 @@ void CK6_Obj3_SetupFunctions()
   CK_ACT_AddFunction("CK6_BabobbaJumpDraw", &CK6_BabobbaJumpDraw);
   CK_ACT_AddFunction("CK6_BabobbaShot", &CK6_BabobbaShot);
   CK_ACT_AddFunction("CK6_BabobbaShotVanish", &CK6_BabobbaShotVanish);
+
+  CK_ACT_AddFunction("CK6_Ceilick", &CK6_Ceilick);
+  CK_ACT_AddFunction("CK6_CeilickDescend", &CK6_CeilickDescend);
+  CK_ACT_AddFunction("CK6_CeilickStunned", &CK6_CeilickStunned);
+  CK_ACT_AddColFunction("CK6_CeilickCol", &CK6_CeilickCol);
+
+  CK_ACT_AddFunction("CK6_BlorbDraw", &CK6_BlorbDraw);
+
+
 }
