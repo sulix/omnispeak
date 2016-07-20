@@ -822,7 +822,7 @@ void US_GetSavefiles()
 		{
 			if( fread( psfe, sizeof( US_Savefile ), 1, handle) == 1 )
 				if( strcmp( psfe->id, "CK5" ) == 0 )	/* AZ:46AA */
-					if( psfe->unknown1 == (uint16_t)0xA537 )
+					if( psfe->printXOffset == ck_currentEpisode->printXOffset )
 						valid = 1;
 
 			fclose( handle );

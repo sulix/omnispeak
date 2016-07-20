@@ -1206,7 +1206,7 @@ void save_savegame_item( US_CardItem far *item )
 	/* Prompt the user to enter a name */
 	fontcolour = 2;
 	VH_Bar( item->x + 1, item->y + 2, 146, 7, 8 );
-	e->unknown1 = 0xA537;
+	e->printXOffset = ck_currentEpisode->printXOffset;
 	n = window_input( item->x + 2, item->y + 2, e->name, (e->used ? e->name : NULL), 1, 32, 138 );
 
 	/* If they entered no name, give a default */
