@@ -99,6 +99,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 	}
 	else if (b->type == CT_CLASS(Platform)) //Platform
 	{
+impossibleBullet:
 		if (!ck_keenState.platform)
 			CK_PhysPushY(a,b);
 	}
@@ -145,9 +146,20 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
   }
   else if (ck_currentEpisode->ep == EP_CK6)
   {
+    if (b->type == CT_Stunner)
+    {
+      // Reflected off of flect
+      if (b->user4)
+      {
+        CK_ShotHit(b);
+        CK_SetAction2(a, CK_GetActionByName("CK6_ACT_keenStunned0"));
+      }
 
+      goto impossibleBullet;
+      // The legendary bug!  For some reason, the control flows to check if
+      // keen is riding a platform he contacts his own stunner bullet.
+    }
   }
-
 }
 
 int ck_KeenRunXVels[8] = {0, 0, 4, 4, 8, -4, -4, -8};

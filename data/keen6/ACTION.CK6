@@ -119,6 +119,10 @@
 %action CK_ACT_DoorOpen1 0x15F2 0 0 UnscaledOnce 0 0 10 0x0 0x0 CK_DoorOpen NULL NULL CK_ACT_DoorOpen2
 %action CK_ACT_DoorOpen2 0x1610 0 0 UnscaledOnce 0 0 10 0x0 0x0 CK_DoorOpen NULL NULL CK_ACT_DoorOpen3
 %action CK_ACT_DoorOpen3 0x162E 0 0 UnscaledOnce 0 0 10 0x0 0x0 CK_DoorOpen NULL NULL NULL
+
+#Stunned keen
+%action CK6_ACT_keenStunned0 0x1868 85 85 UnscaledOnce 0 1 60 0x0 0x0 CK_Fall CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
+
 %action CK_ACT_item 0x196A 0 0 UnscaledOnce 0 0 20 0x0 0x0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item2
 %action CK_ACT_item2 0x1988 0 0 UnscaledOnce 0 0 20 0x0 0x0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item
 #%action CK6_ACT_bloogletItem1 0x19A6 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK6_BloogletItem NULL CK_BasicDrawFunc1 CK6_ACT_bloogletItem2
@@ -264,13 +268,15 @@
 #%action CK6_ACT_BipshipHit2 0x2B4C 283 283 UnscaledOnce 1 0 30000 0x0 0x0 NULL NULL CK6_BipshipHitDraw CK6_ACT_BipshipHit2
 #%action CK6_ACT_BipshipSmoke0 0x2B6A 281 281 UnscaledOnce 1 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BipshipSmoke1
 #%action CK6_ACT_BipshipSmoke1 0x2B88 282 282 UnscaledOnce 1 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
-#%action CK6_ACT_FlectTurn0 0x2BA6 323 318 Frame 0 1 60 0x0 0x0 CK6_FlectTurn CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk0
-#%action CK6_ACT_FlectTurn1 0x2BC4 317 317 UnscaledOnce 0 1 8 0x0 0x0 NULL CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk0
-#%action CK6_ACT_FlectWalk0 0x2BE2 324 319 UnscaledOnce 0 1 10 0x80 0x0 CK6_FlectWalk CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk1
-#%action CK6_ACT_FlectWalk1 0x2C00 325 320 UnscaledOnce 0 1 10 0x80 0x0 CK6_FlectWalk CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk2
-#%action CK6_ACT_FlectWalk2 0x2C1E 326 321 UnscaledOnce 0 1 10 0x80 0x0 CK6_FlectWalk CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk3
-#%action CK6_ACT_FlectWalk3 0x2C3C 327 322 UnscaledOnce 0 1 10 0x80 0x0 CK6_FlectWalk CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk0
-#%action CK6_ACT_FlectStunned0 0x2C5A 328 328 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_FlectStunned0
+
+#Flect
+%action CK6_ACT_FlectTurn0 0x2BA6 323 318 Frame 0 1 60 0x0 0x0 CK6_FlectTurn CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk0
+%action CK6_ACT_FlectTurn1 0x2BC4 317 317 UnscaledOnce 0 1 8 0x0 0x0 NULL CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk0
+%action CK6_ACT_FlectWalk0 0x2BE2 324 319 UnscaledOnce 0 1 10 0x80 0x0 CK6_FlectWalk CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk1
+%action CK6_ACT_FlectWalk1 0x2C00 325 320 UnscaledOnce 0 1 10 0x80 0x0 CK6_FlectWalk CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk2
+%action CK6_ACT_FlectWalk2 0x2C1E 326 321 UnscaledOnce 0 1 10 0x80 0x0 CK6_FlectWalk CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk3
+%action CK6_ACT_FlectWalk3 0x2C3C 327 322 UnscaledOnce 0 1 10 0x80 0x0 CK6_FlectWalk CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk0
+%action CK6_ACT_FlectStunned0 0x2C5A 328 328 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_FlectStunned0
 
 #Fleex
 %action CK6_ACT_FleexWalk0 0x2C78 241 239 UnscaledOnce 0 1 7 0x80 0x0 CK6_FleexWalk CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexWalk1

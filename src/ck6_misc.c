@@ -631,6 +631,16 @@ void CK6_ScanInfoLayer()
         CK6_SpawnBobba(x, y);
         break;
 
+      // Flects
+      case 78:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 77:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 76:
+        ck6_lumpsNeeded[Lump_Flect] = true;
+        CK6_SpawnFlect(x, y);
+        break;
+
       // Blorbs
       case 81:
         if (ck_gameState.difficulty < D_Hard) break;

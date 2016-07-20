@@ -47,6 +47,7 @@ void CK6_SpawnItem(int tileX, int tileY, int itemNumber);
 /* ck6_obj1.c */
 
 /* ck6_obj2.c */
+void CK6_SpawnFlect(int tileX, int tileY);
 
 /* ck6_obj3.c */
 void CK6_SpawnFleex(int tileX, int tileY);
