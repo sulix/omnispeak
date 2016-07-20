@@ -309,6 +309,171 @@ void CK_LethalCol(CK_object *o1, CK_object *o2)
 	}
 }
 
+/*
+ * Tile collision for making the mine and shelley bits bounce, as well as the
+ * babobba shot
+ */
+
+void CK_ShrapnelTileCol(CK_object *obj)
+{
+	int bouncePower; // is long in keen source
+	int topflags_0, velY, absvelX;
+	int d, motion;
+
+  static int bouncearray[8][8] ={
+		{ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
+		{ 0x7, 0x6, 0x5, 0x4, 0x3, 0x2, 0x1, 0x0},
+		{ 0x5, 0x4, 0x3, 0x2, 0x1, 0x0, 0xF, 0xE},
+		{ 0x5, 0x4, 0x3, 0x2, 0x1, 0x0, 0xF, 0xE},
+		{ 0x3, 0x2, 0x1, 0x0, 0xF, 0xE, 0xD, 0xC},
+		{ 0x9, 0x8, 0x7, 0x6, 0x5, 0x4, 0x3, 0x2},
+		{ 0x9, 0x8, 0x7, 0x6, 0x5, 0x4, 0x3, 0x2},
+		{ 0xB, 0xA, 0x9, 0x8, 0x7, 0x6, 0x5, 0x4},
+	};
+
+	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+
+
+	// Bounce backwards if a side wall is hit
+	if (obj->leftTI || obj->rightTI)
+	{
+		obj->velX = -obj->velX / 2;
+	}
+
+	// Bounce down if a top wall is hit
+	if (obj->bottomTI)
+	{
+		obj->velY = -obj->velY / 2;
+		return;
+	}
+
+	// Bounce sideways if a slope floor is hit
+	topflags_0 = obj->topTI;
+	if (!topflags_0)
+		return;
+
+	if (obj->velY < 0)
+		obj->velY = 0;
+
+	absvelX = ABS(obj->velX);
+	velY = obj->velY;
+
+	if (absvelX > velY)
+	{
+		if (absvelX > velY * 2)
+		{
+			d = 0;
+			bouncePower = absvelX * 286;
+		}
+		else
+		{
+			d = 1;
+			bouncePower = absvelX * 362;
+		}
+	}
+	else
+	{
+		if (velY > absvelX * 2)
+		{
+			d = 3;
+			bouncePower = velY * 256;
+		}
+		else
+		{
+			d = 2;
+			bouncePower = velY * 286;
+		}
+	}
+
+	if (obj->velX > 0) //mirror around y-axis
+		d = 7 - d;
+
+	bouncePower /= 2; // absorb energy
+
+	motion = bouncearray[obj->topTI][d];
+
+	switch (motion)
+	{
+	case 0:
+		obj->velX = bouncePower / 286;
+		obj->velY = -obj->velX / 2;
+		break;
+	case 1:
+		obj->velX = bouncePower / 362;
+		obj->velY = -obj->velX;
+		break;
+	case 2:
+		obj->velY = -(bouncePower / 286);
+		obj->velX = -obj->velY / 2;
+		break;
+	case 3:
+	case 4:
+		obj->velX = 0;
+		obj->velY = -(bouncePower / 256);
+		break;
+	case 5:
+		obj->velY = -(bouncePower / 286);
+		obj->velX = obj->velY / 2;
+		break;
+	case 6:
+		obj->velY = -(bouncePower / 362);
+		obj->velX = obj->velY;
+		break;
+	case 7:
+		obj->velX = -(bouncePower / 286);
+		obj->velY = obj->velX / 2;
+		break;
+	case 8:
+		obj->velX = -(bouncePower / 286);
+		obj->velY = -obj->velX / 2;
+		break;
+	case 9:
+		obj->velX = -(bouncePower / 362);
+		obj->velY = -obj->velX;
+		break;
+	case 0xA:
+		obj->velY = bouncePower / 286;
+		obj->velX = -obj->velY / 2;
+		break;
+	case 0xB:
+	case 0xC:
+		obj->velX = 0;
+		obj->velY = -(bouncePower / 256);
+		break;
+	case 0xD:
+		obj->velY = bouncePower / 286;
+		obj->velX = obj->velY / 2;
+		break;
+	case 0xE:
+		obj->velX = bouncePower / 362;
+		obj->velY = bouncePower / 362;
+		break;
+	case 0xF:
+		obj->velX = bouncePower / 256;
+		obj->velY = obj->velX / 2;
+		break;
+	default: break;
+	}
+
+	// if speed is lower than threshhold, then disappear
+	if (bouncePower < 0x1000)
+	{
+    // The babobba shot DOES have a next action, whereas the CK5 shrapnel doesn't
+    // The original .exe has no check for a  NULL action here
+		// we can't advance to a NULL action, because omnispeak will segfault (Keen5 wouldn't)
+    // so we need to check if the next action is NULL
+
+    if (obj->currentAction->next)
+      CK_SetAction2(obj, obj->currentAction->next);
+    else
+    {
+      RF_RemoveSpriteDraw(&obj->sde);
+      CK_RemoveObj(obj);
+    }
+  }
+}
+
+
 void CK_Misc_SetupFunctions(void)
 {
   CK_ACT_AddFunction("CK_SetDraw", &CK_SetDraw);
@@ -322,4 +487,5 @@ void CK_Misc_SetupFunctions(void)
 	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
   CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
   CK_ACT_AddColFunction("CK_LethalCol", &CK_LethalCol);
+	CK_ACT_AddFunction("CK_ShrapnelTileCol", &CK_ShrapnelTileCol);
 }

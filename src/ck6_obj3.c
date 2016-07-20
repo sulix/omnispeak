@@ -34,6 +34,125 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * Setup all of the functions in this file.
  */
 
+// Babobbas
+
+void CK6_SpawnBabobba(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Babobba;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x200;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BabobbaJump0"));
+}
+
+void CK6_BabobbaSit(CK_object *obj)
+{
+  if (US_RndT() < 4)
+  {
+    // Nap time
+    obj->user1 = 0;
+    obj->currentAction = CK_GetActionByName("CK6_ACT_BabobbaNap0");
+  }
+  else if (++obj->user1 == 3)
+  {
+    // Shoot every third hop
+    obj->user1 = 0;
+    CK_object *shot = CK_GetNewObj(true);
+    shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
+    shot->type = CT6_EnemyShot;
+    shot->posY = obj->posY + 0x40;
+    shot->xDirection = obj->xDirection;
+    shot->posX = obj->xDirection == IN_motion_Right ? obj->posX + 0x100 : obj->posX - 0xB0;
+    shot->velX = shot->xDirection * 32;
+    CK_SetAction(shot, CK_GetActionByName("CK6_ACT_BabobbaShotStart0"));
+    shot->zLayer = PRIORITIES - 2;
+
+    obj->currentAction = CK_GetActionByName("CK6_ACT_BabobbaSit1");
+  }
+  else
+  {
+    // Turn around if there's no where to jump
+    uint16_t *tile = CA_TilePtrAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2+1, 1);
+    for (int i = 0; i < 4; i++)
+    {
+      int w = CA_GetMapWidth();
+      if (!TI_ForeTop(*tile) && !TI_ForeTop(*(tile+w) && !TI_ForeTop(*(tile + w * 2))))
+      {
+        obj->xDirection = -obj->xDirection;
+        break;
+      }
+
+      tile += obj->xDirection;
+    }
+
+    obj->velX = obj->xDirection * 24;
+    obj->velY = -32;
+  }
+}
+
+void CK6_BabobbaCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    CK_KillKeen();
+  }
+  else if (b->type == CT_Stunner)
+  {
+    CK_StunCreature(a, b, CK_GetActionByName("CK6_ACT_BabobbaStunned0"));
+  }
+}
+
+void CK6_BabobbaNapCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Stunner)
+    CK_StunCreature(a, b, CK_GetActionByName("CK6_ACT_BabobbaStunned0"));
+}
+
+void CK6_BabobbaJumpDraw(CK_object *obj)
+{
+  if (obj->rightTI)
+  {
+    obj->xDirection = IN_motion_Right;
+    obj->velX = -obj->velX;
+  }
+  else if (obj->leftTI)
+  {
+    obj->xDirection = IN_motion_Left;
+    obj->velX = -obj->velX;
+  }
+
+  if (obj->bottomTI)
+    obj->velY = 0;
+
+  if (obj->topTI)
+    CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_BabobbaSit0"));
+
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+void CK6_BabobbaShot(CK_object *obj)
+{
+  if (++obj->user1 == 10)
+  {
+    obj->user1 = 0;
+    obj->currentAction = CK_GetActionByName("CK6_ACT_BabobbaShotVanish0");
+  }
+}
+
+void CK6_BabobbaShotVanish(CK_object *obj)
+{
+  if (++obj->user1 == 5)
+  {
+    CK_RemoveObj(obj);
+  }
+}
+
+// Blorbs
+
 void CK6_SpawnBlorb(int tileX, int tileY)
 {
   CK_object *obj = CK_GetNewObj(false);
@@ -74,7 +193,6 @@ void CK6_BlorbDraw(CK_object *obj)
   }
 
   RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
-
 }
 
 void CK6_SpawnCeilick(int tileX, int tileY)
@@ -136,4 +254,10 @@ void CK6_Obj3_SetupFunctions()
 
   CK_ACT_AddFunction("CK6_BlorbDraw", &CK6_BlorbDraw);
 
+  CK_ACT_AddFunction("CK6_BabobbaSit", &CK6_BabobbaSit);
+  CK_ACT_AddColFunction("CK6_BabobbaCol", &CK6_BabobbaCol);
+  CK_ACT_AddColFunction("CK6_BabobbaNapCol", &CK6_BabobbaNapCol);
+  CK_ACT_AddFunction("CK6_BabobbaJumpDraw", &CK6_BabobbaJumpDraw);
+  CK_ACT_AddFunction("CK6_BabobbaShot", &CK6_BabobbaShot);
+  CK_ACT_AddFunction("CK6_BabobbaShotVanish", &CK6_BabobbaShotVanish);
 }

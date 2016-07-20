@@ -611,6 +611,7 @@ void CK6_ScanInfoLayer()
         CK_SpawnMapKeen(x, y);
 				break;
 
+
       // Blorbs
       case 81:
         if (ck_gameState.difficulty < D_Hard) break;
@@ -631,6 +632,15 @@ void CK6_ScanInfoLayer()
         CK6_SpawnCeilick(x, y);
         break;
 
+      // Babobbas
+      case 104:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 103:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 102:
+        ck6_lumpsNeeded[Lump_Babobba] = true;
+        CK6_SpawnBabobba(x, y);
+        break;
 
 			case 25:
 				RF_SetScrollBlock(x, y, true);

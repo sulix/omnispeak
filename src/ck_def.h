@@ -121,8 +121,10 @@ typedef enum CK_ClassType {
 	CT5_Korath = 23,
 	CT5_QED = 25,
 
+  CT6_EnemyShot = 4,
   CT6_Item = 5,
   CT6_Platform = 6,
+  CT6_Babobba = 13,
   CT6_Blorb = 22,
   CT6_Ceilick = 23,
   CT6_StunnedCreature = 25,
