@@ -621,7 +621,7 @@ int main(int argc, char *argv[])
 	us_argv = (const char **) argv;
 
 	// FIXME: Pick episode 5 if nothing selected
-	ck_currentEpisode = &ck5_episode;
+	ck_currentEpisode = &ck6_episode;
 	bool isFullScreen = false;
 	bool isAspectCorrected = true;
 

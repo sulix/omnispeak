@@ -41,52 +41,24 @@ void CK6_ScanInfoLayer();
 /* Spawning functions */
 
 /* ck6_misc.c */
-void CK6_SpawnFuseExplosion(int tileX, int tileY);
-void CK6_SpawnLevelEnd(void);
-void CK6_SpawnLightning(void);
 CK_object *CK6_SpawnEnemyShot(int posX, int posY, CK_action *action);
-void CK6_SpawnRedBlockPlatform(int tileX, int tileY, int direction, bool purple);
-void CK6_SpawnRedStandPlatform(int tileX, int tileY);
 void CK6_SpawnItem(int tileX, int tileY, int itemNumber);
 
 /* ck6_obj1.c */
-void CK6_TurretSpawn(int tileX, int tileY, int direction);
-void CK6_SneakPlatSpawn(int tileX, int tileY);
-void CK6_GoPlatSpawn(int tileX, int tileY, int direction, bool purple);
-void CK6_SpawnVolte(int tileX, int tileY);
 
 /* ck6_obj2.c */
-void CK6_SpawnSparky(int tileX, int tileY);
-void CK6_SpawnAmpton(int tileX, int tileY);
-void CK6_SpawnSlice(int tileX, int tileY, int dir);
-void CK6_SpawnSliceDiag(int tileX, int tileY);
-void CK6_SpawnShelly(int tileX, int tileY);
 
 /* ck6_obj3.c */
-void CK6_SpawnMine(int tileX, int tileY);
-void CK6_SpawnRobo(int tileX, int tileY);
-void CK6_SpawnSpirogrip(int tileX, int tileY);
-void CK6_SpawnSpindred(int tileX, int tileY);
-void CK6_SpawnMaster(int tileX, int tileY);
-void CK6_SpawnShikadi(int tileX, int tileY);
-void CK6_SpawnShocksund(int tileX, int tileY);
-void CK6_SpawnSphereful(int tileX, int tileY);
-void CK6_SpawnKorath(int tileX, int tileY);
-void CK6_QEDSpawn(int tileX, int tileY);
+void CK6_SpawnCeilick(int tileX, int tileY);
 
 /* ck6_map.c */
 void CK6_MapMiscFlagsCheck(CK_object *keen);
 void CK_SpawnMapKeen(int tileX, int tileY);
-void CK6_MapKeenTeleSpawn(int tileX, int tileY);
 
 /* Map functions */
-void CK6_AnimateMapTeleporter(int tileX, int tileY);
-void CK6_AnimateMapElevator(int tileX, int tileY, int dir);
 
 /* Misc functions */
 
 /* ck6_misc.c */
-void CK6_ExplodeGalaxy();
-void CK6_FuseMessage();
 
 #endif

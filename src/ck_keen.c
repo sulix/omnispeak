@@ -1426,6 +1426,13 @@ void CK_KeenSpecialDrawFunc(CK_object *obj)
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 }
 
+// Used by CK6
+void CK_KeenJumpDownThink(CK_object *obj)
+{
+  obj->clipped = CLIP_normal;
+}
+
+
 void CK_KeenHangThink(CK_object *obj)
 {
 	if (ck_inputFrame.yDirection == -1 || ck_inputFrame.xDirection == obj->xDirection)
@@ -1950,6 +1957,7 @@ void CK_KeenSetupFunctions()
 	CK_ACT_AddFunction("CK_KeenPoleSitThink",&CK_KeenPoleSitThink);
 	CK_ACT_AddFunction("CK_KeenPoleUpThink",&CK_KeenPoleUpThink);
 	CK_ACT_AddFunction("CK_KeenPoleDownThink",&CK_KeenPoleDownThink);
+	CK_ACT_AddFunction("CK_KeenJumpDownThink",&CK_KeenJumpDownThink);
 	CK_ACT_AddFunction("CK_KeenPoleDownDrawFunc",&CK_KeenPoleDownDrawFunc);
 	CK_ACT_AddFunction("CK_KeenSetClipped",&CK_KeenSetClipped);
 	CK_ACT_AddColFunction("CK_KeenColFunc",&CK_KeenColFunc);

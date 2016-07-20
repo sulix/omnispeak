@@ -120,10 +120,16 @@ typedef enum CK_ClassType {
 	CT5_Sphereful = 22,
 	CT5_Korath = 23,
 	CT5_QED = 25,
+
+  CT6_Item = 5,
+  CT6_Platform = 6,
+  CT6_Ceilick = 23,
+  CT6_StunnedCreature = 25,
+  CT6_MapFlag = 35,
 } CK_ClassType;
 
 #define CT_CLASS(type) \
-  (ck_currentEpisode->ep == EP_CK4 ? CT4_##type : (ck_currentEpisode->ep == EP_CK5 ? CT5_##type : CT_Nothing))
+  (ck_currentEpisode->ep == EP_CK4 ? CT4_##type : (ck_currentEpisode->ep == EP_CK5 ? CT5_##type : (ck_currentEpisode->ep == EP_CK6 ? CT6_##type : CT_Nothing)))
 
 typedef enum CK_MiscFlag
 {

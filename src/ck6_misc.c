@@ -446,6 +446,139 @@ void CK6_SpawnRedStandPlatform(int tileX, int tileY)
 	CK_ResetClipRects(obj);
 }
 
+
+#define MAXLUMPS 0x28
+static bool ck6_lumpsNeeded[MAXLUMPS];
+
+typedef enum
+{
+  Lump_0,
+  Lump_1,
+  Lump_100Pts,
+  Lump_200Pts,
+  Lump_500Pts,
+  Lump_1000Pts,
+  Lump_2000Pts,
+  Lump_5000Pts,
+  Lump_1UP,
+  Lump_Gems,
+  Lump_Stunner,
+  Lump_Mapkeen,
+  Lump_12,
+  Lump_Bloog,
+  Lump_BloogletR,
+  Lump_BloogletY,
+  Lump_BloogletB,
+  Lump_BloogletG,
+  Lump_Platform,
+  Lump_Gik,
+  Lump_Blorb,
+  Lump_Bobba,
+  Lump_Babobba,
+  Lump_Bloogguard,
+  Lump_Flect,
+  Lump_Bip,
+  Lump_BipSquished,
+  Lump_Bipship,
+  Lump_Nospike,
+  Lump_Orbatrix,
+  Lump_Ceilick,
+  Lump_Fleex,
+  Lump_Rope,
+  Lump_Sandwich,
+  Lump_Turret,
+  Lump_Passcard,
+  Lump_Molly,
+} CK6_LumpType;
+
+static int16_t ck6_lumpStarts[MAXLUMPS] =
+{
+  11,
+  52,
+  150,
+  152,
+  154,
+  156,
+  158,
+  160,
+  162,
+  164,
+  173,
+  184,
+  0,
+  342,
+  351,
+  360,
+  369,
+  378,
+  424,
+  387,
+  399,
+  402,
+  285,
+  254,
+  317,
+  414,
+  423,
+  269,
+  298,
+  329,
+  246,
+  239,
+  183,
+  182,
+  176,
+  435,
+  433,
+  0,
+  0,
+  0,
+};
+
+static int16_t ck6_lumpEnds[MAXLUMPS] =
+{
+  26,
+  149,
+  151,
+  153,
+  155,
+  157,
+  159,
+  161,
+  163,
+  172,
+  174,
+  238,
+  0,
+  350,
+  359,
+  368,
+  377,
+  386,
+  432,
+  398,
+  401,
+  413,
+  297,
+  268,
+  328,
+  422,
+  423,
+  284,
+  316,
+  341,
+  253,
+  245,
+  183,
+  182,
+  181,
+  435,
+  434,
+  0,
+  0,
+  0,
+};
+
 // TODO: Cache stuff here instead of spawner handlers
 void CK6_ScanInfoLayer()
 {
@@ -478,7 +611,17 @@ void CK6_ScanInfoLayer()
         CK_SpawnMapKeen(x, y);
 				break;
 
-#if 0
+      //
+      case 84:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 83:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 82:
+        ck6_lumpsNeeded[Lump_Ceilick] = true;
+        CK6_SpawnCeilick(x, y);
+        break;
+
+
 			case 25:
 				RF_SetScrollBlock(x, y, true);
 				break;
@@ -486,6 +629,7 @@ void CK6_ScanInfoLayer()
 				RF_SetScrollBlock(x, y, false);
 				break;
 
+#if 0
 
 			case 69:
 				// Spawn extra stunner if Keen has low ammo
@@ -526,5 +670,10 @@ void CK6_ScanInfoLayer()
 		int keenYTilePos = ck_keenObj->posY >> 8;
 
 	}
+
+  for (int i = 0; i < MAXLUMPS; i++)
+    if (ck6_lumpsNeeded[i])
+      for (int j = ck6_lumpStarts[i]; j <= ck6_lumpEnds[i]; i++)
+        CA_CacheGrChunk(j);
 }
 

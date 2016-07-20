@@ -224,6 +224,44 @@ void CK_BasicDrawFunc4(CK_object *obj)
     }
   }
 
+  else if (ck_currentEpisode->ep == EP_CK6)
+  {
+    switch (obj->user4)
+    {
+      case 0x18:
+        starsX = 0x100;
+        starsY = -0x40;
+        break;
+
+      case 0x15:
+        starsX = 0x40;
+        starsY = -0x40;
+        break;
+
+      case 0x7:
+        starsX = 0x80;
+        starsY = -0x40;
+        break;
+
+      case 0x8:
+        starsY = -0x80;
+        break;
+
+      case 0xA:
+        starsX = 0x100;
+        starsY = 0x80;
+        break;
+
+      case 0x17:
+        starsY = 0xC0;
+        break;
+
+      default:
+        Quit("No star spec for object!");
+    }
+
+  }
+
 	// Tick the star 3-frame animation forward
 	if ((obj->user1 += SD_GetSpriteSync()) > 10)
 	{
