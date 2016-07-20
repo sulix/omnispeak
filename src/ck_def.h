@@ -123,6 +123,7 @@ typedef enum CK_ClassType {
 
   CT6_Item = 5,
   CT6_Platform = 6,
+  CT6_Blorb = 22,
   CT6_Ceilick = 23,
   CT6_StunnedCreature = 25,
   CT6_MapFlag = 35,

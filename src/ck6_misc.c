@@ -611,7 +611,17 @@ void CK6_ScanInfoLayer()
         CK_SpawnMapKeen(x, y);
 				break;
 
-      //
+      // Blorbs
+      case 81:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 80:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 79:
+        ck6_lumpsNeeded[Lump_Blorb] = true;
+        CK6_SpawnBlorb(x, y);
+        break;
+
+      // Ceilicks
       case 84:
         if (ck_gameState.difficulty < D_Hard) break;
       case 83:

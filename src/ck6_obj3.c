@@ -34,6 +34,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * Setup all of the functions in this file.
  */
 
+void CK6_SpawnBlorb(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Blorb;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x80;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = US_RndT() < 0x80 ? IN_motion_Down : IN_motion_Up;
+  obj->clipped = CLIP_simple;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Blorb0"));
+}
+
+#define SOUND_BLORBBOUNCE 6
+void CK6_BlorbDraw(CK_object *obj)
+{
+  if (obj->topTI)
+  {
+    obj->yDirection = IN_motion_Up;
+    SD_PlaySound(SOUND_BLORBBOUNCE);
+  }
+  else if (obj->bottomTI)
+  {
+    obj->yDirection = IN_motion_Down;
+    SD_PlaySound(SOUND_BLORBBOUNCE);
+  }
+
+  if (obj->leftTI)
+  {
+    obj->xDirection = IN_motion_Left;
+    SD_PlaySound(SOUND_BLORBBOUNCE);
+  }
+  else if (obj->rightTI)
+  {
+    obj->xDirection = IN_motion_Right;
+    SD_PlaySound(SOUND_BLORBBOUNCE);
+  }
+
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+
+}
+
 void CK6_SpawnCeilick(int tileX, int tileY)
 {
   CK_object *obj = CK_GetNewObj(false);
@@ -90,5 +133,7 @@ void CK6_Obj3_SetupFunctions()
   CK_ACT_AddFunction("CK6_CeilickDescend", &CK6_CeilickDescend);
   CK_ACT_AddFunction("CK6_CeilickStunned", &CK6_CeilickStunned);
   CK_ACT_AddColFunction("CK6_CeilickCol", &CK6_CeilickCol);
+
+  CK_ACT_AddFunction("CK6_BlorbDraw", &CK6_BlorbDraw);
 
 }

@@ -526,6 +526,17 @@ void CK_PhysFullClipToWalls(CK_object *obj)
       }
       break;
 
+    case EP_CK6:
+      if (obj->type == CT6_Blorb)
+      {
+        delX = delY = 0x200;
+      }
+      else
+      {
+        goto badobjclass;
+      }
+      break;
+
     default:
       break;
 

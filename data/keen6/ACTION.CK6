@@ -313,9 +313,9 @@
 #%action CK6_ACT_BabobbaShot1 0x310A 291 291 UnscaledOnce 0 0 8 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_BabobbaShot0
 #%action CK6_ACT_BabobbaShotVanish0 0x3128 292 292 UnscaledOnce 0 0 8 0x0 0x0 CK6_BabobbaShotVanish CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_BabobbaShotVanish1
 #%action CK6_ACT_BabobbaShotVanish1 0x3146 65535 65535 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BabobbaShotVanish0
-#%action CK6_ACT_Blorb0 0x3164 399 399 ScaledOnce 0 0 20 0x8 0x8 NULL CK_LethalCol CK6_BlorbDraw CK6_ACT_Blorb1
-#%action CK6_ACT_Blorb1 0x3182 400 400 ScaledOnce 0 0 20 0x8 0x8 NULL CK_LethalCol CK6_BlorbDraw CK6_ACT_Blorb2
-#%action CK6_ACT_Blorb2 0x31A0 401 401 ScaledOnce 0 0 20 0x8 0x8 NULL CK_LethalCol CK6_BlorbDraw CK6_ACT_Blorb0
+%action CK6_ACT_Blorb0 0x3164 399 399 ScaledOnce 0 0 20 0x8 0x8 NULL CK_LethalCol CK6_BlorbDraw CK6_ACT_Blorb1
+%action CK6_ACT_Blorb1 0x3182 400 400 ScaledOnce 0 0 20 0x8 0x8 NULL CK_LethalCol CK6_BlorbDraw CK6_ACT_Blorb2
+%action CK6_ACT_Blorb2 0x31A0 401 401 ScaledOnce 0 0 20 0x8 0x8 NULL CK_LethalCol CK6_BlorbDraw CK6_ACT_Blorb0
 %action CK6_ACT_CeilickWait0 0x31BE 248 248 Frame 0 0 20 0x0 0x0 CK6_Ceilick NULL CK_BasicDrawFunc1 NULL
 %action CK6_ACT_CeilickStrike00 0x31DC 248 248 UnscaledOnce 0 0 6 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_CeilickStrike0
 %action CK6_ACT_CeilickStrike0 0x31FA 249 249 UnscaledOnce 0 0 6 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike1

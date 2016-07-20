@@ -50,6 +50,7 @@ void CK6_SpawnItem(int tileX, int tileY, int itemNumber);
 
 /* ck6_obj3.c */
 void CK6_SpawnCeilick(int tileX, int tileY);
+void CK6_SpawnBlorb(int tileX, int tileY);
 
 /* ck6_map.c */
 void CK6_MapMiscFlagsCheck(CK_object *keen);
