@@ -30,9 +30,52 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // =========================================================================
 
+
+// Also used for Fleex and Nospikes
+void CK6_MultihitDraw(CK_object *obj)
+{
+	// Hit wall walking right; turn around and go left
+	if (obj->xDirection == IN_motion_Right && obj->leftTI != 0)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Left;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, obj->currentAction);
+	}
+		// Hit wall walking left; turn around and go right
+	else if (obj->xDirection == IN_motion_Left && obj->rightTI != 0)
+	{
+		obj->posX -= obj->deltaPosX;
+		obj->xDirection = IN_motion_Right;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, obj->currentAction);
+	}
+		// Walked off of ledge; turn around
+	else if (obj->topTI == 0)
+	{
+		obj->posX -= obj->deltaPosX * 2;
+		obj->xDirection = -obj->xDirection;
+		obj->timeUntillThink = US_RndT() / 32;
+		CK_SetAction2(obj, obj->currentAction);
+	}
+
+  if (obj->user1)
+  {
+    obj->user1--;
+    RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, true, obj->zLayer);
+  }
+  else
+  {
+    RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+  }
+}
+
 /*
  * Setup all of the functions in this file.
  */
 void CK6_Obj1_SetupFunctions()
 {
+
+  CK_ACT_AddFunction("CK6_MultihitDraw", &CK6_MultihitDraw);
+
 }

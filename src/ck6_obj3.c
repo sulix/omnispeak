@@ -34,6 +34,66 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * Setup all of the functions in this file.
  */
 
+// Fleex
+
+void CK6_SpawnFleex(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Fleex;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = (tileX << G_T_SHIFT);
+  obj->posY = (tileY << G_T_SHIFT) - 0x280;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_FleexWalk0"));
+  obj->user2 = 4;
+}
+
+void CK6_FleexWalk(CK_object *obj)
+{
+  if (ck_keenObj->deltaPosX && !obj->user1)
+  {
+    obj->currentAction = CK_GetActionByName("CK6_ACT_FleexSearch0");
+  }
+  else
+  {
+    obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+  }
+}
+
+void CK6_FleexSearch(CK_object *obj)
+{
+  obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+}
+
+void CK6_FleexCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+    CK_KillKeen();
+
+  if (b->type == CT_Stunner)
+  {
+    if (--a->user2)
+    {
+      a->user1 = 2;
+      a->visible = true;
+      CK_ShotHit(b);
+      if (a->currentAction == CK_GetActionByName("CK6_ACT_FleexSearch0") ||
+          a->currentAction == CK_GetActionByName("CK6_ACT_FleexSearch1"))
+      {
+        a->xDirection = a->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+        CK_SetAction2(a, CK_GetActionByName("CK6_ACT_FleexWalk0"));
+      }
+    }
+    else
+    {
+      CK_StunCreature(a, b, CK_GetActionByName("CK6_ACT_FleexStunned0"));
+      a->velY = -20;
+    }
+  }
+}
+
+
 // Bobbas
 
 void CK6_SpawnBobba(int tileX, int tileY)
@@ -356,6 +416,10 @@ void CK6_CeilickCol(CK_object *a, CK_object *b)
 
 void CK6_Obj3_SetupFunctions()
 {
+
+  CK_ACT_AddFunction("CK6_FleexWalk", &CK6_FleexWalk);
+  CK_ACT_AddFunction("CK6_FleexSearch", &CK6_FleexSearch);
+  CK_ACT_AddColFunction("CK6_FleexCol", &CK6_FleexCol);
 
   CK_ACT_AddFunction("CK6_BobbaFireball", &CK6_BobbaFireball);
   CK_ACT_AddFunction("CK6_Bobba", &CK6_Bobba);

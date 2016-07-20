@@ -271,15 +271,17 @@
 #%action CK6_ACT_FlectWalk2 0x2C1E 326 321 UnscaledOnce 0 1 10 0x80 0x0 CK6_FlectWalk CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk3
 #%action CK6_ACT_FlectWalk3 0x2C3C 327 322 UnscaledOnce 0 1 10 0x80 0x0 CK6_FlectWalk CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk0
 #%action CK6_ACT_FlectStunned0 0x2C5A 328 328 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_FlectStunned0
-#%action CK6_ACT_FleexWalk0 0x2C78 241 239 UnscaledOnce 0 1 7 0x80 0x0 CK6_FleexWalk CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexWalk1
-#%action CK6_ACT_FleexWalk1 0x2C96 242 240 UnscaledOnce 0 1 7 0x80 0x0 CK6_FleexWalk CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexWalk0
-#%action CK6_ACT_FleexTrack0 0x2CB4 241 239 UnscaledOnce 0 1 7 0x80 0x0 NULL CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexTrack1
-#%action CK6_ACT_FleexTrack1 0x2CD2 242 240 UnscaledOnce 0 1 7 0x80 0x0 NULL CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexTrack2
-#%action CK6_ACT_FleexTrack2 0x2CF0 241 239 UnscaledOnce 0 1 7 0x80 0x0 NULL CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexTrack3
-#%action CK6_ACT_FleexTrack3 0x2D0E 242 240 UnscaledOnce 0 1 7 0x80 0x0 NULL CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexWalk0
-#%action CK6_ACT_FleexSearch0 0x2D2C 243 243 UnscaledOnce 0 1 60 0x0 0x0 NULL CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexSearch1
-#%action CK6_ACT_FleexSearch1 0x2D4A 244 244 UnscaledOnce 0 1 60 0x0 0x0 CK6_FleexSearch CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexTrack0
-#%action CK6_ACT_FleexStunned0 0x2D68 245 245 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+
+#Fleex
+%action CK6_ACT_FleexWalk0 0x2C78 241 239 UnscaledOnce 0 1 7 0x80 0x0 CK6_FleexWalk CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexWalk1
+%action CK6_ACT_FleexWalk1 0x2C96 242 240 UnscaledOnce 0 1 7 0x80 0x0 CK6_FleexWalk CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexWalk0
+%action CK6_ACT_FleexTrack0 0x2CB4 241 239 UnscaledOnce 0 1 7 0x80 0x0 NULL CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexTrack1
+%action CK6_ACT_FleexTrack1 0x2CD2 242 240 UnscaledOnce 0 1 7 0x80 0x0 NULL CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexTrack2
+%action CK6_ACT_FleexTrack2 0x2CF0 241 239 UnscaledOnce 0 1 7 0x80 0x0 NULL CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexTrack3
+%action CK6_ACT_FleexTrack3 0x2D0E 242 240 UnscaledOnce 0 1 7 0x80 0x0 NULL CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexWalk0
+%action CK6_ACT_FleexSearch0 0x2D2C 243 243 UnscaledOnce 0 1 60 0x0 0x0 NULL CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexSearch1
+%action CK6_ACT_FleexSearch1 0x2D4A 244 244 UnscaledOnce 0 1 60 0x0 0x0 CK6_FleexSearch CK6_FleexCol CK6_MultihitDraw CK6_ACT_FleexTrack0
+%action CK6_ACT_FleexStunned0 0x2D68 245 245 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
 
 #Bobbas
 %action CK6_ACT_BobbaJump0 0x2D86 403 406 UnscaledFrame 0 0 8 0x0 0x0 CK_Fall CK6_BobbaCol CK6_BobbaJumpDraw CK6_ACT_BobbaJump1

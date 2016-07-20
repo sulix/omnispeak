@@ -1077,7 +1077,7 @@ void RFL_ProcessSpriteErasers()
 void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int chunk, bool allWhite, int zLayer)
 {
 	bool insertNeeded = true;
-	if (chunk <= 0)
+	if (chunk == 0 || chunk == -1)
 	{
 		RF_RemoveSpriteDraw(drawEntry);
 		return;

@@ -49,6 +49,7 @@ void CK6_SpawnItem(int tileX, int tileY, int itemNumber);
 /* ck6_obj2.c */
 
 /* ck6_obj3.c */
+void CK6_SpawnFleex(int tileX, int tileY);
 void CK6_SpawnBobba(int tileX, int tileY);
 void CK6_SpawnBabobba(int tileX, int tileY);
 void CK6_SpawnBlorb(int tileX, int tileY);

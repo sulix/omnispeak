@@ -611,6 +611,16 @@ void CK6_ScanInfoLayer()
         CK_SpawnMapKeen(x, y);
 				break;
 
+        // Fleex
+      case 20:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 19:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 18:
+        ck6_lumpsNeeded[Lump_Fleex] = true;
+        CK6_SpawnFleex(x, y);
+        break;
+
       // Bobbas
       case 43:
         if (ck_gameState.difficulty < D_Hard) break;
