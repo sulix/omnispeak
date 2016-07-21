@@ -87,7 +87,7 @@ typedef struct VL_Backend
 	long (*getSurfaceMemUse)(void *surface);
 	void (*refreshPaletteAndBorderColor)(void *screen);
 	void (*surfaceRect)(void *dst_surface, int x, int y, int w, int h, int colour);
-  void (*surfaceRect_PM)(void *dst_surface, int x, int y, int w, int h, int colour, int mapmask);
+	void (*surfaceRect_PM)(void *dst_surface, int x, int y, int w, int h, int colour, int mapmask);
 	void (*surfaceToSurface)(void *src_surface, void *dst_surface, int x, int y, int sx, int sy, int sw, int sh);
 	void (*surfaceToSelf)(void *surface, int x, int y, int sx, int sy, int sw, int sh);
 	void (*unmaskedToSurface)(void *src, void *dst_surface, int x, int y, int w, int h);

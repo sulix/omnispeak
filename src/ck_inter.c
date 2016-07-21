@@ -207,6 +207,9 @@ void DoubleSizeTerminatorPics(int pic)
 	size = bmp.width * bmp.height * 2;
 	MM_GetPtr(&terminator_pic_memptrs[pic], size * 2);
 
+	ck_termPicWidths[pic] = bmp.width;
+	ck_termPicHeights[pic] = bmp.height;
+
 	// Copy the data to the expanded buffer
 	picptr = (uint8_t *)ca_graphChunks[picchunk];
 	double_picptr = (uint16_t *)terminator_pic_memptrs[pic];
@@ -222,14 +225,17 @@ void DoubleSizeTerminatorPics(int pic)
 int AdvanceTerminatorCredit(int elapsedTime)
 {
 
-	int bx;
+	int bx, picchunk;
 
 	switch(ck_termCreditStage)
 	{
 
 	case -1:
 		// loading
-		ck_currentTermPicSeg = terminator_pic_memptrs[ck_currentTerminatorCredit];
+
+		picchunk = *terminator_pics[ck_currentTerminatorCredit];
+		CA_CacheGrChunk(picchunk);
+		ck_currentTermPicSeg = ca_graphChunks[picchunk];//terminator_pic_memptrs[ck_currentTerminatorCredit];
 		ck_currentTermPicWidth = ck_termPicWidths[ck_currentTerminatorCredit];
 		ck_currentTermPicHalfWidth = (ck_currentTermPicWidth+3)>>1;
 		ck_currentTermPicHeight = ck_termPicHeights[ck_currentTerminatorCredit];
@@ -298,19 +304,20 @@ int AdvanceTerminatorCredit(int elapsedTime)
 
 void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 {
-	int pelpan, var4, numrows,var10;
+	int pelpan, picX, numrows,var10;
 
 	// Vars are static because BP is used during ASM draw routine
 	static int rowsToDraw;
 
+	static int oldY2 = 0;
 
-	int creditY1, varA, creditY2, var12, varE;
+
+	int creditY1, varA, creditY2, var12, picStartOffset;
 
 	pelpan = xpixel & 7;
-	var4 = /*terminatorOfs +*/ (xpixel>>3) + (20 - ck_currentTermPicWidth/2);
+	picX = (xpixel) + (160 - ck_currentTermPicWidth*4);
 
-	// EGAMAPMASK(0xC);
-  VL_SetMapMask(0xC);
+	VL_SetMapMask(0xC);
 
 	creditY1 = AdvanceTerminatorCredit(elapsedTime);
 	creditY2 = creditY1 + ck_currentTermPicHeight;
@@ -318,51 +325,28 @@ void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 	if (creditY2 < 0)
 		creditY2 = 0;
 
-	varA = word_46CA2[terminatorPageOn];
 
 	// Erasing the area underneath the credit
-	if (creditY2 < 200 && varA > creditY2)
+	if (creditY2 < 200 && oldY2 > creditY2)
 	{
-		numrows = varA - creditY2;
-		// var10 = ylookup[creditY2] + var4;
-
-#if 0
-asm		mov es, screenseg;
-asm		mov bx, linewidth;				// bx = next line distance
-asm		sub bx, ck_currentTermPicHalfWidth;
-asm		sub bx, ck_currentTermPicHalfWidth;
-asm		mov di, var10;
-asm		mov dx, numrows;
-asm		mov si, ck_currentTermPicHalfWidth;
-asm		xor ax, ax;
-
-
-nextrow1:
-asm		mov cx, si;
-asm		rep stosw;
-asm		add di, bx;
-asm		dec dx;
-asm		jnz nextrow1;
-#endif
-
-    // Omnispeak: Just draw an empty rectangle over the area
-    VL_ScreenRect_PM(var4 + pelpan, 0, ck_currentTermPicHalfWidth*16, 200, 0xF);
-    VL_ScreenRect_PM(var4 + pelpan, creditY1, ck_currentTermPicHalfWidth*16, numrows, 0x0);
+		int rowsToClear = oldY2 - creditY2;
+		// Omnispeak: Just draw an empty rectangle over the area
+		VL_ScreenRect_PM(picX, creditY2, ck_currentTermPicWidth*8, rowsToClear, 0x0);
 	}
 
 	// loc_140AB
 	if (creditY2 > 200)
 		creditY2 = 200;
 
-	word_46CA2[terminatorPageOn] = creditY2;
+	oldY2 = creditY2;
 
 	rowsToDraw = ck_currentTermPicHeight;
-	varE = 0;
+	picStartOffset = 0;
 
 	if (creditY1 < 0)
 	{
 		// clipped by screen top
-		varE = -creditY1 * (ck_currentTermPicWidth<<1);
+		picStartOffset = -creditY1 * (ck_currentTermPicWidth);
 		rowsToDraw += creditY1;
 		creditY1 = 0;
 	}
@@ -372,68 +356,18 @@ asm		jnz nextrow1;
 		rowsToDraw = 200 - creditY1;
 	}
 
-#if 0
-
-	// loc_14108
-	word_499CB = varE + ck_currentTermPicSize;
-
 	if (rowsToDraw > 0)
 	{
-		word_499D1 = shifttabletable[pelpan];
+		uint8_t *plane_1 = (uint8_t*)(ck_currentTermPicSeg) + picStartOffset;
+		uint8_t *plane_2 = plane_1 + ck_currentTermPicWidth * ck_currentTermPicHeight;
 
-		word_46CB0 = ylookup[creditY1] + var4;
-
-asm		mov bx, varE;
-asm		push bp;
-asm		mov bp, word_499D1;
-asm		mov es, screenseg;
-asm		mov ds, ck_currentTermPicSeg;
-asm		mov ah, 4;
-asm		mov ss:terminatorPlaneOn, ah;
-
-nextplane:
-asm		mov dx, SC_INDEX;
-asm		mov al, SC_MAPMASK;
-asm		out dx, ax;
-asm		mov dx, ss:rowsToDraw;
-asm		mov di, ss:word_46CB0;
-
-nextrow:
-asm		mov cx, ss:ck_currentTermPicWidth;
-asm		xor al, al;
-
-nextX:
-asm		mov si, [bx];
-asm		add bx, 2;
-asm		xor ah, ah;
-asm		or ax, [bp+si];
-asm		stosb;
-asm		mov al, ah;
-asm		loop nextX;
-
-
-asm		stosb;
-asm		mov uint16_t ptr es:[di], 0;
-asm		add di, ss:ck_currentTermPicNextLineDist;
-asm		dec dx;
-asm		jnz nextrow;
-
-
-asm		mov bx, ss:word_499CB;
-asm		mov ah, ss:terminatorPlaneOn;
-asm		shl ah, 1;
-asm		mov ss:terminatorPlaneOn, ah;
-asm		cmp ah, 0x10;
-asm		jnz nextplane;
-
-asm		pop bp;				// Restore stack
-asm		mov ax, ss;
-asm		mov ds, ax;
-
+		VL_SetMapMask(0x4);
+		VL_1bppToScreen_PM(plane_1, picX, creditY1, ck_currentTermPicWidth*8, rowsToDraw, 0xF);
+		VL_SetMapMask(0x8);
+		VL_1bppToScreen_PM(plane_2, picX, creditY1, ck_currentTermPicWidth*8, rowsToDraw, 0xF);
 
 	}
 
-#endif
 }
 
 
