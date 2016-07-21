@@ -221,13 +221,15 @@
 #%action CK6_ACT_NospikeFall2 0x25AA 298 298 UnscaledOnce 0 0 20 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_NospikeFall3
 #%action CK6_ACT_NospikeFall3 0x25C8 298 298 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK6_NospikeFallDraw2 NULL
 #%action CK6_ACT_NospikeStunned0 0x25E6 315 315 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_NospikeStunned0
-#%action CK6_ACT_GikWalk0 0x2604 390 387 UnscaledOnce 0 1 10 0x80 0x0 CK6_GikWalk CK6_GikDraw CK_BasicDrawFunc2 CK6_ACT_GikWalk1
-#%action CK6_ACT_GikWalk1 0x2622 391 388 UnscaledOnce 0 1 10 0x80 0x0 CK6_GikWalk CK6_GikDraw CK_BasicDrawFunc2 CK6_ACT_GikWalk2
-#%action CK6_ACT_GikWalk2 0x2640 392 389 UnscaledOnce 0 1 10 0x80 0x0 CK6_GikWalk CK6_GikDraw CK_BasicDrawFunc2 CK6_ACT_GikWalk0
-#%action CK6_ACT_GikJump0 0x265E 393 394 Frame 0 0 0 0x0 0x0 CK_Fall CK6_GikJump CK6_GikJumpDraw CK6_ACT_GikSlide0
-#%action CK6_ACT_GikSlide0 0x267C 397 395 UnscaledFrame 0 0 6 0x0 0x0 CK6_GikSlide CK_LethalCol CK6_GikSlideDraw CK6_ACT_GikSlide1
-#%action CK6_ACT_GikSlide1 0x269A 398 396 UnscaledFrame 0 0 6 0x0 0x0 CK6_GikSlide CK_LethalCol CK6_GikSlideDraw CK6_ACT_GikSlide0
-#%action CK6_ACT_GikEndSlide0 0x26B8 397 395 UnscaledOnce 0 1 20 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc2 CK6_ACT_GikWalk0
+
+#Giks
+%action CK6_ACT_GikWalk0 0x2604 390 387 UnscaledOnce 0 1 10 0x80 0x0 CK6_GikWalk CK_CarryKeenCol CK_BasicDrawFunc2 CK6_ACT_GikWalk1
+%action CK6_ACT_GikWalk1 0x2622 391 388 UnscaledOnce 0 1 10 0x80 0x0 CK6_GikWalk CK_CarryKeenCol CK_BasicDrawFunc2 CK6_ACT_GikWalk2
+%action CK6_ACT_GikWalk2 0x2640 392 389 UnscaledOnce 0 1 10 0x80 0x0 CK6_GikWalk CK_CarryKeenCol CK_BasicDrawFunc2 CK6_ACT_GikWalk0
+%action CK6_ACT_GikJump0 0x265E 393 394 Frame 0 0 0 0x0 0x0 CK_Fall CK_PushKeenCol CK6_GikJumpDraw CK6_ACT_GikSlide0
+%action CK6_ACT_GikSlide0 0x267C 397 395 UnscaledFrame 0 0 6 0x0 0x0 CK6_GikSlide CK_LethalCol CK6_GikSlideDraw CK6_ACT_GikSlide1
+%action CK6_ACT_GikSlide1 0x269A 398 396 UnscaledFrame 0 0 6 0x0 0x0 CK6_GikSlide CK_LethalCol CK6_GikSlideDraw CK6_ACT_GikSlide0
+%action CK6_ACT_GikEndSlide0 0x26B8 397 395 UnscaledOnce 0 1 20 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc2 CK6_ACT_GikWalk0
 
 #Turrets
 %action CK_ACT_turretWait 0x26F6 0 0 UnscaledOnce 0 0 120 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_turretShoot

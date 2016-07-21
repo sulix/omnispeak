@@ -228,31 +228,32 @@ void CK_BasicDrawFunc4(CK_object *obj)
   {
     switch (obj->user4)
     {
-      case 0x18:
+      case CT6_Bloogguard:
         starsX = 0x100;
         starsY = -0x40;
         break;
 
-      case 0x15:
+      case CT6_Flect:
         starsX = 0x40;
         starsY = -0x40;
         break;
 
-      case 0x7:
+      case CT6_Bloog:
         starsX = 0x80;
         starsY = -0x40;
         break;
 
-      case 0x8:
+      case CT6_Blooglet:
+      case CT6_Babobba:
         starsY = -0x80;
         break;
 
-      case 0xA:
+      case CT6_Fleex:
         starsX = 0x100;
         starsY = 0x80;
         break;
 
-      case 0x17:
+      case CT6_Ceilick:
         starsY = 0xC0;
         break;
 
@@ -307,6 +308,29 @@ void CK_LethalCol(CK_object *o1, CK_object *o2)
 	{
 		CK_KillKeen();
 	}
+}
+
+/*
+ * This comes before DieOnContactDraw in the CK6 Disassembly
+ * Even though it is  only used for Giks, it is  not placed next to
+ * the rest of the Gik code
+ * Maybe leftover melon cart code?
+ */
+
+void CK_PushKeenCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    ck_keenIgnoreVertClip = true;
+    CK_PhysPushX(b, a);
+    ck_keenIgnoreVertClip = false;
+  }
+}
+
+void CK_CarryKeenCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+    CK_PhysPushY(b, a);
 }
 
 /*
@@ -520,6 +544,9 @@ void CK_Misc_SetupFunctions(void)
 	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
   CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
   CK_ACT_AddColFunction("CK_LethalCol", &CK_LethalCol);
+
+  CK_ACT_AddColFunction("CK_PushKeenCol", &CK_PushKeenCol);
+  CK_ACT_AddColFunction("CK_CarryKeenCol", &CK_CarryKeenCol);
 	CK_ACT_AddFunction("CK_ShrapnelTileCol", &CK_ShrapnelTileCol);
   CK_ACT_AddFunction("CK_DieOnContactDraw", &CK_DieOnContactDraw);
 }

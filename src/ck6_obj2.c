@@ -30,6 +30,107 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // =========================================================================
 
+
+// Giks
+void CK6_SpawnGik(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Gik;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = tileY << G_T_SHIFT;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_GikWalk0"));
+}
+
+#define SOUND_GIKJUMP 0x24
+void CK6_GikWalk(CK_object *obj)
+{
+  if (obj->topTI != 9)
+  {
+    int dx = ck_keenObj->posX - obj->posX;
+
+    int dy = obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2;
+    if (dy >= 0 && dy <= 0x400)
+    {
+      obj->xDirection = dx < 0 ? IN_motion_Left : IN_motion_Right;
+      if (dx >= -0x700 && dx <= 0x700 && (dx <= -0x100 || dx >= 0x100))
+      {
+        obj->velX = dx < 0 ? -40 : 40;
+        obj->velY = -28;
+        obj->currentAction = CK_GetActionByName("CK6_ACT_GikJump0");
+        SD_PlaySound(SOUND_GIKJUMP);
+      }
+    }
+  }
+}
+
+static uint16_t gikslides_r[] = {0, 7, 0, 0, 0, 3, 3, 1};
+static uint16_t gikslides_l[] = {0, 7, 3, 3, 1, 0, 0, 0};
+
+void CK6_GikSlide (CK_object *obj)
+{
+  CK_PhysGravityHigh(obj);
+
+  int topflag = obj->topTI & 7;
+  uint16_t di = obj->xDirection == IN_motion_Right ? gikslides_r[topflag] : gikslides_l[topflag];
+  if (obj->velX == 0 && obj->topTI)
+  {
+    // Hit a wall and on the ground
+    obj->currentAction = CK_GetActionByName("CK6_ACT_GikEndSlide0");
+  }
+  else
+  {
+    // Slide to a halt
+    int32_t lastTimeCount = SD_GetLastTimeCount();
+    for (int32_t tickCount = lastTimeCount - SD_GetSpriteSync(); tickCount < lastTimeCount; tickCount++)
+    {
+      if (di)
+      {
+        uint32_t ddi = di;
+        if ((ddi & tickCount) == 0)
+        {
+          if (obj->velX < 0 && ++obj->velX == 0 || obj->velX > 0 && --obj->velX == 0)
+          {
+            obj->currentAction = CK_GetActionByName("CK6_ACT_GikEndSlide0");
+            break;
+          }
+        }
+      }
+      ck_nextX += obj->velX;
+    }
+  }
+}
+
+#define SOUND_GIKLAND 0x25
+void CK6_GikJumpDraw(CK_object *obj)
+{
+  if (obj->rightTI || obj->leftTI)
+    obj->velX = 0;
+
+  if (obj->bottomTI)
+    obj->velY = 0;
+
+  if (obj->topTI)
+  {
+    obj->velY = 0;
+    SD_PlaySound(SOUND_GIKLAND);
+    CK_SetAction2(obj, obj->currentAction->next);
+  }
+
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+void CK6_GikSlideDraw(CK_object *obj)
+{
+  if (obj->rightTI && obj->velX < 0 || obj->leftTI && obj->velX > 0)
+    obj->velX = 0;
+
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
 // Orbatrices
 void CK6_SpawnOrbatrix(int tileX, int tileY)
 {
@@ -422,6 +523,11 @@ void CK6_FlectDraw(CK_object *obj)
  */
 void CK6_Obj2_SetupFunctions()
 {
+
+  CK_ACT_AddFunction("CK6_GikWalk", &CK6_GikWalk);
+  CK_ACT_AddFunction("CK6_GikSlide", &CK6_GikSlide);
+  CK_ACT_AddFunction("CK6_GikJumpDraw", &CK6_GikJumpDraw);
+  CK_ACT_AddFunction("CK6_GikSlideDraw", &CK6_GikSlideDraw);
 
   CK_ACT_AddFunction("CK6_OrbatrixFloat", &CK6_OrbatrixFloat);
   CK_ACT_AddColFunction("CK6_OrbatrixCol", &CK6_OrbatrixCol);

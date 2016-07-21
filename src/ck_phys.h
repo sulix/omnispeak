@@ -56,6 +56,8 @@ typedef struct CK_objPhysDataDelta
 struct CK_object;
 struct CK_action;
 
+bool ck_keenIgnoreVertClip;
+
 bool CK_NotStuckInWall(struct CK_object *obj);
 bool CK_PreviewClipRects(struct CK_object *obj, struct CK_action *act);
 

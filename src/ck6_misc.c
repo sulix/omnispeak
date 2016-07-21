@@ -631,6 +631,16 @@ void CK6_ScanInfoLayer()
         CK6_SpawnBobba(x, y);
         break;
 
+      // Gik
+      case 52:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 51:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 50:
+        ck6_lumpsNeeded[Lump_Gik] = true;
+        CK6_SpawnGik(x, y);
+        break;
+
       // Turrets
 			case 53:
 			case 54:
