@@ -455,6 +455,7 @@ void IN_WaitForButtonPress()
 			}
 		}
 	#endif
+		VL_Present();
 	}
 }
 
@@ -674,6 +675,7 @@ bool IN_UserInput(int tics, bool waitPress)
 			return true;
 
 		}
+		VL_Present();
 	} while (SD_GetTimeCount() - lasttime < tics);
 
 	return false;

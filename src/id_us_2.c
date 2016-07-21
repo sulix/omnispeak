@@ -371,6 +371,7 @@ int green_message_box( const char *s1, const char *s2, const char *s3 )
 		{
 			k = IN_GetLastScan();
 		}
+		VL_Present();
 	} while ( k == IN_SC_None );
 
 	/* Wait for the button to be released */
@@ -379,6 +380,7 @@ int green_message_box( const char *s1, const char *s2, const char *s3 )
 		SDL_Delay(1); // Keep CPU usage low
 		IN_PumpEvents();
 		IN_ReadControls(0, &state );
+		VL_Present();
 	} while ( state.jump || state.pogo );
 	IN_ClearKeysDown();
 

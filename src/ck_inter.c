@@ -1589,6 +1589,7 @@ void CK_ShowTitleScreen()
 	IN_UserInput(420, false);
 	CA_ClearMarks();
 	CK_HandleDemoKeys();
+	VL_Present();
 }
 
 //TODO: Add some demo number stuff

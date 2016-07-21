@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /* Util Functions */
 
 extern bool vl_screenFaded;
+extern bool vl_isFullScreen;
+extern bool vl_isAspectCorrected;
 
 // EGA signal palettes (the 17th entry of each row is the overscan border color)
 // NOTE: Vanilla Keen can modify some of these (e.g. the border color)

@@ -23,9 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_in.h"
 #include "id_sd.h"
+#include "id_vl.h"
 #include "ck_cross.h"
 #include "ck_play.h"
 
+#define EXTRA_GRAPHICS_OPTIONS
 
 bool CK_US_ScoreBoxMenuProc(US_CardMsg msg, US_CardItem *item)
 {
@@ -70,6 +72,32 @@ bool CK_US_SVGACompatibilityMenuProc(US_CardMsg msg, US_CardItem *item)
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
+
+#ifdef EXTRA_GRAPHICS_OPTIONS
+
+bool CK_US_FullscreenMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	if ( msg != US_MSG_CardEntered )
+		return false;
+
+	VL_ToggleFullscreen();
+	green_message_box( (vl_isFullScreen ? "Fullscreen mode enabled" : "Windowed mode enabled"), "Press any key", NULL );
+	CK_US_UpdateOptionsMenus();
+	return true;
+}
+
+bool CK_US_AspectCorrectMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	if ( msg != US_MSG_CardEntered )
+		return false;
+
+	VL_ToggleAspect();
+	green_message_box( (vl_isAspectCorrected ? "Aspect ratio correction now on" : "Aspect ratio correction now off"), "Press any key", NULL );
+	CK_US_UpdateOptionsMenus();
+	return true;
+}
+
+#endif
 
 bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item);
 bool CK_US_KeyboardMenuProc(US_CardMsg msg, US_CardItem *item);
@@ -214,6 +242,10 @@ US_Card ck_us_scoreBoxMenu ={ 0, 0, 0, 0, 0, &CK_US_ScoreBoxMenuProc, 0, 0, 0 };
 US_Card ck_us_twoButtonFiringMenu ={0, 0, 0, 0, 0, &CK_US_TwoButtonFiringMenuProc, 0, 0, 0 };
 US_Card ck_us_fixJerkyMotionMenu ={ 0, 0, 0, 0, 0, &CK_US_FixJerkyMotionMenuProc, 0, 0, 0 };
 US_Card ck_us_svgaCompatibilityMenu ={ 0, 0, 0, 0, 0, &CK_US_SVGACompatibilityMenuProc, 0, 0, 0 };
+#ifdef EXTRA_GRAPHICS_OPTIONS
+US_Card ck_us_fullscreenMenu ={ 0, 0, 0, 0, 0, &CK_US_FullscreenMenuProc, 0, 0, 0 };
+US_Card ck_us_aspectCorrectMenu ={ 0, 0, 0, 0, 0, &CK_US_AspectCorrectMenuProc, 0, 0, 0 };
+#endif
 
 
 // Options menu
@@ -222,6 +254,10 @@ US_CardItem ck_us_optionsMenuItems[] ={
 	{ US_ITEM_Submenu, 0, IN_SC_T, "", US_Comm_None, &ck_us_twoButtonFiringMenu, 0, 0 },
 	{ US_ITEM_Submenu, 0, IN_SC_M, "", US_Comm_None, &ck_us_fixJerkyMotionMenu, 0, 0 },
 	{ US_ITEM_Submenu, 0, IN_SC_C, "", US_Comm_None, &ck_us_svgaCompatibilityMenu, 0, 0 },
+#ifdef EXTRA_GRAPHICS_OPTIONS
+	{ US_ITEM_Submenu, 0, IN_SC_F, "", US_Comm_None, &ck_us_fullscreenMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_A, "", US_Comm_None, &ck_us_aspectCorrectMenu, 0, 0 },
+#endif
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
 
@@ -762,6 +798,10 @@ void CK_US_UpdateOptionsMenus( void )
 	ck_us_optionsMenuItems[1].caption = ck_twoButtonFiring ? "TWO-BUTTON FIRING (ON)" : "TWO-BUTTON FIRING (OFF)";
 	ck_us_optionsMenuItems[2].caption = ck_fixJerkyMotion ? "FIX JERKY MOTION (ON)" : "FIX JERKY MOTION (OFF)";
 	ck_us_optionsMenuItems[3].caption = ck_svgaCompatibility ? "SVGA COMPATIBILITY (ON)" : "SVGA COMPATIBILITY (OFF)";
+#ifdef EXTRA_GRAPHICS_OPTIONS
+	ck_us_optionsMenuItems[4].caption = vl_isFullScreen ? "FULLSCREEN (ON)" : "FULLSCREEN (OFF)";
+	ck_us_optionsMenuItems[5].caption = vl_isAspectCorrected ? "CORRECT ASPECT RATIO (ON)" : "CORRECT ASPECT RATIO (OFF)";
+#endif
 
 	// Disable Two button firing selection if required
 	ck_us_buttonsMenuItems[2].state &= ~US_IS_Disabled;
