@@ -631,6 +631,16 @@ void CK6_ScanInfoLayer()
         CK6_SpawnBobba(x, y);
         break;
 
+      // Orbatrices
+      case 72:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 71:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 70:
+        ck6_lumpsNeeded[Lump_Orbatrix] = true;
+        CK6_SpawnOrbatrix(x, y);
+        break;
+
       // Bip
       case 75:
         if (ck_gameState.difficulty < D_Hard) break;

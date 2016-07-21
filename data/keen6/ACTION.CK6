@@ -236,21 +236,23 @@
 #%action CK6_ACT_turretShot4 0x278C 179 179 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK6_TurretShotDraw CK6_TurretShotCol CK6_ACT_turretShot1
 #%action CK6_ACT_turretShotHit1 0x27AA 180 180 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_turretShotHit2
 #%action CK6_ACT_turretShotHit2 0x27C8 181 181 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
-#%action CK6_ACT_OrbatrixFloat0 0x27E6 333 335 ScaledOnce 0 1 12 0x10 0x0 CK6_OrbatrixFloat CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixFloat1
-#%action CK6_ACT_OrbatrixFloat1 0x2804 334 336 ScaledOnce 0 1 12 0x10 0x0 CK6_OrbatrixFloat CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixFloat0
-#%action CK6_ACT_OrbatrixCurl0 0x2822 329 329 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixCurl1
-#%action CK6_ACT_OrbatrixCurl1 0x2840 341 341 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixCurl2
-#%action CK6_ACT_OrbatrixCurl2 0x285E 341 341 Frame 0 1 12 0x0 0x0  CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixBounce0
-#%action CK6_ACT_OrbatrixUncurl0 0x287C 337 337 Frame 0 0 12 0x0 0x0 CK6_OrbatrixUncurlThink CK6_OrbatrixCol2 CK_BasicDrawFunc1 CK6_ACT_OrbatrixUncurl1
-#%action CK6_ACT_OrbatrixUncurl1 0x289A 341 341 UnscaledOnce 0 0 12 0x0 0x0 NULL CK6_OrbatrixCol2 CK_BasicDrawFunc1 CK6_ACT_OrbatrixUncurl2
-#%action CK6_ACT_OrbatrixUncurl2 0x28B8 329 329 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixUncurl3
-#%action CK6_ACT_OrbatrixUncurl3 0x28D6 330 330 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixUncurl4
-#%action CK6_ACT_OrbatrixUncurl4 0x28F4 331 331 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixUncurl5
-#%action CK6_ACT_OrbatrixUncurl5 0x2912 332 332 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixFloat0
-#%action CK6_ACT_OrbatrixBounce0 0x2930 340 337 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK6_OrbatrixCol2 CK6_OrbatrixBounceDraw CK6_ACT_OrbatrixBounce1
-#%action CK6_ACT_OrbatrixBounce1 0x294E 339 338 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK6_OrbatrixCol2 CK6_OrbatrixBounceDraw CK6_ACT_OrbatrixBounce2
-#%action CK6_ACT_OrbatrixBounce2 0x296C 338 339 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK6_OrbatrixCol2 CK6_OrbatrixBounceDraw CK6_ACT_OrbatrixBounce3
-#%action CK6_ACT_OrbatrixBounce3 0x298A 337 340 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK6_OrbatrixCol2 CK6_OrbatrixBounceDraw CK6_ACT_OrbatrixBounce0
+
+#Orbatrix
+%action CK6_ACT_OrbatrixFloat0 0x27E6 333 335 ScaledOnce 0 1 12 0x10 0x0 CK6_OrbatrixFloat CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixFloat1
+%action CK6_ACT_OrbatrixFloat1 0x2804 334 336 ScaledOnce 0 1 12 0x10 0x0 CK6_OrbatrixFloat CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixFloat0
+%action CK6_ACT_OrbatrixCurl0 0x2822 329 329 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixCurl1
+%action CK6_ACT_OrbatrixCurl1 0x2840 341 341 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixCurl2
+%action CK6_ACT_OrbatrixCurl2 0x285E 341 341 Frame 0 1 12 0x0 0x0 CK6_OrbatrixCurl CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixBounce0
+%action CK6_ACT_OrbatrixUncurl0 0x287C 337 337 Frame 0 0 12 0x0 0x0 CK6_OrbatrixUncurlThink CK6_OrbatrixCol2 CK_BasicDrawFunc1 CK6_ACT_OrbatrixUncurl1
+%action CK6_ACT_OrbatrixUncurl1 0x289A 341 341 UnscaledOnce 0 0 12 0x0 0x0 NULL CK6_OrbatrixCol2 CK_BasicDrawFunc1 CK6_ACT_OrbatrixUncurl2
+%action CK6_ACT_OrbatrixUncurl2 0x28B8 329 329 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixUncurl3
+%action CK6_ACT_OrbatrixUncurl3 0x28D6 330 330 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixUncurl4
+%action CK6_ACT_OrbatrixUncurl4 0x28F4 331 331 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixUncurl5
+%action CK6_ACT_OrbatrixUncurl5 0x2912 332 332 UnscaledFrame 0 1 12 0x0 0x0 NULL CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixFloat0
+%action CK6_ACT_OrbatrixBounce0 0x2930 340 337 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK6_OrbatrixCol2 CK6_OrbatrixBounceDraw CK6_ACT_OrbatrixBounce1
+%action CK6_ACT_OrbatrixBounce1 0x294E 339 338 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK6_OrbatrixCol2 CK6_OrbatrixBounceDraw CK6_ACT_OrbatrixBounce2
+%action CK6_ACT_OrbatrixBounce2 0x296C 338 339 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK6_OrbatrixCol2 CK6_OrbatrixBounceDraw CK6_ACT_OrbatrixBounce3
+%action CK6_ACT_OrbatrixBounce3 0x298A 337 340 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK6_OrbatrixCol2 CK6_OrbatrixBounceDraw CK6_ACT_OrbatrixBounce0
 
 #Bips
 %action CK6_ACT_BipStand0 0x29A8 414 414 UnscaledOnce 0 1 30 0x0 0x0 NULL CK6_BipCol CK_BasicDrawFunc2 CK6_ACT_BipWalk0

@@ -30,6 +30,124 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // =========================================================================
 
+// Orbatrices
+void CK6_SpawnOrbatrix(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Orbatrix;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x180;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  obj->user4 = 1;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_OrbatrixFloat0"));
+}
+
+void CK6_OrbatrixFloat(CK_object *obj)
+{
+  if (US_RndT() < 0x20)
+  {
+    obj->currentAction = CK_GetActionByName("CK6_ACT_OrbatrixUncurl2");
+  }
+  else if (obj->clipRects.unitY2 != ck_keenObj->clipRects.unitY2)
+  {
+    int dx = ck_keenObj->posX - obj->posX;
+    obj->xDirection = dx < 0 ? IN_motion_Left : IN_motion_Right;
+    if (dx > - 0x500 && dx < 0x500)
+      obj->currentAction = CK_GetActionByName("CK6_ACT_OrbatrixCurl0");
+  }
+}
+
+void CK6_OrbatrixCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Stunner)
+  {
+    CK_ShotHit(b);
+    CK_SetAction2(a, CK_GetActionByName("CK6_ACT_OrbatrixUncurl2"));
+  }
+}
+
+void CK6_OrbatrixDraw(CK_object *obj)
+{
+  obj->posY -= obj->user3;
+  CK_BasicDrawFunc2(obj);
+  obj->posY += obj->user3;
+
+  obj->user3 += obj->user4 * SD_GetSpriteSync() * 4;
+
+  if (obj->user3 > 0x80)
+  {
+    obj->user3 = 0x80;
+    obj->user4 = -1;
+  }
+  else if (obj->user3 < -0x80)
+  {
+    obj->user3 = -0x80;
+    obj->user4 = 1;
+  }
+}
+
+#define SOUND_ORBATRIXBOUNCE 0x26
+void CK6_OrbatrixBounceDraw(CK_object *obj)
+{
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+
+  if (obj->topTI)
+    obj->velY = -obj->velY;
+
+  if (obj->topTI || obj->leftTI || obj->rightTI)
+  {
+    obj->velX = -obj->velX;
+    SD_PlaySound(SOUND_ORBATRIXBOUNCE);
+
+    if (obj->topTI && --obj->user1 == 0)
+    {
+      CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_OrbatrixUncurl0"));
+      obj->user2 = 0x180;
+    }
+  }
+}
+
+void CK6_OrbatrixCurl(CK_object *obj)
+{
+  if (obj->user3 >= 0x10)
+  {
+    obj->velX = obj->xDirection * 60;
+    obj->velY = -32;
+    obj->posY -= obj->user3;
+    obj->user1 = 5;
+    obj->currentAction = obj->currentAction->next;
+  }
+
+  obj->visible = true;
+}
+
+void CK6_OrbatrixUncurlThink(CK_object *obj)
+{
+  ck_nextY = SD_GetSpriteSync() * -8;
+  obj->user2 += ck_nextY;
+  if (obj->user2 <= 0)
+  {
+    ck_nextY -= obj->user2;
+    obj->currentAction = obj->currentAction->next;
+  }
+}
+
+void CK6_OrbatrixCol2(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    CK_KillKeen();
+  }
+  else if (b->type == CT_Stunner)
+  {
+    CK_ShotHit(b);
+    a->velX = 0;
+  }
+}
+
 // Bips
 
 void CK6_BipWalk(CK_object *obj)
@@ -304,6 +422,14 @@ void CK6_FlectDraw(CK_object *obj)
  */
 void CK6_Obj2_SetupFunctions()
 {
+
+  CK_ACT_AddFunction("CK6_OrbatrixFloat", &CK6_OrbatrixFloat);
+  CK_ACT_AddColFunction("CK6_OrbatrixCol", &CK6_OrbatrixCol);
+  CK_ACT_AddFunction("CK6_OrbatrixDraw", &CK6_OrbatrixDraw);
+  CK_ACT_AddFunction("CK6_OrbatrixBounceDraw", &CK6_OrbatrixBounceDraw);
+  CK_ACT_AddFunction("CK6_OrbatrixCurl", &CK6_OrbatrixCurl);
+  CK_ACT_AddFunction("CK6_OrbatrixUncurlThink", &CK6_OrbatrixUncurlThink);
+  CK_ACT_AddColFunction("CK6_OrbatrixCol2", &CK6_OrbatrixCol2);
 
   CK_ACT_AddFunction("CK6_BipWalk", &CK6_BipWalk);
   CK_ACT_AddColFunction("CK6_BipCol", &CK6_BipCol);

@@ -127,6 +127,7 @@ typedef enum CK_ClassType {
   CT6_Fleex = 10,
   CT6_Babobba = 13,
   CT6_Bobba = 14,
+  CT6_Orbatrix = 19,
   CT6_Bip = 20,
   CT6_Flect = 21,
   CT6_Blorb = 22,
@@ -423,6 +424,7 @@ void CK_Map_SetupFunctions();
 void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act);
 void CK_Misc_SetupFunctions(void);
 void CK_Glide(CK_object *obj);
+void CK_BasicDrawFunc2(CK_object *obj);
 
 /* ck_obj.c */
 void CK_SpawnItem(int tileX, int tileY, int itemNumber);
