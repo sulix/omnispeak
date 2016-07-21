@@ -327,12 +327,18 @@ void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 
 
 	// Erasing the area underneath the credit
+#if 0
 	if (creditY2 < 200 && oldY2 > creditY2)
 	{
 		int rowsToClear = oldY2 - creditY2;
 		// Omnispeak: Just draw an empty rectangle over the area
 		VL_ScreenRect_PM(picX, creditY2, ck_currentTermPicWidth*8, rowsToClear, 0x0);
 	}
+#else
+	// There can be "droppings" if the speed drops enough. Just clear the
+	// whole visible screen for now.
+	VL_ScreenRect_PM(xpixel, 0, 320, 200, 0x0);
+#endif
 
 	// loc_140AB
 	if (creditY2 > 200)
@@ -1317,7 +1323,7 @@ VL_SetScrollCoords(ck_introScreenWidth+1, 0);
 
 // Copy each line of the KEEN graphic into video memory, accounting for the padding amount
 {
-uint8_t *destbuf = (uint8_t *)calloc(ck_introScreenWidth/8+1, sizeof(uint8_t));
+uint8_t *destbuf = (uint8_t *)calloc((ck_introScreenWidth + 7)/8+1, sizeof(uint8_t));
 for (int i = 0; i < 200; i++)
 {
   //srcptr = MK_FP(ck_introKeen,  ck_introKeen->linestarts[i]);
