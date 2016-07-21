@@ -310,8 +310,41 @@ void CK_LethalCol(CK_object *o1, CK_object *o2)
 }
 
 /*
+ * This comes right before ShrapnelTileCol in the CK6 Disassembly
+ * The use of the "currenAction->next" pattern suggests that it was another
+ * episode-independent Draw function, even though it is apparently only used for the
+ * bipship. Perhaps another remnant from Keen Dreams
+ */
+
+void CK_DieOnContactDraw(CK_object *obj)
+{
+  if (obj->rightTI || obj->leftTI)
+    obj->velX = 0;
+
+  if (obj->bottomTI)
+    obj->velY = 0;
+
+  if (obj->topTI)
+  {
+    obj->velY = 0;
+    if (obj->currentAction)
+    {
+      CK_SetAction2(obj, obj->currentAction->next);
+    }
+    else
+    {
+      CK_RemoveObj(obj);
+      return;
+    }
+  }
+
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+/*
  * Tile collision for making the mine and shelley bits bounce, as well as the
  * babobba shot
+ * It was also used in Keen Dreams for the flower power
  */
 
 void CK_ShrapnelTileCol(CK_object *obj)
@@ -488,4 +521,5 @@ void CK_Misc_SetupFunctions(void)
   CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
   CK_ACT_AddColFunction("CK_LethalCol", &CK_LethalCol);
 	CK_ACT_AddFunction("CK_ShrapnelTileCol", &CK_ShrapnelTileCol);
+  CK_ACT_AddFunction("CK_DieOnContactDraw", &CK_DieOnContactDraw);
 }

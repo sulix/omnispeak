@@ -251,23 +251,26 @@
 #%action CK6_ACT_OrbatrixBounce1 0x294E 339 338 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK6_OrbatrixCol2 CK6_OrbatrixBounceDraw CK6_ACT_OrbatrixBounce2
 #%action CK6_ACT_OrbatrixBounce2 0x296C 338 339 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK6_OrbatrixCol2 CK6_OrbatrixBounceDraw CK6_ACT_OrbatrixBounce3
 #%action CK6_ACT_OrbatrixBounce3 0x298A 337 340 UnscaledFrame 0 0 6 0x0 0x0 CK_Fall CK6_OrbatrixCol2 CK6_OrbatrixBounceDraw CK6_ACT_OrbatrixBounce0
-#%action CK6_ACT_BipStand0 0x29A8 414 414 UnscaledOnce 0 1 30 0x0 0x0 NULL CK6_BipCol CK_BasicDrawFunc2 CK6_ACT_BipWalk0
-#%action CK6_ACT_BipWalk0 0x29C6 419 415 UnscaledOnce 1 1 4 0x20 0x0 CK6_BipWalk CK6_BipCol CK_BasicDrawFunc2 CK6_ACT_BipWalk1
-#%action CK6_ACT_BipWalk1 0x29E4 420 416 UnscaledOnce 1 1 4 0x20 0x0 CK6_BipWalk CK6_BipCol CK_BasicDrawFunc2 CK6_ACT_BipWalk2
-#%action CK6_ACT_BipWalk2 0x2A02 421 417 UnscaledOnce 1 1 4 0x20 0x0 CK6_BipWalk CK6_BipCol CK_BasicDrawFunc2 CK6_ACT_BipWalk3
-#%action CK6_ACT_BipWalk3 0x2A20 422 418 UnscaledOnce 1 1 4 0x20 0x0 CK6_BipWalk CK6_BipCol CK_BasicDrawFunc2 CK6_ACT_BipWalk0
-#%action CK6_ACT_BipSquished0 0x2A3E 423 423 Frame 0 1 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc1 NULL
-#%action CK6_ACT_BipshipFly0 0x2A5C 274 269 Frame 0 1 0 0x0 0x0 CK6_BipshipFly CK6_BipshipCol CK_BasicDrawFunc1 CK6_ACT_BipshipFly0
-#%action CK6_ACT_BipShot0 0x2A7A 284 284 Frame 0 0 0 0x0 0x0 CK_Glide CK_LethalCol CK6_BipShotCol NULL
-#%action CK6_ACT_BipshipTurn0 0x2A98 270 275 UnscaledFrame 0 1 10 0x0 0x0 CK6_BipshipTurn CK6_BipshipCol CK_BasicDrawFunc1 CK6_ACT_BipshipTurn1
-#%action CK6_ACT_BipshipTurn1 0x2AB6 271 276 UnscaledFrame 0 1 10 0x0 0x0 CK6_BipshipTurn CK6_BipshipCol CK_BasicDrawFunc1 CK6_ACT_BipshipTurn2
-#%action CK6_ACT_BipshipTurn2 0x2AD4 272 277 UnscaledFrame 0 1 10 0x0 0x0 CK6_BipshipTurn CK6_BipshipCol CK_BasicDrawFunc1 CK6_ACT_BipshipTurn3
-#%action CK6_ACT_BipshipTurn3 0x2AF2 273 278 UnscaledFrame 0 1 10 0x0 0x0 CK6_BipshipTurn CK6_BipshipCol CK_BasicDrawFunc1 CK6_ACT_BipshipFly0
-#%action CK6_ACT_BipshipHit0 0x2B10 280 279 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK6_BipshipHitDraw CK6_ACT_BipshipHit1
-#%action CK6_ACT_BipshipHit1 0x2B2E 280 279 UnscaledOnce 1 0 1 0x0 0x0 CK6_BipshipCrash NULL CK6_BipshipHitDraw CK6_ACT_BipshipHit2
-#%action CK6_ACT_BipshipHit2 0x2B4C 283 283 UnscaledOnce 1 0 30000 0x0 0x0 NULL NULL CK6_BipshipHitDraw CK6_ACT_BipshipHit2
-#%action CK6_ACT_BipshipSmoke0 0x2B6A 281 281 UnscaledOnce 1 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BipshipSmoke1
-#%action CK6_ACT_BipshipSmoke1 0x2B88 282 282 UnscaledOnce 1 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+
+#Bips
+%action CK6_ACT_BipStand0 0x29A8 414 414 UnscaledOnce 0 1 30 0x0 0x0 NULL CK6_BipCol CK_BasicDrawFunc2 CK6_ACT_BipWalk0
+%action CK6_ACT_BipWalk0 0x29C6 419 415 UnscaledOnce 1 1 4 0x20 0x0 CK6_BipWalk CK6_BipCol CK_BasicDrawFunc2 CK6_ACT_BipWalk1
+%action CK6_ACT_BipWalk1 0x29E4 420 416 UnscaledOnce 1 1 4 0x20 0x0 CK6_BipWalk CK6_BipCol CK_BasicDrawFunc2 CK6_ACT_BipWalk2
+%action CK6_ACT_BipWalk2 0x2A02 421 417 UnscaledOnce 1 1 4 0x20 0x0 CK6_BipWalk CK6_BipCol CK_BasicDrawFunc2 CK6_ACT_BipWalk3
+%action CK6_ACT_BipWalk3 0x2A20 422 418 UnscaledOnce 1 1 4 0x20 0x0 CK6_BipWalk CK6_BipCol CK_BasicDrawFunc2 CK6_ACT_BipWalk0
+%action CK6_ACT_BipSquished0 0x2A3E 423 423 Frame 0 1 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc1 NULL
+%action CK6_ACT_BipshipFly0 0x2A5C 274 269 Frame 0 1 0 0x0 0x0 CK6_BipshipFly CK6_BipshipCol CK_BasicDrawFunc1 CK6_ACT_BipshipFly0
+
+%action CK6_ACT_BipShot0 0x2A7A 284 284 Frame 0 0 0 0x0 0x0 CK_Glide CK_LethalCol CK6_BipShotDraw NULL
+%action CK6_ACT_BipshipTurn0 0x2A98 270 275 UnscaledFrame 0 1 10 0x0 0x0 CK6_BipshipTurn CK6_BipshipCol CK_BasicDrawFunc1 CK6_ACT_BipshipTurn1
+%action CK6_ACT_BipshipTurn1 0x2AB6 271 276 UnscaledFrame 0 1 10 0x0 0x0 CK6_BipshipTurn CK6_BipshipCol CK_BasicDrawFunc1 CK6_ACT_BipshipTurn2
+%action CK6_ACT_BipshipTurn2 0x2AD4 272 277 UnscaledFrame 0 1 10 0x0 0x0 CK6_BipshipTurn CK6_BipshipCol CK_BasicDrawFunc1 CK6_ACT_BipshipTurn3
+%action CK6_ACT_BipshipTurn3 0x2AF2 273 278 UnscaledFrame 0 1 10 0x0 0x0 CK6_BipshipTurn CK6_BipshipCol CK_BasicDrawFunc1 CK6_ACT_BipshipFly0
+%action CK6_ACT_BipshipHit0 0x2B10 280 279 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_DieOnContactDraw CK6_ACT_BipshipHit1
+%action CK6_ACT_BipshipHit1 0x2B2E 280 279 UnscaledOnce 1 0 1 0x0 0x0 CK6_BipshipCrash NULL CK_DieOnContactDraw CK6_ACT_BipshipHit2
+%action CK6_ACT_BipshipHit2 0x2B4C 283 283 UnscaledOnce 1 0 30000 0x0 0x0 NULL NULL CK_DieOnContactDraw CK6_ACT_BipshipHit2
+%action CK6_ACT_BipshipSmoke0 0x2B6A 281 281 UnscaledOnce 1 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_BipshipSmoke1
+%action CK6_ACT_BipshipSmoke1 0x2B88 282 282 UnscaledOnce 1 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
 
 #Flect
 %action CK6_ACT_FlectTurn0 0x2BA6 323 318 Frame 0 1 60 0x0 0x0 CK6_FlectTurn CK6_FlectCol CK6_FlectDraw CK6_ACT_FlectWalk0

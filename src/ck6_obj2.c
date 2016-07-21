@@ -30,6 +30,158 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // =========================================================================
 
+// Bips
+
+void CK6_BipWalk(CK_object *obj)
+{
+  if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2)
+  {
+    if (ck_keenObj->clipRects.unitX1 - 0x40 < obj->clipRects.unitX2)
+      obj->xDirection = IN_motion_Right;
+
+    if (ck_keenObj->clipRects.unitX2 + 0x40 > obj->clipRects.unitX1)
+      obj->xDirection = IN_motion_Left;
+  }
+  else
+  {
+    if (US_RndT() < 0x10)
+    {
+      obj->xDirection = - obj->xDirection;
+      obj->currentAction = CK_GetActionByName("CK6_ACT_BipStand0");
+    }
+  }
+}
+
+#define SOUND_BIPSQUISH 22
+void CK6_BipCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player && b->deltaPosY == 0)
+  {
+    SD_PlaySound(SOUND_BIPSQUISH);
+    a->type = CT_Friendly;
+    CK_SetAction2(a, CK_GetActionByName("CK6_ACT_BipSquished0"));
+  }
+}
+
+void CK6_SpawnBipship(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Bipship;
+  obj->active = OBJ_ACTIVE;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x180;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->velX = obj->xDirection * 20;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BipshipFly0"));
+}
+
+void CK6_BipShotDraw(CK_object *obj)
+{
+  if (obj->topTI || obj->bottomTI || obj->rightTI || obj->leftTI)
+    CK_RemoveObj(obj);
+  else
+    RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+void CK6_BipshipTurn(CK_object *obj)
+{
+  CK_PhysAccelHorz(obj, obj->xDirection, 20);
+}
+
+void CK6_BipshipFly(CK_object *obj)
+{
+  CK_PhysAccelHorz(obj, obj->xDirection, 20);
+  int xdir = obj->xDirection;
+  int ycheck = ck_keenObj->clipRects.unitY2 + 0x100 - obj->clipRects.unitY2;
+  if (ycheck <= 0x200 && ycheck >= 0)
+  {
+    // Fire!!
+    xdir = (ck_keenObj->posX < obj->posX) ? IN_motion_Left : IN_motion_Right;
+    if (obj->xDirection == xdir && US_RndT() < SD_GetSpriteSync() * 2)
+    {
+      SD_PlaySound(SOUND_KEENSHOOT);
+      CK_object *shot = CK_GetNewObj(true);
+      shot->type = CT6_EnemyShot;
+      shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
+      shot->zLayer = PRIORITIES - 3;
+      if (obj->xDirection == IN_motion_Right)
+      {
+        shot->posX = obj->posX + 0x100;
+        shot->velX = 64;
+      }
+      else
+      {
+        shot->posX = obj->posX;
+        shot->velX = -64;
+      }
+
+      shot->posY = obj->posY + 0xA0;
+      shot->velY = 16;
+      CK_SetAction(shot, CK_GetActionByName("CK6_ACT_BipShot0"));
+    }
+  }
+
+  int startx = obj->clipRects.tileXmid + 2 * xdir;
+  int y = obj->clipRects.tileY1;
+  uint16_t *tile = CA_TilePtrAtPos(startx, y, 1);
+
+  for (y; y <= obj->clipRects.tileY2; y++, tile+=CA_GetMapWidth())
+  {
+    if (TI_ForeLeft(*tile) || TI_ForeRight(*tile))
+    {
+      xdir = -xdir;
+      goto checkTurn;
+    }
+  }
+
+  // And turn around at ledge-ends
+  if (!TI_ForeTop(*tile))
+    xdir = -xdir;
+
+checkTurn:
+
+  if (obj->xDirection != xdir)
+  {
+    obj->xDirection = xdir;
+    CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_BipshipTurn0"));
+  }
+}
+
+#define SOUND_BIPSHIPCRASH 24
+void CK6_BipshipCrash(CK_object *obj)
+{
+  SD_PlaySound(SOUND_BIPSHIPCRASH);
+
+  // Spawn smoke
+  CK_object *smoke = CK_GetNewObj(true);
+  smoke->type = CT_Friendly;
+  smoke->active = OBJ_ACTIVE;
+  smoke->zLayer = PRIORITIES - 2;
+  smoke->posX = obj->posX;
+  smoke->posY = obj->posY - 0x180;
+  CK_SetAction(smoke, CK_GetActionByName("CK6_ACT_BipshipSmoke0"));
+  smoke->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+
+  CK_object *bip = CK_GetNewObj(true);
+  bip->type = CT6_Bip;
+  bip->active = OBJ_ACTIVE;
+  bip->zLayer = PRIORITIES - 4;
+  bip->posX = obj->posX;
+  bip->posY = obj->posY - 0x80;
+  bip->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  CK_SetAction(bip, CK_GetActionByName("CK6_ACT_BipStand0"));
+
+}
+
+void CK6_BipshipCol(CK_object  *a, CK_object *b)
+{
+  if (b->type == CT_Stunner)
+  {
+    CK_ShotHit(b);
+    CK_SetAction2(a, CK_GetActionByName("CK6_ACT_BipshipHit0"));
+  }
+}
+
 
 // Flects
 
@@ -152,6 +304,14 @@ void CK6_FlectDraw(CK_object *obj)
  */
 void CK6_Obj2_SetupFunctions()
 {
+
+  CK_ACT_AddFunction("CK6_BipWalk", &CK6_BipWalk);
+  CK_ACT_AddColFunction("CK6_BipCol", &CK6_BipCol);
+  CK_ACT_AddFunction("CK6_BipShotDraw", &CK6_BipShotDraw);
+  CK_ACT_AddFunction("CK6_BipshipTurn", &CK6_BipshipTurn);
+  CK_ACT_AddFunction("CK6_BipshipFly", &CK6_BipshipFly);
+  CK_ACT_AddFunction("CK6_BipshipCrash", &CK6_BipshipCrash);
+  CK_ACT_AddColFunction("CK6_BipshipCol", &CK6_BipshipCol);
 
   CK_ACT_AddFunction("CK6_FlectTurn", &CK6_FlectTurn);
   CK_ACT_AddFunction("CK6_FlectWalk", &CK6_FlectWalk);
