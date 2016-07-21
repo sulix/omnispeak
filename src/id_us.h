@@ -188,7 +188,7 @@ void US_SetMenuFunctionPointers(void (*loadgamefunc)(FILE *), void (*savegamefun
 typedef struct US_Savefile
 {
 	char id[4];
-	uint16_t unknown1;
+	uint16_t printXOffset;
 	uint16_t used;
 	char name[0x22];
 } __attribute__((packed)) US_Savefile;

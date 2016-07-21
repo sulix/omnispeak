@@ -61,7 +61,7 @@ typedef struct CK_EpisodeDef
   // A few offsets to data in the original EXE
   uint16_t objArrayOffset;
   uint16_t tempObjOffset;
-
+  uint16_t printXOffset;
 } CK_EpisodeDef;
 
 extern CK_EpisodeDef *ck_currentEpisode;
