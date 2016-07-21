@@ -26,82 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdio.h>
 
-void CK5_TurretSpawn(int tileX, int tileY, int direction)
-{
-	CK_object *obj = CK_GetNewObj(false);
-
-	obj->type = 15;
-	obj->active = OBJ_ACTIVE;
-	obj->clipRects.tileX1 = obj->clipRects.tileX2 = tileX;
-	obj->clipRects.tileY1 = obj->clipRects.tileY2 = tileY;
-
-	obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
-	obj->clipRects.unitX1 = obj->clipRects.unitX2 = tileX << 8;
-	obj->clipRects.unitX2 = obj->clipRects.unitY2 = tileY << 8;
-
-	obj->user1 = direction;
-
-	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_turretWait"));
-}
-
-void CK5_TurretShoot(CK_object *obj)
-{
-	CK_object *shot = CK_GetNewObj(true);
-
-	shot->type = CT5_EnemyShot;	//TurretShot
-	shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
-	//shot->clipped = true;
-	shot->posX = obj->posX;
-	shot->posY = obj->posY;
-
-	switch (obj->user1)
-	{
-		case 0:
-			//shot->velX = 0;
-			shot->velY = -64;
-			break;
-		case 1:
-			shot->velX = 64;
-			//shot->velY = 0;
-			break;
-		case 2:
-			//shot->velX = 0;
-			shot->velY = 64;
-			break;
-		case 3:
-			shot->velX = -64;
-			//shot->velY = 0;
-			break;
-	}
-
-	CK_SetAction(shot, CK_GetActionByName("CK5_ACT_turretShot1"));
-	SD_PlaySound(SOUND_ENEMYSHOOT);
-
-	//CK_SetAction(obj, &CK5_ACT_turretWait);
-}
-
-void CK5_TurretShotCol(CK_object *me, CK_object *other)
-{
-	if (other->type == CT_Player)
-	{
-		CK_KillKeen();
-		CK_SetAction2(me, CK_GetActionByName("CK5_ACT_turretShotHit1"));
-	}
-}
-
-void CK5_TurretShotDraw(CK_object *obj)
-{
-	if (obj->topTI || obj->bottomTI || obj->leftTI || obj->rightTI)
-	{
-		SD_PlaySound(SOUND_ENEMYSHOTHIT);
-		//obj->clipped=false;
-		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_turretShotHit1"));
-	}
-
-	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->currentAction->chunkLeft, false, obj->zLayer);
-
-}
 
 /*
  * Spawn a "Sneak Plat".
@@ -554,9 +478,6 @@ void CK5_VolteCol(CK_object *volte, CK_object *other)
  */
 void CK5_Obj1_SetupFunctions()
 {
-	CK_ACT_AddFunction("CK5_TurretShoot", &CK5_TurretShoot);
-	CK_ACT_AddColFunction("CK5_TurretShotCol", &CK5_TurretShotCol);
-	CK_ACT_AddFunction("CK5_TurretShotDraw", &CK5_TurretShotDraw);
 	CK_ACT_AddFunction("CK5_SneakPlatThink", &CK5_SneakPlatThink);
 	CK_ACT_AddFunction("CK5_RedGoPlatThink", &CK5_RedGoPlatThink);
 	CK_ACT_AddFunction("CK5_PurpleGoPlatThink", &CK5_PurpleGoPlatThink);

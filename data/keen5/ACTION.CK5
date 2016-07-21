@@ -236,17 +236,17 @@
 # Back to ck5_obj1.c
 
 #Turrets
-%action CK5_ACT_turretWait 0x1DFE 0 0 UnscaledOnce 0 0 0x78 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_turretShoot
-%action CK5_ACT_turretShoot 0x1E1C 0 0 UnscaledOnce 1 0 1 0 0 CK5_TurretShoot NULL CK_BasicDrawFunc1 CK5_ACT_turretWait
+%action CK_ACT_turretWait 0x1DFE 0 0 UnscaledOnce 0 0 0x78 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_turretShoot
+%action CK_ACT_turretShoot 0x1E1C 0 0 UnscaledOnce 1 0 1 0 0 CK_TurretShoot NULL CK_BasicDrawFunc1 CK_ACT_turretWait
 
 # Turret Shots
-%action CK5_ACT_turretShot1 0x1E3A 0xEC 0xEC UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot2
-%action CK5_ACT_turretShot2 0x1E58 0xED 0xED UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot3
-%action CK5_ACT_turretShot3 0x1E76 0xEE 0xEE UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot4
-%action CK5_ACT_turretShot4 0x1E94 0xEF 0xEF UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot1
+%action CK_ACT_turretShot1 0x1E3A 0xEC 0xEC UnscaledFrame 0 0 8 0 0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot2
+%action CK_ACT_turretShot2 0x1E58 0xED 0xED UnscaledFrame 0 0 8 0 0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot3
+%action CK_ACT_turretShot3 0x1E76 0xEE 0xEE UnscaledFrame 0 0 8 0 0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot4
+%action CK_ACT_turretShot4 0x1E94 0xEF 0xEF UnscaledFrame 0 0 8 0 0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot1
 
-%action CK5_ACT_turretShotHit1 0x1EB2 0xF0 0xF0 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_turretShotHit2
-%action CK5_ACT_turretShotHit2 0x1ED0 0xF1 0xF1 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_turretShotHit1 0x1EB2 0xF0 0xF0 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_turretShotHit2
+%action CK_ACT_turretShotHit2 0x1ED0 0xF1 0xF1 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
 # ck5_obj2.c
 

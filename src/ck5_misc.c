@@ -779,7 +779,7 @@ void CK5_ScanInfoLayer()
 			case 49:
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 45:
-				CK5_TurretSpawn(x, y, 0);
+				CK_TurretSpawn(x, y, 0);
 				break;
 
 			case 54:
@@ -787,7 +787,7 @@ void CK5_ScanInfoLayer()
 			case 50:
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 46:
-				CK5_TurretSpawn(x, y, 1);
+				CK_TurretSpawn(x, y, 1);
 				break;
 
 			case 55:
@@ -795,7 +795,7 @@ void CK5_ScanInfoLayer()
 			case 51:
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 47:
-				CK5_TurretSpawn(x, y, 2);
+				CK_TurretSpawn(x, y, 2);
 				break;
 
 			case 56:
@@ -803,7 +803,7 @@ void CK5_ScanInfoLayer()
 			case 52:
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 48:
-				CK5_TurretSpawn(x, y, 3);
+				CK_TurretSpawn(x, y, 3);
 				break;
 
 			case 69:

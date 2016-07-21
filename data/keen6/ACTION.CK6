@@ -228,14 +228,16 @@
 #%action CK6_ACT_GikSlide0 0x267C 397 395 UnscaledFrame 0 0 6 0x0 0x0 CK6_GikSlide CK_LethalCol CK6_GikSlideDraw CK6_ACT_GikSlide1
 #%action CK6_ACT_GikSlide1 0x269A 398 396 UnscaledFrame 0 0 6 0x0 0x0 CK6_GikSlide CK_LethalCol CK6_GikSlideDraw CK6_ACT_GikSlide0
 #%action CK6_ACT_GikEndSlide0 0x26B8 397 395 UnscaledOnce 0 1 20 0x0 0x0 NULL CK_LethalCol CK_BasicDrawFunc2 CK6_ACT_GikWalk0
-#%action CK6_ACT_turretWait 0x26F6 0 0 UnscaledOnce 0 0 120 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_turretShoot
-#%action CK6_ACT_turretShoot 0x2714 0 0 UnscaledOnce 1 0 1 0x0 0x0 CK6_TurretShoot NULL CK_BasicDrawFunc1 CK6_ACT_turretWait
-#%action CK6_ACT_turretShot1 0x2732 176 176 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK6_TurretShotDraw CK6_TurretShotCol CK6_ACT_turretShot2
-#%action CK6_ACT_turretShot2 0x2750 177 177 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK6_TurretShotDraw CK6_TurretShotCol CK6_ACT_turretShot3
-#%action CK6_ACT_turretShot3 0x276E 178 178 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK6_TurretShotDraw CK6_TurretShotCol CK6_ACT_turretShot4
-#%action CK6_ACT_turretShot4 0x278C 179 179 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK6_TurretShotDraw CK6_TurretShotCol CK6_ACT_turretShot1
-#%action CK6_ACT_turretShotHit1 0x27AA 180 180 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_turretShotHit2
-#%action CK6_ACT_turretShotHit2 0x27C8 181 181 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+
+#Turrets
+%action CK_ACT_turretWait 0x26F6 0 0 UnscaledOnce 0 0 120 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_turretShoot
+%action CK_ACT_turretShoot 0x2714 0 0 UnscaledOnce 1 0 1 0x0 0x0 CK_TurretShoot NULL CK_BasicDrawFunc1 CK_ACT_turretWait
+%action CK_ACT_turretShot1 0x2732 176 176 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot2
+%action CK_ACT_turretShot2 0x2750 177 177 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot3
+%action CK_ACT_turretShot3 0x276E 178 178 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot4
+%action CK_ACT_turretShot4 0x278C 179 179 UnscaledFrame 0 0 8 0x0 0x0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot1
+%action CK_ACT_turretShotHit1 0x27AA 180 180 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_turretShotHit2
+%action CK_ACT_turretShotHit2 0x27C8 181 181 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
 
 #Orbatrix
 %action CK6_ACT_OrbatrixFloat0 0x27E6 333 335 ScaledOnce 0 1 12 0x10 0x0 CK6_OrbatrixFloat CK6_OrbatrixCol CK6_OrbatrixDraw CK6_ACT_OrbatrixFloat1

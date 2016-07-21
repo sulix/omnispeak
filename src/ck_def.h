@@ -99,6 +99,7 @@ typedef enum CK_ClassType {
   CT4_Mine = 32,
   CT4_StunnedCreature = 33,
   CT4_MapFlag = 34,
+  CT4_Turret = 1, // to make the CT_CLASS macro work
 
 	CT5_EnemyShot = 4,
   CT5_Item = 5,
@@ -111,6 +112,7 @@ typedef enum CK_ClassType {
 	CT5_Robo = 12,
 	CT5_Spirogrip = 13,
 	CT5_Ampton = 14,
+  CT5_Turret = 15,
 	CT5_Volte = 16,
   CT5_0x11 = 17,
 	CT5_Spindred = 18,
@@ -127,6 +129,7 @@ typedef enum CK_ClassType {
   CT6_Fleex = 10,
   CT6_Babobba = 13,
   CT6_Bobba = 14,
+  CT6_Turret = 18,
   CT6_Orbatrix = 19,
   CT6_Bip = 20,
   CT6_Flect = 21,
@@ -430,6 +433,7 @@ void CK_BasicDrawFunc2(CK_object *obj);
 void CK_SpawnItem(int tileX, int tileY, int itemNumber);
 void CK_SpawnCentilifeNotify(int tileX, int tileY);
 void CK_SpawnFallPlat(int tileX, int tileY);
+void CK_TurretSpawn(int tileX, int tileY, int direction);
 /*** Used for saved games compatibility ***/
 uint16_t CK_ConvertObjPointerTo16BitOffset(CK_object *obj);
 CK_object *CK_ConvertObj16BitOffsetToPointer(uint16_t offset);

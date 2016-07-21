@@ -265,6 +265,78 @@ void CK_FallPlatRise (CK_object *obj)
 	}
 }
 
+void CK_TurretSpawn(int tileX, int tileY, int direction)
+{
+	CK_object *obj = CK_GetNewObj(false);
+
+	obj->type = CT_CLASS(Turret);
+	obj->active = OBJ_ACTIVE;
+	obj->clipRects.tileX1 = obj->clipRects.tileX2 = tileX;
+	obj->clipRects.tileY1 = obj->clipRects.tileY2 = tileY;
+
+	obj->posX = tileX << 8;
+	obj->posY = tileY << 8;
+	obj->clipRects.unitX1 = obj->clipRects.unitX2 = tileX << 8;
+	obj->clipRects.unitX2 = obj->clipRects.unitY2 = tileY << 8;
+
+	obj->user1 = direction;
+
+	CK_SetAction(obj, CK_GetActionByName("CK_ACT_turretWait"));
+}
+
+void CK_TurretShoot(CK_object *obj)
+{
+	CK_object *shot = CK_GetNewObj(true);
+
+	shot->type = CT5_EnemyShot;	//TurretShot
+	shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
+  shot->clipped = CLIP_normal;
+	shot->posX = obj->posX;
+	shot->posY = obj->posY;
+
+	switch (obj->user1)
+	{
+		case 0:
+			shot->velY = -64;
+			break;
+		case 1:
+			shot->velX = 64;
+			break;
+		case 2:
+			shot->velY = 64;
+			break;
+		case 3:
+			shot->velX = -64;
+			break;
+	}
+
+	CK_SetAction(shot, CK_GetActionByName("CK_ACT_turretShot1"));
+	SD_PlaySound(SOUND_ENEMYSHOOT);
+
+}
+
+void CK_TurretShotCol(CK_object *me, CK_object *other)
+{
+	if (other->type == CT_Player)
+	{
+		CK_KillKeen();
+		CK_SetAction2(me, CK_GetActionByName("CK_ACT_turretShotHit1"));
+	}
+}
+
+void CK_TurretShotDraw(CK_object *obj)
+{
+	if (obj->topTI || obj->bottomTI || obj->leftTI || obj->rightTI)
+	{
+		SD_PlaySound(SOUND_ENEMYSHOTHIT);
+		//obj->clipped=false;
+		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_turretShotHit1"));
+	}
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->currentAction->chunkLeft, false, obj->zLayer);
+
+}
+
 void CK_OBJ_SetupFunctions()
 {
 	CK_ACT_AddFunction("CK_DoorOpen", &CK_DoorOpen);
@@ -277,4 +349,8 @@ void CK_OBJ_SetupFunctions()
 	CK_ACT_AddFunction("CK_FallPlatSit", &CK_FallPlatSit);
 	CK_ACT_AddFunction("CK_FallPlatFall", &CK_FallPlatFall);
 	CK_ACT_AddFunction("CK_FallPlatRise", &CK_FallPlatRise);
+
+	CK_ACT_AddFunction("CK_TurretShoot", &CK_TurretShoot);
+	CK_ACT_AddColFunction("CK_TurretShotCol", &CK_TurretShotCol);
+	CK_ACT_AddFunction("CK_TurretShotDraw", &CK_TurretShotDraw);
 }

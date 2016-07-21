@@ -50,7 +50,6 @@ void CK5_SpawnRedStandPlatform(int tileX, int tileY);
 void CK5_SpawnItem(int tileX, int tileY, int itemNumber);
 
 /* ck5_obj1.c */
-void CK5_TurretSpawn(int tileX, int tileY, int direction);
 void CK5_SneakPlatSpawn(int tileX, int tileY);
 void CK5_GoPlatSpawn(int tileX, int tileY, int direction, bool purple);
 void CK5_SpawnVolte(int tileX, int tileY);

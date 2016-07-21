@@ -631,6 +631,15 @@ void CK6_ScanInfoLayer()
         CK6_SpawnBobba(x, y);
         break;
 
+      // Turrets
+			case 53:
+			case 54:
+			case 55:
+      case 56:
+        ck6_lumpsNeeded[Lump_Turret] = true;
+				CK_TurretSpawn(x, y, infoValue - 53);
+				break;
+
       // Orbatrices
       case 72:
         if (ck_gameState.difficulty < D_Hard) break;
