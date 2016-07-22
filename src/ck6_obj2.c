@@ -143,7 +143,7 @@ void CK6_NospikeCol(CK_object *a, CK_object *b)
 
 void CK6_NospikeFall(CK_object *obj)
 {
-  RF_RemoveSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3));
+  RF_RemoveSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3Ptr));
 }
 
 void CK6_NospikeFallDraw(CK_object *obj)
@@ -151,7 +151,7 @@ void CK6_NospikeFallDraw(CK_object *obj)
   RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 
   // Place the question mark
-  RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3), obj->posX + 0x100, obj->posY - 0x80, 0x13C, false, 3);
+  RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3Ptr), obj->posX + 0x100, obj->posY - 0x80, 0x13C, false, 3);
 }
 
 void CK6_NospikeFallDraw2(CK_object *obj)
