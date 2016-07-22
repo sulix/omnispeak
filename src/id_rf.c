@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 //TODO: id_heads.h
+#include "ck_ep.h"
 #include "ck_play.h"
 #include "id_rf.h"
 #include "id_vl.h"
@@ -105,6 +106,19 @@ typedef struct RF_AnimTileTimer
 	int timeToSwitch;
 } RF_AnimTileTimer;
 
+
+/*** Used for saved games compatibility ***/
+static uint16_t RFL_ConvertAnimTileTimerIndexTo16BitOffset(int i)
+{
+	return 4*i + ck_currentEpisode->animTilesOffset;
+}
+
+static int RFL_ConvertAnimTileTimer16BitOffsetToIndex(uint16_t offset)
+{
+	return (offset-ck_currentEpisode->animTilesOffset) / 4;
+}
+
+
 typedef struct RF_OnscreenAnimTile
 {
 	int tileX;
@@ -188,6 +202,7 @@ void RFL_SetupSpriteTable()
 
 void RF_MarkTileGraphics()
 {
+	memset(rf_animTileTimers, 0, sizeof(rf_animTileTimers));
 	rf_numAnimTileTimers = 0;
 	for (int tileY = 0; tileY < rf_mapHeightTiles; ++tileY)
 	{
@@ -195,10 +210,8 @@ void RF_MarkTileGraphics()
 		{
 			bool needNewTimer = true;
 			int backTile = CA_mapPlanes[0][tileY*rf_mapWidthTiles+tileX];
-			int foreTile = CA_mapPlanes[1][tileY*rf_mapWidthTiles+tileX];
 
 			CA_MarkGrChunk(ca_gfxInfoE.offTiles16 + backTile);
-			CA_MarkGrChunk(ca_gfxInfoE.offTiles16m + foreTile);
 			if (TI_BackAnimTile(backTile))
 			{
 				if (TI_BackAnimTime(backTile))
@@ -213,7 +226,7 @@ void RF_MarkTileGraphics()
 						if (rf_animTileTimers[i].tileNumber == backTile)
 						{
 							// Add the timer index to the info-plane
-							CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = i | 0xfe00;
+							CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
 							needNewTimer = false;
 							break;
 						}
@@ -225,9 +238,11 @@ void RF_MarkTileGraphics()
 							Quit("RF_MarkTileGraphics: Too many unique animations");
 						rf_animTileTimers[rf_numAnimTileTimers].tileNumber = backTile;
 						rf_animTileTimers[rf_numAnimTileTimers].timeToSwitch = TI_BackAnimTime(backTile);
-						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = rf_numAnimTileTimers | 0xfe00;
+						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(rf_numAnimTileTimers);
 						rf_numAnimTileTimers++;
 					}
+					else
+						continue;
 				}
 
 				// Mark all tiles in the animation loop to be cached.
@@ -244,7 +259,17 @@ void RF_MarkTileGraphics()
 					}
 				} while (TI_BackAnimTile(nextTile) && nextTile != backTile);
 			}
-			else if (TI_ForeAnimTile(foreTile))
+		}
+	}
+	for (int tileY = 0; tileY < rf_mapHeightTiles; ++tileY)
+	{
+		for (int tileX = 0; tileX < rf_mapWidthTiles; ++tileX)
+		{
+			bool needNewTimer = true;
+			int foreTile = CA_mapPlanes[1][tileY*rf_mapWidthTiles+tileX];
+
+			CA_MarkGrChunk(ca_gfxInfoE.offTiles16m + foreTile);
+			if (TI_ForeAnimTile(foreTile))
 			{
 				if (TI_ForeAnimTime(foreTile))
 				{
@@ -257,7 +282,7 @@ void RF_MarkTileGraphics()
 						if (rf_animTileTimers[i].tileNumber == (foreTile | 0x8000))
 						{
 							// Add the timer index to the info-plane
-							CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = i | 0xfe00;
+							CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
 							needNewTimer = false;
 							break;
 						}
@@ -270,9 +295,11 @@ void RF_MarkTileGraphics()
 
 						rf_animTileTimers[rf_numAnimTileTimers].tileNumber = foreTile | 0x8000;
 						rf_animTileTimers[rf_numAnimTileTimers].timeToSwitch = TI_ForeAnimTime(foreTile);
-						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = rf_numAnimTileTimers | 0xfe00;
+						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(rf_numAnimTileTimers);
 						rf_numAnimTileTimers++;
 					}
+					else
+						continue;
 				}
 
 				// Mark all tiles in the animation loop to be cached.
@@ -314,7 +341,7 @@ void RFL_CheckForAnimTile(int tileX, int tileY)
 		ost->tileY = tileY;
 		ost->tile = backTile;
 		ost->plane = 0;
-		ost->timerIndex = CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] & 0x1ff;
+		ost->timerIndex = RFL_ConvertAnimTileTimer16BitOffsetToIndex(CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX]);
 
 
 		ost->next = rf_firstOnscreenAnimTile;
@@ -334,7 +361,7 @@ void RFL_CheckForAnimTile(int tileX, int tileY)
 		ost->tileY = tileY;
 		ost->tile = foreTile;
 		ost->plane = 1;
-		ost->timerIndex = CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] & 0x1ff;
+		ost->timerIndex = RFL_ConvertAnimTileTimer16BitOffsetToIndex(CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX]);
 
 		ost->prev = 0;
 		ost->next = rf_firstOnscreenAnimTile;
