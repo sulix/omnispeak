@@ -782,7 +782,7 @@ void CK_CheckKeys()
 		US_PrintCentered("PAUSED");
 		VL_Present(); // VW_UpdateScreen();
 		IN_WaitButton();
-		// RF_ResetScreen();
+		RF_ForceRefresh();
 		in_Paused = false;
 		SD_MusicOn();
 	}
