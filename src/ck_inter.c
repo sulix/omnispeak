@@ -714,7 +714,6 @@ void TerminatorExpandRLE(uint16_t *src, uint8_t *dest)
 	*dest++ = lastbyte;
 	*dest = 0;
 }
-#if 0
 
 // Generate an RLE-compressed bitmap with COMMANDER KEEN separated by some space
 // Except... this RLE-compressed bitmap seems to be in a slightly different format
@@ -726,7 +725,7 @@ void JoinTerminatorPics(void)
 {
 
 	// Points to the data in the stitched bmp
-	uint16_t far *introBMPDataPtr;
+	uint16_t *introBMPDataPtr;
 
 	int i;
 
@@ -734,21 +733,20 @@ void JoinTerminatorPics(void)
 	MM_GetPtr(&introbuffer2, 30000);
 
 	// Where we start writing the bitmap data
-	introBMPDataPtr = MK_FP(introbuffer2, offsetof(introbmptype, data));
+	introBMPDataPtr = (uint16_t*)((introbmptype*)(introbuffer2))->data;
 
 	// for each row
 	for (i = 0; i < 200; i++)
 	{
 		uint16_t count, inword;
-		uint16_t far *linestart;
+		uint16_t *linestart;
 
 		// Generate a pointer to this line of data
-		((introbmptype far *)introbuffer2)->linestarts[i] = FP_OFF(introBMPDataPtr);
+		((introbmptype *)introbuffer2)->linestarts[i] = (uint16_t)((uint8_t*)(introBMPDataPtr) - (uint8_t*)(introbuffer2));
 
 		count = 0;
-		EGAREADMAP(1);
 
-		linestart = MK_FP(ck_introCommander, ck_introCommander->linestarts[i]);
+		linestart = (uint16_t*)((uint8_t*)ck_introCommander + ck_introCommander->linestarts[i]);
 		inword = *linestart++;
 
 		do
@@ -762,10 +760,8 @@ void JoinTerminatorPics(void)
 		// Add some space between the COMMANDER and the KEEN
 		count += 80;
 
-		EGAREADMAP(0);
 
-
-		linestart = MK_FP(ck_introKeen, ck_introKeen->linestarts[i]);
+		linestart = (uint16_t*)((uint8_t*)(ck_introKeen) + ck_introKeen->linestarts[i]);
 		linestart++;
 		inword = *linestart++;
 
@@ -782,6 +778,8 @@ void JoinTerminatorPics(void)
 
 	}
 }
+
+#if 0
 
 //ZoomOutTerminator_1(var16, si+yBottom, leftOffset, introbuffer);
 void ZoomOutTerminator_1(uint16_t far *arg0, uint16_t arg4, int leftOffset, uint16_t far *arg8)
