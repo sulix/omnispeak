@@ -106,6 +106,9 @@ extern int load_game_error, ck_startingSavedGame;
 extern CK_Difficulty ck_startingDifficulty;
 extern CK_object *ck_scoreBoxObj;
 
+extern int ck6_smashScreenDistance;
+extern int16_t ck6_smashScreenOfs[];
+
 void CK_CountActiveObjects()
 {
 	int active = 0;
@@ -1648,7 +1651,15 @@ void CK_NormalCamera(CK_object *obj)
 
 	// If we're attached to the ground, or otherwise awesome
 	// do somethink inscrutible.
-	if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_keenHang1"))
+  if (ck_currentEpisode->ep == EP_CK6 && ck6_smashScreenDistance)
+  {
+    int16_t dx, ax;
+
+    ax = ck6_smashScreenOfs[ck6_smashScreenDistance] + obj->clipRects.unitY2;
+    deltaY += (dx - ax);  // Undefined behaviour here
+
+  }
+	else if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_keenHang1"))
 	{
 		if (obj->currentAction != CK_GetActionByName("CK_ACT_keenPull1") &&
 				obj->currentAction != CK_GetActionByName("CK_ACT_keenPull2") &&
@@ -1905,6 +1916,12 @@ int CK_PlayLoop()
 			if (ck_invincibilityTimer < 0)
 				ck_invincibilityTimer = 0;
 		}
+
+    if (ck_currentEpisode->ep == EP_CK6 && ck6_smashScreenDistance)
+    {
+      if ((ck6_smashScreenDistance -= SD_GetSpriteSync()) < 0)
+        ck6_smashScreenDistance = 0;
+    }
 
 		//TODO: Slow-mo, extra VBLs.
 		if (ck_slowMotionEnabled)

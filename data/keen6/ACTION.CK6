@@ -173,20 +173,26 @@
 #%action CK_ACT_sneakPlatWait 0x1E8C 424 424 Frame 0 0 0 0x0 0x0  NULL CK_BasicDrawFunc1 NULL
 #%action CK_ACT_sneakPlatSneak 0x1EAA 424 424 ScaledOnce 0 0 48 0x20 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatReturn
 #%action CK_ACT_sneakPlatReturn 0x1EC8 424 424 ScaledOnce 0 0 96 0xFFF0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatWait
-#%action CK6_ACT_BloogWalk0 0x1EE6 346 342 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk1
-#%action CK6_ACT_BloogWalk1 0x1F04 347 343 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk2
-#%action CK6_ACT_BloogWalk2 0x1F22 348 344 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk3
-#%action CK6_ACT_BloogWalk3 0x1F40 349 345 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk0
-#%action CK6_ACT_BloogStunned0 0x1F5E 350 350 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_BloogStunned0
-#%action CK6_ACT_BloogguardWalk0 0x1F7C 254 258 UnscaledOnce 0 1 9 0x80 0x0 CK6_BloogguardWalk CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk1
-#%action CK6_ACT_BloogguardWalk1 0x1F9A 255 259 UnscaledOnce 0 1 9 0x80 0x0 CK6_BloogguardWalk CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk2
-#%action CK6_ACT_BloogguardWalk2 0x1FB8 256 260 UnscaledOnce 0 1 9 0x80 0x0 CK6_BloogguardWalk CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk3
-#%action CK6_ACT_BloogguardWalk3 0x1FD6 257 261 UnscaledOnce 0 1 9 0x80 0x0 CK6_BloogguardWalk CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk0
-#%action CK6_ACT_BloogguardClub0 0x1FF4 262 265 UnscaledOnce 0 1 30 0x0 0x0 NULL CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardClub1
-#%action CK6_ACT_BloogguardClub1 0x2012 263 266 UnscaledOnce 0 1 9 0x0 0x0 NULL CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardClub2
-#%action CK6_ACT_BloogguardClub2 0x2030 264 267 UnscaledOnce 1 1 1 0x0 0x0  CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardClub3
-#%action CK6_ACT_BloogguardClub3 0x204E 264 267 UnscaledOnce 0 1 9 0x0 0x0 NULL CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk0
-#%action CK6_ACT_BloogguardStunned0 0x206C 268 268 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_BloogguardStunned0
+#
+#Bloogs
+%action CK6_ACT_BloogWalk0 0x1EE6 346 342 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK6_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk1
+%action CK6_ACT_BloogWalk1 0x1F04 347 343 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK6_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk2
+%action CK6_ACT_BloogWalk2 0x1F22 348 344 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK6_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk3
+%action CK6_ACT_BloogWalk3 0x1F40 349 345 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK6_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk0
+%action CK6_ACT_BloogStunned0 0x1F5E 350 350 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_BloogStunned0
+
+#Bloogguards
+%action CK6_ACT_BloogguardWalk0 0x1F7C 254 258 UnscaledOnce 0 1 9 0x80 0x0 CK6_BloogguardWalk CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk1
+%action CK6_ACT_BloogguardWalk1 0x1F9A 255 259 UnscaledOnce 0 1 9 0x80 0x0 CK6_BloogguardWalk CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk2
+%action CK6_ACT_BloogguardWalk2 0x1FB8 256 260 UnscaledOnce 0 1 9 0x80 0x0 CK6_BloogguardWalk CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk3
+%action CK6_ACT_BloogguardWalk3 0x1FD6 257 261 UnscaledOnce 0 1 9 0x80 0x0 CK6_BloogguardWalk CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk0
+%action CK6_ACT_BloogguardClub0 0x1FF4 262 265 UnscaledOnce 0 1 30 0x0 0x0 NULL CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardClub1
+%action CK6_ACT_BloogguardClub1 0x2012 263 266 UnscaledOnce 0 1 9 0x0 0x0 NULL CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardClub2
+%action CK6_ACT_BloogguardClub2 0x2030 264 267 UnscaledOnce 1 1 1 0x0 0x0 CK6_BloogguardSmash CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardClub3
+%action CK6_ACT_BloogguardClub3 0x204E 264 267 UnscaledOnce 0 1 9 0x0 0x0 NULL CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk0
+%action CK6_ACT_BloogguardStunned0 0x206C 268 268 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_BloogguardStunned0
+
+#Blooglets
 %action CK6_ACT_BloogletRRun0 0x208A 355 351 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletRRun1
 %action CK6_ACT_BloogletRRun1 0x20A8 356 352 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletRRun2
 %action CK6_ACT_BloogletRRun2 0x20C6 357 353 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletRRun3

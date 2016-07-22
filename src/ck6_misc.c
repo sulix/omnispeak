@@ -611,6 +611,16 @@ void CK6_ScanInfoLayer()
         CK_SpawnMapKeen(x, y);
 				break;
 
+      // Bloogs
+      case 6:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 5:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 4:
+        ck6_lumpsNeeded[Lump_Bloog] = true;
+        CK6_SpawnBloog(x, y);
+        break;
+
       case 7:
       case 8:
       case 9:
@@ -724,6 +734,16 @@ void CK6_ScanInfoLayer()
       case 82:
         ck6_lumpsNeeded[Lump_Ceilick] = true;
         CK6_SpawnCeilick(x, y);
+        break;
+
+      // Bloogguards
+      case 87:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 86:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 85:
+        ck6_lumpsNeeded[Lump_Bloogguard] = true;
+        CK6_SpawnBloogguard(x, y);
         break;
 
       // Babobbas

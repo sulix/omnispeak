@@ -42,6 +42,104 @@ void CK6_BloogletItem(CK_object *obj)
   CK_PhysGravityHigh(obj);
 }
 
+void CK6_SpawnBloog(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Bloog;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x200;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogWalk0"));
+}
+// Bloogs
+void CK6_Bloog(CK_object *obj)
+{
+  if (US_RndT() < 0x20)
+    obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+}
+
+void CK6_BloogCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    CK_KillKeen();
+  }
+  else if (b->type == CT_Stunner)
+  {
+    CK_StunCreature(a,b,CK_GetActionByName("CK6_ACT_BloogStunned0"));
+  }
+}
+
+int ck6_smashScreenDistance;
+int16_t ck6_smashScreenOfs [] =
+{
+  0, -64, -64, -64, 64, 64, 64, -200, -200, -200, 200, 200, 200,
+  -250, -250, -250, 250, 250, 250, -250, -250, -250, 250, 250, 250
+};
+
+void CK6_SpawnBloogguard(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Bloogguard;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x280;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  obj->user2 = 3;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogguardWalk0"));
+}
+
+void CK6_BloogguardWalk(CK_object *obj)
+{
+  if (US_RndT() < 0x20)
+    obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+
+  if (obj->xDirection == IN_motion_Right && ck_keenObj->posX > obj->posX ||
+      obj->xDirection == IN_motion_Left && ck_keenObj->posX < obj->posX)
+  {
+    if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2)
+    {
+      if (US_RndT() < 0x20)
+        obj->currentAction = CK_GetActionByName("CK6_ACT_BloogguardClub0");
+    }
+  }
+}
+
+#define SOUND_BLOOGGUARDSMASH 0x34
+void CK6_BloogguardSmash(CK_object *obj)
+{
+  SD_PlaySound(SOUND_BLOOGGUARDSMASH);
+  ck6_smashScreenDistance = 25;
+  if (ck_keenObj->topTI)
+    CK_SetAction2(ck_keenObj, CK_GetActionByName("CK6_ACT_keenStunned0"));
+}
+
+void CK6_BloogguardCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    CK_KillKeen();
+  }
+  else if (b->type == CT_Stunner)
+  {
+    if (--a->user2 == 0)
+    {
+      CK_StunCreature(a, b, CK_GetActionByName("CK6_ACT_BloogguardStunned0"));
+    }
+    else
+    {
+      a->user1 = 2;
+      a->visible = true;
+      CK_ShotHit(b);
+    }
+  }
+}
+
 // Also used for Fleex and Nospikes
 void CK6_MultihitDraw(CK_object *obj)
 {
@@ -79,14 +177,6 @@ void CK6_MultihitDraw(CK_object *obj)
   {
     RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
   }
-}
-
-
-// Bloogs
-void CK6_Bloog(CK_object *obj)
-{
-  if (US_RndT() < 0x20)
-    obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 }
 
 // Blooglets
@@ -171,9 +261,14 @@ void CK6_Obj1_SetupFunctions()
   CK_ACT_AddFunction("CK6_BloogletItem", &CK6_BloogletItem);
 
   CK_ACT_AddFunction("CK6_Bloog", &CK6_Bloog);
+  CK_ACT_AddColFunction("CK6_BloogCol", &CK6_BloogCol);
+
+  CK_ACT_AddFunction("CK6_BloogguardWalk", &CK6_BloogguardWalk);
+  CK_ACT_AddFunction("CK6_BloogguardSmash", &CK6_BloogguardSmash);
+  CK_ACT_AddColFunction("CK6_BloogguardCol", &CK6_BloogguardCol);
+  CK_ACT_AddFunction("CK6_MultihitDraw", &CK6_MultihitDraw);
 
   CK_ACT_AddColFunction("CK6_BloogletCol", &CK6_BloogletCol);
 
-  CK_ACT_AddFunction("CK6_MultihitDraw", &CK6_MultihitDraw);
 
 }
