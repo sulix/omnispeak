@@ -1804,7 +1804,7 @@ int CK_PlayLoop()
 					}
 					else if (currentObj->active != OBJ_ALWAYS_ACTIVE)
 					{
-						if (US_RndT() < SD_GetSpriteSync() * 2 || vl_screenFaded)
+						if (US_RndT() < SD_GetSpriteSync() * 2 || vl_screenFaded || ck_startingSavedGame)
 						{
 							RF_RemoveSpriteDraw(&currentObj->sde);
 							if (currentObj->type == CT_CLASS(StunnedCreature))
@@ -1892,6 +1892,9 @@ int CK_PlayLoop()
 
 		//Draw the scorebox
 		CK_UpdateScoreBox(ck_scoreBoxObj);
+
+		if (ck_startingSavedGame)
+			ck_startingSavedGame = 0;
 
 		// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
 		VL_SetScrollCoords((rf_scrollXUnit & 0xef) >> 4, (rf_scrollYUnit & 0xff) >> 4);
