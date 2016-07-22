@@ -239,6 +239,7 @@ void CK_BasicDrawFunc4(CK_object *obj)
         break;
 
       case CT6_Bloog:
+      case CT6_Nospike:
         starsX = 0x80;
         starsY = -0x40;
         break;

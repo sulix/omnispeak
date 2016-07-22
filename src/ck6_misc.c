@@ -631,6 +631,16 @@ void CK6_ScanInfoLayer()
         CK6_SpawnBobba(x, y);
         break;
 
+      // Nospike
+      case 49:
+        if (ck_gameState.difficulty < D_Hard) break;
+      case 48:
+        if (ck_gameState.difficulty < D_Normal) break;
+      case 47:
+        ck6_lumpsNeeded[Lump_Nospike] = true;
+        CK6_SpawnNospike(x, y);
+        break;
+
       // Gik
       case 52:
         if (ck_gameState.difficulty < D_Hard) break;

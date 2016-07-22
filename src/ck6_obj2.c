@@ -30,6 +30,176 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // =========================================================================
 
+// Nospikes
+void CK6_SpawnNospike(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Nospike;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x180;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_NospikeSit0"));
+  obj->user4 = 4;
+}
+
+void CK6_NospikeWalk(CK_object *obj)
+{
+  if (US_RndT() < 0x10)
+  {
+    obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeSit0");
+  }
+  else if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2 && US_RndT() <= 0x20)
+  {
+    obj->xDirection = ck_keenObj->posX > obj->posX ? IN_motion_Right : IN_motion_Left;
+    obj->user1 = 0;
+    obj->user2 = 1;
+
+    if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk0"))
+      obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeCharge1");
+    else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk1"))
+      obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeCharge2");
+    else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk2"))
+      obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeCharge3");
+    else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk3"))
+      obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeCharge0");
+  }
+}
+
+void CK6_NospikeCharge(CK_object *obj)
+{
+  if (obj->user1 == 0)
+  {
+    if (((ck_keenObj->clipRects.unitY2 != obj->clipRects.unitY2 ||
+          obj->xDirection == IN_motion_Left && obj->posX < ck_keenObj->posX ||
+          obj->xDirection == IN_motion_Right && obj->posX > ck_keenObj->posX) &&
+        US_RndT() < 0x8) ||
+        !CK_ObjectVisible(obj))
+    {
+      // Stop charging if nospike gets bored, or goes off screen
+      obj->user2 = 0;
+      if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeCharge0"))
+        obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeWalk1");
+      else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeCharge1"))
+        obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeWalk2");
+      else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeCharge2"))
+        obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeWalk3");
+      else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeCharge3"))
+        obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeWalk0");
+    }
+  }
+}
+
+#define SOUND_NOSPIKECOLLIDE 0x34
+void CK6_NospikeCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    CK_KillKeen();
+  }
+  else if (b->type == CT_Stunner)
+  {
+    if (--a->user4 == 0)
+    {
+      CK_StunCreature(a, b, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
+    }
+    else
+    {
+      a->xDirection = ck_keenObj->posX < a->posX ? IN_motion_Left : IN_motion_Right;
+      a->user2 |= 0x400;
+      a->visible = true;
+
+      if (a->currentAction == CK_GetActionByName("CK6_ACT_NospikeSit0") ||
+          a->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk0"))
+        CK_SetAction2(a, CK_GetActionByName("CK6_ACT_NospikeCharge1"));
+      else if (a->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk1"))
+        CK_SetAction2(a, CK_GetActionByName("CK6_ACT_NospikeCharge2"));
+      else if (a->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk2"))
+        CK_SetAction2(a, CK_GetActionByName("CK6_ACT_NospikeCharge3"));
+      else if (a->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk3"))
+        CK_SetAction2(a, CK_GetActionByName("CK6_ACT_NospikeCharge0"));
+
+      CK_ShotHit(b);
+    }
+  }
+  else if (b->type == CT6_Nospike)
+  {
+    // Two charging nospikes will stun each other if they collide head on
+    if ((a->user2 & 0xFF) && (b->user2 & 0xFF) && a->xDirection != b->xDirection)
+    {
+      a->user1 = a->user2 = a->user3 = 0;
+      b->user1 = b->user2 = b->user3 = 0;
+      a->user4 = b->user4 = a->type;
+      CK_SetAction2(a, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
+      CK_SetAction2(b, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
+      SD_PlaySound(SOUND_NOSPIKECOLLIDE);
+      a->type = b->type = CT6_StunnedCreature;
+      a->velY = b->velY = -24;
+    }
+  }
+}
+
+void CK6_NospikeFall(CK_object *obj)
+{
+  RF_RemoveSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3));
+}
+
+void CK6_NospikeFallDraw(CK_object *obj)
+{
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+
+  // Place the question mark
+  RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3), obj->posX + 0x100, obj->posY - 0x80, 0x13C, false, 3);
+}
+
+void CK6_NospikeFallDraw2(CK_object *obj)
+{
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+
+  if (obj->topTI)
+  {
+    obj->user1 = obj->user2 = obj->user3;
+    obj->user4 = obj->type;
+    CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
+    SD_PlaySound(SOUND_NOSPIKECOLLIDE);
+    obj->type = CT6_StunnedCreature;
+    obj->velY = -24;
+  }
+}
+
+void CK6_NospikeChargeDraw(CK_object *obj)
+{
+  if (obj->topTI)
+  {
+    obj->user1 = 0;
+    if (obj->rightTI || obj->leftTI)
+    {
+      obj->posX -= obj->xDirection * 128;
+      CK_SetAction(obj, CK_GetActionByName("CK6_ACT_NospikeSit0")); // Not Setaction2
+      RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+      return;
+    }
+  }
+  else if (++obj->user1 == 6)
+  {
+    CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_NospikeFall0"));
+  }
+
+  if (obj->user2 & 0xFF00)
+  {
+    uint16_t user2 = obj->user2 & 0xFFFF;  // Need to use 16-bit arithmetic here
+    user2 -= 0x100;
+    obj->user2 = user2;
+    RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, true, obj->zLayer);
+  }
+  else
+  {
+    RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+  }
+}
+
 
 // Giks
 void CK6_SpawnGik(int tileX, int tileY)
@@ -523,6 +693,14 @@ void CK6_FlectDraw(CK_object *obj)
  */
 void CK6_Obj2_SetupFunctions()
 {
+
+  CK_ACT_AddFunction("CK6_NospikeWalk", &CK6_NospikeWalk);
+  CK_ACT_AddFunction("CK6_NospikeCharge", &CK6_NospikeCharge);
+  CK_ACT_AddColFunction("CK6_NospikeCol", &CK6_NospikeCol);
+  CK_ACT_AddFunction("CK6_NospikeFall", &CK6_NospikeFall);
+  CK_ACT_AddFunction("CK6_NospikeFallDraw", &CK6_NospikeFallDraw);
+  CK_ACT_AddFunction("CK6_NospikeFallDraw2", &CK6_NospikeFallDraw2);
+  CK_ACT_AddFunction("CK6_NospikeChargeDraw", &CK6_NospikeChargeDraw);
 
   CK_ACT_AddFunction("CK6_GikWalk", &CK6_GikWalk);
   CK_ACT_AddFunction("CK6_GikSlide", &CK6_GikSlide);

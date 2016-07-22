@@ -131,6 +131,7 @@ typedef enum CK_ClassType {
   CT6_Fleex = 10,
   CT6_Babobba = 13,
   CT6_Bobba = 14,
+  CT6_Nospike = 16,
   CT6_Gik = 17,
   CT6_Turret = 18,
   CT6_Orbatrix = 19,

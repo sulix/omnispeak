@@ -47,6 +47,7 @@ void CK6_SpawnItem(int tileX, int tileY, int itemNumber);
 /* ck6_obj1.c */
 
 /* ck6_obj2.c */
+void CK6_SpawnNospike(int tileX, int tileY);
 void CK6_SpawnGik(int tileX, int tileY);
 void CK6_SpawnOrbatrix(int tileX, int tileY);
 void CK6_SpawnBipship(int tileX, int tileY);

@@ -207,20 +207,22 @@
 #%action CK6_ACT_BloogletGRun2 0x2288 384 380 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletGRun3
 #%action CK6_ACT_BloogletGRun3 0x22A6 385 381 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletGRun0
 #%action CK6_ACT_BloogletGStunned0 0x22C4 386 386 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
-#%action CK6_ACT_NospikeSit0 0x2460 298 298 UnscaledOnce 0 1 90 0x0 0x0 NULL CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk0
-#%action CK6_ACT_NospikeWalk0 0x247E 311 307 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk1
-#%action CK6_ACT_NospikeWalk1 0x249C 312 308 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk2
-#%action CK6_ACT_NospikeWalk2 0x24BA 313 309 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk3
-#%action CK6_ACT_NospikeWalk3 0x24D8 314 310 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk0
-#%action CK6_ACT_NospikeCharge0 0x24F6 303 299 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge1
-#%action CK6_ACT_NospikeCharge1 0x2514 304 300 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge2
-#%action CK6_ACT_NospikeCharge2 0x2532 305 301 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge3
-#%action CK6_ACT_NospikeCharge3 0x2550 306 302 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge0
-#%action CK6_ACT_NospikeFall0 0x256E 298 298 UnscaledOnce 0 0 20 0x0 0x1 NULL NULL CK_BasicDrawFunc1 CK6_ACT_NospikeFall1
-#%action CK6_ACT_NospikeFall1 0x258C 298 298 UnscaledOnce 0 0 90 0x0 0x0 CK6_NospikeFall NULL CK6_NospikeFallDraw CK6_ACT_NospikeFall2
-#%action CK6_ACT_NospikeFall2 0x25AA 298 298 UnscaledOnce 0 0 20 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_NospikeFall3
-#%action CK6_ACT_NospikeFall3 0x25C8 298 298 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK6_NospikeFallDraw2 NULL
-#%action CK6_ACT_NospikeStunned0 0x25E6 315 315 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_NospikeStunned0
+
+#Nospikes
+%action CK6_ACT_NospikeSit0 0x2460 298 298 UnscaledOnce 0 1 90 0x0 0x0 NULL CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk0
+%action CK6_ACT_NospikeWalk0 0x247E 311 307 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk1
+%action CK6_ACT_NospikeWalk1 0x249C 312 308 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk2
+%action CK6_ACT_NospikeWalk2 0x24BA 313 309 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk3
+%action CK6_ACT_NospikeWalk3 0x24D8 314 310 UnscaledOnce 0 1 10 0x80 0x0 CK6_NospikeWalk CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk0
+%action CK6_ACT_NospikeCharge0 0x24F6 303 299 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge1
+%action CK6_ACT_NospikeCharge1 0x2514 304 300 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge2
+%action CK6_ACT_NospikeCharge2 0x2532 305 301 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge3
+%action CK6_ACT_NospikeCharge3 0x2550 306 302 UnscaledOnce 0 1 4 0x80 0x0 CK6_NospikeCharge CK6_NospikeCol CK6_NospikeChargeDraw CK6_ACT_NospikeCharge0
+%action CK6_ACT_NospikeFall0 0x256E 298 298 UnscaledOnce 0 0 20 0x0 0x1 NULL NULL CK_BasicDrawFunc1 CK6_ACT_NospikeFall1
+%action CK6_ACT_NospikeFall1 0x258C 298 298 UnscaledOnce 0 0 90 0x0 0x0 CK6_NospikeFall NULL CK6_NospikeFallDraw CK6_ACT_NospikeFall2
+%action CK6_ACT_NospikeFall2 0x25AA 298 298 UnscaledOnce 0 0 20 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_NospikeFall3
+%action CK6_ACT_NospikeFall3 0x25C8 298 298 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK6_NospikeFallDraw2 NULL
+%action CK6_ACT_NospikeStunned0 0x25E6 315 315 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_NospikeStunned0
 
 #Giks
 %action CK6_ACT_GikWalk0 0x2604 390 387 UnscaledOnce 0 1 10 0x80 0x0 CK6_GikWalk CK_CarryKeenCol CK_BasicDrawFunc2 CK6_ACT_GikWalk1
