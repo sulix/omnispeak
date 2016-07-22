@@ -358,11 +358,12 @@ int CAL_RLEWCompress (void *src, int expLength, void *dest, uint16_t rletag)
 {
 	int compLength = 0;
 	uint16_t *srcptr = (uint16_t*)src;
-	uint16_t *dstptr = (uint16_t*)dest-1;
-	uint16_t count = 0;
+	uint16_t *dstptr = (uint16_t*)dest;
+	uint16_t count;
 
 	while (expLength)
 	{
+		count = 1;
 		uint16_t val = *srcptr++;
 		expLength -= 2;
 		while (*srcptr == val && expLength)

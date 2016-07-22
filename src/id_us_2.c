@@ -446,6 +446,10 @@ int USL_ConfirmComm( US_CardCommand command )
 	return result;
 }
 
+void error_message( int error )
+{
+	// FIXME
+}
 
 #if 0
 char *error_message_table[] ={
@@ -1790,6 +1794,7 @@ void USL_UpdateCards( void )
 
 void USL_BeginCards()
 {
+	CA_UpLevel();
 
 	// NOTE: I'm caching more stuff here than is necessary
 
@@ -1930,7 +1935,7 @@ void USL_EndCards()
 	//for longer than expected (possibly due to legal of EGA features)
 	//VL_ClearScreen(3); // Draw Cyan
 	VL_ClearScreen(0); // For now we draw black
-	// CA_DownLevel();
+	CA_DownLevel();
 	CA_LoadAllSounds();
 }
 

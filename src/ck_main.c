@@ -283,10 +283,12 @@ void CK_InitGame()
 
 	// Load the core datafiles
 	CA_Startup();
+	// Setup saved games handling
+	US_Setup();
 
 	// Set a few Menu Callbacks
 	// TODO: Finish this!
-	US_SetMenuFunctionPointers(NULL /*Load*/, NULL /*Save*/, &CK_ExitMenu);
+	US_SetMenuFunctionPointers(&CK_LoadGame, &CK_SaveGame, &CK_ExitMenu);
 	// Set ID engine Callbacks
 	ca_beginCacheBox = CK_BeginCacheBox;
 	ca_updateCacheBox = CK_UpdateCacheBox;

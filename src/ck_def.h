@@ -376,6 +376,10 @@ void CK_OverlayHighScores();
 void CK_SubmitHighScore(int score, uint16_t arg4);
 void CK_DoHighScores();
 
+/* ck_game.c */
+bool CK_SaveGame(FILE *fp);
+bool CK_LoadGame(FILE *fp);
+
 /* ck_keen.c */
 extern soundnames *ck_itemSounds;
 extern uint16_t ck_itemPoints[];

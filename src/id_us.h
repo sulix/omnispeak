@@ -91,6 +91,7 @@ extern const char **us_argv;
 extern int us_argc;
 
 void US_Startup(void);
+void US_Setup(void);
 void US_Shutdown(void);
 
 // ID_US_2
@@ -135,6 +136,7 @@ typedef enum US_CardCommand
 	US_Comm_ReturnToGame = 1,
 	US_Comm_EndGame = 2,
 	US_Comm_Quit = 3,
+	US_Comm_LoadGame = 4,
 	US_Comm_NewEasyGame = 5,
 	US_Comm_NewNormalGame = 6,
 	US_Comm_NewHardGame = 7
@@ -178,24 +180,28 @@ void US_RunCards();
 int green_message_box( const char *s1, const char *s2, const char *s3 );
 
 // A few function pointers
-extern void (*p_save_game)(FILE *handle);
-extern void (*p_load_game)(FILE *handle);
+extern bool (*p_save_game)(FILE *handle);
+extern bool (*p_load_game)(FILE *handle);
 extern void (*p_exit_menu)(void);
 
-void US_SetMenuFunctionPointers(void (*loadgamefunc)(FILE *), void (*savegamefunc)(FILE *), void (*exitmenufunc)(void));
+void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FILE *), bool (*savegamefunc)(FILE *), void (*exitmenufunc)(void));
 
 // Savefiles
+
+#define	US_MAX_SAVEDGAMENAME_LEN 32
+#define	US_MAX_NUM_OF_SAVED_GAMES 6
+
 typedef struct US_Savefile
 {
 	char id[4];
 	uint16_t printXOffset;
-	uint16_t used;
-	char name[0x22];
+	bool used;
+	char name[US_MAX_SAVEDGAMENAME_LEN+1];
 } __attribute__((packed)) US_Savefile;
 
-extern US_Savefile us_savefiles[6];
+extern US_Savefile us_savefiles[US_MAX_NUM_OF_SAVED_GAMES];
 
-void US_GetSavefiles();
+void US_GetSavefiles(void);
 
 // Text-mode order screen functions
 bool US_TerminalOk();
