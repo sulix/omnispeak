@@ -45,6 +45,7 @@ CK_EpisodeDef ck4_episode ={
   0xA807,
   0xC5D3,
   0xA537,
+  0xDDAE,
 };
 
 // Contains some keen-4 specific functions.

@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CK_EP_H
 #define CK_EP_H
 
+#include <stdint.h>
+
 struct CK_object;
 
 typedef enum CK_Episode
@@ -62,6 +64,7 @@ typedef struct CK_EpisodeDef
   uint16_t objArrayOffset;
   uint16_t tempObjOffset;
   uint16_t printXOffset;
+  uint16_t animTilesOffset;
 } CK_EpisodeDef;
 
 extern CK_EpisodeDef *ck_currentEpisode;
