@@ -1129,9 +1129,9 @@ void CK5_FuseMessage()
 	US_SetPrintY(US_GetPrintY() + 0xC);
 
 	if (ck_gameState.currentLevel == 0xD)
-		US_Print("I wonder what that\nfuse was for....\n");
+		US_CPrint("I wonder what that\nfuse was for....\n");
 	else
-		US_Print("One of the four\nmachines protecting the\nmain elevator shaft--\ntoast!\n");
+		US_CPrint("One of the four\nmachines protecting the\nmain elevator shaft--\ntoast!\n");
 
 	// VW_UpdateScreen();
 	VL_Present();
