@@ -125,8 +125,8 @@
 
 %action CK_ACT_item 0x196A 0 0 UnscaledOnce 0 0 20 0x0 0x0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item2
 %action CK_ACT_item2 0x1988 0 0 UnscaledOnce 0 0 20 0x0 0x0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item
-#%action CK6_ACT_bloogletItem1 0x19A6 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK6_BloogletItem NULL CK_BasicDrawFunc1 CK6_ACT_bloogletItem2
-#%action CK6_ACT_bloogletItem2 0x19C4 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK6_BloogletItem NULL CK_BasicDrawFunc1 CK6_ACT_bloogletItem1
+%action CK6_ACT_bloogletItem1 0x19A6 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK6_BloogletItem NULL CK_BasicDrawFunc1 CK6_ACT_bloogletItem2
+%action CK6_ACT_bloogletItem2 0x19C4 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK6_BloogletItem NULL CK_BasicDrawFunc1 CK6_ACT_bloogletItem1
 %action CK_ACT_itemNotify 0x19E2 0 0 ScaledOnce 0 0 40 0x0 0x8 NULL NULL CK_BasicDrawFunc1 NULL
 %action CK_ACT_CentilifeNotify1 0x1A00 146 146 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify2
 %action CK_ACT_CentilifeNotify2 0x1A1E 147 147 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify3
@@ -173,10 +173,10 @@
 #%action CK_ACT_sneakPlatWait 0x1E8C 424 424 Frame 0 0 0 0x0 0x0  NULL CK_BasicDrawFunc1 NULL
 #%action CK_ACT_sneakPlatSneak 0x1EAA 424 424 ScaledOnce 0 0 48 0x20 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatReturn
 #%action CK_ACT_sneakPlatReturn 0x1EC8 424 424 ScaledOnce 0 0 96 0xFFF0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatWait
-#%action CK6_ACT_BloogWalk0 0x1EE6 346 342 UnscaledOnce 0 1 10 0x80 0x0 CK6_BloogCol CK6_BloogDraw CK_BasicDrawFunc2 CK6_ACT_BloogWalk1
-#%action CK6_ACT_BloogWalk1 0x1F04 347 343 UnscaledOnce 0 1 10 0x80 0x0 CK6_BloogCol CK6_BloogDraw CK_BasicDrawFunc2 CK6_ACT_BloogWalk2
-#%action CK6_ACT_BloogWalk2 0x1F22 348 344 UnscaledOnce 0 1 10 0x80 0x0 CK6_BloogCol CK6_BloogDraw CK_BasicDrawFunc2 CK6_ACT_BloogWalk3
-#%action CK6_ACT_BloogWalk3 0x1F40 349 345 UnscaledOnce 0 1 10 0x80 0x0 CK6_BloogCol CK6_BloogDraw CK_BasicDrawFunc2 CK6_ACT_BloogWalk0
+#%action CK6_ACT_BloogWalk0 0x1EE6 346 342 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk1
+#%action CK6_ACT_BloogWalk1 0x1F04 347 343 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk2
+#%action CK6_ACT_BloogWalk2 0x1F22 348 344 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk3
+#%action CK6_ACT_BloogWalk3 0x1F40 349 345 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk0
 #%action CK6_ACT_BloogStunned0 0x1F5E 350 350 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_BloogStunned0
 #%action CK6_ACT_BloogguardWalk0 0x1F7C 254 258 UnscaledOnce 0 1 9 0x80 0x0 CK6_BloogguardWalk CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk1
 #%action CK6_ACT_BloogguardWalk1 0x1F9A 255 259 UnscaledOnce 0 1 9 0x80 0x0 CK6_BloogguardWalk CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk2
@@ -187,26 +187,26 @@
 #%action CK6_ACT_BloogguardClub2 0x2030 264 267 UnscaledOnce 1 1 1 0x0 0x0  CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardClub3
 #%action CK6_ACT_BloogguardClub3 0x204E 264 267 UnscaledOnce 0 1 9 0x0 0x0 NULL CK6_BloogguardCol CK6_MultihitDraw CK6_ACT_BloogguardWalk0
 #%action CK6_ACT_BloogguardStunned0 0x206C 268 268 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 CK6_ACT_BloogguardStunned0
-#%action CK6_ACT_BloogletRRun0 0x208A 355 351 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletRRun1
-#%action CK6_ACT_BloogletRRun1 0x20A8 356 352 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletRRun2
-#%action CK6_ACT_BloogletRRun2 0x20C6 357 353 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletRRun3
-#%action CK6_ACT_BloogletRRun3 0x20E4 358 354 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletRRun0
-#%action CK6_ACT_BloogletRStunned0 0x2102 359 359 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
-#%action CK6_ACT_BloogletYRun0 0x2120 364 360 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletYRun1
-#%action CK6_ACT_BloogletYRun1 0x213E 365 361 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletYRun2
-#%action CK6_ACT_BloogletYRun2 0x215C 366 362 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletYRun3
-#%action CK6_ACT_BloogletYRun3 0x217A 367 363 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletYRun0
-#%action CK6_ACT_BloogletYStunned0 0x2198 368 368 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
-#%action CK6_ACT_BloogletBRun0 0x21B6 373 369 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletBRun1
-#%action CK6_ACT_BloogletBRun1 0x21D4 374 370 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletBRun2
-#%action CK6_ACT_BloogletBRun2 0x21F2 375 371 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletBRun3
-#%action CK6_ACT_BloogletBRun3 0x2210 376 372 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletBRun0
-#%action CK6_ACT_BloogletBStunned0 0x222E 377 377 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
-#%action CK6_ACT_BloogletGRun0 0x224C 382 378 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletGRun1
-#%action CK6_ACT_BloogletGRun1 0x226A 383 379 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletGRun2
-#%action CK6_ACT_BloogletGRun2 0x2288 384 380 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletGRun3
-#%action CK6_ACT_BloogletGRun3 0x22A6 385 381 UnscaledOnce 0 1 5 0x80 0x0 CK6_BloogCol CK6_BloogletDraw CK_BasicDrawFunc2 CK6_ACT_BloogletGRun0
-#%action CK6_ACT_BloogletGStunned0 0x22C4 386 386 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+%action CK6_ACT_BloogletRRun0 0x208A 355 351 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletRRun1
+%action CK6_ACT_BloogletRRun1 0x20A8 356 352 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletRRun2
+%action CK6_ACT_BloogletRRun2 0x20C6 357 353 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletRRun3
+%action CK6_ACT_BloogletRRun3 0x20E4 358 354 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletRRun0
+%action CK6_ACT_BloogletRStunned0 0x2102 359 359 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+%action CK6_ACT_BloogletYRun0 0x2120 364 360 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletYRun1
+%action CK6_ACT_BloogletYRun1 0x213E 365 361 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletYRun2
+%action CK6_ACT_BloogletYRun2 0x215C 366 362 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletYRun3
+%action CK6_ACT_BloogletYRun3 0x217A 367 363 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletYRun0
+%action CK6_ACT_BloogletYStunned0 0x2198 368 368 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+%action CK6_ACT_BloogletBRun0 0x21B6 373 369 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletBRun1
+%action CK6_ACT_BloogletBRun1 0x21D4 374 370 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletBRun2
+%action CK6_ACT_BloogletBRun2 0x21F2 375 371 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletBRun3
+%action CK6_ACT_BloogletBRun3 0x2210 376 372 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletBRun0
+%action CK6_ACT_BloogletBStunned0 0x222E 377 377 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
+%action CK6_ACT_BloogletGRun0 0x224C 382 378 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletGRun1
+%action CK6_ACT_BloogletGRun1 0x226A 383 379 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletGRun2
+%action CK6_ACT_BloogletGRun2 0x2288 384 380 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletGRun3
+%action CK6_ACT_BloogletGRun3 0x22A6 385 381 UnscaledOnce 0 1 5 0x80 0x0 CK6_Bloog CK6_BloogletCol CK_BasicDrawFunc2 CK6_ACT_BloogletGRun0
+%action CK6_ACT_BloogletGStunned0 0x22C4 386 386 Frame 0 0 0 0x0 0x0 CK_Fall NULL CK_BasicDrawFunc4 NULL
 
 #Nospikes
 %action CK6_ACT_NospikeSit0 0x2460 298 298 UnscaledOnce 0 1 90 0x0 0x0 NULL CK6_NospikeCol CK_BasicDrawFunc2 CK6_ACT_NospikeWalk0

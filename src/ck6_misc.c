@@ -611,6 +611,22 @@ void CK6_ScanInfoLayer()
         CK_SpawnMapKeen(x, y);
 				break;
 
+      case 7:
+      case 8:
+      case 9:
+      case 10:
+      case 11:
+      case 12:
+      case 13:
+      case 14:
+        {
+        int color = (infoValue - 7) % 4;
+        ck6_lumpsNeeded[Lump_BloogletR + color] = true;
+        CK6_SpawnBlooglet(x, y, infoValue - 7);
+        break;
+        }
+
+
         // Fleex
       case 20:
         if (ck_gameState.difficulty < D_Hard) break;

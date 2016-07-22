@@ -30,6 +30,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // =========================================================================
 
+void CK6_BloogletItem(CK_object *obj)
+{
+  if (obj->topTI)
+  {
+    obj->currentAction = CK_GetActionByName("CK_ACT_item");
+    if (++obj->gfxChunk == obj->user3)
+      obj->gfxChunk = obj->user2;
+  }
+
+  CK_PhysGravityHigh(obj);
+}
 
 // Also used for Fleex and Nospikes
 void CK6_MultihitDraw(CK_object *obj)
@@ -70,11 +81,98 @@ void CK6_MultihitDraw(CK_object *obj)
   }
 }
 
+
+// Bloogs
+void CK6_Bloog(CK_object *obj)
+{
+  if (US_RndT() < 0x20)
+    obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
+}
+
+// Blooglets
+void CK6_SpawnBlooglet(int tileX, int tileY, int type)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Blooglet;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x80;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  obj->user1 = type;
+
+  switch (type%4)
+  {
+    case 0:
+      CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogletRRun0"));
+      break;
+    case 1:
+      CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogletYRun0"));
+      break;
+    case 2:
+      CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogletBRun0"));
+      break;
+    case 3:
+      CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogletGRun0"));
+      break;
+  }
+}
+
+#define SOUND_BLOOGLETGEM 5
+static char *stunnedBloogletActions[] = {
+  "CK6_ACT_BloogletRStunned0",
+  "CK6_ACT_BloogletYStunned0",
+  "CK6_ACT_BloogletBStunned0",
+  "CK6_ACT_BloogletGStunned0",
+};
+
+extern int16_t CK6_ItemSpriteChunks[];
+void CK6_BloogletCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    if (b->currentAction->collide)
+    {
+      ck_keenIgnoreVertClip = true;
+      CK_PhysPushX(b, a);
+      ck_keenIgnoreVertClip = false;
+    }
+  }
+  else if (b->type == CT_Stunner)
+  {
+    int color = a->user1 & 3;
+    if (a->user1 > 3)
+    {
+      CK_object *gem = CK_GetNewObj(false);
+      gem->clipped = true;
+      gem->zLayer = PRIORITIES - 2;
+      gem->type = CT6_Item;
+      gem->posX = a->posX;
+      gem->posY = a->posY;
+      gem->yDirection = IN_motion_Up;
+      gem->velY = -40;
+      gem->user1 = color;
+      gem->user2 = gem->gfxChunk = CK6_ItemSpriteChunks[color];
+      gem->user3 = gem->user2 + 2;
+      CK_SetAction(gem, CK_GetActionByName("CK6_ACT_bloogletItem1"));
+      SD_PlaySound(SOUND_BLOOGLETGEM);
+    }
+
+    CK_StunCreature(a, b, CK_GetActionByName(stunnedBloogletActions[color]));
+  }
+}
+
 /*
  * Setup all of the functions in this file.
  */
 void CK6_Obj1_SetupFunctions()
 {
+  CK_ACT_AddFunction("CK6_BloogletItem", &CK6_BloogletItem);
+
+  CK_ACT_AddFunction("CK6_Bloog", &CK6_Bloog);
+
+  CK_ACT_AddColFunction("CK6_BloogletCol", &CK6_BloogletCol);
 
   CK_ACT_AddFunction("CK6_MultihitDraw", &CK6_MultihitDraw);
 

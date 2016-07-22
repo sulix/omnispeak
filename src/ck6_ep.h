@@ -45,6 +45,7 @@ CK_object *CK6_SpawnEnemyShot(int posX, int posY, CK_action *action);
 void CK6_SpawnItem(int tileX, int tileY, int itemNumber);
 
 /* ck6_obj1.c */
+void CK6_SpawnBlooglet(int tileX, int tileY, int type);
 
 /* ck6_obj2.c */
 void CK6_SpawnNospike(int tileX, int tileY);
