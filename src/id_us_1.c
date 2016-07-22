@@ -75,11 +75,11 @@ static int16_t us_backColour = 0;
 #define US_WINDOW_MAX_X 320
 #define US_WINDOW_MAX_Y 200
 
-void (*p_save_game)(FILE *handle);
-void (*p_load_game)(FILE *handle);
+bool (*p_save_game)(FILE *handle);
+bool (*p_load_game)(FILE *handle);
 void (*p_exit_menu)(void);
 
-void US_SetMenuFunctionPointers(void (*loadgamefunc)(FILE *), void (*savegamefunc)(FILE *), void (*exitmenufunc)(void))
+void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FILE *), bool (*savegamefunc)(FILE *), void (*exitmenufunc)(void))
 {
 	p_load_game = loadgamefunc;
 	p_save_game = savegamefunc;
@@ -792,18 +792,20 @@ void US_SaveConfig(void)
 // Savefiles
 //
 
-static char us_savefile[] = "SAVEGAMx.CK5"; 	/* data_1602e = AZ:45CB */
+static char us_savefile[] = "SAVEGAMx.EXT";
 
-US_Savefile us_savefiles[6];
+US_Savefile us_savefiles[US_MAX_NUM_OF_SAVED_GAMES];
 
 /* Returns the name of the saved game with the given index (0-based) */
-const char *US_GetSavefileName( int index /*, int param_2*/ )
+/* Note that this uses its own internal, temporary static buffer,    */
+/* as well as a similar internal buffer used by CAL_AdjustExtension. */
+const char *US_GetSavefileName(int index)
 {
 	us_savefile[7] = (char)(index + '0'); 		/* 'x' in "SAVEGAMx.CK5" */
-	return us_savefile;
+	return CAL_AdjustExtension(us_savefile);
 }
 
-void US_GetSavefiles()
+void US_GetSavefiles(void)
 {
 	int valid;
 	FILE *handle;
@@ -811,7 +813,7 @@ void US_GetSavefiles()
 	int i;
 	US_Savefile *psfe = us_savefiles;
 
-	while( i < 6 )
+	for (i = 0; i < US_MAX_NUM_OF_SAVED_GAMES; i++, psfe++)
 	{
 		filename = US_GetSavefileName( i );
 		valid = 0;
@@ -820,8 +822,17 @@ void US_GetSavefiles()
 
 		if( handle )
 		{
-			if( fread( psfe, sizeof( US_Savefile ), 1, handle) == 1 )
-				if( strcmp( psfe->id, "CK5" ) == 0 )	/* AZ:46AA */
+			// Omnispeak - reading US_Savefile fields one-by-one
+			// for cross-platform support
+			uint8_t padding; // One byte of struct padding
+			if ((fread(psfe->id, sizeof(psfe->id), 1, handle) == 1) &&
+			    (CK_Cross_freadInt16LE(&psfe->printXOffset, 1, handle) == 1) &&
+			    (CK_Cross_freadBoolFrom16LE(&psfe->used, 1, handle) == 1) &&
+			    (fread(psfe->name, sizeof(psfe->name), 1, handle) == 1) &&
+			    (fread(&padding, sizeof(padding), 1, handle) == 1)
+			)
+			//if( fread( psfe, sizeof( US_Savefile ), 1, handle) == 1 )
+				if( strcmp( psfe->id, ck_currentEpisode->ext ) == 0 )	/* AZ:46AA */
 					if( psfe->printXOffset == ck_currentEpisode->printXOffset )
 						valid = 1;
 
@@ -830,17 +841,14 @@ void US_GetSavefiles()
 
 		if( !valid )
 		{
-			strcpy( psfe->id, "CK5" );		/* AZ:46AE */
-			psfe->used = 0;
+			strcpy( psfe->id, ck_currentEpisode->ext );		/* AZ:46AE */
+			psfe->used = false;
 			strcpy( psfe->name, "Empty" );		/* AZ:46B2 */
 		}
 		else
 		{
-			psfe->used = 1;
+			psfe->used = true;
 		}
-
-		i++;
-		psfe++;
 	}
 
 }
@@ -873,6 +881,13 @@ void US_Startup(void)
 	}
 	us_started = true;
 
+}
+
+void US_Setup(void)
+{
+	p_save_game = NULL;
+	p_load_game = NULL;
+	US_GetSavefiles();
 }
 
 void US_Shutdown(void)

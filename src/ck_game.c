@@ -197,8 +197,8 @@ static bool CK_SaveGameState(FILE* fp, CK_GameState *state)
 	return ((CK_Cross_fwriteInt16LE(&state->mapPosX, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(&state->mapPosY, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(state->levelsDone, sizeof(state->levelsDone)/2, fp) == sizeof(state->levelsDone)/2)
-	        && (CK_Cross_fwriteInt32LE(&state->keenScore, 2, fp) == 2)
-	        && (CK_Cross_fwriteInt32LE(&state->nextKeenAt, 2, fp) == 2)
+	        && (CK_Cross_fwriteInt32LE(&state->keenScore, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt32LE(&state->nextKeenAt, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(&state->numShots, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(&state->numCentilife, 1, fp) == 1)
 	        && (((ck_currentEpisode->ep == EP_CK4)
@@ -226,8 +226,8 @@ static bool CK_LoadGameState(FILE* fp, CK_GameState *state)
 	if ((CK_Cross_freadInt16LE(&state->mapPosX, 1, fp) != 1)
 	    || (CK_Cross_freadInt16LE(&state->mapPosY, 1, fp) != 1)
 	    || (CK_Cross_freadInt16LE(state->levelsDone, sizeof(state->levelsDone)/2, fp) != sizeof(state->levelsDone)/2)
-	    || (CK_Cross_freadInt32LE(&state->keenScore, 2, fp) != 2)
-	    || (CK_Cross_freadInt32LE(&state->nextKeenAt, 2, fp) != 2)
+	    || (CK_Cross_freadInt32LE(&state->keenScore, 1, fp) != 1)
+	    || (CK_Cross_freadInt32LE(&state->nextKeenAt, 1, fp) != 1)
 	    || (CK_Cross_freadInt16LE(&state->numShots, 1, fp) != 1)
 	    || (CK_Cross_freadInt16LE(&state->numCentilife, 1, fp) != 1)
 	    || ((ck_currentEpisode->ep == EP_CK4) &&
@@ -337,7 +337,7 @@ bool CK_LoadGame (FILE *fp)
 		return false;
 	}
 */
-	ca_levelbit << 1;
+	ca_levelbit <<= 1;
 	ca_levelnum++;
 
 	bufsize = CA_GetMapWidth() * CA_GetMapHeight() * 2;
@@ -446,15 +446,11 @@ bool CK_LoadGame (FILE *fp)
 void CK_ExitMenu(void)
 {
 	CK_NewGame();
-	// TODO: With this, cache message doesn't appear...
-	// (nothing to cache in CA_CacheMarks)
-#if 0
 	ca_levelnum--;
 	ca_levelbit >>= 1;
 	CA_ClearMarks();
 	ca_levelbit <<= 1;
 	ca_levelnum++;
-#endif
 }
 
 void CK_MapLevelMarkAsDone(void)
@@ -573,7 +569,8 @@ void CK_LoadLevel(bool doCache)
 
 
 	// CA_CacheMarks(0);
-	CK_BeginFadeDrawing();
+	if (doCache)
+		CK_BeginFadeDrawing();
 }
 
 
@@ -629,7 +626,7 @@ void CK_BeginCacheBox (const char *title, int numChunks)
 	else
 		ck_cacheCountdownNum = 5;
 
-	ca_graphChunkNeeded[PIC_COUNTDOWN5] &= !ca_levelbit;
+	ca_graphChunkNeeded[PIC_COUNTDOWN5] &= ~ca_levelbit;
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
 	// Omnispeak FIXME: Start printX at the right spot

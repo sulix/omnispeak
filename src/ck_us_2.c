@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include <errno.h>
 #include <stdlib.h>
 #include "SDL.h"
 
@@ -177,6 +178,76 @@ void CK_US_DrawSavegameItemBorder( US_CardItem *item )
 	VH_VLine( item->y, item->y + 9, item->x + 148, c );
 }
 
+extern int load_game_error, ck_startingSavedGame;
+extern US_CardCommand us_currentCommand;
+extern bool command_confirmed;
+const char *US_GetSavefileName(int index);
+void error_message( int error );
+void load_save_message( const char *s1, const char *s2 );
+void USL_SetMenuFooter( void );
+int USL_ConfirmComm( US_CardCommand command );
+
+void load_savegame_item( US_CardItem * item )
+{
+	int i;
+	US_Savefile *e;
+	const char *file;
+	FILE *fp;
+	int error = 0;
+
+	if (USL_ConfirmComm(US_Comm_LoadGame))
+	{
+		i = item - ck_us_loadSaveMenuItems;
+		e = &us_savefiles[i];
+		load_save_message( "Loading", us_savefiles[i].name );
+
+		file = US_GetSavefileName( i );
+		if ( (fp = fopen(file, "rb")) != NULL )
+		{
+			// Omnispeak - reading US_Savefile fields one-by-one
+			// for cross-platform support
+			uint8_t padding; // One byte of struct padding
+			if ((fread(e->id, sizeof(e->id), 1, fp) == 1) &&
+			    (CK_Cross_freadInt16LE(&e->printXOffset, 1, fp) == 1) &&
+			    (CK_Cross_freadBoolFrom16LE(&e->used, 1, fp) == 1) &&
+			    (fread(e->name, sizeof(e->name), 1, fp) == 1) &&
+			    (fread(&padding, sizeof(padding), 1, fp) == 1)
+			)
+			//if ( read( handle, e, sizeof ( SAVEFILE_ENTRY ) ) != sizeof ( SAVEFILE_ENTRY ) )
+			{
+				if ( p_load_game && !(*p_load_game)(fp) )
+					error_message( error = errno );
+			}
+			else
+			{
+				error_message( error = errno );
+			}
+			fclose( fp );
+		}
+		else
+		{
+			error_message( error = errno );
+		}
+
+		if ( error )
+		{	/* is this condition right? */
+			load_game_error = 1;
+			us_currentCommand = US_Comm_None;	/* ? last command ? */
+			command_confirmed = 0;	/* ? command success state ? */
+		}
+		else
+		{
+			ck_startingSavedGame = 1;
+		}
+		e->used = 1;
+
+		if (ck_startingSavedGame)
+			in_Paused = 1;
+		US_DrawCards();
+	}
+}
+
+
 bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 {
 	int result, i;
@@ -189,9 +260,9 @@ bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 		if ( getenv( "UID" ) )
 			US_GetSavefiles();
 
-		for ( i = 0; i < 6; i++ )
+		for ( i = 0; i < US_MAX_NUM_OF_SAVED_GAMES; i++ )
 		{
-			if ( us_savefiles[i].name )
+			if ( us_savefiles[i].used )
 				ck_us_loadSaveMenuItems[i].state &= ~US_IS_Disabled;
 			else
 				ck_us_loadSaveMenuItems[i].state |= US_IS_Disabled;
@@ -220,7 +291,7 @@ bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 		break;
 
 	case US_MSG_ItemEntered:
-		//load_savegame_item( item );
+		load_savegame_item(item);
 		result = 1;
 		break;
 	}
@@ -228,9 +299,113 @@ bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 	return result;
 }
 
+extern int game_unsaved;
+extern const char *footer_str[3];
+
+void save_savegame_item( US_CardItem *item )
+{
+	int i, n;
+	FILE *fp;
+	US_Savefile *e;
+	const char *fname;
+	int error;
+
+	footer_str[2] = "Type name";
+	footer_str[1] = "Enter accepts";
+	US_DrawCards();
+
+	i = item - ck_us_loadSaveMenuItems;
+	e = &us_savefiles[i];
+
+	/* Prompt the user to enter a name */
+	US_SetPrintColour(2);
+	//fontcolour = 2;
+	VH_Bar( item->x + 1, item->y + 2, 146, 7, 8 );
+	e->printXOffset = ck_currentEpisode->printXOffset;
+	n = US_LineInput( item->x + 2, item->y + 2, e->name, (e->used ? e->name : NULL), 1, 32, 138 );
+
+	/* If they entered no name, give a default */
+	if ( strlen( e->name ) == 0 )
+		strcpy( e->name, "Untitled" );
+
+	/* If the input was not canceled */
+	if ( n != 0 )
+	{
+		load_save_message( "Saving", e->name );
+
+		/* Save the file */
+		fname = US_GetSavefileName( i );
+		error = 0;
+		fp = fopen(fname, "wb");
+		if (fp != NULL)
+		{
+			// Omnispeak - writing US_Savefile fields one-by-one
+			// for cross-platform support
+			uint8_t padding = 0; // One byte of struct padding
+			if ((fwrite(e->id, sizeof(e->id), 1, fp) == 1) &&
+			    (CK_Cross_fwriteInt16LE(&e->printXOffset, 1, fp) == 1) &&
+			    (CK_Cross_fwriteBoolTo16LE(&e->used, 1, fp) == 1) &&
+			    (fwrite(e->name, sizeof(e->name), 1, fp) == 1) &&
+			    (fwrite(&padding, sizeof(padding), 1, fp) == 1)
+			)
+			//if ( write( handle, e, sizeof ( SAVEFILE_ENTRY ) ) == sizeof ( SAVEFILE_ENTRY ) )
+			{
+				if ( p_save_game && !(n = (*p_save_game)( fp )) )
+					error_message( error = errno );
+			}
+			else
+			{
+				error = (errno == 2) ? 8 : errno;
+				error_message( error );
+			}
+			fclose(fp);
+		}
+		else
+		{
+			error = (errno == 2) ? 8 : errno;
+			error_message( error );
+		}
+
+		/* Delete the file if an error occurred */
+		if ( error )
+		{
+			remove( fname );
+			n = 0;
+		}
+	}
+
+	if ( e->used == 0 )
+		e->used = n;
+
+	if ( n )
+		game_unsaved = 0;
+
+	USL_SetMenuFooter();
+}
+
 bool CK_US_SaveGameMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	return false;
+	int i;
+
+	switch ( msg )
+	{
+	case US_MSG_CardEntered:
+		if ( getenv( "UID" ) )
+			US_GetSavefiles();
+
+		/* Enable all the entries */
+		for ( i = 0; i < US_MAX_NUM_OF_SAVED_GAMES; i++ )
+			ck_us_loadSaveMenuItems[i].state &= ~US_IS_Disabled;
+
+		return false;
+
+	case US_MSG_ItemEntered:
+		save_savegame_item(item);
+		return true;
+
+	default:
+		return CK_US_LoadGameMenuProc(msg, item);
+	}
 }
 
 US_Card ck_us_loadGameMenu ={ 4, 3, &PIC_LOADCARD, 0, ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0 };
