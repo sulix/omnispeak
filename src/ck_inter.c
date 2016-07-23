@@ -53,7 +53,7 @@ void CK_HandleDemoKeys()
 	 * return;
 	 */
 
-	if (IN_GetLastScan() == IN_SC_F1)
+	if ((ck_currentEpisode->ep != EP_CK6) && (IN_GetLastScan() == IN_SC_F1))
 	{
 		HelpScreens();
 		return;
@@ -1536,7 +1536,7 @@ VL_ResizeScreen(21 * 16, 14 * 16);
 		return;
 
 	// Go to help screen
-	if (IN_GetLastScan() == IN_SC_F1)
+	if ((ck_currentEpisode->ep != EP_CK6) && (IN_GetLastScan() == IN_SC_F1))
 	{
 		HelpScreens();
 		return;

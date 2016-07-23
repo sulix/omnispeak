@@ -791,7 +791,7 @@ void CK_CheckKeys()
 	}
 
 	// HELP
-	if (IN_GetLastScan() == IN_SC_F1)
+	if ((ck_currentEpisode->ep != EP_CK6) && (IN_GetLastScan() == IN_SC_F1))
 	{
 		StopMusic();
 		HelpScreens();
