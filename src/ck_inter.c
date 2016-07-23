@@ -779,21 +779,20 @@ void JoinTerminatorPics(void)
 	}
 }
 
-#if 0
 
 //ZoomOutTerminator_1(var16, si+yBottom, leftOffset, introbuffer);
-void ZoomOutTerminator_1(uint16_t far *arg0, uint16_t arg4, int leftOffset, uint16_t far *arg8)
+void ZoomOutTerminator_1(uint16_t *arg0, uint16_t arg4, int leftOffset, uint16_t *arg8)
 {
 
-	uint16_t si;
+	uint16_t inputOffset, outputOffset;
 
 
 	// X coord where the zoomed bitmap is clipped by the left edge of the screen
 	int leftclip;
 
-	int dx, var8;
+	int var8;
 
-	uint8_t far *vidPtr; // Pointer into video memory
+	uint8_t *vidPtr; // Pointer into video memory
 	uint8_t writebyte;
 
 	unsigned pixelrun;  // The width?
@@ -803,7 +802,7 @@ void ZoomOutTerminator_1(uint16_t far *arg0, uint16_t arg4, int leftOffset, uint
 
 	var8 = 320-leftOffset;
 
-	vidPtr = MK_FP(0xA000 , (ylookup[arg4] + terminatorOfs + word_499C7));
+	//vidPtr = MK_FP(0xA000 , (ylookup[arg4] + terminatorOfs + word_499C7));
 
 	if (leftOffset < 0)
 	{
@@ -815,15 +814,15 @@ void ZoomOutTerminator_1(uint16_t far *arg0, uint16_t arg4, int leftOffset, uint
 
 		do {
 
-			si = *arg0++;
-			dx = *(arg8 + si);
-			if ( dx > leftclip)
-				goto loc_14852;
+			inputOffset = *arg0++;
+			outputOffset = *(arg8 + inputOffset);
+			if ( outputOffset > leftclip)
+				goto writeBlackRun;
 
-			si = *arg0++;
-			dx = *(arg8 + si);
-			if ( dx > leftclip)
-				goto loc_147FB;
+			inputOffset = *arg0++;
+			outputOffset = *(arg8 + inputOffset);
+			if ( outputOffset > leftclip)
+				goto writeWhiteRun;
 
 		} while (1);
 	}
@@ -840,12 +839,12 @@ void ZoomOutTerminator_1(uint16_t far *arg0, uint16_t arg4, int leftOffset, uint
 	}
 
 
-loc_14852:
+writeBlackRun:
 	do
 	{
 		// Writing a run of pixels
-		varA = dx - leftclip;
-		leftclip = dx;
+		varA = outputOffset - leftclip;
+		leftclip = outputOffset;
 
 		// get the run of pixels for the first byte
 		writebyte |= terminator_blackmasks[pixelrun];
@@ -866,20 +865,20 @@ loc_14852:
 			pixelrun &= 7;
 		}
 
-		if (dx > var8)
+		if (outputOffset > var8)
 			return;
 
 		writebyte &= terminator_lightmasks[pixelrun];
 
 loc_147E5:
-		si = *arg0++;
-		dx = *(arg8 + si);
+		inputOffset = *arg0++;
+		outputOffset = *(arg8 + inputOffset);
 
-loc_147FB:
+writeWhiteRun:
 
 		// Writing a run of pixels
-		varA = dx - leftclip;
-		leftclip = dx;
+		varA = outputOffset - leftclip;
+		leftclip = outputOffset;
 		if ((pixelrun += varA)> 7)
 		{
 
@@ -897,11 +896,11 @@ loc_147FB:
 
 		}
 
-		if (dx > var8)
+		if (outputOffset > var8)
 			return;
 
-		if ((si = *arg0++) != 0xFFFF)
-			dx = *(arg8 + si);
+		if ((inputOffset = *arg0++) != 0xFFFF)
+			outputOffset = *(arg8 + inputOffset);
 		else
 			break;
 	} while (1);
@@ -928,6 +927,7 @@ loc_147FB:
 	return;
 
 }
+#if 0
 
 // The COMMANDER and KEEN RLE-Encoded bitmaps are first joined together into one big
 // RLE-encoded bitmap, which is then scaled and translated to its final position.
