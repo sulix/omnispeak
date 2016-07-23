@@ -163,6 +163,8 @@ typedef enum CK_ClassType {
   CT6_Rope = 28,
   CT6_Passcard = 29,
   CT6_StunnedCreature = 25,
+  CT6_Satellite = 33,
+  CT6_SatelliteLoading = 34,
   CT6_MapFlag = 35,
 } CK_ClassType;
 
@@ -468,6 +470,7 @@ void CK_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple);
 void CK_SpawnFallPlat(int tileX, int tileY);
 void CK_SpawnStandPlatform(int tileX, int tileY);
 void CK_SpawnGoPlat(int tileX, int tileY, int direction, bool purple);
+void CK_GoPlatThink(CK_object *obj);
 void CK_SneakPlatSpawn(int tileX, int tileY);
 void CK_TurretSpawn(int tileX, int tileY, int direction);
 /*** Used for saved games compatibility ***/

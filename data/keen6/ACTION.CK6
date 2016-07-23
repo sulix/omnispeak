@@ -149,12 +149,14 @@
 #%action CK6_ACT_MapKeenClimbRope1 0x1BF8 224 224 ScaledOnce 1 0 4 0x0 0x10 CK6_MapKeenClimb NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenClimbRope0
 #%action CK6_ACT_RopeOnMap0 0x1C16 226 226 Frame 0 0 0 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
 #%action CK6_ACT_RopeThrown0 0x1C34 225 225 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_RopeThrown0
-#%action CK6_ACT_RopeInvisible0 0x1C52 -1 -1 Frame 0 0 0 0x0 0x0 NULL NULL NULL NULL
-#%action CK6_ACT_KeenSatellite0 0x1C70 227 227 Frame 0 0 0 0x0 0x0 NULL NULL CK6_KeenSatelliteDraw NULL
-#%action CK6_ACT_Satellite0 0x1C8E 213 213 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite1
-#%action CK6_ACT_Satellite1 0x1CAC 214 214 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite2
-#%action CK6_ACT_Satellite2 0x1CCA 215 215 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite3
-#%action CK6_ACT_Satellite3 0x1CE8 216 216 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite0
+
+%action CK6_ACT_SatelliteInvisible0 0x1C52 -1 -1 Frame 0 0 0 0x0 0x0 NULL NULL NULL NULL
+%action CK6_ACT_KeenSatellite0 0x1C70 227 227 Frame 0 0 0 0x0 0x0 NULL NULL CK6_KeenSatelliteDraw NULL
+%action CK6_ACT_Satellite0 0x1C8E 213 213 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite1
+%action CK6_ACT_Satellite1 0x1CAC 214 214 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite2
+%action CK6_ACT_Satellite2 0x1CCA 215 215 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite3
+%action CK6_ACT_Satellite3 0x1CE8 216 216 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite0
+
 %action CK6_ACT_Sandwich0 0x1D06 182 182 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL
 %action CK6_ACT_Rope0 0x1D24 183 183 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL
 %action CK6_ACT_Passcard0 0x1D42 435 435 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL

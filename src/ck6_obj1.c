@@ -44,6 +44,112 @@ void CK6_BloogletItem(CK_object *obj)
   CK_PhysGravityHigh(obj);
 }
 
+// Satellite
+
+
+void CK6_SpawnSatelliteLoading(int tileX, int tileY, int dir)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->active = OBJ_ALWAYS_ACTIVE;
+  obj->clipped = CLIP_not;
+  obj->zLayer = PRIORITIES - 2;
+  obj->type = CT6_SatelliteLoading;
+  obj->clipRects.tileX1 = obj->clipRects.tileX2 = tileX;
+  obj->clipRects.tileY1 = obj->clipRects.tileY2 = tileY;
+  obj->user1 = (dir ^ 1) + 1;
+  obj->posX = obj->clipRects.unitX1 = tileX << G_T_SHIFT;
+  obj->clipRects.unitX2 = obj->clipRects.unitX1 + 0x100;
+  obj->posY = obj->clipRects.unitY1 = tileY << G_T_SHIFT;
+  obj->clipRects.unitY2 = obj->clipRects.unitY1 + 0x100;
+  CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_SatelliteInvisible0"));
+}
+
+void CK6_SpawnSatellite(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->clipped = CLIP_not;
+  obj->zLayer = PRIORITIES - 2;
+  obj->active = OBJ_ALWAYS_ACTIVE;
+  obj->type = CT6_Satellite;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = tileY << G_T_SHIFT;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Satellite0"));
+  CA_SetTileAtPos(tileX, tileY, 2, 0x5B + 3);
+  obj->user1 = 3;
+  obj->user2 = 0x100;
+  obj->user4 = 2;
+}
+
+void CK6_Satellite(CK_object *obj)
+{
+  if (ck_nextX == 0 && ck_nextY == 0)
+  {
+    int16_t user3 = obj->user3;
+    if (!(user3 & 0xFF) && (user3 & 0xFF00))
+    {
+      obj->user4 = user3 / 256; // SAR instruction
+    }
+    obj->user3 *= 256;
+    CK_GoPlatThink(obj);
+  }
+}
+
+#define SOUND_KEENSATELLITE 0x21
+void CK6_SatelliteCol(CK_object *a, CK_object *b)
+{
+  if (b->currentAction == CK_GetActionByName("CK6_ACT_SatelliteInvisible0"))
+  {
+    a->user3 |= b->user1;
+  }
+  else if (b->type == CT_Player)
+  {
+    int var2 = a->user3 / 256;
+    if (var2 == 0 || a->user4 == var2)
+    {
+      if (b->currentAction == CK_GetActionByName("CK6_ACT_KeenSatellite0"))
+      {
+        b->posX = a->posX + 0xC0;
+        b->posY = a->posY + 0x100;
+        CK_SetAction2(b, b->currentAction);
+      }
+    }
+    else
+    {
+      SD_PlaySound(SOUND_KEENSATELLITE);
+      a->user4 = var2;
+      if (ck_keenObj->currentAction == CK_GetActionByName("CK6_ACT_KeenSatellite0"))
+      {
+        a = ck_keenObj->next;
+        while (a)
+        {
+          if (a->type == CT6_SatelliteLoading && a->user1 == var2)
+          {
+            b->posX = a->posX;
+            b->posY = a->posY;
+            b->gfxChunk = 192;
+            CK_SetAction2(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
+            b->clipped = CLIP_normal;
+            break;
+          }
+          a = a->next;
+        }
+      }
+      else
+      {
+        b->posX = a->posX + 0xC0;
+        b->posY = a->posY + 0x100;
+        b->clipped = CLIP_not;
+        CK_SetAction2(ck_keenObj, CK_GetActionByName("CK6_ACT_KeenSatellite0"));
+      }
+    }
+  }
+}
+
+void CK6_KeenSatelliteDraw(CK_object *obj)
+{
+  RF_AddSpriteDraw(&(obj->sde), obj->posX +0x40, obj->posY + 0x80, 0xE3, false, 1);
+}
+
 // Story Items
 void CK6_SpawnSandwich(int tileX, int tileY)
 {
@@ -334,6 +440,10 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
 void CK6_Obj1_SetupFunctions()
 {
   CK_ACT_AddFunction("CK6_BloogletItem", &CK6_BloogletItem);
+
+  CK_ACT_AddFunction("CK6_Satellite", &CK6_Satellite);
+  CK_ACT_AddColFunction("CK6_SatelliteCol", &CK6_SatelliteCol);
+  CK_ACT_AddFunction("CK6_KeenSatelliteDraw", &CK6_KeenSatelliteDraw);
 
   CK_ACT_AddColFunction("CK6_StoryItemCol", &CK6_StoryItemCol);
 

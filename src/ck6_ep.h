@@ -48,6 +48,9 @@ void CK6_ShowGetRope();
 void CK6_ShowGetPasscard();
 
 /* ck6_obj1.c */
+void CK6_SpawnSatelliteLoading(int tileX, int tileY, int dir);
+void CK6_SpawnSatellite(int tileX, int tileY);
+
 void CK6_SpawnSandwich(int tileX, int tileY);
 void CK6_SpawnRope(int tileX, int tileY);
 void CK6_SpawnPasscard(int tileX, int tileY);

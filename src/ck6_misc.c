@@ -662,6 +662,11 @@ void CK6_ScanInfoLayer()
         CK6_SpawnBobba(x, y);
         break;
 
+      case 44:
+      case 45:
+        CK6_SpawnSatelliteLoading(x, y, infoValue - 44);
+        break;
+
       // Nospike
       case 49:
         if (ck_gameState.difficulty < D_Hard) break;
@@ -752,6 +757,12 @@ void CK6_ScanInfoLayer()
         ck6_lumpsNeeded[Lump_Bloogguard] = true;
         CK6_SpawnBloogguard(x, y);
         break;
+
+      // Satellite
+      case 89:
+        CK6_SpawnSatellite(x, y);
+        break;
+
 
       // Story Items
       case 99:
