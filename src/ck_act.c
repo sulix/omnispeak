@@ -114,8 +114,7 @@ CK_action *CK_GetOrCreateActionByName(const char *name)
 	CK_action *ptr = (CK_action*)STR_LookupEntry(ck_actionTable, name);
 	if (!ptr)
 	{
-		ck_actionsUsed++;
-		ptr = &ck_actionData[ck_actionsUsed];
+		ptr = &ck_actionData[ck_actionsUsed++];
 		STR_AddEntry(ck_actionTable, name, (void*)(ptr));
 	}
 	return ptr;
