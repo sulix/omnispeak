@@ -439,7 +439,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 			CK_PhysClipVert(obj);
 
 			//TODO: Handle keen NOT being pushed.
-      if (obj == ck_keenObj && (ck_currentEpisode->ep == EP_CK6 && !ck_keenIgnoreVertClip))
+      if (obj == ck_keenObj && (ck_currentEpisode->ep != EP_CK6 || !ck_keenIgnoreVertClip))
 			{
 				if (!obj->topTI && ck_deltaRects.unitY2 > 0)
 				{
