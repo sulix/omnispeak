@@ -213,9 +213,9 @@
 %action CK_ACT_FallPlat1 0x1BD6 0x1be 0x1be Frame 0x0 0x0 0x0 0x0 0x0 CK_FallPlatFall NULL CK_BasicDrawFunc1 NULL
 %action CK_ACT_FallPlat2 0x1BF4 0x1be 0x1be ScaledFrame 0x0 0x0 0x0 0x0 -32 CK_FallPlatRise NULL CK_BasicDrawFunc1 NULL
 
-%action CK5_ACT_redStandPlatform 0x1C12 446 446 UnscaledOnce 0 0 32000 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_redStandPlatform
+%action CK_ACT_StandPlatform 0x1C12 446 446 UnscaledOnce 0 0 32000 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_StandPlatform
 
-%action CK5_ACT_redGoPlat 0x1C30 446 446 Frame 0 0 0 0 0 CK5_RedGoPlatThink NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_GoPlat0 0x1C30 446 446 Frame 0 0 0 0 0 CK_GoPlatThink NULL CK_BasicDrawFunc1 NULL
 %action CK5_ACT_purpleGoPlat 0x1C4E 422 422 UnscaledFrame 0 0 0 0 0 CK5_PurpleGoPlatThink NULL CK_BasicDrawFunc1 CK5_ACT_purpleGoPlat2
 %action CK5_ACT_purpleGoPlat2 0x1C6C 423 423 UnscaledFrame 0 0 0 0 0 CK5_PurpleGoPlatThink NULL CK_BasicDrawFunc1 CK5_ACT_purpleGoPlat
 
@@ -229,9 +229,9 @@
 %action CK5_ACT_VolteStunned 0x1D44 0x1A5 0x1A5 UnscaledOnce 0 0 0x12C 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_Volte0
 
 # Again ck_misc5.c
-%action CK5_ACT_sneakPlatWait 0x1DA4 0x1BE 0x1BE Frame 0 0 0 0 0 CK5_SneakPlatThink NULL CK_BasicDrawFunc1 NULL
-%action CK5_ACT_sneakPlatSneak 0x1DC2 0x1BE 0x1BE ScaledOnce 0 0 48 32 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_sneakPlatReturn
-%action CK5_ACT_sneakPlatReturn 0x1DE0 446 446 ScaledOnce 0 0 96 -16 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_sneakPlatWait
+%action CK_ACT_sneakPlatWait 0x1DA4 0x1BE 0x1BE Frame 0 0 0 0 0 CK_SneakPlatThink NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_sneakPlatSneak 0x1DC2 0x1BE 0x1BE ScaledOnce 0 0 48 32 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatReturn
+%action CK_ACT_sneakPlatReturn 0x1DE0 446 446 ScaledOnce 0 0 96 -16 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatWait
 
 # Back to ck5_obj1.c
 

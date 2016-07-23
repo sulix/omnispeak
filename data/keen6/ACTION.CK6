@@ -39,11 +39,11 @@
 %action CK_ACT_keenPressSwitch2 0x0C78 118 118 UnscaledOnce 0 1 8 0x0 0x0 NULL NULL CK_KeenDrawFunc CK_ACT_keenStanding
 %action CK_ACT_keenPlaceGem 0x0C96 118 118 UnscaledOnce 0 1 6 0x0 0x0 CK_KeenPlaceGem NULL CK_KeenDrawFunc CK_ACT_keenPressSwitch2
 %action CK_ACT_keenSlide 0x0CB4 118 118 Frame 0 0 0 0x0 0x0 CK_KeenSlide NULL CK_BasicDrawFunc1 NULL
-%action CK_ACT_keenEnterDoor0 0x0CD2 118 118 UnscaledOnce 0 0 9 0x0 0xFFC0 CK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor1
-%action CK_ACT_keenEnterDoor1 0x0CF0 119 119 UnscaledOnce 0 0 9 0x0 0xFFC0 CK_KeenEnterDoor1 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor2
-%action CK_ACT_keenEnterDoor2 0x0D0E 120 120 UnscaledOnce 0 0 9 0x0 0xFFC0 CK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor3
-%action CK_ACT_keenEnterDoor3 0x0D2C 121 121 UnscaledOnce 0 0 9 0x0 0xFFC0 CK_KeenEnterDoor1 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor4
-%action CK_ACT_keenEnterDoor4 0x0D4A 122 122 UnscaledOnce 0 0 9 0x0 0xFFC0 CK_KeenEnterDoor NULL CK_BasicDrawFunc1 CK_ACT_keenStanding
+%action CK_ACT_keenEnterDoor0 0x0CD2 118 118 UnscaledOnce 0 0 9 0x0 -64 CK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor1
+%action CK_ACT_keenEnterDoor1 0x0CF0 119 119 UnscaledOnce 0 0 9 0x0 -64 CK_KeenEnterDoor1 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor2
+%action CK_ACT_keenEnterDoor2 0x0D0E 120 120 UnscaledOnce 0 0 9 0x0 -64 CK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor3
+%action CK_ACT_keenEnterDoor3 0x0D2C 121 121 UnscaledOnce 0 0 9 0x0 -64 CK_KeenEnterDoor1 NULL CK_BasicDrawFunc1 CK_ACT_keenEnterDoor4
+%action CK_ACT_keenEnterDoor4 0x0D4A 122 122 UnscaledOnce 0 0 9 0x0 -64 CK_KeenEnterDoor NULL CK_BasicDrawFunc1 CK_ACT_keenStanding
 %action CK_ACT_keenPoleSit 0x0D68 109 102 Frame 0 0 0 0x0 0x0 CK_KeenPoleSitThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleSit
 %action CK_ACT_keenPoleUp1 0x0D86 109 102 ScaledFrame 0 0 8 0x0 0x8 CK_KeenPoleUpThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleUp2
 %action CK_ACT_keenPoleUp2 0x0DA4 110 103 ScaledFrame 0 0 8 0x0 0x8 CK_KeenPoleUpThink CK_KeenSpecialColFunc CK_KeenSpecialDrawFunc CK_ACT_keenPoleUp3
@@ -164,15 +164,15 @@
 #%action CK6_ACT_Molly3 0x1DBA 434 434 UnscaledOnce 0 0 20 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly0
 
 
-#%action CK_ACT_AxisPlatform 0x1DD8 424 424 Frame 0 0 0 0x0 0x0 CK_AxisPlatform NULL CK_BasicDrawFunc1 NULL
-#%action CK_ACT_FallPlat0 0x1DF6 424 424 Frame 0 0 0 0x0 0x0 CK_FallPlatSit NULL CK_BasicDrawFunc1 NULL
-#%action CK_ACT_FallPlat1 0x1E14 424 424 Frame 0 0 0 0x0 0x0  NULL CK_BasicDrawFunc1 NULL
-#%action CK_ACT_FallPlat2 0x1E32 424 424 ScaledFrame 0 0 0 0x0 0xFFE0  NULL CK_BasicDrawFunc1 NULL
-#%action CK_ACT_StandPlat0 0x1E50 424 424 UnscaledOnce 0 0 32000 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_StandPlat0
-#%action CK_ACT_GoPlat0 0x1E6E 424 424 Frame 0 0 0 0x0 0x0 CK6_GoPlatThink NULL CK6_GoPlatDraw NULL
-#%action CK_ACT_sneakPlatWait 0x1E8C 424 424 Frame 0 0 0 0x0 0x0  NULL CK_BasicDrawFunc1 NULL
-#%action CK_ACT_sneakPlatSneak 0x1EAA 424 424 ScaledOnce 0 0 48 0x20 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatReturn
-#%action CK_ACT_sneakPlatReturn 0x1EC8 424 424 ScaledOnce 0 0 96 0xFFF0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatWait
+%action CK_ACT_AxisPlatform 0x1DD8 424 424 Frame 0 0 0 0x0 0x0 CK_AxisPlatform NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_FallPlat0 0x1DF6 424 424 Frame 0 0 0 0x0 0x0 CK_FallPlatSit NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_FallPlat1 0x1E14 424 424 Frame 0 0 0 0x0 0x0 CK_FallPlatFall NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_FallPlat2 0x1E32 424 424 ScaledFrame 0 0 0 0x0 -32 CK_FallPlatRise NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_StandPlatform 0x1E50 424 424 UnscaledOnce 0 0 32000 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_StandPlatform
+%action CK_ACT_GoPlat0 0x1E6E 424 424 Frame 0 0 0 0x0 0x0 CK_GoPlatThink NULL CK6_GoPlatDraw NULL
+%action CK_ACT_sneakPlatWait 0x1E8C 424 424 Frame 0 0 0 0x0 0x0 CK_SneakPlatThink NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_sneakPlatSneak 0x1EAA 424 424 ScaledOnce 0 0 48 0x20 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatReturn
+%action CK_ACT_sneakPlatReturn 0x1EC8 424 424 ScaledOnce 0 0 96 -16 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatWait
 #
 #Bloogs
 %action CK6_ACT_BloogWalk0 0x1EE6 346 342 UnscaledOnce 0 1 10 0x80 0x0 CK6_Bloog CK6_BloogCol CK_BasicDrawFunc2 CK6_ACT_BloogWalk1
@@ -363,7 +363,7 @@
 %action CK6_ACT_CeilickStrike14 0x339E 246 246 UnscaledOnce 1 0 10 0x0 0x0 NULL CK6_CeilickCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike15
 %action CK6_ACT_CeilickStrike15 0x33BC 247 247 UnscaledOnce 1 0 10 0x0 0x0 NULL CK6_CeilickCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike16
 %action CK6_ACT_CeilickStrike16 0x33DA 246 246 UnscaledOnce 1 0 10 0x0 0x0 NULL CK6_CeilickCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike17
-%action CK6_ACT_CeilickStrike17 0x33F8 246 246 ScaledOnce 1 0 16 0x0 0xFFF0 NULL CK6_CeilickCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike18
+%action CK6_ACT_CeilickStrike17 0x33F8 246 246 ScaledOnce 1 0 16 0x0 -16 NULL CK6_CeilickCol CK_BasicDrawFunc1 CK6_ACT_CeilickStrike18
 %action CK6_ACT_CeilickStrike18 0x3416 -1 -1 UnscaledOnce 1 0 60 0x0 0x0 NULL CK6_CeilickCol CK_BasicDrawFunc1 CK6_ACT_CeilickWait0
 %action CK6_ACT_CeilickStunned0 0x3434 253 253 Frame 1 0 0 0x0 0x0 CK6_CeilickStunned NULL CK_BasicDrawFunc4 NULL
 

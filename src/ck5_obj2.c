@@ -151,8 +151,6 @@ void CK5_SpawnAmpton(int tileX, int tileY)
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Ampton0"));
 }
 
-#define MISCFLAG_COMPUTER 0x1F
-#define MISCFLAG_POLE 0x1
 
 void CK5_AmptonWalk(CK_object *obj)
 {

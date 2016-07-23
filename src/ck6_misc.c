@@ -478,7 +478,7 @@ typedef enum
   Lump_Bloogguard,
   Lump_Flect,
   Lump_Bip,
-  Lump_BipSquished,
+  Lump_PlatBip,
   Lump_Bipship,
   Lump_Nospike,
   Lump_Orbatrix,
@@ -703,6 +703,8 @@ void CK6_ScanInfoLayer()
         if (ck_gameState.difficulty < D_Normal) break;
       case 73:
         ck6_lumpsNeeded[Lump_Bip] = true;
+        ck6_lumpsNeeded[Lump_PlatBip] = true;
+        ck6_lumpsNeeded[Lump_Bipship] = true;
         CK6_SpawnBipship(x, y);
         break;
 
@@ -763,8 +765,42 @@ void CK6_ScanInfoLayer()
 				RF_SetScrollBlock(x, y, false);
 				break;
 
-#if 0
+        // Platforms
+			case 27:
+			case 28:
+			case 29:
+			case 30:
+				CK_SpawnAxisPlatform(x, y, infoValue - 27, false);
+        ck6_lumpsNeeded[Lump_Platform] = true;
+				break;
+			case 32:
+				CK_SpawnFallPlat(x, y);
+        ck6_lumpsNeeded[Lump_Platform] = true;
+				break;
 
+			case 33:
+				if (ck_gameState.difficulty > D_Easy) break;
+			case 34:
+				if (ck_gameState.difficulty > D_Normal) break;
+			case 35:
+				CK_SpawnStandPlatform(x, y);
+        ck6_lumpsNeeded[Lump_Platform] = true;
+				break;
+
+			case 36:
+			case 37:
+			case 38:
+			case 39:
+				CK_SpawnGoPlat(x, y, infoValue - 36, false);
+        ck6_lumpsNeeded[Lump_Platform] = true;
+        ck6_lumpsNeeded[Lump_PlatBip] = true;
+				break;
+			case 40:
+				CK_SneakPlatSpawn(x, y);
+        ck6_lumpsNeeded[Lump_Platform] = true;
+				break;
+
+#if 0
 			case 69:
 				// Spawn extra stunner if Keen has low ammo
 				if (ck_gameState.numShots >= 5)
@@ -809,5 +845,112 @@ void CK6_ScanInfoLayer()
     if (ck6_lumpsNeeded[i])
       for (int j = ck6_lumpStarts[i]; j <= ck6_lumpEnds[i]; i++)
         CA_CacheGrChunk(j);
+}
+
+void CK6_ToggleBigSwitch(CK_object *obj, bool dir)
+{
+
+  // Replace switch tiles
+  int ty = dir ? obj->clipRects.tileY2 : obj->clipRects.tileY1 - 2;
+  int tx = obj->clipRects.tileX1 - 1;
+
+  uint16_t *infoTile = CA_TilePtrAtPos(tx+1, ty+1, 2);
+
+  while (!*infoTile)
+  {
+    tx++;
+    infoTile++;
+  }
+
+  uint16_t *fgTile = CA_TilePtrAtPos(tx, ty, 1);
+
+	uint16_t tile_array[6];
+  for (int y = 0; y < 3; y++)
+  {
+    for (int x = 0; x < 2; x++)
+    {
+      tile_array[2*y+x] = *fgTile + TI_ForeAnimTile(*fgTile);
+      fgTile++;
+    }
+
+    fgTile += CA_GetMapWidth() - 2;
+  }
+
+  RF_ReplaceTiles(tile_array, 1, tx, ty, 2, 3);
+
+  // Apply the switch effect
+  infoTile = CA_TilePtrAtPos(tx+1, ty+1, 2);
+  int destX = *infoTile >> 8;
+  int destY = *infoTile & 0xFF;
+  SD_PlaySound(SOUND_KEENOUTOFAMMO);
+
+  infoTile = CA_TilePtrAtPos(destX, destY, 2);
+
+  if (*infoTile >= 0x5B && *infoTile < 0x5B + 8)
+  {
+    // Toggle a goplat arrow
+    static uint16_t infoPlaneInverses[8] = {2,3,0,1,6,7,4,5};
+    *infoTile = infoPlaneInverses[(*infoTile - 0x5B)] + 0x5B;
+  }
+  else
+  {
+    fgTile = CA_TilePtrAtPos(destX, destY, 1);
+    int miscValue = TI_ForeMisc(*fgTile) & 0x7F;
+
+
+    if (miscValue == MISCFLAG_ACTIVEZAPPER)
+    {
+      uint16_t start = CA_TileAtPos(0, 0, 1);
+      uint16_t mid = CA_TileAtPos(1, 0, 1);
+      uint16_t end = CA_TileAtPos(2, 0, 1);
+
+      RF_ReplaceTiles(&start, 1, destX, destY, 1, 1);
+      destY++;
+
+      while (TI_ForeMisc(CA_TileAtPos(destX, destY, 1)) == MISCFLAG_DEADLY)
+      {
+        RF_ReplaceTiles(&mid, 1, destX, destY, 1, 1);
+        destY++;
+      }
+
+      RF_ReplaceTiles(&end, 1, destX, destY, 1, 1);
+    }
+    else if (miscValue == MISCFLAG_INACTIVEZAPPER)
+    {
+      uint16_t start = CA_TileAtPos(3, 0, 1);
+      uint16_t mid = CA_TileAtPos(4, 0, 1);
+      uint16_t end = CA_TileAtPos(5, 0, 1);
+
+      RF_ReplaceTiles(&start, 1, destX, destY, 1, 1);
+      destY++;
+
+      while (TI_ForeMisc(CA_TileAtPos(destX, destY, 1)) != MISCFLAG_INACTIVEZAPPER)
+      {
+        RF_ReplaceTiles(&mid, 1, destX, destY, 1, 1);
+        destY++;
+      }
+
+      RF_ReplaceTiles(&end, 1, destX, destY, 1, 1);
+    }
+    else if (miscValue == MISCFLAG_BRIDGE)
+    {
+      for (int y = destY; y < destY + 2; ++y)
+      {
+        for (int x = destX - ((y == destY)? 0 : 1); x < CA_GetMapWidth(); ++x)
+        {
+          uint16_t currentTile = CA_TileAtPos(x, y, 1);
+          if (!TI_ForeAnimTile(currentTile)) break;
+          uint16_t newTile = currentTile + TI_ForeAnimTile(currentTile);
+          RF_ReplaceTiles(&newTile, 1, x, y, 1, 1);
+        }
+      }
+
+    }
+    else
+    {
+      // Toggle a B block
+      *infoTile ^= 0x1F;
+    }
+  }
 }
 

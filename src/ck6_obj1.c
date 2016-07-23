@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // =========================================================================
 
+//
+
 void CK6_BloogletItem(CK_object *obj)
 {
   if (obj->topTI)
@@ -41,6 +43,17 @@ void CK6_BloogletItem(CK_object *obj)
 
   CK_PhysGravityHigh(obj);
 }
+
+// Go Plats
+
+void CK6_GoPlatDraw(CK_object *obj)
+{
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+  RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3Ptr), obj->posX + 0x100, obj->posY + 0x100, obj->user1 + 425, false, 0);
+}
+
+
+// Bloogs
 
 void CK6_SpawnBloog(int tileX, int tileY)
 {
@@ -259,6 +272,8 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
 void CK6_Obj1_SetupFunctions()
 {
   CK_ACT_AddFunction("CK6_BloogletItem", &CK6_BloogletItem);
+
+  CK_ACT_AddFunction("CK6_GoPlatDraw", &CK6_GoPlatDraw);
 
   CK_ACT_AddFunction("CK6_Bloog", &CK6_Bloog);
   CK_ACT_AddColFunction("CK6_BloogCol", &CK6_BloogCol);

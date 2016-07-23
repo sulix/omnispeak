@@ -26,6 +26,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_heads.h"
 #include "ck_ep.h"
 
+#define MISCFLAG_POLE		 1
+#define MISCFLAG_DOOR		 2
+#define MISCFLAG_DEADLY 3
+#define MISCFLAG_SWITCHPLATON	 5
+#define MISCFLAG_SWITCHPLATOFF	 6
+#define MISCFLAG_GEMHOLDER0	 7
+#define MISCFLAG_GEMHOLDER1	 8
+#define MISCFLAG_GEMHOLDER2	 9
+#define MISCFLAG_GEMHOLDER3	10
+#define MISCFLAG_SWITCHBRIDGE	15
+#define MISCFLAG_BRIDGE 18
+
+#define MISCFLAG_ACTIVEZAPPER 19
+#define MISCFLAG_INACTIVEZAPPER 30
+#define MISCFLAG_COMPUTER 31
+#define MISCFLAG_SECURITYDOOR	32
+
 #define CK_MAX_OBJECTS 100
 
 #define ABS(x) ((x) > 0? (x) : (-x))
@@ -437,7 +454,11 @@ void CK_BasicDrawFunc2(CK_object *obj);
 /* ck_obj.c */
 void CK_SpawnItem(int tileX, int tileY, int itemNumber);
 void CK_SpawnCentilifeNotify(int tileX, int tileY);
+void CK_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple);
 void CK_SpawnFallPlat(int tileX, int tileY);
+void CK_SpawnStandPlatform(int tileX, int tileY);
+void CK_SpawnGoPlat(int tileX, int tileY, int direction, bool purple);
+void CK_SneakPlatSpawn(int tileX, int tileY);
 void CK_TurretSpawn(int tileX, int tileY, int direction);
 /*** Used for saved games compatibility ***/
 uint16_t CK_ConvertObjPointerTo16BitOffset(CK_object *obj);
