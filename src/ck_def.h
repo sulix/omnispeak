@@ -146,6 +146,7 @@ typedef enum CK_ClassType {
   CT6_Bloog = 7,
   CT6_Blooglet = 8,
   CT6_Fleex = 10,
+  CT6_Molly = 12,
   CT6_Babobba = 13,
   CT6_Bobba = 14,
   CT6_Nospike = 16,
@@ -158,6 +159,9 @@ typedef enum CK_ClassType {
   CT6_Ceilick = 23,
   CT6_Bloogguard = 24,
   CT6_Bipship = 26,
+  CT6_Sandwich = 27,
+  CT6_Rope = 28,
+  CT6_Passcard = 29,
   CT6_StunnedCreature = 25,
   CT6_MapFlag = 35,
 } CK_ClassType;
@@ -211,6 +215,10 @@ typedef enum CK_LevelState
   LS_CouncilRescued = 3,      // Rescued Council Member (Keen 4)
   LS_AboutToRecordDemo = 4,   // About to Record Demo
   LS_Foot = 7,                // Keen exited level by touching foot (keen 4)
+  LS_Sandwich = 9,            // Keen exied level by getting items (Keen 6)
+  LS_Rope = 10,
+  LS_Passcard = 11,
+  LS_Molly = 12,              // Keen rescues Molly (Keen 6)
   LS_TeleportToKorath = 13,   // Keen teleported to Korath III Base (Keen 5)
   LS_DestroyedQED = 15,       // Destroyed QED (Keen 5)
 } CK_LevelState;
@@ -249,6 +257,8 @@ typedef struct CK_GameState
     struct
     {
       int16_t sandwich;
+      int16_t rope;
+      int16_t passcard;
     } ck6;
   } ep;
 

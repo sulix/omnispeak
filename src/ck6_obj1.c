@@ -44,6 +44,68 @@ void CK6_BloogletItem(CK_object *obj)
   CK_PhysGravityHigh(obj);
 }
 
+// Story Items
+void CK6_SpawnSandwich(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->clipped = CLIP_not;
+  obj->zLayer = PRIORITIES - 2;
+  obj->type = CT6_Sandwich;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = tileY << G_T_SHIFT;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Sandwich0"));
+}
+
+void CK6_SpawnRope(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->clipped = CLIP_not;
+  obj->zLayer = PRIORITIES - 2;
+  obj->type = CT6_Rope;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = tileY << G_T_SHIFT;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Rope0"));
+}
+
+void CK6_SpawnPasscard(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->clipped = CLIP_not;
+  obj->zLayer = PRIORITIES - 2;
+  obj->type = CT6_Passcard;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = tileY << G_T_SHIFT;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Passcard0"));
+}
+
+void CK6_StoryItemCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    if (a->type == CT6_Rope)
+      ck_gameState.levelState = LS_Rope;
+    else if (a->type == CT6_Passcard)
+      ck_gameState.levelState = LS_Passcard;
+    else if (a->type == CT6_Molly)
+      ck_gameState.levelState = LS_Molly;
+    else if (a->type == CT6_Sandwich)
+      ck_gameState.levelState = LS_Sandwich;
+  }
+}
+
+void CK6_SpawnMolly(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->type = CT6_Molly;
+  obj->active = OBJ_ACTIVE;
+  obj->zLayer = PRIORITIES - 4;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = (tileY << G_T_SHIFT) - 0x80;
+  obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
+  obj->yDirection = IN_motion_Down;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Molly0"));
+}
+
 // Go Plats
 
 void CK6_GoPlatDraw(CK_object *obj)
@@ -273,6 +335,8 @@ void CK6_Obj1_SetupFunctions()
 {
   CK_ACT_AddFunction("CK6_BloogletItem", &CK6_BloogletItem);
 
+  CK_ACT_AddColFunction("CK6_StoryItemCol", &CK6_StoryItemCol);
+
   CK_ACT_AddFunction("CK6_GoPlatDraw", &CK6_GoPlatDraw);
 
   CK_ACT_AddFunction("CK6_Bloog", &CK6_Bloog);
@@ -284,6 +348,4 @@ void CK6_Obj1_SetupFunctions()
   CK_ACT_AddFunction("CK6_MultihitDraw", &CK6_MultihitDraw);
 
   CK_ACT_AddColFunction("CK6_BloogletCol", &CK6_BloogletCol);
-
-
 }

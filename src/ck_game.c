@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_text.h"
 #include "ck4_ep.h"
 #include "ck5_ep.h"
+#include "ck6_ep.h"
 
 // =========================================================================
 
@@ -495,8 +496,14 @@ replayLevel:
 			//ck_gameState.currentLevel = ck_nextMapNumber;
 			break;
 
+		case LS_Foot:
+      if (ck_currentEpisode->ep == EP_CK6)
+      {
+        IN_ClearKeysDown();
+        break;
+      }
 		case LS_LevelComplete: // 2:
-		case 7:
+levelcomplete:
 		case 13:
 			if (ca_mapOn == 0)
 			{
@@ -561,6 +568,26 @@ replayLevel:
            ck_gameState.currentLevel = 0;
          }
       }
+      break;
+
+    case LS_Sandwich:
+      CK6_ShowGetSandwich();
+      goto levelcomplete;
+    case LS_Rope:
+      CK6_ShowGetRope();
+      goto levelcomplete;
+    case LS_Passcard:
+      CK6_ShowGetPasscard();
+      goto levelcomplete;
+    case LS_Molly:
+      // Game won
+      // CK6_EndingPurge();
+      // RF_Reset();
+      // VW_SyncPages();
+      // help_endgame();
+      CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
+      goto highscores;
+
 		case 14:
       if (ck_currentEpisode->ep == EP_CK5)
       {
@@ -595,11 +622,6 @@ replayLevel:
 			break;
 #endif
 
-		case 9:
-		case 10:
-		case 11:
-		case 12:
-			break;
 		}
 
 		if (ck_gameState.numLives < 0)
@@ -619,8 +641,23 @@ replayLevel:
   }
 
 	//TODO: Update High Scores
+highscores:
   if (ck_currentEpisode->ep == EP_CK4)
+  {
     CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
-  else
+  }
+  else if (ck_currentEpisode->ep == EP_CK5)
+  {
     CK_SubmitHighScore(ck_gameState.keenScore, 0);
+  }
+  else if (ck_currentEpisode->ep == EP_CK6)
+  {
+    int complete = 0;
+    for (int i = 0; i < 25; i++)
+    {
+      if (ck_gameState.levelsDone[i])
+        complete++;
+    }
+    CK_SubmitHighScore(ck_gameState.keenScore, complete);
+  }
 }

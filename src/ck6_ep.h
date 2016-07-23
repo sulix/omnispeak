@@ -42,9 +42,16 @@ void CK6_ScanInfoLayer();
 
 /* ck6_misc.c */
 CK_object *CK6_SpawnEnemyShot(int posX, int posY, CK_action *action);
-void CK6_SpawnItem(int tileX, int tileY, int itemNumber);
+
+void CK6_ShowGetSandwich();
+void CK6_ShowGetRope();
+void CK6_ShowGetPasscard();
 
 /* ck6_obj1.c */
+void CK6_SpawnSandwich(int tileX, int tileY);
+void CK6_SpawnRope(int tileX, int tileY);
+void CK6_SpawnPasscard(int tileX, int tileY);
+void CK6_SpawnMolly(int tileX, int tileY);
 void CK6_SpawnBloog(int tileX, int tileY);
 void CK6_SpawnBloogguard(int tileX, int tileY);
 void CK6_SpawnBlooglet(int tileX, int tileY, int type);

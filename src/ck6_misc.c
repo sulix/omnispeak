@@ -636,6 +636,11 @@ void CK6_ScanInfoLayer()
         break;
         }
 
+      case 24:
+        ck6_lumpsNeeded[Lump_Molly] = true;
+        CK6_SpawnMolly(x, y);
+        break;
+
 
         // Fleex
       case 20:
@@ -748,6 +753,20 @@ void CK6_ScanInfoLayer()
         CK6_SpawnBloogguard(x, y);
         break;
 
+      // Story Items
+      case 99:
+        ck6_lumpsNeeded[Lump_Rope] = true;
+        CK6_SpawnRope(x, y);
+        break;
+      case 100:
+        ck6_lumpsNeeded[Lump_Sandwich] = true;
+        CK6_SpawnSandwich(x, y);
+        break;
+      case 101:
+        ck6_lumpsNeeded[Lump_Passcard] = true;
+        CK6_SpawnPasscard(x, y);
+        break;
+
       // Babobbas
       case 104:
         if (ck_gameState.difficulty < D_Hard) break;
@@ -757,6 +776,7 @@ void CK6_ScanInfoLayer()
         ck6_lumpsNeeded[Lump_Babobba] = true;
         CK6_SpawnBabobba(x, y);
         break;
+
 
 			case 25:
 				RF_SetScrollBlock(x, y, true);
@@ -954,3 +974,76 @@ void CK6_ToggleBigSwitch(CK_object *obj, bool dir)
   }
 }
 
+// Story item dialogues
+
+#define SOUND_STORYITEM 0x2D
+void CK6_ShowGetSandwich()
+{
+  SD_WaitSoundDone();
+  SD_PlaySound(SOUND_STORYITEM);
+  CA_UpLevel();
+  CA_CacheGrChunk(0x23);
+
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetPrintY(US_GetPrintY() + 12);
+  US_CPrint("This is the second\n"
+            "biggest sandwich\n"
+            "I ever saw!\n");
+  VL_Present();
+
+  VL_DelayTics(30); // VW_WaitVBL(30);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+  CA_DownLevel();
+  ck_gameState.ep.ck6.sandwich = true;
+}
+
+void CK6_ShowGetRope()
+{
+  SD_WaitSoundDone();
+  SD_PlaySound(SOUND_STORYITEM);
+  CA_UpLevel();
+  CA_CacheGrChunk(0x23);
+
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetPrintY(US_GetPrintY() + 12);
+  US_CPrint("Wow! A rope and\n"
+            "grappling hook!\n"
+            "They look useful!\n");
+  VL_Present();
+
+  VL_DelayTics(30); // VW_WaitVBL(30);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+  CA_DownLevel();
+  ck_gameState.ep.ck6.rope = true;
+}
+
+void CK6_ShowGetPasscard()
+{
+  SD_WaitSoundDone();
+  SD_PlaySound(SOUND_STORYITEM);
+  CA_UpLevel();
+  CA_CacheGrChunk(0x23);
+
+  US_CenterWindow(26, 8);
+  VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+  US_SetWindowW(US_GetWindowW() - 0x30);
+  US_SetPrintY(US_GetPrintY() + 4);
+  US_CPrint("What's this? Cool!\n"
+            "A passcard for\n"
+            "the Bloogstar Rocket!\n"
+            "(It can fly though\n"
+            "their force field.)");
+  VL_Present();
+
+  VL_DelayTics(30); // VW_WaitVBL(30);
+  IN_ClearKeysDown();
+  IN_WaitButton();
+  CA_DownLevel();
+  ck_gameState.ep.ck6.passcard = true;
+}

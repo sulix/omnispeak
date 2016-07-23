@@ -155,13 +155,13 @@
 #%action CK6_ACT_Satellite1 0x1CAC 214 214 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite2
 #%action CK6_ACT_Satellite2 0x1CCA 215 215 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite3
 #%action CK6_ACT_Satellite3 0x1CE8 216 216 UnscaledFrame 0 0 10 0x0 0x0 CK6_Satellite CK6_SatelliteCol CK_BasicDrawFunc1 CK6_ACT_Satellite0
-#%action CK6_ACT_Sandwich0 0x1D06 182 182 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL
-#%action CK6_ACT_Rope0 0x1D24 183 183 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL
-#%action CK6_ACT_Passcard0 0x1D42 435 435 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL
-#%action CK6_ACT_Molly0 0x1D60 433 433 UnscaledOnce 0 0 20 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly1
-#%action CK6_ACT_Molly1 0x1D7E 434 434 UnscaledOnce 0 0 40 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly2
-#%action CK6_ACT_Molly2 0x1D9C 433 433 UnscaledOnce 0 0 40 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly3
-#%action CK6_ACT_Molly3 0x1DBA 434 434 UnscaledOnce 0 0 20 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly0
+%action CK6_ACT_Sandwich0 0x1D06 182 182 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL
+%action CK6_ACT_Rope0 0x1D24 183 183 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL
+%action CK6_ACT_Passcard0 0x1D42 435 435 Frame 0 0 0 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 NULL
+%action CK6_ACT_Molly0 0x1D60 433 433 UnscaledOnce 0 0 20 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly1
+%action CK6_ACT_Molly1 0x1D7E 434 434 UnscaledOnce 0 0 40 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly2
+%action CK6_ACT_Molly2 0x1D9C 433 433 UnscaledOnce 0 0 40 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly3
+%action CK6_ACT_Molly3 0x1DBA 434 434 UnscaledOnce 0 0 20 0x0 0x0 NULL CK6_StoryItemCol CK_BasicDrawFunc1 CK6_ACT_Molly0
 
 
 %action CK_ACT_AxisPlatform 0x1DD8 424 424 Frame 0 0 0 0x0 0x0 CK_AxisPlatform NULL CK_BasicDrawFunc1 NULL
