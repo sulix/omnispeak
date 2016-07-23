@@ -515,7 +515,7 @@ int main(int argc, char *argv[])
 	if (argc != 4)
 	{
 		printf("Action validator - Usage:\n");
-		printf("%s <UNPACKED.EXT> <ACTION.EXT> <EPISODENUM>\n", argv[0]);
+		printf("%s <UNPACKED.EXE> <ACTION.EXT> <EPISODENUM>\n", argv[0]);
 		return 0;
 	}
 
@@ -527,6 +527,9 @@ int main(int argc, char *argv[])
 		break;
 	case 5:
 		ck_currentEpisode = &ck5_episode;
+		break;
+	case 6:
+		ck_currentEpisode = &ck6_episode;
 		break;
 	default:
 		fprintf(stderr, "Invalid episode selected - only 4 or 5 is valid!\n");
