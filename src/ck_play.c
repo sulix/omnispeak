@@ -642,6 +642,9 @@ bool CK_DebugKeys()
       ck_gameState.ep.ck4.wetsuit = 1;
     else if (ck_currentEpisode->ep == EP_CK5)
       ck_gameState.ep.ck5.securityCard = 1;
+    else if (ck_currentEpisode->ep == EP_CK6)
+      ck_gameState.ep.ck6.sandwich = ck_gameState.ep.ck6.rope = ck_gameState.ep.ck6.passcard = 1;
+
 		VL_Present();
 		IN_WaitButton();
 		CK_IncreaseScore(3000);
