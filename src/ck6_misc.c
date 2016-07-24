@@ -636,6 +636,11 @@ void CK6_ScanInfoLayer()
         break;
         }
 
+      case 15:
+      case 16:
+        CK6_SpawnMapCliff(x, y, infoValue-15);
+        break;
+
       case 24:
         ck6_lumpsNeeded[Lump_Molly] = true;
         CK6_SpawnMolly(x, y);

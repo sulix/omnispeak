@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_ca.h"
 #include "id_in.h"
 #include "id_rf.h"
+#include "id_vl.h"
 #include "ck6_ep.h"
 
 #include <stdio.h>
@@ -44,8 +45,132 @@ void CK6_BloogletItem(CK_object *obj)
   CK_PhysGravityHigh(obj);
 }
 
-// Satellite
+// Cliff and Rope
 
+void CK6_SpawnMapCliff(int tileX, int tileY, int dir)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->active = OBJ_ACTIVE;
+  obj->clipped = CLIP_not;
+  obj->zLayer = PRIORITIES - 2;
+  obj->type = CT6_MapCliff;
+  obj->clipRects.tileX1 = obj->clipRects.tileX2 = tileX;
+  obj->clipRects.tileY1 = obj->clipRects.tileY2 = tileY;
+  obj->user1 = dir;
+  obj->posX = obj->clipRects.unitX1 = tileX << G_T_SHIFT;
+  obj->clipRects.unitX2 = obj->clipRects.unitX1 + 0x100;
+  if (dir)
+    obj->posY = obj->clipRects.unitY1 = ((tileY+1) << G_T_SHIFT) - 1;
+  else
+    obj->posY = obj->clipRects.unitY1 = tileY << G_T_SHIFT;
+
+  obj->clipRects.unitY2 = obj->clipRects.unitY1 + 1;
+  CK_SetAction(obj, CK_GetActionByName("CK6_ACT_MapCliff0"));
+
+  if (ck_gameState.ep.ck6.rope == 2 && dir)
+  {
+    CK_object *obj = CK_GetNewObj(false);
+    obj->active = OBJ_ACTIVE;
+    obj->clipped = CLIP_not;
+    obj->zLayer = PRIORITIES - 4;
+    obj->type = CT_Friendly;
+    obj->posX = tileX << G_T_SHIFT;
+    obj->posY = (tileY + 1) << G_T_SHIFT;
+    CK_SetAction(obj, CK_GetActionByName("CK6_ACT_RopeOnMap0"));
+  }
+}
+
+void CK6_MapKeenThrowRope(CK_object *obj)
+{
+  CK_object *rope = CK_GetNewObj(false);
+  rope->active = OBJ_ACTIVE;
+  rope->clipped = CLIP_not;
+  rope->zLayer = PRIORITIES - 4;
+  rope->type = CT_Friendly;
+  rope->posX = obj->clipRects.tileX2 << G_T_SHIFT;
+  rope->posY = obj->posY - 0x200;
+  CK_SetAction(rope, CK_GetActionByName("CK6_ACT_RopeOnMap0"));
+  obj->type = CT_Player;
+  obj->gfxChunk = 192;
+}
+
+void CK6_MapKeenClimb(CK_object *obj)
+{
+  if (--obj->user4 == 0)
+  {
+    if (obj->yDirection == IN_motion_Down)
+    {
+      obj->posY += 0x30;
+      obj->gfxChunk = 0xC3;
+    }
+    else
+    {
+      obj->posY -= 0x30;
+      obj->gfxChunk = 0xC0;
+    }
+    obj->type = CT_Player;
+    CK_SetAction(obj, CK_GetActionByName("CK_ACT_MapKeenStart"));
+  }
+
+}
+
+#define SOUND_KEENTHROWROPE 0x35
+void CK6_MapCliffCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    if (ck_gameState.ep.ck6.rope == 0)
+    {
+      CA_CacheGrChunk(0x23);
+
+      US_CenterWindow(26, 8);
+      VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+      US_SetWindowW(US_GetWindowW() - 0x30);
+      US_SetPrintY(US_GetPrintY() + 15);
+      US_CPrint("What a tall cliff!\n"
+                "Wish I had a rope\n"
+                "and grappling hook\n");
+      VL_Present();
+      SD_PlaySound(SOUND_NEEDKEYCARD);
+      VL_DelayTics(30); // VW_WaitVBL(30);
+      IN_ClearKeysDown();
+      IN_WaitButton();
+      RF_ForceRefresh();
+      ck_nextX = -b->deltaPosX;
+      ck_nextY = -b->deltaPosY;
+      b->xDirection = b->yDirection = IN_motion_None;
+      CK_PhysUpdateNormalObj(b);
+
+    }
+    else if (ck_gameState.ep.ck6.rope == 1)
+    {
+      ck_gameState.ep.ck6.rope++;
+      SD_PlaySound(SOUND_KEENTHROWROPE);
+      CK_SetAction2(b, CK_GetActionByName("CK6_ACT_MapKeenThrowRope0"));
+      b->type = CT_Friendly;
+    }
+    else if (ck_gameState.ep.ck6.rope == 2)
+    {
+      if (a->user1)
+      {
+        b->posY += 0x40;
+        b->user4 = 6;
+        b->yDirection = IN_motion_Down;
+      }
+      else
+      {
+        b->posY -= 0x40;
+        b->user4 = 6;
+        b->yDirection = IN_motion_Up;
+      }
+
+      CK_SetAction(b, CK_GetActionByName("CK6_ACT_MapKeenClimbRope0"));
+      b->type = CT_Friendly;
+    }
+  }
+}
+
+// Satellite
 
 void CK6_SpawnSatelliteLoading(int tileX, int tileY, int dir)
 {
@@ -440,6 +565,11 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
 void CK6_Obj1_SetupFunctions()
 {
   CK_ACT_AddFunction("CK6_BloogletItem", &CK6_BloogletItem);
+
+
+  CK_ACT_AddFunction("CK6_MapKeenThrowRope", &CK6_MapKeenThrowRope);
+  CK_ACT_AddFunction("CK6_MapKeenClimb", &CK6_MapKeenClimb);
+  CK_ACT_AddColFunction("CK6_MapCliffCol", &CK6_MapCliffCol);
 
   CK_ACT_AddFunction("CK6_Satellite", &CK6_Satellite);
   CK_ACT_AddColFunction("CK6_SatelliteCol", &CK6_SatelliteCol);

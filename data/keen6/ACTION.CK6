@@ -142,13 +142,13 @@
 #%action CK6_ACT_RocketFly0 0x1B26 211 211 UnscaledFrame 0 0 8 0x0 0x0 CK6_RocketFly CK6_RocketFlyCol CK_BasicDrawFunc1 CK6_ACT_RocketFly1
 #%action CK6_ACT_RocketFly1 0x1B44 212 212 UnscaledFrame 0 0 8 0x0 0x0 CK6_RocketFly CK6_RocketFlyCol CK_BasicDrawFunc1 CK6_ACT_RocketFly0
 #%action CK6_ACT_MapKeenRocketSit0 0x1B62 0 0 Frame 0 0 0 0x0 0x0 CK6_Rocket NULL CK_BasicDrawFunc1 NULL
-#%action CK6_ACT_MapKeenRocketFly0 0x1B80 -1 -1 Frame 0 0 0 0x0 0x0 NULL CK6_MapKeenRocketFlyCol CK_BasicDrawFunc1 NULL
-#%action CK6_ACT_MapKeenThrowRope0 0x1B9E 221 221 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenThrowRope1
-#%action CK6_ACT_MapKeenThrowRope1 0x1BBC 222 222 UnscaledOnce 0 0 8 0x0 0x0 CK6_MapKeenThrowRope NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenStart
-#%action CK6_ACT_MapKeenClimbRope0 0x1BDA 223 223 ScaledOnce 1 0 4 0x0 0x10 NULL NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenClimbRope1
-#%action CK6_ACT_MapKeenClimbRope1 0x1BF8 224 224 ScaledOnce 1 0 4 0x0 0x10 CK6_MapKeenClimb NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenClimbRope0
-#%action CK6_ACT_RopeOnMap0 0x1C16 226 226 Frame 0 0 0 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
-#%action CK6_ACT_RopeThrown0 0x1C34 225 225 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_RopeThrown0
+%action CK6_ACT_MapCliff0 0x1B80 -1 -1 Frame 0 0 0 0x0 0x0 NULL CK6_MapCliffCol CK_BasicDrawFunc1 NULL
+%action CK6_ACT_MapKeenThrowRope0 0x1B9E 221 221 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenThrowRope1
+%action CK6_ACT_MapKeenThrowRope1 0x1BBC 222 222 UnscaledOnce 0 0 8 0x0 0x0 CK6_MapKeenThrowRope NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenStart
+%action CK6_ACT_MapKeenClimbRope0 0x1BDA 223 223 ScaledOnce 1 0 4 0x0 0x10 NULL NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenClimbRope1
+%action CK6_ACT_MapKeenClimbRope1 0x1BF8 224 224 ScaledOnce 1 0 4 0x0 0x10 CK6_MapKeenClimb NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenClimbRope0
+%action CK6_ACT_RopeOnMap0 0x1C16 226 226 Frame 0 0 0 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
+%action CK6_ACT_RopeThrown0 0x1C34 225 225 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_RopeThrown0
 
 %action CK6_ACT_SatelliteInvisible0 0x1C52 -1 -1 Frame 0 0 0 0x0 0x0 NULL NULL NULL NULL
 %action CK6_ACT_KeenSatellite0 0x1C70 227 227 Frame 0 0 0 0x0 0x0 NULL NULL CK6_KeenSatelliteDraw NULL
