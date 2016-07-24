@@ -29,6 +29,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdio.h>
 
+extern int ck_infoplaneArrowsX[];
+extern int ck_infoplaneArrowsY[];
+
 // =========================================================================
 
 //
@@ -43,6 +46,198 @@ void CK6_BloogletItem(CK_object *obj)
   }
 
   CK_PhysGravityHigh(obj);
+}
+
+// Rocket ship
+void CK6_SpawnRocket(int tileX, int tileY, int dir)
+{
+  if (ck_gameState.ep.ck6.inRocket == dir)
+  {
+    CK_object *obj = CK_GetNewObj(false);
+    obj->active = OBJ_ACTIVE;
+    obj->clipped = CLIP_not;
+    obj->zLayer = PRIORITIES - 1;
+    obj->type = CT6_Rocket;
+    obj->posX = tileX << G_T_SHIFT;
+    obj->posY = tileY << G_T_SHIFT;
+    CK_SetAction(obj, CK_GetActionByName("CK6_ACT_RocketSit0"));
+  }
+}
+
+void CK6_Rocket(CK_object *obj)
+{
+  obj->visible = true;
+}
+
+#define SOUND_ROCKETLAUNCH 0x38
+void CK6_RocketCol(CK_object *a, CK_object *b)
+{
+  if (ck_gameState.ep.ck6.passcard == 0)
+  {
+
+      CA_CacheGrChunk(0x23);
+
+      US_CenterWindow(26, 8);
+      VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+      US_SetWindowW(US_GetWindowW() - 0x30);
+      US_SetPrintY(US_GetPrintY() + 5);
+      US_CPrint("The door makes a loud\n"
+                "blooping noise.\n"
+                "It says,\n"
+                "\"Passcard required\n"
+                "for entry.\"");
+      VL_Present();
+      SD_PlaySound(SOUND_NEEDKEYCARD);
+      VL_DelayTics(30); // VW_WaitVBL(30);
+      IN_ClearKeysDown();
+      IN_WaitButton();
+      RF_ForceRefresh();
+      ck_nextX = -b->deltaPosX;
+      ck_nextY = -b->deltaPosY;
+      b->xDirection = b->yDirection = IN_motion_None;
+      CK_PhysUpdateNormalObj(b);
+  }
+  else if (ck_gameState.ep.ck6.passcard == 1)
+  {
+    a->user1 = 0;
+    a->user2 = 0x100;
+    CK_SetAction2(a, CK_GetActionByName("CK6_ACT_RocketFly0"));
+    b->posX = a->posX;
+    b->posY = a->posY + 0x100;
+    b->clipped = CLIP_not;
+    CK_SetAction2(b, CK_GetActionByName("CK6_ACT_MapKeenRocketSit0"));
+    SD_PlaySound(SOUND_ROCKETLAUNCH);
+    SD_WaitSoundDone();
+  }
+}
+
+void CK6_RocketFlyCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    b->posX = a->posX;
+    b->posY = a->posY + 0x100;
+    CK_SetAction2(b, b->currentAction);
+  }
+}
+
+#define SOUND_ROCKETFLY 0x36
+void CK6_RocketFly(CK_object *obj)
+{
+  if (!ck_nextX && !ck_nextY)
+  {
+    if (!SD_SoundPlaying())
+      SD_PlaySound(SOUND_ROCKETFLY);
+
+    int delta = SD_GetSpriteSync() * 32;
+
+    // Will we reach a new tile?
+    if (obj->user2 > delta)
+    {
+      // No... keep moving in the same direction.
+      obj->user2 -= delta;
+
+      int dirX = ck_infoplaneArrowsX[obj->user1];
+      if (dirX == 1)
+      {
+        // Moving right.
+        ck_nextX += delta;
+      }
+      else if (dirX == -1)
+      {
+        // Moving left
+        ck_nextX -= delta;
+      }
+
+      int dirY = ck_infoplaneArrowsY[obj->user1];
+      if (dirY == 1)
+      {
+        // Moving down
+        ck_nextY += delta;
+      }
+      else if (dirY == -1)
+      {
+        // Moving up
+        ck_nextY -= delta;
+      }
+    }
+    else
+    {
+      // Move to next tile.
+      int dirX = ck_infoplaneArrowsX[obj->user1];
+      if (dirX == 1)
+      {
+        // Moving right.
+        ck_nextX += obj->user2;
+      }
+      else if (dirX == -1)
+      {
+        // Moving left
+        ck_nextX -= obj->user2;
+      }
+
+      int dirY = ck_infoplaneArrowsY[obj->user1];
+      if (dirY == 1)
+      {
+        // Moving down
+        ck_nextY += obj->user2;
+      }
+      else if (dirY == -1)
+      {
+        // Moving up
+        ck_nextY -= obj->user2;
+      }
+
+      int tileX = (uint16_t)(obj->posX + ck_nextX) >> 8;
+      int tileY = (uint16_t)(obj->posY + ck_nextY) >> 8;
+
+      obj->user1 = CA_TileAtPos(tileX, tileY, 2) - 0x5B;
+
+      if ((obj->user1 < 0) || (obj->user1 > 8))
+      {
+        obj->posX += ck_nextX;
+        obj->posY += ck_nextY;
+        CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_RocketSit0"));
+
+        ck_keenObj->posX = ((tileX + 1) << G_T_SHIFT) + 0x10;
+        ck_keenObj->posY = (tileY + 1) << G_T_SHIFT;
+        ck_keenObj->type = CT_Player;
+        ck_keenObj->gfxChunk = 0xBD;
+        ck_keenObj->clipped = CLIP_normal;
+        CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
+        ck_gameState.ep.ck6.inRocket ^= 1;
+        return;
+      }
+
+      delta -= obj->user2;
+      obj->user2 = 256 - delta;
+
+      // Move in the new direction.
+      dirX = ck_infoplaneArrowsX[obj->user1];
+      if (dirX == 1)
+      {
+        // Moving right.
+        ck_nextX += delta;
+      }
+      else if (dirX == -1)
+      {
+        // Moving left
+        ck_nextX -= delta;
+      }
+
+      dirY = ck_infoplaneArrowsY[obj->user1];
+      if (dirY == 1)
+      {
+        // Moving down
+        ck_nextY += delta;
+      }
+      else if (dirY == -1)
+      {
+        // Moving up
+        ck_nextY -= delta;
+      }
+    }
+  }
 }
 
 // Cliff and Rope
@@ -566,6 +761,11 @@ void CK6_Obj1_SetupFunctions()
 {
   CK_ACT_AddFunction("CK6_BloogletItem", &CK6_BloogletItem);
 
+
+  CK_ACT_AddFunction("CK6_Rocket", &CK6_Rocket);
+  CK_ACT_AddColFunction("CK6_RocketCol", &CK6_RocketCol);
+  CK_ACT_AddColFunction("CK6_RocketFlyCol", &CK6_RocketFlyCol);
+  CK_ACT_AddFunction("CK6_RocketFly", &CK6_RocketFly);
 
   CK_ACT_AddFunction("CK6_MapKeenThrowRope", &CK6_MapKeenThrowRope);
   CK_ACT_AddFunction("CK6_MapKeenClimb", &CK6_MapKeenClimb);

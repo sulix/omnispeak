@@ -163,6 +163,7 @@ typedef enum CK_ClassType {
   CT6_Rope = 28,
   CT6_Passcard = 29,
   CT6_StunnedCreature = 25,
+  CT6_Rocket = 31,
   CT6_MapCliff = 32,
   CT6_Satellite = 33,
   CT6_SatelliteLoading = 34,
@@ -262,6 +263,7 @@ typedef struct CK_GameState
       int16_t sandwich;
       int16_t rope;  // 1 == collected, 2 == deployed on cliff
       int16_t passcard;
+      int16_t inRocket; // true if flying
     } ck6;
   } ep;
 

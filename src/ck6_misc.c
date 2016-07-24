@@ -657,6 +657,48 @@ void CK6_ScanInfoLayer()
         CK6_SpawnFleex(x, y);
         break;
 
+			case 25:
+				RF_SetScrollBlock(x, y, true);
+				break;
+			case 26:
+				RF_SetScrollBlock(x, y, false);
+				break;
+
+        // Platforms
+			case 27:
+			case 28:
+			case 29:
+			case 30:
+				CK_SpawnAxisPlatform(x, y, infoValue - 27, false);
+        ck6_lumpsNeeded[Lump_Platform] = true;
+				break;
+			case 32:
+				CK_SpawnFallPlat(x, y);
+        ck6_lumpsNeeded[Lump_Platform] = true;
+				break;
+
+			case 33:
+				if (ck_gameState.difficulty > D_Easy) break;
+			case 34:
+				if (ck_gameState.difficulty > D_Normal) break;
+			case 35:
+				CK_SpawnStandPlatform(x, y);
+        ck6_lumpsNeeded[Lump_Platform] = true;
+				break;
+
+			case 36:
+			case 37:
+			case 38:
+			case 39:
+				CK_SpawnGoPlat(x, y, infoValue - 36, false);
+        ck6_lumpsNeeded[Lump_Platform] = true;
+        ck6_lumpsNeeded[Lump_PlatBip] = true;
+				break;
+			case 40:
+				CK_SneakPlatSpawn(x, y);
+        ck6_lumpsNeeded[Lump_Platform] = true;
+				break;
+
       // Bobbas
       case 43:
         if (ck_gameState.difficulty < D_Hard) break;
@@ -793,48 +835,11 @@ void CK6_ScanInfoLayer()
         CK6_SpawnBabobba(x, y);
         break;
 
+      case 105:
+        CK6_SpawnRocket(x, y, infoValue - 105);
+        break;
 
-			case 25:
-				RF_SetScrollBlock(x, y, true);
-				break;
-			case 26:
-				RF_SetScrollBlock(x, y, false);
-				break;
 
-        // Platforms
-			case 27:
-			case 28:
-			case 29:
-			case 30:
-				CK_SpawnAxisPlatform(x, y, infoValue - 27, false);
-        ck6_lumpsNeeded[Lump_Platform] = true;
-				break;
-			case 32:
-				CK_SpawnFallPlat(x, y);
-        ck6_lumpsNeeded[Lump_Platform] = true;
-				break;
-
-			case 33:
-				if (ck_gameState.difficulty > D_Easy) break;
-			case 34:
-				if (ck_gameState.difficulty > D_Normal) break;
-			case 35:
-				CK_SpawnStandPlatform(x, y);
-        ck6_lumpsNeeded[Lump_Platform] = true;
-				break;
-
-			case 36:
-			case 37:
-			case 38:
-			case 39:
-				CK_SpawnGoPlat(x, y, infoValue - 36, false);
-        ck6_lumpsNeeded[Lump_Platform] = true;
-        ck6_lumpsNeeded[Lump_PlatBip] = true;
-				break;
-			case 40:
-				CK_SneakPlatSpawn(x, y);
-        ck6_lumpsNeeded[Lump_Platform] = true;
-				break;
 
 #if 0
 			case 69:
