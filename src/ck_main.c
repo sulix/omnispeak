@@ -229,7 +229,7 @@ void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h)
 {
 	char c;
 	uint16_t x, y;
-	char buf[80];
+	char buf[80] = {0};
 	char *p;
 
 	*h = *w = (uint16_t) 0;
