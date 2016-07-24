@@ -805,6 +805,11 @@ void CK6_ScanInfoLayer()
         CK6_SpawnBloogguard(x, y);
         break;
 
+        // Grabbiter
+      case 88:
+        CK6_SpawnGrabbiter(x, y);
+        break;
+
       // Satellite
       case 89:
         CK6_SpawnSatellite(x, y);

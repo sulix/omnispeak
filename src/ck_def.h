@@ -163,6 +163,7 @@ typedef enum CK_ClassType {
   CT6_Rope = 28,
   CT6_Passcard = 29,
   CT6_StunnedCreature = 25,
+  CT6_Grabbiter = 30,
   CT6_Rocket = 31,
   CT6_MapCliff = 32,
   CT6_Satellite = 33,

@@ -48,6 +48,78 @@ void CK6_BloogletItem(CK_object *obj)
   CK_PhysGravityHigh(obj);
 }
 
+// Grabbiter
+
+void CK6_SpawnGrabbiter(int tileX, int tileY)
+{
+  CK_object *obj = CK_GetNewObj(false);
+  obj->active = OBJ_ACTIVE;
+  obj->clipped = CLIP_not;
+  obj->zLayer = PRIORITIES - 2;
+  obj->type = CT6_Grabbiter;
+  obj->posX = tileX << G_T_SHIFT;
+  obj->posY = tileY << G_T_SHIFT;
+
+  if (ck_gameState.ep.ck6.sandwich == 2)
+  {
+    CK_SetAction(obj, CK_GetActionByName("CK6_ACT_GrabbiterNapping0"));
+  }
+  else
+  {
+    CK_SetAction(obj, CK_GetActionByName("CK6_ACT_GrabbiterHungry0"));
+  }
+}
+
+#define SOUND_GRABBITER 0x39
+void CK6_GrabbiterCol(CK_object *a, CK_object *b)
+{
+  if (!ck_gameState.ep.ck6.sandwich)
+  {
+    CA_CacheGrChunk(0x23);
+    SD_PlaySound(SOUND_GRABBITER);
+
+    US_CenterWindow(26, 8);
+    VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+    US_SetWindowW(US_GetWindowW() - 0x30);
+    US_SetPrintY(US_GetPrintY() + 5);
+    US_CPrint("Oh no!\n"
+        "It's a slavering\n"
+        "Grabbiter! He says,\n"
+        "\"Get me lunch and\n"
+        "I'll tell ya a secret!\"");
+    VL_Present();
+    VL_DelayTics(30); // VW_WaitVBL(30);
+    IN_ClearKeysDown();
+    IN_WaitButton();
+    RF_ForceRefresh();
+    ck_nextX = -b->deltaPosX;
+    ck_nextY = -b->deltaPosY;
+    b->xDirection = b->yDirection = IN_motion_None;
+    CK_PhysUpdateNormalObj(b);
+  }
+  else
+  {
+    ck_gameState.ep.ck6.sandwich++;
+    CA_CacheGrChunk(0x23);
+    US_CenterWindow(26, 8);
+    VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+    US_SetWindowW(US_GetWindowW() - 0x30);
+    US_SetPrintY(US_GetPrintY() + 2);
+    US_CPrint("The Grabbiter grabs\n"
+        "the gigantic sandwich,\n"
+        "downs it in one bite,\n"
+        "and says,\"Here's your\n"
+        "secret. Big meals\n"
+        "make me sleepy!\n");
+    VL_Present();
+    VL_DelayTics(30); // VW_WaitVBL(30);
+    IN_ClearKeysDown();
+    IN_WaitButton();
+    CK_SetAction2(a, CK_GetActionByName("CK6_ACT_GrabbiterNapping0"));
+    RF_ForceRefresh();
+  }
+}
+
 // Rocket ship
 void CK6_SpawnRocket(int tileX, int tileY, int dir)
 {
@@ -324,7 +396,7 @@ void CK6_MapCliffCol(CK_object *a, CK_object *b)
       US_SetPrintY(US_GetPrintY() + 15);
       US_CPrint("What a tall cliff!\n"
                 "Wish I had a rope\n"
-                "and grappling hook\n");
+                "and grappling hook.\n");
       VL_Present();
       SD_PlaySound(SOUND_NEEDKEYCARD);
       VL_DelayTics(30); // VW_WaitVBL(30);
@@ -760,6 +832,7 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
 void CK6_Obj1_SetupFunctions()
 {
   CK_ACT_AddFunction("CK6_BloogletItem", &CK6_BloogletItem);
+  CK_ACT_AddColFunction("CK6_GrabbiterCol", &CK6_GrabbiterCol);
 
 
   CK_ACT_AddFunction("CK6_Rocket", &CK6_Rocket);

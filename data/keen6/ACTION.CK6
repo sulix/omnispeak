@@ -134,10 +134,10 @@
 %action CK_ACT_CentilifeNotify4 0x1A5A 149 149 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
 
 
-#%action CK6_ACT_GrabbiterHungry0 0x1A90 217 217 UnscaledOnce 0 0 12 0x0 0x0 NULL CK6_Grabbiter CK_BasicDrawFunc1 CK6_ACT_GrabbiterHungry1
-#%action CK6_ACT_GrabbiterHungry1 0x1AAE 218 218 UnscaledOnce 0 0 12 0x0 0x0 NULL CK6_Grabbiter CK_BasicDrawFunc1 CK6_ACT_GrabbiterHungry0
-#%action CK6_ACT_GrabbiterNapping0 0x1ACC 219 219 UnscaledOnce 0 0 12 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_GrabbiterNapping1
-#%action CK6_ACT_GrabbiterNapping1 0x1AEA 220 220 UnscaledOnce 0 0 12 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_GrabbiterNapping0
+%action CK6_ACT_GrabbiterHungry0 0x1A90 217 217 UnscaledOnce 0 0 12 0x0 0x0 NULL CK6_GrabbiterCol CK_BasicDrawFunc1 CK6_ACT_GrabbiterHungry1
+%action CK6_ACT_GrabbiterHungry1 0x1AAE 218 218 UnscaledOnce 0 0 12 0x0 0x0 NULL CK6_GrabbiterCol CK_BasicDrawFunc1 CK6_ACT_GrabbiterHungry0
+%action CK6_ACT_GrabbiterNapping0 0x1ACC 219 219 UnscaledOnce 0 0 12 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_GrabbiterNapping1
+%action CK6_ACT_GrabbiterNapping1 0x1AEA 220 220 UnscaledOnce 0 0 12 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_GrabbiterNapping0
 %action CK6_ACT_RocketSit0 0x1B08 210 210 Frame 0 0 0 0x0 0x0 NULL CK6_RocketCol CK_BasicDrawFunc1 NULL
 %action CK6_ACT_RocketFly0 0x1B26 211 211 UnscaledFrame 0 0 8 0x0 0x0 CK6_RocketFly CK6_RocketFlyCol CK_BasicDrawFunc1 CK6_ACT_RocketFly1
 %action CK6_ACT_RocketFly1 0x1B44 212 212 UnscaledFrame 0 0 8 0x0 0x0 CK6_RocketFly CK6_RocketFlyCol CK_BasicDrawFunc1 CK6_ACT_RocketFly0
