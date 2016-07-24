@@ -1181,6 +1181,27 @@ void CK_DrawStatusWindow(void)
       if (ck_gameState.ep.ck5.securityCard)
         VH_DrawTile8(136, 91, 40);
       break;
+
+    case EP_CK6:
+      US_SetPrintX(80);
+      US_SetPrintY(96);
+      US_Print("ITEMS");
+      VH_Bar(127, 95, 26, 10, 0);
+
+      if (ck_gameState.ep.ck6.sandwich == 1)
+        VH_DrawTile8(128, 96, 2);
+      else
+        VH_DrawTile8(128, 96, 1);
+
+      if (ck_gameState.ep.ck6.rope == 1)
+        VH_DrawTile8(136, 96, 4);
+      else
+        VH_DrawTile8(136, 96, 3);
+
+      if (ck_gameState.ep.ck6.passcard == 1)
+        VH_DrawTile8(144, 96, 6);
+      else
+        VH_DrawTile8(144, 96, 5);
   }
 
 	// Difficulty
@@ -1248,6 +1269,9 @@ void CK_DrawStatusWindow(void)
     case EP_CK5:
       US_Print("VITALIN");
       break;
+    case EP_CK6:
+      US_Print("VIVAS");
+      break;
   }
 	VH_Bar(224, 127, 16, 10, 0);
 	CK_DrawLongRight(224, 128, 2, 41, ck_gameState.numCentilife);
@@ -1271,6 +1295,7 @@ void CK_DrawStatusWindow(void)
       addX = 5;
 
     case EP_CK5:
+    case EP_CK6:
 
       for (int y = 0; y < 2; y++)
         for (int x = 0; x < 10; x++)

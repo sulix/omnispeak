@@ -140,6 +140,7 @@ const char *ck6_levelNames[] = {
 	"Bloogton Mfg.,\nIncorporated",
 	"Bloogton Tower",
 	"Bloogfoods, Inc.",
+	"Guard Post Two",
 	"Bloogville",
 	"BASA",
 	"Guard Post Three",
@@ -279,7 +280,7 @@ void CK6_DefineConstants(void)
   SOUND_KEENHITCEILING = 15;
   SOUND_SPINDREDFLYUP = 16;
   SOUND_GOTEXTRALIFE = 17;
-  SOUND_OPENSECURITYDOOR = 18;
+  SOUND_OPENGEMDOOR = 18;
   SOUND_GOTGEM = 19;
   SOUND_KEENFALL = 20;
   SOUND_KEENOUTOFAMMO = 21;
@@ -321,11 +322,7 @@ void CK6_DefineConstants(void)
   SOUND_KEENLANDONFUSE = 57;
   SOUND_SPARKYPREPCHARGE = 58;
   SOUND_SPHEREFULCEILING = 59;
-  SOUND_OPENGEMDOOR = 60;
-  SOUND_SPIROFLY = 61;
-  SOUND_UNKNOWN62 = 62;
-  SOUND_UNKNOWN63 = 63;
-  LASTSOUND = 64;
+  LASTSOUND = 60;
 
   STR_EXIT_TO_MAP = "Exit to Fribbulus Xax";
 
