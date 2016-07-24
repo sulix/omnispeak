@@ -177,7 +177,7 @@ void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel);
 void AnimateTerminator(void);
 void TerminatorExpandRLE(uint16_t *src, uint8_t *dest);
 void JoinTerminatorPics(void);
-void ZoomOutTerminator_1(uint16_t *arg0, uint16_t arg4, int leftOffset, uint16_t *arg8);
+void ZoomOutTerminator_1(uint16_t *rleData, uint16_t arg4, int leftOffset, uint16_t scaleFactor);
 void ZoomOutTerminator(void);
 void CK_FizzleFade(void);
 
@@ -780,49 +780,44 @@ void JoinTerminatorPics(void)
 }
 
 
-//ZoomOutTerminator_1(var16, si+yBottom, leftOffset, introbuffer);
-void ZoomOutTerminator_1(uint16_t *arg0, uint16_t arg4, int leftOffset, uint16_t *arg8)
+// Originally this function accepted a table of precomputed scaled values.
+// Here we do the scaling ourselves, with 'scaleFactor' being 
+void ZoomOutTerminator_1(uint16_t *rleData, uint16_t arg4, int leftOffset, uint16_t scaleFactor)
 {
 
-	uint16_t inputOffset, outputOffset;
-
+	uint16_t inputOffset, scaledOffset;
 
 	// X coord where the zoomed bitmap is clipped by the left edge of the screen
-	int leftclip;
+	int runBegin;
 
-	int var8;
+	unsigned runLength;
 
-	uint8_t *vidPtr; // Pointer into video memory
-	uint8_t writebyte;
+	int rightOffset = 320 - leftOffset;
 
-	unsigned pixelrun;  // The width?
-	unsigned varA;
-
-	writebyte = pixelrun = 0;
-
-	var8 = 320-leftOffset;
-
-	//vidPtr = MK_FP(0xA000 , (ylookup[arg4] + terminatorOfs + word_499C7));
+	int vidOffset = 0;
 
 	if (leftOffset < 0)
 	{
 		// The zooming bitmap is clipped by the left edge of the screen
 		// So find out where we start drawing it
 
-		leftclip = -leftOffset;
-		writebyte = pixelrun = 0;
+		runBegin = -leftOffset;
 
 		do {
 
-			inputOffset = *arg0++;
-			outputOffset = *(arg8 + inputOffset);
-			if ( outputOffset > leftclip)
-				goto writeBlackRun;
-
-			inputOffset = *arg0++;
-			outputOffset = *(arg8 + inputOffset);
-			if ( outputOffset > leftclip)
+			inputOffset = *rleData++;
+			scaledOffset = (inputOffset * scaleFactor) / 256;
+			if ( scaledOffset > runBegin)
+			{
 				goto writeWhiteRun;
+			}
+
+			inputOffset = *rleData++;
+			scaledOffset = (inputOffset * scaleFactor) / 256;
+			if ( scaledOffset > runBegin)
+			{
+				goto writeBlackRun;
+			}
 
 		} while (1);
 	}
@@ -830,104 +825,53 @@ void ZoomOutTerminator_1(uint16_t *arg0, uint16_t arg4, int leftOffset, uint16_t
 	{
 		// loc_147C2:
 		// The zooming bitmap is not clipped by left edge of screen
-		writebyte = 0;
-		pixelrun = leftOffset&7;
-		vidPtr += leftOffset/8;
-		leftclip = 0;
-		arg0++;
+		runBegin = 0;
+		rleData++;
+		vidOffset = leftOffset;
 		goto loc_147E5;
 	}
 
 
-writeBlackRun:
+writeWhiteRun:
 	do
 	{
 		// Writing a run of pixels
-		varA = outputOffset - leftclip;
-		leftclip = outputOffset;
+		runLength = scaledOffset - runBegin;
+		VL_ScreenRect(vidOffset, arg4, runLength, 1, 0xF); 
+		runBegin = scaledOffset;
+		vidOffset += runLength;
 
-		// get the run of pixels for the first byte
-		writebyte |= terminator_blackmasks[pixelrun];
-
-		if ((pixelrun += varA) > 7)
-		{
-
-			int cx;
-			// write the first byte
-			*vidPtr++ = writebyte;
-
-			// write bytes of pixels
-			writebyte = 0xFF;
-			for (cx = pixelrun/8 - 1; cx; cx--)
-				*vidPtr++ = 0xFF; // = writebyte;
-
-			// remaining pixels to write
-			pixelrun &= 7;
-		}
-
-		if (outputOffset > var8)
+		if (scaledOffset > rightOffset)
 			return;
-
-		writebyte &= terminator_lightmasks[pixelrun];
 
 loc_147E5:
-		inputOffset = *arg0++;
-		outputOffset = *(arg8 + inputOffset);
+		inputOffset = *rleData++;
+		scaledOffset = (inputOffset * scaleFactor) / 256;
 
-writeWhiteRun:
+writeBlackRun:
 
 		// Writing a run of pixels
-		varA = outputOffset - leftclip;
-		leftclip = outputOffset;
-		if ((pixelrun += varA)> 7)
-		{
+		runLength = scaledOffset - runBegin;
+		VL_ScreenRect(vidOffset, arg4, runLength, 1, 0x0); 
+		runBegin = scaledOffset;
+		vidOffset += runLength;
 
-			int cx;
-			// write the first byte
-			*vidPtr++ = writebyte;
-
-			// write bytes of pixels
-			writebyte = 0;
-			for (cx = pixelrun/8 - 1; cx; cx--)
-				*vidPtr++ = 0; // = writebyte;
-
-			// remaining pixels to write
-			pixelrun &= 7;
-
-		}
-
-		if (outputOffset > var8)
+		if (scaledOffset > rightOffset)
 			return;
 
-		if ((inputOffset = *arg0++) != 0xFFFF)
-			outputOffset = *(arg8 + inputOffset);
+		if ((inputOffset = *rleData++) != 0xFFFF)
+			scaledOffset = (inputOffset * scaleFactor) / 256;
 		else
 			break;
 	} while (1);
 
 	// Write black until the end of the screen?
-	varA = 320 - leftclip;
-	if ((pixelrun += varA) > 7)
-	{
-
-		int cx;
-		// write the first byte
-		*vidPtr++ = writebyte;
-
-		// write bytes of pixels
-		writebyte = 0;
-		for (cx = pixelrun/8 - 1; cx; cx--)
-		       *vidPtr++ = 0; // = writebyte;
-
-		// remaining pixels to write
-		pixelrun &= 7;
-		// return;
-	}
+	runLength = 320 - vidOffset;
+	VL_ScreenRect(vidOffset, arg4, runLength, 1, 0); 
 
 	return;
 
 }
-#if 0
 
 // The COMMANDER and KEEN RLE-Encoded bitmaps are first joined together into one big
 // RLE-encoded bitmap, which is then scaled and translated to its final position.
@@ -937,8 +881,8 @@ writeWhiteRun:
 void ZoomOutTerminator(void)
 {
 	long startingLeftOffset;
-	unsigned yBottom, var18;
-	unsigned var20[2];
+	unsigned yBottom, scaledHeight;
+	unsigned var20;
 	unsigned var1C, si;
 
 	// The px offset of the left edge of the bitmap from the left edge of the screen
@@ -946,35 +890,28 @@ void ZoomOutTerminator(void)
 	int leftOffset;
 
 	unsigned elapsedTime, maxTime;
-	uint16_t far* var16;
+	uint16_t * var16;
 
 	// finalHeight looks like final Height?
-	uint16_t newTime, var8, finalHeight, varC, varE;
+	uint16_t newTime, scaleFactor, finalHeight, varC, varE;
 
 
 	// Set the palette
-asm	mov     ax, ds;
-asm	mov	es, ax;
-asm	mov	dx, offset ck_terminator_palette1;
-asm	mov	ax, 0x1002;
-asm 	int	0x10;
-
-	EGAREADMAP(1);
+	VL_SetPaletteAndBorderColor(ck_terminator_palette2);
 
 	// The starting (negative) offset of the COMMANDER graphic from the left edge of the screen
 	startingLeftOffset = 120 - ck_introCommander->width;
 
 	JoinTerminatorPics();
 
-
-	MM_GetPtr((memptr *)&introbuffer, 5000);
-
-	var8 = 256;
+	scaleFactor = 256;
 	finalHeight = 33;
-	var20[0] = var20[1] = 200;
+	var20 = 200;
 	elapsedTime = 1;
-	maxTime = 30; //3000; // Set to large value to slow down the zoom
+	maxTime = 30; // Set to large value to slow down the zoom
 
+	// Set the starting time properly.
+	SD_SetLastTimeCount(SD_GetTimeCount());
 
 	// elapsedTime seems to be a timer, maxTime is the max time
 	while (elapsedTime <= maxTime)
@@ -983,7 +920,7 @@ asm 	int	0x10;
 		if (elapsedTime == maxTime)
 		{
 			// We're done
-			var8 = finalHeight;
+			scaleFactor = finalHeight;
 			leftOffset = 0;
 			yBottom = 4;
 		}
@@ -991,7 +928,7 @@ asm 	int	0x10;
 		{
 			// These casts to long don't actually exist in disasm, but are required for
 			// testing large values of maxtime
-			var8 = 256 - (((long)(256 - finalHeight) * (long)elapsedTime) / (long)maxTime);
+			scaleFactor = 256 - (((long)(256 - finalHeight) * (long)elapsedTime) / (long)maxTime);
 
 			leftOffset = (startingLeftOffset * (long)(maxTime-elapsedTime))/ (long)maxTime;
 
@@ -999,96 +936,62 @@ asm 	int	0x10;
 		}
 
 
-
-		// Generate a table of 2500 multiples of var8 * 256
-asm		xor    ax, ax;
-asm		xor    dx, dx;
-asm		mov    cx, 2500;
-asm		mov    bx, var8;
-asm		mov    es, introbuffer;
-asm		xor    di, di;
-
-loop1:
-
-asm		mov    es:[di], ah;
-asm		inc    di;
-asm		mov    es:[di], dl;
-asm		inc    di;
-asm		add    ax, bx;
-asm		adc    dx, 0;
-asm		loop   loop1;
-
 		if (elapsedTime == maxTime)
 			leftOffset = 0;
 		else
 			leftOffset = ((long)(maxTime-elapsedTime) * startingLeftOffset) / (long)maxTime;
 
 
-		var18 = *((uint16_t far *)introbuffer + 200);
+		scaledHeight = (200 * scaleFactor) >> 8; 
 		varC =0 ;
-		varE = 0x10000L / var8;
-		bufferofs = terminatorOfs + word_499C7;
+		varE = 0x10000L / scaleFactor;
 
 		if (yBottom > 0)
-			VW_Bar(0,0,320,yBottom, 0);
-
-
-		EGAWRITEMODE(0);
-		EGAMAPMASK(0xF);
+			VL_ScreenRect(0,0,320,yBottom, 0);
 
 		// Draw each line to the screen
-		for (si = 0; si < var18; si++)
+		for (si = 0; si < ((200 * scaleFactor) >> 8); si++)
 		{
-			var16 = MK_FP(introbuffer2, ((introbmptype far*)introbuffer2)->linestarts[varC>>8]);
-			ZoomOutTerminator_1(var16, si+yBottom, leftOffset, introbuffer);
+			var16 = introbuffer2 + ((introbmptype *)introbuffer2)->linestarts[varC>>8];
+			ZoomOutTerminator_1(var16, si+yBottom, leftOffset, scaleFactor);
 			varC += varE;
+			if (varC >= 51200) break;
 		}
 
-		bufferofs = terminatorOfs + word_499C7;
-		var1C = var18 + yBottom;
-		if (var20[terminatorPageOn] > var1C)
+		var1C = scaledHeight + yBottom;
+		if (var20 > var1C)
 		{
-			VW_Bar(0, var1C, 320,var20[terminatorPageOn],0);
-			var20[terminatorPageOn] = var1C;
+			VL_ScreenRect(0, var1C, 320, var20 - var1C + 1,0);
+			var20 = var1C;
 		}
 
-		// Flip the page
-		VW_SetScreen(terminatorOfs + word_499C7, 0);
-		if (terminatorPageOn ^= 1)
-			terminatorOfs = TERMINATORSCREENWIDTH/2;
-		else
-			terminatorOfs = 0;
+		IN_PumpEvents();
+		VL_Present();
 
-		// loc_14B4F;
-		newTime = TimeCount;
-		tics = newTime-lasttimecount;
-		lasttimecount = newTime;
-
-		if (tics > 8)
-			tics = 8;
+		newTime = SD_GetTimeCount();
+		SD_SetSpriteSync(newTime - SD_GetLastTimeCount());
+		SD_SetLastTimeCount(newTime);
 
 		if (elapsedTime == maxTime)
 			break;
 
-		elapsedTime += tics;
+		elapsedTime += SD_GetSpriteSync();
 
 		if (elapsedTime > maxTime)
 			elapsedTime = maxTime;
 
 
-		if (IN_IsUserInput() && LastScan == sc_F1)
-			LastScan = sc_Space;
+		if (/*IN_IsUserInput() &&*/ IN_GetLastScan() == IN_SC_F1)
+			IN_SetLastScan(IN_SC_Space);
 
-		if (LastScan)
+		if (IN_GetLastScan())
 			// return;// should this be break instead? Want to free intro buffers!
 			break;
 
 	}
 
-	MM_FreePtr(&introbuffer);
 	MM_FreePtr(&introbuffer2);
 }
-#endif
 
 
 // The Fizzlefade routine
@@ -1144,7 +1047,7 @@ void CK_FizzleFade()
 #endif
 
 	// VW_SetScreen(0, bufferofs_0);
-  VL_SetScrollCoords(0,0);
+	VL_SetScrollCoords(0,0);
 
 	// DOS: Draw Title Bitmap offscreen
 	// VW_DrawBitmap(0,0,PIC_TITLESCREEN);
@@ -1427,23 +1330,22 @@ AnimateTerminator();
 // Omnispeak
 VL_ResizeScreen(21 * 16, 14 * 16);
 
+VL_SetScrollCoords(0,0);
 
 #if 0
-
   for (int i = 0; i < 4; i++)
     MM_FreePtr(&terminator_pic_memptrs[i]);
 
   for (j = 0; j < 8; j++)
     MM_FreePtr(&shiftedCmdrBMPsegs[j]);
-
+#endif
 
 
 	// After the terminator text has run, keys are checked
 	if (!IN_GetLastScan())
 	{
-		; // ZoomOutTerminator();
+		ZoomOutTerminator();
 	}
-#endif
 
 	if (!IN_GetLastScan())
 	{
