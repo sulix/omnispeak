@@ -217,8 +217,12 @@ void RF_MarkTileGraphics()
 				if (TI_BackAnimTime(backTile))
 				{
 					// Is the info-plane free?
+          // It doesn't need to be.  A spawn-code can be placed over an animating tile
+          // and the map will operate properly
+#if 0
 					if (CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX])
 						Quit("RF_MarkTileGraphics: Info plane above animated bg tile in use.");
+#endif
 
 
 					for (int i = 0; i < rf_numAnimTileTimers; ++i)
@@ -695,7 +699,9 @@ void RFL_RenderForeTiles()
 			int tile = CA_mapPlanes[1][sty*rf_mapWidthTiles+stx];
 			int bufferX = stx - scrollXtile;
 			int bufferY = sty - scrollYtile;
+#ifndef ALWAYS_REDRAW
 			if (!rf_dirtyBlocks[bufferY*RF_BUFFER_WIDTH_TILES+bufferX]) continue;
+#endif
 			if (!tile) continue;
 			if (!(TI_ForeMisc(tile) & 0x80)) continue;
 			VL_MaskedBlitToScreen(ca_graphChunks[ca_gfxInfoE.offTiles16m+tile],(stx - scrollXtile)*16,
@@ -1104,7 +1110,7 @@ void RFL_ProcessSpriteErasers()
 void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int chunk, bool allWhite, int zLayer)
 {
 	bool insertNeeded = true;
-	if (chunk <= 0)
+	if (chunk == 0 || chunk == -1)
 	{
 		RF_RemoveSpriteDraw(drawEntry);
 		return;

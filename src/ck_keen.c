@@ -36,18 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // For all the shitty debug stuff  I have.
 #include <stdio.h>
 
-#define MISCFLAG_POLE		 1
-#define MISCFLAG_DOOR		 2
-#define MISCFLAG_SWITCHPLATON	 5
-#define MISCFLAG_SWITCHPLATOFF	 6
-#define MISCFLAG_GEMHOLDER0	 7
-#define MISCFLAG_GEMHOLDER1	 8
-#define MISCFLAG_GEMHOLDER2	 9
-#define MISCFLAG_GEMHOLDER3	10
-#define MISCFLAG_SWITCHBRIDGE	15
-#define MISCFLAG_SECURITYDOOR	32
-
-
 void CK_SpawnKeen(int tileX, int tileY, int direction);
 extern CK_object *ck_keenObj;
 
@@ -59,7 +47,10 @@ soundnames *ck_itemSounds;
 uint16_t ck_itemPoints[]  = {  0,   0,   0,   0, 100, 200, 500, 1000, 2000, 5000,   0,   0,   0};
 uint16_t *ck_itemShadows;
 
+// Episode dependent stuff
 int16_t ck_keenMoon;
+
+extern void CK6_ToggleBigSwitch(CK_object *obj, bool p);
 
 void CK_KeenColFunc(CK_object *a, CK_object *b)
 {
@@ -99,6 +90,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 	}
 	else if (b->type == CT_CLASS(Platform)) //Platform
 	{
+impossibleBullet:
 		if (!ck_keenState.platform)
 			CK_PhysPushY(a,b);
 	}
@@ -145,9 +137,20 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
   }
   else if (ck_currentEpisode->ep == EP_CK6)
   {
+    if (b->type == CT_Stunner)
+    {
+      // Reflected off of flect
+      if (b->user4)
+      {
+        CK_ShotHit(b);
+        CK_SetAction2(a, CK_GetActionByName("CK6_ACT_keenStunned0"));
+      }
 
+      goto impossibleBullet;
+      // The legendary bug!  For some reason, the control flows to check if
+      // keen is riding a platform he contacts his own stunner bullet.
+    }
   }
-
 }
 
 int ck_KeenRunXVels[8] = {0, 0, 4, 4, 8, -4, -4, -8};
@@ -245,7 +248,7 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 			switch (specialTileInfo)
 			{
 			case 0: break;
-			case 3:
+      case MISCFLAG_DEADLY:
 				CK_KillKeen();
 				break;
 			case 4:
@@ -1114,21 +1117,27 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 			obj->velX = 0;
 			obj->posX = (obj->clipRects.tileXmid << 8) - 32;
 		}
-		else if (!ck_gameState.jumpCheat)
-		{
-			SD_PlaySound(SOUND_KEENHITCEILING);
-			if (obj->bottomTI > 1)
-			{
-				obj->velY += 16;
-				if (obj->velY < 0)
-					obj->velY = 0;
-			}
-			else
-			{
-				obj->velY = 0;
-			}
-			ck_keenState.jumpTimer = 0;
-		}
+		else
+    {
+      if (obj->bottomTI == 0x21)  // Bloog switches
+        CK6_ToggleBigSwitch(obj, false);
+
+      if (!ck_gameState.jumpCheat)
+      {
+        SD_PlaySound(SOUND_KEENHITCEILING);
+        if (obj->bottomTI > 1)
+        {
+          obj->velY += 16;
+          if (obj->velY < 0)
+            obj->velY = 0;
+        }
+        else
+        {
+          obj->velY = 0;
+        }
+        ck_keenState.jumpTimer = 0;
+      }
+    }
 	}
 
 	// Have we landed?
@@ -1146,6 +1155,10 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 			{
 				SD_PlaySound(SOUND_KEENLANDONFUSE);
 			}
+      if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
+      {
+        CK6_ToggleBigSwitch(obj, true);
+      }
 			if (obj->topTI != 0x19 || !ck_keenState.jumpTimer) // Or standing on a platform.
 			{
 				obj->user1 = obj->user2 = 0;	// Being on the ground is boring.
@@ -1339,19 +1352,25 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 			obj->velX = 0;
 			obj->posX = (obj->clipRects.tileXmid << 8) - 32;
 		}
-		else if (!ck_gameState.jumpCheat)
-		{
-			SD_PlaySound(SOUND_KEENHITCEILING);
+		else
+    {
+      if (obj->bottomTI == 0x21)  // Bloog switches
+        CK6_ToggleBigSwitch(obj, false);
 
-			if (obj->bottomTI > 1)
-			{
-				obj->velY += 16;
-				if (obj->velY < 0) obj->velY = 0;
-			}
-			else obj->velY = 0;
+      if (!ck_gameState.jumpCheat)
+      {
+        SD_PlaySound(SOUND_KEENHITCEILING);
 
-			ck_keenState.jumpTimer = 0;
-		}
+        if (obj->bottomTI > 1)
+        {
+          obj->velY += 16;
+          if (obj->velY < 0) obj->velY = 0;
+        }
+        else obj->velY = 0;
+
+        ck_keenState.jumpTimer = 0;
+      }
+    }
 	}
 
 	// Houston, we've landed!
@@ -1365,7 +1384,11 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 		}
 		else
 		{
-			if (obj->topTI == 0x39) // Fuse
+      if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
+      {
+        CK6_ToggleBigSwitch(obj, true);
+      }
+			else if (obj->topTI == 0x39) // Fuse
 			{
 				if (obj->velY >= 0x30)
 				{
@@ -1425,6 +1448,13 @@ void CK_KeenSpecialDrawFunc(CK_object *obj)
 {
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 }
+
+// Used by CK6
+void CK_KeenJumpDownThink(CK_object *obj)
+{
+  obj->clipped = CLIP_normal;
+}
+
 
 void CK_KeenHangThink(CK_object *obj)
 {
@@ -1950,6 +1980,7 @@ void CK_KeenSetupFunctions()
 	CK_ACT_AddFunction("CK_KeenPoleSitThink",&CK_KeenPoleSitThink);
 	CK_ACT_AddFunction("CK_KeenPoleUpThink",&CK_KeenPoleUpThink);
 	CK_ACT_AddFunction("CK_KeenPoleDownThink",&CK_KeenPoleDownThink);
+	CK_ACT_AddFunction("CK_KeenJumpDownThink",&CK_KeenJumpDownThink);
 	CK_ACT_AddFunction("CK_KeenPoleDownDrawFunc",&CK_KeenPoleDownDrawFunc);
 	CK_ACT_AddFunction("CK_KeenSetClipped",&CK_KeenSetClipped);
 	CK_ACT_AddColFunction("CK_KeenColFunc",&CK_KeenColFunc);

@@ -689,7 +689,7 @@ void CK4_LindseyFloat(CK_object *obj)
 void CK4_SpawnDartGun(int tileX, int tileY, int direction)
 {
   CK_object *obj = CK_GetNewObj(false);
-  obj->type = CT_Friendly;
+  obj->type = CT4_Turret; // CT_Friendly
   obj->active = OBJ_ACTIVE;
   obj->posX = tileX << G_T_SHIFT;
   obj->posY = tileY << G_T_SHIFT;

@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_cross.h"
 #include "ck4_ep.h"
 #include "ck5_ep.h"
+#include "ck6_ep.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -516,7 +517,7 @@ int main(int argc, char *argv[])
 	if (argc != 4)
 	{
 		printf("Action validator - Usage:\n");
-		printf("%s <UNPACKED.EXT> <ACTION.EXT> <EPISODENUM>\n", argv[0]);
+		printf("%s <UNPACKED.EXE> <ACTION.EXT> <EPISODENUM>\n", argv[0]);
 		return 0;
 	}
 
@@ -528,6 +529,9 @@ int main(int argc, char *argv[])
 		break;
 	case 5:
 		ck_currentEpisode = &ck5_episode;
+		break;
+	case 6:
+		ck_currentEpisode = &ck6_episode;
 		break;
 	default:
 		fprintf(stderr, "Invalid episode selected - only 4 or 5 is valid!\n");
@@ -622,7 +626,7 @@ int main(int argc, char *argv[])
 	us_argv = (const char **) argv;
 
 	// FIXME: Pick episode 5 if nothing selected
-	ck_currentEpisode = &ck5_episode;
+	ck_currentEpisode = &ck6_episode;
 	bool isFullScreen = false;
 	bool isAspectCorrected = true;
 
@@ -637,6 +641,8 @@ int main(int argc, char *argv[])
 					ck_currentEpisode = &ck4_episode;
 				else if (!strcmp(argv[i+1], "5"))
 					ck_currentEpisode = &ck5_episode;
+				else if (!strcmp(argv[i+1], "6"))
+					ck_currentEpisode = &ck6_episode;
 				else
 				Quit("Unsupported episode!");
 			}

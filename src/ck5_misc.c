@@ -48,13 +48,6 @@ CK_EpisodeDef ck5_episode ={
 
 // Contains some keen-5 specific functions.
 
-//StartSprites +
-int16_t CK5_ItemSpriteChunks[] ={
-	224, 226, 228, 230,
-	210, 212, 214, 216, 218, 220,
-	222, 233, 207
-};
-
 void CK5_PurpleAxisPlatform(CK_object *obj)
 {
 	uint16_t nextPosUnit, nextPosTile;
@@ -545,71 +538,6 @@ CK_object *CK5_SpawnEnemyShot(int posX, int posY, CK_action *action)
 	}
 }
 
-void CK5_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
-{
-	CK_object *obj = CK_GetNewObj(false);
-
-	obj->type = 6;
-	obj->active = OBJ_ALWAYS_ACTIVE;
-	obj->zLayer = 0;
-	obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
-
-	switch (direction)
-	{
-	case 0:
-		obj->xDirection = 0;
-		obj->yDirection = -1;
-		break;
-	case 1:
-		obj->xDirection = 1;
-		obj->yDirection = 0;
-		break;
-	case 2:
-		obj->xDirection = 0;
-		obj->yDirection = 1;
-		break;
-	case 3:
-		obj->xDirection = -1;
-		obj->yDirection = 0;
-		break;
-	}
-
-	if (purple)
-	{
-		obj->posX += 0x40;
-		obj->posY += 0x40;
-		CK_SetAction(obj, CK_GetActionByName("CK5_ACT_purpleAxisPlatform"));
-	}
-	else
-	{
-
-		CK_SetAction(obj, CK_GetActionByName("CK_ACT_AxisPlatform"));
-	}
-	// TODO: These should *not* be done here.
-	obj->gfxChunk = obj->currentAction->chunkLeft;
-	CA_CacheGrChunk(obj->gfxChunk);
-	CK_ResetClipRects(obj);
-}
-
-void CK5_SpawnRedStandPlatform(int tileX, int tileY)
-{
-	CK_object *obj = CK_GetNewObj(false);
-
-	obj->type = 6;
-	obj->active = OBJ_ACTIVE;
-	obj->zLayer = 0;
-	obj->posX = tileX << 8;
-	obj->posY = obj->user1 = tileY << 8;
-	obj->xDirection = 0;
-	obj->yDirection = 1;
-	obj->clipped = CLIP_not;
-	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_redStandPlatform"));
-	obj->gfxChunk = obj->currentAction->chunkLeft;
-	CA_CacheGrChunk(obj->gfxChunk);
-	CK_ResetClipRects(obj);
-}
-
 void CK5_OpenMapTeleporter(int tileX, int tileY)
 {
 	uint16_t tile_array[4];
@@ -739,7 +667,7 @@ void CK5_ScanInfoLayer()
 			case 28:
 			case 29:
 			case 30:
-				CK5_SpawnAxisPlatform(x, y, infoValue - 27, false);
+				CK_SpawnAxisPlatform(x, y, infoValue - 27, false);
 				break;
 			case 32:
 				CK_SpawnFallPlat(x, y);
@@ -750,17 +678,17 @@ void CK5_ScanInfoLayer()
 			case 34:
 				if (ck_gameState.difficulty > D_Normal) break;
 			case 35:
-				CK5_SpawnRedStandPlatform(x, y);
+				CK_SpawnStandPlatform(x, y);
 				break;
 
 			case 36:
 			case 37:
 			case 38:
 			case 39:
-				CK5_GoPlatSpawn(x, y, infoValue - 36, false);
+				CK_SpawnGoPlat(x, y, infoValue - 36, false);
 				break;
 			case 40:
-				CK5_SneakPlatSpawn(x, y);
+				CK_SneakPlatSpawn(x, y);
 				break;
 			case 41:
 				if (ck_gameState.currentLevel == 12)
@@ -786,7 +714,7 @@ void CK5_ScanInfoLayer()
 			case 49:
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 45:
-				CK5_TurretSpawn(x, y, 0);
+				CK_TurretSpawn(x, y, 0);
 				break;
 
 			case 54:
@@ -794,7 +722,7 @@ void CK5_ScanInfoLayer()
 			case 50:
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 46:
-				CK5_TurretSpawn(x, y, 1);
+				CK_TurretSpawn(x, y, 1);
 				break;
 
 			case 55:
@@ -802,7 +730,7 @@ void CK5_ScanInfoLayer()
 			case 51:
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 47:
-				CK5_TurretSpawn(x, y, 2);
+				CK_TurretSpawn(x, y, 2);
 				break;
 
 			case 56:
@@ -810,7 +738,7 @@ void CK5_ScanInfoLayer()
 			case 52:
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 48:
-				CK5_TurretSpawn(x, y, 3);
+				CK_TurretSpawn(x, y, 3);
 				break;
 
 			case 69:
@@ -864,13 +792,13 @@ void CK5_ScanInfoLayer()
 			case 81:
 			case 82:
 			case 83:
-				CK5_GoPlatSpawn(x, y, infoValue - 80, true);
+				CK_SpawnGoPlat(x, y, infoValue - 80, true);
 				break;
 			case 84:
 			case 85:
 			case 86:
 			case 87:
-				CK5_SpawnAxisPlatform(x, y, infoValue - 84, true);
+				CK_SpawnAxisPlatform(x, y, infoValue - 84, true);
 				break;
 
 			case 90:

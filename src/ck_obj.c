@@ -130,7 +130,57 @@ void CK_FallingItem(CK_object *obj)
 
 // CK4: ck4_obj2.c
 // CK5: ck5_obj?.c - This is the RED axis platform
-// CK6 ??
+// CK6  ck_obj1.c
+
+// Note that Keen 5 was the only keen to have the purple parameter, but
+// it is added here for the other Keens in order to reuse code
+void CK_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
+{
+	CK_object *obj = CK_GetNewObj(false);
+
+  obj->type = CT_CLASS(Platform);
+	obj->active = OBJ_ALWAYS_ACTIVE;
+	obj->zLayer = 0;
+	obj->posX = tileX << 8;
+	obj->posY = tileY << 8;
+
+	switch (direction)
+	{
+	case 0:
+		obj->xDirection = 0;
+		obj->yDirection = -1;
+		break;
+	case 1:
+		obj->xDirection = 1;
+		obj->yDirection = 0;
+		break;
+	case 2:
+		obj->xDirection = 0;
+		obj->yDirection = 1;
+		break;
+	case 3:
+		obj->xDirection = -1;
+		obj->yDirection = 0;
+		break;
+	}
+
+	if (purple)
+	{
+		obj->posX += 0x40;
+		obj->posY += 0x40;
+		CK_SetAction(obj, CK_GetActionByName("CK5_ACT_purpleAxisPlatform"));
+	}
+	else
+	{
+
+		CK_SetAction(obj, CK_GetActionByName("CK_ACT_AxisPlatform"));
+	}
+	// TODO: These should *not* be done here.
+	obj->gfxChunk = obj->currentAction->chunkLeft;
+	CA_CacheGrChunk(obj->gfxChunk);
+	// CK_ResetClipRects(obj);
+}
+
 void CK_AxisPlatform(CK_object *obj)
 {
 	uint16_t nextPosUnit, nextPosTile;
@@ -265,6 +315,287 @@ void CK_FallPlatRise (CK_object *obj)
 	}
 }
 
+void CK_SpawnStandPlatform(int tileX, int tileY)
+{
+	CK_object *obj = CK_GetNewObj(false);
+
+	obj->type = CT_CLASS(Platform);
+	obj->active = OBJ_ACTIVE;
+	obj->zLayer = 0;
+	obj->posX = tileX << 8;
+	obj->posY = obj->user1 = tileY << 8;
+	obj->xDirection = 0;
+	obj->yDirection = 1;
+	obj->clipped = CLIP_not;
+	CK_SetAction(obj, CK_GetActionByName("CK_ACT_StandPlatform"));
+	obj->gfxChunk = obj->currentAction->chunkLeft;
+	CA_CacheGrChunk(obj->gfxChunk);
+
+  // CK_ResetClipRects(obj);
+}
+
+
+
+/*
+ * Spawn a GoPlat
+ */
+void CK_SpawnGoPlat(int tileX, int tileY, int direction, bool purple)
+{
+	CK_object *obj = CK_GetNewObj(false);
+
+	obj->type = CT_CLASS(Platform);
+	obj->active = OBJ_ALWAYS_ACTIVE;
+	obj->zLayer = 0;
+	obj->posX = tileX << 8;
+	obj->posY = tileY << 8;
+	obj->xDirection = IN_motion_None;
+  obj->yDirection = ck_currentEpisode->ep == EP_CK5 ? IN_motion_None : IN_motion_Down;
+	obj->clipped = CLIP_not;
+
+	if (purple)
+	{
+		obj->posX += 0x40;
+		obj->posY += 0x40;
+		CK_SetAction(obj, CK_GetActionByName("CK5_ACT_purpleGoPlat"));
+	}
+	else
+	{
+		CK_SetAction(obj, CK_GetActionByName("CK_ACT_GoPlat0"));
+	}
+
+
+	int mapW = CA_MapHeaders[ca_mapOn]->width;
+	//int mapH = CA_MapHeaders[ca_mapOn]->height;
+	CA_mapPlanes[2][tileY * mapW + tileX] = direction + 0x5B;
+
+	obj->user1 = direction;
+	obj->user2 = 256;
+
+}
+
+int ck_infoplaneArrowsX[8] ={0, 1, 0, -1, 1, 1, -1, -1};
+int ck_infoplaneArrowsY[8] ={-1, 0, 1, 0, -1, 1, 1, -1};
+
+void CK_GoPlatThink(CK_object *obj)
+{
+
+	if (ck_nextX || ck_nextY) return;
+
+	int16_t delta = SD_GetSpriteSync()*12;
+
+	// Will we reach a new tile?
+	if (obj->user2 > delta)
+	{
+		// No... keep moving in the same direction.
+		obj->user2 -= delta;
+
+		int dirX = ck_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			ck_nextX += delta;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			ck_nextX -= delta;
+		}
+
+		int dirY = ck_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			ck_nextY += delta;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			ck_nextY -= delta;
+		}
+	}
+	else
+	{
+		// Move to next tile.
+		int dirX = ck_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			ck_nextX += obj->user2;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			ck_nextX -= obj->user2;
+		}
+
+		int dirY = ck_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			ck_nextY += obj->user2;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			ck_nextY -= obj->user2;
+		}
+
+		int tileX = (uint16_t)(obj->posX + ck_nextX) >> 8;
+		int tileY = (uint16_t)(obj->posY + ck_nextY) >> 8;
+
+		obj->user1 = CA_TileAtPos(tileX, tileY, 2) - 0x5B;
+
+		if ((obj->user1 < 0) || (obj->user1 > 8))
+		{
+			Quit("Goplat moved to a bad spot.");
+		}
+
+		delta -= obj->user2;
+		obj->user2 = 256 - delta;
+
+		// Move in the new direction.
+		dirX = ck_infoplaneArrowsX[obj->user1];
+		if (dirX == 1)
+		{
+			// Moving right.
+			ck_nextX += delta;
+		}
+		else if (dirX == -1)
+		{
+			// Moving left
+			ck_nextX -= delta;
+		}
+
+		dirY = ck_infoplaneArrowsY[obj->user1];
+		if (dirY == 1)
+		{
+			// Moving down
+			ck_nextY += delta;
+		}
+		else if (dirY == -1)
+		{
+			// Moving up
+			ck_nextY -= delta;
+		}
+	}
+}
+/*
+ * Spawn a "Sneak Plat".
+ */
+void CK_SneakPlatSpawn(int tileX, int tileY)
+{
+	CK_object *obj = CK_GetNewObj(false);
+
+	obj->type = CT_CLASS(Platform);
+	obj->active = OBJ_ALWAYS_ACTIVE;
+	obj->zLayer = 0;
+	obj->posX = tileX << 8;
+	obj->posY = tileY << 8;
+	obj->xDirection = 0;
+	obj->yDirection = 1;
+	obj->clipped = CLIP_not;
+
+	CK_SetAction(obj, CK_GetActionByName("CK_ACT_sneakPlatWait"));
+	CA_CacheGrChunk(obj->gfxChunk);
+}
+
+void CK_SneakPlatThink(CK_object *obj)
+{
+	if (ck_keenObj->currentAction == CK_GetActionByName("CK_ACT_keenJump1"))
+	{
+		if (ck_keenObj->xDirection == 1)
+		{
+			int dist = obj->clipRects.unitX1 - ck_keenObj->clipRects.unitX2;
+			if (dist > 0x400 || dist < 0) return;
+		}
+		else
+		{
+			int dist = ck_keenObj->clipRects.unitX1 - obj->clipRects.unitX2;
+			if (dist > 0x400 || dist < 0) return;
+		}
+
+		int vertDist = ck_keenObj->posY - obj->posY;
+		if (vertDist < -0x600 || vertDist > 0x600) return;
+
+		obj->xDirection = ck_keenObj->xDirection;
+		obj->currentAction = CK_GetActionByName("CK_ACT_sneakPlatSneak");
+	}
+}
+
+// TURRETS
+
+void CK_TurretSpawn(int tileX, int tileY, int direction)
+{
+	CK_object *obj = CK_GetNewObj(false);
+
+	obj->type = CT_CLASS(Turret);
+	obj->active = OBJ_ACTIVE;
+	obj->clipRects.tileX1 = obj->clipRects.tileX2 = tileX;
+	obj->clipRects.tileY1 = obj->clipRects.tileY2 = tileY;
+
+	obj->posX = tileX << 8;
+	obj->posY = tileY << 8;
+	obj->clipRects.unitX1 = obj->clipRects.unitX2 = tileX << 8;
+	obj->clipRects.unitX2 = obj->clipRects.unitY2 = tileY << 8;
+
+	obj->user1 = direction;
+
+	CK_SetAction(obj, CK_GetActionByName("CK_ACT_turretWait"));
+}
+
+void CK_TurretShoot(CK_object *obj)
+{
+	CK_object *shot = CK_GetNewObj(true);
+
+	shot->type = CT5_EnemyShot;	//TurretShot
+	shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
+  shot->clipped = CLIP_normal;
+	shot->posX = obj->posX;
+	shot->posY = obj->posY;
+
+	switch (obj->user1)
+	{
+		case 0:
+			shot->velY = -64;
+			break;
+		case 1:
+			shot->velX = 64;
+			break;
+		case 2:
+			shot->velY = 64;
+			break;
+		case 3:
+			shot->velX = -64;
+			break;
+	}
+
+	CK_SetAction(shot, CK_GetActionByName("CK_ACT_turretShot1"));
+	SD_PlaySound(SOUND_ENEMYSHOOT);
+
+}
+
+void CK_TurretShotCol(CK_object *me, CK_object *other)
+{
+	if (other->type == CT_Player)
+	{
+		CK_KillKeen();
+		CK_SetAction2(me, CK_GetActionByName("CK_ACT_turretShotHit1"));
+	}
+}
+
+void CK_TurretShotDraw(CK_object *obj)
+{
+	if (obj->topTI || obj->bottomTI || obj->leftTI || obj->rightTI)
+	{
+		SD_PlaySound(SOUND_ENEMYSHOTHIT);
+		//obj->clipped=false;
+		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_turretShotHit1"));
+	}
+
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->currentAction->chunkLeft, false, obj->zLayer);
+
+}
+
 void CK_OBJ_SetupFunctions()
 {
 	CK_ACT_AddFunction("CK_DoorOpen", &CK_DoorOpen);
@@ -277,4 +608,10 @@ void CK_OBJ_SetupFunctions()
 	CK_ACT_AddFunction("CK_FallPlatSit", &CK_FallPlatSit);
 	CK_ACT_AddFunction("CK_FallPlatFall", &CK_FallPlatFall);
 	CK_ACT_AddFunction("CK_FallPlatRise", &CK_FallPlatRise);
+	CK_ACT_AddFunction("CK_GoPlatThink", &CK_GoPlatThink);
+	CK_ACT_AddFunction("CK_SneakPlatThink", &CK_SneakPlatThink);
+
+	CK_ACT_AddFunction("CK_TurretShoot", &CK_TurretShoot);
+	CK_ACT_AddColFunction("CK_TurretShotCol", &CK_TurretShotCol);
+	CK_ACT_AddFunction("CK_TurretShotDraw", &CK_TurretShotDraw);
 }

@@ -106,6 +106,9 @@ extern int load_game_error, ck_startingSavedGame;
 extern CK_Difficulty ck_startingDifficulty;
 extern CK_object *ck_scoreBoxObj;
 
+extern int ck6_smashScreenDistance;
+extern int16_t ck6_smashScreenOfs[];
+
 void CK_CountActiveObjects()
 {
 	int active = 0;
@@ -639,6 +642,9 @@ bool CK_DebugKeys()
       ck_gameState.ep.ck4.wetsuit = 1;
     else if (ck_currentEpisode->ep == EP_CK5)
       ck_gameState.ep.ck5.securityCard = 1;
+    else if (ck_currentEpisode->ep == EP_CK6)
+      ck_gameState.ep.ck6.sandwich = ck_gameState.ep.ck6.rope = ck_gameState.ep.ck6.passcard = 1;
+
 		VL_Present();
 		IN_WaitButton();
 		CK_IncreaseScore(3000);
@@ -788,7 +794,7 @@ void CK_CheckKeys()
 	}
 
 	// HELP
-	if (IN_GetLastScan() == IN_SC_F1)
+	if ((ck_currentEpisode->ep != EP_CK6) && (IN_GetLastScan() == IN_SC_F1))
 	{
 		StopMusic();
 		HelpScreens();
@@ -1175,6 +1181,27 @@ void CK_DrawStatusWindow(void)
       if (ck_gameState.ep.ck5.securityCard)
         VH_DrawTile8(136, 91, 40);
       break;
+
+    case EP_CK6:
+      US_SetPrintX(80);
+      US_SetPrintY(96);
+      US_Print("ITEMS");
+      VH_Bar(127, 95, 26, 10, 0);
+
+      if (ck_gameState.ep.ck6.sandwich == 1)
+        VH_DrawTile8(128, 96, 2);
+      else
+        VH_DrawTile8(128, 96, 1);
+
+      if (ck_gameState.ep.ck6.rope == 1)
+        VH_DrawTile8(136, 96, 4);
+      else
+        VH_DrawTile8(136, 96, 3);
+
+      if (ck_gameState.ep.ck6.passcard == 1)
+        VH_DrawTile8(144, 96, 6);
+      else
+        VH_DrawTile8(144, 96, 5);
   }
 
 	// Difficulty
@@ -1242,6 +1269,9 @@ void CK_DrawStatusWindow(void)
     case EP_CK5:
       US_Print("VITALIN");
       break;
+    case EP_CK6:
+      US_Print("VIVAS");
+      break;
   }
 	VH_Bar(224, 127, 16, 10, 0);
 	CK_DrawLongRight(224, 128, 2, 41, ck_gameState.numCentilife);
@@ -1265,6 +1295,7 @@ void CK_DrawStatusWindow(void)
       addX = 5;
 
     case EP_CK5:
+    case EP_CK6:
 
       for (int y = 0; y < 2; y++)
         for (int x = 0; x < 10; x++)
@@ -1648,7 +1679,15 @@ void CK_NormalCamera(CK_object *obj)
 
 	// If we're attached to the ground, or otherwise awesome
 	// do somethink inscrutible.
-	if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_keenHang1"))
+  if (ck_currentEpisode->ep == EP_CK6 && ck6_smashScreenDistance)
+  {
+    int16_t dx, ax;
+
+    ax = ck6_smashScreenOfs[ck6_smashScreenDistance] + obj->clipRects.unitY2;
+    deltaY += (dx - ax);  // Undefined behaviour here
+
+  }
+	else if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_keenHang1"))
 	{
 		if (obj->currentAction != CK_GetActionByName("CK_ACT_keenPull1") &&
 				obj->currentAction != CK_GetActionByName("CK_ACT_keenPull2") &&
@@ -1909,6 +1948,12 @@ int CK_PlayLoop()
 				ck_invincibilityTimer = 0;
 		}
 
+    if (ck_currentEpisode->ep == EP_CK6 && ck6_smashScreenDistance)
+    {
+      if ((ck6_smashScreenDistance -= SD_GetSpriteSync()) < 0)
+        ck6_smashScreenDistance = 0;
+    }
+
 		//TODO: Slow-mo, extra VBLs.
 		if (ck_slowMotionEnabled)
 		{
@@ -1947,6 +1992,10 @@ int CK_PlayLoop()
       else if (ck_currentEpisode->ep == EP_CK5)
       {
         ck_gameState.levelState = 15;
+      }
+      else if (ck_currentEpisode->ep == EP_CK6)
+      {
+        ck_gameState.levelState = LS_Molly;
       }
     }
   }

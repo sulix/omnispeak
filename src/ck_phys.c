@@ -44,6 +44,9 @@ CK_objPhysDataDelta ck_deltaRects;
 int16_t ck_nextX;
 int16_t ck_nextY;
 
+// Present in ck6; set when keen is being moved by a gik or blooglet
+bool ck_keenIgnoreVertClip;
+
 extern CK_object *ck_keenObj;
 
 void CK_ResetClipRects(CK_object *obj)
@@ -436,7 +439,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 			CK_PhysClipVert(obj);
 
 			//TODO: Handle keen NOT being pushed.
-			if (obj == ck_keenObj)
+      if (obj == ck_keenObj && (ck_currentEpisode->ep != EP_CK6 || !ck_keenIgnoreVertClip))
 			{
 				if (!obj->topTI && ck_deltaRects.unitY2 > 0)
 				{
@@ -519,6 +522,17 @@ void CK_PhysFullClipToWalls(CK_object *obj)
       if (obj->type == CT5_SliceStar || obj->type == CT5_Sphereful)
       {
         delX = delY = 512;
+      }
+      else
+      {
+        goto badobjclass;
+      }
+      break;
+
+    case EP_CK6:
+      if (obj->type == CT6_Blorb)
+      {
+        delX = delY = 0x200;
       }
       else
       {

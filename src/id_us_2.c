@@ -2044,10 +2044,14 @@ void US_RunCards()
 				action_taken = true;
 				break;
 			case IN_SC_F1:
-				HelpScreens();
-				US_DrawCards();
-				action_taken = true;
-				break;
+				if (ck_currentEpisode->ep != EP_CK6)
+				{
+					HelpScreens();
+					US_DrawCards();
+					action_taken = true;
+					break;
+				}
+				// Fall-through
 			default:
 				if (lastScan == in_kbdControls.jump || lastScan == in_kbdControls.pogo)
 				{

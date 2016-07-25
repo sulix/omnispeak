@@ -224,6 +224,46 @@ void CK_BasicDrawFunc4(CK_object *obj)
     }
   }
 
+  else if (ck_currentEpisode->ep == EP_CK6)
+  {
+    switch (obj->user4)
+    {
+      case CT6_Bloogguard:
+        starsX = 0x100;
+        starsY = -0x40;
+        break;
+
+      case CT6_Flect:
+        starsX = 0x40;
+        starsY = -0x40;
+        break;
+
+      case CT6_Bloog:
+      case CT6_Nospike:
+        starsX = 0x80;
+        starsY = -0x40;
+        break;
+
+      case CT6_Blooglet:
+      case CT6_Babobba:
+        starsY = -0x80;
+        break;
+
+      case CT6_Fleex:
+        starsX = 0x100;
+        starsY = 0x80;
+        break;
+
+      case CT6_Ceilick:
+        starsY = 0xC0;
+        break;
+
+      default:
+        Quit("No star spec for object!");
+    }
+
+  }
+
 	// Tick the star 3-frame animation forward
 	if ((obj->user1 += SD_GetSpriteSync()) > 10)
 	{
@@ -271,6 +311,227 @@ void CK_LethalCol(CK_object *o1, CK_object *o2)
 	}
 }
 
+/*
+ * This comes before DieOnContactDraw in the CK6 Disassembly
+ * Even though it is  only used for Giks, it is  not placed next to
+ * the rest of the Gik code
+ * Maybe leftover melon cart code?
+ */
+
+void CK_PushKeenCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+  {
+    ck_keenIgnoreVertClip = true;
+    CK_PhysPushX(b, a);
+    ck_keenIgnoreVertClip = false;
+  }
+}
+
+void CK_CarryKeenCol(CK_object *a, CK_object *b)
+{
+  if (b->type == CT_Player)
+    CK_PhysPushY(b, a);
+}
+
+/*
+ * This comes right before ShrapnelTileCol in the CK6 Disassembly
+ * The use of the "currenAction->next" pattern suggests that it was another
+ * episode-independent Draw function, even though it is apparently only used for the
+ * bipship. Perhaps another remnant from Keen Dreams
+ */
+
+void CK_DieOnContactDraw(CK_object *obj)
+{
+  if (obj->rightTI || obj->leftTI)
+    obj->velX = 0;
+
+  if (obj->bottomTI)
+    obj->velY = 0;
+
+  if (obj->topTI)
+  {
+    obj->velY = 0;
+    if (obj->currentAction)
+    {
+      CK_SetAction2(obj, obj->currentAction->next);
+    }
+    else
+    {
+      CK_RemoveObj(obj);
+      return;
+    }
+  }
+
+  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+/*
+ * Tile collision for making the mine and shelley bits bounce, as well as the
+ * babobba shot
+ * It was also used in Keen Dreams for the flower power
+ */
+
+void CK_ShrapnelTileCol(CK_object *obj)
+{
+	int bouncePower; // is long in keen source
+	int topflags_0, velY, absvelX;
+	int d, motion;
+
+  static int bouncearray[8][8] ={
+		{ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
+		{ 0x7, 0x6, 0x5, 0x4, 0x3, 0x2, 0x1, 0x0},
+		{ 0x5, 0x4, 0x3, 0x2, 0x1, 0x0, 0xF, 0xE},
+		{ 0x5, 0x4, 0x3, 0x2, 0x1, 0x0, 0xF, 0xE},
+		{ 0x3, 0x2, 0x1, 0x0, 0xF, 0xE, 0xD, 0xC},
+		{ 0x9, 0x8, 0x7, 0x6, 0x5, 0x4, 0x3, 0x2},
+		{ 0x9, 0x8, 0x7, 0x6, 0x5, 0x4, 0x3, 0x2},
+		{ 0xB, 0xA, 0x9, 0x8, 0x7, 0x6, 0x5, 0x4},
+	};
+
+	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+
+
+	// Bounce backwards if a side wall is hit
+	if (obj->leftTI || obj->rightTI)
+	{
+		obj->velX = -obj->velX / 2;
+	}
+
+	// Bounce down if a top wall is hit
+	if (obj->bottomTI)
+	{
+		obj->velY = -obj->velY / 2;
+		return;
+	}
+
+	// Bounce sideways if a slope floor is hit
+	topflags_0 = obj->topTI;
+	if (!topflags_0)
+		return;
+
+	if (obj->velY < 0)
+		obj->velY = 0;
+
+	absvelX = ABS(obj->velX);
+	velY = obj->velY;
+
+	if (absvelX > velY)
+	{
+		if (absvelX > velY * 2)
+		{
+			d = 0;
+			bouncePower = absvelX * 286;
+		}
+		else
+		{
+			d = 1;
+			bouncePower = absvelX * 362;
+		}
+	}
+	else
+	{
+		if (velY > absvelX * 2)
+		{
+			d = 3;
+			bouncePower = velY * 256;
+		}
+		else
+		{
+			d = 2;
+			bouncePower = velY * 286;
+		}
+	}
+
+	if (obj->velX > 0) //mirror around y-axis
+		d = 7 - d;
+
+	bouncePower /= 2; // absorb energy
+
+	motion = bouncearray[obj->topTI][d];
+
+	switch (motion)
+	{
+	case 0:
+		obj->velX = bouncePower / 286;
+		obj->velY = -obj->velX / 2;
+		break;
+	case 1:
+		obj->velX = bouncePower / 362;
+		obj->velY = -obj->velX;
+		break;
+	case 2:
+		obj->velY = -(bouncePower / 286);
+		obj->velX = -obj->velY / 2;
+		break;
+	case 3:
+	case 4:
+		obj->velX = 0;
+		obj->velY = -(bouncePower / 256);
+		break;
+	case 5:
+		obj->velY = -(bouncePower / 286);
+		obj->velX = obj->velY / 2;
+		break;
+	case 6:
+		obj->velY = -(bouncePower / 362);
+		obj->velX = obj->velY;
+		break;
+	case 7:
+		obj->velX = -(bouncePower / 286);
+		obj->velY = obj->velX / 2;
+		break;
+	case 8:
+		obj->velX = -(bouncePower / 286);
+		obj->velY = -obj->velX / 2;
+		break;
+	case 9:
+		obj->velX = -(bouncePower / 362);
+		obj->velY = -obj->velX;
+		break;
+	case 0xA:
+		obj->velY = bouncePower / 286;
+		obj->velX = -obj->velY / 2;
+		break;
+	case 0xB:
+	case 0xC:
+		obj->velX = 0;
+		obj->velY = -(bouncePower / 256);
+		break;
+	case 0xD:
+		obj->velY = bouncePower / 286;
+		obj->velX = obj->velY / 2;
+		break;
+	case 0xE:
+		obj->velX = bouncePower / 362;
+		obj->velY = bouncePower / 362;
+		break;
+	case 0xF:
+		obj->velX = bouncePower / 256;
+		obj->velY = obj->velX / 2;
+		break;
+	default: break;
+	}
+
+	// if speed is lower than threshhold, then disappear
+	if (bouncePower < 0x1000)
+	{
+    // The babobba shot DOES have a next action, whereas the CK5 shrapnel doesn't
+    // The original .exe has no check for a  NULL action here
+		// we can't advance to a NULL action, because omnispeak will segfault (Keen5 wouldn't)
+    // so we need to check if the next action is NULL
+
+    if (obj->currentAction->next)
+      CK_SetAction2(obj, obj->currentAction->next);
+    else
+    {
+      RF_RemoveSpriteDraw(&obj->sde);
+      CK_RemoveObj(obj);
+    }
+  }
+}
+
+
 void CK_Misc_SetupFunctions(void)
 {
   CK_ACT_AddFunction("CK_SetDraw", &CK_SetDraw);
@@ -284,4 +545,9 @@ void CK_Misc_SetupFunctions(void)
 	CK_ACT_AddFunction("CK_BasicDrawFunc4", &CK_BasicDrawFunc4);
   CK_ACT_AddColFunction("CK_DeadlyCol", &CK_DeadlyCol);
   CK_ACT_AddColFunction("CK_LethalCol", &CK_LethalCol);
+
+  CK_ACT_AddColFunction("CK_PushKeenCol", &CK_PushKeenCol);
+  CK_ACT_AddColFunction("CK_CarryKeenCol", &CK_CarryKeenCol);
+	CK_ACT_AddFunction("CK_ShrapnelTileCol", &CK_ShrapnelTileCol);
+  CK_ACT_AddFunction("CK_DieOnContactDraw", &CK_DieOnContactDraw);
 }

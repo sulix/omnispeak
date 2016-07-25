@@ -213,9 +213,9 @@
 %action CK_ACT_FallPlat1 0x1BD6 0x1be 0x1be Frame 0x0 0x0 0x0 0x0 0x0 CK_FallPlatFall NULL CK_BasicDrawFunc1 NULL
 %action CK_ACT_FallPlat2 0x1BF4 0x1be 0x1be ScaledFrame 0x0 0x0 0x0 0x0 -32 CK_FallPlatRise NULL CK_BasicDrawFunc1 NULL
 
-%action CK5_ACT_redStandPlatform 0x1C12 446 446 UnscaledOnce 0 0 32000 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_redStandPlatform
+%action CK_ACT_StandPlatform 0x1C12 446 446 UnscaledOnce 0 0 32000 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_StandPlatform
 
-%action CK5_ACT_redGoPlat 0x1C30 446 446 Frame 0 0 0 0 0 CK5_RedGoPlatThink NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_GoPlat0 0x1C30 446 446 Frame 0 0 0 0 0 CK_GoPlatThink NULL CK_BasicDrawFunc1 NULL
 %action CK5_ACT_purpleGoPlat 0x1C4E 422 422 UnscaledFrame 0 0 0 0 0 CK5_PurpleGoPlatThink NULL CK_BasicDrawFunc1 CK5_ACT_purpleGoPlat2
 %action CK5_ACT_purpleGoPlat2 0x1C6C 423 423 UnscaledFrame 0 0 0 0 0 CK5_PurpleGoPlatThink NULL CK_BasicDrawFunc1 CK5_ACT_purpleGoPlat
 
@@ -229,24 +229,24 @@
 %action CK5_ACT_VolteStunned 0x1D44 0x1A5 0x1A5 UnscaledOnce 0 0 0x12C 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_Volte0
 
 # Again ck_misc5.c
-%action CK5_ACT_sneakPlatWait 0x1DA4 0x1BE 0x1BE Frame 0 0 0 0 0 CK5_SneakPlatThink NULL CK_BasicDrawFunc1 NULL
-%action CK5_ACT_sneakPlatSneak 0x1DC2 0x1BE 0x1BE ScaledOnce 0 0 48 32 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_sneakPlatReturn
-%action CK5_ACT_sneakPlatReturn 0x1DE0 446 446 ScaledOnce 0 0 96 -16 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_sneakPlatWait
+%action CK_ACT_sneakPlatWait 0x1DA4 0x1BE 0x1BE Frame 0 0 0 0 0 CK_SneakPlatThink NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_sneakPlatSneak 0x1DC2 0x1BE 0x1BE ScaledOnce 0 0 48 32 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatReturn
+%action CK_ACT_sneakPlatReturn 0x1DE0 446 446 ScaledOnce 0 0 96 -16 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_sneakPlatWait
 
 # Back to ck5_obj1.c
 
 #Turrets
-%action CK5_ACT_turretWait 0x1DFE 0 0 UnscaledOnce 0 0 0x78 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_turretShoot
-%action CK5_ACT_turretShoot 0x1E1C 0 0 UnscaledOnce 1 0 1 0 0 CK5_TurretShoot NULL CK_BasicDrawFunc1 CK5_ACT_turretWait
+%action CK_ACT_turretWait 0x1DFE 0 0 UnscaledOnce 0 0 0x78 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_turretShoot
+%action CK_ACT_turretShoot 0x1E1C 0 0 UnscaledOnce 1 0 1 0 0 CK_TurretShoot NULL CK_BasicDrawFunc1 CK_ACT_turretWait
 
 # Turret Shots
-%action CK5_ACT_turretShot1 0x1E3A 0xEC 0xEC UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot2
-%action CK5_ACT_turretShot2 0x1E58 0xED 0xED UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot3
-%action CK5_ACT_turretShot3 0x1E76 0xEE 0xEE UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot4
-%action CK5_ACT_turretShot4 0x1E94 0xEF 0xEF UnscaledFrame 0 0 8 0 0 CK_Glide CK5_TurretShotCol CK5_TurretShotDraw CK5_ACT_turretShot1
+%action CK_ACT_turretShot1 0x1E3A 0xEC 0xEC UnscaledFrame 0 0 8 0 0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot2
+%action CK_ACT_turretShot2 0x1E58 0xED 0xED UnscaledFrame 0 0 8 0 0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot3
+%action CK_ACT_turretShot3 0x1E76 0xEE 0xEE UnscaledFrame 0 0 8 0 0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot4
+%action CK_ACT_turretShot4 0x1E94 0xEF 0xEF UnscaledFrame 0 0 8 0 0 CK_Glide CK_TurretShotCol CK_TurretShotDraw CK_ACT_turretShot1
 
-%action CK5_ACT_turretShotHit1 0x1EB2 0xF0 0xF0 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK5_ACT_turretShotHit2
-%action CK5_ACT_turretShotHit2 0x1ED0 0xF1 0xF1 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+%action CK_ACT_turretShotHit1 0x1EB2 0xF0 0xF0 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 CK_ACT_turretShotHit2
+%action CK_ACT_turretShotHit2 0x1ED0 0xF1 0xF1 UnscaledOnce 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
 
 # ck5_obj2.c
 
@@ -313,8 +313,8 @@
 %action CK5_ACT_ShellyExplode1 0x2560 0x1b9 0x1b9 UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_ShellyExplode2
 %action CK5_ACT_ShellyExplode2 0x257E 0x1ba 0x1ba UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_ShellyExplode3
 %action CK5_ACT_ShellyExplode3 0x259C 0x1bb 0x1bb UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 NULL
-%action CK5_ACT_ShellyBits0 0x25BA 0x1bc 0x1bc Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK_DeadlyCol CK5_ShrapnelTileCol NULL
-%action CK5_ACT_ShellyBits1 0x25D8 0x1bd 0x1bd Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK_DeadlyCol CK5_ShrapnelTileCol NULL
+%action CK5_ACT_ShellyBits0 0x25BA 0x1bc 0x1bc Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK_DeadlyCol CK_ShrapnelTileCol NULL
+%action CK5_ACT_ShellyBits1 0x25D8 0x1bd 0x1bd Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK_DeadlyCol CK_ShrapnelTileCol NULL
 
 # ck5_obj3.c
 
@@ -328,7 +328,7 @@
 %action CK5_ACT_MineExplode3 0x26BC 0x17D 0x17D UnscaledOnce 0x0 0x0 0xa 0x0 0x0 CK5_MineExplode CK5_MineCol CK_BasicDrawFunc1 CK5_ACT_MineExplode4
 %action CK5_ACT_MineExplode4 0x26DA 0x17E 0x17E UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 CK5_ACT_MineExplode5
 %action CK5_ACT_MineExplode5 0x26F8 0x17F 0x17F UnscaledOnce 0x0 0x0 0x14 0x0 0x0 NULL CK_DeadlyCol CK_BasicDrawFunc1 NULL
-%action CK5_ACT_MineShrap0 0x2716 0x180 0x180 Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK5_MineShrapCol CK5_ShrapnelTileCol NULL
+%action CK5_ACT_MineShrap0 0x2716 0x180 0x180 Frame 0x0 0x0 0x8 0x0 0x0 CK_Fall CK5_MineShrapCol CK_ShrapnelTileCol NULL
 
 #Robo Red
 %action CK5_ACT_Robo0 0x2734 0x184 0x183 UnscaledOnce 0x0 0x1 0x6 0x40 0x0 CK5_RoboMove CK5_RoboCol CK_BasicDrawFunc2 CK5_ACT_Robo0

@@ -53,7 +53,7 @@ void CK_HandleDemoKeys()
 	 * return;
 	 */
 
-	if (IN_GetLastScan() == IN_SC_F1)
+	if ((ck_currentEpisode->ep != EP_CK6) && (IN_GetLastScan() == IN_SC_F1))
 	{
 		HelpScreens();
 		return;
@@ -1173,7 +1173,7 @@ void CK_DrawTerminator(void)
 		return;
 
 	// Go to help screen
-	if (IN_GetLastScan() == IN_SC_F1)
+	if ((ck_currentEpisode->ep != EP_CK6) && (IN_GetLastScan() == IN_SC_F1))
 	{
 		HelpScreens();
 		return;
