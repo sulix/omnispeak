@@ -126,8 +126,8 @@ void CK_CountActiveObjects()
 	}
 
 	US_CenterWindow(18, 4);
-	US_PrintF("Active Objects : %d", active);
-	US_PrintF("Inactive Object : %d", inactive);
+	US_PrintF("Active Objects : %d\n", active);
+	US_PrintF("Inactive Object : %d\n", inactive);
 	VL_Present();
 	IN_WaitButton();
 }
@@ -136,13 +136,13 @@ void CK_DebugMemory()
 {
 	US_CenterWindow(16, 10);
 
-	US_CPrint("Memory Usage:");
-	US_CPrint("-------------");
-	US_PrintF("In Use      : %dk", MM_UsedMemory() / 1024);
-	US_PrintF("Blocks      : %d", MM_UsedBlocks());
-	US_PrintF("Purgable    : %d", MM_PurgableBlocks());
-	US_PrintF("GFX Mem Used: %dk", VL_MemUsed() / 1024);
-	US_PrintF("GFX Surfaces: %d", VL_NumSurfaces());
+	US_CPrint("Memory Usage:\n");
+	US_CPrint("-------------\n");
+	US_PrintF("In Use      : %dk\n", MM_UsedMemory() / 1024);
+	US_PrintF("Blocks      : %d\n", MM_UsedBlocks());
+	US_PrintF("Purgable    : %d\n", MM_PurgableBlocks());
+	US_PrintF("GFX Mem Used: %dk\n", VL_MemUsed() / 1024);
+	US_PrintF("GFX Surfaces: %d\n", VL_NumSurfaces());
 	VL_Present();
 	IN_WaitButton();
 	//MM_ShowMemory();
