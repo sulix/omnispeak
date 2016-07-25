@@ -790,7 +790,7 @@ static char *stunnedBloogletActions[] = {
   "CK6_ACT_BloogletGStunned0",
 };
 
-extern int16_t CK6_ItemSpriteChunks[];
+extern int16_t *CK_ItemSpriteChunks[];
 void CK6_BloogletCol(CK_object *a, CK_object *b)
 {
   if (b->type == CT_Player)
@@ -816,7 +816,7 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
       gem->yDirection = IN_motion_Up;
       gem->velY = -40;
       gem->user1 = color;
-      gem->user2 = gem->gfxChunk = CK6_ItemSpriteChunks[color];
+      gem->user2 = gem->gfxChunk = *CK_ItemSpriteChunks[color];
       gem->user3 = gem->user2 + 2;
       CK_SetAction(gem, CK_GetActionByName("CK6_ACT_bloogletItem1"));
       SD_PlaySound(SOUND_BLOOGLETGEM);

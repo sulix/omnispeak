@@ -310,13 +310,16 @@ void PageLayout( int show_status )
 
 	/* Fill the background and draw the border */
 	VH_Bar( 0, 0, 320, 200, 4 );
-	VH_DrawBitmap( 0, 0, PIC_BORDERTOP );	/* Top border */
-	VH_DrawBitmap( 0, 8, PIC_BORDERLEFT );	/* Left border */
-	VH_DrawBitmap( 312, 8, PIC_BORDERRIGHT ); /* Right border */
-	if ( show_status )
-		VH_DrawBitmap( 8, 176, PIC_BORDERBOTTOMSTATUS ); /* Bottom status bar */
-	else
-		VH_DrawBitmap( 8, 192, PIC_BORDERBOTTOM ); /* Bottom border */
+  if (ck_currentEpisode->ep != EP_CK6)
+  {
+    VH_DrawBitmap( 0, 0, PIC_BORDERTOP );	/* Top border */
+    VH_DrawBitmap( 0, 8, PIC_BORDERLEFT );	/* Left border */
+    VH_DrawBitmap( 312, 8, PIC_BORDERRIGHT ); /* Right border */
+    if ( show_status )
+      VH_DrawBitmap( 8, 176, PIC_BORDERBOTTOMSTATUS ); /* Bottom status bar */
+    else
+      VH_DrawBitmap( 8, 192, PIC_BORDERBOTTOM ); /* Bottom border */
+  }
 
 	/* Set the lines' start and end positions so the text stays within the border */
 	for ( i = 0; i < 18; i++ )

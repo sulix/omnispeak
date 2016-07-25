@@ -46,13 +46,6 @@ CK_EpisodeDef ck5_episode ={
 
 // Contains some keen-5 specific functions.
 
-//StartSprites +
-int16_t CK5_ItemSpriteChunks[] ={
-	224, 226, 228, 230,
-	210, 212, 214, 216, 218, 220,
-	222, 233, 207
-};
-
 void CK5_PurpleAxisPlatform(CK_object *obj)
 {
 	uint16_t nextPosUnit, nextPosTile;

@@ -253,7 +253,7 @@ void CK4_DefineConstants(void)
   TEXT_SECRETEND = 4744;
   TEXT_ORDER = 4745;
 
-  EXTERN_ORDERSCREEN = 4735; 
+  EXTERN_ORDERSCREEN = 4735;
   EXTERN_COMMANDER = 4736;
   EXTERN_KEEN = 4737;
 
@@ -1295,23 +1295,6 @@ void CK4_KeenSwimDraw(CK_object *obj)
 }
 
 // ===========================================================================
-
-// Purge stuff for endgame
-void CK4_EndingPurge()
-{
-  for (int i = ca_gfxInfoE.offSprites; i < ca_gfxInfoE.offTiles8; i++)
-  {
-    if (ca_graphChunks[i])
-      MM_SetPurge(ca_graphChunks + i, 1);
-  }
-
-  for (int i = ca_gfxInfoE.offTiles16; i < ca_gfxInfoE.offBinaries; i++)
-  {
-    if (ca_graphChunks[i])
-      MM_SetPurge(ca_graphChunks + i, 1);
-  }
-}
-
 
 void CK4_Misc_SetupFunctions()
 {

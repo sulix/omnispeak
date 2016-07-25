@@ -1990,6 +1990,10 @@ int CK_PlayLoop()
       {
         ck_gameState.levelState = 15;
       }
+      else if (ck_currentEpisode->ep == EP_CK6)
+      {
+        ck_gameState.levelState = LS_Molly;
+      }
     }
   }
 	game_in_progress = 0;

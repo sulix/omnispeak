@@ -42,6 +42,23 @@ static int ck_lastLevelFinished;
 
 // =========================================================================
 
+
+// Purge stuff for endgame
+void CK_EndingPurge()
+{
+  for (int i = ca_gfxInfoE.offSprites; i < ca_gfxInfoE.offTiles8; i++)
+  {
+    if (ca_graphChunks[i])
+      MM_SetPurge(ca_graphChunks + i, 1);
+  }
+
+  for (int i = ca_gfxInfoE.offTiles16; i < ca_gfxInfoE.offBinaries; i++)
+  {
+    if (ca_graphChunks[i])
+      MM_SetPurge(ca_graphChunks + i, 1);
+  }
+}
+
 /*
  * NewGame: Setup the default starting stats
  */
@@ -555,7 +572,7 @@ levelcomplete:
          if (ck_gameState.ep.ck4.membersRescued == 8)
          {
             // Game won
-            CK4_EndingPurge();
+            CK_EndingPurge();
             // RF_Reset();
             // VW_SyncPages();
             help_endgame();
@@ -581,10 +598,10 @@ levelcomplete:
       goto levelcomplete;
     case LS_Molly:
       // Game won
-      // CK6_EndingPurge();
+      CK_EndingPurge();
       // RF_Reset();
       // VW_SyncPages();
-      // help_endgame();
+      help_endgame();
       CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
       goto highscores;
 

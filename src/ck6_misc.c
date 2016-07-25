@@ -169,8 +169,8 @@ void CK6_DefineConstants(void)
   FON_WATCHFONT = 4;
 
   PIC_HELPMENU = 6;
-  PIC_ARROWDIM = 26;
-  PIC_ARROWBRIGHT = 27;
+  PIC_ARROWDIM = 27;
+  PIC_ARROWBRIGHT = 28;
   PIC_HELPPOINTER = 24;
   PIC_BORDERTOP = 28;
   PIC_BORDERLEFT = 29;
@@ -221,19 +221,18 @@ void CK6_DefineConstants(void)
 
   SPR_CENTILIFE1UPSHADOW = 146;
 
-  SPR_SECURITYCARD_1 = 207;
-  SPR_GEM_A1 = 224;
-  SPR_GEM_B1 = 226;
-  SPR_GEM_C1 = 228;
-  SPR_GEM_D1 = 230;
-  SPR_100_PTS1 = 210;
-  SPR_200_PTS1 = 212;
-  SPR_500_PTS1 = 214;
-  SPR_1000_PTS1 = 216;
-  SPR_2000_PTS1 = 218;
-  SPR_5000_PTS1 = 220;
-  SPR_1UP1 = 222;
-  SPR_STUNNER1 = 233;
+  SPR_GEM_A1 = 164;
+  SPR_GEM_B1 = 166;
+  SPR_GEM_C1 = 168;
+  SPR_GEM_D1 = 170;
+  SPR_100_PTS1 = 150;
+  SPR_200_PTS1 = 152;
+  SPR_500_PTS1 = 154;
+  SPR_1000_PTS1 = 156;
+  SPR_2000_PTS1 = 158;
+  SPR_5000_PTS1 = 160;
+  SPR_1UP1 = 162;
+  SPR_STUNNER1 = 173;
 
   SPR_SCOREBOX = 175;
 
@@ -740,6 +739,26 @@ void CK6_ScanInfoLayer()
 				CK_TurretSpawn(x, y, infoValue - 53);
 				break;
 
+			case 69:
+				// Spawn extra stunner if Keen has low ammo
+				if (ck_gameState.numShots >= 5)
+					break;
+				infoValue = 68;
+			case 57:
+			case 58:
+			case 59:
+			case 60:
+			case 61:
+			case 62:
+			case 63:
+			case 64:
+			case 65:
+			case 66:
+			case 67:
+			case 68:
+				CK_SpawnItem(x, y, infoValue - 57);
+				break;
+
       // Orbatrices
       case 72:
         if (ck_gameState.difficulty < D_Hard) break;
@@ -841,32 +860,6 @@ void CK6_ScanInfoLayer()
         CK6_SpawnRocket(x, y, infoValue - 105);
         break;
 
-
-
-#if 0
-			case 69:
-				// Spawn extra stunner if Keen has low ammo
-				if (ck_gameState.numShots >= 5)
-					break;
-				infoValue = 68;
-			case 57:
-			case 58:
-			case 59:
-			case 60:
-			case 61:
-			case 62:
-			case 63:
-			case 64:
-			case 65:
-			case 66:
-			case 67:
-			case 68:
-				CK_SpawnItem(x, y, infoValue - 57);
-				break;
-			case 70:
-				CK_SpawnItem(x, y, infoValue - 58); // Omegamatic Keycard
-				break;
-#endif
 			}
 		}
 	}
