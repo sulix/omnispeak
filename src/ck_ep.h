@@ -59,6 +59,7 @@ typedef struct CK_EpisodeDef
 
   int highScoreLevel;
   int endSongLevel;
+  int starWarsSongLevel;
 
   // A few offsets to data in the original EXE
   uint16_t objArrayOffset;

@@ -36,18 +36,6 @@ extern int ck_infoplaneArrowsY[];
 
 //
 
-void CK6_BloogletItem(CK_object *obj)
-{
-  if (obj->topTI)
-  {
-    obj->currentAction = CK_GetActionByName("CK_ACT_item");
-    if (++obj->gfxChunk == obj->user3)
-      obj->gfxChunk = obj->user2;
-  }
-
-  CK_PhysGravityHigh(obj);
-}
-
 // Grabbiter
 
 void CK6_SpawnGrabbiter(int tileX, int tileY)
@@ -783,7 +771,7 @@ void CK6_SpawnBlooglet(int tileX, int tileY, int type)
 }
 
 #define SOUND_BLOOGLETGEM 5
-static char *stunnedBloogletActions[] = {
+static const char *stunnedBloogletActions[] = {
   "CK6_ACT_BloogletRStunned0",
   "CK6_ACT_BloogletYStunned0",
   "CK6_ACT_BloogletBStunned0",
@@ -808,7 +796,7 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
     if (a->user1 > 3)
     {
       CK_object *gem = CK_GetNewObj(false);
-      gem->clipped = true;
+      gem->clipped = CLIP_normal;
       gem->zLayer = PRIORITIES - 2;
       gem->type = CT6_Item;
       gem->posX = a->posX;
@@ -818,7 +806,7 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
       gem->user1 = color;
       gem->user2 = gem->gfxChunk = *CK_ItemSpriteChunks[color];
       gem->user3 = gem->user2 + 2;
-      CK_SetAction(gem, CK_GetActionByName("CK6_ACT_bloogletItem1"));
+      CK_SetAction(gem, CK_GetActionByName("CK_ACT_fallingitem"));
       SD_PlaySound(SOUND_BLOOGLETGEM);
     }
 
@@ -831,7 +819,6 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
  */
 void CK6_Obj1_SetupFunctions()
 {
-  CK_ACT_AddFunction("CK6_BloogletItem", &CK6_BloogletItem);
   CK_ACT_AddColFunction("CK6_GrabbiterCol", &CK6_GrabbiterCol);
 
 

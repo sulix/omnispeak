@@ -2,7 +2,9 @@
 # Action database for Keen 6 (v1.5)
 #
 
-#%action NULL 0x0 0W 0W 0W 0W 0W 0W 0W 0W NULL NULL NULL NULL
+%action CK_ACT_NULL 0x0780 0 0 Frame 0 0 0 0 0 NULL NULL NULL NULL
+%action CK_ACT_objBadState 0x079E 0 0 Frame 0 0 0 0 0 CK_ObjBadstate CK_ObjBadstate CK_ObjBadstate NULL
+
 %action CK_ACT_keenStanding 0x089A 60 52 UnscaledFrame 0 1 4 0x0 0x20 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
 %action CK_ACT_keenIdle 0x08B8 68 68 UnscaledFrame 0 1 60 0x0 0x0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
 %action CK_ACT_keenBored1 0x08D6 70 70 UnscaledFrame 0 1 90 0x0 0x0 CK_KeenStandingThink CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenBored2
@@ -29,8 +31,8 @@
 %action CK_ACT_keenLookDown4 0x0B4C 81 81 UnscaledOnce 0 1 6 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
 %action CK_ACT_keenLookDown5 0x0B6A 81 81 UnscaledOnce 0 0 0 0x0 0x0 CK_KeenJumpDownThink CK_KeenColFunc CK_KeenSpecialDrawFunc CK_ACT_keenFall1
 %action CK_ACT_keenNot 0x0B88 -1 -1 Frame 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
-%action CK_ACT_keenDie0 0x0BA6 83 83 Frame 0 0 100 0x0 0x0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_KeenDie0
-%action CK_ACT_keenDie1 0x0BC4 84 84 Frame 0 0 100 0x0 0x0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_KeenDie1
+%action CK_ACT_keenDie0 0x0BA6 83 83 Frame 0 0 100 0x0 0x0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_keenDie0
+%action CK_ACT_keenDie1 0x0BC4 84 84 Frame 0 0 100 0x0 0x0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_keenDie1
 %action CK_ACT_keenShoot1 0x0BE2 89 94 UnscaledOnce 0 1 9 0x0 0x0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenShoot2
 %action CK_ACT_keenShoot2 0x0C00 89 94 UnscaledOnce 0 1 6 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
 %action CK_ACT_keenShootUp1 0x0C1E 93 93 UnscaledOnce 0 1 9 0x0 0x0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenShootUp2
@@ -125,8 +127,8 @@
 
 %action CK_ACT_item 0x196A 0 0 UnscaledOnce 0 0 20 0x0 0x0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item2
 %action CK_ACT_item2 0x1988 0 0 UnscaledOnce 0 0 20 0x0 0x0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item
-%action CK6_ACT_bloogletItem1 0x19A6 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK6_BloogletItem NULL CK_BasicDrawFunc1 CK6_ACT_bloogletItem2
-%action CK6_ACT_bloogletItem2 0x19C4 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK6_BloogletItem NULL CK_BasicDrawFunc1 CK6_ACT_bloogletItem1
+%action CK_ACT_fallingitem 0x19A6 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK_FallingItem NULL CK_BasicDrawFunc1 CK_ACT_fallingitem2
+%action CK_ACT_fallingitem2 0x19C4 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK_FallingItem NULL CK_BasicDrawFunc1 CK_ACT_fallingitem
 %action CK_ACT_itemNotify 0x19E2 0 0 ScaledOnce 0 0 40 0x0 0x8 NULL NULL CK_BasicDrawFunc1 NULL
 %action CK_ACT_CentilifeNotify1 0x1A00 146 146 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify2
 %action CK_ACT_CentilifeNotify2 0x1A1E 147 147 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify3
@@ -144,7 +146,7 @@
 %action CK6_ACT_MapKeenRocketSit0 0x1B62 0 0 Frame 0 0 0 0x0 0x0 CK6_Rocket NULL CK_BasicDrawFunc1 NULL
 %action CK6_ACT_MapCliff0 0x1B80 -1 -1 Frame 0 0 0 0x0 0x0 NULL CK6_MapCliffCol CK_BasicDrawFunc1 NULL
 %action CK6_ACT_MapKeenThrowRope0 0x1B9E 221 221 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenThrowRope1
-%action CK6_ACT_MapKeenThrowRope1 0x1BBC 222 222 UnscaledOnce 0 0 8 0x0 0x0 CK6_MapKeenThrowRope NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenStart
+%action CK6_ACT_MapKeenThrowRope1 0x1BBC 222 222 UnscaledOnce 0 0 8 0x0 0x0 CK6_MapKeenThrowRope NULL CK_BasicDrawFunc1 CK_ACT_MapKeenStart
 %action CK6_ACT_MapKeenClimbRope0 0x1BDA 223 223 ScaledOnce 1 0 4 0x0 0x10 NULL NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenClimbRope1
 %action CK6_ACT_MapKeenClimbRope1 0x1BF8 224 224 ScaledOnce 1 0 4 0x0 0x10 CK6_MapKeenClimb NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenClimbRope0
 %action CK6_ACT_RopeOnMap0 0x1C16 226 226 Frame 0 0 0 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
