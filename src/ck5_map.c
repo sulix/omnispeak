@@ -36,10 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Thisis called from playloop
 
-#define MISCFLAG_TELEPORT 0x14
-#define MISCFLAG_LEFTELEVATOR 0x21
-#define MISCFLAG_RIGHTELEVATOR 0x22
-
 void CK5_MapMiscFlagsCheck(CK_object *keen)
 {
 
@@ -55,7 +51,7 @@ void CK5_MapMiscFlagsCheck(CK_object *keen)
 	{
 
 	case MISCFLAG_TELEPORT:
-		CK5_AnimateMapTeleporter(midTileX, midTileY);
+		CK_AnimateMapTeleporter(midTileX, midTileY);
 		break;
 
 	case MISCFLAG_LEFTELEVATOR:
@@ -84,137 +80,6 @@ void CK5_MapKeenTeleSpawn(int tileX, int tileY)
 	ck_keenObj->gfxChunk = 244;
 	CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
 }
-
-// FIXME: Keen teleports, but animation doesn't work
-
-void CK5_AnimateMapTeleporter(int tileX, int tileY)
-{
-
-	int unitX, unitY;
-	uint16_t timer, animTile, ticsx2;
-
-	SD_PlaySound(SOUND_UNKNOWN41);
-
-	unitX = (tileX << 8);
-	unitY = (tileY << 8);
-
-	// Teleport Out
-	for (timer = 0; timer < 130; )
-	{
-		// NOTE: I think that the original keen game used
-		// RF_Refresh() to delay this loop
-		// Simulate this by adding a 1/35 second delay
-
-		// UPDATE (Feb 19 2014): Not done anymore, but VL_Present is called.
-
-		RF_Refresh();
-		//VL_DelayTics(2);
-		//CK_SetTicsPerFrame();
-		VL_Present();
-
-		ticsx2 = SD_GetSpriteSync() * 2;
-		timer += SD_GetSpriteSync();
-		if (ck_keenObj->posX == unitX && ck_keenObj->posY == unitY)
-			break;
-
-		// Move Keen closer to the target on every loop
-		if (ck_keenObj->posY < unitY)
-		{
-			ck_keenObj->posY += ticsx2;
-			if (ck_keenObj->posY > unitY)
-				ck_keenObj->posY = unitY;
-		}
-		else if (ck_keenObj->posY > unitY)
-		{
-			ck_keenObj->posY -= ticsx2;
-			if (ck_keenObj->posY < unitY)
-				ck_keenObj->posY = unitY;
-		}
-
-		if (ck_keenObj->posX < unitX)
-		{
-			ck_keenObj->posX += ticsx2;
-			if (ck_keenObj->posX > unitX)
-				ck_keenObj->posX = unitX;
-		}
-		else if (ck_keenObj->posX > unitX)
-		{
-			ck_keenObj->posX -= ticsx2;
-			if (ck_keenObj->posX < unitX)
-				ck_keenObj->posX = unitX;
-		}
-
-		// Draw Keen walking into target
-		ck_keenObj->gfxChunk = ((SD_GetTimeCount() >> 3) % 3) + 0xF8;
-		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
-
-		animTile = ((SD_GetTimeCount() >> 2)&1) + 0xA7F; // lighting bolt tile
-
-		RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
-	}
-
-	// Done Teleporting; Move keen to destination
-	animTile = 0x427;
-	RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
-
-	// Destination is set in Infoplane above teleporter
-	animTile = CA_TileAtPos(tileX, tileY, 2);
-
-	tileX = animTile >> 8;
-	tileY = animTile & 0xFF; // 0x7F in disasm, should be 0xFF?
-	ck_keenObj->posX = (tileX << 8);
-	ck_keenObj->posY = (tileY << 8);
-	ck_keenObj->xDirection = IN_motion_None;
-	ck_keenObj->yDirection = IN_motion_Down;
-	ck_keenObj->user1 = 4;
-	CK_SetAction(ck_keenObj, ck_keenObj->currentAction);
-	CK_CentreCamera(ck_keenObj);
-	// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
-	VL_SetScrollCoords((rf_scrollXUnit & 0xef) >> 4, (rf_scrollYUnit & 0xff) >> 4);
-
-	// Set objects to be active if they're inside the screen
-	for (CK_object *obj = ck_keenObj->next; obj != NULL; obj = obj->next)
-	{
-
-		if (obj->active || obj->type != 8 ||
-				obj->clipRects.tileX2 < (rf_scrollXUnit >> 8) - 1 || obj->clipRects.tileX1 > (rf_scrollXUnit >> 8) + (320 >> 4) + 1 || obj->clipRects.tileY2 < (rf_scrollYUnit >> 8) - 1 || obj->clipRects.tileY1 > (rf_scrollYUnit >> 8) + (208 >> 4) + 1)
-			continue;
-
-		obj->visible = 1;
-		obj->active = OBJ_ACTIVE;
-		RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
-	}
-
-	CK_UpdateScoreBox(ck_scoreBoxObj);
-	RF_Refresh();
-	VL_Present();
-	RF_Refresh();
-	SD_PlaySound(SOUND_UNKNOWN41);
-
-	for (timer = 0; timer < 90; )
-	{
-
-		//NOTE: Same delay tactic used here too
-		//UPDATE (Feb 19 2014): Again not
-		RF_Refresh();
-		//VL_DelayTics(2);
-		//CK_SetTicsPerFrame();
-		VL_Present();
-
-		timer += SD_GetSpriteSync();
-		ck_keenObj->posY += SD_GetSpriteSync() * 3;
-		ck_keenObj->gfxChunk = (SD_GetTimeCount() >> 3) % 3 + 0xFB;
-		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
-		animTile = ((SD_GetTimeCount() >> 2)&1) + 0xA7F; // animate return lighting bolt
-		RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
-	}
-
-	animTile = 0;
-	RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
-	ck_nextX = ck_nextY = 0;
-	CK_PhysUpdateNormalObj(ck_keenObj);
-}
-
 
 //this is a move proc.. closes doors on keen
 

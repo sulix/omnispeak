@@ -36,9 +36,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void CK6_MapMiscFlagsCheck(CK_object *obj)
 {
+  if (obj->user3 == 0)
+  {
+    int tileX = obj->clipRects.tileXmid;
+    int tileY = (obj->clipRects.unitY1 +
+      (obj->clipRects.unitY2 - obj->clipRects.unitY1)/2) >> G_T_SHIFT;
+    uint16_t tile = CA_TileAtPos(tileX, tileY, 1);
+    uint8_t miscValue = TI_ForeMisc(tile);
 
+    if (miscValue == MISCFLAG_TELEPORT)
+      CK_AnimateMapTeleporter(tileX, tileY);
+  }
 }
-
 
 void CK6_Map_SetupFunctions()
 {
