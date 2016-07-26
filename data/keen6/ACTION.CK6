@@ -125,8 +125,8 @@
 
 %action CK_ACT_item 0x196A 0 0 UnscaledOnce 0 0 20 0x0 0x0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item2
 %action CK_ACT_item2 0x1988 0 0 UnscaledOnce 0 0 20 0x0 0x0 CK_PointItem NULL CK_BasicDrawFunc1 CK_ACT_item
-%action CK6_ACT_bloogletItem1 0x19A6 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK6_BloogletItem NULL CK_BasicDrawFunc1 CK6_ACT_bloogletItem2
-%action CK6_ACT_bloogletItem2 0x19C4 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK6_BloogletItem NULL CK_BasicDrawFunc1 CK6_ACT_bloogletItem1
+%action CK_ACT_fallingitem 0x19A6 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK_FallingItem NULL CK_BasicDrawFunc1 CK_ACT_fallingitem2
+%action CK_ACT_fallingitem2 0x19C4 0 0 UnscaledFrame 0 0 20 0x0 0x0 CK_FallingItem NULL CK_BasicDrawFunc1 CK_ACT_fallingitem
 %action CK_ACT_itemNotify 0x19E2 0 0 ScaledOnce 0 0 40 0x0 0x8 NULL NULL CK_BasicDrawFunc1 NULL
 %action CK_ACT_CentilifeNotify1 0x1A00 146 146 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify2
 %action CK_ACT_CentilifeNotify2 0x1A1E 147 147 UnscaledOnce 0 0 8 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK_ACT_CentilifeNotify3
