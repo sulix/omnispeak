@@ -162,7 +162,7 @@ const char *ck6_levelNames[] = {
 // ck_keen.c
 
 soundnames ck6_itemSounds[]  = { 19, 19, 19, 19, 8,8,8,8,8,8, 17, 9 };
-uint16_t ck6_itemShadows[] = {166, 166, 166, 166, 138, 139, 140,  141,  142,  143, 144, 145,};
+uint16_t ck6_itemShadows[] = {172, 172, 172, 172, 138, 139, 140,  141,  142,  143, 144, 145,};
 
 // ck_map.c
 int ck6_mapKeenFrames[] = { 189, 204, 186, 195, 192, 198, 183, 201};
