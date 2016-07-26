@@ -29,8 +29,8 @@
 %action CK_ACT_keenLookDown4 0x0B4C 81 81 UnscaledOnce 0 1 6 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
 %action CK_ACT_keenLookDown5 0x0B6A 81 81 UnscaledOnce 0 0 0 0x0 0x0 CK_KeenJumpDownThink CK_KeenColFunc CK_KeenSpecialDrawFunc CK_ACT_keenFall1
 %action CK_ACT_keenNot 0x0B88 -1 -1 Frame 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
-%action CK_ACT_keenDie0 0x0BA6 83 83 Frame 0 0 100 0x0 0x0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_KeenDie0
-%action CK_ACT_keenDie1 0x0BC4 84 84 Frame 0 0 100 0x0 0x0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_KeenDie1
+%action CK_ACT_keenDie0 0x0BA6 83 83 Frame 0 0 100 0x0 0x0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_keenDie0
+%action CK_ACT_keenDie1 0x0BC4 84 84 Frame 0 0 100 0x0 0x0 CK_KeenDeathThink NULL CK_BasicDrawFunc1 CK_ACT_keenDie1
 %action CK_ACT_keenShoot1 0x0BE2 89 94 UnscaledOnce 0 1 9 0x0 0x0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenShoot2
 %action CK_ACT_keenShoot2 0x0C00 89 94 UnscaledOnce 0 1 6 0x0 0x0 NULL CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenStanding
 %action CK_ACT_keenShootUp1 0x0C1E 93 93 UnscaledOnce 0 1 9 0x0 0x0 CK_KeenSpawnShot CK_KeenColFunc CK_KeenDrawFunc CK_ACT_keenShootUp2
@@ -144,7 +144,7 @@
 %action CK6_ACT_MapKeenRocketSit0 0x1B62 0 0 Frame 0 0 0 0x0 0x0 CK6_Rocket NULL CK_BasicDrawFunc1 NULL
 %action CK6_ACT_MapCliff0 0x1B80 -1 -1 Frame 0 0 0 0x0 0x0 NULL CK6_MapCliffCol CK_BasicDrawFunc1 NULL
 %action CK6_ACT_MapKeenThrowRope0 0x1B9E 221 221 UnscaledOnce 0 0 10 0x0 0x0 NULL NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenThrowRope1
-%action CK6_ACT_MapKeenThrowRope1 0x1BBC 222 222 UnscaledOnce 0 0 8 0x0 0x0 CK6_MapKeenThrowRope NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenStart
+%action CK6_ACT_MapKeenThrowRope1 0x1BBC 222 222 UnscaledOnce 0 0 8 0x0 0x0 CK6_MapKeenThrowRope NULL CK_BasicDrawFunc1 CK_ACT_MapKeenStart
 %action CK6_ACT_MapKeenClimbRope0 0x1BDA 223 223 ScaledOnce 1 0 4 0x0 0x10 NULL NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenClimbRope1
 %action CK6_ACT_MapKeenClimbRope1 0x1BF8 224 224 ScaledOnce 1 0 4 0x0 0x10 CK6_MapKeenClimb NULL CK_BasicDrawFunc1 CK6_ACT_MapKeenClimbRope0
 %action CK6_ACT_RopeOnMap0 0x1C16 226 226 Frame 0 0 0 0x0 0x0 NULL NULL CK_BasicDrawFunc1 NULL
