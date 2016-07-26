@@ -1245,7 +1245,7 @@ void CK_DrawStarWars()
 	// one per line, which scale the text (from the surface mentioned above)
 	// to make the "Star Wars" effect. (sub_152AE)
 
-	StartMusic(17);
+	StartMusic(ck_currentEpisode->starWarsSongLevel);
 
 
 	// TODO: Implement
