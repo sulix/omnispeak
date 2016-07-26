@@ -39,8 +39,12 @@ CK_EpisodeDef ck6_episode ={
   4,
   15,
   1,
+  // Note these offsets are for version 1.5
   0x75CE,
   0x939E,
+  0xE81A,
+  0xD62E,
+  10,
 };
 
 int16_t CK6_ItemSpriteChunks[] ={

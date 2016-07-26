@@ -104,18 +104,22 @@ typedef struct RF_AnimTileTimer
 {
 	int tileNumber;
 	int timeToSwitch;
+	// These are in Keen 6 only, used for emitting sounds (levels 6, 8)
+	int tileWithSound;
+	int numOfOnScreenTiles;
+	int sound;
 } RF_AnimTileTimer;
 
 
 /*** Used for saved games compatibility ***/
 static uint16_t RFL_ConvertAnimTileTimerIndexTo16BitOffset(int i)
 {
-	return 4*i + ck_currentEpisode->animTilesOffset;
+	return ck_currentEpisode->animTileSize*i + ck_currentEpisode->animTilesOffset;
 }
 
 static int RFL_ConvertAnimTileTimer16BitOffsetToIndex(uint16_t offset)
 {
-	return (offset-ck_currentEpisode->animTilesOffset) / 4;
+	return (offset-ck_currentEpisode->animTilesOffset) / ck_currentEpisode->animTileSize;
 }
 
 
@@ -179,6 +183,10 @@ void RFL_SetupOnscreenAnimList()
 	rf_onscreenAnimTiles[RF_MAX_ONSCREENANIMTILES - 1].next = 0;
 
 	rf_firstOnscreenAnimTile = 0;
+
+	if (ck_currentEpisode->ep == EP_CK6)
+		for (RF_AnimTileTimer *animTileTimer = rf_animTileTimers; animTileTimer->tileNumber; ++animTileTimer)
+			animTileTimer->numOfOnScreenTiles = 0;
 }
 
 void RFL_SetupSpriteTable()
@@ -200,10 +208,29 @@ void RFL_SetupSpriteTable()
 	}
 }
 
+// Some Keen 6 specific function
+
+void RFL_MarkTileWithSound(RF_AnimTileTimer *animTileTimer, int tile)
+{
+	// FIXME: Define the sounds in ck6_misc.c?
+	static const uint16_t tilesWithSounds[4] = {0x8868, 0x88a0, 58, 59};
+	for (int i = 0; i < 2; ++i)
+		if (tile == tilesWithSounds[i])
+		{
+			animTileTimer->tileWithSound = tile;
+			animTileTimer->sound = tilesWithSounds[i+2];
+			return;
+		}
+}
+
 void RF_MarkTileGraphics()
 {
 	memset(rf_animTileTimers, 0, sizeof(rf_animTileTimers));
 	rf_numAnimTileTimers = 0;
+	// WARNING: As in the original codebase, the given variable is NOT initialized.
+	// This may lead to undefined behaviors in calls to RFL_MarkTileWithSound,
+	// although they aren't reproduced in vanilla Keen 6 in practice.
+	int i;
 	for (int tileY = 0; tileY < rf_mapHeightTiles; ++tileY)
 	{
 		for (int tileX = 0; tileX < rf_mapWidthTiles; ++tileX)
@@ -225,7 +252,7 @@ void RF_MarkTileGraphics()
 #endif
 
 
-					for (int i = 0; i < rf_numAnimTileTimers; ++i)
+					for (i = 0; i < rf_numAnimTileTimers; ++i)
 					{
 						if (rf_animTileTimers[i].tileNumber == backTile)
 						{
@@ -238,30 +265,40 @@ void RF_MarkTileGraphics()
 
 					if (needNewTimer)
 					{
-						if (rf_numAnimTileTimers >= RF_MAX_ANIMTILETIMERS)
+						if (i >= RF_MAX_ANIMTILETIMERS)
 							Quit("RF_MarkTileGraphics: Too many unique animations");
-						rf_animTileTimers[rf_numAnimTileTimers].tileNumber = backTile;
-						rf_animTileTimers[rf_numAnimTileTimers].timeToSwitch = TI_BackAnimTime(backTile);
-						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(rf_numAnimTileTimers);
+
+						RF_AnimTileTimer *animTileTimer = &rf_animTileTimers[i];
+						animTileTimer->tileNumber = backTile;
+						animTileTimer->timeToSwitch = TI_BackAnimTime(backTile);
+						if (ck_currentEpisode->ep == EP_CK6)
+						{
+							animTileTimer->numOfOnScreenTiles = 0;
+							animTileTimer->sound = -1;
+						}
+						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
 						rf_numAnimTileTimers++;
 					}
 					else
 						continue;
 				}
 
+				if (ck_currentEpisode->ep == EP_CK6)
+					RFL_MarkTileWithSound(&rf_animTileTimers[i], backTile);
 				// Mark all tiles in the animation loop to be cached.
 				int animLength = 0;
-				int nextTile = backTile;
-				do
+				int nextTile = backTile + TI_BackAnimTile(backTile);
+				while (TI_BackAnimTile(nextTile) && (nextTile != backTile))
 				{
-					nextTile += TI_BackAnimTile(nextTile);
-					animLength++;
+					if (ck_currentEpisode->ep == EP_CK6)
+						RFL_MarkTileWithSound(&rf_animTileTimers[i], nextTile);
 					CA_MarkGrChunk(ca_gfxInfoE.offTiles16 + nextTile);
-					if (animLength > RF_MAX_ANIM_LOOP)
+					nextTile += TI_BackAnimTile(nextTile);
+					if (++animLength > RF_MAX_ANIM_LOOP)
 					{
 						Quit("RF_MarkTileGraphics: Unending background animation");
 					}
-				} while (TI_BackAnimTile(nextTile) && nextTile != backTile);
+				}
 			}
 		}
 	}
@@ -281,7 +318,7 @@ void RF_MarkTileGraphics()
 					//if (CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX])
 					//	Quit("RF_MarkTileGraphics: Info plane above animated fg tile in use.");
 
-					for (int i = 0; i < rf_numAnimTileTimers; ++i)
+					for (i = 0; i < rf_numAnimTileTimers; ++i)
 					{
 						if (rf_animTileTimers[i].tileNumber == (foreTile | 0x8000))
 						{
@@ -294,32 +331,40 @@ void RF_MarkTileGraphics()
 
 					if (needNewTimer)
 					{
-						if (rf_numAnimTileTimers >= RF_MAX_ANIMTILETIMERS)
+						if (i >= RF_MAX_ANIMTILETIMERS)
 							Quit("RF_MarkTileGraphics: Too many unique animations");
 
-						rf_animTileTimers[rf_numAnimTileTimers].tileNumber = foreTile | 0x8000;
-						rf_animTileTimers[rf_numAnimTileTimers].timeToSwitch = TI_ForeAnimTime(foreTile);
-						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(rf_numAnimTileTimers);
+						RF_AnimTileTimer *animTileTimer = &rf_animTileTimers[i];
+						animTileTimer->tileNumber = foreTile | 0x8000;
+						animTileTimer->timeToSwitch = TI_ForeAnimTime(foreTile);
+						if (ck_currentEpisode->ep == EP_CK6)
+						{
+							animTileTimer->numOfOnScreenTiles = 0;
+							animTileTimer->sound = -1;
+						}
+						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
 						rf_numAnimTileTimers++;
 					}
 					else
 						continue;
 				}
+				if (ck_currentEpisode->ep == EP_CK6)
+					RFL_MarkTileWithSound(&rf_animTileTimers[i], foreTile | 0x8000);
 
 				// Mark all tiles in the animation loop to be cached.
 				int animLength = 0;
-				int nextTile = foreTile;
-				do
+				int nextTile = foreTile + TI_ForeAnimTile(foreTile);
+				while (TI_ForeAnimTile(nextTile) && (nextTile != foreTile))
 				{
-					nextTile += TI_ForeAnimTile(nextTile);
-					animLength++;
+					if (ck_currentEpisode->ep == EP_CK6)
+						RFL_MarkTileWithSound(&rf_animTileTimers[i], nextTile | 0x8000);
 					CA_MarkGrChunk(ca_gfxInfoE.offTiles16m + nextTile);
-					if (animLength > RF_MAX_ANIM_LOOP)
+					nextTile += TI_ForeAnimTile(nextTile);
+					if (++animLength > RF_MAX_ANIM_LOOP)
 					{
 						Quit("RF_MarkTileGraphics: Unending foreground animation");
 					}
-				} while (TI_ForeAnimTile(nextTile) && nextTile != foreTile);
-
+				}
 			}
 
 		}
@@ -346,7 +391,8 @@ void RFL_CheckForAnimTile(int tileX, int tileY)
 		ost->tile = backTile;
 		ost->plane = 0;
 		ost->timerIndex = RFL_ConvertAnimTileTimer16BitOffsetToIndex(CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX]);
-
+		if (ck_currentEpisode->ep == EP_CK6)
+			++rf_animTileTimers[ost->timerIndex].numOfOnScreenTiles;
 
 		ost->next = rf_firstOnscreenAnimTile;
 		ost->prev = 0;
@@ -366,6 +412,8 @@ void RFL_CheckForAnimTile(int tileX, int tileY)
 		ost->tile = foreTile;
 		ost->plane = 1;
 		ost->timerIndex = RFL_ConvertAnimTileTimer16BitOffsetToIndex(CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX]);
+		if (ck_currentEpisode->ep == EP_CK6)
+			++rf_animTileTimers[ost->timerIndex].numOfOnScreenTiles;
 
 		ost->prev = 0;
 		ost->next = rf_firstOnscreenAnimTile;
@@ -385,6 +433,8 @@ void RFL_RemoveAnimRect(int tileX, int tileY, int tileW, int tileH)
 	{
 		if ((ost->tileX >= tileX && ost->tileX < (tileX+tileW)) && (ost->tileY >= tileY && ost->tileY < (tileY+tileH)))
 		{
+			if (ck_currentEpisode->ep == EP_CK6)
+				--rf_animTileTimers[ost->timerIndex].numOfOnScreenTiles;
 			RF_OnscreenAnimTile *obsolete = ost;
 			if (prev)
 				prev->next = ost->next;
@@ -411,6 +461,8 @@ void RFL_RemoveAnimCol(int tileX)
 	{
 		if (ost->tileX == tileX)
 		{
+			if (ck_currentEpisode->ep == EP_CK6)
+				--rf_animTileTimers[ost->timerIndex].numOfOnScreenTiles;
 			RF_OnscreenAnimTile *obsolete = ost;
 			if (prev)
 				prev->next = ost->next;
@@ -438,6 +490,8 @@ void RFL_RemoveAnimRow(int tileY)
 	{
 		if (ost->tileY == tileY)
 		{
+			if (ck_currentEpisode->ep == EP_CK6)
+				--rf_animTileTimers[ost->timerIndex].numOfOnScreenTiles;
 			RF_OnscreenAnimTile *obsolete = ost;
 			if (prev)
 				prev->next = ost->next;
@@ -478,6 +532,10 @@ void RFL_AnimateTiles()
 				rf_animTileTimers[i].timeToSwitch += TI_BackAnimTime(tile);
 				rf_animTileTimers[i].tileNumber = tile;
 			}
+
+			if (ck_currentEpisode->ep == EP_CK6)
+				if (rf_animTileTimers[i].numOfOnScreenTiles && (rf_animTileTimers[i].tileNumber == rf_animTileTimers[i].tileWithSound) && (rf_animTileTimers[i].sound != (uint16_t)-1))
+					SD_PlaySound(rf_animTileTimers[i].sound);
 		}
 	}
 

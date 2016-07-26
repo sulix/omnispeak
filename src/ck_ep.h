@@ -65,6 +65,7 @@ typedef struct CK_EpisodeDef
   uint16_t tempObjOffset;
   uint16_t printXOffset;
   uint16_t animTilesOffset;
+  uint16_t animTileSize; // Keen 6 has a few additional fields for sounds
 } CK_EpisodeDef;
 
 extern CK_EpisodeDef *ck_currentEpisode;
