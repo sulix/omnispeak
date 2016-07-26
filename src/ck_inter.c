@@ -814,7 +814,7 @@ void ZoomOutTerminator(void)
 		// Draw each line to the screen
 		for (si = 0; si < ((200 * scaleFactor) >> 8); si++)
 		{
-			var16 = introbuffer2 + ((introbmptype *)introbuffer2)->linestarts[varC>>8];
+			var16 = (uint16_t *)((uint8_t *)introbuffer2 + ((introbmptype *)introbuffer2)->linestarts[varC>>8]);
 			ZoomOutTerminator_1(var16, si+yBottom, leftOffset, scaleFactor);
 			varC += varE;
 		}

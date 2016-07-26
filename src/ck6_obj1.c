@@ -783,7 +783,7 @@ void CK6_SpawnBlooglet(int tileX, int tileY, int type)
 }
 
 #define SOUND_BLOOGLETGEM 5
-static char *stunnedBloogletActions[] = {
+static const char *stunnedBloogletActions[] = {
   "CK6_ACT_BloogletRStunned0",
   "CK6_ACT_BloogletYStunned0",
   "CK6_ACT_BloogletBStunned0",
@@ -808,7 +808,7 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
     if (a->user1 > 3)
     {
       CK_object *gem = CK_GetNewObj(false);
-      gem->clipped = true;
+      gem->clipped = CLIP_normal;
       gem->zLayer = PRIORITIES - 2;
       gem->type = CT6_Item;
       gem->posX = a->posX;
