@@ -1226,9 +1226,10 @@ uint8_t *ck_starWarsPalette;
 
 // Utilities for converting to the units used by the Star Wars scroller:
 // 1/2048 of a pixel.
-const unsigned int SWunitsPerPixel = 2048;
-#define CK_SWunitsToPixels(sw) ((sw) >> SWunitsPerPixel)
-#define CK_PixelsToSWunits(px) ((px) << SWunitsPerPixel)
+static const unsigned int SWunitsPerPixel = 2048;
+static const unsigned int log2_SWunitsPerPixel = 11;
+#define CK_SWunitsToPixels(sw) ((sw) >> log2_SWunitsPerPixel)
+#define CK_PixelsToSWunits(px) ((px) << log2_SWunitsPerPixel)
 
 // Table that adds a row-displacement when selecting a line of the master text image to draw, 
 // given a row on visible screen as the index
