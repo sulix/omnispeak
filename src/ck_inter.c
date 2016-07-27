@@ -1224,6 +1224,142 @@ void CK_DrawTerminator(void)
 
 uint8_t *ck_starWarsPalette;
 
+// Utilities for converting to the units used by the Star Wars scroller:
+// 1/2048 of a pixel.
+const unsigned int SWunitsPerPixel = 2048;
+#define CK_SWunitsToPixels(sw) ((sw) >> SWunitsPerPixel)
+#define CK_PixelsToSWunits(px) ((px) << SWunitsPerPixel)
+
+// Table that adds a row-displacement when selecting a line of the master text image to draw, 
+// given a row on visible screen as the index
+// Because the table values are skewed, this causes the text to bunch up at the top of the screen.
+uint16_t ck_SWScreenRowToMasterRow[200];
+
+// Table giving the distance (in SWunits) between two screen pixels in master pixel coordinates.
+uint16_t ck_SWRowPixelDistance[200];
+
+// Table giving the width of each row in screen pixels.
+uint16_t ck_SWRowWidthInScreenPx[200];
+
+// This replaces CompileSWUpdate in Keen (BuildScalers in CKSRCMOD).
+// As omnispeak is not architecture specific, instead of generating scaling
+// functions for each row, we'll simply determine the scaling parameters.
+void CK_PrepareSWUpdate()
+{
+	// TODO: This is where BuildBitTables() would normally happen.
+	// I still need to work out what that actually does, so leaving it for
+	// now.
+	
+	
+	// This is the width of the trapezoid at the bottom of the screen.
+	uint32_t trapezoidWidth = CK_PixelsToSWunits(320);
+
+	// This is the change in width per scanline.
+	// The value here is such that the top of the screen will by ~40px.
+	uint32_t delTrapWidth = 0xB33;
+
+	// This is the Y-coordinate of where the current screen row maps to on
+	// the master SW text surface. (In SWunits.)
+	uint32_t currentMasterRow = 0;
+
+	for (int row = 199; row >= 0; --row)
+	{
+		// Width of the row in pixels. We want this to be even, hence
+		// the / 2 * 2 shenanigans.
+		uint32_t rowWidth = CK_SWunitsToPixels(trapezoidWidth / 2) * 2;
+
+		ck_SWRowWidthInScreenPx[row] = rowWidth;
+
+		ck_SWScreenRowToMasterRow[row] = CK_SWunitsToPixels(currentMasterRow);
+
+		// This is the distance between successive pixels (in SWunits).
+		// It is also used as the distance between this row and the one above it.
+		uint32_t rowDistance = CK_PixelsToSWunits(336) / rowWidth;
+
+		ck_SWRowPixelDistance[row] = rowDistance;
+
+		currentMasterRow += rowDistance;
+
+		// Shrink the scale distance for the next line.
+		trapezoidWidth -= delTrapWidth;
+	}
+}
+
+
+// Converts a string from ASCII to Star Wars font indices.
+// Note that the DOS version acted on strings in-place. For omnispeak, we write
+// into another string. (It can still be used in place if input == output).
+void CK_TranslateString(const char *input, char *output)
+{
+	while (*input)
+	{
+		char c = *input;
+		if (c >= 'A' && c <= 'Z')
+			c -= 33;
+		else if (c >= 'a' && c <= 'z')
+			c -= 39;
+		else if (c == '.')
+			c = 0x54;
+		else if (c == ',')
+			c = 0x55;
+		else if (c == '-')
+			c = 0x56;
+		else if (c == '"')
+			c = 0x57;
+		else if (c == ' ')
+			c = 0x58;
+		else if (c == '!')
+			c = 0x59;
+		else if (c == '\'')
+			c = 0x5A;
+		else if (c != '\n')
+			c = 0x54;
+		*output = c;
+		input++;
+		output++;
+	}
+}
+
+// This is PrintStarWars in CKSRCMOD.
+void CK_DrawSWText()
+{
+	char currentTextLine[81];
+	const char *storyTextIndex = "";//ck_starWarsText;
+
+	while (*storyTextIndex)
+	{
+		char *lineIndex = currentTextLine;
+		char ch;
+		
+		// Extract one line of text.
+		do
+		{
+			ch = *storyTextIndex;
+			*lineIndex = ch;
+			storyTextIndex++;
+			lineIndex++;
+		} while (ch && ch != '\n');
+		// ...and null-terminate it.
+		*lineIndex = '\0';
+
+		// Translate from ASCII to SW font indices.
+		CK_TranslateString(currentTextLine, currentTextLine);
+
+		US_CPrint(currentTextLine);
+
+	}
+
+}
+
+// This is StarWarsLoop in CKSRCMOD.
+void CK_ScrollSWText()
+{
+	// We draw the text on plane 4.
+	VL_SetMapMask(8);
+
+
+}
+
 void CK_DrawStarWars()
 {
 	// Keen5 sets the palette to the default one here.
