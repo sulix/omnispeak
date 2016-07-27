@@ -411,6 +411,145 @@ void CK_MapKeenWalk(CK_object * obj)
 	}
 }
 
+// =========================================================================
+
+// TELEPORTERS
+
+void CK_AnimateMapTeleporter(int tileX, int tileY)
+{
+
+	int unitX, unitY;
+	uint16_t timer, animTile, ticsx2;
+
+  int boltTile = ck_currentEpisode->ep == EP_CK5 ? 0xA7F :
+    (ck_currentEpisode->ep == EP_CK6 ? 0xA35 : 0);
+  int doneTile = ck_currentEpisode->ep == EP_CK5 ? 0x427 :
+    (ck_currentEpisode->ep == EP_CK6 ? 0xA45 : 0);
+  int doneTile2 = ck_currentEpisode->ep == EP_CK5 ? 0 :
+    (ck_currentEpisode->ep == EP_CK6 ? 0xA45 : 0);
+
+	SD_PlaySound(SOUND_UNKNOWN41);
+
+	unitX = (tileX << 8);
+	unitY = (tileY << 8);
+
+	// Teleport Out
+	for (timer = 0; timer < 130; )
+	{
+		// NOTE: I think that the original keen game used
+		// RF_Refresh() to delay this loop
+		// Simulate this by adding a 1/35 second delay
+
+		// UPDATE (Feb 19 2014): Not done anymore, but VL_Present is called.
+
+		RF_Refresh();
+		//VL_DelayTics(2);
+		//CK_SetTicsPerFrame();
+		VL_Present();
+
+		ticsx2 = SD_GetSpriteSync() * 2;
+		timer += SD_GetSpriteSync();
+		if (ck_keenObj->posX == unitX && ck_keenObj->posY == unitY)
+			break;
+
+		// Move Keen closer to the target on every loop
+		if (ck_keenObj->posY < unitY)
+		{
+			ck_keenObj->posY += ticsx2;
+			if (ck_keenObj->posY > unitY)
+				ck_keenObj->posY = unitY;
+		}
+		else if (ck_keenObj->posY > unitY)
+		{
+			ck_keenObj->posY -= ticsx2;
+			if (ck_keenObj->posY < unitY)
+				ck_keenObj->posY = unitY;
+		}
+
+		if (ck_keenObj->posX < unitX)
+		{
+			ck_keenObj->posX += ticsx2;
+			if (ck_keenObj->posX > unitX)
+				ck_keenObj->posX = unitX;
+		}
+		else if (ck_keenObj->posX > unitX)
+		{
+			ck_keenObj->posX -= ticsx2;
+			if (ck_keenObj->posX < unitX)
+				ck_keenObj->posX = unitX;
+		}
+
+		// Draw Keen walking into target
+		ck_keenObj->gfxChunk = ((SD_GetTimeCount() >> 3) % 3) + SPR_MAPKEEN_WALK1_N;
+		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
+
+		animTile = ((SD_GetTimeCount() >> 2)&1) + boltTile; // lighting bolt tile
+
+		RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
+	}
+
+	// Done Teleporting; Move keen to destination
+	animTile = doneTile;
+	RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
+
+	// Destination is set in Infoplane above teleporter
+	animTile = CA_TileAtPos(tileX, tileY, 2);
+
+	tileX = animTile >> 8;
+	tileY = animTile & 0xFF; // 0x7F in disasm, should be 0xFF?
+	ck_keenObj->posX = (tileX << 8);
+	ck_keenObj->posY = (tileY << 8);
+	ck_keenObj->xDirection = IN_motion_None;
+	ck_keenObj->yDirection = IN_motion_Down;
+	ck_keenObj->user1 = 4;
+	CK_SetAction(ck_keenObj, ck_keenObj->currentAction);
+	CK_CentreCamera(ck_keenObj);
+	// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
+	VL_SetScrollCoords((rf_scrollXUnit & 0xef) >> 4, (rf_scrollYUnit & 0xff) >> 4);
+
+	// Set objects to be active if they're inside the screen
+	for (CK_object *obj = ck_keenObj->next; obj != NULL; obj = obj->next)
+	{
+
+		if (obj->active || obj->type != 8 ||
+				obj->clipRects.tileX2 < (rf_scrollXUnit >> 8) - 1 || obj->clipRects.tileX1 > (rf_scrollXUnit >> 8) + (320 >> 4) + 1 || obj->clipRects.tileY2 < (rf_scrollYUnit >> 8) - 1 || obj->clipRects.tileY1 > (rf_scrollYUnit >> 8) + (208 >> 4) + 1)
+			continue;
+
+		obj->visible = 1;
+		obj->active = OBJ_ACTIVE;
+		RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
+	}
+
+	CK_UpdateScoreBox(ck_scoreBoxObj);
+	RF_Refresh();
+	VL_Present();
+	RF_Refresh();
+	SD_PlaySound(SOUND_UNKNOWN41);
+
+	for (timer = 0; timer < 90; )
+	{
+
+		//NOTE: Same delay tactic used here too
+		//UPDATE (Feb 19 2014): Again not
+		RF_Refresh();
+		//VL_DelayTics(2);
+		//CK_SetTicsPerFrame();
+		VL_Present();
+
+		timer += SD_GetSpriteSync();
+		ck_keenObj->posY += SD_GetSpriteSync() * 3;
+		ck_keenObj->gfxChunk = (SD_GetTimeCount() >> 3) % 3 + SPR_MAPKEEN_WALK1_S;
+		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
+		animTile = ((SD_GetTimeCount() >> 2)&1) + boltTile; // animate return lighting bolt
+		RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
+	}
+
+	animTile = doneTile2;
+	RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
+	ck_nextX = ck_nextY = 0;
+	CK_PhysUpdateNormalObj(ck_keenObj);
+}
+
 
 // =========================================================================
 // Map Flags
@@ -439,6 +578,7 @@ void CK_MapFlagSpawn(int tileX, int tileY)
 	CK_SetAction(flag, CK_GetActionByName("CK_ACT_MapFlag0"));
 }
 
+int ck_flagTileSpotX, ck_flagTileSpotY;
 void CK_FlippingFlagSpawn(int tileX, int tileY)
 {
   int32_t dx, dy;
@@ -447,32 +587,79 @@ void CK_FlippingFlagSpawn(int tileX, int tileY)
   obj->clipped = CLIP_not;
   obj->zLayer = PRIORITIES - 1;
   obj->type = CT_CLASS(MapFlag);
+  obj->active = OBJ_ALWAYS_ACTIVE;
   obj->posX = ck_gameState.mapPosX - 0x100;
   obj->posY = ck_gameState.mapPosY - 0x100;
 
+  ck_flagTileSpotX = tileX;
+  ck_flagTileSpotY = tileY;
+
   // Destination coords
-  obj->user1 = (tileX << G_T_SHIFT) + 0x60;
-  obj->user2 = (tileY << G_T_SHIFT) - 0x260;
+  int xofs = ck_currentEpisode->ep == EP_CK4 ? 0x60 :
+    (ck_currentEpisode->ep == EP_CK6 ? 0xE0 : 0);
+  int yofs = ck_currentEpisode->ep == EP_CK4 ? -0x260 :
+    (ck_currentEpisode->ep == EP_CK6 ? -0x220 : 0);
+
+  obj->user1 = (tileX << G_T_SHIFT) + xofs;
+  obj->user2 = (tileY << G_T_SHIFT) + yofs;
 
   dx = (int32_t)obj->user1 - (int32_t)obj->posX;
   dy = (int32_t)obj->user2 - (int32_t)obj->posY;
 
   // Make a table of coordinates for the flag's path
-  for (int i = 0; i < 30; i++)
+  if (ck_currentEpisode->ep == EP_CK4)
   {
+    for (int i = 0; i < 30; i++)
+    {
+       // Draw points in a straight line between keen and the holster
+       ck_flagPoints[i].x = obj->posX + dx * (i < 24 ? i : 24) / 24;
+       ck_flagPoints[i].y = obj->posY + dy * i / 30;
+
+       // Offset th eY points to mimic a parabolic trajectory
+       if (i < 10)
+         ck_flagPoints[i].y -= i * 0x30; // going up
+       else if (i < 15)
+         ck_flagPoints[i].y -= i * 16 + 0x140;
+       else if (i < 20)
+         ck_flagPoints[i].y -= (20 - i) * 16 + 0x1E0;
+       else
+         ck_flagPoints[i].y -= (29 - i) * 0x30;
+    }
+  }
+  else if (ck_currentEpisode->ep == EP_CK6)
+  {
+    // I think this is just the same code from CK4 that's been optimized differently
+    // by the compiler
+    int point0 = 0;
+    int point1 = 0x140;
+    int point2 = 0x320;
+    int point3 = 0x570;
+
+    int i = 0;
+    do {
+
      // Draw points in a straight line between keen and the holster
      ck_flagPoints[i].x = obj->posX + dx * (i < 24 ? i : 24) / 24;
      ck_flagPoints[i].y = obj->posY + dy * i / 30;
 
      // Offset th eY points to mimic a parabolic trajectory
      if (i < 10)
-       ck_flagPoints[i].y -= i * 0x30; // going up
+       ck_flagPoints[i].y -= point0;
      else if (i < 15)
-       ck_flagPoints[i].y -= i * 16 + 0x140;
+       ck_flagPoints[i].y -= point1;
      else if (i < 20)
-       ck_flagPoints[i].y -= (20 - i) * 16 + 0x1E0;
+       ck_flagPoints[i].y -= point2;
      else
-       ck_flagPoints[i].y -= (29 - i) * 0x30;
+       ck_flagPoints[i].y -= point3;
+
+
+     point0 += 0x30;
+     point1 += 0x10;
+     point2 -= 0x10;
+     point3 -= 0x30;
+     i++;
+    } while (i != 30);
+
   }
 
   CK_SetAction(obj, CK_GetActionByName("CK_ACT_MapFlagFlips0"));
@@ -496,8 +683,11 @@ void CK_MapFlagFall(CK_object *obj)
 {
   obj->user3 += SD_GetSpriteSync();
 
-  if (obj->user3 > 50)
-    obj->user3 = 50;
+  int timer = ck_currentEpisode->ep == EP_CK4 ? 50 :
+    (ck_currentEpisode->ep == EP_CK6 ? 58 : 0);
+
+  if (obj->user3 > timer)
+    obj->user3 = timer;
 
   obj->posX = ck_flagPoints[obj->user3/2].x;
   obj->posY = ck_flagPoints[obj->user3/2].y;
@@ -515,6 +705,8 @@ void CK_MapFlagLand(CK_object *obj)
   obj->zLayer = PRIORITIES - 1;
 
   SD_PlaySound(SOUND_FLAGLAND);
+  uint16_t tile = CA_TileAtPos(ck_flagTileSpotX, ck_flagTileSpotY, 1)+1;
+  RF_ReplaceTiles(&tile, 1, ck_flagTileSpotX, ck_flagTileSpotY, 1, 1);
 }
 
 /*

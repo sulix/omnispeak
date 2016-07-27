@@ -228,6 +228,12 @@ static bool CK_SaveGameState(FILE* fp, CK_GameState *state)
 	            && (CK_Cross_fwriteInt16LE(&state->ep.ck5.word_4729C, 1, fp) == 1)
 	            && (CK_Cross_fwriteInt16LE(&state->ep.ck5.fusesRemaining, 1, fp) == 1)
 	         )
+	         || ((ck_currentEpisode->ep == EP_CK6)
+	            && (CK_Cross_fwriteInt16LE(&state->ep.ck6.sandwich, 1, fp) == 1)
+	            && (CK_Cross_fwriteInt16LE(&state->ep.ck6.rope, 1, fp) == 1)
+	            && (CK_Cross_fwriteInt16LE(&state->ep.ck6.passcard, 1, fp) == 1)
+	            && (CK_Cross_fwriteInt16LE(&state->ep.ck6.inRocket, 1, fp) == 1)
+	         )
 	        )
 	        && (CK_Cross_fwriteInt16LE(state->keyGems, sizeof(state->keyGems)/2, fp) == sizeof(state->keyGems)/2)
 	        && (CK_Cross_fwriteInt16LE(&state->currentLevel, 1, fp) == 1)
@@ -259,6 +265,14 @@ static bool CK_LoadGameState(FILE* fp, CK_GameState *state)
 	        (CK_Cross_freadInt16LE(&state->ep.ck5.securityCard, 1, fp) != 1)
 	        || (CK_Cross_freadInt16LE(&state->ep.ck5.word_4729C, 1, fp) != 1)
 	        || (CK_Cross_freadInt16LE(&state->ep.ck5.fusesRemaining, 1, fp) != 1)
+	     )
+	    )
+	    || ((ck_currentEpisode->ep == EP_CK6) &&
+	       (
+	        (CK_Cross_freadInt16LE(&state->ep.ck6.sandwich, 1, fp) != 1)
+	        || (CK_Cross_freadInt16LE(&state->ep.ck6.rope, 1, fp) != 1)
+	        || (CK_Cross_freadInt16LE(&state->ep.ck6.passcard, 1, fp) != 1)
+	        || (CK_Cross_freadInt16LE(&state->ep.ck6.inRocket, 1, fp) != 1)
 	     )
 	    )
 	    || (CK_Cross_freadInt16LE(state->keyGems, sizeof(state->keyGems)/2, fp) != sizeof(state->keyGems)/2)
@@ -437,6 +451,11 @@ bool CK_LoadGame (FILE *fp)
 				newObj->user4Ptr = NULL;
 			else if (newObj->type == CT5_Sphereful)
 				newObj->user1Ptr = newObj->user2Ptr = newObj->user3Ptr = newObj->user4Ptr = NULL;
+		}
+		else if (ck_currentEpisode->ep == EP_CK6)
+		{
+			if (newObj->type == CT6_Platform)
+				newObj->user3Ptr = NULL;
 		}
 
 		/* If this is the last object in the saved list, exit the loop */

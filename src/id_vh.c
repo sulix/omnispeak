@@ -120,7 +120,7 @@ void VH_DrawSprite(int x, int y, int chunk)
 
 	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
 
-	int shiftMask = ~(4-spr.shifts) & ~1;
+	int shiftMask = ~((8/spr.shifts)-1) & ~1;
 
 	VL_MaskedBlitToScreen(ca_graphChunks[chunk], (x + (spr.originX >> 4))&shiftMask, y + (spr.originY >> 4) , spr.width*8, spr.height);
 

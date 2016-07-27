@@ -39,9 +39,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MISCFLAG_BRIDGE 18
 
 #define MISCFLAG_ACTIVEZAPPER 19
+#define MISCFLAG_TELEPORT 20
 #define MISCFLAG_INACTIVEZAPPER 30
 #define MISCFLAG_COMPUTER 31
 #define MISCFLAG_SECURITYDOOR	32
+#define MISCFLAG_LEFTELEVATOR 33
+#define MISCFLAG_RIGHTELEVATOR 34
 
 #define CK_MAX_OBJECTS 100
 
@@ -463,6 +466,7 @@ extern int *ck_mapKeenFrames;
 void CK_DemoSignSpawn();
 void CK_UpdateScoreBox(CK_object *scorebox);
 void CK_SpawnMapKeen(int tileX, int tileY);
+void CK_AnimateMapTeleporter(int tileX, int tileY);
 void CK_MapFlagSpawn(int tileX, int tileY);
 void CK_FlippingFlagSpawn(int tileX, int tileY);
 void CK_Map_SetupFunctions();
