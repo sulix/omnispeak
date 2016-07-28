@@ -87,7 +87,7 @@ void CK_GameOver()
 }
 
 // OMNISPEAK - New cross-platform methods for reading/writing objects from/to saved games
-static bool CK_SaveObject(FILE *fp, CK_object *o)
+bool CK_SaveObject(FILE *fp, CK_object *o)
 {
 	int16_t dummy = 0;
 	// Convert a few enums
@@ -95,8 +95,14 @@ static bool CK_SaveObject(FILE *fp, CK_object *o)
 	int16_t clippedInt = (int16_t)(o->clipped);
 	// BACKWARD COMPATIBILITY
 	uint16_t statedosoffset = o->currentAction ? o->currentAction->compatDosPointer : 0;
+#ifdef CK_ENABLE_PLAYLOOP_DUMPER
+	// Used for debugging
+	uint16_t next = CK_ConvertObjPointerTo16BitOffset(o->next);
+	uint16_t prev = CK_ConvertObjPointerTo16BitOffset(o->prev);
+#else
 	// Just tells if "o->next" is zero or not
 	int16_t isnext = o->next ? 1 : 0;
+#endif
 	// Now writing
 	return ((CK_Cross_fwriteInt16LE(&o->type, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(&activeInt, 1, fp) == 1)
@@ -138,8 +144,13 @@ static bool CK_SaveObject(FILE *fp, CK_object *o)
 	        // Furthermore, all we need to know about next on loading is
 	        // if it's zero or not.
 	        && (CK_Cross_fwriteInt16LE(&dummy, 1, fp) == 1) // sde
+#ifdef CK_ENABLE_PLAYLOOP_DUMPER
+	        && (CK_Cross_fwriteInt16LE(&next, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&prev, 1, fp) == 1)
+#else
 	        && (CK_Cross_fwriteInt16LE(&isnext, 1, fp) == 1) // next
 	        && (CK_Cross_fwriteInt16LE(&dummy, 1, fp) == 1) // prev
+#endif
 	);
 }
 
@@ -207,7 +218,7 @@ static bool CK_LoadObject(FILE *fp, CK_object *o)
 }
 
 // Similar new methods for writing/reading game state
-static bool CK_SaveGameState(FILE* fp, CK_GameState *state)
+bool CK_SaveGameState(FILE* fp, CK_GameState *state)
 {
 	int16_t difficultyInt = (int16_t)state->difficulty; // Convert enum
 	// TODO - platform should be a part of the game state
