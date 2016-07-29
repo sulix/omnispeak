@@ -819,8 +819,21 @@ void CK_TryAgainMenu()
 
 extern CK_Difficulty ck_startingDifficulty;
 
+bool CK6_CreatureQuestion();
 void CK_GameLoop()
 {
+  if (ck_currentEpisode->ep == EP_CK6)
+  {
+    // if !demoParm
+    if (!CK6_CreatureQuestion())
+    {
+      ck_startingSavedGame = false;
+      ck_startingDifficulty = D_Normal;
+      return;
+    }
+
+  }
+
 	do
 	{
 		if (ck_gameState.levelState != 6)

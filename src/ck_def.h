@@ -424,6 +424,7 @@ void CK_NewGame(void);
 void CK_ExitMenu(void);
 
 /* ck_inter.c */
+extern int ck_startingSavedGame;
 extern bool ck_inHighScores;
 extern uint8_t *ck_starWarsPalette;
 extern uint8_t *ck_terminator_palette1;

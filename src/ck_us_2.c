@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <errno.h>
 #include <stdlib.h>
+#include <time.h>
 #include "SDL.h"
 
 #include "id_us.h"
@@ -990,4 +991,104 @@ void CK_US_UpdateOptionsMenus( void )
 		configure_menu_items[6].state &= ~US_IS_Disabled;
 	configure_menu_items[6].caption = gamepad ? "USE GRAVIS GAMEPAD (ON)" : "USE GRAVIS GAMEPAD (OFF)";
 #endif
+}
+
+typedef struct
+{
+  char *name;
+  int sprite;
+  int xofs;
+  int yofs;
+} CK_CreatureType;
+
+static int currentCreature = -1;
+
+CK_CreatureType ck6_creatures[] = {
+  {"Bip", 269, -2, 0},
+  {"Babobba", 288, 0, 0},
+  {"Blorb", 399, -2, 0},
+  {"Gik", 387, -1, 0},
+  {"Ceilick", 246, 0, 0},
+  {"Blooglet", 351, -2, 0},
+  {"Blooguard", 254, -3, -1},
+  {"Flect", 317, -1, 0},
+  {"Bobba", 405, -2, 0},
+  {"Nospike", 298, -2, 0},
+  {"Orbatrix", 335, -2, 1},
+  {"Fleex", 239, -2, 0},
+};
+
+bool CK6_CreatureQuestion()
+{
+  static bool alreadyPassed = 0;
+
+  if (alreadyPassed)
+    return true;
+
+  int var2 = 0;
+  if (currentCreature == -1)
+  {
+    time_t t;
+    struct tm *tt;
+    time(&t);
+    tt = localtime(&t);
+    currentCreature = (tt->tm_hour + tt->tm_mday) % 12;
+  }
+
+  CA_UpLevel();
+  CK_CreatureType creature = ck6_creatures[currentCreature];
+  CA_ClearMarks();
+  CA_MarkGrChunk(creature.sprite);
+  CA_CacheMarks(false);
+
+  VH_Bar(0, 0, 320, 200, 8);
+  VH_SpriteTableEntry sprite = VH_GetSpriteTableEntry(creature.sprite - ca_gfxInfoE.offSprites);
+  int w = sprite.width;
+  int h = sprite.height;
+
+  US_CenterWindow(30, (h+41)/8+1);
+  US_SetPrintY(US_GetWindowY() +2);
+  US_CPrint("What is the name of this creature?");
+  int x = US_GetWindowX() + (US_GetWindowW() - w)/2 + (creature.xofs * 8);
+  int y = US_GetWindowY() + 15;
+
+  if (creature.sprite == 246)
+    y++;
+  else
+    y += creature.yofs * 3;
+
+  VH_DrawSprite(x, y, creature.sprite);
+
+  y = US_GetWindowY() + US_GetWindowH() - 0x10;
+  int varC = 100;
+  x = US_GetWindowX() + (US_GetWindowW() - 100)/2;
+  VH_Bar(x, y, 100, 14, 0);
+  VH_Bar(x+1, y+1, varC-2 , 12, 15);
+  x+=2;
+  y+=2;
+  varC -= 8;
+  VL_Present();
+
+  char buf[16];
+  if (US_LineInput(x, y, buf, NULL, true, 16, varC))
+  {
+    var2 = 1;
+    // In the disassembly, a loop which appears to do a  case-insensitve strcmp
+    if (strcasecmp(buf, creature.name))
+    {
+      VH_Bar(0,0,320,200,8);
+      US_CenterWindow(35,5);
+      US_SetPrintY(US_GetPrintY() + 11);
+      US_CPrint("Sorry, that's not quite right.");
+      US_CPrint("Please check your manual and try again.");
+      VL_Present();
+      IN_WaitButton();
+      var2 = 0;
+    }
+  }
+
+  VH_Bar(0,0, 320, 200, 8);
+  CA_DownLevel();
+  alreadyPassed = var2;
+  return var2;
 }
