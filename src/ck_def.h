@@ -289,7 +289,9 @@ typedef enum CK_ActionType
 	AT_ScaledOnce,				// Scaled Motion, Thinks once.
 	AT_Frame,					// No Motion, Thinks each frame (doesn't advance action)
 	AT_UnscaledFrame,			// Unscaled Motion, Thinks each frame
-	AT_ScaledFrame				// Scaled Motion, Thinks each frame
+	AT_ScaledFrame,				// Scaled Motion, Thinks each frame
+
+	AT_NullActionTypeValue = 0x6F42	// FIXME: Ugly hack used for filling ck_play.c:ck_partialNullAction
 } CK_ActionType;
 
 typedef struct CK_action
@@ -424,6 +426,7 @@ void CK_NewGame(void);
 void CK_ExitMenu(void);
 
 /* ck_inter.c */
+extern int ck_startingSavedGame;
 extern bool ck_inHighScores;
 extern uint8_t *ck_starWarsPalette;
 extern uint8_t *ck_terminator_palette1;

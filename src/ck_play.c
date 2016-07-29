@@ -287,10 +287,19 @@ CK_object *CK_ConvertObj16BitOffsetToPointer(uint16_t offset)
 	return NULL;
 }
 
+// Used for reproduction of vanilla Keen bugs; Does NOT include function pointers
+static const CK_action ck_partialNullAction =
+{0, 0, AT_NullActionTypeValue, 0x6C72, 0x6E61, 0x2064, 0x2B43, 0x202B};
+
 int16_t CK_ActionThink(CK_object *obj, int16_t time)
 {
-	CK_action *action = obj->currentAction;
-
+	CK_action *lastAction = obj->currentAction;
+	// WORKAROUND FOR VANILLA KEEN BUG: The original code does not
+	// check if lastAction != NULL. Naively accessing *lastAction
+	// may lead to a crash in this case (try no-clip cheat).
+	// Returning from the function in case lastAction == NULL
+	// resolves this, but we try to emulate original behaviors here.
+	const CK_action *action = lastAction ? lastAction : &ck_partialNullAction;
 
 	// ThinkMethod: 2
 	if (action->type == AT_Frame)
@@ -381,7 +390,8 @@ int16_t CK_ActionThink(CK_object *obj, int16_t time)
 		}
 	}
 
-	if (action != obj->currentAction)
+	// Do NOT use action variable here
+	if (lastAction != obj->currentAction)
 	{
 		if (!obj->currentAction)
 		{
@@ -390,7 +400,7 @@ int16_t CK_ActionThink(CK_object *obj, int16_t time)
 	}
 	else
 	{
-		obj->currentAction = action->next;
+		obj->currentAction = lastAction->next;
 	}
 	return newTime;
 }
@@ -416,19 +426,25 @@ void CK_RunAction(CK_object *obj)
 		obj->actionTimer = 0;
 		prevAction = obj->currentAction;
 	}
-	// TODO/FIXME(?): Vanilla code doesn't check if prevAction is non-NULL,
-	// but the new code may crash as a consequence (try no-clip cheat).
-	while (prevAction && ticsLeft)
+	while (ticsLeft)
 	{
-		if (prevAction->protectAnimation || prevAction->timer > ticsLeft)
+		// WORKAROUND FOR VANILLA KEEN BUG: As in CK_ActionThink, the
+		// original code does not check if prevAction != NULL. Naively
+		// accessing *prevAction may lead to a crash in this case
+		// (try no-clip cheat). Adding a check if prevAction == NULL
+		// before entering the loop resolves this, but we try
+		// to emulate original behaviors here.
+		const CK_action *prevActionToAccess = prevAction ? prevAction : &ck_partialNullAction;
+
+		if (prevActionToAccess->protectAnimation || prevActionToAccess->timer > ticsLeft)
 		{
 			ticsLeft = CK_ActionThink(obj, ticsLeft);
 		}
 		else
 		{
-			ticsLeft = CK_ActionThink(obj, prevAction->timer - 1);
+			ticsLeft = CK_ActionThink(obj, prevActionToAccess->timer - 1);
 		}
-
+		// Do NOT use prevActionToAccess here
 		if (obj->currentAction != prevAction)
 		{
 			obj->actionTimer = 0;
