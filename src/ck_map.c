@@ -571,9 +571,22 @@ void CK_MapFlagSpawn(int tileX, int tileY)
 	flag->zLayer = 3;
   flag->type = CT_CLASS(MapFlag);
 	flag->active = OBJ_ACTIVE;
-  flag->posX = (tileX << 8) + (ck_currentEpisode->ep == EP_CK5 ? -0x50 : 0x60);
-	flag->posY = (tileY << 8) - 0x1E0;
+  int xofs = ck_currentEpisode->ep == EP_CK4 ? 0x60 :
+    ck_currentEpisode->ep == EP_CK5 ? -0x50 :
+    ck_currentEpisode->ep == EP_CK6 ? 0xE0 : 0;
+  int yofs = ck_currentEpisode->ep == EP_CK4 ? -0x1E0 :
+    ck_currentEpisode->ep == EP_CK5 ? -0x1E0 :
+    ck_currentEpisode->ep == EP_CK6 ? -0x1A0 : 0;
+
+  flag->posX = (tileX << 8) + xofs;
+	flag->posY = (tileY << 8) + yofs;
 	flag->actionTimer = US_RndT() / 16;
+
+  if (ck_currentEpisode->ep == EP_CK6)
+  {
+    uint16_t tile = CA_TileAtPos(tileX, tileY, 1)+1;
+    RF_ReplaceTiles(&tile, 1, tileX, tileY, 1, 1);
+  }
 
 	CK_SetAction(flag, CK_GetActionByName("CK_ACT_MapFlag0"));
 }
@@ -705,8 +718,11 @@ void CK_MapFlagLand(CK_object *obj)
   obj->zLayer = PRIORITIES - 1;
 
   SD_PlaySound(SOUND_FLAGLAND);
-  uint16_t tile = CA_TileAtPos(ck_flagTileSpotX, ck_flagTileSpotY, 1)+1;
-  RF_ReplaceTiles(&tile, 1, ck_flagTileSpotX, ck_flagTileSpotY, 1, 1);
+  if (ck_currentEpisode->ep == EP_CK6)
+  {
+    uint16_t tile = CA_TileAtPos(ck_flagTileSpotX, ck_flagTileSpotY, 1)+1;
+    RF_ReplaceTiles(&tile, 1, ck_flagTileSpotX, ck_flagTileSpotY, 1, 1);
+  }
 }
 
 /*

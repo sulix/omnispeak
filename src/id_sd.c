@@ -132,6 +132,7 @@ uint32_t SD_GetTimeCount(void)
 
 void SD_SetTimeCount(uint32_t newval)
 {
+	SD_LastPITTickTime = (uint64_t)(SDL_GetTicks()) * SD_SOUND_PART_RATE_BASE / 1000;
 	TimeCount = newval;
 }
 

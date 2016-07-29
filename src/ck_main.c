@@ -629,6 +629,9 @@ int main(int argc, char *argv[])
 	ck_currentEpisode = &ck6_episode;
 	bool isFullScreen = false;
 	bool isAspectCorrected = true;
+#ifdef CK_ENABLE_PLAYLOOP_DUMPER
+	const char *dumperFilename = NULL;
+#endif
 
 	for (int i = 1; i < argc; ++i)
 	{
@@ -655,7 +658,31 @@ int main(int argc, char *argv[])
 		{
 			isAspectCorrected = false;
 		}
+#ifdef CK_ENABLE_PLAYLOOP_DUMPER
+		else if (!CK_Cross_strcasecmp(argv[i], "/DUMPFILE"))
+		{
+			if (i < argc+1)
+				dumperFilename = argv[++i]; // Yes, we increment i twice
+		}
+#endif
 	}
+
+#ifdef CK_ENABLE_PLAYLOOP_DUMPER
+	if (dumperFilename == NULL)
+	{
+		printf("Dumper-enabled build running, set dumper file like this: /dumpfile <out.bin>\n");
+		return 0;
+	}
+
+	extern FILE *ck_dumperFile;
+
+	ck_dumperFile = fopen(dumperFilename, "wb");
+	if (ck_dumperFile == NULL)
+	{
+		fprintf(stderr, "Couldn't open dumper file for writing.\n");
+		return 1;
+	}
+#endif
 
 	VL_SetParams(isFullScreen, isAspectCorrected);
 
@@ -681,6 +708,9 @@ int main(int argc, char *argv[])
 	// Draw the ANSI "Press Key When Ready Screen" here
 	CK_DemoLoop();
 	CK_ShutdownID();
+#ifdef CK_ENABLE_PLAYLOOP_DUMPER
+	fclose(ck_dumperFile);
+#endif
 }
 
 #endif // CK_RUN_ACTION_VALIDATOR
