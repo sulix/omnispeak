@@ -39,6 +39,11 @@ ifeq ($(BUILDASCPP), 0)
 	INTCXXFLAGS+= -std=c99
 endif
 
+WITH_DUMPER=0
+ifeq ($(WITH_DUMPER), 1)
+	INTCXXFLAGS += -DCK_ENABLE_PLAYLOOP_DUMPER
+endif
+
 OUTBIN=../bin/omnispeak$(EXE_EXT)
 
 LIBS=
