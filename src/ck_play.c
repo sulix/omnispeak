@@ -1861,14 +1861,17 @@ int CK_PlayLoop()
 			}
 		}
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
-		bool CK_SaveObject(FILE *fp, CK_object *o);
-		bool CK_SaveGameState(FILE* fp, CK_GameState *state);
+		if (ck_dumperFile)
+		{
+			bool CK_SaveObject(FILE *fp, CK_object *o);
+			bool CK_SaveGameState(FILE* fp, CK_GameState *state);
 
-		uint32_t timecountToDump = SD_GetTimeCount();
-		CK_Cross_fwriteInt32LE(&timecountToDump, 1, ck_dumperFile);
-		CK_SaveGameState(ck_dumperFile, &ck_gameState);
-		for (CK_object *currentObj = &ck_objArray[0]; currentObj != &ck_objArray[CK_MAX_OBJECTS]; ++currentObj)
-			CK_SaveObject(ck_dumperFile, currentObj);
+			uint32_t timecountToDump = SD_GetTimeCount();
+			CK_Cross_fwriteInt32LE(&timecountToDump, 1, ck_dumperFile);
+			CK_SaveGameState(ck_dumperFile, &ck_gameState);
+			for (CK_object *currentObj = &ck_objArray[0]; currentObj != &ck_objArray[CK_MAX_OBJECTS]; ++currentObj)
+				CK_SaveObject(ck_dumperFile, currentObj);
+		}
 #endif
 
 		if (ck_keenState.platform)

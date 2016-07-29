@@ -668,19 +668,15 @@ int main(int argc, char *argv[])
 	}
 
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
-	if (dumperFilename == NULL)
-	{
-		printf("Dumper-enabled build running, set dumper file like this: /dumpfile <out.bin>\n");
-		return 0;
-	}
-
 	extern FILE *ck_dumperFile;
-
-	ck_dumperFile = fopen(dumperFilename, "wb");
-	if (ck_dumperFile == NULL)
+	if (dumperFilename != NULL)
 	{
-		fprintf(stderr, "Couldn't open dumper file for writing.\n");
-		return 1;
+		ck_dumperFile = fopen(dumperFilename, "wb");
+		if (ck_dumperFile == NULL)
+		{
+			fprintf(stderr, "Couldn't open dumper file for writing.\n");
+			return 1;
+		}
 	}
 #endif
 
@@ -709,7 +705,8 @@ int main(int argc, char *argv[])
 	CK_DemoLoop();
 	CK_ShutdownID();
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
-	fclose(ck_dumperFile);
+	if (ck_dumperFile)
+		fclose(ck_dumperFile);
 #endif
 }
 
