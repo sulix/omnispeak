@@ -289,7 +289,7 @@ CK_object *CK_ConvertObj16BitOffsetToPointer(uint16_t offset)
 
 // Used for reproduction of vanilla Keen bugs; Does NOT include function pointers
 static const CK_action ck_partialNullAction =
-{0, 0, 0x6F42, 0x6C72, 0x6E61, 0x2064, 0x2B43, 0x202B};
+{0, 0, AT_NullActionTypeValue, 0x6C72, 0x6E61, 0x2064, 0x2B43, 0x202B};
 
 int16_t CK_ActionThink(CK_object *obj, int16_t time)
 {
