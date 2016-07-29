@@ -289,7 +289,9 @@ typedef enum CK_ActionType
 	AT_ScaledOnce,				// Scaled Motion, Thinks once.
 	AT_Frame,					// No Motion, Thinks each frame (doesn't advance action)
 	AT_UnscaledFrame,			// Unscaled Motion, Thinks each frame
-	AT_ScaledFrame				// Scaled Motion, Thinks each frame
+	AT_ScaledFrame,				// Scaled Motion, Thinks each frame
+
+	AT_NullActionTypeValue = 0x6F42	// FIXME: Ugly hack used for filling ck_play.c:ck_partialNullAction
 } CK_ActionType;
 
 typedef struct CK_action

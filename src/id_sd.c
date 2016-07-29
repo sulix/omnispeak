@@ -113,8 +113,9 @@ Originally SDL_t0Service is responsible for incrementing TimeCount.
 static uint32_t TimeCount = 0; // Kind of same as Wolf3D's TimeCount from ID_SD.C
 static int32_t lasttimecount = 0; // Same as Wolf3D's lasttimecount from WL_DRAW.C?
 static uint16_t SpriteSync = 0;
-// PIT timer divisor, scaled (bt 8 if music is on, 2 otherwise)
-static int16_t ScaledTimerDivisor;
+// PIT timer divisor, scaled (bt 8 if music is on, 2 otherwise).
+// NOT initialized to 0 since this can lead to division by zero on startup.
+static int16_t ScaledTimerDivisor = 1;
 // A few variables used for timing measurements (PC_PIT_RATE units per second)
 static uint64_t SD_LastPITTickTime;
 
@@ -132,6 +133,7 @@ uint32_t SD_GetTimeCount(void)
 
 void SD_SetTimeCount(uint32_t newval)
 {
+	SD_GetTimeCount(); // Refresh SD_LastPITTickTime to be in sync with SDL_GetTicks()
 	TimeCount = newval;
 }
 

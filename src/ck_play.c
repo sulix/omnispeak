@@ -51,6 +51,10 @@ CK_object *ck_keenObj;
 
 static CK_object tempObj;
 
+#ifdef CK_ENABLE_PLAYLOOP_DUMPER
+FILE *ck_dumperFile;
+#endif
+
 // The rectangle within which objects are active.
 int ck_activeX0Tile;
 int ck_activeY0Tile;
@@ -283,10 +287,19 @@ CK_object *CK_ConvertObj16BitOffsetToPointer(uint16_t offset)
 	return NULL;
 }
 
+// Used for reproduction of vanilla Keen bugs; Does NOT include function pointers
+static const CK_action ck_partialNullAction =
+{0, 0, AT_NullActionTypeValue, 0x6C72, 0x6E61, 0x2064, 0x2B43, 0x202B};
+
 int16_t CK_ActionThink(CK_object *obj, int16_t time)
 {
-	CK_action *action = obj->currentAction;
-
+	CK_action *lastAction = obj->currentAction;
+	// WORKAROUND FOR VANILLA KEEN BUG: The original code does not
+	// check if lastAction != NULL. Naively accessing *lastAction
+	// may lead to a crash in this case (try no-clip cheat).
+	// Returning from the function in case lastAction == NULL
+	// resolves this, but we try to emulate original behaviors here.
+	const CK_action *action = lastAction ? lastAction : &ck_partialNullAction;
 
 	// ThinkMethod: 2
 	if (action->type == AT_Frame)
@@ -377,7 +390,8 @@ int16_t CK_ActionThink(CK_object *obj, int16_t time)
 		}
 	}
 
-	if (action != obj->currentAction)
+	// Do NOT use action variable here
+	if (lastAction != obj->currentAction)
 	{
 		if (!obj->currentAction)
 		{
@@ -386,7 +400,7 @@ int16_t CK_ActionThink(CK_object *obj, int16_t time)
 	}
 	else
 	{
-		obj->currentAction = action->next;
+		obj->currentAction = lastAction->next;
 	}
 	return newTime;
 }
@@ -412,19 +426,25 @@ void CK_RunAction(CK_object *obj)
 		obj->actionTimer = 0;
 		prevAction = obj->currentAction;
 	}
-	// TODO/FIXME(?): Vanilla code doesn't check if prevAction is non-NULL,
-	// but the new code may crash as a consequence (try no-clip cheat).
-	while (prevAction && ticsLeft)
+	while (ticsLeft)
 	{
-		if (prevAction->protectAnimation || prevAction->timer > ticsLeft)
+		// WORKAROUND FOR VANILLA KEEN BUG: As in CK_ActionThink, the
+		// original code does not check if prevAction != NULL. Naively
+		// accessing *prevAction may lead to a crash in this case
+		// (try no-clip cheat). Adding a check if prevAction == NULL
+		// before entering the loop resolves this, but we try
+		// to emulate original behaviors here.
+		const CK_action *prevActionToAccess = prevAction ? prevAction : &ck_partialNullAction;
+
+		if (prevActionToAccess->protectAnimation || prevActionToAccess->timer > ticsLeft)
 		{
 			ticsLeft = CK_ActionThink(obj, ticsLeft);
 		}
 		else
 		{
-			ticsLeft = CK_ActionThink(obj, prevAction->timer - 1);
+			ticsLeft = CK_ActionThink(obj, prevActionToAccess->timer - 1);
 		}
-
+		// Do NOT use prevActionToAccess here
 		if (obj->currentAction != prevAction)
 		{
 			obj->actionTimer = 0;
@@ -1856,7 +1876,19 @@ int CK_PlayLoop()
 				CK_RunAction(currentObj);
 			}
 		}
+#ifdef CK_ENABLE_PLAYLOOP_DUMPER
+		if (ck_dumperFile)
+		{
+			bool CK_SaveObject(FILE *fp, CK_object *o);
+			bool CK_SaveGameState(FILE* fp, CK_GameState *state);
 
+			uint32_t timecountToDump = SD_GetTimeCount();
+			CK_Cross_fwriteInt32LE(&timecountToDump, 1, ck_dumperFile);
+			CK_SaveGameState(ck_dumperFile, &ck_gameState);
+			for (CK_object *currentObj = &ck_objArray[0]; currentObj != &ck_objArray[CK_MAX_OBJECTS]; ++currentObj)
+				CK_SaveObject(ck_dumperFile, currentObj);
+		}
+#endif
 
 		if (ck_keenState.platform)
 			CK_KeenRidePlatform(ck_keenObj);
