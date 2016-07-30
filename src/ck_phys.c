@@ -455,6 +455,28 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 			}
 
 			CK_PhysClipHorz(obj);
+
+			// Present only in the Keen 6 EXE - Handle the case Keen is pushed towards a wall (with right/left key) while standing on a sloped floor (see levels 6-8).
+			if ((ck_currentEpisode->ep == EP_CK6) && (obj == ck_keenObj) && ((obj->topTI & 7) > 1) && (obj->rightTI || obj->leftTI))
+			{
+				// Based on code from CK_PhysClipVert
+				int16_t midTileXOffset = (obj->clipRects.unitXmid >> 4) & 0x0F;
+
+				for (uint16_t y = ck_oldRects.tileY2; obj->clipRects.tileY2 + 1 >= y; ++y)
+				{
+					int16_t tile = CA_TileAtPos(obj->clipRects.tileXmid, y, 1);
+					if (TI_ForeTop(tile))
+					{
+						int16_t slopeAmt = ck_physSlopeHeight[TI_ForeTop(tile)&0x07][midTileXOffset];
+						int16_t objYOffset = obj->clipRects.unitY2 - (y * 256);
+						int16_t dy = (slopeAmt - objYOffset) - 1;
+
+						obj->topTI = TI_ForeTop(tile);
+						CK_PhysUpdateY(obj, dy); //-objYOffset+slopeAmt-1);
+						return;
+					}
+				}
+			}
 		}
 
 		//TODO: Something strange about reseting if falling?
