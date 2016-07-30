@@ -351,7 +351,7 @@ typedef struct CK_object
 	CK_objPhysData clipRects;
 
 	//TileInfo for surrounding tiles.
-	int16_t topTI, bottomTI, leftTI, rightTI;
+	int16_t topTI, rightTI, bottomTI, leftTI;
 
 
 	struct RF_SpriteDrawEntry *sde;
