@@ -968,9 +968,10 @@ void CK_KeenRunDrawFunc(CK_object *obj)
 		CK_PhysUpdateNormalObj(obj);
 	}
 
+	// If we're running into a wall, we should stand still.
 	if ((obj->rightTI && obj->xDirection == -1) || (obj->leftTI && obj->xDirection == 1))
 	{
-		obj->timeUntillThink = 0;
+		obj->actionTimer = 0;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
 		obj->gfxChunk = (obj->xDirection == -1) ? obj->currentAction->chunkLeft : obj->currentAction->chunkRight;
 	}

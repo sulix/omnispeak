@@ -105,7 +105,10 @@ void CK_PhysUpdateX(CK_object *obj, int16_t deltaUnitX)
 	obj->posX += deltaUnitX;
 	obj->clipRects.unitX1 += deltaUnitX;
 	obj->clipRects.unitX2 += deltaUnitX;
-	//obj->clipRects.unitXmid += deltaUnitX;
+
+	// It looks like only Keen 6 updates unitXmid here.
+	if (ck_currentEpisode->ep == EP_CK6)
+		obj->clipRects.unitXmid += deltaUnitX;
 
 	//Now update the tile rect
 	// WARNING: Keen _doesn't_ update tileXmid!
