@@ -322,7 +322,7 @@ void CK6_OrbatrixFloat(CK_object *obj)
   {
     obj->currentAction = CK_GetActionByName("CK6_ACT_OrbatrixUncurl2");
   }
-  else if (obj->clipRects.unitY2 != ck_keenObj->clipRects.unitY2)
+  else if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2)
   {
     int dx = ck_keenObj->posX - obj->posX;
     obj->xDirection = dx < 0 ? IN_motion_Left : IN_motion_Right;
