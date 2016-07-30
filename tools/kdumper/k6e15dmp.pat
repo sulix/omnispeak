@@ -1,33 +1,33 @@
-%ext ck4
+%ext ck6
 
-%ver 1.4
+%ver 1.5
 
-%patch $8F09 $EA $12A617BFRL # Jump to CAL_DialogUpdate
+%patch $8F7C $EA $12541719RL # Jump to CAL_DialogUpdate
 
 # Replace CAL_DialogUpdate itself
-%patch $1421F $75 $3C
+%patch $13C59 $75 $3C
               $6A $00
               $6A $04
               $1E
-              $68 $A53DW
+              $68 $E6C2W
               $6A $01
-              $9A $12A60140RL
+              $9A $12540136RL
               $83 $C4 $0A
               $6A $00
-              $6A $56
+              $6A $5A
               $1E
-              $68 $7A1AW
+              $68 $9408W
               $6A $01
-              $9A $12A60140RL
+              $9A $12540136RL
               $83 $C4 $0A
               $6A $00
               $68 $1DB0W
               $1E
-              $68 $A807W
+              $68 $75CEW
               $6A $01
-              $9A $12A60140RL
+              $9A $12540136RL
               $83 $C4 $0A
-              $EA $06BD233ERL
-              $EA $06BD2248RL
+              $EA $06D62221RL
+              $EA $06D6212BRL
 
 %end
