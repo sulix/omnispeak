@@ -839,7 +839,7 @@ void CK_GameLoop()
     if (!CK6_CreatureQuestion())
     {
       ck_startingSavedGame = false;
-      ck_startingDifficulty = D_Normal;
+      ck_startingDifficulty = D_NotPlaying;
       return;
     }
 
