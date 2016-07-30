@@ -261,6 +261,13 @@ static long VL_SDL2GL_GetSurfaceMemUse(void *surface)
 	return surf->w*surf->h;
 }
 
+static void VL_SDL2GL_GetSurfaceDimensions(void *surface, int *w, int *h)
+{
+	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)surface;
+	if (w) *w = surf->w;
+	if (h) *h = surf->h;
+}
+
 static void VL_SDL2GL_SetGLClearColorFromBorder(void)
 {
 	glClearColor((GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][0]/255,
@@ -586,6 +593,7 @@ VL_Backend vl_sdl2gl_backend =
 	/*.createSurface =*/ &VL_SDL2GL_CreateSurface,
 	/*.destroySurface =*/ &VL_SDL2GL_DestroySurface,
 	/*.getSurfaceMemUse =*/ &VL_SDL2GL_GetSurfaceMemUse,
+	/*.getSurfaceDimensions =*/ &VL_SDL2GL_GetSurfaceDimensions,
 	/*.refreshPaletteAndBorderColor =*/ &VL_SDL2GL_RefreshPaletteAndBorderColor,
 	/*.surfaceRect =*/ &VL_SDL2GL_SurfaceRect,
 	/*.surfaceRect_PM =*/ &VL_SDL2GL_SurfaceRect_PM,

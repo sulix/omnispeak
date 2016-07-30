@@ -1038,9 +1038,8 @@ void CK_DrawTerminator(void)
 
 	bool terminator_complete = false;
 
-	VL_ClearScreen(0);
-
 	VL_ResizeScreen(TERMINATORSCREENWIDTH * 8, 200);
+	VL_ClearScreen(0);
 
 
 	// Cache Intro Bitmaps

@@ -858,7 +858,10 @@ int VL_GetScrollY(void)
 
 void VL_ClearScreen(int colour)
 {
-	VL_ScreenRect(0, 0, 320, 200, colour);
+	int screenWidth, screenHeight;
+	vl_currentBackend->getSurfaceDimensions(vl_emuegavgaadapter.screen,
+		&screenWidth, &screenHeight);
+	VL_ScreenRect(0, 0, screenWidth, screenHeight, colour);
 }
 
 void VL_SetMapMask(int mapmask)

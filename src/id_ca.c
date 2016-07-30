@@ -426,8 +426,9 @@ void *ca_graphStarts;
 long CAL_GetGrChunkStart(int chunk)
 {
 	int offset = chunk*3;
-	//Warning: This currently only works on LITTLE-ENDIAN systems.
-	long value = (*(long *)((uint8_t*)ca_graphStarts + offset)) & 0x00ffffff;
+	long value = ((uint8_t*)ca_graphStarts)[offset]
+		| ((uint8_t*)ca_graphStarts)[offset+1] << 8
+		| ((uint8_t*)ca_graphStarts)[offset+2] << 16;
 	if (value == 0xffffff)
 		return -1;
 	return value;

@@ -78,6 +78,13 @@ static long VL_SDL12_GetSurfaceMemUse(void *surface)
 	return surf->pitch*surf->h;
 }
 
+static void VL_SDL12_GetSurfaceDimensions(void *surface, int *w, int *h)
+{
+	SDL_Surface *surf = (SDL_Surface *)surface;
+	if (w) *w = surf->w;
+	if (h) *h = surf->h;
+}
+
 static void VL_SDL12_RefreshPaletteAndBorderColor(void *screen)
 {
 	SDL_Surface *surf = (SDL_Surface *)screen;
@@ -256,6 +263,7 @@ VL_Backend vl_sdl12_backend =
 	/*.createSurface =*/ &VL_SDL12_CreateSurface,
 	/*.destroySurface =*/ &VL_SDL12_DestroySurface,
 	/*.getSurfaceMemUse =*/ &VL_SDL12_GetSurfaceMemUse,
+	/*.getSurfaceDimensions =*/ &VL_SDL12_GetSurfaceDimensions,
 	/*.refreshPaletteAndBorderColor =*/ &VL_SDL12_RefreshPaletteAndBorderColor,
 	/*.surfaceRect =*/ &VL_SDL12_SurfaceRect,
 	/*.surfaceRect_PM =*/ &VL_SDL12_SurfaceRect_PM,
