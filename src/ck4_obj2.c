@@ -659,36 +659,36 @@ void CK4_PlatformDraw(CK_object *obj)
 
   if (obj->xDirection == IN_motion_Right)
   {
-    RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user2Ptr), obj->posX - 0x10, obj->posY + 0x30, di + 485, false, PRIORITIES - 4);
-    if (obj->user3Ptr) {
-      RF_RemoveSpriteDraw((RF_SpriteDrawEntry**)&(obj->user3Ptr));
+    RF_AddSpriteDrawUsing16BitOffset(&(obj->user2), obj->posX - 0x10, obj->posY + 0x30, di + 485, false, PRIORITIES - 4);
+    if (obj->user3) {
+      RF_RemoveSpriteDrawUsing16BitOffset(&(obj->user3));
     }
   }
   else if (obj->xDirection == IN_motion_Left)
   {
-    if (obj->user2Ptr) {
-      RF_RemoveSpriteDraw((RF_SpriteDrawEntry**)&(obj->user2Ptr));
+    if (obj->user2) {
+      RF_RemoveSpriteDrawUsing16BitOffset(&(obj->user2));
     }
-    RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3Ptr), obj->posX + 0x300, obj->posY + 0x50, di + 485, false, PRIORITIES - 3);
+    RF_AddSpriteDrawUsing16BitOffset(&(obj->user3), obj->posX + 0x300, obj->posY + 0x50, di + 485, false, PRIORITIES - 3);
   }
   else if (obj->yDirection == IN_motion_Up)
   {
-    RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user2Ptr), obj->posX + 0x20, obj->posY + 0x90, di + 489, false, PRIORITIES - 4);
-    RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3Ptr), obj->posX + 0x2E0, obj->posY + 0x80, di + 487, false, PRIORITIES - 4);
+    RF_AddSpriteDrawUsing16BitOffset(&(obj->user2), obj->posX + 0x20, obj->posY + 0x90, di + 489, false, PRIORITIES - 4);
+    RF_AddSpriteDrawUsing16BitOffset(&(obj->user3), obj->posX + 0x2E0, obj->posY + 0x80, di + 487, false, PRIORITIES - 4);
   }
   else if (obj->yDirection == IN_motion_Down)
   {
     if (di)
     {
-      RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user2Ptr), obj->posX + 0x20, obj->posY + 0x90, di + 489, false, PRIORITIES - 4);
-      RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3Ptr), obj->posX + 0x2E0, obj->posY + 0x80, di + 487, false, PRIORITIES - 4);
+      RF_AddSpriteDrawUsing16BitOffset(&(obj->user2), obj->posX + 0x20, obj->posY + 0x90, di + 489, false, PRIORITIES - 4);
+      RF_AddSpriteDrawUsing16BitOffset(&(obj->user3), obj->posX + 0x2E0, obj->posY + 0x80, di + 487, false, PRIORITIES - 4);
     }
     else
     {
-      if (obj->user2Ptr)
-        RF_RemoveSpriteDraw((RF_SpriteDrawEntry**)&(obj->user2Ptr));
-      if (obj->user3Ptr)
-        RF_RemoveSpriteDraw((RF_SpriteDrawEntry**)&(obj->user3Ptr));
+      if (obj->user2)
+        RF_RemoveSpriteDrawUsing16BitOffset(&(obj->user2));
+      if (obj->user3)
+        RF_RemoveSpriteDrawUsing16BitOffset(&(obj->user3));
     }
   }
 }

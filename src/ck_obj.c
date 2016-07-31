@@ -349,7 +349,7 @@ void CK_SpawnGoPlat(int tileX, int tileY, int direction, bool purple)
 	obj->posX = tileX << 8;
 	obj->posY = tileY << 8;
 	obj->xDirection = IN_motion_None;
-  obj->yDirection = ck_currentEpisode->ep == EP_CK5 ? IN_motion_None : IN_motion_Down;
+	obj->yDirection = IN_motion_Down;
 	obj->clipped = CLIP_not;
 
 	if (purple)
@@ -489,7 +489,7 @@ void CK_SneakPlatSpawn(int tileX, int tileY)
 	obj->type = CT_CLASS(Platform);
 	obj->active = OBJ_ALWAYS_ACTIVE;
 	obj->zLayer = 0;
-	obj->posX = tileX << 8;
+	obj->user1 = obj->posX = tileX << 8;
 	obj->posY = tileY << 8;
 	obj->xDirection = 0;
 	obj->yDirection = 1;
@@ -536,7 +536,7 @@ void CK_TurretSpawn(int tileX, int tileY, int direction)
 	obj->posX = tileX << 8;
 	obj->posY = tileY << 8;
 	obj->clipRects.unitX1 = obj->clipRects.unitX2 = tileX << 8;
-	obj->clipRects.unitX2 = obj->clipRects.unitY2 = tileY << 8;
+	obj->clipRects.unitY1 = obj->clipRects.unitY2 = tileY << 8;
 
 	obj->user1 = direction;
 

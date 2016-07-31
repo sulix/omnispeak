@@ -358,23 +358,20 @@ typedef struct CK_object
 
 	// *** OMNISPEAK - NOTES ABOUT USAGE OF USER VARIABLES: ***
 	//
-	// These variables should be used wisely, in order to preserve
-	// compatibility with games saved/loaded by original DOS versions.
-	// Here is a simple set of rules of usage of the user1* variables,
-	// also applying to 2-4:
+	// The user variables are of type of int16_t for compatibility with
+	// saved games, as well, as to be useful with dumper-enabled builds.
 	//
-	// - If user1 should be used only in numeric form, then simply use
-	// the usual 16-bit integer "user1" variable.
-	// - If user1 is *exclusively* used as a pointer, and its value is
-	// *discarded* after loading a saved game (e.g., Keen 5 Sphereful),
-	// then use the "user1Ptr" variable.
-	// - For any other pointer, *convert* it to the 16-bit offset pointer
-	// expected by the DOS version, to be stored in the usual (numeric)
-	// "user1" variable. Additionally, the actual pointer may
-	// optionally be stored in "user1Ptr", but be consistent!
+	// This is the case even if a user field stores a pointer.
+	//
+	// If you want to store a pointer in a user field,
+	// an appropriate conversion shall be made. A few
+	// examples of functions that can be used:
+	// - RF_AddSpriteDrawUsing16BitOffset
+	// - RF_RemoveSpriteDrawUsing16BitOffset
+	// - CK_ConvertObjPointerTo16BitOffset
+	// - CK_ConvertObj16BitOffsetToPointer
 
 	int16_t user1, user2, user3, user4;
-	void *user1Ptr, *user2Ptr, *user3Ptr, *user4Ptr;
 
 	struct CK_object *next;
 	struct CK_object *prev;

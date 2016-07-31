@@ -597,7 +597,7 @@ void CK6_SpawnMolly(int tileX, int tileY)
 void CK6_GoPlatDraw(CK_object *obj)
 {
   RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
-  RF_AddSpriteDraw((RF_SpriteDrawEntry **)&(obj->user3Ptr), obj->posX + 0x100, obj->posY + 0x100, obj->user1 + 425, false, 0);
+  RF_AddSpriteDrawUsing16BitOffset(&(obj->user3), obj->posX + 0x100, obj->posY + 0x100, obj->user1 + 425, false, 0);
 }
 
 

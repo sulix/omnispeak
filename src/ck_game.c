@@ -97,6 +97,7 @@ bool CK_SaveObject(FILE *fp, CK_object *o)
 	uint16_t statedosoffset = o->currentAction ? o->currentAction->compatDosPointer : 0;
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 	// Used for debugging
+	uint16_t sde = RF_ConvertSpriteArrayPtrTo16BitOffset(o->sde);
 	uint16_t next = CK_ConvertObjPointerTo16BitOffset(o->next);
 	uint16_t prev = CK_ConvertObjPointerTo16BitOffset(o->prev);
 #else
@@ -139,15 +140,16 @@ bool CK_SaveObject(FILE *fp, CK_object *o)
 	        && (CK_Cross_fwriteInt16LE(&o->user2, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(&o->user3, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(&o->user4, 1, fp) == 1)
+#ifdef CK_ENABLE_PLAYLOOP_DUMPER
+	        && (CK_Cross_fwriteInt16LE(&sde, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&next, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&prev, 1, fp) == 1)
+#else
 	        // No need to write sde, prev pointers as-is,
 	        // these are ignored on loading. So write dummy value.
 	        // Furthermore, all we need to know about next on loading is
 	        // if it's zero or not.
 	        && (CK_Cross_fwriteInt16LE(&dummy, 1, fp) == 1) // sde
-#ifdef CK_ENABLE_PLAYLOOP_DUMPER
-	        && (CK_Cross_fwriteInt16LE(&next, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&prev, 1, fp) == 1)
-#else
 	        && (CK_Cross_fwriteInt16LE(&isnext, 1, fp) == 1) // next
 	        && (CK_Cross_fwriteInt16LE(&dummy, 1, fp) == 1) // prev
 #endif
@@ -450,23 +452,23 @@ bool CK_LoadGame (FILE *fp)
 
 		/* Omit stale sprite draw pointers */
 		if (newObj->type == CT_CLASS(StunnedCreature))
-			newObj->user3Ptr = NULL;
+			newObj->user3 = 0;
 		else if (ck_currentEpisode->ep == EP_CK4)
 		{
 			if (newObj->type == CT4_Platform)
-				newObj->user2Ptr = newObj->user3Ptr = NULL;
+				newObj->user2 = newObj->user3 = 0;
 		}
 		else if (ck_currentEpisode->ep == EP_CK5)
 		{
 			if (newObj->type == CT5_Mine)
-				newObj->user4Ptr = NULL;
+				newObj->user4 = 0;
 			else if (newObj->type == CT5_Sphereful)
-				newObj->user1Ptr = newObj->user2Ptr = newObj->user3Ptr = newObj->user4Ptr = NULL;
+				newObj->user1 = newObj->user2 = newObj->user3 = newObj->user4 = 0;
 		}
 		else if (ck_currentEpisode->ep == EP_CK6)
 		{
 			if (newObj->type == CT6_Platform)
-				newObj->user3Ptr = NULL;
+				newObj->user3 = 0;
 		}
 
 		/* If this is the last object in the saved list, exit the loop */
@@ -516,7 +518,7 @@ void CK_MapLevelMarkAsDone(void)
 		{
 			w = *pw;
 			level = w & 0xFF;
-			if ( level >= 1 && level <= 17 && ck_gameState.levelsDone[level] )
+			if ( level >= 1 && level <= ck_currentEpisode->lastLevelToMarkAsDone && ck_gameState.levelsDone[level] )
 			{	/* Is this a level tile */
 				flags = w >> 8;
 				/* Set the info tile at this position to 0 */

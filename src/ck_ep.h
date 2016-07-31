@@ -61,9 +61,12 @@ typedef struct CK_EpisodeDef
   int endSongLevel;
   int starWarsSongLevel;
 
+  int lastLevelToMarkAsDone;
+
   // A few offsets to data in the original EXE
   uint16_t objArrayOffset;
   uint16_t tempObjOffset;
+  uint16_t spriteArrayOffset;
   uint16_t printXOffset;
   uint16_t animTilesOffset;
   uint16_t animTileSize; // Keen 6 has a few additional fields for sounds
