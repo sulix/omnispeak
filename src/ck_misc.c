@@ -516,18 +516,24 @@ void CK_ShrapnelTileCol(CK_object *obj)
 	// if speed is lower than threshhold, then disappear
 	if (bouncePower < 0x1000)
 	{
-    // The babobba shot DOES have a next action, whereas the CK5 shrapnel doesn't
-    // The original .exe has no check for a  NULL action here
+		// The babobba shot DOES have a next action, whereas the CK5 shrapnel doesn't
+		// The original .exe has no check for a  NULL action here
 		// we can't advance to a NULL action, because omnispeak will segfault (Keen5 wouldn't)
-    // so we need to check if the next action is NULL
+		// so we need to check if the next action is NULL
 
-    if (obj->currentAction->next)
-      CK_SetAction2(obj, obj->currentAction->next);
-    else
-    {
-      RF_RemoveSpriteDraw(&obj->sde);
-      CK_RemoveObj(obj);
-    }
+		if (obj->currentAction->next)
+			CK_SetAction2(obj, obj->currentAction->next);
+		else
+		{
+			// In order to get dumps to match properly, though, we
+			// need obj->currentAction to be NULL.
+			// In Keen5, oftern obj->visible is set, too, as
+			// the object has moved (even if it is now invalid.
+			obj->currentAction = 0;
+			obj->visible = true;
+			RF_RemoveSpriteDraw(&obj->sde);
+			CK_RemoveObj(obj);
+		}
   }
 }
 

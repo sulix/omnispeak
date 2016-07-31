@@ -561,7 +561,7 @@ void CK5_SpawnRobo(int tileX, int tileY)
 	obj->posX = tileX << 8;
 	obj->posY = (tileY << 8) - 0x400;
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
-	obj->yDirection = IN_motion_Down;
+	obj->yDirection = IN_motion_None;
 	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_Robo0"));
 }
 
@@ -1385,6 +1385,7 @@ void CK5_SpawnSphereful(int tileX, int tileY)
 	new_object->active = OBJ_ACTIVE;
 	new_object->posX = tileX << 8;
 	new_object->posY = (tileY << 8) - 0x100;
+	new_object->zLayer = 1;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Sphereful0"));
 }
 

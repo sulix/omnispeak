@@ -141,7 +141,7 @@ void CK5_SpawnVolte(int tileX, int tileY)
 	CK_object *new_object = CK_GetNewObj(false);
 	new_object->type = CT5_Volte;
 	new_object->active = OBJ_ALWAYS_ACTIVE;
-	new_object->zLayer = 0;
+	new_object->zLayer = 2;
 	new_object->posX = tileX << 8;
 	new_object->posY = tileY << 8;
 	new_object->clipped = CLIP_not;
