@@ -1461,22 +1461,22 @@ void CK_KeenHangThink(CK_object *obj)
 {
 	if (ck_inputFrame.yDirection == -1 || ck_inputFrame.xDirection == obj->xDirection)
 	{
+		uint16_t tile;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPull1");
 
 		if(obj->xDirection == 1)
 		{
+			tile = CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1-1, 1);
 			ck_nextY = -256;
 		}
 		else
 		{
+			tile = CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1-1, 1);
 			ck_nextY = -128;
 		}
-		//TODO: Set keen->zlayer 3
 
-		//if (obj->xDirection == 1)
-		//{
-
-
+		if (!(TI_ForeMisc(tile) & 0x80))
+			obj->zLayer = 3;
 	}
 	else if (ck_inputFrame.yDirection == 1 || (ck_inputFrame.xDirection && ck_inputFrame.xDirection != obj->xDirection))
 	{
