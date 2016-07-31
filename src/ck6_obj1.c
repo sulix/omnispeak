@@ -615,6 +615,7 @@ void CK6_SpawnBloog(int tileX, int tileY)
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogWalk0"));
 }
+
 // Bloogs
 void CK6_Bloog(CK_object *obj)
 {
@@ -781,14 +782,11 @@ static const char *stunnedBloogletActions[] = {
 extern int16_t *CK_ItemSpriteChunks[];
 void CK6_BloogletCol(CK_object *a, CK_object *b)
 {
-  if (b->type == CT_Player)
+  if (b->type == CT_Player && b->currentAction->collide)
   {
-    if (b->currentAction->collide)
-    {
-      ck_keenIgnoreVertClip = true;
-      CK_PhysPushX(b, a);
-      ck_keenIgnoreVertClip = false;
-    }
+    ck_keenIgnoreVertClip = true;
+    CK_PhysPushX(b, a);
+    ck_keenIgnoreVertClip = false;
   }
   else if (b->type == CT_Stunner)
   {

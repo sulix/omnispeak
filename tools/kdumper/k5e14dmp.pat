@@ -1,5 +1,7 @@
 %ext ck5
 
+%ver 1.4
+
 %patch $8E7B $EA $13A017BCRL # Jump to CAL_DialogUpdate
 
 # Replace CAL_DialogUpdate itself
