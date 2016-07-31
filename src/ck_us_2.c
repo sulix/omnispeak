@@ -995,7 +995,7 @@ void CK_US_UpdateOptionsMenus( void )
 
 typedef struct
 {
-  char *name;
+  const char *name;
   int sprite;
   int xofs;
   int yofs;
@@ -1039,7 +1039,7 @@ bool CK6_CreatureQuestion()
   CK_CreatureType creature = ck6_creatures[currentCreature];
   CA_ClearMarks();
   CA_MarkGrChunk(creature.sprite);
-  CA_CacheMarks(false);
+  CA_CacheMarks(NULL);
 
   VH_Bar(0, 0, 320, 200, 8);
   VH_SpriteTableEntry sprite = VH_GetSpriteTableEntry(creature.sprite - ca_gfxInfoE.offSprites);
