@@ -97,6 +97,7 @@ bool CK_SaveObject(FILE *fp, CK_object *o)
 	uint16_t statedosoffset = o->currentAction ? o->currentAction->compatDosPointer : 0;
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 	// Used for debugging
+	uint16_t sde = RF_ConvertSpriteArray16BitOffsetToPtr(o->sde);
 	uint16_t next = CK_ConvertObjPointerTo16BitOffset(o->next);
 	uint16_t prev = CK_ConvertObjPointerTo16BitOffset(o->prev);
 #else
@@ -139,15 +140,16 @@ bool CK_SaveObject(FILE *fp, CK_object *o)
 	        && (CK_Cross_fwriteInt16LE(&o->user2, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(&o->user3, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(&o->user4, 1, fp) == 1)
+#ifdef CK_ENABLE_PLAYLOOP_DUMPER
+	        && (CK_Cross_fwriteInt16LE(&sde, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&next, 1, fp) == 1)
+	        && (CK_Cross_fwriteInt16LE(&prev, 1, fp) == 1)
+#else
 	        // No need to write sde, prev pointers as-is,
 	        // these are ignored on loading. So write dummy value.
 	        // Furthermore, all we need to know about next on loading is
 	        // if it's zero or not.
 	        && (CK_Cross_fwriteInt16LE(&dummy, 1, fp) == 1) // sde
-#ifdef CK_ENABLE_PLAYLOOP_DUMPER
-	        && (CK_Cross_fwriteInt16LE(&next, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&prev, 1, fp) == 1)
-#else
 	        && (CK_Cross_fwriteInt16LE(&isnext, 1, fp) == 1) // next
 	        && (CK_Cross_fwriteInt16LE(&dummy, 1, fp) == 1) // prev
 #endif

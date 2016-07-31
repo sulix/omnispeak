@@ -1242,6 +1242,33 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	*drawEntry = sde;
 }
 
+RF_SpriteDrawEntry *RF_ConvertSpriteArray16BitOffsetToPtr(uint16_t drawEntryoffset)
+{
+	return drawEntryoffset ? &rf_spriteTable[(drawEntryoffset - ck_currentEpisode->spriteArrayOffset) / 32] : NULL;
+}
+
+uint16_t RF_ConvertSpriteArrayPtrTo16BitOffset(RF_SpriteDrawEntry *drawEntry)
+{
+	return drawEntry ? ((drawEntry - rf_spriteTable) * 32 + ck_currentEpisode->spriteArrayOffset) : 0;
+}
+
+void RF_RemoveSpriteDrawUsing16BitOffset(int16_t *drawEntryOffset)
+{
+	if (drawEntryOffset)
+	{
+		RF_SpriteDrawEntry *drawEntry = RF_ConvertSpriteArray16BitOffsetToPtr(*drawEntryOffset);
+		RF_RemoveSpriteDraw(&drawEntry);
+		*drawEntryOffset = 0;
+	}
+}
+
+void RF_AddSpriteDrawUsing16BitOffset(int16_t *drawEntryOffset, int unitX, int unitY, int chunk, bool allWhite, int zLayer)
+{
+	RF_SpriteDrawEntry *drawEntry = RF_ConvertSpriteArray16BitOffsetToPtr(*drawEntryOffset);
+	RF_AddSpriteDraw(&drawEntry, unitX, unitY, chunk, allWhite, zLayer);
+	*drawEntryOffset = RF_ConvertSpriteArrayPtrTo16BitOffset(drawEntry);
+}
+
 void RFL_DrawSpriteList()
 {
 	for (int zLayer = 0; zLayer < RF_NUM_SPRITE_Z_LAYERS; ++zLayer)

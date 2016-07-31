@@ -82,6 +82,11 @@ void RF_Reposition(int scrollXunit, int scrollYunit);
 void RF_SmoothScroll(int scrollXdelta, int scrollYdelta);
 void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry);
 void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int chunk, bool allWhite, int zLayer);
+void RF_RemoveSpriteDrawUsing16BitOffset(int16_t *drawEntryOffset);
+void RF_AddSpriteDrawUsing16BitOffset(int16_t *drawEntryOffset, int unitX, int unitY, int chunk, bool allWhite, int zLayer);
 void RF_Refresh();
+/*** Used for dumper (and, partially, for saved games compatibility) ***/
+RF_SpriteDrawEntry *RF_ConvertSpriteArray16BitOffsetToPtr(uint16_t drawEntryoffset);
+uint16_t RF_ConvertSpriteArrayPtrTo16BitOffset(RF_SpriteDrawEntry *drawEntry);
 
 #endif //ID_RF_H
