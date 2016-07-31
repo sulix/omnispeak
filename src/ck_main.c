@@ -677,6 +677,7 @@ int main(int argc, char *argv[])
 			fprintf(stderr, "Couldn't open dumper file for writing.\n");
 			return 1;
 		}
+		printf("Writing to dump file %s\n", dumperFilename);
 	}
 #endif
 
