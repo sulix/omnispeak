@@ -44,6 +44,7 @@ CK_EpisodeDef ck6_episode ={
   // Note these offsets are for version 1.5
   0x75CE,
   0x939E,
+  0xCEA2,
   0xE81A,
   0xD62E,
   10,

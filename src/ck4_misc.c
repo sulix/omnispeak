@@ -46,6 +46,7 @@ CK_EpisodeDef ck4_episode ={
   17,
   0xA807,
   0xC5D3,
+  0xD622,
   0xA537,
   0xDDAE,
   4,
