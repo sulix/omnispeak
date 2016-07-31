@@ -1223,6 +1223,8 @@ void CK_DrawTerminator(void)
 
 uint8_t *ck_starWarsPalette;
 
+const char *ck_storyText;
+
 // Utilities for converting to the units used by the Star Wars scroller:
 // 1/2048 of a pixel.
 static const unsigned int SWunitsPerPixel = 2048;
@@ -1240,6 +1242,13 @@ uint16_t ck_SWRowPixelDistance[200];
 
 // Table giving the width of each row in screen pixels.
 uint16_t ck_SWRowWidthInScreenPx[200];
+
+// The total height of the master text, in master pixels.
+int ck_starWarsTotalHeight;
+
+// The master text screen for the Star Wars scroller.
+void *ck_starWarsTextSurface;
+
 
 // This replaces CompileSWUpdate in Keen (BuildScalers in CKSRCMOD).
 // As omnispeak is not architecture specific, instead of generating scaling
@@ -1321,10 +1330,32 @@ void CK_TranslateString(const char *input, char *output)
 }
 
 // This is PrintStarWars in CKSRCMOD.
+// We print the story text to an offscreen buffer, which we'll later scale
+// invidual rows from to produce the final trapezoidal text.
 void CK_DrawSWText()
 {
 	char currentTextLine[81];
-	const char *storyTextIndex = "";//ck_starWarsText;
+	const char *storyTextIndex = ck_storyText;
+
+	// We want to render to a 336px wide texture.
+	US_SetWindowX(0);
+	US_SetWindowW(336);
+
+	// We start from row 1, as row 0 is used as an empty row for rendering
+	// otherwise out-of-bounds rows.
+	US_SetPrintY(1);
+	US_SetPrintColour(0xF);
+
+	// TODO: Calculate the height of the text. Keen will happily use as much
+	// video memory as is required, but here we guess that 1024 px will be
+	// sufficient. (It is for the original games). Eventually, we'll measure
+	// the number of newlines to calculate this.
+	ck_starWarsTextSurface = VL_CreateSurface(336, 1024);
+
+	// We want to render to this offscreen buffer.
+	void *oldScreen = VL_SetScreen(ck_starWarsTextSurface);
+	VL_ClearScreen(0);
+
 
 	while (*storyTextIndex)
 	{
@@ -1345,9 +1376,21 @@ void CK_DrawSWText()
 		// Translate from ASCII to SW font indices.
 		CK_TranslateString(currentTextLine, currentTextLine);
 
+		// And print it centered in its line.
 		US_CPrint(currentTextLine);
 
+		// Note that the original game resets its buffer offset here
+		// and incrementally calculates the height. We just let
+		// US_CPrint() increase the PrintY coordinate for us.
+
 	}
+
+	// Save off the total height of the scroller.
+	ck_starWarsTotalHeight = US_GetPrintY();
+	US_SetPrintY(0);
+
+	// Restore the screen.
+	VL_SetScreen(oldScreen);
 
 }
 
@@ -1357,7 +1400,61 @@ void CK_ScrollSWText()
 	// We draw the text on plane 4.
 	VL_SetMapMask(8);
 
+	uint16_t scrollDistance = 0;
 
+	while (scrollDistance < ck_starWarsTotalHeight + 400)
+	{
+		// Update rows from the bottom.
+
+		for (int row = 199; row > 0; --row)
+		{
+			int masterRowToDraw = scrollDistance - ck_SWScreenRowToMasterRow[row];
+
+			// If it's out of range, set it to our reserved blank row 0.
+			if (masterRowToDraw < 0 || masterRowToDraw >= ck_starWarsTotalHeight)
+				masterRowToDraw = 0;
+
+
+			int rowStart = 160 - ck_SWRowWidthInScreenPx[row]/2;
+			int rowEnd = 160 + ck_SWRowWidthInScreenPx[row]/2;
+
+			// The x-coordinate of the current pixel in the offscreen
+			// text buffer. Measured in SWunits.
+			int masterX = 0;
+
+			// Start drawing.
+			// For each screen (destination) pixel, we calulate the
+			// "master" pixel coordinates in the offscreen buffer,
+			// read the pixel from it, and then mask it to the
+			// screen in plane 4.
+			for(int screenX = rowStart; screenX < rowEnd; ++screenX)
+			{
+				int masterPixelX = CK_SWunitsToPixels(masterX);
+				int pixelValue = VL_SurfacePGet(ck_starWarsTextSurface, masterPixelX, masterRowToDraw);
+
+				VL_ScreenRect_PM(screenX, row, 1, 1, pixelValue);
+				masterX += ck_SWRowPixelDistance[row];
+			}
+		}
+
+		IN_PumpEvents();
+		VL_Present();
+
+		SD_SetSpriteSync(SD_GetSpriteSync() + SD_GetTimeCount() - SD_GetLastTimeCount());
+		SD_SetLastTimeCount(SD_GetTimeCount());
+
+		if (SD_GetSpriteSync() > 20)
+			SD_SetSpriteSync(20);
+
+		scrollDistance += SD_GetSpriteSync()/4;
+		SD_SetSpriteSync(SD_GetSpriteSync() & 3);
+
+		if (IN_GetLastScan() == IN_SC_F1)
+			IN_SetLastScan(IN_SC_Space);
+
+		if (IN_GetLastScan())
+			return;
+	}
 }
 
 void CK_DrawStarWars()
@@ -1367,9 +1464,16 @@ void CK_DrawStarWars()
 	VL_SetScrollCoords(0,0);
 
 	CA_SetGrPurge();
-	// Cache the Star Wars font.
+	// Cache and set the Star Wars font.
 	CA_CacheGrChunk(5);
+	US_SetPrintFont(2);
 	// Render out the story text (to an offscreen buffer?)
+	CK_DrawSWText();
+	// Restore the font.
+	US_SetPrintFont(0);
+
+
+
 	CA_CacheGrChunk(PIC_STARWARS); // Story bkg image.
 
 	// Keen draws this to a separate surface, for fast copies.
@@ -1379,40 +1483,28 @@ void CK_DrawStarWars()
 
 	// At this point, Keen generates a set of buffers full of machine code,
 	// one per line, which scale the text (from the surface mentioned above)
-	// to make the "Star Wars" effect. (sub_152AE)
+	// to make the "Star Wars" effect. (BuildScalers/CompileSWUpdate)
+	
+	// Instead, we just precalculate the various scaling factors.
+	CK_PrepareSWUpdate();
 
-	StartMusic(ck_currentEpisode->starWarsSongLevel);
-
-
-	// TODO: Implement
-	// In the meantime, there's this placeholder
-#if 1
-	int firsttime = SD_GetLastTimeCount();
-	CA_CacheGrChunk(3);
-	do
+	// ...and scroll the text!
+	if (!IN_GetLastScan())
 	{
-		char buf[80];
+		StartMusic(ck_currentEpisode->starWarsSongLevel);
+		CK_ScrollSWText();
+		StopMusic();
+	}
 
-		sprintf(buf, "Star Wars: %d", (SD_GetTimeCount()-firsttime)/70);
-
-		VH_DrawPropString(buf, 30, 10, 0, 15);
-		VH_DrawPropString("Ends at 5", 30, 20, 0, 15);
-
-		IN_PumpEvents();
-		VL_DelayTics(35);
-		VL_Present();
-
-		if ((SD_GetTimeCount()-firsttime)/70 > 5)
-			break;
-
-	} while (!IN_GetLastScan());
-	StopMusic();
+	//TODO: We _really_ need a destroy surface function.
+	//VL_DestroySurface(ck_starWarsTextSurface);
 
 	VL_ClearScreen(0);
 	VL_SetScrollCoords(0,0);
 	VL_SetDefaultPalette();
 	CA_ClearMarks();
-#endif
+
+	CK_HandleDemoKeys();
 }
 
 void CK_ShowTitleScreen()

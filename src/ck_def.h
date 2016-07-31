@@ -431,6 +431,7 @@ extern bool ck_inHighScores;
 extern uint8_t *ck_starWarsPalette;
 extern uint8_t *ck_terminator_palette1;
 extern uint8_t *ck_terminator_palette2;
+extern const char *ck_storyText;
 
 void CK_DrawTerminator(void);
 void CK_DrawStarWars(void);

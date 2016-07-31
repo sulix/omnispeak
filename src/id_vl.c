@@ -725,6 +725,18 @@ void *VL_CreateSurface(int w, int h)
 	return s;
 }
 
+void *VL_SetScreen(void *surf)
+{
+	void *old_screen = vl_emuegavgaadapter.screen;
+	vl_emuegavgaadapter.screen = surf;
+	return old_screen;
+}
+
+int VL_SurfacePGet(void *surf, int x, int y)
+{
+	return vl_currentBackend->surfacePGet(surf, x, y);
+}
+
 void VL_SurfaceRect(void *dst, int x, int y, int w, int h, int colour)
 {
 	vl_currentBackend->surfaceRect(dst,x,y,w,h,colour);

@@ -106,6 +106,15 @@ static void VL_SDL12_RefreshPaletteAndBorderColor(void *screen)
 	);
 }
 
+static int VL_SDL12_SurfacePGet(void *surface, int x, int y)
+{
+	SDL_Surface *surf = (SDL_Surface*) surface;
+	SDL_LockSurface(surf);
+	int col = ((uint8_t*)surf->pixels)[y*surf->pitch+x];
+	SDL_UnlockSurface(surf);
+	return col;
+}
+
 static void VL_SDL12_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour)
 {
 	SDL_Surface *surf = (SDL_Surface*) dst_surface;
@@ -119,7 +128,7 @@ static void VL_SDL12_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int 
   colour &= mapmask;
 
 	SDL_Surface *surf = (SDL_Surface*) dst_surface;
-  for (int py = y, py < y + h; py++)
+  for (int py = y; py < y + h; py++)
     for (int px = x; px < x + w; px++)
     {
       uint8_t *p = ((uint8_t*)surf->pixels)+py*surf->w+px;
@@ -265,6 +274,7 @@ VL_Backend vl_sdl12_backend =
 	/*.getSurfaceMemUse =*/ &VL_SDL12_GetSurfaceMemUse,
 	/*.getSurfaceDimensions =*/ &VL_SDL12_GetSurfaceDimensions,
 	/*.refreshPaletteAndBorderColor =*/ &VL_SDL12_RefreshPaletteAndBorderColor,
+	/*.surfacePGet =*/ &VL_SDL12_SurfacePGet,
 	/*.surfaceRect =*/ &VL_SDL12_SurfaceRect,
 	/*.surfaceRect_PM =*/ &VL_SDL12_SurfaceRect_PM,
 	/*.surfaceToSurface =*/ &VL_SDL12_SurfaceToSurface,

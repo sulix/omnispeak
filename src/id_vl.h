@@ -89,6 +89,7 @@ typedef struct VL_Backend
 	long (*getSurfaceMemUse)(void *surface);
 	void (*getSurfaceDimensions)(void *surface, int *w, int *h);
 	void (*refreshPaletteAndBorderColor)(void *screen);
+	int (*surfacePGet)(void *screen, int x, int y);
 	void (*surfaceRect)(void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*surfaceRect_PM)(void *dst_surface, int x, int y, int w, int h, int colour, int mapmask);
 	void (*surfaceToSurface)(void *src_surface, void *dst_surface, int x, int y, int sx, int sy, int sw, int sh);
@@ -112,6 +113,8 @@ void VL_SetParams(bool isFullScreen, bool isAspectCorrected);
 void VL_ToggleFullscreen();
 void VL_ToggleAspect();
 void *VL_CreateSurface(int w, int h);
+void *VL_SetScreen(void *surf);
+int VL_SurfacePGet(void *surf, int x, int y);
 void VL_SurfaceRect(void *dst, int x, int y, int w, int h, int colour);
 void VL_ScreenRect(int x, int y, int w, int h, int colour);
 void VL_ScreenRect_PM(int x, int y, int w, int h, int colour);

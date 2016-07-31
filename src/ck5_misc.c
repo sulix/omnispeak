@@ -210,6 +210,46 @@ uint8_t ck5_starWarsPalette[] = {
 uint8_t ck5_terminator_palette1[] = {0,4,4,0x1c,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,0x13,0};
 uint8_t ck5_terminator_palette2[] = {0,4,4,0x1c,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,4,0};
 
+const char *ck5_storyText =
+	"Episode Five\n"
+	"\n"
+	"The Armageddon Machine\n"
+	"\n"
+	"After learning the\n"
+	"location of the secret\n"
+	"Shikadi base, Keen\n"
+	"jumped in the trusty\n"
+	"Bean-with-Bacon\n"
+	"Megarocket and blasted\n"
+	"across interstellar\n"
+	"space.\n"
+	"\n"
+	"Seventy-five furious\n"
+	"games of Paddle War\n"
+	"later, Keen dropped\n"
+	"out of lightspeed near\n"
+	" the Korath system.\n"
+	"\n"
+	"He flew toward the\n"
+	"planet, keeping it\n"
+	"between him and the\n"
+	"base.\n"
+	"\n"
+	"Pulling up underside\n"
+	"and docking at the\n"
+	"Ion Ventilation System,\n"
+	"Keen must destroy the\n"
+	"Shikadi Armageddon\n"
+	"Machine before it\n"
+	"explodes and destroys\n"
+	"the Milky Way!  He\n"
+	"steps into the dark\n"
+	"ventilation duct and\n"
+	"begins his most\n"
+	"dangerous adventure\n"
+	"yet...\n";
+
+
 // ck_game.c
 const char *ck5_levelEntryTexts[] = {
 	"Keen purposefully\n"
@@ -492,6 +532,7 @@ void CK5_DefineConstants(void)
   ck_starWarsPalette = ck5_starWarsPalette;
   ck_terminator_palette1 = ck5_terminator_palette1;
   ck_terminator_palette2 = ck5_terminator_palette2;
+  ck_storyText = ck5_storyText;
 
   // ck_game.c
   ck_levelEntryTexts = ck5_levelEntryTexts;

@@ -70,6 +70,39 @@ uint8_t ck4_starWarsPalette[] = {
 uint8_t ck4_terminator_palette1[] = {0,0x18,0x18,0x07,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,0x13,0};
 uint8_t ck4_terminator_palette2[] = {0,0x18,0x18,0x07,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,0x18,0};
 
+const char *ck4_storyText =
+	"Episode Four\n"
+	"\n"
+	"Secret of the Oracle\n"
+	"\n"
+	"After delivering a\n"
+	"crippling blow to the\n"
+	"plans of Mortimer\n"
+	"McMire and receiving\n"
+	"the praise of the\n"
+	"Vorticon race,\n"
+	"Commander Keen\n"
+	"returned to his home in\n"
+	"the suburbs.\n"
+	"\n"
+	"Here he was forced to\n"
+	"go to bed at an early\n"
+	"hour, and to eat mashed\n"
+	"potatoes.\n"
+	"\n"
+	"Months later, Billy\n"
+	"tinkered around with\n"
+	"his latest invention,\n"
+	"the Photachyon\n"
+	"Transceiver, or faster-\n"
+	"than-light radio. After\n"
+	"picking up a lot of bad\n"
+	"alien sitcoms, he\n"
+	"stumbled upon a strange\n"
+	"message of terrible\n"
+	"importance....\n";
+
+
 // ck_game.c
 const char *ck4_levelEntryTexts[] = {
 	"Keen enters the\n"
@@ -326,6 +359,7 @@ void CK4_DefineConstants(void)
   ck_starWarsPalette = ck4_starWarsPalette;
   ck_terminator_palette1 = ck4_terminator_palette1;
   ck_terminator_palette2 = ck4_terminator_palette2;
+  ck_storyText = ck4_storyText;
 
   // ck_game.c
   ck_levelEntryTexts = ck4_levelEntryTexts;

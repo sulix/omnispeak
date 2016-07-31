@@ -294,6 +294,12 @@ static void VL_SDL2GL_RefreshPaletteAndBorderColor(void *screen)
 	VL_SDL2GL_SetGLClearColorFromBorder();
 }
 
+static int VL_SDL2GL_SurfacePGet(void *surface, int x, int y)
+{
+	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface*) surface;
+	return ((uint8_t*)surf->data)[y*surf->w+x];
+}
+
 static void VL_SDL2GL_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour)
 {
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface*) dst_surface;
@@ -595,6 +601,7 @@ VL_Backend vl_sdl2gl_backend =
 	/*.getSurfaceMemUse =*/ &VL_SDL2GL_GetSurfaceMemUse,
 	/*.getSurfaceDimensions =*/ &VL_SDL2GL_GetSurfaceDimensions,
 	/*.refreshPaletteAndBorderColor =*/ &VL_SDL2GL_RefreshPaletteAndBorderColor,
+	/*.surfacePGet =*/ &VL_SDL2GL_SurfacePGet,
 	/*.surfaceRect =*/ &VL_SDL2GL_SurfaceRect,
 	/*.surfaceRect_PM =*/ &VL_SDL2GL_SurfaceRect_PM,
 	/*.surfaceToSurface =*/ &VL_SDL2GL_SurfaceToSurface,

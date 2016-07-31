@@ -70,6 +70,40 @@ uint8_t ck6_starWarsPalette[] = {
 uint8_t ck6_terminator_palette1[] = {0,0x05,0x05,0x15,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,0x13,0};
 uint8_t ck6_terminator_palette2[] = {0,0x05,0x05,0x15,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,0x05,0};
 
+const char *ck6_storyText =
+	"Episode Six\n"
+	"\n"
+	"Aliens Ate My\n"
+	"Baby Sitter!\n"
+	"\n"
+	"While out in his\n"
+	"backyard clubhouse,\n"
+	"Billy's baby sitter\n"
+	"Molly calls him for\n"
+	"dinner. He continues\n"
+	"working on his new\n"
+	"wrist computer.\n"
+	"\n"
+	"Suddenly, there is a\n"
+	"loud noise outside.\n"
+	"\n"
+	"Rushing out, Keen finds\n"
+	"his baby sitter gone\n"
+	"and a note on a patch\n"
+	"of scorched grass.  The\n"
+	"Bloogs of Fribbulus Xax\n"
+	"are going to make a\n"
+	"meal out of Molly!\n"
+	"\n"
+	"You've got to rescue\n"
+	"her, because your\n"
+	"parents will never\n"
+	"believe you when you\n"
+	"tell them...\n"
+	"\n"
+	"\"Aliens Ate My\n"
+	"Baby Sitter!\"\n";
+
 // ck_game.c
 const char *ck6_levelEntryTexts[] = {
 	"Keen attacks\n"
@@ -337,6 +371,7 @@ void CK6_DefineConstants(void)
   ck_starWarsPalette = ck6_starWarsPalette;
   ck_terminator_palette1 = ck6_terminator_palette1;
   ck_terminator_palette2 = ck6_terminator_palette2;
+  ck_storyText = ck6_storyText;
 
   // ck_game.c
   ck_levelEntryTexts = ck6_levelEntryTexts;
