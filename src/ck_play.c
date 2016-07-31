@@ -249,7 +249,7 @@ void CK_RemoveObj(CK_object *obj)
 
 	if (obj->type == CT_CLASS(StunnedCreature))
 	{
-		RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & obj->user3Ptr);
+		RF_RemoveSpriteDrawUsing16BitOffset(&obj->user3);
 	}
 
 	if (obj == ck_lastObject)
@@ -1867,7 +1867,7 @@ int CK_PlayLoop()
 						{
 							RF_RemoveSpriteDraw(&currentObj->sde);
 							if (currentObj->type == CT_CLASS(StunnedCreature))
-								RF_RemoveSpriteDraw((RF_SpriteDrawEntry **) & currentObj->user3Ptr);
+								RF_RemoveSpriteDrawUsing16BitOffset(&currentObj->user3);
 							currentObj->active = OBJ_INACTIVE;
 							continue;
 						}

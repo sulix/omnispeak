@@ -97,7 +97,7 @@ bool CK_SaveObject(FILE *fp, CK_object *o)
 	uint16_t statedosoffset = o->currentAction ? o->currentAction->compatDosPointer : 0;
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 	// Used for debugging
-	uint16_t sde = RF_ConvertSpriteArray16BitOffsetToPtr(o->sde);
+	uint16_t sde = RF_ConvertSpriteArrayPtrTo16BitOffset(o->sde);
 	uint16_t next = CK_ConvertObjPointerTo16BitOffset(o->next);
 	uint16_t prev = CK_ConvertObjPointerTo16BitOffset(o->prev);
 #else
@@ -452,23 +452,23 @@ bool CK_LoadGame (FILE *fp)
 
 		/* Omit stale sprite draw pointers */
 		if (newObj->type == CT_CLASS(StunnedCreature))
-			newObj->user3Ptr = NULL;
+			newObj->user3 = 0;
 		else if (ck_currentEpisode->ep == EP_CK4)
 		{
 			if (newObj->type == CT4_Platform)
-				newObj->user2Ptr = newObj->user3Ptr = NULL;
+				newObj->user2 = newObj->user3 = 0;
 		}
 		else if (ck_currentEpisode->ep == EP_CK5)
 		{
 			if (newObj->type == CT5_Mine)
-				newObj->user4Ptr = NULL;
+				newObj->user4 = 0;
 			else if (newObj->type == CT5_Sphereful)
-				newObj->user1Ptr = newObj->user2Ptr = newObj->user3Ptr = newObj->user4Ptr = NULL;
+				newObj->user1 = newObj->user2 = newObj->user3 = newObj->user4 = 0;
 		}
 		else if (ck_currentEpisode->ep == EP_CK6)
 		{
 			if (newObj->type == CT6_Platform)
-				newObj->user3Ptr = NULL;
+				newObj->user3 = 0;
 		}
 
 		/* If this is the last object in the saved list, exit the loop */
