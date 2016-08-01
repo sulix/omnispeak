@@ -973,7 +973,6 @@ levelcomplete:
       // RF_Reset();
       // VW_SyncPages();
       help_endgame();
-      CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
       goto highscores;
 
 		case 14:

@@ -1610,37 +1610,27 @@ CK_HighScore ck_highScores[8] =
 
 // Draw the high scores overtop the level
 extern void *rf_tileBuffer;
-#include "id_vl_private.h"
 void CK_OverlayHighScores()
 {
-  // Omnispeak
-  int topMargin = ck_currentEpisode->ep == EP_CK4 ? 0x33 :
-    ck_currentEpisode->ep == EP_CK5 ? 0x23 :
-    0;
-
-  int rightMargin = ck_currentEpisode->ep == EP_CK4 ? 0x128 :
-    ck_currentEpisode->ep == EP_CK5 ? 0x118 :
-    0;
-
-  int leftMargin = ck_currentEpisode->ep == EP_CK4 ? 0x18 :
-    ck_currentEpisode->ep == EP_CK5 ? 0x28 :
-    0;
+	// Omnispeak
+	int topMargin = ck_currentEpisode->highScoreTopMargin;
+	int rightMargin = ck_currentEpisode->highScoreRightMargin;
+	int leftMargin = ck_currentEpisode->highScoreLeftMargin;
 
 	RF_Reposition (0,0);
 
-  // DOS: Set the back buffer to the master tilebuffer
-  // The print routines draw to the backbuffer
+	// DOS: Set the back buffer to the master tilebuffer
+	// The print routines draw to the backbuffer
 	// oldbufferofs = bufferofs;
 	// bufferofs = masterofs;
 
-  // Simulate this in Omnispeak by replacing the tilebuffer surface
-  // for the screen surface
+	// Simulate this in Omnispeak by replacing the tilebuffer surface
+	// for the screen surface
 
-  void *screen = vl_emuegavgaadapter.screen;
-	vl_emuegavgaadapter.screen = rf_tileBuffer;
+	void *screen = VL_SetScreen(rf_tileBuffer);
 
-  if (ck_currentEpisode->ep == EP_CK5)
-    US_SetPrintColour(12);
+	if (ck_currentEpisode->ep == EP_CK5)
+		US_SetPrintColour(12);
 
 	for (int entry = 0; entry < 8; entry++)
 	{
@@ -1649,16 +1639,16 @@ void CK_OverlayHighScores()
 		US_SetPrintX(leftMargin);
 		US_Print(ck_highScores[entry].name);
 
-    // Keen 4: print the councilmembers rescued
-    if (ck_currentEpisode->ep == EP_CK4)
-    {
-      US_SetPrintX(0x98);
-      for (int i = 0; i < ck_highScores[entry].arg4; i++)
-      {
-        VH_DrawTile8(US_GetPrintX(), US_GetPrintY()+1, 0x47);
-        US_SetPrintX(US_GetPrintX() + 8);
-      }
-    }
+		// Keen 4: print the councilmembers rescued
+		if (ck_currentEpisode->ep == EP_CK4)
+		{
+			US_SetPrintX(0x98);
+			for (int i = 0; i < ck_highScores[entry].arg4; i++)
+			{
+				VH_DrawTile8(US_GetPrintX(), US_GetPrintY()+1, 0x47);
+				US_SetPrintX(US_GetPrintX() + 8);
+			}
+		}
 
 		// Print the score, right aligned in the second
 		// column of the table
@@ -1674,15 +1664,14 @@ void CK_OverlayHighScores()
 		// Align it
 		uint16_t w, h;
 		VH_MeasurePropString(buf, &w, &h, US_GetPrintFont());
-    US_SetPrintX(rightMargin-w);
+		US_SetPrintX(rightMargin-w);
 		US_Print(buf);
 	}
 
 	US_SetPrintColour(15);
 
-  // restore the backbuffer
-	// bufferofs = oldbufferofs;  // DOS
-	vl_emuegavgaadapter.screen = screen;
+	// restore the backbuffer
+	VL_SetScreen(screen);
 
 }
 
@@ -1690,18 +1679,10 @@ void CK_OverlayHighScores()
 static bool ck_highScoresDirty;
 void CK_SubmitHighScore(int score, uint16_t arg_4)
 {
-  // Omnispeak
-  int topMargin = ck_currentEpisode->ep == EP_CK4 ? 0x33 :
-    ck_currentEpisode->ep == EP_CK5 ? 0x23 :
-    0;
-
-  int rightMargin = ck_currentEpisode->ep == EP_CK4 ? 0x128 :
-    ck_currentEpisode->ep == EP_CK5 ? 0x118 :
-    0;
-
-  int leftMargin = ck_currentEpisode->ep == EP_CK4 ? 0x18 :
-    ck_currentEpisode->ep == EP_CK5 ? 0x28 :
-    0;
+	// Omnispeak
+	int topMargin = ck_currentEpisode->highScoreTopMargin;
+	int rightMargin = ck_currentEpisode->highScoreRightMargin;
+	int leftMargin = ck_currentEpisode->highScoreLeftMargin;
 
 	int entry, entryRank;
 
@@ -1725,17 +1706,17 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 				continue;
 		}
 
-    // Made it in!
-    // Insert the new high score into the proper slot
-    for (int e = 8; --e > entry; )
-      memcpy(&ck_highScores[e], &ck_highScores[e-1], sizeof(newHighScore));
+		// Made it in!
+		// Insert the new high score into the proper slot
+		for (int e = 8; --e > entry; )
+		memcpy(&ck_highScores[e], &ck_highScores[e-1], sizeof(newHighScore));
 
-    memcpy(&ck_highScores[entry], &newHighScore, sizeof(newHighScore));
-    entryRank = entry;
-    ck_highScoresDirty = true;
+		memcpy(&ck_highScores[entry], &newHighScore, sizeof(newHighScore));
+		entryRank = entry;
+		ck_highScoresDirty = true;
 
 
-    break;
+		break;
 	}
 
 
@@ -1745,8 +1726,8 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 		ck_gameState.currentLevel = ck_currentEpisode->highScoreLevel;
 		CK_LoadLevel(true);
 		CK_OverlayHighScores();
-    if (ck_currentEpisode->ep == EP_CK5)
-      US_SetPrintColour(12);
+		if (ck_currentEpisode->ep == EP_CK5)
+			US_SetPrintColour(12);
 
 		// FIXME: Calling these causes segfault
 		RF_Refresh();

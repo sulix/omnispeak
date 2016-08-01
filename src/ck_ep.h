@@ -58,6 +58,9 @@ typedef struct CK_EpisodeDef
   int activeLimit;
 
   int highScoreLevel;
+  int highScoreTopMargin;
+  int highScoreLeftMargin;
+  int highScoreRightMargin;
   int endSongLevel;
   int starWarsSongLevel;
 

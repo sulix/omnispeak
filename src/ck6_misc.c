@@ -30,24 +30,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdio.h>
 
 CK_EpisodeDef ck6_episode ={
-  EP_CK6,
+	EP_CK6,
 	"CK6",
 	&CK6_SetupFunctions,
 	&CK6_ScanInfoLayer,
-  &CK6_DefineConstants,
-  &CK6_MapMiscFlagsCheck,
-  4,
-  15,
-  1,
-  13,
-  16,
-  // Note these offsets are for version 1.5
-  0x75CE,
-  0x939E,
-  0xCEA2,
-  0xE81A,
-  0xD62E,
-  10,
+	&CK6_DefineConstants,
+	&CK6_MapMiscFlagsCheck,
+	/* .activeLimit = */ 4,
+	/* .highScoreLevel = */ 18,
+	/* .highScoreTopMargin = */ 0x33,
+	/* .highScoreLeftMargin = */ 0x28,
+	/* .highScoreRightMargin = */ 0x118,
+	/* .endSongLevel = */ 1,
+	/* .starWarsSongLevel = */ 13,
+	/* .lastLevelToMarkAsDone = */ 16,
+	// Note these offsets are for version 1.5
+	/* .objArrayOffset = */ 0x75CE,
+	/* .tempObjOffset = */ 0x939E,
+	/* .spriteArrayOffset = */ 0xCEA2,
+	/* .printXOffset = */ 0xE81A,
+	/* .animTilesOffset = */ 0xD62E,
+	/* .animTileSize = */ 10,
 };
 
 int16_t CK6_ItemSpriteChunks[] ={

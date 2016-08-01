@@ -32,24 +32,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck4_ep.h"
 #include <stdio.h>
 
+
 CK_EpisodeDef ck4_episode ={
-  EP_CK4,
+	EP_CK4,
 	"CK4",
 	&CK4_SetupFunctions,
 	&CK4_ScanInfoLayer,
-  &CK4_DefineConstants,
-  &CK4_MapMiscFlagsCheck,
-  4,
-  19,
-  7,
-  12,
-  17,
-  0xA807,
-  0xC5D3,
-  0xD622,
-  0xA537,
-  0xDDAE,
-  4,
+	&CK4_DefineConstants,
+	&CK4_MapMiscFlagsCheck,
+	/* .activeLimit = */ 4,
+	/* .highScoreLevel = */ 19,
+	/* .highScoreTopMargin = */ 0x33,
+	/* .highScoreLeftMargin = */ 0x18,
+	/* .highScoreRightMargin = */ 0x128, 
+	/* .endSongLevel = */ 7,
+	/* .starWarsSongLevel = */ 12,
+	/* .lastLevelToMarkAsDone = */ 17,
+	/* .objArrayOffset = */ 0xA807,
+	/* .tempObjOffset = */ 0xC5D3,
+	/* .spriteArrayOffset = */ 0xD622,
+	/* .printXOffset = */ 0xA537,
+	/* .animTilesOffset = */ 0xDDAE,
+	/* .animTileSize = */ 4,
 };
 
 // Contains some keen-4 specific functions.
