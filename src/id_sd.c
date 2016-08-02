@@ -376,6 +376,8 @@ void SDL_SetTimer0(int16_t int_8_divisor)
 	if (SD_SDL_AudioSubsystem_Up)
 		SDL_LockAudio();
 	SD_SDL_ScaledSamplesPerPartsTimesPITRate = int_8_divisor * SD_SDL_AudioSpec.freq;
+	// Since the following division may lead to truncation, SD_SDL_SamplesInCurrentPart
+	// can change during playback by +-1 (otherwise music may be a bit faster than intended).
 	SD_SDL_SamplesInCurrentPart = SD_SDL_ScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE;
 	if (SD_SDL_AudioSubsystem_Up)
 		SDL_UnlockAudio();
