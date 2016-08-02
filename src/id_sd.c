@@ -97,7 +97,9 @@ int32_t sqHackTime;
 // WARNING: These vars refer to the libSDL library!!!
 SDL_AudioSpec SD_SDL_AudioSpec;
 static bool SD_SDL_AudioSubsystem_Up;
-static uint32_t SD_SDL_SampleOffsetInSound, SD_SDL_SamplesPerPart/*, SD_SDL_MusSamplesPerPart*/;
+static uint64_t SD_SDL_ScaledSamplesPerPartsTimesPITRate;
+static uint32_t SD_SDL_ScaledSamplesPartNum = 0;
+static uint32_t SD_SDL_SampleOffsetInSound, SD_SDL_SamplesInCurrentPart;
 
 // Used for filling with samples from alOut (alOut_lLw), in addition
 // to SD_SDL_CallBack (because waits between/after AdLib writes are expected)
@@ -124,9 +126,9 @@ uint32_t SD_GetTimeCount(void)
 	// FIXME: What happens when SDL_GetTicks() reaches the upper bound?
 	// May be challenging to fix... A proper solution should
 	// only work with *differences between SDL_GetTicks values*.
-	uint64_t currPitTicks = (uint64_t)(SDL_GetTicks()) * SD_SOUND_PART_RATE_BASE / 1000;
-	uint32_t ticksToAdd = (currPitTicks - SD_LastPITTickTime) / ScaledTimerDivisor;
-	SD_LastPITTickTime += ticksToAdd * ScaledTimerDivisor;
+	uint64_t currPitTicks = (uint64_t)(SDL_GetTicks()) * PC_PIT_RATE / 1000;
+	uint32_t ticksToAdd = currPitTicks / ScaledTimerDivisor - SD_LastPITTickTime / ScaledTimerDivisor;
+	SD_LastPITTickTime = currPitTicks;
 	TimeCount += ticksToAdd;
 	return TimeCount;
 }
@@ -328,8 +330,8 @@ void SD_SDL_CallBack(void *unused, Uint8 *stream, int len)
 			SDL_t0Service();
 		}
 		// Now generate sound
-		isPartCompleted = (len >= 2*(SD_SDL_SamplesPerPart-SD_SDL_SampleOffsetInSound));
-		currNumOfSamples = isPartCompleted ? (SD_SDL_SamplesPerPart-SD_SDL_SampleOffsetInSound) : (len/2);
+		isPartCompleted = (len >= 2*(SD_SDL_SamplesInCurrentPart-SD_SDL_SampleOffsetInSound));
+		currNumOfSamples = isPartCompleted ? (SD_SDL_SamplesInCurrentPart-SD_SDL_SampleOffsetInSound) : (len/2);
 
 		// AdLib (including hack for alOut delays)
 		if (SD_ALOut_SamplesEnd-SD_ALOut_SamplesStart <= currNumOfSamples)
@@ -357,16 +359,26 @@ void SD_SDL_CallBack(void *unused, Uint8 *stream, int len)
 		SD_SDL_SampleOffsetInSound += currNumOfSamples;
 		len -= 2*currNumOfSamples;
 		// End of part?
-		if (SD_SDL_SampleOffsetInSound >= SD_SDL_SamplesPerPart)
+		if (SD_SDL_SampleOffsetInSound >= SD_SDL_SamplesInCurrentPart)
 		{
 			SD_SDL_SampleOffsetInSound = 0;
+			if (++SD_SDL_ScaledSamplesPartNum == PC_PIT_RATE)
+				SD_SDL_ScaledSamplesPartNum = 0;
+
+			SD_SDL_SamplesInCurrentPart = (SD_SDL_ScaledSamplesPartNum + 1) * SD_SDL_ScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE - SD_SDL_ScaledSamplesPartNum * SD_SDL_ScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE;
 		}
 	}
 }
 
+/* NEVER call this from the SDL callback!!! (Or you want a deadlock?) */
 void SDL_SetTimer0(int16_t int_8_divisor)
 {
-	SD_SDL_SamplesPerPart = (int32_t)int_8_divisor * SD_SDL_AudioSpec.freq / PC_PIT_RATE;
+	if (SD_SDL_AudioSubsystem_Up)
+		SDL_LockAudio();
+	SD_SDL_ScaledSamplesPerPartsTimesPITRate = int_8_divisor * SD_SDL_AudioSpec.freq;
+	SD_SDL_SamplesInCurrentPart = SD_SDL_ScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE;
+	if (SD_SDL_AudioSubsystem_Up)
+		SDL_UnlockAudio();
 	ScaledTimerDivisor = int_8_divisor;
 }
 
@@ -900,11 +912,6 @@ void SD_Startup(void)
 		}
 		else
 		{
-#if 0
-			// TODO: This depends on music on/off? (560Hz vs 140Hz for general interrupt handler)
-			SD_SDL_SamplesPerPart = ((uint64_t)SD_SOUND_PART_RATE_BASE / SD_SFX_PART_RATE) * SD_SDL_AudioSpec.freq / PC_PIT_RATE;
-			SD_SDL_MusSamplesPerPart = ((uint64_t)SD_SOUND_PART_RATE_BASE / (4*SD_SFX_PART_RATE)) * SD_SDL_AudioSpec.freq / PC_PIT_RATE;
-#endif
 			SD_SDL_AudioSubsystem_Up = true;
 		}
 
@@ -1072,15 +1079,22 @@ void SD_WaitSoundDone(void)
 	}
 }
 
+/* NEVER call this from the callback!!! */
 void SD_MusicOn(void)
 {
+	if (SD_SDL_AudioSubsystem_Up)
+		SDL_LockAudio();
 	sqActive = 1;
+	if (SD_SDL_AudioSubsystem_Up)
+		SDL_UnlockAudio();
 }
 
-/* NEVER call this from the callback!!! */
+/* Also don't call this from the callback */
 void SD_MusicOff(void)
 {
 	uint16_t i;
+	if (SD_SDL_AudioSubsystem_Up)
+		SDL_LockAudio();
 	if (MusicMode == smm_AdLib)
 	{
 		alFXReg = 0;
@@ -1089,6 +1103,8 @@ void SD_MusicOff(void)
 			alOut(alFreqH + i + 1, 0);
 	}
 	sqActive = 0;
+	if (SD_SDL_AudioSubsystem_Up)
+		SDL_UnlockAudio();
 }
 
 void SD_StartMusic(MusicGroup *music)
@@ -1096,10 +1112,14 @@ void SD_StartMusic(MusicGroup *music)
 	SD_MusicOff();
 	if (MusicMode == smm_AdLib)
 	{
+		if (SD_SDL_AudioSubsystem_Up)
+			SDL_LockAudio();
 		sqHackPtr = sqHack = (uint16_t *)music->values;
 		sqHackSeqLen = sqHackLen = music->length;
 		sqHackTime = 0;
 		alTimeCount = 0;
+		if (SD_SDL_AudioSubsystem_Up)
+			SDL_UnlockAudio();
 		SD_MusicOn();
 	}
 }
