@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdlib.h>
 #include <string.h>
+#include "SDL.h" // For SDL_Delay
 
 /*
  * CK_INTER: Holds an assortment of screen drawing and state switching routines
@@ -386,9 +387,9 @@ void AnimateTerminator(void)
 	terminatorPageOn = terminatorOfs = 0;
 
 	// delay for a tic before starting
-	SD_SetTimeCount(SD_GetTimeCount());
+	SD_SetLastTimeCount(SD_GetTimeCount());
 	while (SD_GetLastTimeCount() == SD_GetTimeCount())
-		;
+		SDL_Delay(1); // Keep CPU usage low
 
 	SD_SetLastTimeCount(SD_GetTimeCount());
 
@@ -772,9 +773,6 @@ void ZoomOutTerminator(void)
 	elapsedTime = 1;
 	maxTime = 30; // Set to large value to slow down the zoom
 
-	// Set the starting time properly.
-	SD_SetLastTimeCount(SD_GetTimeCount());
-
 	// elapsedTime seems to be a timer, maxTime is the max time
 	while (elapsedTime <= maxTime)
 	{
@@ -832,6 +830,8 @@ void ZoomOutTerminator(void)
 		newTime = SD_GetTimeCount();
 		SD_SetSpriteSync(newTime - SD_GetLastTimeCount());
 		SD_SetLastTimeCount(newTime);
+		if (SD_GetSpriteSync() > 8)
+			SD_SetSpriteSync(8);
 
 		if (elapsedTime == maxTime)
 			break;
@@ -1397,16 +1397,19 @@ void CK_DrawSWText()
 // This is StarWarsLoop in CKSRCMOD.
 void CK_ScrollSWText()
 {
+	SD_SetLastTimeCount(0);
+	SD_SetTimeCount(0);
+	SD_SetSpriteSync(0);
 	// We draw the text on plane 4.
 	VL_SetMapMask(8);
 
 	uint16_t scrollDistance = 0;
 
-	while (scrollDistance < ck_starWarsTotalHeight + 400)
+	while (scrollDistance <= ck_starWarsTotalHeight + 400)
 	{
 		// Update rows from the bottom.
 
-		for (int row = 199; row > 0; --row)
+		for (int row = 199; row >= 0; --row)
 		{
 			int masterRowToDraw = scrollDistance - ck_SWScreenRowToMasterRow[row];
 
@@ -1440,14 +1443,15 @@ void CK_ScrollSWText()
 		IN_PumpEvents();
 		VL_Present();
 
-		SD_SetSpriteSync(SD_GetSpriteSync() + SD_GetTimeCount() - SD_GetLastTimeCount());
-		SD_SetLastTimeCount(SD_GetTimeCount());
+		uint32_t newTime = SD_GetTimeCount();
+		SD_SetSpriteSync(SD_GetSpriteSync() + newTime - SD_GetLastTimeCount());
+		SD_SetLastTimeCount(newTime);
 
 		if (SD_GetSpriteSync() > 20)
 			SD_SetSpriteSync(20);
 
 		scrollDistance += SD_GetSpriteSync()/4;
-		SD_SetSpriteSync(SD_GetSpriteSync() & 3);
+		SD_SetSpriteSync(SD_GetSpriteSync()%4);
 
 		if (IN_GetLastScan() == IN_SC_F1)
 			IN_SetLastScan(IN_SC_Space);
