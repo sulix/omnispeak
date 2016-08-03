@@ -610,7 +610,18 @@ void RF_NewMap(void)
 
 void RF_RenderTile16(int x, int y, int tile)
 {
+	//TODO: We should be able to remove this at some point, as it should have already been cached by
+	// CacheMarks. Last time I tried that, I recall it failing, but it's something we should investigate
+	// at some point.
 	CA_CacheGrChunk(ca_gfxInfoE.offTiles16+tile);
+
+	// Some levels, notably Keen 6's "Guard Post 3" use empty background tiles (i.e. tiles with offset
+	// FFFFFF in EGAHEAD). CA_CacheGrChunk() leaves these as NULL pointers. As we'd otherwise crash,
+	// we just skip rendering these (though the possibility is there to use hardcoded null pointer data
+	// as with F10+Y). At least in this case, the tile is hidden anyway, so it doesn't matter.
+	if (!ca_graphChunks[ca_gfxInfoE.offTiles16+tile])
+		return;
+
 	VL_UnmaskedToSurface(ca_graphChunks[ca_gfxInfoE.offTiles16+tile],rf_tileBuffer,x*16,y*16,16,16);
 }
 
