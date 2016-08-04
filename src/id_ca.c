@@ -422,10 +422,17 @@ static ca_huffnode *ca_gr_huffdict;
 static FILE *ca_graphHandle;	//File Pointer for ?GAGRAPH file.
 void *ca_graphStarts;
 
+// Size of the ?GAHEAD file (i.e. number of chunks * 3)
+int ca_graphHeadSize;
+// Size of the ?GAGRAPH file (in bytes)
+int ca_graphFileSize;
+
 //Get the offset of a (compressed) chunk in the ?GAGRAPH file.
 long CAL_GetGrChunkStart(int chunk)
 {
 	int offset = chunk*3;
+	if (offset >= ca_graphHeadSize)
+		return -1;
 	long value = ((uint8_t*)ca_graphStarts)[offset]
 		| ((uint8_t*)ca_graphStarts)[offset+1] << 8
 		| ((uint8_t*)ca_graphStarts)[offset+2] << 16;
@@ -480,6 +487,8 @@ int CAL_GetGrChunkCompLength(int chunk)
 	int sizeOffset = 0;
 	if (chunk < ca_gfxInfoE.offTiles8 && chunk >= ca_gfxInfoE.offBinaries)
 		sizeOffset = 4;
+	if (nextChunk * 3 >= ca_graphHeadSize)
+		return ca_graphFileSize - CAL_GetGrChunkStart(chunk) - sizeOffset;
 	while (CAL_GetGrChunkStart(nextChunk) == -1) nextChunk++;
 	return CAL_GetGrChunkStart(nextChunk) - CAL_GetGrChunkStart(chunk) - sizeOffset;
 }
@@ -500,7 +509,7 @@ void CAL_SetupGrFile()
 	//CAL_OptimizeNodes(ca_gr_huffdict);
 
 	//Load the ?GAHEAD
-	CA_LoadFile("EGAHEAD.EXT", &ca_graphStarts, 0);
+	CA_LoadFile("EGAHEAD.EXT", &ca_graphStarts, &ca_graphHeadSize);
 
 	// Read chunk type info from GFEINFO?
 	FILE *gfxinfoe = fopen(CAL_AdjustExtension("GFXINFOE.EXT"),"rb");
@@ -509,6 +518,11 @@ void CAL_SetupGrFile()
 
 	//Load the graphics --- we will keep the file open for the duration of the game.
 	ca_graphHandle = fopen(CAL_AdjustExtension("EGAGRAPH.EXT"),"rb");
+
+	// Find the size of the file. Some mods do not have the last entry in the ?GAHEAD,
+	// so we compute it like so.
+	fseek(ca_graphHandle, 0, SEEK_END);
+	ca_graphFileSize = ftell(ca_graphHandle);
 
 	// Read in the graphics headers (from TED's GFXINFOE)
 	// For some reason, keen decompresses these differently, not
