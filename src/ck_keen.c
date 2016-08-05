@@ -1776,6 +1776,20 @@ void CK_SpawnShot(int x, int y, int direction)
 	}
 
 	CK_SetAction(shot, CK_GetActionByName("CK_ACT_keenShot1"));
+
+	// This assists when Keen may shoot "through" a blooglet (see last demo in Keen 6 v1.5)
+	if (ck_currentEpisode->ep == EP_CK6)
+	{
+		for (CK_object *currentObj = ck_keenObj; currentObj; currentObj = currentObj->next)
+			if (currentObj->active &&
+			    (shot->clipRects.unitX2 > currentObj->clipRects.unitX1) &&
+			    (shot->clipRects.unitX1 < currentObj->clipRects.unitX2) &&
+			    (shot->clipRects.unitY1 < currentObj->clipRects.unitY2) &&
+			    (shot->clipRects.unitY2 > currentObj->clipRects.unitY1) &&
+			    currentObj->currentAction->collide
+			)
+				currentObj->currentAction->collide(currentObj, shot);
+	}
 }
 
 void CK_ShotHit(CK_object *obj)
