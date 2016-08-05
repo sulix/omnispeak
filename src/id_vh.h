@@ -57,4 +57,17 @@ void VH_DrawPropChar(int x, int y, int chunk, unsigned char c, int colour);
 void VH_MeasurePropString(const char *string, uint16_t *width, uint16_t *height, int16_t chunk);
 void VH_DrawPropString(const char *string,int x, int y, int chunk, int colour);
 
+bool VH_MarkUpdateBlock(int x1px, int y1px, int x2px, int y2px);
+
+void VHB_DrawTile8(int x, int y, int tile);
+void VHB_DrawTile8M(int x, int y, int tile);
+void VHB_DrawTile16(int x, int y, int tile);
+void VHB_DrawTile16M(int x, int y, int tile);
+void VHB_DrawBitmap(int x, int y, int chunk);
+void VHB_DrawMaskedBitmap(int x, int y, int chunk);
+void VHB_Plot(int x, int y, int colour);
+void VHB_HLine(int x1, int x2, int y, int colour);
+void VHB_VLine(int y1, int y2, int x, int colour);
+void VHB_Bar(int x, int y, int w, int h, int colour);
+void VHB_DrawPropString(const char *string,int x, int y, int chunk, int colour);
 #endif

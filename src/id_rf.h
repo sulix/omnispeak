@@ -68,6 +68,8 @@ extern int rf_scrollYMaxUnit;
 
 extern void (*rf_drawFunc) (void);
 
+void RFL_MarkBlockDirty(int x, int y, int val);
+
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical);
 void RF_MarkTileGraphics();
 void RF_SetDrawFunc(void (*func) (void));
