@@ -179,6 +179,7 @@ void CK6_NospikeChargeDraw(CK_object *obj)
       obj->posX -= obj->xDirection * 128;
       CK_SetAction(obj, CK_GetActionByName("CK6_ACT_NospikeSit0")); // Not Setaction2
       RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+      obj->user2 = 0;
       return;
     }
   }
