@@ -108,7 +108,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitX2 + ck_nextX;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		if (obj->clipRects.tileX2 != nextPosTile && CA_TileAtPos(nextPosTile, obj->clipRects.tileY1, 2) == 0x1F)
 		{
 			obj->xDirection = -1;
 			//TODO: Change DeltaVelocity
@@ -119,7 +119,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitX1 + ck_nextX;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		if (obj->clipRects.tileX1 != nextPosTile && CA_TileAtPos(nextPosTile, obj->clipRects.tileY1, 2) == 0x1F)
 		{
 			obj->xDirection = 1;
 			//TODO: Change DeltaVelocity
@@ -131,7 +131,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitY2 + ck_nextY;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
+		if (obj->clipRects.tileY2 != nextPosTile && CA_TileAtPos(obj->clipRects.tileX1 + 1, nextPosTile, 2) == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile - 2, 2) == 0x1F)
 			{
@@ -151,7 +151,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	{
 		nextPosUnit = obj->clipRects.unitY1 + ck_nextY;
 		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1 + 1] == 0x1F)
+		if (obj->clipRects.tileY1 != nextPosTile && CA_TileAtPos(obj->clipRects.tileX1 + 1, nextPosTile, 2) == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile + 2, 2) == 0x1F)
 			{
@@ -663,7 +663,7 @@ void CK5_ScanInfoLayer()
 	{
 		for (int x = 0; x < mapW; ++x)
 		{
-			int infoValue = CA_mapPlanes[2][y * mapW + x];
+			int infoValue = CA_TileAtPos(x, y, 2);
 			switch (infoValue)
 			{
 			case 1:

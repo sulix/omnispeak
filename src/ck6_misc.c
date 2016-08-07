@@ -674,7 +674,7 @@ void CK6_ScanInfoLayer()
 	{
 		for (int x = 0; x < mapW; ++x)
 		{
-			int infoValue = CA_mapPlanes[2][y * mapW + x];
+			int infoValue = CA_TileAtPos(x, y, 2);
 			switch (infoValue)
 			{
 			case 1:
