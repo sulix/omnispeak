@@ -66,11 +66,13 @@ static bool CAL_AdjustFilenameCase(char *filename)
 			// We've found our file!
 			// TODO: This is more than a little ugly.
 			strcpy(filename, dirEntry->d_name);
+			closedir(currentDirPtr);
 			return true;
 		}
 	}
 
 	// We didn't find a matching file.
+	closedir(currentDirPtr);
 	return false;
 }
 #else

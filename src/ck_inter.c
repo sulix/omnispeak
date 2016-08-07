@@ -1003,7 +1003,7 @@ void CK_FizzleFade()
 			// Write enable all memory planes
 			// out(0x3C4, 0xF02);
 
-			// free(titleBuffer);
+			VL_DestroySurface(titleBuffer);
 
 			return;
 		}
@@ -1019,8 +1019,7 @@ void CK_FizzleFade()
 
 	IN_UserInput(420, false);
 
-	// VL_DestroySurface?
-	// free(titleBuffer);
+	VL_DestroySurface(titleBuffer);
 
 }
 
@@ -1500,8 +1499,7 @@ void CK_DrawStarWars()
 		StopMusic();
 	}
 
-	//TODO: We _really_ need a destroy surface function.
-	//VL_DestroySurface(ck_starWarsTextSurface);
+	VL_DestroySurface(ck_starWarsTextSurface);
 
 	VL_ClearScreen(0);
 	VL_SetScrollCoords(0,0);

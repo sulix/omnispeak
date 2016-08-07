@@ -108,11 +108,13 @@ typedef struct VL_Backend
 } VL_Backend;
 
 void VL_InitScreen(void);
+void VL_Shutdown();
 void VL_ResizeScreen(int w, int h);
 void VL_SetParams(bool isFullScreen, bool isAspectCorrected);
 void VL_ToggleFullscreen();
 void VL_ToggleAspect();
 void *VL_CreateSurface(int w, int h);
+void VL_DestroySurface(void *surf);
 void *VL_SetScreen(void *surf);
 int VL_SurfacePGet(void *surf, int x, int y);
 void VL_SurfaceRect(void *dst, int x, int y, int w, int h, int colour);

@@ -264,11 +264,13 @@ void CK_ShutdownID(void)
 	US_Shutdown();
 	SD_Shutdown();
 	//IN
-	//RF
+	RF_Shutdown();
 	//VH
-	//VL
-	//CA
+	VL_Shutdown();
+	CA_Shutdown();
 	MM_Shutdown();
+
+	SDL_Quit();
 }
 
 /*

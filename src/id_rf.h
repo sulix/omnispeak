@@ -74,6 +74,7 @@ void RF_SetScrollBlock(int tileX, int tileY, bool vertical);
 void RF_MarkTileGraphics();
 void RF_SetDrawFunc(void (*func) (void));
 void RF_Startup();
+void RF_Shutdown();
 void RF_NewMap(void);
 void RF_RenderTile16(int x, int y, int tile);
 void RF_RenderTile16m(int x, int y, int tile);

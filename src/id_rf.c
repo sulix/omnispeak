@@ -579,6 +579,11 @@ void RF_Startup()
 
 }
 
+void RF_Shutdown()
+{
+	VL_DestroySurface(rf_tileBuffer);
+}
+
 // TODO: More to change? Also, originally mapNum is a global variable.
 void RF_NewMap(void)
 {

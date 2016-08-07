@@ -687,6 +687,14 @@ void VL_InitScreen(void)
 	VL_SetPaletteAndBorderColor(vl_palette[3]);
 }
 
+void VL_Shutdown()
+{
+	vl_currentBackend->destroySurface(vl_emuegavgaadapter.screen);
+	vl_currentBackend->setVideoMode(0);
+	vl_memused = 0;
+	vl_numsurfaces = 0;
+}
+
 void VL_ResizeScreen(int w, int h)
 {
 	vl_memused -= vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
@@ -723,6 +731,13 @@ void *VL_CreateSurface(int w, int h)
 	vl_memused += vl_currentBackend->getSurfaceMemUse(s);
 	vl_numsurfaces++;
 	return s;
+}
+
+void VL_DestroySurface(void *surf)
+{
+	vl_memused -= vl_currentBackend->getSurfaceMemUse(surf);
+	vl_numsurfaces--;
+	vl_currentBackend->destroySurface(surf);
 }
 
 void *VL_SetScreen(void *surf)

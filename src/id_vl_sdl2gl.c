@@ -151,81 +151,95 @@ void VL_SDL2GL_SetIcon(SDL_Window *wnd);
 
 static void VL_SDL2GL_SetVideoMode(int mode)
 {
-	assert(mode == 0xD);
-	// Here is how the dimensions of the window are currently picked:
-	// 1. The emulated 320x200 sub-window is first zoomed
-	// by a factor of 3 (for each dimension) to 960x600.
-	// 2. The height is then multiplied by 1.2, so the internal contents
-	// (without the borders) have the aspect ratio of 4:3.
-	//
-	// There are a few more tricks in use to handle the overscan border
-	// and VGA line doubling.
-	vl_sdl2gl_window = SDL_CreateWindow(VL_WINDOW_TITLE,SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-	                                    VL_SDL2GL_DEFAULT_WINDOW_WIDTH, VL_SDL2GL_DEFAULT_WINDOW_HEIGHT,
-	                                    SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE|(vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
-	vl_sdl2gl_context = SDL_GL_CreateContext(vl_sdl2gl_window);
-	vl_sdl2gl_screenWidth = VL_EGAVGA_GFX_WIDTH;
-	vl_sdl2gl_screenHeight = VL_EGAVGA_GFX_HEIGHT;
-	vl_sdl2gl_scaledBorders.left = VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH;
-	vl_sdl2gl_scaledBorders.right = VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH;
-	vl_sdl2gl_scaledBorders.top = VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT;
-	vl_sdl2gl_scaledBorders.bottom = VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT;
-	vl_sdl2gl_screenHorizScaleFactor = VL_VGA_GFX_WIDTH_SCALEFACTOR;
-	vl_sdl2gl_screenVertScaleFactor = VL_VGA_GFX_HEIGHT_SCALEFACTOR;
-
-	SDL_SetWindowMinimumSize(vl_sdl2gl_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
-
-	VL_SDL2GL_SetIcon(vl_sdl2gl_window);
-
-	if (!VL_SDL2GL_LoadGLProcs())
+	if (mode == 0xD)
 	{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Omnispeak", "Omnispeak requires OpenGL 2.0 or higher to run. Check that your drivers are installed correctly.", NULL);
-		Quit("Your system does not have one or more required OpenGL extensions.");
-	}
+		// Here is how the dimensions of the window are currently picked:
+		// 1. The emulated 320x200 sub-window is first zoomed
+		// by a factor of 3 (for each dimension) to 960x600.
+		// 2. The height is then multiplied by 1.2, so the internal contents
+		// (without the borders) have the aspect ratio of 4:3.
+		//
+		// There are a few more tricks in use to handle the overscan border
+		// and VGA line doubling.
+		vl_sdl2gl_window = SDL_CreateWindow(VL_WINDOW_TITLE,SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+						    VL_SDL2GL_DEFAULT_WINDOW_WIDTH, VL_SDL2GL_DEFAULT_WINDOW_HEIGHT,
+						    SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE|(vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+		vl_sdl2gl_context = SDL_GL_CreateContext(vl_sdl2gl_window);
+		vl_sdl2gl_screenWidth = VL_EGAVGA_GFX_WIDTH;
+		vl_sdl2gl_screenHeight = VL_EGAVGA_GFX_HEIGHT;
+		vl_sdl2gl_scaledBorders.left = VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH;
+		vl_sdl2gl_scaledBorders.right = VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH;
+		vl_sdl2gl_scaledBorders.top = VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT;
+		vl_sdl2gl_scaledBorders.bottom = VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT;
+		vl_sdl2gl_screenHorizScaleFactor = VL_VGA_GFX_WIDTH_SCALEFACTOR;
+		vl_sdl2gl_screenVertScaleFactor = VL_VGA_GFX_HEIGHT_SCALEFACTOR;
 
-	SDL_GL_SetSwapInterval(1);
+		SDL_SetWindowMinimumSize(vl_sdl2gl_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 
-	// Compile the shader we use to emulate EGA palettes.
-	int compileStatus = 0;
-	GLuint ps = id_glCreateShader(GL_FRAGMENT_SHADER);
-	id_glShaderSource(ps, 1, &pxprog, 0);
-	id_glCompileShader(ps);
-	id_glGetShaderiv(ps, GL_COMPILE_STATUS, &compileStatus);
-	if (!compileStatus)
-	{
+		VL_SDL2GL_SetIcon(vl_sdl2gl_window);
+
+		if (!VL_SDL2GL_LoadGLProcs())
+		{
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Omnispeak", "Omnispeak requires OpenGL 2.0 or higher to run. Check that your drivers are installed correctly.", NULL);
+			Quit("Your system does not have one or more required OpenGL extensions.");
+		}
+
+		SDL_GL_SetSwapInterval(1);
+
+		// Compile the shader we use to emulate EGA palettes.
+		int compileStatus = 0;
+		GLuint ps = id_glCreateShader(GL_FRAGMENT_SHADER);
+		id_glShaderSource(ps, 1, &pxprog, 0);
+		id_glCompileShader(ps);
+		id_glGetShaderiv(ps, GL_COMPILE_STATUS, &compileStatus);
+		if (!compileStatus)
+		{
+			id_glDeleteShader(ps);
+			Quit("Could not compile palette conversion fragment shader!");
+		}
+
+		vl_sdl2gl_program = id_glCreateProgram();
+		id_glAttachShader(vl_sdl2gl_program, ps);
+		id_glLinkProgram(vl_sdl2gl_program);
 		id_glDeleteShader(ps);
-		Quit("Could not compile palette conversion fragment shader!");
-	}
+		compileStatus = 0;
+		id_glGetProgramiv(vl_sdl2gl_program, GL_LINK_STATUS, &compileStatus);
+		if (!compileStatus)
+		{
+			id_glDeleteProgram(vl_sdl2gl_program);
+			Quit("Could not link palette conversion program!");
+		}
 
-	vl_sdl2gl_program = id_glCreateProgram();
-	id_glAttachShader(vl_sdl2gl_program, ps);
-	id_glLinkProgram(vl_sdl2gl_program);
-	id_glDeleteShader(ps);
-	compileStatus = 0;
-	id_glGetProgramiv(vl_sdl2gl_program, GL_LINK_STATUS, &compileStatus);
-	if (!compileStatus)
+		// Generate palette texture
+		glGenTextures(1, &vl_sdl2gl_palTextureHandle);
+		id_glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_1D, vl_sdl2gl_palTextureHandle);
+		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+		id_glActiveTexture(GL_TEXTURE0);
+
+		// Setup framebuffer stuff, just in case.
+		vl_sdl2gl_framebufferWidth = vl_sdl2gl_screenWidth;
+		vl_sdl2gl_framebufferHeight = vl_sdl2gl_screenHeight;
+		vl_sdl2gl_framebufferTexture = 0;
+		vl_sdl2gl_framebufferObject = 0;
+
+		// Hide mouse cursor
+		SDL_ShowCursor(0);
+	}
+	else
 	{
+		if (vl_sdl2gl_framebufferTexture)
+			glDeleteTextures(1, &vl_sdl2gl_framebufferTexture);
+		if (vl_sdl2gl_framebufferObject)
+			id_glDeleteFramebuffersEXT(1, &vl_sdl2gl_framebufferObject);
 		id_glDeleteProgram(vl_sdl2gl_program);
-		Quit("Could not link palette conversion program!");
+		glDeleteTextures(1, &vl_sdl2gl_palTextureHandle);
+		SDL_ShowCursor(1);
+		SDL_GL_DeleteContext(vl_sdl2gl_context);
+		SDL_DestroyWindow(vl_sdl2gl_window);
 	}
-
-	// Generate palette texture
-	glGenTextures(1, &vl_sdl2gl_palTextureHandle);
-	id_glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_1D, vl_sdl2gl_palTextureHandle);
-	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-	id_glActiveTexture(GL_TEXTURE0);
-
-	// Setup framebuffer stuff, just in case.
-	vl_sdl2gl_framebufferWidth = vl_sdl2gl_screenWidth;
-	vl_sdl2gl_framebufferHeight = vl_sdl2gl_screenHeight;
-	vl_sdl2gl_framebufferTexture = 0;
-	vl_sdl2gl_framebufferObject = 0;
-
-	// Hide mouse cursor
-	SDL_ShowCursor(0);
 }
 
 static void VL_SDL2GL_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
