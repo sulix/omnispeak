@@ -36,6 +36,7 @@ CK_EpisodeDef ck6_episode ={
 	&CK6_ScanInfoLayer,
 	&CK6_DefineConstants,
 	&CK6_MapMiscFlagsCheck,
+	&CK6_IsPresent,
 	/* .activeLimit = */ 4,
 	/* .highScoreLevel = */ 18,
 	/* .highScoreTopMargin = */ 0x33,
@@ -65,6 +66,42 @@ void CK6_SetupFunctions()
 	CK6_Obj2_SetupFunctions();
 	CK6_Obj3_SetupFunctions();
 	CK6_Map_SetupFunctions();
+}
+
+// Check if all the game files are present.
+bool CK6_IsPresent()
+{
+	// User-provided files
+	if (!CA_IsFilePresent("EGAGRAPH.CK6"))
+		return false;
+	if (!CA_IsFilePresent("GAMEMAPS.CK6"))
+		return false;
+	if (!CA_IsFilePresent("AUDIO.CK6"))
+		return false;
+
+	// Omnispeak-provided files
+	if (!CA_IsFilePresent("EGAHEAD.CK6"))
+		return false;
+	if (!CA_IsFilePresent("EGADICT.CK6"))
+		return false;
+	if (!CA_IsFilePresent("GFXINFOE.CK6"))
+		return false;
+	if (!CA_IsFilePresent("MAPHEAD.CK6"))
+		return false;
+	if (!CA_IsFilePresent("TILEINFO.CK6"))
+		return false;
+	if (!CA_IsFilePresent("AUDIODCT.CK6"))
+		return false;
+	if (!CA_IsFilePresent("AUDIOHED.CK6"))
+		return false;
+	if (!CA_IsFilePresent("AUDINFOE.CK6"))
+		return false;
+
+	if (!CA_IsFilePresent("ACTION.CK6"))
+		return false;
+	
+	// We clearly have all of the required files.
+	return true;
 }
 
 // ck_inter.c

@@ -47,7 +47,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sys/stat.h>
 #include <dirent.h>
 
-static bool CAL_AdjustFilenameCase(char *filename)
+bool CAL_AdjustFilenameCase(char *filename)
 {
 	// Quickly check to see if the file exists with the current case.
 	struct stat fileStat;
@@ -79,7 +79,7 @@ static bool CAL_AdjustFilenameCase(char *filename)
 #define WIN32_MEAN_AND_LEAN
 #undef UNICODE
 #include <windows.h>
-static bool CAL_AdjustFilenameCase(char *filename)
+bool CAL_AdjustFilenameCase(char *filename)
 {
 	DWORD fileAttribs = GetFileAttributes(filename);
 	return (fileAttribs != INVALID_FILE_ATTRIBUTES);
@@ -137,6 +137,17 @@ void	(*ca_beginCacheBox)	(const char *title, int numcache);
 void	(*ca_updateCacheBox)	(void);
 void	(*ca_finishCacheBox)	(void);
 
+// Does a file exist (with filename case correction)
+bool CA_IsFilePresent(const char *filename)
+{
+	static char newname[16];
+	strcpy(newname,filename);
+	if (!CAL_AdjustFilenameCase(newname))
+	{
+		return false;	
+	}
+	return true;
+}
 
 // Adjusts the extension on a filename to match the current episode.
 // This function is NOT thread safe, and the string returned is only
@@ -903,9 +914,12 @@ void CA_Startup(void)
 
 void CA_Shutdown(void)
 {
-	fclose(ca_GameMaps);
-	fclose(ca_graphHandle);
-	fclose(ca_audiohandle);
+	if (ca_GameMaps)
+		fclose(ca_GameMaps);
+	if (ca_graphHandle)
+		fclose(ca_graphHandle);
+	if (ca_audiohandle)
+		fclose(ca_audiohandle);
 }
 
 uint8_t *CA_audio[CA_MAX_AUDIO_CHUNKS];

@@ -36,6 +36,7 @@ CK_EpisodeDef ck5_episode ={
 	&CK5_ScanInfoLayer,
 	&CK5_DefineConstants,
 	&CK5_MapMiscFlagsCheck,
+	&CK5_IsPresent,
 	/* .activeLimit = */ 6,
 	/* .highScoreLevel = */ 15,
 	/* .highScoreTopMargin = */ 0x23,
@@ -54,6 +55,42 @@ CK_EpisodeDef ck5_episode ={
 
 
 // Contains some keen-5 specific functions.
+
+// Check if all the game files are present.
+bool CK5_IsPresent()
+{
+	// User-provided files
+	if (!CA_IsFilePresent("EGAGRAPH.CK5"))
+		return false;
+	if (!CA_IsFilePresent("GAMEMAPS.CK5"))
+		return false;
+	if (!CA_IsFilePresent("AUDIO.CK5"))
+		return false;
+
+	// Omnispeak-provided files
+	if (!CA_IsFilePresent("EGAHEAD.CK5"))
+		return false;
+	if (!CA_IsFilePresent("EGADICT.CK5"))
+		return false;
+	if (!CA_IsFilePresent("GFXINFOE.CK5"))
+		return false;
+	if (!CA_IsFilePresent("MAPHEAD.CK5"))
+		return false;
+	if (!CA_IsFilePresent("TILEINFO.CK5"))
+		return false;
+	if (!CA_IsFilePresent("AUDIODCT.CK5"))
+		return false;
+	if (!CA_IsFilePresent("AUDIOHED.CK5"))
+		return false;
+	if (!CA_IsFilePresent("AUDINFOE.CK5"))
+		return false;
+
+	if (!CA_IsFilePresent("ACTION.CK5"))
+		return false;
+	
+	// We clearly have all of the required files.
+	return true;
+}
 
 void CK5_PurpleAxisPlatform(CK_object *obj)
 {

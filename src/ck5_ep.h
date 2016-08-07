@@ -34,6 +34,7 @@ void CK5_Obj2_SetupFunctions(void);
 void CK5_Obj3_SetupFunctions(void);
 void CK5_Map_SetupFunctions(void);
 void CK5_SetupFunctions(void);
+bool CK5_IsPresent(void);
 void CK5_DefineConstants(void);
 
 void CK5_ScanInfoLayer();

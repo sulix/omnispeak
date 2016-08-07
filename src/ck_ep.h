@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CK_EP_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 struct CK_object;
 
@@ -48,31 +49,34 @@ typedef struct CK_EpisodeDef
 	// Scan the 'info layer' of a map.
 	void (*scanInfoLayer)();
 
-  // Faux-#define episode-dependent constants
+	// Faux-#define episode-dependent constants
 	void (*defineConstants)();
 
-  // World map miscflags check function
-  void (*mapMiscFlagsCheck)(struct CK_object*);
+	// World map miscflags check function
+	void (*mapMiscFlagsCheck)(struct CK_object*);
 
-  // Limit in tiles beyond which active objects become inactive
-  int activeLimit;
+	// Check if the episode's files are all present.
+	bool (*isPresent)();
 
-  int highScoreLevel;
-  int highScoreTopMargin;
-  int highScoreLeftMargin;
-  int highScoreRightMargin;
-  int endSongLevel;
-  int starWarsSongLevel;
+	// Limit in tiles beyond which active objects become inactive
+	int activeLimit;
 
-  int lastLevelToMarkAsDone;
+	int highScoreLevel;
+	int highScoreTopMargin;
+	int highScoreLeftMargin;
+	int highScoreRightMargin;
+	int endSongLevel;
+	int starWarsSongLevel;
 
-  // A few offsets to data in the original EXE
-  uint16_t objArrayOffset;
-  uint16_t tempObjOffset;
-  uint16_t spriteArrayOffset;
-  uint16_t printXOffset;
-  uint16_t animTilesOffset;
-  uint16_t animTileSize; // Keen 6 has a few additional fields for sounds
+	int lastLevelToMarkAsDone;
+
+	// A few offsets to data in the original EXE
+	uint16_t objArrayOffset;
+	uint16_t tempObjOffset;
+	uint16_t spriteArrayOffset;
+	uint16_t printXOffset;
+	uint16_t animTilesOffset;
+	uint16_t animTileSize; // Keen 6 has a few additional fields for sounds
 } CK_EpisodeDef;
 
 extern CK_EpisodeDef *ck_currentEpisode;

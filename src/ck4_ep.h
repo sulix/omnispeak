@@ -57,6 +57,7 @@ void CK4_Obj3_SetupFunctions(void);
 void CK4_Map_SetupFunctions(void);
 void CK4_Misc_SetupFunctions(void);
 void CK4_SetupFunctions(void);
+bool CK4_IsPresent(void);
 void CK4_DefineConstants(void);
 
 void CK4_ScanInfoLayer();

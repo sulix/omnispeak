@@ -60,6 +60,8 @@ uint8_t vl_palette[6][17] = {
 
 bool vl_screenFaded = false;
 
+bool vl_started = false;
+
 static int vl_memused, vl_numsurfaces;
 
 VL_EGAVGAAdapter vl_emuegavgaadapter;
@@ -685,14 +687,18 @@ void VL_InitScreen(void)
 	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
 	// NOTE: The overscan border color is *not* yet set to cyan here
 	VL_SetPaletteAndBorderColor(vl_palette[3]);
+	vl_started = true;
 }
 
 void VL_Shutdown()
 {
-	vl_currentBackend->destroySurface(vl_emuegavgaadapter.screen);
-	vl_currentBackend->setVideoMode(0);
-	vl_memused = 0;
-	vl_numsurfaces = 0;
+	if (vl_started)
+	{
+		vl_currentBackend->destroySurface(vl_emuegavgaadapter.screen);
+		vl_currentBackend->setVideoMode(0);
+		vl_memused = 0;
+		vl_numsurfaces = 0;
+	}
 }
 
 void VL_ResizeScreen(int w, int h)
@@ -735,6 +741,9 @@ void *VL_CreateSurface(int w, int h)
 
 void VL_DestroySurface(void *surf)
 {
+	if (!vl_started || !surf)
+		return;
+
 	vl_memused -= vl_currentBackend->getSurfaceMemUse(surf);
 	vl_numsurfaces--;
 	vl_currentBackend->destroySurface(surf);

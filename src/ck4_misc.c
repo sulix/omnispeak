@@ -40,6 +40,7 @@ CK_EpisodeDef ck4_episode ={
 	&CK4_ScanInfoLayer,
 	&CK4_DefineConstants,
 	&CK4_MapMiscFlagsCheck,
+	&CK4_IsPresent,
 	/* .activeLimit = */ 4,
 	/* .highScoreLevel = */ 19,
 	/* .highScoreTopMargin = */ 0x33,
@@ -66,6 +67,42 @@ void CK4_SetupFunctions()
 	CK4_Obj3_SetupFunctions();
 	CK4_Map_SetupFunctions();
   CK4_Misc_SetupFunctions();
+}
+
+// Check if all the game files are present.
+bool CK4_IsPresent()
+{
+	// User-provided files
+	if (!CA_IsFilePresent("EGAGRAPH.CK4"))
+		return false;
+	if (!CA_IsFilePresent("GAMEMAPS.CK4"))
+		return false;
+	if (!CA_IsFilePresent("AUDIO.CK4"))
+		return false;
+
+	// Omnispeak-provided files
+	if (!CA_IsFilePresent("EGAHEAD.CK4"))
+		return false;
+	if (!CA_IsFilePresent("EGADICT.CK4"))
+		return false;
+	if (!CA_IsFilePresent("GFXINFOE.CK4"))
+		return false;
+	if (!CA_IsFilePresent("MAPHEAD.CK4"))
+		return false;
+	if (!CA_IsFilePresent("TILEINFO.CK4"))
+		return false;
+	if (!CA_IsFilePresent("AUDIODCT.CK4"))
+		return false;
+	if (!CA_IsFilePresent("AUDIOHED.CK4"))
+		return false;
+	if (!CA_IsFilePresent("AUDINFOE.CK4"))
+		return false;
+
+	if (!CA_IsFilePresent("ACTION.CK4"))
+		return false;
+	
+	// We clearly have all of the required files.
+	return true;
 }
 
 // ck_inter.c

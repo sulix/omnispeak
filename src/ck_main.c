@@ -261,6 +261,7 @@ void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h)
 void CK_ShutdownID(void)
 {
 	//TODO: Some managers don't have shutdown implemented yet
+	VL_DestroySurface(ck_statusSurface);
 	US_Shutdown();
 	SD_Shutdown();
 	//IN
@@ -304,7 +305,7 @@ void CK_InitGame()
 	CA_MarkGrChunk(ca_gfxInfoE.offTiles8m);
 	CA_MarkGrChunk(MPIC_STATUSLEFT);
 	CA_MarkGrChunk(MPIC_STATUSRIGHT);
-  CA_MarkGrChunk(PIC_TITLESCREEN); // Moved from CA_Startup
+	CA_MarkGrChunk(PIC_TITLESCREEN); // Moved from CA_Startup
 	CA_CacheMarks(0);
 
 	// Lock them chunks in memory.
@@ -318,8 +319,8 @@ void CK_InitGame()
 	CK_ACT_SetupFunctions();
 	CK_KeenSetupFunctions();
 	CK_OBJ_SetupFunctions();
-  CK_Map_SetupFunctions();
-  CK_Misc_SetupFunctions();
+	CK_Map_SetupFunctions();
+	CK_Misc_SetupFunctions();
 	ck_currentEpisode->setupFunctions();
 	CK_ACT_LoadActions("ACTION.EXT");
 
@@ -345,8 +346,8 @@ void CK_InitGame()
 	VL_ClearScreen(0);
 	VL_Present();
 
-  // Create a surface for the dropdown menu
-  ck_statusSurface = VL_CreateSurface(STATUS_W+64, STATUS_H+16);
+	// Create a surface for the dropdown menu
+	ck_statusSurface = VL_CreateSurface(STATUS_W+64, STATUS_H+16);
 }
 
 /*
@@ -621,14 +622,33 @@ int main(int argc, char *argv[])
 
 #else // !CK_RUN_ACTION_VALIDATOR
 
+CK_EpisodeDef *ck_episodes[] = {
+	&ck4_episode,
+	&ck5_episode,
+	&ck6_episode,
+	0
+};
+
+
 int main(int argc, char *argv[])
 {
 	// Send the cmd-line args to the User Manager.
 	us_argc = argc;
 	us_argv = (const char **) argv;
 
-	// FIXME: Pick episode 5 if nothing selected
-	ck_currentEpisode = &ck6_episode;
+	// Default to the first episode with all files present.
+	// If no episodes are found, we default to Keen 4, in order
+	// to show the file not found messages.
+	ck_currentEpisode = &ck4_episode;
+	for (int i = 0; ck_episodes[i]; ++i)
+	{
+		if (ck_episodes[i]->isPresent())
+		{
+			ck_currentEpisode = ck_episodes[i];
+			break;
+		}
+	}
+
 	bool isFullScreen = false;
 	bool isAspectCorrected = true;
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
@@ -649,7 +669,7 @@ int main(int argc, char *argv[])
 				else if (!strcmp(argv[i+1], "6"))
 					ck_currentEpisode = &ck6_episode;
 				else
-				Quit("Unsupported episode!");
+					Quit("Unsupported episode!");
 			}
 		}
 		else if (!CK_Cross_strcasecmp(argv[i], "/FULLSCREEN"))
