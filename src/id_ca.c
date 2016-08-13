@@ -229,6 +229,8 @@ bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 {
 	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
 
+	if (!f) return false;
+
 	//Get length of file
 	fseek(f,0,SEEK_END);
 	int length = ftell(f);
@@ -733,9 +735,21 @@ uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
 extern uint8_t *ti_tileInfo;
 void CAL_SetupMapFile(void)
 {
-	CA_LoadFile("MAPHEAD.EXT", (void**)(&ca_MapHead), 0);
+	int mapHeadFileSize = 0;
+	CA_LoadFile("MAPHEAD.EXT", (void**)(&ca_MapHead), &mapHeadFileSize);
 	ca_GameMaps = fopen(CAL_AdjustExtension("GAMEMAPS.EXT"), "rb");
-	CA_LoadFile("TILEINFO.EXT",(void**)(&ti_tileInfo), 0);
+	// Try reading TILEINFO.EXT first, otherwise use data from MAPHEAD.EXT
+	ti_tileInfo = NULL;
+	if (!CA_LoadFile("TILEINFO.EXT",(void**)(&ti_tileInfo), 0))
+	{
+		if (ti_tileInfo) // CA_LoadFile may leave a memory leak
+			MM_FreePtr((void**)&ti_tileInfo);
+
+		if (mapHeadFileSize <= sizeof(*ca_MapHead))
+			Quit("Can't open TILEINFO file, and MAPHEAD file lacks tileinfo data!");
+
+		ti_tileInfo = (uint8_t *)(ca_MapHead+1);
+	}
 }
 
 static ca_huffnode *ca_audiohuffman;

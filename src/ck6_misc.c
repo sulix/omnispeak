@@ -88,8 +88,9 @@ bool CK6_IsPresent()
 		return false;
 	if (!CA_IsFilePresent("MAPHEAD.CK6"))
 		return false;
-	if (!CA_IsFilePresent("TILEINFO.CK6"))
-		return false;
+	// Map header file may include the tile info
+	//if (!CA_IsFilePresent("TILEINFO.CK6"))
+	//	return false;
 	if (!CA_IsFilePresent("AUDIODCT.CK6"))
 		return false;
 	if (!CA_IsFilePresent("AUDIOHED.CK6"))

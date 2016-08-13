@@ -89,8 +89,9 @@ bool CK4_IsPresent()
 		return false;
 	if (!CA_IsFilePresent("MAPHEAD.CK4"))
 		return false;
-	if (!CA_IsFilePresent("TILEINFO.CK4"))
-		return false;
+	// Map header file may include the tile info
+	//if (!CA_IsFilePresent("TILEINFO.CK4"))
+	//	return false;
 	if (!CA_IsFilePresent("AUDIODCT.CK4"))
 		return false;
 	if (!CA_IsFilePresent("AUDIOHED.CK4"))
