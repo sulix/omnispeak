@@ -93,7 +93,7 @@ bool CK6_IsPresent()
 	//	return false;
 	if (!CA_IsFilePresent("AUDIODCT.CK6"))
 		return false;
-	if (!CA_IsFilePresent("AUDIOHED.CK6"))
+	if (!CA_IsFilePresent("AUDIOHHD.CK6"))
 		return false;
 	if (!CA_IsFilePresent("AUDINFOE.CK6"))
 		return false;

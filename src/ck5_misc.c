@@ -81,7 +81,7 @@ bool CK5_IsPresent()
 	//	return false;
 	if (!CA_IsFilePresent("AUDIODCT.CK5"))
 		return false;
-	if (!CA_IsFilePresent("AUDIOHED.CK5"))
+	if (!CA_IsFilePresent("AUDIOHHD.CK5"))
 		return false;
 	if (!CA_IsFilePresent("AUDINFOE.CK5"))
 		return false;

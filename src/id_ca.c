@@ -770,8 +770,8 @@ void CAL_SetupAudioFile(void)
 	// We don't need to 'OptimizeNodes'.
 	//CAL_OptimizeNodes(ca_audiohuffman);
 
-	//Load the AUDIOHED
-	CA_LoadFile("AUDIOHED.EXT", (void **)(&ca_audiostarts), 0);
+	//Load the AUDIOHHD
+	CA_LoadFile("AUDIOHHD.EXT", (void **)(&ca_audiostarts), 0);
 
 	//Load the sound data --- we will keep the file open for the duration of the game.
 	ca_audiohandle = fopen(CAL_AdjustExtension("AUDIO.EXT"),"rb");

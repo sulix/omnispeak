@@ -94,7 +94,7 @@ bool CK4_IsPresent()
 	//	return false;
 	if (!CA_IsFilePresent("AUDIODCT.CK4"))
 		return false;
-	if (!CA_IsFilePresent("AUDIOHED.CK4"))
+	if (!CA_IsFilePresent("AUDIOHHD.CK4"))
 		return false;
 	if (!CA_IsFilePresent("AUDINFOE.CK4"))
 		return false;
