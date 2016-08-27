@@ -131,6 +131,8 @@ typedef uint8_t IN_ScanCode;
   IN_SC_Y = 0x15,
   IN_SC_Z = 0x2c,
 
+  IN_SC_SecondaryBackSlash = 0x56, // Additional key in 102-keys layout
+
   //IN_KP_Enter = 0x0d,
   //IN_KP_Escape = 0x1b,
   //IN_KP_Space = 0x20,

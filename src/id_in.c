@@ -236,6 +236,8 @@ static IN_ScanCode INL_SDLKeySymToScanCode(const SDL_Keysym *keySym)
 		INL_MapKey(SDL_SCANCODE_KP_9, IN_SC_PgUp);
 		INL_MapKey(SDL_SCANCODE_KP_0, IN_SC_Insert);
 
+		INL_MapKey(SDL_SCANCODE_NONUSBACKSLASH, IN_SC_SecondaryBackSlash);
+
 	default: return IN_SC_Invalid;
 	}
 }
@@ -358,6 +360,8 @@ static IN_ScanCode INL_SDLKeySymToScanCode(const SDL_keysym *keySym)
 		INL_MapKey(SDLK_KP8, IN_SC_UpArrow);
 		INL_MapKey(SDLK_KP9, IN_SC_PgUp);
 		INL_MapKey(SDLK_KP0, IN_SC_Insert);
+
+		INL_MapKey(SDLK_LESS, IN_SC_SecondaryBackSlash);
 
 	default: return IN_SC_Invalid;
 	}
