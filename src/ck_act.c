@@ -88,6 +88,8 @@ CK_ACT_ColFunction CK_ACT_GetColFunction(const char *fnName)
 
 STR_Table *ck_actionTable;
 CK_action *ck_actionData;
+ID_MM_Arena *ck_actionStringArena;
+ID_MM_Arena *ck_actionLoadTempArena;
 int ck_actionsUsed;
 
 typedef struct CK_ACT_ParserState
@@ -102,6 +104,7 @@ void CK_ACT_SetupActionDB()
 {
 	MM_GetPtr((mm_ptr_t*)&ck_actionData, CK_ACT_MAXACTIONS*sizeof(CK_action));
 	STR_AllocTable(&ck_actionTable, CK_ACT_MAXACTIONS);
+	ck_actionStringArena = MM_ArenaCreate(16384);
 }
 
 CK_action *CK_GetActionByName(const char *name)
@@ -115,7 +118,8 @@ CK_action *CK_GetOrCreateActionByName(const char *name)
 	if (!ptr)
 	{
 		ptr = &ck_actionData[ck_actionsUsed++];
-		STR_AddEntry(ck_actionTable, name, (void*)(ptr));
+		char *dupName = MM_ArenaStrDup(ck_actionStringArena, name);
+		STR_AddEntry(ck_actionTable, dupName, (void*)(ptr));
 	}
 	return ptr;
 }
@@ -162,7 +166,7 @@ const char *CK_ACT_GetToken(CK_ACT_ParserState *ps)
 	CK_ACT_SkipWhitespace(ps);
 	while (CK_ACT_PeekCharacter(ps) && !isspace(CK_ACT_PeekCharacter(ps))) tokenbuf[i++] = CK_ACT_GetCharacter(ps);
 	tokenbuf[i] = '\0';
-	return STR_Pool(tokenbuf);
+	return MM_ArenaStrDup(ck_actionLoadTempArena, tokenbuf);
 }
 
 
@@ -178,7 +182,6 @@ int CK_ACT_GetInteger(CK_ACT_ParserState *ps)
 	else
 		result = strtol(token, 0, 0);
 	//printf("GetInteger %s -> %d\n", token, result);
-	STR_UnPool(token);
 	return result;
 }
 
@@ -187,7 +190,6 @@ bool CK_ACT_ExpectToken(CK_ACT_ParserState *ps, const char *str)
 	const char *c = CK_ACT_GetToken(ps);
 	bool result = !strcmp(c,str);
 	if (!result) CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "ExpectToken, got \"%s\" expected \"%s\" on line %d\n", c, str, ps->linecount);
-	STR_UnPool(c);
 	return result;
 }
 
@@ -211,7 +213,6 @@ CK_ActionType CK_ACT_GetActionType(CK_ACT_ParserState *ps)
 		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Got a bad action type %s on line %d.\n", tok, ps->linecount);
 		at = (CK_ActionType)(atoi(tok));
 	}
-	STR_UnPool(tok);
 	return at;
 		
 }
@@ -251,14 +252,12 @@ bool CK_ACT_ParseAction(CK_ACT_ParserState *ps)
 	act->collide = CK_ACT_GetColFunction(cCollide);
 	act->draw = CK_ACT_GetFunction(cDraw);
 
-	STR_UnPool(cDraw);
-	STR_UnPool(cCollide);
-	STR_UnPool(cThink);
-
 	const char *nextActionName = CK_ACT_GetToken(ps);
 
 	act->next = strcmp(nextActionName,"NULL")?CK_GetOrCreateActionByName(nextActionName):0;
 
+	MM_ArenaReset(ck_actionLoadTempArena);
+	
 	return true;
 }
 
@@ -285,9 +284,13 @@ void CK_ACT_LoadActions(const char *filename)
 	parserstate.dataindex = 0;
 	parserstate.linecount = 0;
 
+	ck_actionLoadTempArena = MM_ArenaCreate(1024);
+	
 	while (CK_ACT_ParseAction(&parserstate)) numActionsParsed++;
 
 	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Parsed %d actions over %d lines.\n", numActionsParsed, parserstate.linecount);
+	
+	MM_ArenaDestroy(ck_actionLoadTempArena);
 }
 
 

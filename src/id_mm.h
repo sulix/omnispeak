@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stddef.h>
 
 #define	BUFFERSIZE 0x1000 // Miscellaneous, always available buffer
 
@@ -52,5 +53,11 @@ void MM_BombOnError (bool bomb);
 
 void MML_UseSpace (void *off, intptr_t len);
 
+typedef struct ID_MM_Arena ID_MM_Arena;
+ID_MM_Arena *MM_ArenaCreate(size_t size);
+void *MM_ArenaAlloc(ID_MM_Arena *arena, size_t size);
+char *MM_ArenaStrDup(ID_MM_Arena *arena, const char *str);
+void MM_ArenaReset(ID_MM_Arena *arena);
+void MM_ArenaDestroy(ID_MM_Arena *arena);
 
 #endif

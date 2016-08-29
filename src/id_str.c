@@ -83,23 +83,3 @@ bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
 	}
 	return false;
 }
-
-/*
- * One day, this will be a glorious string pool, saving memory and generally being awesome.
- * For now, it's a crappy malloc wrapper.
- */
-const char *STR_Pool(const char *str)
-{
-	//return strdup(str);
-	//strdup is non-standard... (and strcopy is a bad name for a variable)
-	char *ourcopyofstr = (char *)malloc(strlen(str)+1);
-	strncpy(ourcopyofstr, str, strlen(str)+1);
-	return ourcopyofstr;
-}
-
-void STR_UnPool(const char *pooled_str)
-{
-	free((void*)pooled_str);
-}
-
-

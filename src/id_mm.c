@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_cross.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 mm_ptr_t buffer; // Misc buffer
 
@@ -264,3 +265,139 @@ void MM_BombOnError(bool bomb)
 
 //NOTE: Keen/Wolf3d have MML_UseSpace. This is incompatible with our use of the
 //system allocator, so it is unused for now.
+
+
+
+#ifndef ID_MM_DEBUGARENA
+
+typedef struct ID_MM_Arena
+{
+	size_t size;
+	size_t currentOffset;
+	// TODO: Add flags/mutex for multithreading?
+} ID_MM_Arena;
+
+ID_MM_Arena *MM_ArenaCreate(size_t size)
+{
+	if (size < sizeof(ID_MM_Arena))
+		Quit("Tried to create an arena which was too small.");
+	uint8_t *memblk = malloc(size);
+	if (!memblk) return 0;
+
+	ID_MM_Arena *arena = (ID_MM_Arena*)memblk;
+	arena->size = size;
+	arena->currentOffset = sizeof(ID_MM_Arena);
+
+	return arena;
+}
+
+void *MM_ArenaAlloc(ID_MM_Arena *arena, size_t size)
+{
+	if (arena->currentOffset + size >= arena->size)
+	{
+		Quit("Arena is full!");
+	}
+
+	uint8_t *ptr = ((uint8_t*)arena) + arena->currentOffset;
+	arena->currentOffset += size;
+	return ptr;
+}
+
+char *MM_ArenaStrDup(ID_MM_Arena *arena, const char *str)
+{
+	size_t len = strlen(str) + 1;
+	char *newStr = MM_ArenaAlloc(arena, len);
+	strcpy(newStr, str);
+	newStr[len-1] = '\0';
+	return newStr;
+}
+
+void MM_ArenaReset(ID_MM_Arena *arena)
+{
+	arena->currentOffset = sizeof(ID_MM_Arena);
+}
+
+void MM_ArenaDestroy(ID_MM_Arena *arena)
+{
+	arena->currentOffset = 0;
+	arena->size = 0;
+	free(arena);
+}
+
+#else
+
+// For debug builds, the ID_MM_Arena is a linked list of allocation records.
+// This allows tools like valgrind to check things.
+typedef struct ID_MM_Arena
+{
+	void *data;
+	size_t size;
+	struct ID_MM_Arena *next;
+	// the following are valid only in the first element.
+	size_t arena_size;
+	size_t arena_used;
+} ID_MM_Arena;
+
+ID_MM_Arena *MM_ArenaCreate(size_t size)
+{
+	ID_MM_Arena *arena = (ID_MM_Arena*)malloc(sizeof(ID_MM_Arena));
+	arena->arena_size = size;
+	arena->arena_used = 0;
+	arena->data = 0;
+	arena->size = 0;
+	arena->next = 0;
+	return arena;
+}
+
+void *MM_ArenaAlloc(ID_MM_Arena *arena, size_t size)
+{
+	ID_MM_Arena *lastBlock = arena;
+	if (arena->arena_used + size >= arena->arena_size)
+		Quit("Arena is full!");
+	
+	while (lastBlock->next)
+		lastBlock = lastBlock->next;
+	
+	// Allocate and record the block
+	lastBlock->data = malloc(size);
+	lastBlock->size = size;
+	// Add a new tail element.
+	lastBlock->next = (ID_MM_Arena*)malloc(sizeof(ID_MM_Arena));
+	lastBlock->next->next = 0;
+	
+	return lastBlock->data;
+}
+
+char *MM_ArenaStrDup(ID_MM_Arena *arena, const char *str)
+{
+	size_t len = strlen(str) + 1;
+	char *newStr = MM_ArenaAlloc(arena, len);
+	strcpy(newStr, str);
+	newStr[len-1] = '\0';
+	return newStr;
+}
+
+void MM_ArenaReset(ID_MM_Arena *arena)
+{
+	ID_MM_Arena *block = arena->next;
+	while (block)
+	{
+		ID_MM_Arena *nextBlock = block->next;
+		if (nextBlock)
+			free(block->data);
+		free(block);
+		block = nextBlock;
+	}
+	if (arena->next)
+		free(arena->data);
+	arena->arena_used = 0;
+	arena->next = 0;
+}
+
+void MM_ArenaDestroy(ID_MM_Arena *arena)
+{
+	MM_ArenaReset(arena);
+	free(arena);
+}
+
+#endif

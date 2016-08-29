@@ -43,9 +43,5 @@ void STR_AllocTable(STR_Table **tabl, size_t size);
 void* STR_LookupEntry(STR_Table *tabl, const char* str);
 bool STR_AddEntry(STR_Table *tabl, const char *str, void *value);
 
-
-const char *STR_Pool(const char *str);
-void STR_UnPool(const char *pooled_str);
-
 #endif //ID_STR_H
 
