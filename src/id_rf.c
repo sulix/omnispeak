@@ -546,8 +546,8 @@ void RFL_AnimateTiles()
 		if (tile != ost->tile)
 		{
 			ost->tile = tile;
-			int screenTileX = ost->tileX - (rf_scrollXUnit >> 8);
-			int screenTileY = ost->tileY - (rf_scrollYUnit >> 8);
+			int screenTileX = ost->tileX - RF_UnitToTile(rf_scrollXUnit);
+			int screenTileY = ost->tileY - RF_UnitToTile(rf_scrollYUnit);
 
 			if (screenTileX < 0 || screenTileX > RF_BUFFER_WIDTH_TILES || screenTileY < 0 || screenTileY > RF_BUFFER_HEIGHT_TILES)
 			{
@@ -591,8 +591,8 @@ void RF_NewMap(void)
 	rf_mapHeightTiles = CA_MapHeaders[ca_mapOn]->height;
 	rf_scrollXMinUnit = 0x0200;		//Two-tile wide border around map
 	rf_scrollYMinUnit = 0x0200;
-	rf_scrollXMaxUnit = ((CA_MapHeaders[ca_mapOn]->width - RF_SCREEN_WIDTH_TILES - 2) << 8);
-	rf_scrollYMaxUnit = ((CA_MapHeaders[ca_mapOn]->height - RF_SCREEN_HEIGHT_TILES - 2) << 8);
+	rf_scrollXMaxUnit = RF_TileToUnit(CA_MapHeaders[ca_mapOn]->width - RF_SCREEN_WIDTH_TILES - 2);
+	rf_scrollYMaxUnit = RF_TileToUnit(CA_MapHeaders[ca_mapOn]->height - RF_SCREEN_HEIGHT_TILES - 2);
 
 	// Reset the scroll-blocks
 	rf_numVertScrollBlocks = rf_numHorzScrollBlocks = 0;
@@ -696,8 +696,8 @@ void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, in
 			}
 
 			// If the tile is onscreen...
-			screenX = destx + tx - (rf_scrollXUnit >> 8);
-			screenY = desty + ty - (rf_scrollYUnit >> 8);
+			screenX = destx + tx - RF_UnitToTile(rf_scrollXUnit);
+			screenY = desty + ty - RF_UnitToTile(rf_scrollYUnit);
 			if (screenX >= 0 && screenY >= 0 && screenY < RF_BUFFER_HEIGHT_TILES && screenX < RF_BUFFER_WIDTH_TILES)
 			{
 				// Redraw it if it's different.
@@ -734,8 +734,8 @@ void RF_ReplaceTiles(uint16_t *tilePtr, int plane, int dstX, int dstY, int width
 			int dstTileX = dstX + x;
 			int dstTileY = dstY + y;
 
-			int tileScreenX = dstTileX - (rf_scrollXUnit >> 8);
-			int tileScreenY = dstTileY - (rf_scrollYUnit >> 8);
+			int tileScreenX = dstTileX - RF_UnitToTile(rf_scrollXUnit);
+			int tileScreenY = dstTileY - RF_UnitToTile(rf_scrollYUnit);
 			int oldTile = CA_mapPlanes[plane][dstTileY*rf_mapWidthTiles+dstTileX];
 			int newTile = tilePtr[y*width+x];
 			// Update the tile on the map.
@@ -763,8 +763,8 @@ void RF_ReplaceTiles(uint16_t *tilePtr, int plane, int dstX, int dstY, int width
 
 void RFL_RenderForeTiles()
 {
-	int scrollXtile = rf_scrollXUnit >> 8;
-	int scrollYtile = rf_scrollYUnit >> 8;
+	int scrollXtile = RF_UnitToTile(rf_scrollXUnit);
+	int scrollYtile = RF_UnitToTile(rf_scrollYUnit);
 
 	for (int stx =  scrollXtile; stx < scrollXtile + RF_BUFFER_WIDTH_TILES; ++stx)
 	{
@@ -798,8 +798,8 @@ void RFL_NewRowHorz(bool dir)
 	{
 		bufferRow = 0;
 	}
-	mapRow = (rf_scrollYUnit >> 8) + bufferRow;
-	int xOffset = (rf_scrollXUnit >> 8);
+	mapRow = RF_UnitToTile(rf_scrollYUnit) + bufferRow;
+	int xOffset = RF_UnitToTile(rf_scrollXUnit);
 
 	// Add tiles to onscreen animation list
 	for (int i = 0; i < RF_BUFFER_WIDTH_TILES; ++i)
@@ -825,8 +825,8 @@ void RFL_NewRowVert(bool dir)
 	{
 		bufferCol = 0;
 	}
-	mapCol = (rf_scrollXUnit >> 8) + bufferCol;
-	int yOffset = (rf_scrollYUnit >> 8);
+	mapCol = RF_UnitToTile(rf_scrollXUnit) + bufferCol;
+	int yOffset = RF_UnitToTile(rf_scrollYUnit);
 
 	// Check for animated tiles
 	for (int i = 0; i < RF_BUFFER_HEIGHT_TILES; ++i)
@@ -850,8 +850,8 @@ void RF_RepositionLimit(int scrollXunit, int scrollYunit)
 	if (scrollXunit > rf_scrollXMaxUnit) rf_scrollXUnit = rf_scrollXMaxUnit;
 	if (scrollYunit > rf_scrollYMaxUnit) rf_scrollYUnit = rf_scrollYMaxUnit;
 
-	int scrollXtile = rf_scrollXUnit >> 8;
-	int scrollYtile = rf_scrollYUnit >> 8;
+	int scrollXtile = RF_UnitToTile(rf_scrollXUnit);
+	int scrollYtile = RF_UnitToTile(rf_scrollYUnit);
 
 	// Loop through the horizontal scroll blocks.
 	for (int scrollBlockID = 0; scrollBlockID < rf_numHorzScrollBlocks; ++scrollBlockID)
@@ -861,7 +861,7 @@ void RF_RepositionLimit(int scrollXunit, int scrollYunit)
 			scrollXtile + 10 >= rf_horzScrollBlocks[scrollBlockID])
 		{
 			// reposition ourselves to be to its right.
-			rf_scrollXUnit = (rf_horzScrollBlocks[scrollBlockID] << 8) + 0x100;
+			rf_scrollXUnit = RF_TileToUnit(rf_horzScrollBlocks[scrollBlockID]) + 0x100;
 			break;
 		}
 
@@ -870,7 +870,7 @@ void RF_RepositionLimit(int scrollXunit, int scrollYunit)
 			scrollXtile + 20 >= rf_horzScrollBlocks[scrollBlockID])
 		{
 			// reposition ourselved to be at its left.
-			rf_scrollXUnit = (rf_horzScrollBlocks[scrollBlockID] << 8) - 0x1400;
+			rf_scrollXUnit = RF_TileToUnit(rf_horzScrollBlocks[scrollBlockID]) - 0x1400;
 			break;
 		}
 	}
@@ -883,7 +883,7 @@ void RF_RepositionLimit(int scrollXunit, int scrollYunit)
 			scrollYtile + 6 >= rf_vertScrollBlocks[scrollBlockID])
 		{
 			// reposition ourselves to be beneath it.
-			rf_scrollYUnit = (rf_vertScrollBlocks[scrollBlockID] << 8) + 0x100;
+			rf_scrollYUnit = RF_TileToUnit(rf_vertScrollBlocks[scrollBlockID]) + 0x100;
 			break;
 		}
 
@@ -892,7 +892,7 @@ void RF_RepositionLimit(int scrollXunit, int scrollYunit)
 			scrollYtile + 13 >= rf_vertScrollBlocks[scrollBlockID])
 		{
 			// reposition ourselves to be above it.
-			rf_scrollYUnit = (rf_vertScrollBlocks[scrollBlockID] << 8) - 0xD00;
+			rf_scrollYUnit = RF_TileToUnit(rf_vertScrollBlocks[scrollBlockID]) - 0xD00;
 			break;
 		}
 	}
@@ -904,8 +904,8 @@ void RFL_SmoothScrollLimit(int scrollXdelta, int scrollYdelta)
 	rf_scrollXUnit += scrollXdelta;
 	rf_scrollYUnit += scrollYdelta;
 
-	int scrollXtile = rf_scrollXUnit >> 8;
-	int scrollYtile = rf_scrollYUnit >> 8;
+	int scrollXtile = RF_UnitToTile(rf_scrollXUnit);
+	int scrollYtile = RF_UnitToTile(rf_scrollYUnit);
 
 	if (scrollXdelta > 0)
 	{
@@ -1001,10 +1001,10 @@ void RF_Reposition(int scrollXunit, int scrollYunit)
 {
 	//TODO: Implement scrolling properly
 	//NOTE: This should work now.
-	RFL_RemoveAnimRect(rf_scrollXUnit >> 8, rf_scrollXUnit >> 8, RF_BUFFER_WIDTH_TILES, RF_BUFFER_HEIGHT_TILES);
+	RFL_RemoveAnimRect(RF_UnitToTile(rf_scrollXUnit), RF_UnitToTile(rf_scrollYUnit), RF_BUFFER_WIDTH_TILES, RF_BUFFER_HEIGHT_TILES);
 	RF_RepositionLimit(scrollXunit, scrollYunit);
-	int scrollXtile = rf_scrollXUnit >> 8;
-	int scrollYtile = rf_scrollYUnit >> 8;
+	int scrollXtile = RF_UnitToTile(rf_scrollXUnit);
+	int scrollYtile = RF_UnitToTile(rf_scrollYUnit);
 
 	RFL_SetupOnscreenAnimList();
 
@@ -1023,10 +1023,10 @@ void RF_Reposition(int scrollXunit, int scrollYunit)
 
 void RF_SmoothScroll(int scrollXdelta, int scrollYdelta)
 {
-	int oldScrollXTile = (rf_scrollXUnit >> 8), oldScrollYTile = (rf_scrollYUnit >> 8);
+	int oldScrollXTile = RF_UnitToTile(rf_scrollXUnit), oldScrollYTile = RF_UnitToTile(rf_scrollYUnit);
 	RFL_SmoothScrollLimit(scrollXdelta,scrollYdelta);
-	int scrollXTileDelta = (rf_scrollXUnit >> 8) - oldScrollXTile;
-	int scrollYTileDelta = (rf_scrollYUnit >> 8) - oldScrollYTile;
+	int scrollXTileDelta = RF_UnitToTile(rf_scrollXUnit) - oldScrollXTile;
+	int scrollYTileDelta = RF_UnitToTile(rf_scrollYUnit) - oldScrollYTile;
 
 
 	// If we're not moving to a new tile at all, we can quit now.
@@ -1065,11 +1065,11 @@ void RF_SmoothScroll(int scrollXdelta, int scrollYdelta)
 		RFL_NewRowVert((scrollXTileDelta>0));
 		if (scrollXTileDelta>0)
 		{
-			RFL_RemoveAnimCol((rf_scrollXUnit >> 8) - 1);
+			RFL_RemoveAnimCol(RF_UnitToTile(rf_scrollXUnit) - 1);
 		}
 		else
 		{
-			RFL_RemoveAnimCol((rf_scrollXUnit >> 8) + RF_BUFFER_WIDTH_TILES);
+			RFL_RemoveAnimCol(RF_UnitToTile(rf_scrollXUnit) + RF_BUFFER_WIDTH_TILES);
 		}
 	}
 
@@ -1078,11 +1078,11 @@ void RF_SmoothScroll(int scrollXdelta, int scrollYdelta)
 		RFL_NewRowHorz((scrollYTileDelta>0));
 		if (scrollYTileDelta>0)
 		{
-			RFL_RemoveAnimRow((rf_scrollYUnit >> 8) - 1);
+			RFL_RemoveAnimRow(RF_UnitToTile(rf_scrollYUnit) - 1);
 		}
 		else
 		{
-			RFL_RemoveAnimRow((rf_scrollYUnit >> 8) + RF_BUFFER_HEIGHT_TILES);
+			RFL_RemoveAnimRow(RF_UnitToTile(rf_scrollYUnit) + RF_BUFFER_HEIGHT_TILES);
 		}
 	}
 }
@@ -1103,12 +1103,12 @@ void RF_PlaceEraser(int pxX, int pxY, int pxW, int pxH)
 
 void RF_EraseRegion(int pxX, int pxY, int pxW, int pxH)
 {
-	int pixelX = pxX - (rf_scrollXUnit >> 8)*16;
-	int pixelY = pxY - (rf_scrollYUnit >> 8)*16;
-	int tileX1 = MAX(pixelX >> 4, 0);
-	int tileY1 = MAX(pixelY >> 4, 0);
-	int tileX2 = MIN((pixelX + pxW) >> 4, RF_BUFFER_WIDTH_TILES-1);
-	int tileY2 = MIN((pixelY + pxH) >> 4, RF_BUFFER_HEIGHT_TILES-1);
+	int pixelX = pxX - RF_UnitToTile(rf_scrollXUnit)*16;
+	int pixelY = pxY - RF_UnitToTile(rf_scrollYUnit)*16;
+	int tileX1 = MAX(RF_PixelToTile(pixelX), 0);
+	int tileY1 = MAX(RF_PixelToTile(pixelY), 0);
+	int tileX2 = MIN(RF_PixelToTile(pixelX + pxW), RF_BUFFER_WIDTH_TILES-1);
+	int tileY2 = MIN(RF_PixelToTile(pixelY + pxH), RF_BUFFER_HEIGHT_TILES-1);
 
 
 }
@@ -1133,7 +1133,7 @@ void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
 #endif
 	int old_sprite_number = (*drawEntry)->chunk - ca_gfxInfoE.offSprites;
 	VH_SpriteTableEntry oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
-	RF_PlaceEraser((*drawEntry)->x + (oldSprite.originX >> 4), (*drawEntry)->y + (oldSprite.originY >> 4), (*drawEntry)->sw, (*drawEntry)->sh);
+	RF_PlaceEraser((*drawEntry)->x + RF_UnitToPixel(oldSprite.originX), (*drawEntry)->y + RF_UnitToPixel(oldSprite.originY), (*drawEntry)->sw, (*drawEntry)->sh);
 
 	if ((*drawEntry)->next)
 		(*drawEntry)->next->prevNextPtr = (*drawEntry)->prevNextPtr;
@@ -1149,8 +1149,8 @@ void RFL_ProcessSpriteErasers()
 #ifndef ALWAYS_REDRAW
 	for (int i = 0; i < rf_freeSpriteEraserIndex; ++i)
 	{
-		rf_spriteErasers[i].pxX -= (rf_scrollXUnit >> 8)*16;
-		rf_spriteErasers[i].pxY -= (rf_scrollYUnit >> 8)*16;
+		rf_spriteErasers[i].pxX -= RF_UnitToTile(rf_scrollXUnit)*16;
+		rf_spriteErasers[i].pxY -= RF_UnitToTile(rf_scrollYUnit)*16;
 		int x = MAX(rf_spriteErasers[i].pxX - 8, 0);
 		int y = MAX(rf_spriteErasers[i].pxY - 8, 0);
 		int x2 = MIN(rf_spriteErasers[i].pxX+rf_spriteErasers[i].pxW + 8, RF_BUFFER_WIDTH_PIXELS-1);
@@ -1164,10 +1164,10 @@ void RFL_ProcessSpriteErasers()
 
 		// Mark the affected tiles dirty with '2', to force sprites to
 		// redraw.
-		int tileX1 = x >> 4;
-		int tileY1 = y >> 4;
-		int tileX2 = x2 >> 4;
-		int tileY2 = y2 >> 4;
+		int tileX1 = RF_PixelToTile(x);
+		int tileY1 = RF_PixelToTile(y);
+		int tileX2 = RF_PixelToTile(x2);
+		int tileY2 = RF_PixelToTile(y2);
 		for (int ty = tileY1; ty <= tileY2; ++ty)
 		{
 			for (int tx = tileX1; tx <= tileX2; ++tx)
@@ -1196,7 +1196,7 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	{
 		int old_sprite_number = sde->chunk - ca_gfxInfoE.offSprites;
 		VH_SpriteTableEntry oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
-		RF_PlaceEraser(sde->x + (oldSprite.originX >> 4), sde->y + (oldSprite.originY >> 4), sde->sw, sde->sh);
+		RF_PlaceEraser(sde->x + RF_UnitToPixel(oldSprite.originX), sde->y + RF_UnitToPixel(oldSprite.originY), sde->sw, sde->sh);
 
 		//TODO: Support changing zLayers properly.
 		if (zLayer == sde->zLayer)
@@ -1248,8 +1248,8 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 
 	sde->chunk = chunk;
 	sde->zLayer = zLayer;
-	sde->x = (unitX >> 4);
-	sde->y = (unitY >> 4);
+	sde->x = RF_UnitToPixel(unitX);
+	sde->y = RF_UnitToPixel(unitY);
 	sde->sw = VH_GetSpriteTableEntry(sprite_number).width*8;
 	sde->sh = VH_GetSpriteTableEntry(sprite_number).height;
 	sde->maskOnly = allWhite;
@@ -1295,12 +1295,12 @@ void RFL_DrawSpriteList()
 
 		for (RF_SpriteDrawEntry *sde = rf_firstSpriteTableEntry[zLayer]; sde; sde=sde->next)
 		{
-			int pixelX = sde->x - (rf_scrollXUnit >> 8)*16;
-			int pixelY = sde->y - (rf_scrollYUnit >> 8)*16;
-			int tileX1 = MAX(pixelX >> 4, 0);
-			int tileY1 = MAX(pixelY >> 4, 0);
-			int tileX2 = MIN((pixelX + sde->sw) >> 4, RF_BUFFER_WIDTH_TILES-1);
-			int tileY2 = MIN((pixelY + sde->sh) >> 4, RF_BUFFER_HEIGHT_TILES-1);
+			int pixelX = sde->x - RF_UnitToTile(rf_scrollXUnit)*16;
+			int pixelY = sde->y - RF_UnitToTile(rf_scrollYUnit)*16;
+			int tileX1 = MAX(RF_PixelToTile(pixelX), 0);
+			int tileY1 = MAX(RF_PixelToTile(pixelY), 0);
+			int tileX2 = MIN(RF_PixelToTile(pixelX + sde->sw), RF_BUFFER_WIDTH_TILES-1);
+			int tileY2 = MIN(RF_PixelToTile(pixelY + sde->sh), RF_BUFFER_HEIGHT_TILES-1);
 
 			// Check the sprite is in-bounds.
 			if (tileX2 < tileX1 || tileY2 < tileY1)

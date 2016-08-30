@@ -479,11 +479,6 @@ void CK_RunAction(CK_object *obj)
 	}
 }
 
-void hackdraw(CK_object *me)
-{
-	RF_AddSpriteDraw(&(me->sde), (150 << 4), (100 << 4), 121, false, 0);
-}
-
 void CK_OverlayForegroundTile(int fgTile, int overlayTile)
 {
 	// Some random DOSBox memory dump, resolving crashes with NULL pointers and
@@ -1530,27 +1525,27 @@ void CK_CentreCamera(CK_object *obj)
 
 	screenYpx = 140;
 
-	if (obj->posX < (152 << 4))
+	if (obj->posX < RF_PixelToUnit(152))
 		screenX = 0;
 	else
-		screenX = obj->posX - (152 << 4);
+		screenX = obj->posX - RF_PixelToUnit(152);
 
 	if (ca_mapOn == 0)
 	{
 		// World Map
-		if (obj->posY < (80 << 4))
+		if (obj->posY < RF_PixelToUnit(80))
 			screenY = 0;
 		else
-			screenY = obj->posY - (80 << 4);
+			screenY = obj->posY - RF_PixelToUnit(80);
 	}
 	else
 	{
 		// In Level
-		if (obj->clipRects.unitY2 < (140 << 4))
+		if (obj->clipRects.unitY2 < RF_PixelToUnit(140))
 			screenY = 0;
 
 		else
-			screenY = obj->clipRects.unitY2 - (140 << 4);
+			screenY = obj->clipRects.unitY2 - RF_PixelToUnit(140);
 	}
 
 	// TODO: Find out why this is locking the game up
@@ -1558,10 +1553,10 @@ void CK_CentreCamera(CK_object *obj)
 		RF_Reposition(screenX, screenY);
 
 	//TODO: This is 4 in Andy's disasm.
-	ck_activeX0Tile = max((rf_scrollXUnit >> 8) - ck_currentEpisode->activeLimit, 0);
-	ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + ck_currentEpisode->activeLimit, 0);
-	ck_activeY0Tile = max((rf_scrollYUnit >> 8) - ck_currentEpisode->activeLimit, 0);
-	ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + ck_currentEpisode->activeLimit, 0);
+	ck_activeX0Tile = max(RF_UnitToTile(rf_scrollXUnit) - ck_currentEpisode->activeLimit, 0);
+	ck_activeX1Tile = max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + ck_currentEpisode->activeLimit, 0);
+	ck_activeY0Tile = max(RF_UnitToTile(rf_scrollYUnit) - ck_currentEpisode->activeLimit, 0);
+	ck_activeY1Tile = max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + ck_currentEpisode->activeLimit, 0);
 }
 
 /*
@@ -1576,18 +1571,18 @@ void CK_MapCamera( CK_object *keen )
 		return;
 
 	// Scroll Left, Right, or nowhere
-	if ( keen->clipRects.unitX1 < rf_scrollXUnit + (144 << 4) )
-		scr_x = keen->clipRects.unitX1 - (rf_scrollXUnit + (144 << 4));
-	else if ( keen->clipRects.unitX2 > rf_scrollXUnit + (192 << 4) )
-		scr_x = keen->clipRects.unitX2 + 16 - (rf_scrollXUnit + (192 << 4));
+	if ( keen->clipRects.unitX1 < rf_scrollXUnit + RF_PixelToUnit(144) )
+		scr_x = keen->clipRects.unitX1 - (rf_scrollXUnit + RF_PixelToUnit(144));
+	else if ( keen->clipRects.unitX2 > rf_scrollXUnit + RF_PixelToUnit(192) )
+		scr_x = keen->clipRects.unitX2 + 16 - (rf_scrollXUnit + RF_PixelToUnit(192));
 	else
 		scr_x = 0;
 
 	// Scroll Up, Down, or nowhere
-	if ( keen->clipRects.unitY1 < rf_scrollYUnit + (80 << 4) )
-		scr_y = keen->clipRects.unitY1 - (rf_scrollYUnit + (80 << 4));
-	else if ( keen->clipRects.unitY2 > rf_scrollYUnit + (112 << 4) )
-		scr_y = keen->clipRects.unitY2 - (rf_scrollYUnit + (112 << 4));
+	if ( keen->clipRects.unitY1 < rf_scrollYUnit + RF_PixelToUnit(80) )
+		scr_y = keen->clipRects.unitY1 - (rf_scrollYUnit + RF_PixelToUnit(80));
+	else if ( keen->clipRects.unitY2 > rf_scrollYUnit + RF_PixelToUnit(112) )
+		scr_y = keen->clipRects.unitY2 - (rf_scrollYUnit + RF_PixelToUnit(112));
 	else
 		scr_y = 0;
 
@@ -1614,10 +1609,10 @@ void CK_MapCamera( CK_object *keen )
 		 */
 
 		//TODO: This is 4 in Andy's disasm.
-    ck_activeX0Tile = max((rf_scrollXUnit >> 8) - ck_currentEpisode->activeLimit, 0);
-		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + ck_currentEpisode->activeLimit, 0);
-		ck_activeY0Tile = max((rf_scrollYUnit >> 8) - ck_currentEpisode->activeLimit, 0);
-		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + ck_currentEpisode->activeLimit, 0);
+		ck_activeX0Tile = max(RF_UnitToTile(rf_scrollXUnit) - ck_currentEpisode->activeLimit, 0);
+		ck_activeX1Tile = max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + ck_currentEpisode->activeLimit, 0);
+		ck_activeY0Tile = max(RF_UnitToTile(rf_scrollYUnit) - ck_currentEpisode->activeLimit, 0);
+		ck_activeY1Tile = max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + ck_currentEpisode->activeLimit, 0);
 	}
 }
 
@@ -1635,16 +1630,16 @@ void CK_NormalCamera(CK_object *obj)
 		return;
 
 	// End level if keen makes it out either side
-	if (obj->clipRects.unitX1 < rf_scrollXMinUnit || obj->clipRects.unitX2 > rf_scrollXMaxUnit + (320 << 4))
+	if (obj->clipRects.unitX1 < rf_scrollXMinUnit || obj->clipRects.unitX2 > rf_scrollXMaxUnit + RF_PixelToUnit(320))
 	{
 		ck_gameState.levelState = 2;
 		return;
 	}
 
 	// Kill keen if he falls out the bottom
-	if (obj->clipRects.unitY2 > (rf_scrollYMaxUnit + (208 << 4)))
+	if (obj->clipRects.unitY2 > (rf_scrollYMaxUnit + RF_PixelToUnit(208)))
 	{
-		obj->posY -= obj->clipRects.unitY2 - (rf_scrollYMaxUnit + (208 << 4));
+		obj->posY -= obj->clipRects.unitY2 - (rf_scrollYMaxUnit + RF_PixelToUnit(208));
 		SD_PlaySound(SOUND_KEENFALL);
 		ck_godMode = false;
 		CK_KillKeen();
@@ -1653,11 +1648,11 @@ void CK_NormalCamera(CK_object *obj)
 
 
 	// Keep keen's x-coord between 144-192 pixels
-	if (obj->posX < (rf_scrollXUnit + (144 << 4)))
-		deltaX = obj->posX - (rf_scrollXUnit + (144 << 4));
+	if (obj->posX < (rf_scrollXUnit + RF_PixelToUnit(144)))
+		deltaX = obj->posX - (rf_scrollXUnit + RF_PixelToUnit(144));
 
-	if (obj->posX > (rf_scrollXUnit + (192 << 4)))
-		deltaX = obj->posX - (rf_scrollXUnit + (192 << 4));
+	if (obj->posX > (rf_scrollXUnit + RF_PixelToUnit(192)))
+		deltaX = obj->posX - (rf_scrollXUnit + RF_PixelToUnit(192));
 
 
 	// Keen should be able to look up and down.
@@ -1676,7 +1671,7 @@ void CK_NormalCamera(CK_object *obj)
 			pxToMove = SD_GetSpriteSync();
 		}
 		screenYpx += pxToMove;
-		deltaY = (-pxToMove) << 4;
+		deltaY = RF_PixelToUnit(-pxToMove);
 
 	}
 	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookDown3"))
@@ -1694,19 +1689,19 @@ void CK_NormalCamera(CK_object *obj)
 			pxToMove = SD_GetSpriteSync();
 		}
 		screenYpx -= pxToMove;
-		deltaY = pxToMove << 4;
+		deltaY = RF_PixelToUnit(pxToMove);
 	}
 
 	// If we're attached to the ground, or otherwise awesome
 	// do somethink inscrutible.
-  if (ck_currentEpisode->ep == EP_CK6 && ck6_smashScreenDistance)
-  {
-    int16_t dx, ax;
+	if (ck_currentEpisode->ep == EP_CK6 && ck6_smashScreenDistance)
+	{
+		int16_t dx, ax;
 
-    ax = ck6_smashScreenOfs[ck6_smashScreenDistance] + obj->clipRects.unitY2;
-    deltaY += (dx - ax);  // Undefined behaviour here
+		ax = ck6_smashScreenOfs[ck6_smashScreenDistance] + obj->clipRects.unitY2;
+		deltaY += (dx - ax);  // Undefined behaviour here
 
-  }
+	}
 	else if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_keenHang1"))
 	{
 		if (obj->currentAction != CK_GetActionByName("CK_ACT_keenPull1") &&
@@ -1719,7 +1714,7 @@ void CK_NormalCamera(CK_object *obj)
 			//TODO: Something hideous
 			// TODO: Convert to 16-bit once the rest is converted
 			// (due to unsigned vs signed mess)
-			int cmpAmt = (screenYpx << 4) + rf_scrollYUnit + deltaY;
+			int cmpAmt = RF_PixelToUnit(screenYpx) + rf_scrollYUnit + deltaY;
 			if (cmpAmt != obj->clipRects.unitY2)
 			{
 				int oneDiff, otherDiff;
@@ -1768,12 +1763,12 @@ void CK_NormalCamera(CK_object *obj)
 
 
 	// Scroll the screen to keep keen between 33 and 167 px.
-	if (obj->clipRects.unitY2 < (rf_scrollYUnit + deltaY + (32 << 4)))
-		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + (32 << 4));
+	if (obj->clipRects.unitY2 < (rf_scrollYUnit + deltaY + RF_PixelToUnit(32)))
+		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + RF_PixelToUnit(32));
 
 
-	if (obj->clipRects.unitY2 > (rf_scrollYUnit + deltaY + (168 << 4)))
-		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + (168 << 4));
+	if (obj->clipRects.unitY2 > (rf_scrollYUnit + deltaY + RF_PixelToUnit(168)))
+		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + RF_PixelToUnit(168));
 
 	//Don't scroll more than one tile's worth per frame.
 	if (deltaX || deltaY)
@@ -1790,10 +1785,10 @@ void CK_NormalCamera(CK_object *obj)
 		RF_SmoothScroll(deltaX, deltaY);
 
 		// Update the rectangle of active objects
-    ck_activeX0Tile = max((rf_scrollXUnit >> 8) - ck_currentEpisode->activeLimit, 0);
-		ck_activeX1Tile = max((rf_scrollXUnit >> 8) + (320 >> 4) + ck_currentEpisode->activeLimit, 0);
-		ck_activeY0Tile = max((rf_scrollYUnit >> 8) - ck_currentEpisode->activeLimit, 0);
-		ck_activeY1Tile = max((rf_scrollYUnit >> 8) + (208 >> 4) + ck_currentEpisode->activeLimit, 0);
+		ck_activeX0Tile = max(RF_UnitToTile(rf_scrollXUnit) - ck_currentEpisode->activeLimit, 0);
+		ck_activeX1Tile = max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + ck_currentEpisode->activeLimit, 0);
+		ck_activeY0Tile = max(RF_UnitToTile(rf_scrollYUnit) - ck_currentEpisode->activeLimit, 0);
+		ck_activeY1Tile = max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + ck_currentEpisode->activeLimit, 0);
 	}
 }
 
@@ -1838,10 +1833,10 @@ int CK_PlayLoop()
 		{
 
 			if (!currentObj->active &&
-					(currentObj->clipRects.tileX2 >= (rf_scrollXUnit >> 8) - 1) &&
-					(currentObj->clipRects.tileX1 <= (rf_scrollXUnit >> 8) + (320 >> 4) + 1) &&
-					(currentObj->clipRects.tileY1 <= (rf_scrollYUnit >> 8) + (208 >> 4) + 1) &&
-					(currentObj->clipRects.tileY2 >= (rf_scrollYUnit >> 8) - 1))
+					(currentObj->clipRects.tileX2 >= RF_UnitToTile(rf_scrollXUnit) - 1) &&
+					(currentObj->clipRects.tileX1 <= RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + 1) &&
+					(currentObj->clipRects.tileY1 <= RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + 1) &&
+					(currentObj->clipRects.tileY2 >= RF_UnitToTile(rf_scrollYUnit) - 1))
 			{
 				currentObj->active = OBJ_ACTIVE;
 				currentObj->visible = true;
@@ -1922,7 +1917,7 @@ int CK_PlayLoop()
 		//TODO: If not world map, check keen -> item-tile collision.
 
 		if (ca_mapOn == 0)
-      ck_currentEpisode->mapMiscFlagsCheck(ck_keenObj);
+			ck_currentEpisode->mapMiscFlagsCheck(ck_keenObj);
 		else
 			CK_KeenCheckSpecialTileInfo(ck_keenObj);
 
@@ -1968,7 +1963,7 @@ int CK_PlayLoop()
 			ck_startingSavedGame = 0;
 
 		// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
-		VL_SetScrollCoords((rf_scrollXUnit & 0xef) >> 4, (rf_scrollYUnit & 0xff) >> 4);
+		VL_SetScrollCoords(RF_UnitToPixel(rf_scrollXUnit & 0xef), RF_UnitToPixel(rf_scrollYUnit & 0xff));
 		RF_Refresh();
 
 
@@ -1980,11 +1975,11 @@ int CK_PlayLoop()
 				ck_invincibilityTimer = 0;
 		}
 
-    if (ck_currentEpisode->ep == EP_CK6 && ck6_smashScreenDistance)
-    {
-      if ((ck6_smashScreenDistance -= SD_GetSpriteSync()) < 0)
-        ck6_smashScreenDistance = 0;
-    }
+		if (ck_currentEpisode->ep == EP_CK6 && ck6_smashScreenDistance)
+		{
+			if ((ck6_smashScreenDistance -= SD_GetSpriteSync()) < 0)
+				ck6_smashScreenDistance = 0;
+		}
 
 		//TODO: Slow-mo, extra VBLs.
 		if (ck_slowMotionEnabled)
@@ -2014,23 +2009,23 @@ int CK_PlayLoop()
 			CK_CheckKeys();
 		}
 		// End-Of-Game cheat
-    if (IN_GetKeyState(IN_SC_E) && IN_GetKeyState(IN_SC_N) && IN_GetKeyState(IN_SC_D))
-    {
-      if (ck_currentEpisode->ep == EP_CK4)
-      {
-        ck_gameState.ep.ck4.membersRescued = 7;
-        ck_gameState.levelState = LS_CouncilRescued;
-      }
-      else if (ck_currentEpisode->ep == EP_CK5)
-      {
-        ck_gameState.levelState = 15;
-      }
-      else if (ck_currentEpisode->ep == EP_CK6)
-      {
-        ck_gameState.levelState = LS_Molly;
-      }
-    }
-  }
+		if (IN_GetKeyState(IN_SC_E) && IN_GetKeyState(IN_SC_N) && IN_GetKeyState(IN_SC_D))
+		{
+			if (ck_currentEpisode->ep == EP_CK4)
+			{
+				ck_gameState.ep.ck4.membersRescued = 7;
+				ck_gameState.levelState = LS_CouncilRescued;
+			}
+			else if (ck_currentEpisode->ep == EP_CK5)
+			{
+				ck_gameState.levelState = LS_DestroyedQED;
+			}
+			else if (ck_currentEpisode->ep == EP_CK6)
+			{
+				ck_gameState.levelState = LS_Molly;
+			}
+		}
+	}
 	game_in_progress = 0;
 	StopMusic();
 }

@@ -63,12 +63,12 @@ void CK_ResetClipRects(CK_object *obj)
 
 	obj->clipRects.unitXmid = (obj->clipRects.unitX2 - obj->clipRects.unitX1) / 2 + obj->clipRects.unitX1;
 
-	obj->clipRects.tileX1 = obj->clipRects.unitX1 >> 8;
-	obj->clipRects.tileX2 = obj->clipRects.unitX2 >> 8;
-	obj->clipRects.tileY1 = obj->clipRects.unitY1 >> 8;
-	obj->clipRects.tileY2 = obj->clipRects.unitY2 >> 8;
+	obj->clipRects.tileX1 = RF_UnitToTile(obj->clipRects.unitX1);
+	obj->clipRects.tileX2 = RF_UnitToTile(obj->clipRects.unitX2);
+	obj->clipRects.tileY1 = RF_UnitToTile(obj->clipRects.unitY1);
+	obj->clipRects.tileY2 = RF_UnitToTile(obj->clipRects.unitY2);
 
-	obj->clipRects.tileXmid = obj->clipRects.unitXmid >> 8;
+	obj->clipRects.tileXmid = RF_UnitToTile(obj->clipRects.unitXmid);
 }
 
 void CK_SetOldClipRects(CK_object *obj)
@@ -113,8 +113,8 @@ void CK_PhysUpdateX(CK_object *obj, int16_t deltaUnitX)
 	//Now update the tile rect
 	// WARNING: Keen _doesn't_ update tileXmid!
 
-	obj->clipRects.tileX1 = obj->clipRects.unitX1 >> 8;
-	obj->clipRects.tileX2 = obj->clipRects.unitX2 >> 8;
+	obj->clipRects.tileX1 = RF_UnitToTile(obj->clipRects.unitX1);
+	obj->clipRects.tileX2 = RF_UnitToTile(obj->clipRects.unitX2);
 }
 
 void CK_PhysUpdateY(CK_object *obj, int16_t deltaUnitY)
@@ -123,8 +123,8 @@ void CK_PhysUpdateY(CK_object *obj, int16_t deltaUnitY)
 	obj->clipRects.unitY1 += deltaUnitY;
 	obj->clipRects.unitY2 += deltaUnitY;
 
-	obj->clipRects.tileY1 = obj->clipRects.unitY1 >> 8;
-	obj->clipRects.tileY2 = obj->clipRects.unitY2 >> 8;
+	obj->clipRects.tileY1 = RF_UnitToTile(obj->clipRects.unitY1);
+	obj->clipRects.tileY2 = RF_UnitToTile(obj->clipRects.unitY2);
 }
 
 void CK_PhysKeenClipDown(CK_object *obj)
@@ -177,7 +177,7 @@ void CK_PhysKeenClipDown(CK_object *obj)
 	if (spaceAbove && (topTI == 1))
 	{
 		int16_t slope = ck_physSlopeHeight[(topTI & 7)][midTileXOffset];
-		int16_t deltaY = (obj->clipRects.tileY2 << 8) + slope - 1 - obj->clipRects.unitY2;
+		int16_t deltaY = RF_TileToUnit(obj->clipRects.tileY2) + slope - 1 - obj->clipRects.unitY2;
 		if (deltaY <= 0 && -(ck_deltaRects.unitY2) <= deltaY)
 		{
 			obj->topTI = topTI;
@@ -218,7 +218,7 @@ void CK_PhysKeenClipUp(CK_object *obj)
 	if (spaceBelow && bottomTI)
 	{
 		int16_t slopeAmt = ck_physSlopeHeight[bottomTI & 0x07][midTileXOffset];
-		deltaY = ((obj->clipRects.tileY1 + 1) << 8) - slopeAmt - obj->clipRects.unitY1;
+		deltaY = RF_TileToUnit(obj->clipRects.tileY1 + 1) - slopeAmt - obj->clipRects.unitY1;
 		if (deltaY >= 0 && (-ck_deltaRects.unitY1) >= deltaY)
 		{
 			obj->bottomTI = bottomTI;
@@ -246,7 +246,7 @@ bool CK_NotStuckInWall(CK_object *obj)
 // Only seems to be used in CK4 in a Bluebird think function
 bool CK_PreviewClipRects(CK_object *obj, CK_action *act)
 {
-  obj->gfxChunk = obj->xDirection < 0 ? act->chunkLeft : act->chunkRight;
+	obj->gfxChunk = obj->xDirection < 0 ? act->chunkLeft : act->chunkRight;
 	int spriteNumber = obj->gfxChunk - ca_gfxInfoE.offSprites;
 
 	VH_SpriteTableEntry ste = VH_GetSpriteTableEntry(spriteNumber);
@@ -258,19 +258,19 @@ bool CK_PreviewClipRects(CK_object *obj, CK_action *act)
 
 	obj->clipRects.unitXmid = (obj->clipRects.unitX2 - obj->clipRects.unitX1) / 2 + obj->clipRects.unitX1;
 
-	obj->clipRects.tileX1 = obj->clipRects.unitX1 >> 8;
-	obj->clipRects.tileX2 = obj->clipRects.unitX2 >> 8;
-	obj->clipRects.tileY1 = obj->clipRects.unitY1 >> 8;
-	obj->clipRects.tileY2 = obj->clipRects.unitY2 >> 8;
+	obj->clipRects.tileX1 = RF_UnitToTile(obj->clipRects.unitX1);
+	obj->clipRects.tileX2 = RF_UnitToTile(obj->clipRects.unitX2);
+	obj->clipRects.tileY1 = RF_UnitToTile(obj->clipRects.unitY1);
+	obj->clipRects.tileY2 = RF_UnitToTile(obj->clipRects.unitY2);
 
-	obj->clipRects.tileXmid = obj->clipRects.unitXmid >> 8;
+	obj->clipRects.tileXmid = RF_UnitToTile(obj->clipRects.unitXmid);
 
-  return CK_NotStuckInWall(obj);
+	return CK_NotStuckInWall(obj);
 }
 
 void CK_PhysClipVert(CK_object *obj)
 {
-	int16_t midTileXOffset = (obj->clipRects.unitXmid >> 4) & 0x0F;
+	int16_t midTileXOffset = RF_UnitToPixel(obj->clipRects.unitXmid) & 0x0F;
 
 
 
@@ -308,7 +308,7 @@ void CK_PhysClipVert(CK_object *obj)
 		if (TI_ForeBottom(tile))
 		{
 
-			int16_t objYOffset = obj->clipRects.unitY1 - ((y + 1) << 8);
+			int16_t objYOffset = obj->clipRects.unitY1 - RF_TileToUnit(y + 1);
 
 			int16_t slopeAmt = -ck_physSlopeHeight[TI_ForeBottom(tile)&0x07][midTileXOffset];
 
@@ -346,7 +346,7 @@ void CK_PhysClipHorz(CK_object *obj)
 		{
 			// Clipping right
 			// Push us right until we're no-longer intersecting.
-			CK_PhysUpdateX(obj, ((obj->clipRects.tileX1 + 1) << 8) - obj->clipRects.unitX1);
+			CK_PhysUpdateX(obj, RF_TileToUnit(obj->clipRects.tileX1 + 1) - obj->clipRects.unitX1);
 			return;
 		}
 	}
@@ -359,7 +359,7 @@ void CK_PhysClipHorz(CK_object *obj)
 		if (obj->leftTI)
 		{
 			// Push us left until we're no-longer intersecting.
-			CK_PhysUpdateX(obj, (obj->clipRects.tileX2 << 8) - 1 - obj->clipRects.unitX2);
+			CK_PhysUpdateX(obj, RF_TileToUnit(obj->clipRects.tileX2) - 1 - obj->clipRects.unitX2);
 			return;
 
 		}
@@ -442,7 +442,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 			CK_PhysClipVert(obj);
 
 			//TODO: Handle keen NOT being pushed.
-      if (obj == ck_keenObj && (ck_currentEpisode->ep != EP_CK6 || !ck_keenIgnoreVertClip))
+			if (obj == ck_keenObj && (ck_currentEpisode->ep != EP_CK6 || !ck_keenIgnoreVertClip))
 			{
 				if (!obj->topTI && ck_deltaRects.unitY2 > 0)
 				{
@@ -460,7 +460,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 			if ((ck_currentEpisode->ep == EP_CK6) && (obj == ck_keenObj) && ((obj->topTI & 7) > 1) && (obj->rightTI || obj->leftTI))
 			{
 				// Based on code from CK_PhysClipVert
-				int16_t midTileXOffset = (obj->clipRects.unitXmid >> 4) & 0x0F;
+				int16_t midTileXOffset = RF_UnitToPixel(obj->clipRects.unitXmid) & 0x0F;
 
 				for (uint16_t y = ck_oldRects.tileY2; obj->clipRects.tileY2 + 1 >= y; ++y)
 				{
@@ -577,10 +577,10 @@ badobjclass:
 	obj->clipRects.unitX1 = obj->posX;
 	obj->clipRects.unitY1 = obj->posY;
 	obj->clipRects.unitY2 = obj->posY + delY;
-	obj->clipRects.tileX1 = obj->clipRects.unitX1 >> 8;
-	obj->clipRects.tileX2 = obj->clipRects.unitX2 >> 8;
-	obj->clipRects.tileY1 = obj->clipRects.unitY1 >> 8;
-	obj->clipRects.tileY2 = obj->clipRects.unitY2 >> 8;
+	obj->clipRects.tileX1 = RF_UnitToTile(obj->clipRects.unitX1);
+	obj->clipRects.tileX2 = RF_UnitToTile(obj->clipRects.unitX2);
+	obj->clipRects.tileY1 = RF_UnitToTile(obj->clipRects.unitY1);
+	obj->clipRects.tileY2 = RF_UnitToTile(obj->clipRects.unitY2);
 	//Reset the tile clipping vars.
 	obj->topTI = 0;
 	obj->bottomTI = 0;
@@ -835,7 +835,10 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 bool CK_ObjectVisible(CK_object *obj)
 {
 	// TODO: Use ScrollX0_T,  ScrollX1_T and co. directly?
-	if (obj->clipRects.tileX2 < (rf_scrollXUnit >> 8) || obj->clipRects.tileY2 < (rf_scrollYUnit >> 8) || obj->clipRects.tileX1 > ((rf_scrollXUnit >> 8) + (320 >> 4)) || obj->clipRects.tileY1 > ((rf_scrollYUnit >> 8) + (208 >> 4)))
+	if (obj->clipRects.tileX2 < RF_UnitToTile(rf_scrollXUnit)
+		|| obj->clipRects.tileY2 < RF_UnitToTile(rf_scrollYUnit)
+		|| obj->clipRects.tileX1 > (RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320))
+		|| obj->clipRects.tileY1 > (RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
 	{
 		return false;
 	}

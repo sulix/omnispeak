@@ -83,8 +83,8 @@ void CK_SpawnItem(int tileX, int tileY, int itemNumber)
 	//obj->active = OBJ_ACTIVE;
 	obj->zLayer = 2;
 	obj->type = CT_CLASS(Item);
-	obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
+	obj->posX = RF_TileToUnit(tileX);
+	obj->posY = RF_TileToUnit(tileY);
 	obj->yDirection = -1;
 	obj->user1 = itemNumber;
 	obj->gfxChunk = (int16_t)*CK_ItemSpriteChunks[itemNumber];
@@ -102,8 +102,8 @@ void CK_SpawnCentilifeNotify(int tileX, int tileY)
 	notify->type = 1;
 	notify->clipped = CLIP_not;
 	notify->zLayer = 3;
-	notify->posX = tileX << 8;
-	notify->posY = tileY << 8;
+	notify->posX = RF_TileToUnit(tileX);
+	notify->posY = RF_TileToUnit(tileY);
 
 	CK_SetAction(notify, CK_GetActionByName("CK_ACT_CentilifeNotify1"));
 }
@@ -138,11 +138,11 @@ void CK_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
 {
 	CK_object *obj = CK_GetNewObj(false);
 
-  obj->type = CT_CLASS(Platform);
+	obj->type = CT_CLASS(Platform);
 	obj->active = OBJ_ALWAYS_ACTIVE;
 	obj->zLayer = 0;
-	obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
+	obj->posX = RF_TileToUnit(tileX);
+	obj->posY = RF_TileToUnit(tileY);
 
 	switch (direction)
 	{
@@ -196,8 +196,8 @@ void CK_AxisPlatform(CK_object *obj)
 	if (obj->xDirection == 1)
 	{
 		nextPosUnit = obj->clipRects.unitX2 + ck_nextX;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		nextPosTile = RF_UnitToTile(nextPosUnit);
+		if (obj->clipRects.tileX2 != nextPosTile && CA_TileAtPos(nextPosTile, obj->clipRects.tileY1, 2) == 0x1F)
 		{
 			obj->xDirection = -1;
 			//TODO: Change DeltaVelocity
@@ -207,8 +207,8 @@ void CK_AxisPlatform(CK_object *obj)
 	else if (obj->xDirection == -1)
 	{
 		nextPosUnit = obj->clipRects.unitX1 + ck_nextX;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileX1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * obj->clipRects.tileY1 + nextPosTile] == 0x1F)
+		nextPosTile = RF_UnitToTile(nextPosUnit);
+		if (obj->clipRects.tileX1 != nextPosTile && CA_TileAtPos(nextPosTile, obj->clipRects.tileY1, 2) == 0x1F)
 		{
 			obj->xDirection = 1;
 			//TODO: Change DeltaVelocity
@@ -219,8 +219,8 @@ void CK_AxisPlatform(CK_object *obj)
 	else if (obj->yDirection == 1)
 	{
 		nextPosUnit = obj->clipRects.unitY2 + ck_nextY;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY2 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
+		nextPosTile = RF_UnitToTile(nextPosUnit);
+		if (obj->clipRects.tileY2 != nextPosTile && CA_TileAtPos(obj->clipRects.tileX1, nextPosTile, 2) == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile - 2, 2) == 0x1F)
 			{
@@ -239,8 +239,8 @@ void CK_AxisPlatform(CK_object *obj)
 	else if (obj->yDirection == -1)
 	{
 		nextPosUnit = obj->clipRects.unitY1 + ck_nextY;
-		nextPosTile = nextPosUnit >> 8;
-		if (obj->clipRects.tileY1 != nextPosTile && CA_mapPlanes[2][CA_MapHeaders[ca_mapOn]->width * nextPosTile + obj->clipRects.tileX1] == 0x1F)
+		nextPosTile = RF_UnitToTile(nextPosUnit);
+		if (obj->clipRects.tileY1 != nextPosTile && CA_TileAtPos(obj->clipRects.tileX1, nextPosTile, 2) == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile + 2, 2) == 0x1F)
 			{
@@ -264,8 +264,8 @@ void CK_SpawnFallPlat(int tileX, int tileY)
 	new_object->type = CT_CLASS(Platform);
 	new_object->active = OBJ_ALWAYS_ACTIVE;
 	new_object->zLayer = 0;
-	new_object->posX = tileX << 8;
-	new_object->user1 = new_object->posY = tileY << 8;
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->user1 = new_object->posY = RF_TileToUnit(tileY);
 	new_object->xDirection = IN_motion_None;
 	new_object->yDirection = IN_motion_Down;
 	new_object->clipped = CLIP_not;
@@ -290,7 +290,7 @@ void CK_FallPlatFall (CK_object *obj)
 
 	CK_PhysGravityHigh(obj);
 	newY = obj->clipRects.unitY2 + ck_nextY;
-	newYT = newY >> 8;
+	newYT = RF_UnitToTile(newY);
 
 	// Stop falling if platform hits a block
 	if ((obj->clipRects.tileY2 != newYT) && (CA_TileAtPos(obj->clipRects.tileX1, newYT, 2) == 0x1F))
@@ -322,16 +322,14 @@ void CK_SpawnStandPlatform(int tileX, int tileY)
 	obj->type = CT_CLASS(Platform);
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = 0;
-	obj->posX = tileX << 8;
-	obj->posY = obj->user1 = tileY << 8;
+	obj->posX = RF_TileToUnit(tileX);
+	obj->posY = obj->user1 = RF_TileToUnit(tileY);
 	obj->xDirection = 0;
 	obj->yDirection = 1;
 	obj->clipped = CLIP_not;
 	CK_SetAction(obj, CK_GetActionByName("CK_ACT_StandPlatform"));
 	obj->gfxChunk = obj->currentAction->chunkLeft;
 	CA_CacheGrChunk(obj->gfxChunk);
-
-  // CK_ResetClipRects(obj);
 }
 
 
@@ -346,8 +344,8 @@ void CK_SpawnGoPlat(int tileX, int tileY, int direction, bool purple)
 	obj->type = CT_CLASS(Platform);
 	obj->active = OBJ_ALWAYS_ACTIVE;
 	obj->zLayer = 0;
-	obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
+	obj->posX = RF_TileToUnit(tileX);
+	obj->posY = RF_TileToUnit(tileY);
 	obj->xDirection = IN_motion_None;
 	obj->yDirection = IN_motion_Down;
 	obj->clipped = CLIP_not;
@@ -364,9 +362,7 @@ void CK_SpawnGoPlat(int tileX, int tileY, int direction, bool purple)
 	}
 
 
-	int mapW = CA_MapHeaders[ca_mapOn]->width;
-	//int mapH = CA_MapHeaders[ca_mapOn]->height;
-	CA_mapPlanes[2][tileY * mapW + tileX] = direction + 0x5B;
+	CA_SetTileAtPos(tileX, tileY, 2, direction + 0x5B);
 
 	obj->user1 = direction;
 	obj->user2 = 256;
@@ -440,8 +436,8 @@ void CK_GoPlatThink(CK_object *obj)
 			ck_nextY -= obj->user2;
 		}
 
-		int tileX = (uint16_t)(obj->posX + ck_nextX) >> 8;
-		int tileY = (uint16_t)(obj->posY + ck_nextY) >> 8;
+		int tileX = RF_UnitToTile((uint16_t)(obj->posX + ck_nextX));
+		int tileY = RF_UnitToTile((uint16_t)(obj->posY + ck_nextY));
 
 		obj->user1 = CA_TileAtPos(tileX, tileY, 2) - 0x5B;
 
@@ -489,8 +485,8 @@ void CK_SneakPlatSpawn(int tileX, int tileY)
 	obj->type = CT_CLASS(Platform);
 	obj->active = OBJ_ALWAYS_ACTIVE;
 	obj->zLayer = 0;
-	obj->user1 = obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
+	obj->user1 = obj->posX = RF_TileToUnit(tileX);
+	obj->posY = RF_TileToUnit(tileY);
 	obj->xDirection = 0;
 	obj->yDirection = 1;
 	obj->clipped = CLIP_not;
@@ -533,10 +529,10 @@ void CK_TurretSpawn(int tileX, int tileY, int direction)
 	obj->clipRects.tileX1 = obj->clipRects.tileX2 = tileX;
 	obj->clipRects.tileY1 = obj->clipRects.tileY2 = tileY;
 
-	obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
-	obj->clipRects.unitX1 = obj->clipRects.unitX2 = tileX << 8;
-	obj->clipRects.unitY1 = obj->clipRects.unitY2 = tileY << 8;
+	obj->posX = RF_TileToUnit(tileX);
+	obj->posY = RF_TileToUnit(tileY);
+	obj->clipRects.unitX1 = obj->clipRects.unitX2 = RF_TileToUnit(tileX);
+	obj->clipRects.unitY1 = obj->clipRects.unitY2 = RF_TileToUnit(tileY);
 
 	obj->user1 = direction;
 
@@ -549,7 +545,7 @@ void CK_TurretShoot(CK_object *obj)
 
 	shot->type = CT5_EnemyShot;	//TurretShot
 	shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
-  shot->clipped = CLIP_normal;
+	shot->clipped = CLIP_normal;
 	shot->posX = obj->posX;
 	shot->posY = obj->posY;
 

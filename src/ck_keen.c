@@ -177,8 +177,8 @@ void CK_SpawnKeen(int tileX, int tileY, int direction)
 	ck_keenObj->visible = true;
 	ck_keenObj->zLayer = 1;
 	ck_keenObj->clipped = CLIP_normal;
-	ck_keenObj->posX = (tileX << 8);
-	ck_keenObj->posY = (tileY << 8) - 241;
+	ck_keenObj->posX = RF_TileToUnit(tileX);
+	ck_keenObj->posY = RF_TileToUnit(tileY) - 241;
 	ck_keenObj->xDirection = direction;
 	ck_keenObj->yDirection = 1;
 	CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_keenStanding"));
@@ -203,8 +203,8 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 	CK_object *notify = CK_GetNewObj(true);
 	notify->type = 1;
 	notify->zLayer = 3;
-	notify->posX = tileX << 8;
-	notify->posY = tileY << 8;
+	notify->posX = RF_TileToUnit(tileX);
+	notify->posY = RF_TileToUnit(tileY);
 	notify->yDirection = -1;
 	notify->user2 = ck_itemShadows[itemNumber];
 	notify->gfxChunk = notify->user2;
@@ -217,23 +217,23 @@ void CK_KeenGetTileCentilife(int tileX, int tileY)
 	RF_ReplaceTiles(&emptyTile, 1, tileX, tileY, 1, 1);
 	SD_PlaySound(SOUND_GOTCENTILIFE);
 	CK_SpawnCentilifeNotify(tileX, tileY);
-  if (++ck_gameState.numCentilife == 100)
-  {
-    ck_gameState.numCentilife = 0;
-    SD_PlaySound(SOUND_GOTEXTRALIFE);
-    ck_gameState.numLives++;
+	if (++ck_gameState.numCentilife == 100)
+	{
+		ck_gameState.numCentilife = 0;
+		SD_PlaySound(SOUND_GOTEXTRALIFE);
+		ck_gameState.numLives++;
 
-    // Spawn a 1up shadow
-    CK_object *obj = CK_GetNewObj(true);
-    obj->type = CT_Friendly;
-    obj->zLayer = PRIORITIES - 1;
-    obj->posX = tileX << G_T_SHIFT;
-    obj->posY = tileY << G_T_SHIFT;
-    obj->yDirection = IN_motion_Up;
-    obj->user2 = obj->gfxChunk = SPR_CENTILIFE1UPSHADOW;
-    CK_SetAction(obj, CK_GetActionByName("CK_ACT_itemNotify"));
-    obj->clipped = CLIP_not;
-  }
+		// Spawn a 1up shadow
+		CK_object *obj = CK_GetNewObj(true);
+		obj->type = CT_Friendly;
+		obj->zLayer = PRIORITIES - 1;
+		obj->posX = RF_TileToUnit(tileX);
+		obj->posY = RF_TileToUnit(tileY);
+		obj->yDirection = IN_motion_Up;
+		obj->user2 = obj->gfxChunk = SPR_CENTILIFE1UPSHADOW;
+		CK_SetAction(obj, CK_GetActionByName("CK_ACT_itemNotify"));
+		obj->clipped = CLIP_not;
+	}
 }
 
 void CK_KeenCheckSpecialTileInfo(CK_object *obj)
@@ -261,7 +261,7 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 				if (y == obj->clipRects.tileY2 && obj->topTI && obj->currentAction != CK_GetActionByName("CK_ACT_keenPlaceGem")
 					&& ck_gameState.keyGems[specialTileInfo - MISCFLAG_GEMHOLDER0])
 				{
-					int targetXUnit = (x << 8) - 64;
+					int targetXUnit = RF_TileToUnit(x) - 64;
 					if (obj->posX == targetXUnit)
 					{
 						ck_gameState.keyGems[specialTileInfo - MISCFLAG_GEMHOLDER0]--;
@@ -348,7 +348,7 @@ bool CK_KeenPressUp(CK_object *obj)
 	// Are we pressing a switch?
 	if (tileMiscFlag == MISCFLAG_SWITCHPLATON || tileMiscFlag == MISCFLAG_SWITCHPLATOFF || tileMiscFlag == MISCFLAG_SWITCHBRIDGE)
 	{
-		int16_t destXunit = (obj->clipRects.tileXmid << 8) - 64;
+		int16_t destXunit = RF_TileToUnit(obj->clipRects.tileXmid) - 64;
 		if (obj->posX == destXunit)
 		{
 			// Flip that switch!
@@ -366,7 +366,7 @@ bool CK_KeenPressUp(CK_object *obj)
 	// Are we enterting a door?
 	if (tileMiscFlag == MISCFLAG_DOOR || tileMiscFlag == MISCFLAG_SECURITYDOOR )
 	{
-		uint16_t destUnitX = (obj->clipRects.tileXmid << 8) + 96;
+		uint16_t destUnitX = RF_TileToUnit(obj->clipRects.tileXmid) + 96;
 
 		// If the door is two tiles wide, we want to be in the centre.
 		uint8_t miscFlagLeft = TI_ForeMisc(CA_TileAtPos(obj->clipRects.tileXmid - 1, obj->clipRects.tileY1, 1));
@@ -493,8 +493,8 @@ void CK_KeenEnterDoor(CK_object *obj)
 		}
 	}
 
-	obj->posY = ((destination&0xFF) << 8) - 256 + 15;
-	obj->posX = ((destination >> 8) << 8);
+	obj->posY = RF_TileToUnit((destination&0xFF)) - 256 + 15;
+	obj->posX = RF_TileToUnit((destination >> 8));
 	obj->zLayer = 1;
 	obj->clipped = CLIP_not;
 	CK_SetAction2(obj, obj->currentAction->next);
@@ -604,12 +604,13 @@ bool CK_KeenTryClimbPole(CK_object *obj)
 	else if (SD_GetLastTimeCount() - ck_keenState.poleGrabTime < 19)
 		return false;
 
-	uint16_t candidateTile = CA_TileAtPos(obj->clipRects.tileXmid, ((ck_inputFrame.yDirection==-1)?((obj->clipRects.unitY1+96)>>8):(obj->clipRects.tileY2+1)), 1);
+	uint16_t candidateTile = CA_TileAtPos(obj->clipRects.tileXmid,
+		((ck_inputFrame.yDirection==-1)?(RF_UnitToTile(obj->clipRects.unitY1+96)):(obj->clipRects.tileY2+1)), 1);
 
 
 	if ((TI_ForeMisc(candidateTile) & 0x7F) == 1)
 	{
-		obj->posX = 128 + ((obj->clipRects.tileXmid - 1) << 8);
+		obj->posX = 128 + RF_TileToUnit(obj->clipRects.tileXmid - 1);
 		ck_nextX = 0;
 		ck_nextY = (ck_inputFrame.yDirection << 5);
 		obj->clipped = CLIP_not;
@@ -1116,29 +1117,29 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 			obj->posY -= 32;
 			obj->clipRects.unitY1 -= 32;
 			obj->velX = 0;
-			obj->posX = (obj->clipRects.tileXmid << 8) - 32;
+			obj->posX = RF_TileToUnit(obj->clipRects.tileXmid) - 32;
 		}
 		else
-    {
-      if (obj->bottomTI == 0x21)  // Bloog switches
-        CK6_ToggleBigSwitch(obj, false);
+		{
+			if (obj->bottomTI == 0x21)  // Bloog switches
+			CK6_ToggleBigSwitch(obj, false);
 
-      if (!ck_gameState.jumpCheat)
-      {
-        SD_PlaySound(SOUND_KEENHITCEILING);
-        if (obj->bottomTI > 1)
-        {
-          obj->velY += 16;
-          if (obj->velY < 0)
-            obj->velY = 0;
-        }
-        else
-        {
-          obj->velY = 0;
-        }
-        ck_keenState.jumpTimer = 0;
-      }
-    }
+			if (!ck_gameState.jumpCheat)
+			{
+				SD_PlaySound(SOUND_KEENHITCEILING);
+				if (obj->bottomTI > 1)
+				{
+					obj->velY += 16;
+					if (obj->velY < 0)
+						obj->velY = 0;
+				}
+				else
+				{
+					obj->velY = 0;
+				}
+				ck_keenState.jumpTimer = 0;
+			}
+		}
 	}
 
 	// Have we landed?
@@ -1156,10 +1157,10 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 			{
 				SD_PlaySound(SOUND_KEENLANDONFUSE);
 			}
-      if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
-      {
-        CK6_ToggleBigSwitch(obj, true);
-      }
+			if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
+			{
+				CK6_ToggleBigSwitch(obj, true);
+			}
 			if (obj->topTI != 0x19 || !ck_keenState.jumpTimer) // Or standing on a platform.
 			{
 				obj->user1 = obj->user2 = 0;	// Being on the ground is boring.
@@ -1192,7 +1193,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 		// temp8 = Keen's current upper y coord - 1.5 tiles, rounded to nearest tile, + 1.5 tiles
 		int temp8 = ((obj->clipRects.unitY1 - 64) & 0xFF00) + 64;
 		// temp10 = temp8 in tile coords, - 1
-		int temp10 = (temp8 >> 8) - 1 ;
+		int temp10 = RF_UnitToTile(temp8) - 1 ;
 
 		// If we're moving past a tile boundary.
 		if (temp6 < temp8 && obj->clipRects.unitY1 >= temp8)
@@ -1351,7 +1352,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 			obj->posY -= 32;
 			obj->clipRects.unitY1 -= 32;
 			obj->velX = 0;
-			obj->posX = (obj->clipRects.tileXmid << 8) - 32;
+			obj->posX = RF_TileToUnit(obj->clipRects.tileXmid) - 32;
 		}
 		else
     {
@@ -1677,7 +1678,7 @@ void CK_KeenPoleUpThink(CK_object *obj)
 void CK_KeenPoleDownThink(CK_object *obj)
 {
 
-	int tileUnderneath = CA_TileAtPos(obj->clipRects.tileXmid, (obj->clipRects.unitY2-64) >> 8, 1);
+	int tileUnderneath = CA_TileAtPos(obj->clipRects.tileXmid, RF_UnitToTile(obj->clipRects.unitY2-64), 1);
 
 	if ((TI_ForeMisc(tileUnderneath) & 127) != 1)
 	{
@@ -1803,15 +1804,15 @@ void CK_ShotHit(CK_object *obj)
 void CK_ShotThink(CK_object *shot)
 {
 	// Stun things which are offscreen.
-	if ((shot->clipRects.tileX2 < (rf_scrollXUnit >> 8)) ||
-	    (shot->clipRects.tileY2 < (rf_scrollYUnit >> 8)) ||
-	    (shot->clipRects.tileX1 > (rf_scrollXUnit >> 8) + (320 >> 4)) ||
-	    (shot->clipRects.tileY1 > (rf_scrollYUnit >> 8) + (208 >> 4)))
+	if ((shot->clipRects.tileX2 < RF_UnitToTile(rf_scrollXUnit)) ||
+	    (shot->clipRects.tileY2 < RF_UnitToTile(rf_scrollYUnit)) ||
+	    (shot->clipRects.tileX1 > RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320)) ||
+	    (shot->clipRects.tileY1 > RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
 	{
-		if ((shot->clipRects.tileX2 + 10 < (rf_scrollXUnit >> 8)) ||
-		    (shot->clipRects.tileX1 - 10 > (rf_scrollXUnit >> 8) + (320 >> 4)) ||
-		    (shot->clipRects.tileY2 + 6 < (rf_scrollYUnit >> 8)) ||
-		    (shot->clipRects.tileY1 - 6 > (rf_scrollYUnit >> 8) + (208 >> 4)))
+		if ((shot->clipRects.tileX2 + 10 < RF_UnitToTile(rf_scrollXUnit)) ||
+		    (shot->clipRects.tileX1 - 10 > RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320)) ||
+		    (shot->clipRects.tileY2 + 6 < RF_UnitToTile(rf_scrollYUnit)) ||
+		    (shot->clipRects.tileY1 - 6 > RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
 		{
 			CK_RemoveObj(shot);
 			return;
@@ -1887,8 +1888,8 @@ void CK_ShotDrawFunc(CK_object *obj)
 		obj->posY += ck_nextY;
 		obj->clipRects.unitY1 += ck_nextY;
 		obj->clipRects.unitY2 += ck_nextY;
-		obj->clipRects.tileY1 = obj->clipRects.unitY1 >> 8;
-		obj->clipRects.tileY2 = obj->clipRects.unitY2 >> 8;
+		obj->clipRects.tileY1 = RF_UnitToTile(obj->clipRects.unitY1);
+		obj->clipRects.tileY2 = RF_UnitToTile(obj->clipRects.unitY2);
 	}
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 }

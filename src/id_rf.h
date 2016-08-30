@@ -60,6 +60,13 @@ typedef struct RF_SpriteDrawEntry
 #define G_P_SHIFT 4  // global >> ?? = pixels
 #define P_T_SHIFT 4  // pixels >> ?? = tile
 
+#define RF_UnitToTile(u)	((u) >> G_T_SHIFT)
+#define RF_TileToUnit(t)	((t) << G_T_SHIFT)
+#define RF_UnitToPixel(u)	((u) >> G_P_SHIFT)
+#define RF_PixelToUnit(p)	((p) << G_P_SHIFT)
+#define RF_PixelToTile(p)	((p) >> P_T_SHIFT)
+#define RF_TileToPixel(t)	((t) << P_T_SHIFT)
+
 extern int rf_scrollXUnit, rf_scrollYUnit;
 extern int rf_scrollXMinUnit;
 extern int rf_scrollYMinUnit;
