@@ -281,7 +281,7 @@ ID_MM_Arena *MM_ArenaCreate(size_t size)
 {
 	if (size < sizeof(ID_MM_Arena))
 		Quit("Tried to create an arena which was too small.");
-	uint8_t *memblk = malloc(size);
+	uint8_t *memblk = (uint8_t*)malloc(size);
 	if (!memblk) return 0;
 
 	ID_MM_Arena *arena = (ID_MM_Arena*)memblk;
@@ -306,7 +306,7 @@ void *MM_ArenaAlloc(ID_MM_Arena *arena, size_t size)
 char *MM_ArenaStrDup(ID_MM_Arena *arena, const char *str)
 {
 	size_t len = strlen(str) + 1;
-	char *newStr = MM_ArenaAlloc(arena, len);
+	char *newStr = (char*)MM_ArenaAlloc(arena, len);
 	strcpy(newStr, str);
 	newStr[len-1] = '\0';
 	return newStr;
@@ -371,7 +371,7 @@ void *MM_ArenaAlloc(ID_MM_Arena *arena, size_t size)
 char *MM_ArenaStrDup(ID_MM_Arena *arena, const char *str)
 {
 	size_t len = strlen(str) + 1;
-	char *newStr = MM_ArenaAlloc(arena, len);
+	char *newStr = (char*)MM_ArenaAlloc(arena, len);
 	strcpy(newStr, str);
 	newStr[len-1] = '\0';
 	return newStr;
