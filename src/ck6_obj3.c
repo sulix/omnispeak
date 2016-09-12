@@ -41,8 +41,8 @@ void CK6_SpawnFleex(int tileX, int tileY)
   CK_object *obj = CK_GetNewObj(false);
   obj->type = CT6_Fleex;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = (tileX << G_T_SHIFT);
-  obj->posY = (tileY << G_T_SHIFT) - 0x280;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x280;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_FleexWalk0"));
@@ -102,8 +102,8 @@ void CK6_SpawnBobba(int tileX, int tileY)
   obj->type = CT6_Bobba;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x200;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x200;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BobbaJump0"));
@@ -212,8 +212,8 @@ void CK6_SpawnBabobba(int tileX, int tileY)
   obj->type = CT6_Babobba;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x200;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x200;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BabobbaJump0"));
@@ -329,8 +329,8 @@ void CK6_SpawnBlorb(int tileX, int tileY)
   obj->type = CT6_Blorb;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x80;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x80;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = US_RndT() < 0x80 ? IN_motion_Down : IN_motion_Up;
   obj->clipped = CLIP_simple;
@@ -372,8 +372,8 @@ void CK6_SpawnCeilick(int tileX, int tileY)
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
   obj->clipped = CLIP_not;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->user1 = obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->user1 = obj->posY = RF_TileToUnit(tileY);
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_CeilickWait0"));
 }

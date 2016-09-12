@@ -45,8 +45,8 @@ void CK6_SpawnGrabbiter(int tileX, int tileY)
   obj->clipped = CLIP_not;
   obj->zLayer = PRIORITIES - 2;
   obj->type = CT6_Grabbiter;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
 
   if (ck_gameState.ep.ck6.sandwich == 2)
   {
@@ -118,8 +118,8 @@ void CK6_SpawnRocket(int tileX, int tileY, int dir)
     obj->clipped = CLIP_not;
     obj->zLayer = PRIORITIES - 1;
     obj->type = CT6_Rocket;
-    obj->posX = tileX << G_T_SHIFT;
-    obj->posY = tileY << G_T_SHIFT;
+    obj->posX = RF_TileToUnit(tileX);
+    obj->posY = RF_TileToUnit(tileY);
     CK_SetAction(obj, CK_GetActionByName("CK6_ACT_RocketSit0"));
   }
 }
@@ -248,8 +248,8 @@ void CK6_RocketFly(CK_object *obj)
         ck_nextY -= obj->user2;
       }
 
-      int tileX = (uint16_t)(obj->posX + ck_nextX) >> 8;
-      int tileY = (uint16_t)(obj->posY + ck_nextY) >> 8;
+      int tileX = (uint16_t)RF_UnitToTile(obj->posX + ck_nextX);
+      int tileY = (uint16_t)RF_UnitToTile(obj->posY + ck_nextY);
 
       obj->user1 = CA_TileAtPos(tileX, tileY, 2) - 0x5B;
 
@@ -259,8 +259,8 @@ void CK6_RocketFly(CK_object *obj)
         obj->posY += ck_nextY;
         CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_RocketSit0"));
 
-        ck_keenObj->posX = ((tileX + 1) << G_T_SHIFT) + 0x10;
-        ck_keenObj->posY = (tileY + 1) << G_T_SHIFT;
+        ck_keenObj->posX = RF_TileToUnit(tileX + 1) + 0x10;
+        ck_keenObj->posY = RF_TileToUnit(tileY + 1);
         ck_keenObj->type = CT_Player;
         ck_keenObj->gfxChunk = 0xBD;
         ck_keenObj->clipped = CLIP_normal;
@@ -312,12 +312,12 @@ void CK6_SpawnMapCliff(int tileX, int tileY, int dir)
   obj->clipRects.tileX1 = obj->clipRects.tileX2 = tileX;
   obj->clipRects.tileY1 = obj->clipRects.tileY2 = tileY;
   obj->user1 = dir;
-  obj->posX = obj->clipRects.unitX1 = tileX << G_T_SHIFT;
+  obj->posX = obj->clipRects.unitX1 = RF_TileToUnit(tileX);
   obj->clipRects.unitX2 = obj->clipRects.unitX1 + 0x100;
   if (dir)
-    obj->posY = obj->clipRects.unitY1 = ((tileY+1) << G_T_SHIFT) - 1;
+    obj->posY = obj->clipRects.unitY1 = RF_TileToUnit(tileY+1) - 1;
   else
-    obj->posY = obj->clipRects.unitY1 = tileY << G_T_SHIFT;
+    obj->posY = obj->clipRects.unitY1 = RF_TileToUnit(tileY);
 
   obj->clipRects.unitY2 = obj->clipRects.unitY1 + 1;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_MapCliff0"));
@@ -329,8 +329,8 @@ void CK6_SpawnMapCliff(int tileX, int tileY, int dir)
     obj->clipped = CLIP_not;
     obj->zLayer = PRIORITIES - 4;
     obj->type = CT_Friendly;
-    obj->posX = tileX << G_T_SHIFT;
-    obj->posY = (tileY + 1) << G_T_SHIFT;
+    obj->posX = RF_TileToUnit(tileX);
+    obj->posY = RF_TileToUnit(tileY + 1);
     CK_SetAction(obj, CK_GetActionByName("CK6_ACT_RopeOnMap0"));
   }
 }
@@ -342,7 +342,7 @@ void CK6_MapKeenThrowRope(CK_object *obj)
   rope->clipped = CLIP_not;
   rope->zLayer = PRIORITIES - 4;
   rope->type = CT_Friendly;
-  rope->posX = obj->clipRects.tileX2 << G_T_SHIFT;
+  rope->posX = RF_TileToUnit(obj->clipRects.tileX2);
   rope->posY = obj->posY - 0x200;
   CK_SetAction(rope, CK_GetActionByName("CK6_ACT_RopeOnMap0"));
   obj->type = CT_Player;
@@ -437,9 +437,9 @@ void CK6_SpawnSatelliteLoading(int tileX, int tileY, int dir)
   obj->clipRects.tileX1 = obj->clipRects.tileX2 = tileX;
   obj->clipRects.tileY1 = obj->clipRects.tileY2 = tileY;
   obj->user1 = (dir ^ 1) + 1;
-  obj->posX = obj->clipRects.unitX1 = tileX << G_T_SHIFT;
+  obj->posX = obj->clipRects.unitX1 = RF_TileToUnit(tileX);
   obj->clipRects.unitX2 = obj->clipRects.unitX1 + 0x100;
-  obj->posY = obj->clipRects.unitY1 = tileY << G_T_SHIFT;
+  obj->posY = obj->clipRects.unitY1 = RF_TileToUnit(tileY);
   obj->clipRects.unitY2 = obj->clipRects.unitY1 + 0x100;
   CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_SatelliteInvisible0"));
 }
@@ -451,8 +451,8 @@ void CK6_SpawnSatellite(int tileX, int tileY)
   obj->zLayer = PRIORITIES - 2;
   obj->active = OBJ_ALWAYS_ACTIVE;
   obj->type = CT6_Satellite;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Satellite0"));
   CA_SetTileAtPos(tileX, tileY, 2, 0x5B + 3);
   obj->user1 = 3;
@@ -537,8 +537,8 @@ void CK6_SpawnSandwich(int tileX, int tileY)
   obj->clipped = CLIP_not;
   obj->zLayer = PRIORITIES - 2;
   obj->type = CT6_Sandwich;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Sandwich0"));
 }
 
@@ -548,8 +548,8 @@ void CK6_SpawnRope(int tileX, int tileY)
   obj->clipped = CLIP_not;
   obj->zLayer = PRIORITIES - 2;
   obj->type = CT6_Rope;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Rope0"));
 }
 
@@ -559,8 +559,8 @@ void CK6_SpawnPasscard(int tileX, int tileY)
   obj->clipped = CLIP_not;
   obj->zLayer = PRIORITIES - 2;
   obj->type = CT6_Passcard;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Passcard0"));
 }
 
@@ -585,8 +585,8 @@ void CK6_SpawnMolly(int tileX, int tileY)
   obj->type = CT6_Molly;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x80;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x80;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Molly0"));
@@ -609,8 +609,8 @@ void CK6_SpawnBloog(int tileX, int tileY)
   obj->type = CT6_Bloog;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x200;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x200;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogWalk0"));
@@ -648,8 +648,8 @@ void CK6_SpawnBloogguard(int tileX, int tileY)
   obj->type = CT6_Bloogguard;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x280;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x280;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   obj->user2 = 3;
@@ -661,8 +661,8 @@ void CK6_BloogguardWalk(CK_object *obj)
   if (US_RndT() < 0x20)
     obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 
-  if (obj->xDirection == IN_motion_Right && ck_keenObj->posX > obj->posX ||
-      obj->xDirection == IN_motion_Left && ck_keenObj->posX < obj->posX)
+  if ((obj->xDirection == IN_motion_Right && ck_keenObj->posX > obj->posX) ||
+      (obj->xDirection == IN_motion_Left && ck_keenObj->posX < obj->posX))
   {
     if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2)
     {
@@ -748,8 +748,8 @@ void CK6_SpawnBlooglet(int tileX, int tileY, int type)
   obj->type = CT6_Blooglet;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x80;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x80;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   obj->user1 = type;

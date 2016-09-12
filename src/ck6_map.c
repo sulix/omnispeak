@@ -39,8 +39,8 @@ void CK6_MapMiscFlagsCheck(CK_object *obj)
   if (obj->user3 == 0)
   {
     int tileX = obj->clipRects.tileXmid;
-    int tileY = (obj->clipRects.unitY1 +
-      (obj->clipRects.unitY2 - obj->clipRects.unitY1)/2) >> G_T_SHIFT;
+    int tileY = RF_UnitToTile(obj->clipRects.unitY1 +
+      (obj->clipRects.unitY2 - obj->clipRects.unitY1)/2);
     uint16_t tile = CA_TileAtPos(tileX, tileY, 1);
     uint8_t miscValue = TI_ForeMisc(tile);
 

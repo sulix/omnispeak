@@ -472,8 +472,8 @@ void CK6_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
 	obj->type = 6;
 	obj->active = OBJ_ALWAYS_ACTIVE;
 	obj->zLayer = 0;
-	obj->posX = tileX << 8;
-	obj->posY = tileY << 8;
+	obj->posX = RF_TileToUnit(tileX);
+	obj->posY = RF_TileToUnit(tileY);
 
 	switch (direction)
 	{
@@ -519,8 +519,8 @@ void CK6_SpawnRedStandPlatform(int tileX, int tileY)
 	obj->type = 6;
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = 0;
-	obj->posX = tileX << 8;
-	obj->posY = obj->user1 = tileY << 8;
+	obj->posX = RF_TileToUnit(tileX);
+	obj->posY = obj->user1 = RF_TileToUnit(tileY);
 	obj->xDirection = 0;
 	obj->yDirection = 1;
 	obj->clipped = CLIP_not;
@@ -961,7 +961,7 @@ void CK6_ScanInfoLayer()
 
 	if (ck_gameState.currentLevel == 0)
 	{
-		int keenYTilePos = ck_keenObj->posY >> 8;
+		//int keenYTilePos = RF_UnitToTile(ck_keenObj->posY);
 
 	}
 

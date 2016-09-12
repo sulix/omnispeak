@@ -37,8 +37,8 @@ void CK6_SpawnNospike(int tileX, int tileY)
   obj->type = CT6_Nospike;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x180;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x180;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_NospikeSit0"));
@@ -73,8 +73,8 @@ void CK6_NospikeCharge(CK_object *obj)
   if (obj->user1 == 0)
   {
     if (((ck_keenObj->clipRects.unitY2 != obj->clipRects.unitY2 ||
-          obj->xDirection == IN_motion_Left && obj->posX < ck_keenObj->posX ||
-          obj->xDirection == IN_motion_Right && obj->posX > ck_keenObj->posX) &&
+          (obj->xDirection == IN_motion_Left && obj->posX < ck_keenObj->posX) ||
+          (obj->xDirection == IN_motion_Right && obj->posX > ck_keenObj->posX)) &&
         US_RndT() < 0x8) ||
         !CK_ObjectVisible(obj))
     {
@@ -209,8 +209,8 @@ void CK6_SpawnGik(int tileX, int tileY)
   obj->type = CT6_Gik;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_GikWalk0"));
@@ -263,7 +263,7 @@ void CK6_GikSlide (CK_object *obj)
         uint32_t ddi = di;
         if ((ddi & tickCount) == 0)
         {
-          if (obj->velX < 0 && ++obj->velX == 0 || obj->velX > 0 && --obj->velX == 0)
+          if ((obj->velX < 0 && ++obj->velX == 0) || (obj->velX > 0 && --obj->velX == 0))
           {
             obj->currentAction = CK_GetActionByName("CK6_ACT_GikEndSlide0");
             break;
@@ -296,7 +296,7 @@ void CK6_GikJumpDraw(CK_object *obj)
 
 void CK6_GikSlideDraw(CK_object *obj)
 {
-  if (obj->rightTI && obj->velX < 0 || obj->leftTI && obj->velX > 0)
+  if ((obj->rightTI && obj->velX < 0) || (obj->leftTI && obj->velX > 0))
     obj->velX = 0;
 
   RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
@@ -309,8 +309,8 @@ void CK6_SpawnOrbatrix(int tileX, int tileY)
   obj->type = CT6_Orbatrix;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x180;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit((tileY)) - 0x180;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   obj->user4 = 1;
@@ -458,8 +458,8 @@ void CK6_SpawnBipship(int tileX, int tileY)
   CK_object *obj = CK_GetNewObj(false);
   obj->type = CT6_Bipship;
   obj->active = OBJ_ACTIVE;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x180;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x180;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->velX = obj->xDirection * 20;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BipshipFly0"));
@@ -582,8 +582,8 @@ void CK6_SpawnFlect(int tileX, int tileY)
   obj->type = CT6_Flect;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x100;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x100;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK6_ACT_FlectWalk0"));
