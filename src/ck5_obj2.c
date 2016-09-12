@@ -35,8 +35,8 @@ void CK5_SpawnSparky(int tileX, int tileY)
 	new_object->type = CT5_Sparky;
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 0;
-	new_object->posX = tileX << 8;
-	new_object->posY = (tileY << 8) - 0x100;
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->posY = RF_TileToUnit(tileY) - 0x100;
 	new_object->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	new_object->yDirection = IN_motion_Down;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Sparky0"));
@@ -144,8 +144,8 @@ void CK5_SpawnAmpton(int tileX, int tileY)
 	new_object->type = CT5_Ampton;
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 0;
-	new_object->posX = (tileX << 8);
-	new_object->posY = (tileY << 8) - 0x80;
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->posY = RF_TileToUnit(tileY) - 0x80;
 	new_object->xDirection = (US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left);
 	new_object->yDirection = IN_motion_Down;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Ampton0"));
@@ -228,7 +228,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 	int newYT;
 
 	// Check if ampton is moving into new tile
-	newYT = (obj->clipRects.unitY2 + ck_nextY) >> 8;
+	newYT = RF_UnitToTile(obj->clipRects.unitY2 + ck_nextY);
 
 	if (obj->clipRects.tileY2 == newYT)
 		return;
@@ -369,8 +369,8 @@ void CK5_SpawnSlice(int tileX, int tileY, int dir)
 	new_object->type = CT5_SliceStar;
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 2;
-	new_object->posX = (tileX << 8);
-	new_object->posY = (tileY << 8);
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->posY = RF_TileToUnit(tileY);
 	new_object->user4 = 20;
 
 	switch (dir)
@@ -406,8 +406,8 @@ void CK5_SpawnSliceDiag(int tileX, int tileY)
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 2;
 	new_object->clipped = CLIP_simple;
-	new_object->posX = (tileX << 8);
-	new_object->posY = (tileY << 8);
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->posY = RF_TileToUnit(tileY);
 	new_object->user4 = 50; // strength
 
 	switch (US_RndT() / 0x40)
@@ -486,8 +486,8 @@ void CK5_SpawnShelly(int tileX, int tileY)
 	new_object->type = CT5_Sparky; // Apparently, the same type as a sparky
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 0;
-	new_object->posX = (tileX << 8);
-	new_object->posY = (tileY << 8);
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->posY = RF_TileToUnit(tileY);
 	new_object->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	new_object->yDirection = IN_motion_Down;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Shelly0"));

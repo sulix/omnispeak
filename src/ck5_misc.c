@@ -108,7 +108,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	if (obj->xDirection == 1)
 	{
 		nextPosUnit = obj->clipRects.unitX2 + ck_nextX;
-		nextPosTile = nextPosUnit >> 8;
+		nextPosTile = RF_UnitToTile(nextPosUnit);
 		if (obj->clipRects.tileX2 != nextPosTile && CA_TileAtPos(nextPosTile, obj->clipRects.tileY1, 2) == 0x1F)
 		{
 			obj->xDirection = -1;
@@ -119,7 +119,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	else if (obj->xDirection == -1)
 	{
 		nextPosUnit = obj->clipRects.unitX1 + ck_nextX;
-		nextPosTile = nextPosUnit >> 8;
+		nextPosTile = RF_UnitToTile(nextPosUnit);
 		if (obj->clipRects.tileX1 != nextPosTile && CA_TileAtPos(nextPosTile, obj->clipRects.tileY1, 2) == 0x1F)
 		{
 			obj->xDirection = 1;
@@ -131,7 +131,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	else if (obj->yDirection == 1)
 	{
 		nextPosUnit = obj->clipRects.unitY2 + ck_nextY;
-		nextPosTile = nextPosUnit >> 8;
+		nextPosTile = RF_UnitToTile(nextPosUnit);
 		if (obj->clipRects.tileY2 != nextPosTile && CA_TileAtPos(obj->clipRects.tileX1 + 1, nextPosTile, 2) == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile - 2, 2) == 0x1F)
@@ -151,7 +151,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 	else if (obj->yDirection == -1)
 	{
 		nextPosUnit = obj->clipRects.unitY1 + ck_nextY;
-		nextPosTile = nextPosUnit >> 8;
+		nextPosTile = RF_UnitToTile(nextPosUnit);
 		if (obj->clipRects.tileY1 != nextPosTile && CA_TileAtPos(obj->clipRects.tileX1 + 1, nextPosTile, 2) == 0x1F)
 		{
 			if (CA_TileAtPos(obj->clipRects.tileX1, nextPosTile + 2, 2) == 0x1F)
@@ -185,8 +185,8 @@ void CK5_SpawnLightning ()
 	new_object->zLayer = 3;
 	new_object->clipped = CLIP_not;
 	new_object->type = 24;
-	new_object->posX = (ck_keenObj->clipRects.tileX1 << 8) - 0x80;
-	new_object->posY = (ck_keenObj->clipRects.tileY2 << 8) - 0x500;
+	new_object->posX = RF_TileToUnit(ck_keenObj->clipRects.tileX1) - 0x80;
+	new_object->posY = RF_TileToUnit(ck_keenObj->clipRects.tileY2) - 0x500;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_LightningH0"));
 
 	// Spawn the vertical lightning that covers keen
@@ -194,8 +194,8 @@ void CK5_SpawnLightning ()
 	new_object->zLayer = 3;
 	new_object->clipped = CLIP_not;
 	new_object->type = 24;
-	new_object->posX = (ck_keenObj->clipRects.tileX1 << 8);
-	new_object->posY = (ck_keenObj->clipRects.tileY1 << 8) - 0x80;
+	new_object->posX = RF_TileToUnit(ck_keenObj->clipRects.tileX1);
+	new_object->posY = RF_TileToUnit(ck_keenObj->clipRects.tileY1) - 0x80;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_LightningV0"));
 
 	SD_PlaySound(SOUND_UNKNOWN41);
@@ -209,8 +209,8 @@ void CK5_SpawnFuseExplosion(int tileX, int tileY)
 	new_object->zLayer = 3;
 	new_object->clipped = CLIP_not;
 	new_object->type = 24;
-	new_object->posX = (tileX - 1) << 8;
-	new_object->posY = tileY << 8;
+	new_object->posX = RF_TileToUnit(tileX - 1);
+	new_object->posY = RF_TileToUnit(tileY);
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_FuseExplosion0"));
 	SD_PlaySound(SOUND_UNKNOWN52);
 }

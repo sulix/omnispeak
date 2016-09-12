@@ -93,8 +93,8 @@ void CK5_PurpleGoPlatThink(CK_object *obj)
 			ck_nextY -= obj->user2;
 		}
 
-		int tileX = (obj->posX + ck_nextX + 0x40) >> 8;
-		int tileY = (obj->posY + ck_nextY + 0x40) >> 8;
+		int tileX = RF_UnitToTile(obj->posX + ck_nextX + 0x40);
+		int tileY = RF_UnitToTile(obj->posY + ck_nextY + 0x40);
 
 		obj->user1 = CA_TileAtPos(tileX, tileY, 2) - 0x5B;
 
@@ -142,8 +142,8 @@ void CK5_SpawnVolte(int tileX, int tileY)
 	new_object->type = CT5_Volte;
 	new_object->active = OBJ_ALWAYS_ACTIVE;
 	new_object->zLayer = 2;
-	new_object->posX = tileX << 8;
-	new_object->posY = tileY << 8;
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->posY = RF_TileToUnit(tileY);
 	new_object->clipped = CLIP_not;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Volte0"));
 
@@ -232,8 +232,8 @@ void CK5_VolteMove(CK_object *obj)
 			ck_nextY -= obj->user2;
 		}
 
-		int16_t tileX = (obj->posX + ck_nextX) >> 8;
-		int16_t tileY = (obj->posY + ck_nextY) >> 8;
+		int16_t tileX = RF_UnitToTile(obj->posX + ck_nextX);
+		int16_t tileY = RF_UnitToTile(obj->posY + ck_nextY);
 
 		obj->user1 = CA_TileAtPos(tileX, tileY, 2) - 0x5B;
 

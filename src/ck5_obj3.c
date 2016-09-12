@@ -45,8 +45,8 @@ void CK5_SpawnMine(int tileX, int tileY)
 	obj->type = 10; // ShikadiMine
 	obj->active = OBJ_ACTIVE;
 	obj->clipped = CLIP_not;
-	obj->posX = tileX * 0x100;
-	obj->posY = tileY * 0x100 - 0x1F1;
+	obj->posX = RF_TileToUnit(tileX);
+	obj->posY = RF_TileToUnit(tileY) - 0x1F1;
 
 	// X and Y offsets of the Dot relative to the mine
 	obj->user2 = 0x100;
@@ -87,8 +87,8 @@ int CK5_Walk(CK_object *obj, CK_Controldir dir)
 
 	int tx, ty;
 
-	tx = (obj->posX + ck_nextX) >> 8;
-	ty = (obj->posY + ck_nextY) >> 8;
+	tx = RF_UnitToTile(obj->posX + ck_nextX);
+	ty = RF_UnitToTile(obj->posY + ck_nextY);
 
 	switch (dir)
 	{
@@ -558,8 +558,8 @@ void CK5_SpawnRobo(int tileX, int tileY)
 	CK_object *obj = CK_GetNewObj(false);
 	obj->type = CT5_Robo;
 	obj->active = OBJ_ACTIVE;
-	obj->posX = tileX << 8;
-	obj->posY = (tileY << 8) - 0x400;
+	obj->posX = RF_TileToUnit(tileX);
+	obj->posY = RF_TileToUnit(tileY) - 0x400;
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_None;
 	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_Robo0"));
@@ -607,7 +607,7 @@ void CK5_RoboShoot(CK_object *obj)
 
 	shotSpawnX = obj->xDirection == IN_motion_Right ? obj->posX + 0x380 : obj->posX;
 
-	if (new_object = CK5_SpawnEnemyShot(shotSpawnX, obj->posY + 0x200, CK_GetActionByName("CK5_ACT_RoboShot0")))
+	if ((new_object = CK5_SpawnEnemyShot(shotSpawnX, obj->posY + 0x200, CK_GetActionByName("CK5_ACT_RoboShot0"))))
 	{
 		new_object->velX = obj->xDirection * 60;
 		new_object->velY = obj->user1 & 1 ? -8 : 8;
@@ -646,8 +646,8 @@ void CK5_SpawnSpirogrip(int tileX, int tileY)
 
 	obj->type = CT5_Spirogrip;
 	obj->active = OBJ_ACTIVE;
-	obj->posX = (tileX << 8);
-	obj->posY = (tileY << 8) - 256;
+	obj->posX = RF_TileToUnit(tileX);
+	obj->posY = RF_TileToUnit(tileY) - 256;
 
 	obj->xDirection = 1; // Right
 	obj->yDirection = 1; // Down
@@ -697,8 +697,8 @@ void CK5_SpawnSpindred(int tileX, int tileY)
 	new_object->type = CT5_Spindred;
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 0;
-	new_object->posX = (tileX << 8);
-	new_object->posY = (tileY << 8) - 0x80;
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->posY = RF_TileToUnit(tileY) - 0x80;
 	new_object->yDirection = IN_motion_Down;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Spindred0"));
 }
@@ -793,8 +793,8 @@ void CK5_SpawnMaster(int tileX, int tileY)
 	CK_object *new_object = CK_GetNewObj(false);
 	new_object->type = CT5_Master;
 	new_object->active = OBJ_ACTIVE;
-	new_object->posX = (tileX << 8);
-	new_object->posY = (tileY << 8) - 0x180;
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->posY = RF_TileToUnit(tileY) - 0x180;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Master0"));
 }
 
@@ -823,7 +823,7 @@ void CK5_MasterShoot(CK_object *obj)
 	CK_object *new_object;
 
 	xPos = obj->xDirection == IN_motion_Right ? obj->posX : 0x100 + obj->posX;
-	if (new_object = CK5_SpawnEnemyShot(xPos, obj->posY + 0x80, CK_GetActionByName("CK5_ACT_MasterBall0")))
+	if ((new_object = CK5_SpawnEnemyShot(xPos, obj->posY + 0x80, CK_GetActionByName("CK5_ACT_MasterBall0"))))
 	{
 		new_object->velX = obj->xDirection * 48;
 		new_object->velY = -16;
@@ -861,7 +861,7 @@ void CK5_MasterTele(CK_object *obj)
 	posY_0 = obj->posY;
 
 	// Spawn sparks going in both directions
-	if (new_object = CK_GetNewObj(true))
+	if ((new_object = CK_GetNewObj(true)))
 	{
 		new_object->posX = obj->posX;
 		new_object->posY = obj->posY;
@@ -869,7 +869,7 @@ void CK5_MasterTele(CK_object *obj)
 		CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MasterSparks0"));
 	}
 
-	if (new_object = CK_GetNewObj(true))
+	if ((new_object = CK_GetNewObj(true)))
 	{
 		new_object->posX = obj->posX;
 		new_object->posY = obj->posY;
@@ -892,8 +892,8 @@ void CK5_MasterTele(CK_object *obj)
 			continue;
 
 		// Set the new position and clipping rectangle of the master
-		obj->posX = tx << 8;
-		obj->posY = ty << 8;
+		obj->posX = RF_TileToUnit(tx);
+		obj->posY = RF_TileToUnit(ty);
 		obj->clipRects.tileX1 = tx - 1;
 		obj->clipRects.tileX2 = tx + 4;
 		obj->clipRects.tileY1 = ty - 1;
@@ -992,7 +992,7 @@ void CK5_MasterBallTileCol(CK_object *obj)
 		CK_object *new_object;
 		obj->velX = 48;
 		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_MasterSparks0"));
-		if (new_object = CK_GetNewObj(true))
+		if ((new_object = CK_GetNewObj(true)))
 		{
 			new_object->posX = obj->posX;
 			new_object->posY = obj->posY;
@@ -1023,8 +1023,8 @@ void CK5_SpawnShikadi(int tileX, int tileY)
 	CK_object *new_object = CK_GetNewObj(false);
 	new_object->type = CT5_Shikadi;
 	new_object->active = OBJ_ACTIVE;
-	new_object->posX = (tileX << 8);
-	new_object->posY = (tileY << 8) - 0x100;
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->posY = RF_TileToUnit(tileY) - 0x100;
 	new_object->user2 = 4;
 	new_object->xDirection = (US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left);
 	new_object->yDirection = IN_motion_Down;
@@ -1118,13 +1118,13 @@ void CK5_ShikadiCol(CK_object *o1, CK_object *o2)
 void CK5_ShikadiPole(CK_object *obj)
 {
 
-	int tileX;
+	int sparkX;
 	CK_object *new_object;
 
 	obj->timeUntillThink = 2;
-	tileX = obj->xDirection == IN_motion_Right ? obj->clipRects.tileX2 << 8 : obj->clipRects.tileX1 << 8;
+	sparkX = obj->xDirection == IN_motion_Right ? RF_TileToUnit(obj->clipRects.tileX2) : RF_TileToUnit(obj->clipRects.tileX1);
 	new_object = CK_GetNewObj(true);
-	new_object->posX = tileX;
+	new_object->posX = sparkX;
 	new_object->posY = obj->posY + 0x80;
 	new_object->type = CT5_EnemyShot;
 	new_object->active = OBJ_EXISTS_ONLY_ONSCREEN;
@@ -1193,8 +1193,8 @@ void CK5_SpawnShocksund(int tileX, int tileY)
 	CK_object *new_object = CK_GetNewObj(false);
 	new_object->type = CT5_Shocksund;
 	new_object->active = OBJ_ACTIVE;
-	new_object->posX = (tileX << 8);
-	new_object->posY = (tileY << 8) - 0x80;
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->posY = RF_TileToUnit(tileY) - 0x80;
 	new_object->user2 = 2;
 	new_object->xDirection = IN_motion_Right;
 	new_object->yDirection = IN_motion_Down;
@@ -1242,7 +1242,7 @@ void CK5_ShocksundShoot(CK_object *obj)
 	CK_object *new_object;
 	int posX = obj->xDirection == IN_motion_Right ? obj->posX + 0x70 : obj->posX;
 
-	if (new_object = CK5_SpawnEnemyShot(posX, obj->posY + 0x40, CK_GetActionByName("CK5_ACT_BarkShot0")))
+	if ((new_object = CK5_SpawnEnemyShot(posX, obj->posY + 0x40, CK_GetActionByName("CK5_ACT_BarkShot0"))))
 	{
 
 		new_object->velX = obj->xDirection * 60;
@@ -1296,8 +1296,8 @@ void CK5_ShocksundGroundTileCol(CK_object *obj)
 	{
 
 		//if facing ck_keenObj, jump towards him, else turn around at edge
-		if (obj->xDirection == IN_motion_Right && ck_keenObj->posX > obj->posX ||
-				obj->xDirection == IN_motion_Left && ck_keenObj->posX < obj->posX)
+		if ((obj->xDirection == IN_motion_Right && ck_keenObj->posX > obj->posX) ||
+				(obj->xDirection == IN_motion_Left && ck_keenObj->posX < obj->posX))
 		{
 			CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_ShocksundJump0"));
 			obj->velX = obj->xDirection == IN_motion_Right ? 40 : -40;
@@ -1383,8 +1383,8 @@ void CK5_SpawnSphereful(int tileX, int tileY)
 	new_object->type = CT5_Sphereful;
 	new_object->clipped = CLIP_simple;
 	new_object->active = OBJ_ACTIVE;
-	new_object->posX = tileX << 8;
-	new_object->posY = (tileY << 8) - 0x100;
+	new_object->posX = RF_TileToUnit(tileX);
+	new_object->posY = RF_TileToUnit(tileY) - 0x100;
 	new_object->zLayer = 1;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Sphereful0"));
 }
@@ -1513,8 +1513,8 @@ void CK5_SpawnKorath(int tileX, int tileY)
 
 	obj->type = 23;
 	obj->active = OBJ_ACTIVE;
-	obj->posX = tileX << 8;
-	obj->posY = (tileY << 8) - 128;
+	obj->posX = RF_TileToUnit(tileX);
+	obj->posY = RF_TileToUnit(tileY) - 128;
 	obj->xDirection = US_RndT() < 128 ? 1 : -1;
 	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_KorathWalk1"));
 }
@@ -1529,8 +1529,8 @@ void CK5_QEDSpawn(int tileX, int tileY)
 	new_object->clipRects.tileY1 = tileY;
 	new_object->clipRects.tileX2 = new_object->clipRects.tileX1 + 1;
 	new_object->clipRects.tileY2 = new_object->clipRects.tileY1 + 1;
-	new_object->clipRects.unitX1 = (tileX << 8) - 0x10;
-	new_object->clipRects.unitY1 = (tileY << 8) - 0x10;
+	new_object->clipRects.unitX1 = RF_TileToUnit(tileX) - 0x10;
+	new_object->clipRects.unitY1 = RF_TileToUnit(tileY) - 0x10;
 	new_object->clipRects.unitX2 = new_object->clipRects.unitX1 + 0x220;
 	new_object->clipRects.unitY2 = new_object->clipRects.unitY1 + 0x220;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_QED"));

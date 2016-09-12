@@ -69,8 +69,8 @@ void CK5_MapKeenTeleSpawn(int tileX, int tileY)
 {
 
 	ck_keenObj->type = 2;
-	ck_keenObj->posX = (tileX << 8);
-	ck_keenObj->posY = (tileY << 8);
+	ck_keenObj->posX = RF_TileToUnit(tileX);
+	ck_keenObj->posY = RF_TileToUnit(tileY);
 	ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
 	ck_keenObj->zLayer = 1;
 	ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None;
@@ -239,8 +239,8 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 	int timer;
 	int ticsx2;
 
-	unitX = tileX << 8;
-	unitY = tileY << 8;
+	unitX = RF_TileToUnit(tileX);
+	unitY = RF_TileToUnit(tileY);
 
 	for (timer = 0; timer < 130; )
 	{
@@ -333,7 +333,7 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 	// and store X in map units in user1; Y in user 2
 	int dest_tile = CA_TileAtPos(tileX, tileY, 2);
 	ck_keenObj->user2 = dest_tile / 256 * 256;
-	ck_keenObj->user1 = (((dest_tile & 0x007F)+1) << 8);
+	ck_keenObj->user1 = RF_TileToUnit((dest_tile & 0x007F)+1);
 
 	// Move keen based on the relative location of the target
 	if ((uint16_t) ck_keenObj->user1 < (uint16_t) ck_keenObj->posY)
