@@ -71,8 +71,8 @@ void CK4_SpawnCouncilMember(int tileX, int tileY)
    obj->type = CT4_CouncilMember;
    obj->active = OBJ_ACTIVE;
    obj->zLayer = PRIORITIES - 4;
-   obj->posX = tileX << G_T_SHIFT;
-   obj->posY = (tileY << G_T_SHIFT) - 369;
+   obj->posX = RF_TileToUnit(tileX);
+   obj->posY = RF_TileToUnit(tileY) - 369;
    obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
    obj->yDirection = IN_motion_Down;
    CK_SetAction(obj, CK_GetActionByName("CK4_ACT_CouncilWalk0"));
@@ -92,8 +92,8 @@ void CK4_SpawnSlug(int tileX, int tileY)
   obj->type = CT4_Slug;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 2;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x71;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x71;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_SlugMove0"));
@@ -142,8 +142,8 @@ void CK4_SpawnMushroom(int tileX, int tileY)
   obj->type = CT4_Mushroom;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0xF1;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit((tileY)) - 0xF1;
   obj->xDirection = IN_motion_Right;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Mushroom0"));
 }
@@ -200,8 +200,8 @@ void CK4_SpawnEgg(int tileX, int tileY)
   obj->type = CT4_Egg;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 2;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x71;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x71;
   obj->xDirection = IN_motion_Right;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Egg0"));
@@ -218,8 +218,8 @@ void CK4_SpawnBird(int tileX, int tileY)
   obj->type = CT4_Bird;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 2;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0xF1;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0xF1;
   obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_BirdHatched0"));
@@ -377,7 +377,7 @@ void CK4_BirdFlyingDraw(CK_object *obj)
     if (!obj->user1)
       obj->user1++;
 
-  if (obj->rightTI && obj->velX < 0 || obj->leftTI && obj->velX > 0)
+  if ((obj->rightTI && obj->velX < 0) || (obj->leftTI && obj->velX > 0))
   {
     obj->velX = 0;
     obj->xDirection = -obj->xDirection;
@@ -415,8 +415,8 @@ void CK4_SpawnArachnut(int tileX, int tileY)
   obj->type = CT4_Arachnut;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = (tileX << G_T_SHIFT);
-  obj->posY = (tileY << G_T_SHIFT) - 0x171;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x171;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_ArachnutWalk0"));
@@ -455,8 +455,8 @@ void CK4_SpawnSkypest(int tileX, int tileY)
   obj->type = CT4_Skypest;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = US_RndT() < 0x80 ? IN_motion_Down : IN_motion_Up;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_SkypestFly0"));

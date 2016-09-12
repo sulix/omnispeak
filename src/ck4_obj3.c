@@ -36,8 +36,8 @@ void CK4_SpawnSmirky(int tileX, int tileY)
   obj->type = CT4_Smirky;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 1;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x180;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x180;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Smirky0"));
@@ -175,8 +175,8 @@ void CK4_SmirkyCheckTiles(CK_object *obj)
         o->type = CT_Friendly;
         o->zLayer = PRIORITIES - 1;
         o->clipped = CLIP_not;
-        o->posX = x << G_T_SHIFT;
-        o->posY = y << G_T_SHIFT;
+        o->posX = RF_TileToUnit(x);
+        o->posY = RF_TileToUnit(y);
         o->active = OBJ_EXISTS_ONLY_ONSCREEN;
         CK_SetAction2(o, CK_GetActionByName("CK4_ACT_StolenItem0"));
       }
@@ -214,8 +214,8 @@ void CK4_SpawnMimrock(int tileX, int tileY)
   obj->type = CT4_Mimrock;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 1;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0xD0;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0xD0;
   obj->xDirection = IN_motion_Right;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Mimrock0"));
@@ -336,8 +336,8 @@ void CK4_SpawnDopefish(int tileX, int tileY)
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 2;
   obj->clipped = CLIP_simple;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x300;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x300;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_DopefishSwim0"));
@@ -531,8 +531,8 @@ void CK4_SpawnSchoolfish(int tileX, int tileY)
   obj->active = OBJ_ACTIVE;
   obj->clipped = CLIP_simple;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   obj->xDirection = IN_motion_Right;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_SchoolfishSwim0"));
@@ -560,8 +560,8 @@ void CK4_SpawnSprite(int tileX, int tileY)
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
   obj->clipped = CLIP_not;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   obj->user1 = obj->posY;
   obj->xDirection = IN_motion_Right;
   obj->yDirection = IN_motion_Down;
@@ -626,8 +626,8 @@ void CK4_SpawnMine(int tileX, int tileY, int direction)
   obj->type = CT4_Mine;
   obj->active = OBJ_ALWAYS_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
 
   switch (direction)
   {
@@ -670,8 +670,8 @@ void CK4_SpawnLindsey(int tileX, int tileY)
   obj->type = CT4_Lindsey;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->user1 = obj->posY = (tileY << G_T_SHIFT) - 0x100;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->user1 = obj->posY = RF_TileToUnit(tileY) - 0x100;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Lindsey0"));
 }
@@ -691,8 +691,8 @@ void CK4_SpawnDartGun(int tileX, int tileY, int direction)
   CK_object *obj = CK_GetNewObj(false);
   obj->type = CT4_Turret; // CT_Friendly
   obj->active = OBJ_ACTIVE;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   obj->clipped = CLIP_not;
   obj->user1 = direction;
   switch (direction)
@@ -765,8 +765,8 @@ void CK4_SpawnWetsuit(int tileX, int tileY)
   CK_object *obj = CK_GetNewObj(false);
   obj->type = CT4_Wetsuit;
   obj->active = OBJ_ACTIVE;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x100;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x100;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Wetsuit0"));
 }
 

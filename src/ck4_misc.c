@@ -569,9 +569,11 @@ static int16_t ck4_lumpEnds[MAXLUMPS] =
 void CK4_ScanInfoLayer()
 {
 
-  memset(ck4_lumpsNeeded, sizeof(ck4_lumpsNeeded), 0);
+	// Reset the lumps (contiguous lists of chunks for sprites) required by
+	// the level.
+	memset(ck4_lumpsNeeded, sizeof(ck4_lumpsNeeded), 0);
 
-  //TODO: Work out where to store current map number, etc.
+	//TODO: Work out where to store current map number, etc.
 	int mapW = CA_MapHeaders[ca_mapOn]->width;
 	int mapH = CA_MapHeaders[ca_mapOn]->height;
 
@@ -593,11 +595,11 @@ void CK4_ScanInfoLayer()
 				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
 				break;
 
-        // ScubaKeen
+			// ScubaKeen
 			case 42:
 				CK4_SpawnScubaKeen(x, y);
 				CK_DemoSignSpawn();
-        ck4_lumpsNeeded[Lump_ScubaKeen] = true;
+				ck4_lumpsNeeded[Lump_ScubaKeen] = true;
 				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
 				break;
 
@@ -607,17 +609,16 @@ void CK4_ScanInfoLayer()
 				CK_SpawnMapKeen(x, y);
 				break;
 
-      case 4:
-        CK4_SpawnCouncilMember(x, y);
-        ck4_lumpsNeeded[Lump_CouncilMember] = true;
-        break;
-
+			case 4:
+				CK4_SpawnCouncilMember(x, y);
+				ck4_lumpsNeeded[Lump_CouncilMember] = true;
+				break;
 
 			case 25:
 				RF_SetScrollBlock(x, y, true);
 				break;
 			case 26:
-        RF_SetScrollBlock(x, y, false);
+				RF_SetScrollBlock(x, y, false);
 				break;
 
       // Miragia
@@ -1182,8 +1183,8 @@ void CK4_SpawnScubaKeen (int tileX, int tileY)
   ck_keenObj->type = CT_Player;
   ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
   ck_keenObj->zLayer = PRIORITIES - 3;
-  ck_keenObj->posX = tileX << G_T_SHIFT;
-  ck_keenObj->posY = tileY << G_T_SHIFT;
+  ck_keenObj->posX = RF_TileToUnit(tileX);
+  ck_keenObj->posY = RF_TileToUnit(tileY);
   ck_keenObj->xDirection = IN_motion_Right;
   ck_keenObj->yDirection = IN_motion_Down;
   ck_keenObj->clipped = CLIP_simple;
@@ -1371,14 +1372,13 @@ void CK4_KeenSwimCol(CK_object *a, CK_object *b)
 
 void CK4_KeenSwimDraw(CK_object *obj)
 {
-  if (obj->rightTI || obj->leftTI)
-    obj->velX = 0;
+	if (obj->rightTI || obj->leftTI)
+		obj->velX = 0;
 
-  if (obj->topTI && obj->velY > 0 ||
-      obj->bottomTI && obj->velY < 0)
-    obj->velY = 0;
+	if ((obj->topTI && obj->velY > 0) || (obj->bottomTI && obj->velY < 0))
+		obj->velY = 0;
 
-  RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
 
 // ===========================================================================

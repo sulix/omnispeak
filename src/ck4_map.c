@@ -87,7 +87,7 @@ void CK4_MapMiscFlagsCheck(CK_object *obj)
   if (!obj->user3)
   {
     int midX = obj->clipRects.tileXmid;
-    int midY = (obj->clipRects.unitY1 + (obj->clipRects.unitY2 - obj->clipRects.unitY1) / 2) >> G_T_SHIFT;
+    int midY = RF_UnitToTile(obj->clipRects.unitY1 + (obj->clipRects.unitY2 - obj->clipRects.unitY1) / 2);
     int mf = TI_ForeMisc(CA_TileAtPos(midX, midY, 1));
 
     if (mf == MF_WaterN || mf == MF_WaterE || mf == MF_WaterS || mf == MF_WaterW)

@@ -36,8 +36,8 @@ void CK4_SpawnWormmouth(int tileX, int tileY)
   obj->type = CT4_Wormmouth;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) + 0x8F;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) + 0x8F;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_WormmouthMove0"));
@@ -79,8 +79,8 @@ void CK4_WormmouthMove(CK_object *obj)
 
   if (dy >= -0x100 && dy <= 0x100)
   {
-    if (obj->xDirection == IN_motion_Right && dx > 0x80 && dx < 0x180 ||
-        obj->xDirection == IN_motion_Left && dx < -0x80 && dx > -0x200)
+    if ((obj->xDirection == IN_motion_Right && dx > 0x80 && dx < 0x180) ||
+        (obj->xDirection == IN_motion_Left && dx < -0x80 && dx > -0x200))
     {
       SD_PlaySound(SOUND_WORMMOUTHBITE);
       obj->currentAction = CK_GetActionByName("CK4_ACT_WormmouthBite0");
@@ -117,8 +117,8 @@ void CK4_SpawnCloud(int tileX, int tileY)
   obj->type = CT4_Cloud;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 2;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   obj->xDirection = IN_motion_Right;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_CloudDormant0"));
@@ -203,8 +203,8 @@ void CK4_SpawnBerkeloid(int tileX, int tileY)
   obj->type = CT4_Berkeloid;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 2;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x200;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x200;
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   obj->user2 = 8;
@@ -345,8 +345,8 @@ void CK4_SpawnInchworm(int tileX, int tileY)
   obj->type = CT4_Inchworm;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 2;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Inchworm0"));
@@ -359,8 +359,8 @@ void CK4_SpawnFoot(int tileX, int tileY)
   obj->type = CT4_Foot;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY - 3 << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY - 3);
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Foot1"));
 }
 
@@ -440,8 +440,8 @@ void CK4_SpawnBounder(int tileX, int tileY)
   obj->type = CT4_Bounder;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 4;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = (tileY << G_T_SHIFT) - 0x80;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY) - 0x80;
   obj->yDirection = IN_motion_Down;
   obj->xDirection = IN_motion_None;
   CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Bounder0"));
@@ -540,8 +540,8 @@ void CK4_SpawnLick(int tileX, int tileY)
   obj->type = CT4_Lick;
   obj->active = OBJ_ACTIVE;
   obj->zLayer = PRIORITIES - 2;
-  obj->posX = tileX << G_T_SHIFT;
-  obj->posY = tileY << G_T_SHIFT;
+  obj->posX = RF_TileToUnit(tileX);
+  obj->posY = RF_TileToUnit(tileY);
   obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
   obj->yDirection = IN_motion_Down;
   obj->timeUntillThink = US_RndT() / 0x40;
