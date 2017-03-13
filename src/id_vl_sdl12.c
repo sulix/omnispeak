@@ -2,6 +2,7 @@
 #include "id_vl_private.h"
 #include "assert.h"
 #include <SDL.h>
+#include <string.h>
 
 static SDL_Surface *vl_sdl12_screenSurface;
 static SDL_Rect vl_sdl12_screenBorderedRect;

@@ -331,7 +331,7 @@ void US_RestoreWindow(US_WindowRec *win)
 static void USL_XORICursor(uint16_t x, uint16_t y, char *s, uint16_t cursor)
 {
 	//static	bool	status;		// VGA doesn't XOR...
-	static char cursorStr[2] = {0x80, 0};
+	static char cursorStr[2] = {(char)0x80, 0};
 	char	buf[128];
 	uint16_t w, h;
 
