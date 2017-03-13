@@ -458,8 +458,19 @@ static bool ck4_lumpsNeeded[MAXLUMPS];
 typedef enum
 {
   Lump_0 = 0,
+  Lump_Keen = 1,
+  Lump_Soda = 2,
+  Lump_Candybar = 3,
+  Lump_Choc = 4,
+  Lump_Jawbreaker = 5,
+  Lump_Donut = 6,
+  Lump_Icecream = 7,
+  Lump_LifewaterFlask = 8,
+  Lump_Stunner = 9,
+  Lump_MapKeen = 10,
   Lump_Slug = 11,
   Lump_Mushroom = 12,
+  Lump_DartShooter = 13,
   Lump_Lindsey = 14,
   Lump_FootWorm = 15,
   Lump_Smirky = 16,
@@ -476,18 +487,35 @@ typedef enum
   Lump_Bounder = 27,
   Lump_Cloud = 28,
   Lump_Berkeloid = 29,
-  // 30??
+  Lump_Gems = 30,
   Lump_Dart = 31,
   Lump_ScubaKeen = 32,
   Lump_Sprite = 33,
   Lump_Mine = 34,
+  Lump_KeenMoon = 35,
   Lump_Egg = 36,
 } CK_Lumptype;
+
+static int16_t ck4_itemLumps[] =
+{
+	Lump_Gems,
+	Lump_Gems,
+	Lump_Gems,
+	Lump_Gems,
+	Lump_Soda,
+	Lump_Candybar,
+	Lump_Choc,
+	Lump_Jawbreaker,
+	Lump_Donut,
+	Lump_Icecream,
+	Lump_LifewaterFlask,
+	Lump_Stunner,
+};
 
 static int16_t ck4_lumpStarts[MAXLUMPS] =
 {
   88,
-  130,
+  130, 
   227,
   229,
   231,
@@ -588,11 +616,13 @@ void CK4_ScanInfoLayer()
 				CK_SpawnKeen(x, y, 1);
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
+				ck4_lumpsNeeded[Lump_Keen] = true;
 				break;
 			case 2:
 				CK_SpawnKeen(x, y, -1);
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
+				ck4_lumpsNeeded[Lump_Keen] = true;
 				break;
 
 			// ScubaKeen
@@ -606,6 +636,7 @@ void CK4_ScanInfoLayer()
 			case 3:
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
+				ck4_lumpsNeeded[Lump_MapKeen] = true;
 				CK_SpawnMapKeen(x, y);
 				break;
 
@@ -645,6 +676,7 @@ void CK4_ScanInfoLayer()
         // Birds
       case 13:
         ck4_lumpsNeeded[Lump_Egg] = true;
+	ck4_lumpsNeeded[Lump_Bird] = true;
         CK4_SpawnEgg(x, y);
         break;
 
@@ -666,6 +698,10 @@ void CK4_ScanInfoLayer()
         CK4_SpawnArachnut(x, y);
         break;
 
+      case 75:
+	ck4_lumpsNeeded[Lump_KeenMoon] = true;
+	break;
+	
         // Skypest
         //
       case 46:
@@ -717,7 +753,7 @@ void CK4_ScanInfoLayer()
 
 cachePoofs:
 
-        for (int i = 350; i < 353; i++)
+        for (int i = 350; i <= 353; i++)
         {
           CA_MarkGrChunk(i);
         }
@@ -861,6 +897,7 @@ cachePoofs:
 				if (ck_gameState.numShots >= 5)
 					break;
 				infoValue = 68;
+				ck4_lumpsNeeded[Lump_Stunner] = true;
 			case 57:
 			case 58:
 			case 59:
@@ -874,6 +911,7 @@ cachePoofs:
 			case 67:
 			case 68:
 				CK_SpawnItem(x, y, infoValue - 57);
+				ck4_lumpsNeeded[ck4_itemLumps[infoValue - 57]] = true;
 				break;
 
       default:
@@ -896,8 +934,8 @@ cachePoofs:
 
   for (int i = 0; i < MAXLUMPS; i++)
     if (ck4_lumpsNeeded[i])
-      for (int j = ck4_lumpStarts[i]; j <= ck4_lumpEnds[i]; i++)
-        CA_CacheGrChunk(j);
+      for (int j = ck4_lumpStarts[i]; j <= ck4_lumpEnds[i]; j++)
+        CA_MarkGrChunk(j);
 }
 
 // Dialog Functions

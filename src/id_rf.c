@@ -27,9 +27,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_ca.h"
 #include "id_mm.h"
 #include "id_ti.h"
+#include "ck_cross.h"
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 #include "SDL.h"
 
 // Proper dirty-rectangle drawing is not working yet. Disable it for now.
@@ -618,7 +620,11 @@ void RF_RenderTile16(int x, int y, int tile)
 	//TODO: We should be able to remove this at some point, as it should have already been cached by
 	// CacheMarks. Last time I tried that, I recall it failing, but it's something we should investigate
 	// at some point.
-	CA_CacheGrChunk(ca_gfxInfoE.offTiles16+tile);
+	if (!ca_graphChunks[ca_gfxInfoE.offTiles16 + tile])
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Tried to render a Tile16 which was not cached. tile = %d, chunk = %d.\n", tile, ca_gfxInfoE.offTiles16 + tile);
+		CA_CacheGrChunk(ca_gfxInfoE.offTiles16+tile);
+	}
 
 	// Some levels, notably Keen 6's "Guard Post 3" use empty background tiles (i.e. tiles with offset
 	// FFFFFF in EGAHEAD). CA_CacheGrChunk() leaves these as NULL pointers. As we'd otherwise crash,
@@ -633,7 +639,11 @@ void RF_RenderTile16(int x, int y, int tile)
 void RF_RenderTile16m(int x, int y, int tile)
 {
 	if (!tile) return;
-	CA_CacheGrChunk(ca_gfxInfoE.offTiles16m+tile);
+	if (!ca_graphChunks[ca_gfxInfoE.offTiles16m + tile])
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Tried to render a Tile16m which was not cached. tile = %d, chunk = %d.\n", tile, ca_gfxInfoE.offTiles16m + tile);
+		CA_CacheGrChunk(ca_gfxInfoE.offTiles16m+tile);
+	}
 	VL_MaskedBlitToSurface(ca_graphChunks[ca_gfxInfoE.offTiles16m+tile],rf_tileBuffer,x*16,y*16,16,16);
 }
 
@@ -1235,15 +1245,16 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 		sde->prevNextPtr = &rf_firstSpriteTableEntry[zLayer];
 	}
 
-	//TODO: Remove
-	CA_CacheGrChunk(chunk);
-
+	int sprite_number = chunk - ca_gfxInfoE.offSprites;
+	
+	if (!ca_graphChunks[chunk])
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Trying to place an uncached sprite (chunk = %d, sprite = %d)\n", chunk, sprite_number);
+		CA_CacheGrChunk(chunk);
+	}
 	void *sprite_data = ca_graphChunks[chunk];
 	if (!sprite_data)
 		Quit("RF_AddSpriteDraw: Placed an uncached sprite");
-
-	int sprite_number = chunk - ca_gfxInfoE.offSprites;
-
 
 
 	sde->chunk = chunk;

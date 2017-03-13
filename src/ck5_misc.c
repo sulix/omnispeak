@@ -651,6 +651,139 @@ void CK5_CloseMapTeleporter(int tileX, int tileY)
 }
 
 // TODO: Cache stuff here instead of spawner handlers
+#define MAXLUMPS 34
+static bool ck5_lumpsNeeded[MAXLUMPS];
+typedef enum
+{
+	Lump_0 = 0,
+	Lump_Keen = 1,
+	Lump_Candy = 2,
+	Lump_Marshmallow = 3,
+	Lump_Cola = 4,
+	Lump_Stix = 5,
+	Lump_SugarStoopies = 6,
+	Lump_BagOSugar = 7,
+	Lump_VitalinKeg = 8,
+	Lump_Gems = 9,
+	Lump_Stunner = 10,
+	Lump_PinkShot = 11,
+	Lump_MapKeen = 12,
+	Lump_ShikadiMaster = 13,
+	Lump_Shikadi = 14,
+	Lump_Shocksund = 15,
+	Lump_Sphereful = 16,
+	Lump_Sparky = 17,
+	Lump_Mine = 18,
+	Lump_Slicestar = 19,
+	Lump_RoboRed = 20,
+	Lump_Spirogrip = 21,
+	Lump_Ampton = 22,
+	Lump_VolteFace = 23,
+	Lump_PurplePlat = 24,
+	Lump_Spindred = 25,
+	Lump_Shelley = 26,
+	Lump_RedPlat = 27,
+	Lump_UnusedRedPlat = 28,
+	Lump_Keycard = 29,
+	Lump_Korath = 30,
+	Lump_QEDFuse = 31,
+	Lump_QEDExplosion = 32,
+	Lump_Teleporter = 33,
+} CK_Lumptype;
+
+static int16_t ck5_itemLumps[] =
+{
+	Lump_Gems,
+	Lump_Gems,
+	Lump_Gems,
+	Lump_Gems,
+	Lump_Candy,
+	Lump_Marshmallow,
+	Lump_Cola,
+	Lump_Stix,
+	Lump_SugarStoopies,
+	Lump_BagOSugar,
+	Lump_VitalinKeg,
+	Lump_Stunner
+};
+
+static int16_t ck5_lumpStarts[MAXLUMPS] =
+{
+	0,
+	0x6C,
+	0xD2,
+	0xD4,
+	0xD6,
+	0xD8,
+	0xDA,
+	0xDC,
+	0xDE,
+	0xE0,
+	0xE9,
+	0xEC,
+	0xF2,
+	0x130,
+	0x140,
+	0x151,
+	0x166,
+	0x16E,
+	0x17A,
+	0x181,
+	0x183,
+	0x189,
+	0x195,
+	0x1A1,
+	0x1A6,
+	0x1A8,
+	0x1AC,
+	0x1BE,
+	0x1BF,
+	0xCF,
+	0x126,
+	0x11B,
+	0x11E,
+	0x122,
+};
+
+static int16_t ck5_lumpEnds[MAXLUMPS] =
+{
+	0,
+	0xCE,
+	0xD3,
+	0xD5,
+	0xD7,
+	0xD9,
+	0xDB,
+	0xDD,
+	0xDF,
+	0xE8,
+	0xEA,
+	0xF1,
+	0x11A,
+	0x13F,
+	0x150,
+	0x165,
+	0x16D,
+	0x179,
+	0x180,
+	0x182,
+	0x188,
+	0x194,
+	0x1A0,
+	0x1A5,
+	0x1A7,
+	0x1AB,
+	0x1BD,
+	0x1BE,
+	0x1BF,
+	0xD1,
+	0x12F,
+	0x11D,
+	0x121,
+	0x125
+};
+
+
 void CK5_ScanInfoLayer()
 {
 
@@ -671,16 +804,19 @@ void CK5_ScanInfoLayer()
 				CK_SpawnKeen(x, y, 1);
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
+				ck5_lumpsNeeded[Lump_Keen] = true;
 				break;
 			case 2:
 				CK_SpawnKeen(x, y, -1);
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
+				ck5_lumpsNeeded[Lump_Keen] = true;
 				break;
 
 			case 3:
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[0xEB] |= ca_levelbit;
+				ck5_lumpsNeeded[Lump_MapKeen] = true;
 				if (ck_gameState.levelState != LS_TeleportToKorath)
 					CK_SpawnMapKeen(x, y);
 				break;
@@ -691,6 +827,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 4:
 				CK5_SpawnSparky(x, y);
+				ck5_lumpsNeeded[Lump_Sparky] = true;
 				break;
 
 			case 9:
@@ -699,6 +836,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 7:
 				CK5_SpawnMine(x, y);
+				ck5_lumpsNeeded[Lump_Mine] = true;
 				break;
 
 			case 12:
@@ -707,6 +845,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 10:
 				CK5_SpawnSlice(x, y, CD_north);
+				ck5_lumpsNeeded[Lump_Slicestar] = true;
 				break;
 
 			case 15:
@@ -715,6 +854,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 13:
 				CK5_SpawnRobo(x, y);
+				ck5_lumpsNeeded[Lump_RoboRed] = true;
 				break;
 
 			case 18:
@@ -723,6 +863,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 16:
 				CK5_SpawnSpirogrip(x, y);
+				ck5_lumpsNeeded[Lump_Spirogrip] = true;
 				break;
 
 			case 21:
@@ -731,6 +872,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 19:
 				CK5_SpawnSliceDiag(x, y);
+				ck5_lumpsNeeded[Lump_Slicestar] = true;
 				break;
 
 			case 24:
@@ -739,6 +881,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 22:
 				CK5_SpawnSlice(x, y, CD_east);
+				ck5_lumpsNeeded[Lump_Slicestar] = true;
 				break;
 
 			case 25:
@@ -754,9 +897,11 @@ void CK5_ScanInfoLayer()
 			case 29:
 			case 30:
 				CK_SpawnAxisPlatform(x, y, infoValue - 27, false);
+				ck5_lumpsNeeded[Lump_RedPlat] = true;
 				break;
 			case 32:
 				CK_SpawnFallPlat(x, y);
+				ck5_lumpsNeeded[Lump_RedPlat] = true;
 				break;
 
 			case 33:
@@ -765,6 +910,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty > D_Normal) break;
 			case 35:
 				CK_SpawnStandPlatform(x, y);
+				ck5_lumpsNeeded[Lump_RedPlat] = true;
 				break;
 
 			case 36:
@@ -772,9 +918,11 @@ void CK5_ScanInfoLayer()
 			case 38:
 			case 39:
 				CK_SpawnGoPlat(x, y, infoValue - 36, false);
+				ck5_lumpsNeeded[Lump_RedPlat] = true;
 				break;
 			case 40:
 				CK_SneakPlatSpawn(x, y);
+				ck5_lumpsNeeded[Lump_RedPlat] = true;
 				break;
 			case 41:
 				if (ck_gameState.currentLevel == 12)
@@ -786,6 +934,7 @@ void CK5_ScanInfoLayer()
 				{
 					ck_gameState.ep.ck5.fusesRemaining++;
 				}
+				ck5_lumpsNeeded[Lump_QEDFuse] = true;
 				break;
 			case 44:
 				if (ck_gameState.difficulty < D_Hard) break;
@@ -793,6 +942,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 42:
 				CK5_SpawnAmpton(x, y);
+				ck5_lumpsNeeded[Lump_Ampton] = true;
 				break;
 
 			case 53:
@@ -801,6 +951,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 45:
 				CK_TurretSpawn(x, y, 0);
+				ck5_lumpsNeeded[Lump_PinkShot] = true;
 				break;
 
 			case 54:
@@ -809,6 +960,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 46:
 				CK_TurretSpawn(x, y, 1);
+				ck5_lumpsNeeded[Lump_PinkShot] = true;
 				break;
 
 			case 55:
@@ -817,6 +969,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 47:
 				CK_TurretSpawn(x, y, 2);
+				ck5_lumpsNeeded[Lump_PinkShot] = true;
 				break;
 
 			case 56:
@@ -825,6 +978,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 48:
 				CK_TurretSpawn(x, y, 3);
+				ck5_lumpsNeeded[Lump_PinkShot] = true;
 				break;
 
 			case 69:
@@ -845,9 +999,11 @@ void CK5_ScanInfoLayer()
 			case 67:
 			case 68:
 				CK_SpawnItem(x, y, infoValue - 57);
+				ck5_lumpsNeeded[ck5_itemLumps[infoValue - 57]] = true;
 				break;
 			case 70:
 				CK_SpawnItem(x, y, infoValue - 58); // Omegamatic Keycard
+				ck5_lumpsNeeded[Lump_Keycard] = true;
 				break;
 
 			case 73:
@@ -856,6 +1012,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 71:
 				CK5_SpawnVolte(x, y);
+				ck5_lumpsNeeded[Lump_VolteFace] = true;
 				break;
 
 			case 76:
@@ -864,6 +1021,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 74:
 				CK5_SpawnShelly(x, y);
+				ck5_lumpsNeeded[Lump_Shelley] = true;
 				break;
 
 			case 79:
@@ -872,6 +1030,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 77:
 				CK5_SpawnSpindred(x, y);
+				ck5_lumpsNeeded[Lump_Spindred] = true;
 				break;
 
 			case 80:
@@ -879,12 +1038,14 @@ void CK5_ScanInfoLayer()
 			case 82:
 			case 83:
 				CK_SpawnGoPlat(x, y, infoValue - 80, true);
+				ck5_lumpsNeeded[Lump_PurplePlat] = true;
 				break;
 			case 84:
 			case 85:
 			case 86:
 			case 87:
 				CK_SpawnAxisPlatform(x, y, infoValue - 84, true);
+				ck5_lumpsNeeded[Lump_PurplePlat] = true;
 				break;
 
 			case 90:
@@ -893,6 +1054,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 88:
 				CK5_SpawnMaster(x, y);
+				ck5_lumpsNeeded[Lump_ShikadiMaster] = true;
 				break;
 
 			case 101:
@@ -901,6 +1063,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 99:
 				CK5_SpawnShikadi(x, y);
+				ck5_lumpsNeeded[Lump_Shikadi] = true;
 				break;
 
 			case 104:
@@ -909,6 +1072,7 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 102:
 				CK5_SpawnShocksund(x, y);
+				ck5_lumpsNeeded[Lump_Shocksund] = true;
 				break;
 
 			case 107:
@@ -917,13 +1081,16 @@ void CK5_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal) break;
 			case 105:
 				CK5_SpawnSphereful(x, y);
+				ck5_lumpsNeeded[Lump_Sphereful] = true;
 				break;
 
 			case 124:
 				CK5_SpawnKorath(x, y);
+				ck5_lumpsNeeded[Lump_Korath] = true;
 				break;
 			case 125:
 				// TODO: Signal about teleportation (caching)
+				ck5_lumpsNeeded[Lump_Teleporter] = true;
 				break;
 			}
 		}
@@ -936,6 +1103,12 @@ void CK5_ScanInfoLayer()
 	}
 	// TODO: Some more stuff (including opening elevator after breaking fuses)
 
+	// Mark all of the chunks for needed lumps.
+	for (int i = 0; i < MAXLUMPS; i++)
+		if (ck5_lumpsNeeded[i])
+			for (int j = ck5_lumpStarts[i]; j <= ck5_lumpEnds[i]; j++)
+				CA_MarkGrChunk(j);
+	
 	if (ck_gameState.currentLevel == 0)
 	{
 		int keenYTilePos = ck_keenObj->posY >> 8;

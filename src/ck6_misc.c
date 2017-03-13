@@ -537,7 +537,7 @@ static bool ck6_lumpsNeeded[MAXLUMPS];
 typedef enum
 {
   Lump_0,
-  Lump_1,
+  Lump_Keen,
   Lump_100Pts,
   Lump_200Pts,
   Lump_500Pts,
@@ -574,6 +574,22 @@ typedef enum
   Lump_Passcard,
   Lump_Molly,
 } CK6_LumpType;
+
+static int16_t ck6_itemLumps[] =
+{
+	Lump_Gems,
+	Lump_Gems,
+	Lump_Gems,
+	Lump_Gems,
+	Lump_100Pts,
+	Lump_200Pts,
+	Lump_500Pts,
+	Lump_1000Pts,
+	Lump_2000Pts,
+	Lump_5000Pts,
+	Lump_1UP,
+	Lump_Stunner
+};
 
 static int16_t ck6_lumpStarts[MAXLUMPS] =
 {
@@ -682,17 +698,20 @@ void CK6_ScanInfoLayer()
 				CK_SpawnKeen(x, y, 1);
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[175] |= ca_levelbit;
+				ck6_lumpsNeeded[Lump_Keen] = true;
 				break;
 			case 2:
 				CK_SpawnKeen(x, y, -1);
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[175] |= ca_levelbit;
+				ck6_lumpsNeeded[Lump_Keen] = true;
 				break;
 
 			case 3:
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[175] |= ca_levelbit;
-        CK_SpawnMapKeen(x, y);
+				CK_SpawnMapKeen(x, y);
+				ck6_lumpsNeeded[Lump_Mapkeen] = true;
 				break;
 
       // Bloogs
@@ -845,6 +864,7 @@ void CK6_ScanInfoLayer()
 			case 67:
 			case 68:
 				CK_SpawnItem(x, y, infoValue - 57);
+				ck6_lumpsNeeded[ck6_itemLumps[infoValue - 57]] = true;
 				break;
 
       // Orbatrices
@@ -967,7 +987,7 @@ void CK6_ScanInfoLayer()
 
   for (int i = 0; i < MAXLUMPS; i++)
     if (ck6_lumpsNeeded[i])
-      for (int j = ck6_lumpStarts[i]; j <= ck6_lumpEnds[i]; i++)
+      for (int j = ck6_lumpStarts[i]; j <= ck6_lumpEnds[i]; j++)
         CA_CacheGrChunk(j);
 }
 
