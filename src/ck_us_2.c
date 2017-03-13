@@ -99,6 +99,17 @@ bool CK_US_AspectCorrectMenuProc(US_CardMsg msg, US_CardItem *item)
 	return true;
 }
 
+bool CK_US_BorderMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	if ( msg != US_MSG_CardEntered )
+		return false;
+	
+	VL_ToggleBorder();
+	green_message_box( (vl_hasOverscanBorder ? "Overscan border now on" : "Overscan border now off"), "Press any key", NULL );
+	CK_US_UpdateOptionsMenus();
+	return true;
+}
+
 #endif
 
 bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item);
@@ -421,6 +432,7 @@ US_Card ck_us_svgaCompatibilityMenu ={ 0, 0, 0, 0, 0, &CK_US_SVGACompatibilityMe
 #ifdef EXTRA_GRAPHICS_OPTIONS
 US_Card ck_us_fullscreenMenu ={ 0, 0, 0, 0, 0, &CK_US_FullscreenMenuProc, 0, 0, 0 };
 US_Card ck_us_aspectCorrectMenu ={ 0, 0, 0, 0, 0, &CK_US_AspectCorrectMenuProc, 0, 0, 0 };
+US_Card ck_us_borderMenu ={ 0, 0, 0, 0, 0, &CK_US_BorderMenuProc, 0, 0, 0 };
 #endif
 
 
@@ -433,6 +445,7 @@ US_CardItem ck_us_optionsMenuItems[] ={
 #ifdef EXTRA_GRAPHICS_OPTIONS
 	{ US_ITEM_Submenu, 0, IN_SC_F, "", US_Comm_None, &ck_us_fullscreenMenu, 0, 0 },
 	{ US_ITEM_Submenu, 0, IN_SC_A, "", US_Comm_None, &ck_us_aspectCorrectMenu, 0, 0 },
+	{ US_ITEM_Submenu, 0, IN_SC_B, "", US_Comm_None, &ck_us_borderMenu, 0, 0 },
 #endif
 	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
 };
@@ -977,6 +990,7 @@ void CK_US_UpdateOptionsMenus( void )
 #ifdef EXTRA_GRAPHICS_OPTIONS
 	ck_us_optionsMenuItems[4].caption = vl_isFullScreen ? "FULLSCREEN (ON)" : "FULLSCREEN (OFF)";
 	ck_us_optionsMenuItems[5].caption = vl_isAspectCorrected ? "CORRECT ASPECT RATIO (ON)" : "CORRECT ASPECT RATIO (OFF)";
+	ck_us_optionsMenuItems[6].caption = vl_hasOverscanBorder ? "OVERSCAN BORDER (ON)" : "OVERSCAN BORDER (OFF)";
 #endif
 
 	// Disable Two button firing selection if required

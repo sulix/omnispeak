@@ -712,23 +712,30 @@ void VL_ResizeScreen(int w, int h)
 
 bool vl_isFullScreen;
 bool vl_isAspectCorrected;
+bool vl_hasOverscanBorder;
 
-void VL_SetParams(bool isFullScreen, bool isAspectCorrected)
+void VL_SetParams(bool isFullScreen, bool isAspectCorrected, bool hasOverscan)
 {
 	vl_isFullScreen = isFullScreen;
 	vl_isAspectCorrected = isAspectCorrected;
+	vl_hasOverscanBorder = hasOverscan;
 	if (vl_currentBackend)
 		vl_currentBackend->flushParams();
 }
 
 void VL_ToggleFullscreen()
 {
-	VL_SetParams(!vl_isFullScreen, vl_isAspectCorrected);
+	VL_SetParams(!vl_isFullScreen, vl_isAspectCorrected, vl_hasOverscanBorder);
 }
 
 void VL_ToggleAspect()
 {
-	VL_SetParams(vl_isFullScreen, !vl_isAspectCorrected);
+	VL_SetParams(vl_isFullScreen, !vl_isAspectCorrected, vl_hasOverscanBorder);
+}
+
+void VL_ToggleBorder()
+{
+	VL_SetParams(vl_isFullScreen, vl_isAspectCorrected, !vl_hasOverscanBorder);
 }
 
 void *VL_CreateSurface(int w, int h)

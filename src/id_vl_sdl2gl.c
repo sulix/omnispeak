@@ -604,6 +604,13 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 void VL_SDL2GL_FlushParams()
 {
 	SDL_SetWindowFullscreen(vl_sdl2gl_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	vl_sdl2gl_scaledBorders.left = VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH;
+	vl_sdl2gl_scaledBorders.right = VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH;
+	vl_sdl2gl_scaledBorders.top = VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT;
+	vl_sdl2gl_scaledBorders.bottom = VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT;
+
+	SDL_SetWindowMinimumSize(vl_sdl2gl_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
+
 }
 
 // Unfortunately, we can't take advantage of designated initializers in C++.

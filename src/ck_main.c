@@ -651,6 +651,7 @@ int main(int argc, char *argv[])
 
 	bool isFullScreen = false;
 	bool isAspectCorrected = true;
+	bool hasBorder = true;
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 	const char *dumperFilename = NULL;
 #endif
@@ -680,6 +681,10 @@ int main(int argc, char *argv[])
 		{
 			isAspectCorrected = false;
 		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/NOBORDER"))
+		{
+			hasBorder = false;
+		}
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 		else if (!CK_Cross_strcasecmp(argv[i], "/DUMPFILE"))
 		{
@@ -703,7 +708,7 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-	VL_SetParams(isFullScreen, isAspectCorrected);
+	VL_SetParams(isFullScreen, isAspectCorrected, hasBorder);
 
 	ck_currentEpisode->defineConstants();
 

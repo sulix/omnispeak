@@ -31,10 +31,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * observations, the vertical overscan bars have the thickness of 8 pixels,
  * while each of the horizontal bars has 7 scanlines (after double-scanning).
  */
-#define VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH 8
-#define VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH 8
-#define VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT 7
-#define VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT 7
+#define VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH (vl_hasOverscanBorder ? 8 : 0)
+#define VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH (vl_hasOverscanBorder ? 8 : 0)
+#define VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT (vl_hasOverscanBorder ? 7 : 0)
+#define VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT (vl_hasOverscanBorder ? 7 : 0)
 #define VL_VGA_GFX_WIDTH_SCALEFACTOR 1
 #define VL_VGA_GFX_HEIGHT_SCALEFACTOR 2
 /* If 320x200 is desired, then the bars should be
@@ -67,6 +67,7 @@ extern VL_EGAVGAAdapter vl_emuegavgaadapter;
 
 extern bool vl_isFullScreen;
 extern bool vl_isAspectCorrected;
+extern bool vl_hasOverscanBorder;
 
 #endif
 
