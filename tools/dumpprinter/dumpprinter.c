@@ -166,6 +166,7 @@ static bool processObjects(FILE *fp)
 			printf(" %04X", objFields[i]);
 		printf("\n");
 	}
+	return true;
 }
 
 int main(int argc, char **argv)
