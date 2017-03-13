@@ -76,6 +76,7 @@ const char *okterms[] = {
 // Checks if the terminal is compatible with our B8000 text mode emulation.
 bool US_TerminalOk()
 {
+#ifndef _WIN32
 	// We need a UTF-8 character encoding.
 	const char *lang = getenv("LANG");
 	if (!lang) return false;
@@ -88,7 +89,8 @@ bool US_TerminalOk()
 	for (int i = 0; okterms[i]; ++i)
 		if (!strcmp(term, okterms[i]))
 			return true;
-
+#endif
+		
 	return false;
 }
 
