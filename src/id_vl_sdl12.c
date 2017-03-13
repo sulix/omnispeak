@@ -10,53 +10,60 @@ static SDL_Rect vl_sdl12_screenWholeRect;
 static int vl_sdl12_desktopWidth = -1, vl_sdl12_desktopHeight = -1;
 static void VL_SDL12_SetVideoMode(int mode)
 {
-	assert(mode == 0xD);
-	// WARNING - This may be set ONLY before the first call to SDL_SetVideoMode!
-	if ((vl_sdl12_desktopWidth < 0) || (vl_sdl12_desktopHeight < 0))
+	if (mode == 0x0D)
 	{
-		const SDL_VideoInfo* vidinfo = SDL_GetVideoInfo();
-		if (vidinfo) {
-			vl_sdl12_desktopWidth = vidinfo->current_w;
-			vl_sdl12_desktopHeight = vidinfo->current_h;
-		}
-		else // Just in case this fails...
+		// WARNING - This may be set ONLY before the first call to SDL_SetVideoMode!
+		if ((vl_sdl12_desktopWidth < 0) || (vl_sdl12_desktopHeight < 0))
 		{
-			vl_sdl12_desktopWidth = 2*VL_EGAVGA_GFX_WIDTH;
-			vl_sdl12_desktopHeight = 2*VL_EGAVGA_GFX_HEIGHT;
+			const SDL_VideoInfo* vidinfo = SDL_GetVideoInfo();
+			if (vidinfo) {
+				vl_sdl12_desktopWidth = vidinfo->current_w;
+				vl_sdl12_desktopHeight = vidinfo->current_h;
+			}
+			else // Just in case this fails...
+			{
+				vl_sdl12_desktopWidth = 2*VL_EGAVGA_GFX_WIDTH;
+				vl_sdl12_desktopHeight = 2*VL_EGAVGA_GFX_HEIGHT;
+			}
 		}
-	}
 
-	if (vl_isFullScreen)
-	{
-		vl_sdl12_screenSurface = SDL_SetVideoMode(vl_sdl12_desktopWidth,
-			                                  vl_sdl12_desktopHeight,
-			                                  0,SDL_DOUBLEBUF|SDL_HWSURFACE|SDL_FULLSCREEN);
-		vl_sdl12_screenWholeRect.w = VL_VGA_GFX_SHRUNK_WIDTH_PLUS_BORDER;
-		vl_sdl12_screenWholeRect.h = VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER;
-		vl_sdl12_screenWholeRect.x = (vl_sdl12_desktopWidth-vl_sdl12_screenWholeRect.w)/2;
-		vl_sdl12_screenWholeRect.y = (vl_sdl12_desktopHeight-vl_sdl12_screenWholeRect.h)/2;
-		vl_sdl12_screenBorderedRect.w = VL_EGAVGA_GFX_WIDTH;
-		vl_sdl12_screenBorderedRect.h = VL_EGAVGA_GFX_HEIGHT;
-		vl_sdl12_screenBorderedRect.x = vl_sdl12_screenWholeRect.x+VL_VGA_GFX_SHRUNK_LEFTBORDER_WIDTH;
-		vl_sdl12_screenBorderedRect.y = vl_sdl12_screenWholeRect.y+VL_VGA_GFX_SHRUNK_TOPBORDER_HEIGHT;
+		if (vl_isFullScreen)
+		{
+			vl_sdl12_screenSurface = SDL_SetVideoMode(vl_sdl12_desktopWidth,
+								vl_sdl12_desktopHeight,
+								0,SDL_DOUBLEBUF|SDL_HWSURFACE|SDL_FULLSCREEN);
+			vl_sdl12_screenWholeRect.w = VL_VGA_GFX_SHRUNK_WIDTH_PLUS_BORDER;
+			vl_sdl12_screenWholeRect.h = VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER;
+			vl_sdl12_screenWholeRect.x = (vl_sdl12_desktopWidth-vl_sdl12_screenWholeRect.w)/2;
+			vl_sdl12_screenWholeRect.y = (vl_sdl12_desktopHeight-vl_sdl12_screenWholeRect.h)/2;
+			vl_sdl12_screenBorderedRect.w = VL_EGAVGA_GFX_WIDTH;
+			vl_sdl12_screenBorderedRect.h = VL_EGAVGA_GFX_HEIGHT;
+			vl_sdl12_screenBorderedRect.x = vl_sdl12_screenWholeRect.x+VL_VGA_GFX_SHRUNK_LEFTBORDER_WIDTH;
+			vl_sdl12_screenBorderedRect.y = vl_sdl12_screenWholeRect.y+VL_VGA_GFX_SHRUNK_TOPBORDER_HEIGHT;
+		}
+		else
+		{
+			vl_sdl12_screenSurface = SDL_SetVideoMode(VL_VGA_GFX_SHRUNK_WIDTH_PLUS_BORDER,
+								VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER,
+								0,SDL_DOUBLEBUF|SDL_HWSURFACE);
+			vl_sdl12_screenWholeRect.x = 0;
+			vl_sdl12_screenWholeRect.y = 0;
+			vl_sdl12_screenWholeRect.w = VL_VGA_GFX_SHRUNK_WIDTH_PLUS_BORDER;
+			vl_sdl12_screenWholeRect.h = VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER;
+			vl_sdl12_screenBorderedRect.x = VL_VGA_GFX_SHRUNK_LEFTBORDER_WIDTH;
+			vl_sdl12_screenBorderedRect.y = VL_VGA_GFX_SHRUNK_TOPBORDER_HEIGHT;
+			vl_sdl12_screenBorderedRect.w = VL_EGAVGA_GFX_WIDTH;
+			vl_sdl12_screenBorderedRect.h = VL_EGAVGA_GFX_HEIGHT;
+		}
+		SDL_WM_SetCaption(VL_WINDOW_TITLE, VL_WINDOW_TITLE);
+		// Hide mouse cursor
+		SDL_ShowCursor(0);
 	}
-	else
+	else 
 	{
-		vl_sdl12_screenSurface = SDL_SetVideoMode(VL_VGA_GFX_SHRUNK_WIDTH_PLUS_BORDER,
-			                                  VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER,
-			                                  0,SDL_DOUBLEBUF|SDL_HWSURFACE);
-		vl_sdl12_screenWholeRect.x = 0;
-		vl_sdl12_screenWholeRect.y = 0;
-		vl_sdl12_screenWholeRect.w = VL_VGA_GFX_SHRUNK_WIDTH_PLUS_BORDER;
-		vl_sdl12_screenWholeRect.h = VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER;
-		vl_sdl12_screenBorderedRect.x = VL_VGA_GFX_SHRUNK_LEFTBORDER_WIDTH;
-		vl_sdl12_screenBorderedRect.y = VL_VGA_GFX_SHRUNK_TOPBORDER_HEIGHT;
-		vl_sdl12_screenBorderedRect.w = VL_EGAVGA_GFX_WIDTH;
-		vl_sdl12_screenBorderedRect.h = VL_EGAVGA_GFX_HEIGHT;
+		SDL_ShowCursor(1);
+		// The main window will be freed by SDL_Quit()
 	}
-	SDL_WM_SetCaption(VL_WINDOW_TITLE, VL_WINDOW_TITLE);
-	// Hide mouse cursor
-	SDL_ShowCursor(0);
 }
 
 static void VL_SDL12_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
@@ -119,7 +126,7 @@ static int VL_SDL12_SurfacePGet(void *surface, int x, int y)
 static void VL_SDL12_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour)
 {
 	SDL_Surface *surf = (SDL_Surface*) dst_surface;
-	SDL_Rect rect = {x,y,w,h};
+	SDL_Rect rect = {(Sint16)x,(Sint16)y,(Uint16)w,(Uint16)h};
 	SDL_FillRect(surf,&rect,colour);
 }
 
@@ -256,7 +263,7 @@ static void VL_SDL12_Present(void *surface, int scrlX, int scrlY)
 {
 	// TODO: Verify this is a VL_SurfaceUsage_FrontBuffer
 	SDL_Surface *surf = (SDL_Surface *)surface;
-	SDL_Rect srcr = {scrlX,scrlY,vl_sdl12_screenBorderedRect.w,vl_sdl12_screenBorderedRect.h};
+	SDL_Rect srcr = {(Sint16)scrlX,(Sint16)scrlY,vl_sdl12_screenBorderedRect.w,vl_sdl12_screenBorderedRect.h};
 	SDL_BlitSurface(surf,&srcr, vl_sdl12_screenSurface, &vl_sdl12_screenBorderedRect);
 	//VL_SDL12_SurfaceToSurface(surface, vl_sdl12_screenSurface, 0, 0, scrlX, scrlY, vl_sdl12_screenWidth, vl_sdl12_screenHeight);
 	SDL_Flip(vl_sdl12_screenSurface);
