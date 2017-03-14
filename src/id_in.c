@@ -113,6 +113,7 @@ IN_ControlType in_controlType = IN_ctrl_Keyboard1;
 bool in_keyStates[256];
 IN_ScanCode in_lastKeyScanned = IN_SC_None;
 char in_lastASCII;
+bool in_disableJoysticks = false;
 static bool INL_StartJoy(int joystick);
 static void INL_StopJoy(int joystick);
 
@@ -622,7 +623,8 @@ void IN_SetLastASCII(char c)
 
 void IN_Startup(void)
 {
-	SDL_Init(SDL_INIT_JOYSTICK);
+	if (!in_disableJoysticks)
+		SDL_Init(SDL_INIT_JOYSTICK);
 	for (int i = 0; i < 256; ++i)
 		in_keyStates[i] = 0;
 
@@ -630,9 +632,12 @@ void IN_Startup(void)
 	INL_SetupKbdControls();
 	
 	// Setup any existing joysticks.
-	int numJoys = SDL_NumJoysticks();
-	for (int i = 0; i < numJoys; ++i)
-		INL_StartJoy(i);
+	if (!in_disableJoysticks)
+	{
+		int numJoys = SDL_NumJoysticks();
+		for (int i = 0; i < numJoys; ++i)
+			INL_StartJoy(i);
+	}
 }
 
 // TODO: IMPLEMENT!
@@ -682,6 +687,9 @@ void CK_US_UpdateOptionsMenus( void );
 
 static bool INL_StartJoy(int joystick)
 {
+	if (in_disableJoysticks)
+		return false;
+	
 	if (joystick > SDL_NumJoysticks())
 		return false;
 	

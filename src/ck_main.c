@@ -697,6 +697,10 @@ int main(int argc, char *argv[])
 		{
 			hasBorder = false;
 		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/NOJOYS"))
+		{
+			in_disableJoysticks = true;
+		}
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 		else if (!CK_Cross_strcasecmp(argv[i], "/DUMPFILE"))
 		{

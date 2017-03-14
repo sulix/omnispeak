@@ -228,6 +228,7 @@ extern IN_DemoMode in_demoState;
 extern IN_ControlType in_controlType;
 
 extern bool in_Paused;
+extern bool in_disableJoysticks;
 
 void IN_PumpEvents();
 void IN_WaitKey();
