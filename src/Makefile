@@ -20,11 +20,15 @@ IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id
 CKOBJECTS=ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck4_map.o ck5_map.o ck6_map.o ck4_obj1.o ck4_obj2.o ck4_obj3.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck6_obj1.o ck6_obj2.o ck6_obj3.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck4_misc.o ck5_misc.o ck6_misc.o ck_main.o ck_text.o ck_cross.o icon.o
 OPLOBJECTS=opl/dbopl.o
 
+K4DATA=../bin/ACTION.CK4 ../bin/AUDINFOE.CK4 ../bin/AUDIODCT.CK4 ../bin/AUDIOHHD.CK4 ../bin/EGADICT.CK4 ../bin/EGAHEAD.CK4 ../bin/GFXINFOE.CK4 ../bin/MAPHEAD.CK4 ../bin/TILEINFO.CK4
+K5DATA=../bin/ACTION.CK5 ../bin/AUDINFOE.CK5 ../bin/AUDIODCT.CK5 ../bin/AUDIOHHD.CK5 ../bin/EGADICT.CK5 ../bin/EGAHEAD.CK5 ../bin/GFXINFOE.CK5 ../bin/MAPHEAD.CK5 ../bin/TILEINFO.CK5
+K6DATA=../bin/ACTION.CK6 ../bin/AUDINFOE.CK6 ../bin/AUDIODCT.CK6 ../bin/AUDIOHHD.CK6 ../bin/EGADICT.CK6 ../bin/EGAHEAD.CK6 ../bin/GFXINFOE.CK6 ../bin/MAPHEAD.CK6 ../bin/TILEINFO.CK6
+
 ifeq ($(PLATFORM), WINDOWS)
 	EXE_EXT=.exe
 endif
 
-BUILDASCPP=0
+BUILDASCPP=1
 BINPREFIX=
 
 ifeq ($(BUILDASCPP), 1)
@@ -70,17 +74,27 @@ DEPS := $(OBJ:%.o=%.d)
 #SDL_CONFIG=/home/david/builds/libs/bin/$(SDLCONFIGBIN)
 SDL_CONFIG=$(SDLCONFIGBIN)
 
-.PHONY: all clean
+.PHONY: all clean keen4data keen5data keen6data binfiles
 
 all: $(OUTBIN) binfiles
 
 clean:
-	rm -f $(OUTBIN) $(OBJ) $(DEPS)
+	rm -f $(OUTBIN) $(OBJ) $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA)
 
-binfiles: ../data/keen6/ACTION.CK6 ../data/keen5/ACTION.CK5 ../data/keen4/ACTION.CK4
-	cp -f ../data/keen6/ACTION.CK6 ../bin/ACTION.CK6
-	cp -f ../data/keen5/ACTION.CK5 ../bin/ACTION.CK5
-	cp -f ../data/keen4/ACTION.CK4 ../bin/ACTION.CK4
+../bin/%.CK4: ../data/keen4/%.CK4
+	cp -f $< $@ 
+
+../bin/%.CK5: ../data/keen5/%.CK5
+	cp -f $< $@ 
+
+../bin/%.CK6: ../data/keen6/%.CK6
+	cp -f $< $@
+
+keen4data: $(K4DATA)
+keen5data: $(K5DATA)
+keen6data: $(K6DATA)
+	
+binfiles: keen4data keen5data keen6data
 
 ../obj/%.o: %.c
 	@mkdir -p $(dir $@)
