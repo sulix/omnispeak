@@ -45,6 +45,8 @@ void CA_LoadAllSounds(void);
 
 // -- File IO --
 
+size_t CA_GetFileSize(char *filename);
+bool CAL_AdjustFilenameCase(char *filename);
 bool CA_IsFilePresent(const char *filename);
 char* CAL_AdjustExtension(const char *filename);
 bool CA_FarWrite(int handle, uint8_t *source, int length);

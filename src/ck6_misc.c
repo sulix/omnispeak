@@ -29,7 +29,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck6_ep.h"
 #include <stdio.h>
 
-CK_EpisodeDef ck6_episode ={
+CK_EpisodeDef *ck6_episode;
+
+CK_EpisodeDef ck6v14e_episode ={
+	EP_CK6,
+	"CK6",
+	&CK6_SetupFunctions,
+	&CK6_ScanInfoLayer,
+	&CK6_DefineConstants,
+	&CK6_MapMiscFlagsCheck,
+	&CK6_IsPresent,
+	/* .activeLimit = */ 4,
+	/* .highScoreLevel = */ 18,
+	/* .highScoreTopMargin = */ 0x33,
+	/* .highScoreLeftMargin = */ 0x28,
+	/* .highScoreRightMargin = */ 0x118,
+	/* .endSongLevel = */ 1,
+	/* .starWarsSongLevel = */ 13,
+	/* .lastLevelToMarkAsDone = */ 16,
+	// Note these offsets are for version 1.4
+	/* .objArrayOffset = */ 0xA995,
+	/* .tempObjOffset = */ 0xC761,
+	/* .spriteArrayOffset = */ 0xD7EC,
+	/* .printXOffset = */ 0xA6C5,
+	/* .animTilesOffset = */ 0xDF78,
+	/* .animTileSize = */ 10,
+};
+
+CK_EpisodeDef ck6v15e_episode ={
 	EP_CK6,
 	"CK6",
 	&CK6_SetupFunctions,
@@ -78,6 +105,14 @@ bool CK6_IsPresent()
 		return false;
 	if (!CA_IsFilePresent("AUDIO.CK6"))
 		return false;
+	
+	char egaGraphName[] = "EGAGRAPH.CK6";
+	CAL_AdjustFilenameCase(egaGraphName);
+	size_t egaGraphSize = CA_GetFileSize(egaGraphName);
+	if (egaGraphSize == 464662)
+		ck6_episode = &ck6v15e_episode;
+	else
+		ck6_episode = &ck6v14e_episode;
 
 	// Omnispeak-provided files
 	if (!CA_IsFilePresent("EGAHEAD.CK6"))

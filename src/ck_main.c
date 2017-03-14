@@ -625,7 +625,8 @@ int main(int argc, char *argv[])
 CK_EpisodeDef *ck_episodes[] = {
 	&ck4_episode,
 	&ck5_episode,
-	&ck6_episode,
+	&ck6v14e_episode,
+	&ck6v15e_episode,
 	0
 };
 
@@ -668,7 +669,18 @@ int main(int argc, char *argv[])
 				else if (!strcmp(argv[i+1], "5"))
 					ck_currentEpisode = &ck5_episode;
 				else if (!strcmp(argv[i+1], "6"))
-					ck_currentEpisode = &ck6_episode;
+				{
+					// For now, we use the 1.4 structure to
+					// call the IsPresent function, which
+					// will set the ck6_episode pointer
+					// based on what files are present.
+					ck6v14e_episode.isPresent();
+					ck_currentEpisode = ck6_episode;
+				}
+				else if (!strcmp(argv[i+1], "6v14"))
+					ck_currentEpisode = &ck6v14e_episode;
+				else if (!strcmp(argv[i+1], "6v15"))
+					ck_currentEpisode = &ck6v15e_episode;
 				else
 					Quit("Unsupported episode!");
 			}

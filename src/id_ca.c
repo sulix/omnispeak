@@ -47,6 +47,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sys/stat.h>
 #include <dirent.h>
 
+size_t CA_GetFileSize(char *filename)
+{
+	struct stat fileStat;
+	if (stat(filename, &fileStat))
+		return 0;
+	
+	return fileStat.st_size;
+}
+
 bool CAL_AdjustFilenameCase(char *filename)
 {
 	// Quickly check to see if the file exists with the current case.
@@ -79,6 +88,15 @@ bool CAL_AdjustFilenameCase(char *filename)
 #define WIN32_MEAN_AND_LEAN
 #undef UNICODE
 #include <windows.h>
+size_t CA_GetFileSize(char *filename)
+{
+	WIN32_FILE_ATTRIBUTE_DATA fileStat;
+	if (!GetFileAttributesEx(filename, GetFileExInfoStandard, &fileStat))
+		return 0;
+	
+	return fileStat.nFileSizeLow + (fileStat.nFileSizeHigh << 32);
+}
+
 bool CAL_AdjustFilenameCase(char *filename)
 {
 	DWORD fileAttribs = GetFileAttributes(filename);
