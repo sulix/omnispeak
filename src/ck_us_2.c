@@ -37,7 +37,7 @@ bool CK_US_ScoreBoxMenuProc(US_CardMsg msg, US_CardItem *item)
 		return false;
 
 	ck_scoreBoxEnabled = !ck_scoreBoxEnabled;
-	green_message_box( (ck_scoreBoxEnabled ? "Score box now on" : "Score box now off"), "Press any key", NULL );
+	USL_CtlDialog ( (ck_scoreBoxEnabled ? "Score box now on" : "Score box now off"), "Press any key", NULL );
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
@@ -48,7 +48,7 @@ bool CK_US_TwoButtonFiringMenuProc(US_CardMsg msg, US_CardItem *item)
 		return false;
 
 	ck_twoButtonFiring = !ck_twoButtonFiring;
-	green_message_box( (ck_twoButtonFiring ? "Two-button firing now on" : "Two-button firing now off"), "Press any key", NULL );
+	USL_CtlDialog ( (ck_twoButtonFiring ? "Two-button firing now on" : "Two-button firing now off"), "Press any key", NULL );
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
@@ -59,7 +59,7 @@ bool CK_US_FixJerkyMotionMenuProc(US_CardMsg msg, US_CardItem *item)
 		return false;
 
 	ck_fixJerkyMotion = !ck_fixJerkyMotion;
-	green_message_box( (ck_fixJerkyMotion ? "Jerky motion fix enabled" : "Jerky motion fix disabled"), "Press any key", NULL );
+	USL_CtlDialog ( (ck_fixJerkyMotion ? "Jerky motion fix enabled" : "Jerky motion fix disabled"), "Press any key", NULL );
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
@@ -70,7 +70,7 @@ bool CK_US_SVGACompatibilityMenuProc(US_CardMsg msg, US_CardItem *item)
 		return false;
 
 	ck_svgaCompatibility = !ck_svgaCompatibility;
-	green_message_box( (ck_svgaCompatibility ? "SVGA compatibility now on" : "SVGA compatibility now off"), "Press any key", NULL );
+	USL_CtlDialog ( (ck_svgaCompatibility ? "SVGA compatibility now on" : "SVGA compatibility now off"), "Press any key", NULL );
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
@@ -83,7 +83,7 @@ bool CK_US_FullscreenMenuProc(US_CardMsg msg, US_CardItem *item)
 		return false;
 
 	VL_ToggleFullscreen();
-	green_message_box( (vl_isFullScreen ? "Fullscreen mode enabled" : "Windowed mode enabled"), "Press any key", NULL );
+	USL_CtlDialog ( (vl_isFullScreen ? "Fullscreen mode enabled" : "Windowed mode enabled"), "Press any key", NULL );
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
@@ -94,7 +94,7 @@ bool CK_US_AspectCorrectMenuProc(US_CardMsg msg, US_CardItem *item)
 		return false;
 
 	VL_ToggleAspect();
-	green_message_box( (vl_isAspectCorrected ? "Aspect ratio correction now on" : "Aspect ratio correction now off"), "Press any key", NULL );
+	USL_CtlDialog ( (vl_isAspectCorrected ? "Aspect ratio correction now on" : "Aspect ratio correction now off"), "Press any key", NULL );
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
@@ -105,7 +105,7 @@ bool CK_US_BorderMenuProc(US_CardMsg msg, US_CardItem *item)
 		return false;
 	
 	VL_ToggleBorder();
-	green_message_box( (vl_hasOverscanBorder ? "Overscan border now on" : "Overscan border now off"), "Press any key", NULL );
+	USL_CtlDialog ( (vl_hasOverscanBorder ? "Overscan border now on" : "Overscan border now off"), "Press any key", NULL );
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
@@ -194,8 +194,8 @@ extern int load_game_error, ck_startingSavedGame;
 extern US_CardCommand us_currentCommand;
 extern bool command_confirmed;
 const char *US_GetSavefileName(int index);
-void error_message( int error );
-void load_save_message( const char *s1, const char *s2 );
+void USL_HandleError ( int error );
+void USL_LoadSaveMessage ( const char *s1, const char *s2 );
 void USL_SetMenuFooter( void );
 int USL_ConfirmComm( US_CardCommand command );
 
@@ -211,7 +211,7 @@ void load_savegame_item( US_CardItem * item )
 	{
 		i = item - ck_us_loadSaveMenuItems;
 		e = &us_savefiles[i];
-		load_save_message( "Loading", us_savefiles[i].name );
+		USL_LoadSaveMessage ( "Loading", us_savefiles[i].name );
 
 		file = US_GetSavefileName( i );
 		if ( (fp = fopen(file, "rb")) != NULL )
@@ -228,17 +228,17 @@ void load_savegame_item( US_CardItem * item )
 			//if ( read( handle, e, sizeof ( SAVEFILE_ENTRY ) ) != sizeof ( SAVEFILE_ENTRY ) )
 			{
 				if ( p_load_game && !(*p_load_game)(fp) )
-					error_message( error = errno );
+					USL_HandleError ( error = errno );
 			}
 			else
 			{
-				error_message( error = errno );
+				USL_HandleError ( error = errno );
 			}
 			fclose( fp );
 		}
 		else
 		{
-			error_message( error = errno );
+			USL_HandleError ( error = errno );
 		}
 
 		if ( error )
@@ -343,7 +343,7 @@ void save_savegame_item( US_CardItem *item )
 	/* If the input was not canceled */
 	if ( n != 0 )
 	{
-		load_save_message( "Saving", e->name );
+		USL_LoadSaveMessage ( "Saving", e->name );
 
 		/* Save the file */
 		fname = US_GetSavefileName( i );
@@ -363,19 +363,19 @@ void save_savegame_item( US_CardItem *item )
 			//if ( write( handle, e, sizeof ( SAVEFILE_ENTRY ) ) == sizeof ( SAVEFILE_ENTRY ) )
 			{
 				if ( p_save_game && !(n = (*p_save_game)( fp )) )
-					error_message( error = errno );
+					USL_HandleError ( error = errno );
 			}
 			else
 			{
 				error = (errno == 2) ? 8 : errno;
-				error_message( error );
+				USL_HandleError ( error );
 			}
 			fclose(fp);
 		}
 		else
 		{
 			error = (errno == 2) ? 8 : errno;
-			error_message( error );
+			USL_HandleError ( error );
 		}
 
 		/* Delete the file if an error occurred */
@@ -566,7 +566,7 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 
 	case US_MSG_ItemEntered:
 		CK_US_ControlsMenuProc( US_MSG_DrawItem, item );
-		set_key_control( item, which_control );
+		CK_US_SetKeyBinding( item, which_control );
 		US_DrawCards();
 		result = 1;
 		break;
@@ -575,7 +575,7 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 	return result;
 }
 
-void set_key_control( US_CardItem *item, int which_control )
+void CK_US_SetKeyBinding ( US_CardItem *item, int which_control )
 {
 	bool cursor = false;
 	uint32_t lasttime = 0;
@@ -654,7 +654,7 @@ void set_key_control( US_CardItem *item, int which_control )
 		}
 
 		if ( used )
-			green_message_box( "Key already used", "Press any key", NULL );
+			USL_CtlDialog ( "Key already used", "Press any key", NULL );
 		else
 			*(key_controls[ which_control ]) = k;
 	}
@@ -678,7 +678,7 @@ bool CK_US_Joystick1MenuProc(US_CardMsg msg, US_CardItem *item)
 	if ( msg == US_MSG_CardEntered )
 	{
 		IN_SetControlType(0, IN_ctrl_Joystick1);
-		green_message_box("USING JOYSTICK #1", "PRESS ANY KEY", 0);
+		USL_CtlDialog ("USING JOYSTICK #1", "PRESS ANY KEY", 0);
 		CK_US_UpdateOptionsMenus();
 		return true;
 	}
@@ -690,7 +690,7 @@ bool CK_US_Joystick2MenuProc(US_CardMsg msg, US_CardItem *item)
 	if ( msg == US_MSG_CardEntered )
 	{
 		IN_SetControlType(0, IN_ctrl_Joystick2);
-		green_message_box("USING JOYSTICK #2", "PRESS ANY KEY", 0);
+		USL_CtlDialog ("USING JOYSTICK #2", "PRESS ANY KEY", 0);
 		CK_US_UpdateOptionsMenus();
 		return true;
 	}
@@ -707,7 +707,7 @@ bool CK_US_ConfigureMenuProc(US_CardMsg msg, US_CardItem *item)
 	return false;
 }
 
-void show_paddlewar_score( int16_t keen_score, int16_t comp_score )
+void USL_DrawPaddleWarScore ( int16_t keen_score, int16_t comp_score )
 {
 	// NOTE: This is modified a little from the original
 	// exe in order to align the text and to set the proper font and color
@@ -747,7 +747,7 @@ void show_paddlewar_score( int16_t keen_score, int16_t comp_score )
 	//US_SetPrintColour(old_print_color);
 }
 
-void paddlewar( void )
+void USL_PlayPaddleWar ( void )
 {
 	int16_t ball_visible, new_round, y_bounce, done, keen_won_last, comp_move_counter;
 	int16_t ball_y, keen_x, comp_x, bounce_point, ball_real_x, ball_real_y;
@@ -763,7 +763,7 @@ void paddlewar( void )
 	old_ball_x = old_comp_x = old_keen_x = 78;
 	old_ball_y = 62;
 	keen_score = comp_score = 0;
-	show_paddlewar_score( 0, 0 );
+	USL_DrawPaddleWarScore ( 0, 0 );
 	comp_move_counter = 0;
 	y_bounce = 0;
 	new_round = 1;
@@ -872,10 +872,10 @@ void paddlewar( void )
 				keen_won_last = 0;
 				comp_score++;
 				SD_PlaySound(SOUND_COMPSCORE);
-				show_paddlewar_score( keen_score, comp_score );
+				USL_DrawPaddleWarScore ( keen_score, comp_score );
 				if ( comp_score == 21 )
 				{
-					green_message_box( "You lost!", "Press any key", NULL );
+					USL_CtlDialog ( "You lost!", "Press any key", NULL );
 					done = 1;
 					continue;
 				}
@@ -887,10 +887,10 @@ void paddlewar( void )
 				keen_won_last = 1;
 				keen_score++;
 				SD_PlaySound(SOUND_KEENSCORE);	/* play_sound */
-				show_paddlewar_score( keen_score, comp_score );
+				USL_DrawPaddleWarScore ( keen_score, comp_score );
 				if ( keen_score == 21 )
 				{
-					green_message_box( "You won!", "Press any key", NULL );
+					USL_CtlDialog ( "You won!", "Press any key", NULL );
 					done = 1;
 					continue;
 				}
@@ -986,7 +986,7 @@ bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item)
 	VH_HLine( 77, 231, 143, 10 );
 
 	/* Play the game */
-	paddlewar();
+	USL_PlayPaddleWar();
 	return 1;
 }
 

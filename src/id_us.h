@@ -177,7 +177,7 @@ void US_DrawCards();
 void US_RunCards();
 
 // Related
-int green_message_box( const char *s1, const char *s2, const char *s3 );
+int USL_CtlDialog ( const char *s1, const char *s2, const char *s3 );
 
 // A few function pointers
 extern bool (*p_save_game)(FILE *handle);
