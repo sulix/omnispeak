@@ -202,6 +202,14 @@ extern IN_KeyMapping in_kbdControls;
 
 extern int16_t in_gamepadButtons[4];
 
+typedef enum IN_ControlType {
+	IN_ctrl_Keyboard1,
+	IN_ctrl_Keyboard2,
+	IN_ctrl_Joystick1,
+	IN_ctrl_Joystick2,
+	IN_ctrl_Mouse
+} IN_ControlType;
+
 typedef struct IN_ControlFrame {
   bool jump, pogo, button2, button3;
   int x, y;
@@ -209,7 +217,15 @@ typedef struct IN_ControlFrame {
   IN_Direction dir;
 } IN_ControlFrame;
 
+typedef struct IN_Cursor {
+	bool button0;
+	bool button1;
+	IN_Motion xMotion;
+	IN_Motion yMotion;
+} IN_Cursor;
+
 extern IN_DemoMode in_demoState;
+extern IN_ControlType in_controlType;
 
 extern bool in_Paused;
 
@@ -221,6 +237,11 @@ IN_ScanCode IN_GetLastScan(void);
 void IN_SetLastScan(IN_ScanCode scanCode);
 char IN_GetLastASCII(void);
 void IN_SetLastASCII(char c);
+void IN_SetControlType(int player, IN_ControlType type);
+void IN_GetJoyAbs(int joystick, int *x, int *y);
+uint16_t IN_GetJoyButtonsDB(int joystick);
+bool IN_JoyPresent(int joystick);
+void IN_ReadCursor(IN_Cursor *cursor);
 void IN_Startup(void);
 void IN_Default(bool gotit, int16_t inputChoice);
 void IN_DemoStartPlaying(uint8_t *data, int len);

@@ -109,9 +109,17 @@ in_specialNames[] =	// ASCII for 0xe0 prefixed codes
 
 
 bool in_Paused;
+IN_ControlType in_controlType = IN_ctrl_Keyboard1;
 bool in_keyStates[256];
 IN_ScanCode in_lastKeyScanned = IN_SC_None;
 char in_lastASCII;
+static bool INL_StartJoy(int joystick);
+static void INL_StopJoy(int joystick);
+
+#define IN_MAX_JOYSTICKS 2
+
+SDL_Joystick *in_joysticks[IN_MAX_JOYSTICKS];
+bool in_joystickPresent[IN_MAX_JOYSTICKS];
 
 // SDLKey -> IN_SC
 #define INL_MapKey(sdl,in_sc) case sdl: return in_sc
@@ -469,6 +477,18 @@ static void INL_HandleSDLEvent(SDL_Event *event)
 		sc = INL_SDLKeySymToScanCode(&event->key.keysym);
 		in_keyStates[sc] = 0;
 		break;
+#if SDL_VERSION_ATLEAST(2,0,0)
+	case SDL_JOYDEVICEADDED:
+		INL_StartJoy(event->jdevice.which);
+		break;
+	case SDL_JOYDEVICEREMOVED:
+		for (int i = 0; i < IN_MAX_JOYSTICKS; ++i)
+		{
+			if (SDL_JoystickInstanceID(in_joysticks[i]) == event->jdevice.which)
+				INL_StopJoy(i);
+		}
+		break;
+#endif
 	}
 }
 
@@ -555,19 +575,22 @@ void IN_WaitForButtonPress()
 			return;
 		}
 
-		for (int i = 0; i < 2; i++)
+	#endif
+		for (int i = 0; i < IN_MAX_JOYSTICKS; i++)
 		{
-			if (JoyPresent[i] || Gamepad)
+			if (IN_JoyPresent(i))
 			{
 				if (IN_GetJoyButtonsDB(i))
 				{
 					while (IN_GetJoyButtonsDB(i))
-						;
+					{
+						IN_PumpEvents();
+						VL_Present();
+					}
 					return;
 				}
 			}
 		}
-	#endif
 		VL_Present();
 	}
 }
@@ -599,16 +622,23 @@ void IN_SetLastASCII(char c)
 
 void IN_Startup(void)
 {
+	SDL_Init(SDL_INIT_JOYSTICK);
 	for (int i = 0; i < 256; ++i)
 		in_keyStates[i] = 0;
 
 	// Set the default kbd controls.
 	INL_SetupKbdControls();
+	
+	// Setup any existing joysticks.
+	int numJoys = SDL_NumJoysticks();
+	for (int i = 0; i < numJoys; ++i)
+		INL_StartJoy(i);
 }
 
 // TODO: IMPLEMENT!
 void IN_Default(bool gotit,int16_t inputChoice)
 {
+	in_controlType = (IN_ControlType)inputChoice;
 }
 
 uint8_t *in_demoBuf;
@@ -648,6 +678,125 @@ void IN_ClearKeysDown()
 	memset (in_keyStates, 0, sizeof (in_keyStates));
 }
 
+void CK_US_UpdateOptionsMenus( void );
+
+static bool INL_StartJoy(int joystick)
+{
+	if (joystick > SDL_NumJoysticks())
+		return false;
+	
+	int joystick_id = -1;
+	
+#if SDL_VERSION_ATLEAST(2,0,0)
+	// On SDL2, with hotplug support, we can get hotplug events for joysticks
+	// we've already got open. Check we don't have any duplicates here.
+	SDL_JoystickGUID newGUID = SDL_JoystickGetDeviceGUID(joystick);
+	for (int i = 0; i < IN_MAX_JOYSTICKS; ++i)
+	{
+		if (in_joystickPresent[i])
+		{
+			SDL_JoystickGUID GUID_i = SDL_JoystickGetGUID(in_joysticks[i]);
+			if (!memcmp((void*)&newGUID, (void*)&GUID_i, sizeof(SDL_JoystickGUID)))
+				return false;
+		}
+	}
+#endif
+	
+	// Find an available joystick ID.
+	for (int i = 0; i < IN_MAX_JOYSTICKS; ++i)
+	{
+		if (!in_joystickPresent[i])
+		{
+			joystick_id = i;
+			break;
+		}
+	}
+	
+	if (joystick_id == -1)
+		return false;
+	
+	in_joysticks[joystick_id] = SDL_JoystickOpen(joystick);
+	
+	in_joystickPresent[joystick_id] = true;
+	
+	CK_US_UpdateOptionsMenus();
+	
+	return true;
+}
+
+static void INL_StopJoy(int joystick)
+{
+	in_joystickPresent[joystick] = false;
+	
+	SDL_JoystickClose(in_joysticks[joystick]);
+
+	// If the joystick is unplugged, switch to keyboard immediately.
+	if (in_controlType == IN_ctrl_Joystick1 + joystick)
+		in_controlType = IN_ctrl_Keyboard1;
+	
+	void CK_US_UpdateOptionsMenus();
+	
+}
+
+bool IN_JoyPresent(int joystick)
+{
+	return in_joystickPresent[joystick];
+}
+
+#define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  7849
+#define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
+#define IN_DO_DEADZONE(val, zone) (((val)*(val) < (zone)*(zone))?0:val) 
+
+void IN_GetJoyAbs(int joystick, int *x, int *y)
+{
+	// We apply the XInput (Xbox 360 controller)'s right analogue stick's deadzone,
+	// as it's one of the worst in common use.
+	if (x)
+		*x = IN_DO_DEADZONE (SDL_JoystickGetAxis(in_joysticks[joystick], 0), XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+	if (y)
+		*y = IN_DO_DEADZONE (SDL_JoystickGetAxis(in_joysticks[joystick], 1), XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+}
+
+uint16_t IN_GetJoyButtonsDB(int joystick)
+{
+	int button0 = SDL_JoystickGetButton(in_joysticks[joystick], 0);
+	int button1 = SDL_JoystickGetButton(in_joysticks[joystick], 1);
+	return (button0) | (button1 << 1);
+}
+
+void IN_SetControlType(int player, IN_ControlType type)
+{
+	in_controlType = type;
+}
+
+void IN_ReadCursor(IN_Cursor *cursor)
+{
+	cursor->button0 = false;
+	cursor->button1 = false;
+	cursor->xMotion = IN_motion_None;
+	cursor->yMotion = IN_motion_None;
+	if (in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2)
+	{
+		int joy = in_controlType - IN_ctrl_Joystick1;
+		int rawX, rawY;
+		IN_GetJoyAbs(joy, &rawX, &rawY);
+		cursor->xMotion = IN_motion_None;
+		if (rawX < 0)
+			cursor->xMotion = IN_motion_Left;
+		else if (rawX > 0)
+			cursor->xMotion = IN_motion_Right;
+		cursor->yMotion = IN_motion_None;
+		if (rawY < 0)
+			cursor->yMotion = IN_motion_Up;
+		else if (rawY > 0)
+			cursor->yMotion = IN_motion_Down;
+		
+		uint16_t buttons = IN_GetJoyButtonsDB(joy);
+		cursor->button0 = buttons & 1;
+		cursor->button1 = buttons & 2;
+	}
+}
+
 void IN_ReadControls(int player, IN_ControlFrame *controls)
 {
 	controls->xDirection = IN_motion_None;
@@ -678,6 +827,8 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	}
 	else
 	{
+		if (in_controlType == IN_ctrl_Keyboard1 || in_controlType == IN_ctrl_Keyboard2)
+		{
 		if (IN_GetKeyState(in_kbdControls.upLeft))
 		{
 			controls->xDirection = IN_motion_Left;
@@ -709,8 +860,30 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 		if (IN_GetKeyState(in_kbdControls.pogo)) controls->pogo = true;
 		// TODO: Handle fire input separately? (e.g. two-button firing)
 		if (IN_GetKeyState(in_kbdControls.fire)) controls->button2 = true;
+		}
+		else if (in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2)
+		{
+			int joy = in_controlType - IN_ctrl_Joystick1;
+			int rawX, rawY;
+			IN_GetJoyAbs(joy, &rawX, &rawY);
+			controls->xDirection = IN_motion_None;
+			if (rawX < 0)
+				controls->xDirection = IN_motion_Left;
+			else if (rawX > 0)
+				controls->xDirection = IN_motion_Right;
+			controls->yDirection = IN_motion_None;
+			if (rawY < 0)
+				controls->yDirection = IN_motion_Up;
+			else if (rawY > 0)
+				controls->yDirection = IN_motion_Down;
+			
+			uint16_t buttons = IN_GetJoyButtonsDB(joy);
+			controls->jump = buttons & 1;
+			controls->pogo = buttons & 2;
+		}
 
 		controls->dir = in_dirTable[3 * (controls->yDirection + 1) + controls->xDirection + 1];
+		
 	}
 
 	//TODO: Record this inputFrame
@@ -758,15 +931,15 @@ int IN_CheckAck()
 #if 0
 	if (MousePresent && INL_GetMouseButtons())
 		di = 1;
+#endif
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < IN_MAX_JOYSTICKS; i++)
 	{
-		if (JoyPresent[i] || Gamepad)
-			if (INL_GetJoyButtons)
+		if (IN_JoyPresent(i))
+			if (IN_GetJoyButtonsDB(i))
 				di = 1;
 	}
 
-#endif
 
 	return di;
 

@@ -2073,7 +2073,45 @@ void US_RunCards()
 		}
 		else
 		{
-			//TODO: Add mouse/joystick support
+			IN_Cursor cursor;
+			IN_ReadCursor(&cursor);
+			
+			controller_dy += cursor.yMotion;
+			
+			if (cursor.button0)
+			{
+				while (cursor.button0)
+				{
+					IN_ReadCursor(&cursor);
+					IN_PumpEvents();
+					VL_Present();
+				}
+				US_SelectCurrentItem();
+				action_taken = true;
+			}
+			else if (cursor.button1)
+			{
+				while (cursor.button1)
+				{
+					IN_ReadCursor(&cursor);
+					IN_PumpEvents();
+					VL_Present();
+				}
+				USL_UpLevel();
+				action_taken = true;
+			}
+			else if (controller_dy < -40)
+			{
+				controller_dy += 40;
+				US_SelectPrevItem();
+				action_taken = true;
+			}
+			else if (controller_dy > 40)
+			{
+				controller_dy -= 40;
+				US_SelectNextItem();
+				action_taken = true;
+			}
 		}
 		IN_PumpEvents();
 		//CK_SetTicsPerFrame();

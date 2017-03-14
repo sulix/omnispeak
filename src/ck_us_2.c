@@ -667,23 +667,33 @@ bool CK_US_KeyboardMenuProc(US_CardMsg msg, US_CardItem *item)
 	// Set keyboard as game controller if this menu is entered
 	if ( msg == US_MSG_CardEntered )
 	{
-		// TODO: Implement gamepad and joystick support
-#if 0
-		game_controller[0] = CTRL_KEYBOARD;
-		gamepad = 0;
+		IN_SetControlType(0, IN_ctrl_Keyboard1);
 		CK_US_UpdateOptionsMenus();
-#endif
 	}
 	return false;
 }
 
 bool CK_US_Joystick1MenuProc(US_CardMsg msg, US_CardItem *item)
 {
+	if ( msg == US_MSG_CardEntered )
+	{
+		IN_SetControlType(0, IN_ctrl_Joystick1);
+		green_message_box("USING JOYSTICK #1", "PRESS ANY KEY", 0);
+		CK_US_UpdateOptionsMenus();
+		return true;
+	}
 	return false;
 }
 
 bool CK_US_Joystick2MenuProc(US_CardMsg msg, US_CardItem *item)
 {
+	if ( msg == US_MSG_CardEntered )
+	{
+		IN_SetControlType(0, IN_ctrl_Joystick2);
+		green_message_box("USING JOYSTICK #2", "PRESS ANY KEY", 0);
+		CK_US_UpdateOptionsMenus();
+		return true;
+	}
 	return false;
 }
 
@@ -997,13 +1007,23 @@ void CK_US_UpdateOptionsMenus( void )
 	ck_us_buttonsMenuItems[2].state &= ~US_IS_Disabled;
 	if ( ck_twoButtonFiring )
 		ck_us_buttonsMenuItems[2].state |= US_IS_Disabled;
-#if 0
 
+	
+	if ( IN_JoyPresent(0) )
+		ck_us_configureMenuItems[4].state &= ~US_IS_Disabled;
+	else
+		ck_us_configureMenuItems[4].state |= US_IS_Disabled;
+	if ( IN_JoyPresent(1) )
+		ck_us_configureMenuItems[5].state &= ~US_IS_Disabled;
+	else
+		ck_us_configureMenuItems[5].state |= US_IS_Disabled;
+	
 	/* Set up the gamepad menu item */
-	configure_menu_items[6].state |= US_IS_Disabled;
-	if ( game_controllers[0] == CTRL_JOYSTICK1 || game_controllers[0] == CTRL_JOYSTICK2 )
-		configure_menu_items[6].state &= ~US_IS_Disabled;
-	configure_menu_items[6].caption = gamepad ? "USE GRAVIS GAMEPAD (ON)" : "USE GRAVIS GAMEPAD (OFF)";
+#if 0
+	ck_us_configureMenuItems[6].state |= US_IS_Disabled;
+	if ( in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2 )
+		ck_us_configureMenuItems[6].state &= ~US_IS_Disabled;
+	ck_us_configureMenuItems[6].caption = gamepad ? "USE GRAVIS GAMEPAD (ON)" : "USE GRAVIS GAMEPAD (OFF)";
 #endif
 }
 

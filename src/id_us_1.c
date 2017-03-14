@@ -757,7 +757,7 @@ void US_SaveConfig(void)
 	CK_Cross_fwriteInt16LE(&intVal, 1, f);
 
 	// FIXME: Currently it is unused
-	intVal = 0;
+	intVal = (int16_t)in_controlType;
 	CK_Cross_fwriteInt16LE(&intVal, 1, f); // Input device
 
 	// Write most of in_kbdControls one-by-one (it's a struct):
