@@ -1,31 +1,88 @@
-Omnispeak: A Commander Keen 5 Reimplementation 
+Omnispeak: An reimplementation of "Commander Keen in Goodbye Galaxy!"
 
-Omnispeak is a re-implementation of the Keen:Galaxy engine which aims for
-almost perfect, bug-for-bug compatibility with the original games. Essentially,
-it is a rewrite of the keen 5 engine in modern-ish c99, based on several
-disassembly/decompilation efforts.
+Omnispeak is an open-source reimplementation of Commander Keen episodes 4, 5,
+and 6. It aims to be a pixel-perfect, bug-for-bug clone of the original games,
+and is compatible with savegames from the DOS version.
 
-The source is in the src/ directory. You'll want to run 'make' from within there
-to get it compiling. You'll need gcc or a compatible compiler, and the Simple
-Directmedia Layer (libSDL) version 1.2 or 2.0 (http://libsdl.org/). When
-compiled, an 'omnispeak' binary will appear in 'bin/'. You'll need to copy the
-game's data files, including some resources extracted from the executable.
-You'll find those in the 'data/keen5' directory.
+Omnispeak's homepage, including binary downloads, is available at:
+	https://davidgow.net/keen/omnispeak.html
 
-You'll also need to take the following files from Keen 5 v1.4, and place them
-in the same directory as the binary:
-	* GAMEMAPS.CK5
-	* EGAGRAPH.CK5
-	* AUDIO.CK5
+== INSTALLATION ==
+To play, you'll need to include files from the original game.
+
+Omnispeak supports:
+	- Keen 4 v1.4 EGA
+	- Keen 5 v1.4 EGA
+	- Keen 6 v1.4 EGA
+	- Keen 6 v1.5 EGA
+
+These should be the easiest versions to get. For example, the Steam version and
+the 3DRealms version are both version 1.4. Keen 6 is not easily available, but
+you should be able to find patches which convert one version of the game to
+another. Keen 6 v1.5 fixes a few bugs, so it's probably best to use it if you
+can.
+
+The shareware release of Keen 4 v1.4 is available here:
+	https://davidgow.net/keen/4keen14.zip
+
+
+You'll need to take the following files from your version of Keen, and place
+them in the same directory as the 'omnispeak' binary:
+	* GAMEMAPS.CK?
+	* EGAGRAPH.CK?
+	* AUDIO.CK?
+
+You'll also need the files from the 'data' directory corresponding to your
+version of Keen. 
 
 To run the game, simply switch to the directory with the data files, and run:
-./omnispeak
+	./omnispeak
 
-There's also a basic webpage for this at:
-http://davidgow.net/keen/omnispeak.html
+You can provide Omnispeak the following command-line arguments:
+	/EPISODE <4,5,6,6v14,6v15>
+		- Runs the given episode/version of Commander Keen
+	/FULLSCREEN
+		- Starts the game in fullscreen mode
+	/FILLED
+		- Starts the game with aspect-ratio correction off.
+	/NOBORDER
+		- Starts the game with EGA overscan border emulation off.
+	/NOJOYS
+		- Disables Joystick detection.
+	/DEMOFILE <filename>
+		- Plays the demo recorded with Keen's F10+D cheat in filename.
 
-Patches are most welcome: either use GitHub's "Pull Request" system, or email me
-at david@ingeniumdigital.com.
 
-Have fun,
--- David Gow
+== COMPILING ==
+
+The source code for Omnispeak is available on GitHub:
+	https://github.com/sulix/omnispeak
+
+You'll find it in the src/ directory and built with make.
+
+Omnispeak should build fine on most Linux distributions, and can be made to
+build for Windows with MinGW with a small amount of tweaking.
+
+You'll need to have the Simple Directmedia Layer 2.0 installed, with the
+sdl2-config program somewhere in your path.
+
+Running 'make' from within the src/ directory will output When compiled, an
+'omnispeak' binary will appear in 'bin/', along with the files from the 'data'
+directories.
+
+There are some variables you can change in the Makefile:
+	KEEN6VER: The version of Keen 6's data files to copy to 'bin'.
+	PLATFORM: Set this to 'WINDOWS' to build for Windows.
+	BUILDASCPP: Build as C++ (using g++) instead of as C99.
+	WITH_SDL2: Use SDL2 (recommended) rather than SDL1.2.
+
+== KNOWN ISSUES ==
+
+- Modding support is not implemented.
+- Mouse / Gamepad support is not implemented.
+- Joystick support is new and very buggy.
+- Some debug cheats (notably demo recording) are not supported.
+- New settings ("Fullscreen", "Aspect Ratio", "Overscan border" are not saved.
+- The game always redraws everything every frame.
+- Some chunks are not cached properly at load time (doors, especially)
+- No fallbacks for systems without GLSL and non-power-of-two texture support.
