@@ -491,9 +491,9 @@ void CK4_SkypestAirCol(CK_object *a, CK_object *b)
       a->velX = 20;
     else if (b->xDirection == IN_motion_Left)
       a->velX = -20;
-    else if (b->yDirection = IN_motion_Down)
+    else if (b->yDirection == IN_motion_Down)
       a->velY = 20;
-    else if (b->yDirection = IN_motion_Up)
+    else if (b->yDirection == IN_motion_Up)
       a->velY = -20;
 
     CK_ShotHit(b);
