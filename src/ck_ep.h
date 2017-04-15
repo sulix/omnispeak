@@ -31,6 +31,7 @@ typedef enum CK_Episode
   EP_CK4,
   EP_CK5,
   EP_CK6,
+  EP_NK5,
 } CK_Episode;
 
 //This structure defines an episode of Commander Keen, providing
@@ -77,6 +78,10 @@ typedef struct CK_EpisodeDef
 	uint16_t printXOffset;
 	uint16_t animTilesOffset;
 	uint16_t animTileSize; // Keen 6 has a few additional fields for sounds
+
+    // Is this a Netkeen style episode?
+    bool netGame;
+
 } CK_EpisodeDef;
 
 extern CK_EpisodeDef *ck_currentEpisode;

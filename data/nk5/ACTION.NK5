@@ -1,0 +1,150 @@
+#
+# Action database for Keen 5 (v1.4)
+#
+
+# ck_phys.c
+%action NK_ACT_NULL 0x0788 0 0 Frame 0 0 0 0 0 NULL NULL NULL NULL
+
+# ck_misc.c
+%action NK_ACT_objBadState 0x07A6 0 0 Frame 0 0 0 0 0 CK_ObjBadstate CK_ObjBadstate CK_ObjBadstate NULL
+
+# ck_keen.c: Apart from sprite numbers these should work across all keen versions
+
+%action NK_ACT_keenStanding 0x0888 44 36 UnscaledFrame 0 1 4 0 32 NK_KeenStandingThink NK_KeenColFunc NK_KeenDrawFunc NK_ACT_keenStanding
+%action NK_ACT_keenIdle1 0x08C4 53 53 UnscaledFrame 0 1 100 0 0 NK_KeenStandingThink NK_KeenColFunc NK_KeenDrawFunc NK_ACT_keenIdle2
+%action NK_ACT_keenIdle2 0x08E2 54 54 UnscaledFrame 0 1 50 0 0 NK_KeenStandingThink NK_KeenColFunc NK_KeenDrawFunc NK_ACT_keenStanding
+
+#%action NK_ACT_keenRidePlatform 0x08A6 0x8B 0x8B UnscaledFrame 0 1 4 0 32 NK_HandleInputOnGround NK_KeenColFunc NK_KeenDrawFunc NK_ACT_keenRidePlatform
+
+%action NK_ACT_keenLookUp1 0x0AC2 52 52 UnscaledFrame 0 1 30 0 0 NK_KeenLookUpThink NK_KeenColFunc NK_KeenDrawFunc NK_ACT_keenLookUp2
+%action NK_ACT_keenLookUp2 0x0AE0 52 52 Frame 0 1 0 0 0 NK_KeenLookUpThink NK_KeenSpecialColFunc NK_KeenDrawFunc NULL
+
+# Modified lookdown from vanilla keen
+%action NK_ACT_keenLookDown1 0x0AFE 55 55 UnscaledFrame 0 1 6 0 0 NK_KeenLookDownThink NK_KeenColFunc NK_KeenDrawFunc NK_ACT_keenLookDown3
+#%action NK_ACT_keenLookDown2 0x0B1C 55 55 UnscaledFrame 0 1 0x18 0 0 NK_KeenLookDownThink NK_KeenSpecialColFunc NK_KeenDrawFunc NK_ACT_keenLookDown3
+%action NK_ACT_keenLookDown3 0x0B3A 55 55 Frame 0 1 0 0 0 NK_KeenLookDownThink NK_KeenSpecialColFunc NK_KeenDrawFunc NULL
+%action NK_ACT_keenLookDown4 0x0B58 55 55 UnscaledOnce 0 1 6 0 0 NULL NK_KeenColFunc NK_KeenDrawFunc NK_ACT_keenStanding
+
+## Some unused state
+#%action NK_ACT_keenLookDown5 0x0B76 137 137 UnscaledOnce 0 0 0 0 0 NK_KeenSetClipped NK_KeenColFunc NK_KeenSpecialDrawFunc NK_ACT_keenFall1
+
+#%action NK_ACT_keenNot 0x0B94 -1 -1 Frame 0 0 10 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+%action NK_ACT_keenDie0 0x0BB2 57 57 Frame 0 0 0x64 0 0 NK_KeenDeathThink NULL CK_BasicDrawFunc1 NK_ACT_keenDie0
+%action NK_ACT_keenDie1 0x0BD0 58 58 Frame 0 0 0x64 0 0 NK_KeenDeathThink NULL CK_BasicDrawFunc1 NK_ACT_keenDie1
+
+
+%action NK_ACT_keenShoot1 0x0BEE 59 64 UnscaledOnce 0 1 9 0 0 NK_KeenSpawnShot NK_KeenColFunc NK_KeenDrawFunc NK_ACT_keenShoot2
+%action NK_ACT_keenShoot2 0x0C0C 59 64 UnscaledOnce 0 1 6 0 0 NULL NK_KeenColFunc NK_KeenDrawFunc NK_ACT_keenStanding
+
+%action NK_ACT_keenShootUp1 0x0C2A 63 63 UnscaledOnce 0 1 9 0 0 NK_KeenSpawnShot NK_KeenColFunc NK_KeenDrawFunc NK_ACT_keenShootUp2
+%action NK_ACT_keenShootUp2 0x0C48 63 63 UnscaledOnce 0 1 6 0 0 NULL NK_KeenColFunc NK_KeenDrawFunc NK_ACT_keenLookUp1
+
+%action NK_ACT_keenPressSwitch1 0x0C66 82 82 UnscaledOnce 0 1 8 0 0 NK_KeenPressSwitchThink NULL NK_KeenDrawFunc NK_ACT_keenPressSwitch2
+%action NK_ACT_keenPressSwitch2 0x0C84 82 82 UnscaledOnce 0 1 8 0 0 NULL NULL NK_KeenDrawFunc NK_ACT_keenStanding
+
+%action NK_ACT_keenPlaceGem 0x0CA2 82 82 UnscaledOnce 0 1 6 0 0 NK_KeenPlaceGem NULL NK_KeenDrawFunc NK_ACT_keenPressSwitch2
+
+%action NK_ACT_keenSlide 0x0CC0 82 82 Frame 0 0 0 0 0 NK_KeenSlide NULL CK_BasicDrawFunc1 NULL
+
+#%action NK_ACT_keenEnterSecurityDoor 0x0CDE 82 82 UnscaledOnce 0 0 0x2D 0 -64 NULL NULL CK_BasicDrawFunc1 NK_ACT_keenEnterDoor0
+#
+## Another unused state
+#%action NK_ACT_keenCantEnterDoor 0x0CFC 126 126 Frame 0 0 0 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+#
+%action NK_ACT_keenEnterDoor0 0x0D1A 82 82 UnscaledOnce 0 0 9 0 -64 NK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 NK_ACT_keenEnterDoor1
+%action NK_ACT_keenEnterDoor1 0x0D38 83 83 UnscaledOnce 0 0 9 0 -64 NK_KeenEnterDoor1 NULL CK_BasicDrawFunc1 NK_ACT_keenEnterDoor2
+%action NK_ACT_keenEnterDoor2 0x0D56 84 84 UnscaledOnce 0 0 9 0 -64 NK_KeenEnterDoor0 NULL CK_BasicDrawFunc1 NK_ACT_keenEnterDoor3
+%action NK_ACT_keenEnterDoor3 0x0D74 85 85 UnscaledOnce 0 0 9 0 -64 NK_KeenEnterDoor1 NULL CK_BasicDrawFunc1 NK_ACT_keenEnterDoor4
+%action NK_ACT_keenEnterDoor4 0x0D92 86 86 UnscaledOnce 0 0 9 0 -64 NK_KeenEnterDoor NULL CK_BasicDrawFunc1 NK_ACT_keenStanding
+%action NK_ACT_keenEnteredDoor 0x0DB0 -1 -1 UnscaledOnce 0 0 9 0 -64 NK_KeenEnterDoor NULL CK_BasicDrawFunc1 NK_ACT_keenStanding
+
+%action NK_ACT_keenPoleSit 0x0DCE 73 66 Frame 0 0 0 0 0 NK_KeenPoleSitThink NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPoleSit
+%action NK_ACT_keenPoleUp1 0x0DEC 73 66 ScaledFrame 0 0 8 0 8 NK_KeenPoleUpThink NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPoleUp2
+%action NK_ACT_keenPoleUp2 0x0E0A 74 67 ScaledFrame 0 0 8 0 8 NK_KeenPoleUpThink NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPoleUp3
+%action NK_ACT_keenPoleUp3 0x0E28 75 68 ScaledFrame 0 0 8 0 8 NK_KeenPoleUpThink NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPoleUp1
+%action NK_ACT_keenPoleDown1 0x0E46 69 69 ScaledOnce 0 0 8 0 24 NK_KeenPoleDownThink NK_KeenSpecialColFunc NK_KeenPoleDownDrawFunc NK_ACT_keenPoleDown2
+%action NK_ACT_keenPoleDown2 0x0E64 70 70 ScaledOnce 0 0 8 0 24 NK_KeenPoleDownThink NK_KeenSpecialColFunc NK_KeenPoleDownDrawFunc NK_ACT_keenPoleDown3
+%action NK_ACT_keenPoleDown3 0x0E82 71 71 ScaledOnce 0 0 8 0 24 NK_KeenPoleDownThink NK_KeenSpecialColFunc NK_KeenPoleDownDrawFunc NK_ACT_keenPoleDown4
+%action NK_ACT_keenPoleDown4 0x0EA0 72 72 ScaledOnce 0 0 8 0 24 NK_KeenPoleDownThink NK_KeenSpecialColFunc NK_KeenPoleDownDrawFunc NK_ACT_keenPoleDown1
+
+%action NK_ACT_keenPoleShoot1 0x0EBE 80 81 UnscaledOnce 0 0 9 0 0 NK_KeenSpawnShot NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPoleShoot2
+%action NK_ACT_keenPoleShoot2 0x0EDC 80 81 UnscaledOnce 0 0 6 0 0 NULL NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPoleSit
+%action NK_ACT_keenPoleShootUp1 0x0EFA 76 77 UnscaledOnce 0 0 9 0 0 NK_KeenSpawnShot NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPoleShootUp2
+%action NK_ACT_keenPoleShootUp2 0x0F18 76 77 UnscaledOnce 0 0 6 0 0 NULL NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPoleSit
+%action NK_ACT_keenPoleShootDown1 0x0F36 79 78 UnscaledOnce 0 0 9 0 0 NK_KeenSpawnShot NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPoleShootDown2
+%action NK_ACT_keenPoleShootDown2 0x0F54 79 78 UnscaledOnce 0 0 6 0 0 NULL NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPoleSit
+
+%action NK_ACT_keenRun1 0x0F72 45 37 ScaledFrame 1 1 6 24 0 NK_KeenRunningThink NK_KeenColFunc NK_KeenRunDrawFunc NK_ACT_keenRun2
+%action NK_ACT_keenRun2 0x0F90 46 38 ScaledFrame 1 1 6 24 0 NK_KeenRunningThink NK_KeenColFunc NK_KeenRunDrawFunc NK_ACT_keenRun3
+%action NK_ACT_keenRun3 0x0FAE 47 39 ScaledFrame 1 1 6 24 0 NK_KeenRunningThink NK_KeenColFunc NK_KeenRunDrawFunc NK_ACT_keenRun4
+%action NK_ACT_keenRun4 0x0FCC 48 40 ScaledFrame 1 1 6 24 0 NK_KeenRunningThink NK_KeenColFunc NK_KeenRunDrawFunc NK_ACT_keenRun1
+
+%action NK_ACT_keenPogo1 0x0FEA 100 98 UnscaledOnce 1 0 1 0 0 NK_KeenPogoBounceThink NK_KeenColFunc NK_KeenPogoDrawFunc NK_ACT_keenPogo2
+%action NK_ACT_keenPogo2 0x1008 100 98 Frame 1 0 0 0 0 NK_KeenPogoThink NK_KeenColFunc NK_KeenPogoDrawFunc NK_ACT_keenPogo3
+%action NK_ACT_keenPogo3 0x1026 99 97 Frame 1 0 0 0 0 NK_KeenPogoThink NK_KeenColFunc NK_KeenPogoDrawFunc NULL
+
+%action NK_ACT_keenJump1 0x1044 49 41 Frame 0 0 0 0 0 NK_KeenJumpThink NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenJump2
+%action NK_ACT_keenJump2 0x1062 50 42 Frame 0 0 0 0 0 NK_KeenJumpThink NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenFall1
+%action NK_ACT_keenFall1 0x1080 51 43 UnscaledFrame 0 0 0x32 0 0 NK_KeenJumpThink NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenFall2
+%action NK_ACT_keenFall2 0x109E 50 42 UnscaledFrame 0 0 0x28 0 0 NK_KeenJumpThink NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenFall1
+
+%action NK_ACT_keenJumpShoot1 0x10BC 60 65 UnscaledFrame 0 0 9 0 0 CK_Fall NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenJumpShoot2
+%action NK_ACT_keenJumpShoot2 0x10DA 60 65 UnscaledFrame 1 0 1 0 0 NK_KeenSpawnShot NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenJumpShoot3
+%action NK_ACT_keenJumpShoot3 0x10F8 60 65 UnscaledFrame 0 0 6 0 0 CK_Fall NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenFall1
+
+%action NK_ACT_keenJumpShootUp1 0x1116 62 62 UnscaledFrame 0 0 9 0 0 CK_Fall NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenJumpShootUp2
+%action NK_ACT_keenJumpShootUp2 0x1134 62 62 UnscaledFrame 1 0 1 0 0 NK_KeenSpawnShot NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenJumpShootUp3
+%action NK_ACT_keenJumpShootUp3 0x1152 62 62 UnscaledFrame 0 0 6 0 0 CK_Fall NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenFall1
+
+%action NK_ACT_keenJumpShootDown1 0x1170 61 61 UnscaledFrame 0 0 9 0 0 CK_Fall NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenJumpShootDown2
+%action NK_ACT_keenJumpShootDown2 0x118E 61 61 UnscaledFrame 1 0 1 0 0 NK_KeenSpawnShot NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenJumpShootDown3
+%action NK_ACT_keenJumpShootDown3 0x11AC 61 61 UnscaledFrame 0 0 6 0 0 CK_Fall NK_KeenColFunc NK_KeenJumpDrawFunc NK_ACT_keenFall1
+
+%action NK_ACT_keenHang1 0x11CA 87 88 UnscaledOnce 0 0 12 0 0 NULL NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenHang2
+%action NK_ACT_keenHang2 0x11E8 87 88 Frame 0 0 0 0 0 NK_KeenHangThink NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NULL
+
+%action NK_ACT_keenPull1 0x1206 89 93 UnscaledOnce 0 0 10 0 0 NK_KeenPullThink1 NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPull2
+%action NK_ACT_keenPull2 0x1224 90 94 UnscaledOnce 0 0 10 0 0 NK_KeenPullThink2 NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPull3
+%action NK_ACT_keenPull3 0x1242 91 95 UnscaledOnce 0 0 10 0 0 NK_KeenPullThink3 NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPull4
+%action NK_ACT_keenPull4 0x1260 92 96 UnscaledOnce 0 0 10 0 0 NK_KeenPullThink4 NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenPull5
+%action NK_ACT_keenPull5 0x127E 44 36 UnscaledOnce 0 0 6 0 0 NULL NK_KeenSpecialColFunc NK_KeenSpecialDrawFunc NK_ACT_keenStanding
+
+##ScoreBox
+#%action NK_ACT_ScoreBox 0x133E 0 0 Frame 0 0 0 0 0 NULL NULL NULL NULL
+#
+
+## Keen shots
+%action NK_ACT_keenShot1 0x1502 716 716 ScaledOnce 0 0 6 0x40 0x40 NULL NULL NK_ShotDrawFunc NK_ACT_keenShot2
+%action NK_ACT_keenShot2 0x1520 717 717 ScaledOnce 0 0 6 0x40 0x40 NULL NULL NK_ShotDrawFunc NK_ACT_keenShot3
+%action NK_ACT_keenShot3 0x153E 718 718 ScaledOnce 0 0 6 0x40 0x40 NULL NULL NK_ShotDrawFunc NK_ACT_keenShot4
+%action NK_ACT_keenShot4 0x155C 719 719 ScaledOnce 0 0 6 0x40 0x40 NULL NULL NK_ShotDrawFunc NK_ACT_keenShot1
+%action NK_ACT_keenShotHit1 0x157A 720 720 UnscaledOnce 0 0 0xC 0 0 NULL NULL CK_BasicDrawFunc1 NK_ACT_keenShotHit2
+%action NK_ACT_keenShotHit2 0x1598 721 721 UnscaledOnce 0 0 0xC 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+
+
+## Again ck_misc.c
+%action NK_ACT_DoorOpen1 0x15B6 0 0 UnscaledOnce 0 0 10 0 0 NK_DoorOpen NULL NULL NK_ACT_DoorOpen2
+%action NK_ACT_DoorOpen2 0x15D4 0 0 UnscaledOnce 0 0 10 0 0 NK_DoorOpen NULL NULL NK_ACT_DoorOpen3
+%action NK_ACT_DoorOpen3 0x15F2 0 0 UnscaledOnce 0 0 10 0 0 NK_DoorOpen NULL NULL NULL
+
+#%action NK_ACT_SecurityDoorOpen 0x1610 0 0 UnscaledOnce 0 0 15 0 0 NK_SecurityDoorOpen NULL NULL NK_ACT_SecurityDoorOpen
+
+
+##ck_obj.c
+## Items
+%action NK_ACT_item 0x1946 0 0 UnscaledOnce 0 0 20 0 0 NK_PointItem NULL CK_BasicDrawFunc1 NK_ACT_item2
+%action NK_ACT_item2 0x1964 0 0 UnscaledOnce 0 0 20 0 0 NK_PointItem NULL CK_BasicDrawFunc1 NK_ACT_item
+
+## Unused in Keen 5, but might be used in 6 (for dropped gems)
+#%action NK_ACT_fallingitem 0x1982 0 0 UnscaledFrame 0 0 20 0 0 NK_FallingItem NULL CK_BasicDrawFunc1 NK_ACT_fallingitem2
+#%action NK_ACT_fallingitem2 0x19A0 0 0 UnscaledFrame 0 0 20 0 0 NK_FallingItem NULL CK_BasicDrawFunc1 NK_ACT_fallingitem
+
+%action NK_ACT_itemNotify 0x19BE 0 0 ScaledOnce 0 0 40 0 8 NULL NULL CK_BasicDrawFunc1 NULL
+
+## Vitalins
+%action NK_ACT_CentilifeNotify1 0x19DC 734 734 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 NK_ACT_CentilifeNotify2
+%action NK_ACT_CentilifeNotify2 0x19FA 735 735 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 NK_ACT_CentilifeNotify3
+%action NK_ACT_CentilifeNotify3 0x1A18 736 736 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 NK_ACT_CentilifeNotify4
+%action NK_ACT_CentilifeNotify4 0x1A36 737 737 UnscaledOnce 0 0 8 0 0 NULL NULL CK_BasicDrawFunc1 NULL
+
+

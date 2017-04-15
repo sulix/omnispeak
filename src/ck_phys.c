@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_rf.h"
 #include "id_us.h"
 
+#include "ck_net.h"
+
 #include <stdio.h>
 #include <stdlib.h> /* For abs() */
 
@@ -442,7 +444,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 			CK_PhysClipVert(obj);
 
 			//TODO: Handle keen NOT being pushed.
-			if (obj == ck_keenObj && (ck_currentEpisode->ep != EP_CK6 || !ck_keenIgnoreVertClip))
+			if ((net_mode == Net_None && (obj == ck_keenObj && (ck_currentEpisode->ep != EP_CK6 || !ck_keenIgnoreVertClip))) || (net_mode != Net_None && obj->type == CT_Player))
 			{
 				if (!obj->topTI && ck_deltaRects.unitY2 > 0)
 				{

@@ -19,7 +19,7 @@
 KEEN6VER=keen6e15
 
 IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id_us_2.o id_us_textscreen.o id_vh.o id_vl.o id_str.o
-CKOBJECTS=ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck4_map.o ck5_map.o ck6_map.o ck4_obj1.o ck4_obj2.o ck4_obj3.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck6_obj1.o ck6_obj2.o ck6_obj3.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck4_misc.o ck5_misc.o ck6_misc.o ck_main.o ck_text.o ck_cross.o icon.o
+CKOBJECTS=ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck4_map.o ck5_map.o ck6_map.o ck4_obj1.o ck4_obj2.o ck4_obj3.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck6_obj1.o ck6_obj2.o ck6_obj3.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck4_misc.o ck5_misc.o ck6_misc.o ck_main.o ck_text.o ck_cross.o ck_net.o ck_server.o ck_client.o nk_keen.o nk_obj.o nk5_misc.o icon.o
 OPLOBJECTS=opl/dbopl.o
 
 K4DATA=../bin/ACTION.CK4 ../bin/AUDINFOE.CK4 ../bin/AUDIODCT.CK4 ../bin/AUDIOHHD.CK4 ../bin/EGADICT.CK4 ../bin/EGAHEAD.CK4 ../bin/GFXINFOE.CK4 ../bin/MAPHEAD.CK4 ../bin/TILEINFO.CK4
@@ -76,6 +76,9 @@ DEPS := $(OBJ:%.o=%.d)
 #SDL_CONFIG=/home/david/builds/libs/bin/$(SDLCONFIGBIN)
 SDL_CONFIG=$(SDLCONFIGBIN)
 
+PKGCONFIGBIN=pkg-config
+PKG_CONFIG=$(PKGCONFIGBIN)
+
 .PHONY: all clean keen4data keen5data keen6data binfiles
 
 all: $(OUTBIN) binfiles
@@ -100,10 +103,10 @@ binfiles: keen4data keen5data keen6data
 
 ../obj/%.o: %.c
 	@mkdir -p $(dir $@)
-	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g `$(SDL_CONFIG) --cflags` -mno-ms-bitfields -c -MMD -o $@ $<
+	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g `$(SDL_CONFIG) --cflags` `$(PKG_CONFIG) --cflags libenet` -mno-ms-bitfields -c -MMD -o $@ $<
 
 $(OUTBIN): $(OBJ)
 	@mkdir -p $(dir $@)
-	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` -lm $(LIBS)
+	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` `$(PKG_CONFIG) --libs libenet` -lm $(LIBS)
 
 -include $(DEPS)

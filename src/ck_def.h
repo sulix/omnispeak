@@ -172,6 +172,10 @@ typedef enum CK_ClassType {
   CT6_Satellite = 33,
   CT6_SatelliteLoading = 34,
   CT6_MapFlag = 35,
+
+  // Netkeen
+  CTN_Item = 4,
+
 } CK_ClassType;
 
 #define CT_CLASS(type) \
@@ -571,6 +575,8 @@ extern int SPR_1UP1;
 extern int SPR_STUNNER1;
 
 extern int SPR_SCOREBOX;
+
+extern int SPR_BOMB;
 
 extern int SPR_MAPKEEN_WALK1_N;
 extern int SPR_MAPKEEN_STAND_N;

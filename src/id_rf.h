@@ -99,4 +99,6 @@ void RF_Refresh();
 RF_SpriteDrawEntry *RF_ConvertSpriteArray16BitOffsetToPtr(uint16_t drawEntryoffset);
 uint16_t RF_ConvertSpriteArrayPtrTo16BitOffset(RF_SpriteDrawEntry *drawEntry);
 
+// Network functions
+void RF_NetRefresh();
 #endif //ID_RF_H
