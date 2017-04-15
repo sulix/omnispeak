@@ -34,6 +34,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string.h>
 #include "SDL.h"
 
+// For netstuff
+typedef enum
+{
+    Net_None,
+    Net_Server,
+    Net_Client,
+} CK_NetMode;
+extern CK_NetMode net_mode;
+
 // Proper dirty-rectangle drawing is not working yet. Disable it for now.
 #define ALWAYS_REDRAW
 
@@ -116,12 +125,12 @@ typedef struct RF_AnimTileTimer
 /*** Used for saved games compatibility ***/
 static uint16_t RFL_ConvertAnimTileTimerIndexTo16BitOffset(int i)
 {
-	return ck_currentEpisode->animTileSize*i + ck_currentEpisode->animTilesOffset;
+    return ck_currentEpisode->animTileSize*i + ck_currentEpisode->animTilesOffset;
 }
 
 static int RFL_ConvertAnimTileTimer16BitOffsetToIndex(uint16_t offset)
 {
-	return (offset-ck_currentEpisode->animTilesOffset) / ck_currentEpisode->animTileSize;
+    return (offset-ck_currentEpisode->animTilesOffset) / ck_currentEpisode->animTileSize;
 }
 
 
@@ -182,9 +191,9 @@ void RFL_SetupOnscreenAnimList()
 		rf_onscreenAnimTiles[i].next = &rf_onscreenAnimTiles[i+1];
 	}
 
-	rf_onscreenAnimTiles[RF_MAX_ONSCREENANIMTILES - 1].next = 0;
+	rf_onscreenAnimTiles[RF_MAX_ONSCREENANIMTILES - 1].next = NULL;
 
-	rf_firstOnscreenAnimTile = 0;
+	rf_firstOnscreenAnimTile = NULL;
 
 	if (ck_currentEpisode->ep == EP_CK6)
 		for (RF_AnimTileTimer *animTileTimer = rf_animTileTimers; animTileTimer->tileNumber; ++animTileTimer)
@@ -225,6 +234,25 @@ void RFL_MarkTileWithSound(RF_AnimTileTimer *animTileTimer, int tile)
 		}
 }
 
+// Netgame:
+// All tiles are animated all the time
+void AddNetAnimTile(int x, int y, int p, int t) 
+{
+    if (!rf_freeOnscreenAnimTile)
+        Quit("AddNetAnimTile: No free spots in tilearray!");
+
+    RF_OnscreenAnimTile *ost = rf_freeOnscreenAnimTile; 
+    rf_freeOnscreenAnimTile = rf_freeOnscreenAnimTile->next; 
+    ost->tileX = x; 
+    ost->tileY = y; 
+    ost->tile = t; 
+    ost->plane = p; 
+    ost->timerIndex = RFL_ConvertAnimTileTimer16BitOffsetToIndex(CA_mapPlanes[2][y*rf_mapWidthTiles+x]); 
+    ost->next = rf_firstOnscreenAnimTile; 
+    ost->prev = NULL; 
+    rf_firstOnscreenAnimTile = ost; 
+}
+
 void RF_MarkTileGraphics()
 {
 	memset(rf_animTileTimers, 0, sizeof(rf_animTileTimers));
@@ -261,6 +289,9 @@ void RF_MarkTileGraphics()
 							// Add the timer index to the info-plane
 							CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
 							needNewTimer = false;
+
+                            if (net_mode != Net_None)
+                                AddNetAnimTile(tileX, tileY, 0, backTile);
 							break;
 						}
 					}
@@ -280,6 +311,9 @@ void RF_MarkTileGraphics()
 						}
 						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
 						rf_numAnimTileTimers++;
+
+                        if (net_mode != Net_None)
+                            AddNetAnimTile(tileX, tileY, 0, backTile);
 					}
 					else
 						continue;
@@ -327,6 +361,9 @@ void RF_MarkTileGraphics()
 							// Add the timer index to the info-plane
 							CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
 							needNewTimer = false;
+
+                            if (net_mode != Net_None)
+                                AddNetAnimTile(tileX, tileY, 1, foreTile);
 							break;
 						}
 					}
@@ -346,6 +383,9 @@ void RF_MarkTileGraphics()
 						}
 						CA_mapPlanes[2][tileY*rf_mapWidthTiles+tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
 						rf_numAnimTileTimers++;
+
+                        if (net_mode != Net_None)
+                            AddNetAnimTile(tileX, tileY, 1, foreTile);
 					}
 					else
 						continue;
@@ -376,6 +416,9 @@ void RF_MarkTileGraphics()
 
 void RFL_CheckForAnimTile(int tileX, int tileY)
 {
+    if (net_mode != Net_None)
+        return;
+
 	int backTile = CA_mapPlanes[0][tileY*rf_mapWidthTiles+tileX];
 	int foreTile = CA_mapPlanes[1][tileY*rf_mapWidthTiles+tileX];
 
@@ -425,6 +468,9 @@ void RFL_CheckForAnimTile(int tileX, int tileY)
 
 void RFL_RemoveAnimRect(int tileX, int tileY, int tileW, int tileH)
 {
+    if (net_mode != Net_None)
+        return;
+
 	RF_OnscreenAnimTile *ost, *prev;
 
 	prev = 0;
@@ -454,6 +500,9 @@ void RFL_RemoveAnimRect(int tileX, int tileY, int tileW, int tileH)
 
 void RFL_RemoveAnimCol(int tileX)
 {
+    if (net_mode != Net_None)
+        return;
+
 	RF_OnscreenAnimTile *ost, *prev;
 
 	prev = 0;
@@ -482,6 +531,9 @@ void RFL_RemoveAnimCol(int tileX)
 
 void RFL_RemoveAnimRow(int tileY)
 {
+    if (net_mode != Net_None)
+        return;
+
 	RF_OnscreenAnimTile *ost, *prev;
 
 	prev = 0;
@@ -544,6 +596,8 @@ void RFL_AnimateTiles()
 	// Update the onscreen tiles.
 	for (RF_OnscreenAnimTile *ost = rf_firstOnscreenAnimTile; ost; ost = ost->next)
 	{
+        // For now, animation is disabled
+#if 0
 		int tile = rf_animTileTimers[ost->timerIndex].tileNumber & ~0x8000;
 		if (tile != ost->tile)
 		{
@@ -553,17 +607,32 @@ void RFL_AnimateTiles()
 
 			if (screenTileX < 0 || screenTileX > RF_BUFFER_WIDTH_TILES || screenTileY < 0 || screenTileY > RF_BUFFER_HEIGHT_TILES)
 			{
-				//printf("Out of bounds: %d, %d (sc: %d,%d) (tl: %d,%d,%d):%d\n", screenTileX, screenTileY,
-				//	rf_scrollXUnit >> 8, rf_scrollYUnit >> 8, ost->tileX, ost->tileY,ost->plane, ost->tile);
-				Quit("RFL_AnimateTiles: Out of bounds!");
+                if (net_mode != Net_None)
+                {
+                    CA_mapPlanes[ost->plane][ost->tileY*rf_mapWidthTiles+ost->tileX] = tile;
+                }
+                else
+                {
+                    //printf("Out of bounds: %d, %d (sc: %d,%d) (tl: %d,%d,%d):%d\n", screenTileX, screenTileY,
+                    //	rf_scrollXUnit >> 8, rf_scrollYUnit >> 8, ost->tileX, ost->tileY,ost->plane, ost->tile);
+                    Quit("RFL_AnimateTiles: Out of bounds!");
+                }
 			}
-
-			CA_mapPlanes[ost->plane][ost->tileY*rf_mapWidthTiles+ost->tileX] = tile;
-
-			RF_RenderTile16(screenTileX, screenTileY, CA_mapPlanes[0][ost->tileY*rf_mapWidthTiles+ost->tileX]);
-			RF_RenderTile16m(screenTileX, screenTileY, CA_mapPlanes[1][ost->tileY*rf_mapWidthTiles+ost->tileX]);
-			RFL_MarkBlockDirty(screenTileX, screenTileY, 1);
+            else
+            {
+                CA_mapPlanes[ost->plane][ost->tileY*rf_mapWidthTiles+ost->tileX] = tile;
+                // TODO: figure out why this screws up in netmode
+                // We shouldn't need this if statement and we don't want it in the first place
+                // but Tiles get drawn in weird places if this iff statement is removed
+                if (net_mode == Net_None)  
+                {
+                    RF_RenderTile16(screenTileX, screenTileY, CA_mapPlanes[0][ost->tileY*rf_mapWidthTiles+ost->tileX]);
+                    RF_RenderTile16m(screenTileX, screenTileY, CA_mapPlanes[1][ost->tileY*rf_mapWidthTiles+ost->tileX]);
+                    RFL_MarkBlockDirty(screenTileX, screenTileY, 1);
+                }
+            }
 		}
+#endif
 	}
 }
 
@@ -577,13 +646,15 @@ void RF_SetDrawFunc(void (*func) (void))
 void RF_Startup()
 {
 	// Create the tile backing buffer
-	rf_tileBuffer = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS);
+    if (vl_started)
+        rf_tileBuffer = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS);
 
 }
 
 void RF_Shutdown()
 {
-	VL_DestroySurface(rf_tileBuffer);
+    if (vl_started)
+        VL_DestroySurface(rf_tileBuffer);
 }
 
 // TODO: More to change? Also, originally mapNum is a global variable.
@@ -617,6 +688,9 @@ void RF_NewMap(void)
 
 void RF_RenderTile16(int x, int y, int tile)
 {
+    if (!vl_started)
+        return;
+
 	//TODO: We should be able to remove this at some point, as it should have already been cached by
 	// CacheMarks. Last time I tried that, I recall it failing, but it's something we should investigate
 	// at some point.
@@ -638,6 +712,9 @@ void RF_RenderTile16(int x, int y, int tile)
 
 void RF_RenderTile16m(int x, int y, int tile)
 {
+    if (!vl_started)
+        return;
+
 	if (!tile) return;
 	if (!ca_graphChunks[ca_gfxInfoE.offTiles16m + tile])
 	{
@@ -773,6 +850,9 @@ void RF_ReplaceTiles(uint16_t *tilePtr, int plane, int dstX, int dstY, int width
 
 void RFL_RenderForeTiles()
 {
+    if (!vl_started)
+        return;
+
 	int scrollXtile = RF_UnitToTile(rf_scrollXUnit);
 	int scrollYtile = RF_UnitToTile(rf_scrollYUnit);
 
@@ -1016,7 +1096,8 @@ void RF_Reposition(int scrollXunit, int scrollYunit)
 	int scrollXtile = RF_UnitToTile(rf_scrollXUnit);
 	int scrollYtile = RF_UnitToTile(rf_scrollYUnit);
 
-	RFL_SetupOnscreenAnimList();
+    if (net_mode == Net_None)
+        RFL_SetupOnscreenAnimList();
 
 
 	for (int ty = 0; ty < RF_BUFFER_HEIGHT_TILES; ++ty)
@@ -1193,6 +1274,9 @@ void RFL_ProcessSpriteErasers()
 
 void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int chunk, bool allWhite, int zLayer)
 {
+    if (!vl_started)
+        return;
+
 	bool insertNeeded = true;
 	if (chunk == 0 || chunk == -1)
 	{
@@ -1407,3 +1491,40 @@ void RF_Refresh()
 	RFL_CalcTics();
 }
 
+
+/*
+ * Network Refresh Functions
+ * In net games, the server and the client calculate when to run the tics
+ * Additionally, each frame takes a constant amount of time
+ */
+
+
+void RF_NetRefresh ()
+{
+	RFL_AnimateTiles();
+
+#ifdef ALWAYS_REDRAW
+	VL_SurfaceToScreen(rf_tileBuffer,0,0,0,0,RF_BUFFER_WIDTH_PIXELS,RF_BUFFER_HEIGHT_PIXELS);
+#endif
+
+	//TODO: Work out how to do scrolling before using this
+	RFL_UpdateTiles();
+	RFL_ProcessSpriteErasers();
+
+	RFL_DrawSpriteList();
+
+	// No blocks should be dirty after the frame has been rendered.
+	for (int y = 0; y < RF_BUFFER_HEIGHT_TILES; ++y)
+	{
+		for (int x = 0; x < RF_BUFFER_WIDTH_TILES; ++x)
+		{
+			RFL_MarkBlockDirty(x,y,0);
+		}
+	}
+
+	if (rf_drawFunc)
+		rf_drawFunc();
+
+    // Do timing in server/client loops
+	// RFL_CalcTics();
+}

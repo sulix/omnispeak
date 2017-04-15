@@ -109,7 +109,7 @@ static uint32_t SD_ALOut_SamplesStart = 0, SD_ALOut_SamplesEnd = 0;
 /******************************************************************
 Timing subsection.
 Originally SDL_t0Service is responsible for incrementing TimeCount.
-/*****************************************************************/
+******************************************************************/
 
 // PRIVATE variables (in this source port)
 static uint32_t TimeCount = 0; // Kind of same as Wolf3D's TimeCount from ID_SD.C

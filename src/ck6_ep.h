@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_ep.h"
 
 /*
- * Contains definitions relevant only to Keen 5
+ * Contains definitions relevant only to Keen 6
  */
 extern CK_EpisodeDef *ck6_episode;
 extern CK_EpisodeDef ck6v14e_episode;

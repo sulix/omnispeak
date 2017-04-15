@@ -29,6 +29,7 @@ extern bool vl_screenFaded;
 extern bool vl_isFullScreen;
 extern bool vl_isAspectCorrected;
 extern bool vl_hasOverscanBorder;
+extern bool vl_started;
 
 // EGA signal palettes (the 17th entry of each row is the overscan border color)
 // NOTE: Vanilla Keen can modify some of these (e.g. the border color)

@@ -31,6 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck4_ep.h"
 #include "ck5_ep.h"
 #include "ck6_ep.h"
+#include "nk5_ep.h"
+
+#include "ck_net.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -113,6 +116,8 @@ int SPR_1UP1;
 int SPR_STUNNER1;
 
 int SPR_SCOREBOX;
+
+int SPR_BOMB;
 
 int SPR_MAPKEEN_WALK1_N;
 int SPR_MAPKEEN_STAND_N;
@@ -324,11 +329,13 @@ void CK_InitGame()
 	ck_currentEpisode->setupFunctions();
 	CK_ACT_LoadActions("ACTION.EXT");
 
-	// Setup the screen
-	VL_InitScreen();
-	// TODO: Palette initialization should be done in the terminator code
-	VL_SetDefaultPalette();
-
+    if (net_mode != Net_Server)
+    {
+        // Setup the screen
+        VL_InitScreen();
+        // TODO: Palette initialization should be done in the terminator code
+        VL_SetDefaultPalette();
+    }
 
 	// Setup input
 	IN_Startup();
@@ -342,12 +349,15 @@ void CK_InitGame()
 
 	RF_Startup();
 
-	VL_ColorBorder(3);
-	VL_ClearScreen(0);
-	VL_Present();
+    if (net_mode != Net_Server)
+    {
+        VL_ColorBorder(3);
+        VL_ClearScreen(0);
+        VL_Present();
 
-	// Create a surface for the dropdown menu
-	ck_statusSurface = VL_CreateSurface(STATUS_W+64, STATUS_H+16);
+        // Create a surface for the dropdown menu
+        ck_statusSurface = VL_CreateSurface(STATUS_W+64, STATUS_H+16);
+    }
 }
 
 /*
@@ -362,6 +372,19 @@ static int ck_startingLevel = 0;
 
 void CK_DemoLoop()
 {
+    // Netplay mode
+    if (net_mode == Net_Server)
+    {
+        CK_Net_RunServer();
+        Quit(0);
+    }
+    else if (net_mode == Net_Client)
+    {
+        CK_Net_RunClient();
+        Quit(0);
+    }
+
+
 	/*
 	 * Commander Keen could be 'launched' from the map editor TED to test a map.
 	 * This was implemented by having TED launch keen with the /TEDLEVEL xx
@@ -627,6 +650,7 @@ CK_EpisodeDef *ck_episodes[] = {
 	&ck5_episode,
 	&ck6v14e_episode,
 	&ck6v15e_episode,
+    &nk5_episode,
 	0
 };
 
@@ -708,6 +732,34 @@ int main(int argc, char *argv[])
 				dumperFilename = argv[++i]; // Yes, we increment i twice
 		}
 #endif
+        else if (!CK_Cross_strcasecmp(argv[i], "/SERVER"))
+        {
+            if (argc >= i + 3)
+            {
+                int players = atoi(argv[++i]);
+                int level = atoi(argv[++i]);
+                if (players >= 1 && players <= MAX_NET_PLAYERS)
+                {
+                    net_mode = Net_Server;
+                    net_numPlayers = players;
+                    net_level = level;
+					ck_currentEpisode = &nk5_episode;
+                }
+                else
+                {
+                    Quit("Illegal player argument for /SERVER");
+                }
+            }
+            else
+            {
+                Quit("/SERVER requires player argument");
+            }
+        }
+        else if (!CK_Cross_strcasecmp(argv[i], "/CLIENT"))
+        {
+            net_mode = Net_Client;
+            ck_currentEpisode = &nk5_episode;
+        }
 	}
 
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
