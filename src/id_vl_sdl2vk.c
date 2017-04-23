@@ -321,6 +321,7 @@ static ID_MM_Arena *vl_sdl2vk_tempArena;
 static VkApplicationInfo vl_sdl2vk_applicationInfo;
 static VkInstanceCreateInfo vl_sdl2vk_instanceCreateInfo;
 static VkInstance vl_sdl2vk_instance;
+static VkDebugReportCallbackEXT vl_sdl2vk_debugCallback;
 static VkPhysicalDevice vl_sdl2vk_physicalDevice;
 static VkDevice vl_sdl2vk_device;
 static int vl_sdl2vk_graphicsQueueIndex;
@@ -328,7 +329,7 @@ static int vl_sdl2vk_presentQueueIndex;
 static VkQueue vl_sdl2vk_graphicsQueue;
 static VkQueue vl_sdl2vk_presentQueue;
 static VkSurfaceKHR vl_sdl2vk_windowSurface;
-static VkSwapchainKHR vl_sdl2vk_swapchain = 0;
+static VkSwapchainKHR vl_sdl2vk_swapchain = VK_NULL_HANDLE;
 static uint32_t vl_sdl2vk_numSwapchainImages;
 static VkImage *vl_sdl2vk_swapchainImages;
 static VkImageView *vl_sdl2vk_swapchainImageViews;
@@ -352,6 +353,17 @@ static VkDescriptorSet vl_sdl2vk_ubDescriptorSet;
 static VkDescriptorSetLayout vl_sdl2vk_samplerDescriptorSetLayout;
 static VkDescriptorPool vl_sdl2vk_samplerDescriptorPool;
 static VkDescriptorSet vl_sdl2vk_samplerDescriptorSet;
+
+// Here is how the dimensions of the window are currently picked:
+// 1. The emulated 320x200 sub-window is first zoomed
+// by a factor of 3 (for each dimension) to 960x600.
+// 2. The height is then multiplied by 1.2, so the internal contents
+// (without the borders) have the aspect ratio of 4:3.
+//
+// There are a few more tricks in use to handle the overscan border
+// and VGA line doubling.
+#define VL_SDL2VK_DEFAULT_WINDOW_WIDTH (VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER*3/VL_VGA_GFX_WIDTH_SCALEFACTOR)
+#define VL_SDL2VK_DEFAULT_WINDOW_HEIGHT (6*VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER*3/(5*VL_VGA_GFX_HEIGHT_SCALEFACTOR))
 
 static void VL_SDL2VK_LoadVKInstanceProcs()
 {
@@ -549,7 +561,7 @@ static void VL_SDL2VK_InitPhysicalDevice()
 	queueCreateInfo[0].flags = 0;
 	queueCreateInfo[0].queueFamilyIndex = vl_sdl2vk_graphicsQueueIndex;
 	queueCreateInfo[0].queueCount = 1;
-	queueCreateInfo[1].pQueuePriorities = &queuePriorities;
+	queueCreateInfo[0].pQueuePriorities = &queuePriorities;
 	queueCreateInfo[1].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	queueCreateInfo[1].pNext = 0;
 	queueCreateInfo[1].flags = 0;
@@ -597,20 +609,16 @@ static void VL_SDL2VK_SetupSwapchain(int width, int height)
 	if (result != VK_SUCCESS)
 		Quit("Couldn't enumerate physical device surface formats.");
 	
-	vl_sdl2vk_swapchainSize.width = width;
-	vl_sdl2vk_swapchainSize.height = height;
+	vl_sdl2vk_swapchainSize = surfaceCapabilities.currentExtent;
 	
 	int desiredFormat = 0;
 	for (int i = 0; i < surfaceFormatCount; ++i)
 	{
-		printf("Got surface format %d, colorSpace %d, format %d\n",i,surfaceFormats[i].colorSpace, surfaceFormats[i].format);
 		if (surfaceFormats[i].colorSpace != VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
 			continue;
 		if (surfaceFormats[i].format == VK_FORMAT_B8G8R8A8_UNORM)
 			desiredFormat = i;
 	}
-	
-	printf("Got surface format %d (colourSpace: %x, format: %x)\n", desiredFormat, surfaceFormats[desiredFormat].colorSpace, surfaceFormats[desiredFormat].format);
 	
 	vl_sdl2vk_swapchainFormat = surfaceFormats[desiredFormat].format;
 	
@@ -637,6 +645,9 @@ static void VL_SDL2VK_SetupSwapchain(int width, int height)
 	result = id_vkCreateSwapchainKHR(vl_sdl2vk_device, &swapchainCreateInfo, 0, &vl_sdl2vk_swapchain);
 	if (result != VK_SUCCESS)
 		Quit("Couldn't create swapchain.");
+
+	if (swapchainCreateInfo.oldSwapchain != VK_NULL_HANDLE)
+		id_vkDestroySwapchainKHR(vl_sdl2vk_device, swapchainCreateInfo.oldSwapchain, 0);
 	
 	result = id_vkGetSwapchainImagesKHR(vl_sdl2vk_device, vl_sdl2vk_swapchain, &vl_sdl2vk_numSwapchainImages, 0);
 	if (result != VK_SUCCESS)
@@ -722,7 +733,7 @@ static void VL_SDL2VK_CreateRenderPass()
 		Quit("Couldn't create render pass.");
 }
 
-static void VL_SDL2VK_CreatePipeline()
+static void VL_SDL2VK_CreateShaders()
 {
 	VkResult result = VK_SUCCESS;
 	
@@ -748,7 +759,47 @@ static void VL_SDL2VK_CreatePipeline()
 	result = vkCreateShaderModule(vl_sdl2vk_device, &fragShaderCreateInfo, 0, &vl_sdl2vk_fragShaderModule);
 	if (result != VK_SUCCESS)
 		Quit("Failed to create fragment shader");
+}
 	
+
+static void VL_SDL2VK_CreateDescriptorSetLayouts()
+{
+	VkResult result = VK_SUCCESS;	
+	VkDescriptorSetLayoutBinding ubLayoutBinding = {};
+	ubLayoutBinding.binding = 0;
+	ubLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	ubLayoutBinding.descriptorCount = 1;
+	ubLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	
+	VkDescriptorSetLayoutCreateInfo ubDescriptorSetLayoutInfo = {};
+	ubDescriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	ubDescriptorSetLayoutInfo.bindingCount = 1;
+	ubDescriptorSetLayoutInfo.pBindings = &ubLayoutBinding;
+	
+	result = vkCreateDescriptorSetLayout(vl_sdl2vk_device, &ubDescriptorSetLayoutInfo, 0, &vl_sdl2vk_ubDescriptorSetLayout);
+	if (result != VK_SUCCESS)
+		Quit("Couldn't create uniform buffer descriptor set layout.");
+	
+	VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+	samplerLayoutBinding.binding = 1;
+	samplerLayoutBinding.descriptorCount = 1;
+	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	samplerLayoutBinding.pImmutableSamplers = 0;
+	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	
+	VkDescriptorSetLayoutCreateInfo samplerDescriptorSetLayoutInfo = {};
+	samplerDescriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	samplerDescriptorSetLayoutInfo.bindingCount = 1;
+	samplerDescriptorSetLayoutInfo.pBindings = &samplerLayoutBinding;
+	
+	result = vkCreateDescriptorSetLayout(vl_sdl2vk_device, &samplerDescriptorSetLayoutInfo, 0, &vl_sdl2vk_samplerDescriptorSetLayout);
+	if (result != VK_SUCCESS)
+		Quit("Couldn't create sampler descriptor set layout.");
+}
+
+static void VL_SDL2VK_CreatePipeline()
+{
+	VkResult result = VK_SUCCESS;
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
 	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	vertShaderStageInfo.pNext = 0;
@@ -842,37 +893,6 @@ static void VL_SDL2VK_CreatePipeline()
 	blendState.pAttachments = &attachmentBlendState;
 	
 	
-	VkDescriptorSetLayoutBinding ubLayoutBinding = {};
-	ubLayoutBinding.binding = 0;
-	ubLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	ubLayoutBinding.descriptorCount = 1;
-	ubLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	
-	VkDescriptorSetLayoutCreateInfo ubDescriptorSetLayoutInfo = {};
-	ubDescriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	ubDescriptorSetLayoutInfo.bindingCount = 1;
-	ubDescriptorSetLayoutInfo.pBindings = &ubLayoutBinding;
-	
-	result = vkCreateDescriptorSetLayout(vl_sdl2vk_device, &ubDescriptorSetLayoutInfo, 0, &vl_sdl2vk_ubDescriptorSetLayout);
-	if (result != VK_SUCCESS)
-		Quit("Couldn't create uniform buffer descriptor set layout.");
-	
-	VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-	samplerLayoutBinding.binding = 1;
-	samplerLayoutBinding.descriptorCount = 1;
-	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	samplerLayoutBinding.pImmutableSamplers = 0;
-	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	
-	VkDescriptorSetLayoutCreateInfo samplerDescriptorSetLayoutInfo = {};
-	samplerDescriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	samplerDescriptorSetLayoutInfo.bindingCount = 1;
-	samplerDescriptorSetLayoutInfo.pBindings = &samplerLayoutBinding;
-	
-	result = vkCreateDescriptorSetLayout(vl_sdl2vk_device, &samplerDescriptorSetLayoutInfo, 0, &vl_sdl2vk_samplerDescriptorSetLayout);
-	if (result != VK_SUCCESS)
-		Quit("Couldn't create sampler descriptor set layout.");
-	
 	VkDescriptorSetLayout layouts[2] = {vl_sdl2vk_ubDescriptorSetLayout, vl_sdl2vk_samplerDescriptorSetLayout};
 	
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
@@ -884,10 +904,17 @@ static void VL_SDL2VK_CreatePipeline()
 	result = vkCreatePipelineLayout(vl_sdl2vk_device, &pipelineLayoutInfo, 0, &vl_sdl2vk_pipelineLayout);
 	if (result != VK_SUCCESS)
 		Quit("Couldn't create pipeline layout.");
-	
+
+	VkDynamicState dynamicStates[2] = {
+		VK_DYNAMIC_STATE_VIEWPORT,
+		VK_DYNAMIC_STATE_SCISSOR
+	};	
+
 	VkPipelineDynamicStateCreateInfo dynamicState = {};
 	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicState.flags = VK_DYNAMIC_STATE_VIEWPORT | VK_DYNAMIC_STATE_SCISSOR;
+	dynamicState.flags = 0;
+	dynamicState.dynamicStateCount = 2;
+	dynamicState.pDynamicStates = dynamicStates;
 	
 	VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
 	pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -966,7 +993,7 @@ static uint32_t VL_SDL2VK_SelectMemoryType(uint32_t memoryTypeMask, VkMemoryProp
 			break;
 		}
 	}
-	
+	return memTypeIndex;	
 }
 
 static void VL_SDL2VK_CreateUniformBuffer()
@@ -1087,7 +1114,65 @@ static void VL_SDL2VK_CreateCommandBuffers()
 	
 }
 
-static void VL_SDL2VK_PopulateCommandBuffer(int i)
+static VkRect2D VL_SDL2VK_CalculateFullRgn(int realW, int realH)
+{
+	VkRect2D fullRgn = {};
+	if (vl_isAspectCorrected)
+	{
+		/* HACK: Naturally, the ratio to compare to may be 4:3,
+		 * but we use the default window dimensions instead
+		 * (so 4:3 covers the contents without the overscan border).
+		 */
+		if (realW * VL_SDL2VK_DEFAULT_WINDOW_HEIGHT > realH * VL_SDL2VK_DEFAULT_WINDOW_WIDTH) // Wider than default ratio
+		{
+			fullRgn.extent.width = realH * VL_SDL2VK_DEFAULT_WINDOW_WIDTH / VL_SDL2VK_DEFAULT_WINDOW_HEIGHT;
+			fullRgn.extent.height = realH;
+			fullRgn.offset.x = (realW - fullRgn.extent.width) / 2;
+			fullRgn.offset.y = 0;
+		}
+		else // Thinner or equal to default ratio
+		{
+			fullRgn.extent.width = realW;
+			fullRgn.extent.height = realW * VL_SDL2VK_DEFAULT_WINDOW_HEIGHT / VL_SDL2VK_DEFAULT_WINDOW_WIDTH;
+			fullRgn.offset.x = 0;
+			fullRgn.offset.y = (realH - fullRgn.extent.height) / 2;
+		}
+	}
+	else
+	{
+		fullRgn.extent.width = realW;
+		fullRgn.extent.height = realH;
+		fullRgn.offset.x = 0;
+		fullRgn.offset.y = 0;
+	}
+	return fullRgn;
+}
+
+static VkRect2D VL_SDL2VK_CalculateRenderRgn(VkRect2D fullRgn)
+{
+	VkRect2D renderRgn = {};
+	renderRgn.offset.x = fullRgn.offset.x +
+		fullRgn.extent.width * VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH /
+		(VL_VGA_GFX_WIDTH_SCALEFACTOR*VL_EGAVGA_GFX_WIDTH +
+			VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
+	renderRgn.offset.y = fullRgn.offset.y +
+		fullRgn.extent.height * VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT /
+		(VL_VGA_GFX_HEIGHT_SCALEFACTOR*VL_EGAVGA_GFX_HEIGHT +
+			VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
+	// Tricky calculations that preserve symmetry for the VGA
+	renderRgn.extent.width = fullRgn.extent.width - (renderRgn.offset.x - fullRgn.offset.x) -
+		fullRgn.extent.width * VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH /
+		(VL_VGA_GFX_WIDTH_SCALEFACTOR*VL_EGAVGA_GFX_WIDTH +
+			VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
+	renderRgn.extent.height = fullRgn.extent.height - (renderRgn.offset.y - fullRgn.offset.y) -
+		fullRgn.extent.height * VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT /
+		(VL_VGA_GFX_HEIGHT_SCALEFACTOR*VL_EGAVGA_GFX_HEIGHT +
+			VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
+
+	return renderRgn;
+}
+
+static void VL_SDL2VK_PopulateCommandBuffer(int i, VkRect2D fullRgn, VkRect2D renderRgn, VkClearColorValue borderColour)
 {
 	VkResult result = VK_SUCCESS;
 	
@@ -1114,23 +1199,30 @@ static void VL_SDL2VK_PopulateCommandBuffer(int i)
 	
 	
 	VkViewport viewport = {};
-	viewport.x = 0;
-	viewport.y = 0;
-	viewport.width = vl_sdl2vk_swapchainSize.width;
-	viewport.height = vl_sdl2vk_swapchainSize.height;
+	viewport.x = renderRgn.offset.x;
+	viewport.y = renderRgn.offset.y;
+	viewport.width = renderRgn.extent.width;
+	viewport.height = renderRgn.extent.height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 	
-	VkRect2D scissor = {};
-	scissor.offset.x = 0;
-	scissor.offset.y = 0;
-	scissor.extent = vl_sdl2vk_swapchainSize;
-	
-	vkCmdSetViewport(vl_sdl2vk_commandBuffers[i], 0, 1, &viewport);
-	vkCmdSetScissor(vl_sdl2vk_commandBuffers[i], 0, 1, &scissor);
+	VkRect2D scissor = renderRgn;
+
+	VkClearAttachment clearBuffers = {};
+	clearBuffers.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	clearBuffers.colorAttachment = 0;
+	clearBuffers.clearValue.color = borderColour;
+
+	VkClearRect clearRects = {};
+	clearRects.rect = fullRgn;
+	clearRects.baseArrayLayer = 0;
+	clearRects.layerCount = 1;
 	
 	vkCmdBeginRenderPass(vl_sdl2vk_commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 	
+	vkCmdClearAttachments(vl_sdl2vk_commandBuffers[i], 1, &clearBuffers, 1, &clearRects);
+	vkCmdSetViewport(vl_sdl2vk_commandBuffers[i], 0, 1, &viewport);
+	vkCmdSetScissor(vl_sdl2vk_commandBuffers[i], 0, 1, &scissor);
 	vkCmdBindDescriptorSets(vl_sdl2vk_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vl_sdl2vk_pipelineLayout, 0, 1, &vl_sdl2vk_ubDescriptorSet, 0, 0);
 	vkCmdBindDescriptorSets(vl_sdl2vk_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vl_sdl2vk_pipelineLayout, 1, 1, &vl_sdl2vk_samplerDescriptorSet, 0, 0);
 	
@@ -1148,6 +1240,7 @@ static void VL_SDL2VK_PopulateCommandBuffer(int i)
 
 void VL_SDL2VK_DestroySwapchain()
 {
+	vkDeviceWaitIdle(vl_sdl2vk_device);
 	for (int i = 0; i < vl_sdl2vk_numSwapchainImages; ++i)
 	{
 		vkDestroyFramebuffer(vl_sdl2vk_device, vl_sdl2vk_framebuffers[i], 0);
@@ -1158,6 +1251,7 @@ void VL_SDL2VK_DestroySwapchain()
 	
 	vkDestroyPipeline(vl_sdl2vk_device, vl_sdl2vk_pipeline, 0);
 	vkDestroyPipelineLayout(vl_sdl2vk_device, vl_sdl2vk_pipelineLayout, 0);
+
 }
 
 /* TODO (Overscan border):
@@ -1230,8 +1324,7 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 		debugCallbackInfo.pfnCallback = &VL_SDL2VK_DebugCallback;
 		debugCallbackInfo.pUserData = 0;
 		
-		VkDebugReportCallbackEXT debugCallback;
-		VkResult result = id_vkCreateDebugReportCallbackEXT(vl_sdl2vk_instance, &debugCallbackInfo, 0, &debugCallback);
+		VkResult result = id_vkCreateDebugReportCallbackEXT(vl_sdl2vk_instance, &debugCallbackInfo, 0, &vl_sdl2vk_debugCallback);
 		if (result != VK_SUCCESS)
 			Quit("Couldn't create debug callback.");
 		VL_SDL2VK_InitPhysicalDevice();
@@ -1241,6 +1334,8 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 		
 		VL_SDL2VK_CreateRenderPass();
 		
+		VL_SDL2VK_CreateShaders();
+		VL_SDL2VK_CreateDescriptorSetLayouts();
 		VL_SDL2VK_CreatePipeline();
 		
 		VL_SDL2VK_CreateFramebuffers();
@@ -1270,13 +1365,15 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 		vkFreeMemory(vl_sdl2vk_device, vl_sdl2vk_uniformBufferMemory, 0);
 		vkDestroyBuffer(vl_sdl2vk_device, vl_sdl2vk_uniformBuffer, 0);
 		vkDestroyRenderPass(vl_sdl2vk_device, vl_sdl2vk_renderPass, 0);
+		id_vkDestroySwapchainKHR(vl_sdl2vk_device, vl_sdl2vk_swapchain, 0);
 		VL_SDL2VK_DestroySwapchain();
 		vkDestroyShaderModule(vl_sdl2vk_device, vl_sdl2vk_vertShaderModule, 0);
 		vkDestroyShaderModule(vl_sdl2vk_device, vl_sdl2vk_fragShaderModule, 0);
 		vkDestroyCommandPool(vl_sdl2vk_device, vl_sdl2vk_commandPool, 0);
-		id_vkDestroySwapchainKHR(vl_sdl2vk_device, vl_sdl2vk_swapchain,0);
+		vkDeviceWaitIdle(vl_sdl2vk_device);
 		vkDestroyDevice(vl_sdl2vk_device, 0);
 		vkDestroySurfaceKHR(vl_sdl2vk_instance, vl_sdl2vk_windowSurface, 0);
+		id_vkDestroyDebugReportCallbackEXT(vl_sdl2vk_instance, vl_sdl2vk_debugCallback, 0);
 		vkDestroyInstance(vl_sdl2vk_instance, 0);
 		SDL_DestroyWindow(vl_sdl2vk_window);
 	}
@@ -1442,6 +1539,7 @@ static void *VL_SDL2VK_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerInfo.anisotropyEnable = VK_FALSE;
+		samplerInfo.maxAnisotropy = 1.0f;
 		samplerInfo.unnormalizedCoordinates = VK_TRUE;
 		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 		samplerInfo.compareEnable = VK_FALSE;
@@ -1747,7 +1845,15 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 	
 	VL_SDL2VK_BindTexture(surface);
 	
-	VL_SDL2VK_PopulateCommandBuffer(framebufferIndex);
+	VkRect2D fullRgn = VL_SDL2VK_CalculateFullRgn(newW, newH);
+	VkRect2D renderRgn = VL_SDL2VK_CalculateRenderRgn(fullRgn);
+	VkClearColorValue borderColour = {{
+		(float)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][0]/255,
+		(float)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][1]/255,
+		(float)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][2]/255,
+		1.0f
+	}};
+	VL_SDL2VK_PopulateCommandBuffer(framebufferIndex, fullRgn, renderRgn, borderColour);
 	
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -1760,7 +1866,7 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 	submitInfo.pSignalSemaphores = doneSemaphores;
 	
 	float *data;
-	vkMapMemory(vl_sdl2vk_device, vl_sdl2vk_uniformBufferMemory, 0, 8, 0, (void**)&data);
+	vkMapMemory(vl_sdl2vk_device, vl_sdl2vk_uniformBufferMemory, 0, sizeof(float) * 4 * 17, 0, (void**)&data);
 	data[0] = scrlX;
 	data[1] = scrlY;
 	for (int i = 0; i < 16; ++i)
