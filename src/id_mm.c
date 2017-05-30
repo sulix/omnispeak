@@ -270,12 +270,12 @@ void MM_BombOnError(bool bomb)
 
 #ifndef ID_MM_DEBUGARENA
 
-typedef struct ID_MM_Arena
+struct ID_MM_Arena
 {
 	size_t size;
 	size_t currentOffset;
 	// TODO: Add flags/mutex for multithreading?
-} ID_MM_Arena;
+};
 
 ID_MM_Arena *MM_ArenaCreate(size_t size)
 {
