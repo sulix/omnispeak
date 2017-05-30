@@ -28,10 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_ca.h"
 #include "id_us.h"
 #include "ck_ep.h"
+#include "id_vh.h"
 #include "ck_cross.h"
+#include "ck_def.h"
 
 #include <string.h>
 #include <stdio.h>
+#include "SDL_endian.h"
 #include "SDL.h"
 
 // For chdir
@@ -429,7 +432,7 @@ void CAL_RLEWExpand (void *src, void *dest, int expLength, uint16_t rletag)
 
 	while (expLength > 0)
 	{
-		value = CAL_ReadWord(srcptr++);
+		value = *srcptr++;
 		if (value != rletag)
 		{
 			*(dstptr++) = value;
@@ -538,6 +541,14 @@ void CAL_SetupGrFile()
 	//Load the ?GADICT
 	CA_LoadFile("EGADICT.EXT", (void**)(&ca_gr_huffdict), 0);
 
+#ifdef CK_CROSS_IS_BIGENDIAN
+	for (int i = 0; i < 256; ++i)
+	{
+		ca_gr_huffdict[i].bit_0 = CK_Cross_SwapLE16(ca_gr_huffdict[i].bit_0);
+		ca_gr_huffdict[i].bit_1 = CK_Cross_SwapLE16(ca_gr_huffdict[i].bit_1);
+	}
+#endif
+
 	// We don't need to 'OptimizeNodes'.
 	//CAL_OptimizeNodes(ca_gr_huffdict);
 
@@ -548,6 +559,11 @@ void CAL_SetupGrFile()
 	FILE *gfxinfoe = fopen(CAL_AdjustExtension("GFXINFOE.EXT"),"rb");
 	fread(&ca_gfxInfoE, 1, sizeof(ca_gfxinfo), gfxinfoe);
 	fclose(gfxinfoe);
+#ifdef CK_CROSS_IS_BIGENDIAN
+	uint16_t *uptr = (uint16_t *)&ca_gfxInfoE;
+	for (size_t loopVar = 0; loopVar < sizeof(ca_gfxInfoE)/2; loopVar++, uptr++)
+		*uptr = CK_Cross_Swap16(*uptr);
+#endif
 
 	//Load the graphics --- we will keep the file open for the duration of the game.
 	ca_graphHandle = fopen(CAL_AdjustExtension("EGAGRAPH.EXT"),"rb");
@@ -619,6 +635,62 @@ void CA_CacheGrChunk(int chunk)
 	} while (read < compressedLength);
 	CAL_ExpandGrChunk(chunk, compdata);
 	MM_FreePtr(&compdata);
+
+#ifdef CK_CROSS_IS_BIGENDIAN
+	if (chunk == ca_gfxInfoE.hdrBitmaps)
+	{
+		VH_BitmapTableEntry *bitmapTable = (VH_BitmapTableEntry*)(ca_graphChunks[chunk]);
+		for (int i = 0; i < ca_gfxInfoE.numBitmaps; ++i)
+		{
+			bitmapTable[i].width = CK_Cross_SwapLE16(bitmapTable[i].width);
+			bitmapTable[i].height = CK_Cross_SwapLE16(bitmapTable[i].height);
+		}
+	}
+	else if (chunk == ca_gfxInfoE.hdrMasked)
+	{
+		VH_BitmapTableEntry *maskedTable = (VH_BitmapTableEntry*)(ca_graphChunks[chunk]);
+		for (int i = 0; i < ca_gfxInfoE.numMasked; ++i)
+		{
+			maskedTable[i].width = CK_Cross_SwapLE16(maskedTable[i].width);
+			maskedTable[i].height = CK_Cross_SwapLE16(maskedTable[i].height);
+		}
+	}
+	else if (chunk == ca_gfxInfoE.hdrSprites)
+	{
+		VH_SpriteTableEntry *spriteTable = (VH_SpriteTableEntry*)(ca_graphChunks[chunk]);
+		for (int i = 0; i < ca_gfxInfoE.numSprites; ++i)
+		{
+			spriteTable[i].width = CK_Cross_SwapLE16(spriteTable[i].width);
+			spriteTable[i].height = CK_Cross_SwapLE16(spriteTable[i].height);
+			spriteTable[i].originX = CK_Cross_SwapLE16(spriteTable[i].originX);
+			spriteTable[i].originY = CK_Cross_SwapLE16(spriteTable[i].originY);
+			spriteTable[i].xl = CK_Cross_SwapLE16(spriteTable[i].xl);
+			spriteTable[i].yl = CK_Cross_SwapLE16(spriteTable[i].yl);
+			spriteTable[i].xh = CK_Cross_SwapLE16(spriteTable[i].xh);
+			spriteTable[i].yh = CK_Cross_SwapLE16(spriteTable[i].yh);
+			spriteTable[i].shifts = CK_Cross_SwapLE16(spriteTable[i].shifts);
+		}
+	}
+	else if (chunk >= FON_MAINFONT && chunk <= FON_WATCHFONT)
+	{
+		VH_Font *font = (VH_Font*)ca_graphChunks[chunk];
+		font->height = CK_Cross_SwapLE16(font->height);
+		for (int i = 0; i < (int)(sizeof(font->location)/sizeof(*(font->location))); ++i)
+		{
+			font->location[i] = CK_Cross_SwapLE16(font->location[i]);
+		}
+	}
+	else if (chunk >= EXTERN_COMMANDER && chunk <= EXTERN_KEEN)
+	{
+		introbmptype *intro = (introbmptype *)ca_graphChunks[chunk];
+		intro->height = CK_Cross_SwapLE16(intro->height);
+		intro->width = CK_Cross_SwapLE16(intro->width);
+		for (int i = 0; i < (int)(sizeof(intro->linestarts)/sizeof(*(intro->linestarts))); ++i)
+		{
+			intro->linestarts[i] = CK_Cross_SwapLE16(intro->linestarts[i]);
+		}
+	}
+#endif
 }
 
 // CA_ClearMarks:
@@ -755,6 +827,13 @@ void CAL_SetupMapFile(void)
 {
 	int mapHeadFileSize = 0;
 	CA_LoadFile("MAPHEAD.EXT", (void**)(&ca_MapHead), &mapHeadFileSize);
+#ifdef CK_CROSS_IS_BIGENDIAN
+	ca_MapHead->rleTag = CK_Cross_SwapLE16(ca_MapHead->rleTag);
+	for (int i = 0; i < CA_NUMMAPS; ++i)
+	{
+		ca_MapHead->headerOffsets[i] = CK_Cross_SwapLE32(ca_MapHead->headerOffsets[i]);
+	}
+#endif
 	ca_GameMaps = fopen(CAL_AdjustExtension("GAMEMAPS.EXT"), "rb");
 	// Try reading TILEINFO.EXT first, otherwise use data from MAPHEAD.EXT
 	ti_tileInfo = NULL;
@@ -781,9 +860,22 @@ void CAL_SetupAudioFile(void)
   FILE *audinfoe = fopen(CAL_AdjustExtension("AUDINFOE.EXT"),"rb");
 	fread(&ca_audInfoE, 1, sizeof(ca_audinfo), audinfoe);
 	fclose(audinfoe);
+#ifdef CK_CROSS_IS_BIGENDIAN
+	uint16_t *uptr = (uint16_t *)&ca_audInfoE;
+	for (size_t loopVar = 0; loopVar < sizeof(ca_audInfoE)/2; loopVar++, uptr++)
+		*uptr = CK_Cross_Swap16(*uptr);
+#endif
 
 	//Load the AUDIODCT
 	CA_LoadFile("AUDIODCT.EXT", (void**)(&ca_audiohuffman), 0);
+
+#ifdef CK_CROSS_IS_BIGENDIAN
+	for (int i = 0; i < 256; ++i)
+	{
+		ca_audiohuffman[i].bit_0 = CK_Cross_SwapLE16(ca_audiohuffman[i].bit_0);
+		ca_audiohuffman[i].bit_1 = CK_Cross_SwapLE16(ca_audiohuffman[i].bit_1);
+	}
+#endif
 
 	// We don't need to 'OptimizeNodes'.
 	//CAL_OptimizeNodes(ca_audiohuffman);
@@ -827,7 +919,15 @@ void CA_CacheMap(int mapIndex)
 		fseek(ca_GameMaps, headerOffset, SEEK_SET);
 
 		fread(CA_MapHeaders[mapIndex], 1, sizeof(CA_MapHeader), ca_GameMaps);
-
+#ifdef CK_CROSS_IS_BIGENDIAN
+		for (int plane = 0; plane < CA_NUMMAPPLANES; ++plane)
+		{
+			CA_MapHeaders[mapIndex]->planeOffsets[plane] = CK_Cross_SwapLE32(CA_MapHeaders[mapIndex]->planeOffsets[plane]);
+			CA_MapHeaders[mapIndex]->planeLengths[plane] = CK_Cross_SwapLE16(CA_MapHeaders[mapIndex]->planeLengths[plane]);
+		}
+		CA_MapHeaders[mapIndex]->width = CK_Cross_SwapLE16(CA_MapHeaders[mapIndex]->width);
+		CA_MapHeaders[mapIndex]->height = CK_Cross_SwapLE16(CA_MapHeaders[mapIndex]->height);
+#endif
 	}
 	else
 	{
@@ -863,7 +963,7 @@ void CA_CacheMap(int mapIndex)
 			read += curRead;
 		} while (read < planeCompLength);
 
-		uint16_t carmackExpanded = *compBuffer;
+		uint16_t carmackExpanded = CK_Cross_SwapLE16(*compBuffer);
 
 		uint16_t *rlewBuffer;
 		MM_GetPtr((void**)(&rlewBuffer), carmackExpanded);
@@ -1006,6 +1106,24 @@ void CA_CacheAudioChunk(int16_t chunk)
 //done:
 	if (compressed>BUFFERSIZE)
 		MM_FreePtr(&bigbuffer);
+
+#ifdef CK_CROSS_IS_BIGENDIAN
+	if (chunk < ca_audInfoE.startMusic) // Sound effects
+	{
+		SoundCommon *sndCommonPtr = (SoundCommon *)CA_audio[chunk];
+		sndCommonPtr->length = CK_Cross_SwapLE32(sndCommonPtr->length);
+		sndCommonPtr->priority = CK_Cross_SwapLE16(sndCommonPtr->priority);
+	}
+	else // Music chunk
+	{
+		// TODO fixme is this ok?
+		MusicGroup *musicPtr = (MusicGroup *)CA_audio[chunk];
+		musicPtr->length = CK_Cross_SwapLE16(musicPtr->length);
+		// Swap the delays only
+		for (int bytesLeft = musicPtr->length, *musicData = 1 + musicPtr->values; bytesLeft >= 4; bytesLeft -= 4, musicData += 2)
+			*musicData = CK_Cross_SwapLE16(*musicData);
+	}
+#endif
 }
 
 

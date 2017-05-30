@@ -31,6 +31,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include "SDL_endian.h"
 #include "SDL.h"
 
 #include "id_sd.h"

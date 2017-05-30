@@ -430,6 +430,12 @@ extern uint8_t *ck_terminator_palette1;
 extern uint8_t *ck_terminator_palette2;
 extern const char *ck_storyText;
 
+typedef struct introbmptypestruct {
+	uint16_t height, width;
+	uint16_t linestarts[200];
+	uint8_t data[];
+} introbmptype;
+
 void CK_DrawTerminator(void);
 void CK_DrawStarWars(void);
 

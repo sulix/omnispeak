@@ -25,12 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 
-typedef struct VH_Font
-{
-	uint16_t height;
-	uint16_t location[256];
-	uint8_t width[256];
-} __attribute((__packed__)) VH_Font;
 
 //TODO: Should these functions cache the bitmap tables?
 VH_BitmapTableEntry VH_GetBitmapTableEntry(int bitmapNumber)

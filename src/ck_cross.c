@@ -83,8 +83,9 @@ size_t CK_Cross_freadInt16LE(void *ptr, size_t count, FILE *stream)
 {
 	count = fread(ptr, 2, count, stream);
 #ifdef CK_CROSS_IS_BIGENDIAN
-	for (size_t loopVar = 0; loopVar < count; loopVar++, ((uint16_t *) ptr)++)
-		*(uint16_t *) ptr = CK_Cross_Swap16(*(uint16_t *) ptr);
+	uint16_t *uptr = (uint16_t *)ptr;
+	for (size_t loopVar = 0; loopVar < count; loopVar++, uptr++)
+		*uptr = CK_Cross_Swap16(*uptr);
 #endif
 	return count;
 }
@@ -93,8 +94,9 @@ size_t CK_Cross_freadInt32LE(void *ptr, size_t count, FILE *stream)
 {
 	count = fread(ptr, 4, count, stream);
 #ifdef CK_CROSS_IS_BIGENDIAN
-	for (size_t loopVar = 0; loopVar < count; loopVar++, ((uint32_t *) ptr)++)
-		*(uint32_t *) ptr = CK_Cross_Swap32(*(uint32_t *) ptr);
+	uint32_t *uptr = (uint32_t *)ptr;
+	for (size_t loopVar = 0; loopVar < count; loopVar++, uptr++)
+		*uptr = CK_Cross_Swap32(*uptr);
 #endif
 	return count;
 }
@@ -111,9 +113,10 @@ size_t CK_Cross_fwriteInt16LE(const void *ptr, size_t count, FILE *stream)
 #else
 	uint16_t val;
 	size_t actualCount = 0;
-	for (size_t loopVar = 0; loopVar < count; loopVar++, ((uint16_t *) ptr)++)
+	uint16_t *uptr = (uint16_t *)ptr;
+	for (size_t loopVar = 0; loopVar < count; loopVar++, uptr++)
 	{
-		val = CK_Cross_Swap16(*(uint16_t *) ptr);
+		val = CK_Cross_Swap16(*uptr);
 		actualCount += fwrite(&val, 2, 1, stream);
 	}
 	return actualCount;
@@ -127,9 +130,10 @@ size_t CK_Cross_fwriteInt32LE(const void *ptr, size_t count, FILE *stream)
 #else
 	uint32_t val;
 	size_t actualCount = 0;
-	for (size_t loopVar = 0; loopVar < count; loopVar++, ((uint32_t *) ptr)++)
+	uint32_t *uptr = (uint32_t *)ptr;
+	for (size_t loopVar = 0; loopVar < count; loopVar++, uptr++)
 	{
-		val = CK_Cross_Swap32(*(uint32_t *) ptr);
+		val = CK_Cross_Swap32(*uptr);
 		actualCount += fwrite(&val, 4, 1, stream);
 	}
 	return actualCount;

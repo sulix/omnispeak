@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_def.h"
 #include "ck_game.h"
 #include "ck_play.h"
+#include "ck_cross.h"
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_us.h"
@@ -103,12 +104,6 @@ void CK_HandleDemoKeys()
 #define TERMINATORSCREENWIDTH 248
 
 // Pointers to the two monochrome bitmaps that are scrolled during the intro
-
-typedef struct introbmptypestruct {
-	uint16_t height, width;
-	uint16_t linestarts[200];
-	uint8_t data[];
-} introbmptype;
 
 introbmptype *ck_introKeen;
 introbmptype *ck_introCommander;
@@ -520,6 +515,7 @@ void TerminatorExpandRLE(uint16_t *src, uint8_t *dest)
 
 	while ((nextword = *src++) != 0xFFFF)
 	{
+		nextword = CK_Cross_SwapLE16(nextword);
 		// Expand a Black Run of pixels
 		if ((runlength += nextword) > 7)
 		{
@@ -545,6 +541,7 @@ void TerminatorExpandRLE(uint16_t *src, uint8_t *dest)
 			*dest = 0;
 			return;
 		}
+		nextword = CK_Cross_SwapLE16(nextword);
 
 		// the lowest bits in this byte will be black (zero)
 		// so we OR the right most remaining bits so that they are drawn white
