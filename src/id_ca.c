@@ -671,7 +671,7 @@ void CA_CacheGrChunk(int chunk)
 			spriteTable[i].shifts = CK_Cross_SwapLE16(spriteTable[i].shifts);
 		}
 	}
-	else if (chunk >= FON_MAINFONT && chunk <= FON_WATCHFONT)
+	else if (chunk >= FON_MAINFONT && chunk <= /*FON_WATCHFONT*/FON_MAINFONT+2)
 	{
 		VH_Font *font = (VH_Font*)ca_graphChunks[chunk];
 		font->height = CK_Cross_SwapLE16(font->height);

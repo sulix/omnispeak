@@ -1535,7 +1535,7 @@ void CK_PlayDemoFile(const char *demoName)
 
 	uint16_t demoMap = *demoBuf;
 	demoBuf += 2;
-	uint16_t demoLen = *((uint16_t *) demoBuf);
+	uint16_t demoLen = CK_Cross_SwapLE16(*((uint16_t *) demoBuf));
 	demoBuf += 2;
 
 	ck_gameState.currentLevel =demoMap;
@@ -1563,7 +1563,7 @@ void CK_PlayDemo(int demoNumber)
 
 	uint16_t demoMap = *demoBuf;
 	demoBuf += 2;
-	uint16_t demoLen = *((uint16_t *) demoBuf);
+	uint16_t demoLen = CK_Cross_SwapLE16(*((uint16_t *) demoBuf));
 	demoBuf += 2;
 
 	ck_gameState.currentLevel =demoMap;
