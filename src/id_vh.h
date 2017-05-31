@@ -44,8 +44,8 @@ typedef struct VH_Font
 	uint8_t width[256];
 } __attribute((__packed__)) VH_Font;
 
-VH_BitmapTableEntry VH_GetBitmapTableEntry(int bitmapNumber);
-VH_SpriteTableEntry VH_GetSpriteTableEntry(int spriteNumber);
+VH_BitmapTableEntry *VH_GetBitmapTableEntry(int bitmapNumber);
+VH_SpriteTableEntry *VH_GetSpriteTableEntry(int spriteNumber);
 
 void VH_Plot(int x, int y, int colour);
 void VH_HLine(int x1, int x2, int y, int colour);
