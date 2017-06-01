@@ -116,7 +116,7 @@ void TimedPicCommand( void )
 void HandleCommand( void )
 {
 	int16_t i, w, h, midx, wrapx, miny, maxy;
-	VH_BitmapTableEntry bmpinfo;
+	VH_BitmapTableEntry *bmpinfo;
 
 	help_ptr++;
 	switch ( CK_Cross_toupper( *help_ptr ) )
@@ -178,8 +178,8 @@ void HandleCommand( void )
 		ParsePicCommand();
 		VH_DrawBitmap( help_x & ~7, help_y, help_pic );
     bmpinfo = VH_GetBitmapTableEntry(help_pic - ca_gfxInfoE.offBitmaps);
-		w = bmpinfo.width * 8;
-		h = bmpinfo.height;
+		w = bmpinfo->width * 8;
+		h = bmpinfo->height;
 
 		/* Wrap text either on the left or the right-hand-side of the picture */
 		midx = help_x + w / 2;

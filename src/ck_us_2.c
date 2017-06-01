@@ -1076,9 +1076,9 @@ bool CK6_CreatureQuestion()
   CA_CacheMarks(NULL);
 
   VH_Bar(0, 0, 320, 200, 8);
-  VH_SpriteTableEntry sprite = VH_GetSpriteTableEntry(creature.sprite - ca_gfxInfoE.offSprites);
-  int w = sprite.width;
-  int h = sprite.height;
+  VH_SpriteTableEntry *sprite = VH_GetSpriteTableEntry(creature.sprite - ca_gfxInfoE.offSprites);
+  int w = sprite->width;
+  int h = sprite->height;
 
   US_CenterWindow(30, (h+41)/8+1);
   US_SetPrintY(US_GetWindowY() +2);
