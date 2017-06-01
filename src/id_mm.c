@@ -328,7 +328,7 @@ void MM_ArenaDestroy(ID_MM_Arena *arena)
 
 // For debug builds, the ID_MM_Arena is a linked list of allocation records.
 // This allows tools like valgrind to check things.
-typedef struct ID_MM_Arena
+struct ID_MM_Arena
 {
 	void *data;
 	size_t size;
@@ -336,7 +336,7 @@ typedef struct ID_MM_Arena
 	// the following are valid only in the first element.
 	size_t arena_size;
 	size_t arena_used;
-} ID_MM_Arena;
+};
 
 ID_MM_Arena *MM_ArenaCreate(size_t size)
 {
