@@ -335,6 +335,10 @@ static VkImage *vl_sdl2vk_swapchainImages;
 static VkImageView *vl_sdl2vk_swapchainImageViews;
 static VkExtent2D vl_sdl2vk_swapchainSize;
 static VkFormat vl_sdl2vk_swapchainFormat;
+static VkImage vl_sdl2vk_integerImage;
+static VkImageView vl_sdl2vk_integerImageView;
+static VkDeviceMemory vl_sdl2vk_integerMemory;
+static VkFramebuffer vl_sdl2vk_integerFramebuffer;
 static VkShaderModule vl_sdl2vk_vertShaderModule;
 static VkShaderModule vl_sdl2vk_fragShaderModule;
 static VkPipelineLayout vl_sdl2vk_pipelineLayout;
@@ -353,6 +357,10 @@ static VkDescriptorSet vl_sdl2vk_ubDescriptorSet;
 static VkDescriptorSetLayout vl_sdl2vk_samplerDescriptorSetLayout;
 static VkDescriptorPool vl_sdl2vk_samplerDescriptorPool;
 static VkDescriptorSet vl_sdl2vk_samplerDescriptorSet;
+
+static int vl_sdl2vk_integerWidth;
+static int vl_sdl2vk_integerHeight;
+
 
 // Here is how the dimensions of the window are currently picked:
 // 1. The emulated 320x200 sub-window is first zoomed
@@ -410,6 +418,50 @@ static void VL_SDL2VK_LoadVKDeviceProcs()
 	id_vkQueuePresentKHR = (PFN_vkQueuePresentKHR)id_vkGetDeviceProcAddr(vl_sdl2vk_device, "vkQueuePresentKHR");
 	if (!id_vkQueuePresentKHR)
 		Quit("Couldn't get address of vkQueuePresentKHR");
+}
+
+static VkCommandBuffer VL_SDL2VK_StartCommandBuffer(VkCommandBufferUsageFlagBits usageFlags)
+{
+	//VkResult result = VK_SUCCESS;
+	VkCommandBufferAllocateInfo cmdbufAllocInfo = {};
+	cmdbufAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	cmdbufAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	cmdbufAllocInfo.commandPool = vl_sdl2vk_commandPool;
+	cmdbufAllocInfo.commandBufferCount = 1;
+	
+	VkCommandBuffer cmdBuf;
+	vkAllocateCommandBuffers(vl_sdl2vk_device, &cmdbufAllocInfo, &cmdBuf);
+	VkCommandBufferBeginInfo cmdbufBeginInfo = {};
+	cmdbufBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	cmdbufBeginInfo.flags = usageFlags;
+	
+	vkBeginCommandBuffer(cmdBuf, &cmdbufBeginInfo);
+	
+	return cmdBuf;
+}
+
+static void VL_SDL2VK_ImageLayoutBarrier(VkCommandBuffer buf, VkImage img, VkFormat imgFormat, VkImageLayout oldLayout, VkAccessFlags oldAccess, VkImageLayout newLayout, VkAccessFlags newAccess)
+{
+	VkImageMemoryBarrier memBarrier = {};
+	memBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	memBarrier.oldLayout = oldLayout;
+	memBarrier.newLayout = newLayout;
+	memBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	memBarrier.srcAccessMask = oldAccess;
+	memBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	memBarrier.dstAccessMask = newAccess;
+	memBarrier.image = img;
+	memBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	memBarrier.subresourceRange.baseMipLevel = 0;
+	memBarrier.subresourceRange.levelCount = 1;
+	memBarrier.subresourceRange.baseArrayLayer = 0;
+	memBarrier.subresourceRange.layerCount = 1;
+	
+	vkCmdPipelineBarrier(buf, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+			     0, 0, 0, 0, 0, 1, &memBarrier);
+	
+	
+	
 }
 
 static void VL_SDL2VK_CreateVulkanInstance()
@@ -471,6 +523,27 @@ static void VL_SDL2VK_CreateVulkanInstance()
 	{
 		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Couldn't create Vulkan instance: %d", result);
 	}
+}
+
+static uint32_t VL_SDL2VK_SelectMemoryType(uint32_t memoryTypeMask, VkMemoryPropertyFlags memoryTypeFlags)
+{
+	VkPhysicalDeviceMemoryProperties physDeviceMemoryProperties = {};
+	vkGetPhysicalDeviceMemoryProperties(vl_sdl2vk_physicalDevice, &physDeviceMemoryProperties);
+	
+	uint32_t memTypeIndex = UINT32_MAX;
+	for (uint32_t i = 0; i < physDeviceMemoryProperties.memoryTypeCount; ++i)
+	{
+		// Make sure the memory type is supported.
+		if ((memoryTypeMask & (1 << i)) == 0)
+			continue;
+		
+		if ((physDeviceMemoryProperties.memoryTypes[i].propertyFlags & memoryTypeFlags) == memoryTypeFlags)
+		{
+			memTypeIndex = i;
+			break;
+		}
+	}
+	return memTypeIndex;	
 }
 
 static void VL_SDL2VK_InitPhysicalDevice()
@@ -598,6 +671,9 @@ static void VL_SDL2VK_SetupSwapchain(int width, int height)
 	result = id_vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vl_sdl2vk_physicalDevice, vl_sdl2vk_windowSurface, &surfaceCapabilities);
 	if (result != VK_SUCCESS)
 		Quit("Couldn't get window surface capabilities");
+
+	if (surfaceCapabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT == 0)
+		Quit("Vulkan swapchain does not support VK_IMAGE_USAGE_TRANSFER_DST_BIT");
 	
 	uint32_t surfaceFormatCount;
 	result = id_vkGetPhysicalDeviceSurfaceFormatsKHR(vl_sdl2vk_physicalDevice, vl_sdl2vk_windowSurface, &surfaceFormatCount, 0);
@@ -630,7 +706,7 @@ static void VL_SDL2VK_SetupSwapchain(int width, int height)
 	swapchainCreateInfo.imageFormat = vl_sdl2vk_swapchainFormat;
 	swapchainCreateInfo.imageColorSpace = surfaceFormats[desiredFormat].colorSpace;
 	swapchainCreateInfo.imageExtent = vl_sdl2vk_swapchainSize;
-	swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+	swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	swapchainCreateInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 	swapchainCreateInfo.imageArrayLayers = 1;
 	swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -682,8 +758,9 @@ static void VL_SDL2VK_SetupSwapchain(int width, int height)
 		result = vkCreateImageView(vl_sdl2vk_device, &imageViewCreateInfo, 0, &vl_sdl2vk_swapchainImageViews[i]);
 		if (result != VK_SUCCESS)
 			Quit("Couldn't create swapchain image view.");
+
 	}
-	
+
 	
 }
 
@@ -699,7 +776,7 @@ static void VL_SDL2VK_CreateRenderPass()
 	colourAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colourAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	colourAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colourAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	colourAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	
 	VkAttachmentReference colourAttachmentRef = {};
 	colourAttachmentRef.attachment = 0;
@@ -938,9 +1015,32 @@ static void VL_SDL2VK_CreatePipeline()
 		Quit("Couldn't create graphics pipeline.");
 }
 
-static void VL_SDL2VK_CreateFramebuffers()
+static void VL_SDL2VK_CreateFramebuffers(int integerScaleX, int integerScaleY)
 {
 	VkResult result = VK_SUCCESS;
+	
+	// Set all of the swapchain image layouts to PRESENT_SRC, which is what our command buffers expect them to
+	// be going in.
+	// We do this here, rather than in SetupSwapchain(), because we always have the command pool initialized by
+	// this point.
+	VkCommandBuffer layoutChange = VL_SDL2VK_StartCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+	for (int i = 0; i < vl_sdl2vk_numSwapchainImages; ++i)
+	{
+		VL_SDL2VK_ImageLayoutBarrier(layoutChange, vl_sdl2vk_swapchainImages[i], vl_sdl2vk_swapchainFormat,
+						VK_IMAGE_LAYOUT_UNDEFINED, 0,
+						VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_ACCESS_MEMORY_READ_BIT);
+	}
+	vkEndCommandBuffer(layoutChange);
+	// And submit it...
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &layoutChange;
+	
+	vkQueueSubmit(vl_sdl2vk_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(vl_sdl2vk_graphicsQueue);
+	
+	vkFreeCommandBuffers(vl_sdl2vk_device, vl_sdl2vk_commandPool, 1, &layoutChange);
 	
 	vl_sdl2vk_framebuffers = (VkFramebuffer*)MM_ArenaAlloc(vl_sdl2vk_arena, vl_sdl2vk_numSwapchainImages * sizeof(VkFramebuffer));
 	
@@ -973,27 +1073,72 @@ static void VL_SDL2VK_CreateFramebuffers()
 	if (result != VK_SUCCESS)
 		Quit("Couldn't create semaphore");
 	
-}
-
-static uint32_t VL_SDL2VK_SelectMemoryType(uint32_t memoryTypeMask, VkMemoryPropertyFlags memoryTypeFlags)
-{
-	VkPhysicalDeviceMemoryProperties physDeviceMemoryProperties = {};
-	vkGetPhysicalDeviceMemoryProperties(vl_sdl2vk_physicalDevice, &physDeviceMemoryProperties);
+	// Now create a framebuffer with the integer scaled size.
+	VkImageCreateInfo imageInfo = {};
+	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+	imageInfo.imageType = VK_IMAGE_TYPE_2D;
+	imageInfo.extent.width = integerScaleX;
+	imageInfo.extent.height = integerScaleY;
+	imageInfo.extent.depth = 1;
+	imageInfo.mipLevels = 1;
+	imageInfo.arrayLayers = 1;
+	imageInfo.format = VK_FORMAT_B8G8R8A8_UNORM;
+	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	imageInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 	
-	uint32_t memTypeIndex = UINT32_MAX;
-	for (uint32_t i = 0; i < physDeviceMemoryProperties.memoryTypeCount; ++i)
-	{
-		// Make sure the memory type is supported.
-		if ((memoryTypeMask & (1 << i)) == 0)
-			continue;
-		
-		if ((physDeviceMemoryProperties.memoryTypes[i].propertyFlags & memoryTypeFlags) == memoryTypeFlags)
-		{
-			memTypeIndex = i;
-			break;
-		}
-	}
-	return memTypeIndex;	
+	result = vkCreateImage(vl_sdl2vk_device, &imageInfo, 0, &vl_sdl2vk_integerImage);
+	if (result != VK_SUCCESS)
+		Quit("Failed to create image for front buffer surface.");
+	
+	VkMemoryRequirements memoryRequirements;
+	vkGetImageMemoryRequirements(vl_sdl2vk_device, vl_sdl2vk_integerImage, &memoryRequirements);
+	
+	
+	VkMemoryAllocateInfo imageAllocInfo = {};
+	imageAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	imageAllocInfo.allocationSize = memoryRequirements.size;
+	imageAllocInfo.memoryTypeIndex = VL_SDL2VK_SelectMemoryType(memoryRequirements.memoryTypeBits, 0);
+
+	result = vkAllocateMemory(vl_sdl2vk_device, &imageAllocInfo,0, &vl_sdl2vk_integerMemory);
+	if (result != VK_SUCCESS)
+		Quit("Couldn't allocate memory for image.");
+	
+	vkBindImageMemory(vl_sdl2vk_device, vl_sdl2vk_integerImage, vl_sdl2vk_integerMemory, 0);
+	
+	VkImageViewCreateInfo imageViewInfo = {};
+	imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+	imageViewInfo.image = vl_sdl2vk_integerImage;
+	imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+	imageViewInfo.format = VK_FORMAT_B8G8R8A8_UNORM;
+	imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	imageViewInfo.subresourceRange.baseArrayLayer = 0;
+	imageViewInfo.subresourceRange.layerCount = 1;
+	imageViewInfo.subresourceRange.baseMipLevel = 0;
+	imageViewInfo.subresourceRange.levelCount = 1;
+	
+	result = vkCreateImageView(vl_sdl2vk_device, &imageViewInfo, 0, &vl_sdl2vk_integerImageView);
+	if (result != VK_SUCCESS)
+		Quit("Couldn't create image view for surface.");
+	
+	
+	VkFramebufferCreateInfo integerFramebufferCreateInfo = {};
+	integerFramebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+	integerFramebufferCreateInfo.renderPass = vl_sdl2vk_renderPass;
+	integerFramebufferCreateInfo.attachmentCount = 1;
+	integerFramebufferCreateInfo.pAttachments = &vl_sdl2vk_integerImageView;
+	integerFramebufferCreateInfo.width = integerScaleX;
+	integerFramebufferCreateInfo.height = integerScaleY;
+	integerFramebufferCreateInfo.layers = 1;
+	
+	result = vkCreateFramebuffer(vl_sdl2vk_device, &integerFramebufferCreateInfo, 0, &vl_sdl2vk_integerFramebuffer);
+	if (result != VK_SUCCESS)
+		Quit("Couldn't create framebuffer.");
+	
+	vl_sdl2vk_integerWidth = integerScaleX;
+	vl_sdl2vk_integerHeight = integerScaleY;
 }
 
 static void VL_SDL2VK_CreateUniformBuffer()
@@ -1151,21 +1296,21 @@ static VkRect2D VL_SDL2VK_CalculateFullRgn(int realW, int realH)
 static VkRect2D VL_SDL2VK_CalculateRenderRgn(VkRect2D fullRgn)
 {
 	VkRect2D renderRgn = {};
-	renderRgn.offset.x = fullRgn.offset.x +
-		fullRgn.extent.width * VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH /
+	renderRgn.offset.x = 
+		vl_sdl2vk_integerWidth * VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH /
 		(VL_VGA_GFX_WIDTH_SCALEFACTOR*VL_EGAVGA_GFX_WIDTH +
 			VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
-	renderRgn.offset.y = fullRgn.offset.y +
-		fullRgn.extent.height * VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT /
+	renderRgn.offset.y =
+		vl_sdl2vk_integerHeight * VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT /
 		(VL_VGA_GFX_HEIGHT_SCALEFACTOR*VL_EGAVGA_GFX_HEIGHT +
 			VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
 	// Tricky calculations that preserve symmetry for the VGA
-	renderRgn.extent.width = fullRgn.extent.width - (renderRgn.offset.x - fullRgn.offset.x) -
-		fullRgn.extent.width * VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH /
+	renderRgn.extent.width = vl_sdl2vk_integerWidth -
+		vl_sdl2vk_integerWidth * (VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH) /
 		(VL_VGA_GFX_WIDTH_SCALEFACTOR*VL_EGAVGA_GFX_WIDTH +
 			VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
-	renderRgn.extent.height = fullRgn.extent.height - (renderRgn.offset.y - fullRgn.offset.y) -
-		fullRgn.extent.height * VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT /
+	renderRgn.extent.height = vl_sdl2vk_integerHeight - 
+		vl_sdl2vk_integerHeight * (VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT) /
 		(VL_VGA_GFX_HEIGHT_SCALEFACTOR*VL_EGAVGA_GFX_HEIGHT +
 			VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
 
@@ -1186,17 +1331,21 @@ static void VL_SDL2VK_PopulateCommandBuffer(int i, VkRect2D fullRgn, VkRect2D re
 		Quit("Couldn't begin command buffer");
 	
 	VkClearValue clearColour = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+	VkClearValue borderValue = {};
+	borderValue.color = borderColour;
 	
 	VkRenderPassBeginInfo renderPassBeginInfo = {};
 	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassBeginInfo.renderPass = vl_sdl2vk_renderPass;
-	renderPassBeginInfo.framebuffer = vl_sdl2vk_framebuffers[i];
+	renderPassBeginInfo.framebuffer = vl_sdl2vk_integerFramebuffer;
 	renderPassBeginInfo.renderArea.offset.x = 0;
 	renderPassBeginInfo.renderArea.offset.y = 0;
-	renderPassBeginInfo.renderArea.extent = vl_sdl2vk_swapchainSize;
-	renderPassBeginInfo.clearValueCount = 1;
-	renderPassBeginInfo.pClearValues = &clearColour;
+	//renderPassBeginInfo.renderArea.extent = vl_sdl2vk_swapchainSize;
+	renderPassBeginInfo.renderArea.extent.width = vl_sdl2vk_integerWidth;
+	renderPassBeginInfo.renderArea.extent.height = vl_sdl2vk_integerHeight;
 	
+	renderPassBeginInfo.clearValueCount = 1;
+	renderPassBeginInfo.pClearValues = &borderValue;
 	
 	VkViewport viewport = {};
 	viewport.x = renderRgn.offset.x;
@@ -1208,19 +1357,34 @@ static void VL_SDL2VK_PopulateCommandBuffer(int i, VkRect2D fullRgn, VkRect2D re
 	
 	VkRect2D scissor = renderRgn;
 
-	VkClearAttachment clearBuffers = {};
-	clearBuffers.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	clearBuffers.colorAttachment = 0;
-	clearBuffers.clearValue.color = borderColour;
-
-	VkClearRect clearRects = {};
-	clearRects.rect = fullRgn;
-	clearRects.baseArrayLayer = 0;
-	clearRects.layerCount = 1;
+	VkImageBlit blitRegion = {};
+	blitRegion.dstOffsets[0].x = fullRgn.offset.x;
+	blitRegion.dstOffsets[0].y = fullRgn.offset.y;
+	blitRegion.dstOffsets[0].z = 0;
+	blitRegion.dstOffsets[1].x = fullRgn.offset.x + fullRgn.extent.width;
+	blitRegion.dstOffsets[1].y = fullRgn.offset.y + fullRgn.extent.height;
+	blitRegion.dstOffsets[1].z = 1;
+	blitRegion.dstSubresource.mipLevel = 0;
+	blitRegion.dstSubresource.baseArrayLayer = 0;
+	blitRegion.dstSubresource.layerCount = 1;
+	blitRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	blitRegion.srcOffsets[0].x = 0;
+	blitRegion.srcOffsets[0].y = 0;
+	blitRegion.srcOffsets[0].z = 0;
+	blitRegion.srcOffsets[1].x = vl_sdl2vk_integerWidth;
+	blitRegion.srcOffsets[1].y = vl_sdl2vk_integerHeight;
+	blitRegion.srcOffsets[1].z = 1;
+	blitRegion.srcSubresource.mipLevel = 0;
+	blitRegion.srcSubresource.baseArrayLayer = 0;
+	blitRegion.srcSubresource.layerCount = 1;
+	blitRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	
+	
+	VL_SDL2VK_ImageLayoutBarrier(vl_sdl2vk_commandBuffers[i], vl_sdl2vk_swapchainImages[i], vl_sdl2vk_swapchainFormat,
+					VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_ACCESS_MEMORY_READ_BIT,
+					VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT);
 	vkCmdBeginRenderPass(vl_sdl2vk_commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 	
-	vkCmdClearAttachments(vl_sdl2vk_commandBuffers[i], 1, &clearBuffers, 1, &clearRects);
 	vkCmdSetViewport(vl_sdl2vk_commandBuffers[i], 0, 1, &viewport);
 	vkCmdSetScissor(vl_sdl2vk_commandBuffers[i], 0, 1, &scissor);
 	vkCmdBindDescriptorSets(vl_sdl2vk_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vl_sdl2vk_pipelineLayout, 0, 1, &vl_sdl2vk_ubDescriptorSet, 0, 0);
@@ -1232,6 +1396,17 @@ static void VL_SDL2VK_PopulateCommandBuffer(int i, VkRect2D fullRgn, VkRect2D re
 	
 	vkCmdEndRenderPass(vl_sdl2vk_commandBuffers[i]);
 	
+	VL_SDL2VK_ImageLayoutBarrier(vl_sdl2vk_commandBuffers[i], vl_sdl2vk_integerImage, vl_sdl2vk_swapchainFormat,
+					VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+					VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_READ_BIT);
+	vkCmdBlitImage(vl_sdl2vk_commandBuffers[i],
+			vl_sdl2vk_integerImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+			vl_sdl2vk_swapchainImages[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			1, &blitRegion, VK_FILTER_LINEAR);
+	
+	VL_SDL2VK_ImageLayoutBarrier(vl_sdl2vk_commandBuffers[i], vl_sdl2vk_swapchainImages[i], vl_sdl2vk_swapchainFormat,
+					VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT,
+					VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_ACCESS_MEMORY_READ_BIT);
 	result = vkEndCommandBuffer(vl_sdl2vk_commandBuffers[i]);
 	
 	if (result != VK_SUCCESS)
@@ -1249,6 +1424,11 @@ void VL_SDL2VK_DestroySwapchain()
 	vkDestroySemaphore(vl_sdl2vk_device, vl_sdl2vk_imageAvailableSemaphore, 0);
 	vkDestroySemaphore(vl_sdl2vk_device, vl_sdl2vk_frameCompleteSemaphore, 0);
 	
+	vkDestroyFramebuffer(vl_sdl2vk_device, vl_sdl2vk_integerFramebuffer, 0);
+	vkDestroyImageView(vl_sdl2vk_device, vl_sdl2vk_integerImageView, 0);
+	vkDestroyImage(vl_sdl2vk_device, vl_sdl2vk_integerImage, 0);
+	vkFreeMemory(vl_sdl2vk_device, vl_sdl2vk_integerMemory, 0);
+
 	vkDestroyPipeline(vl_sdl2vk_device, vl_sdl2vk_pipeline, 0);
 	vkDestroyPipelineLayout(vl_sdl2vk_device, vl_sdl2vk_pipelineLayout, 0);
 
@@ -1338,8 +1518,8 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 		VL_SDL2VK_CreateDescriptorSetLayouts();
 		VL_SDL2VK_CreatePipeline();
 		
-		VL_SDL2VK_CreateFramebuffers();
 		VL_SDL2VK_CreateCommandBuffers();
+		VL_SDL2VK_CreateFramebuffers(3*VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, 3*VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 		
 		VL_SDL2VK_CreateUniformBuffer();
 
@@ -1379,49 +1559,6 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 	}
 }
 
-static void VL_SDL2VK_ImageLayoutBarrier(VkCommandBuffer buf, VkImage img, VkFormat imgFormat, VkImageLayout oldLayout, VkAccessFlags oldAccess, VkImageLayout newLayout, VkAccessFlags newAccess)
-{
-	VkImageMemoryBarrier memBarrier = {};
-	memBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	memBarrier.oldLayout = oldLayout;
-	memBarrier.newLayout = newLayout;
-	memBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	memBarrier.srcAccessMask = oldAccess;
-	memBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	memBarrier.dstAccessMask = newAccess;
-	memBarrier.image = img;
-	memBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	memBarrier.subresourceRange.baseMipLevel = 0;
-	memBarrier.subresourceRange.levelCount = 1;
-	memBarrier.subresourceRange.baseArrayLayer = 0;
-	memBarrier.subresourceRange.layerCount = 1;
-	
-	vkCmdPipelineBarrier(buf, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-			     0, 0, 0, 0, 0, 1, &memBarrier);
-	
-	
-	
-}
-
-static VkCommandBuffer VL_SDL2VK_StartCommandBuffer(VkCommandBufferUsageFlagBits usageFlags)
-{
-	//VkResult result = VK_SUCCESS;
-	VkCommandBufferAllocateInfo cmdbufAllocInfo = {};
-	cmdbufAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	cmdbufAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	cmdbufAllocInfo.commandPool = vl_sdl2vk_commandPool;
-	cmdbufAllocInfo.commandBufferCount = 1;
-	
-	VkCommandBuffer cmdBuf;
-	vkAllocateCommandBuffers(vl_sdl2vk_device, &cmdbufAllocInfo, &cmdBuf);
-	VkCommandBufferBeginInfo cmdbufBeginInfo = {};
-	cmdbufBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	cmdbufBeginInfo.flags = usageFlags;
-	
-	vkBeginCommandBuffer(cmdBuf, &cmdbufBeginInfo);
-	
-	return cmdBuf;
-}
 
 static void VL_SDL2VK_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
 static void *VL_SDL2VK_CreateSurface(int w, int h, VL_SurfaceUsage usage)
@@ -1822,7 +1959,7 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 	{
 		VL_SDL2VK_DestroySwapchain();
 		VL_SDL2VK_SetupSwapchain(newW, newH);
-		VL_SDL2VK_CreateFramebuffers();
+		VL_SDL2VK_CreateFramebuffers(3*VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, 3*VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 		VL_SDL2VK_CreatePipeline();
 	}
 	
@@ -1832,8 +1969,9 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 	{
 		VL_SDL2VK_DestroySwapchain();
 		VL_SDL2VK_SetupSwapchain(newW, newH);
-		VL_SDL2VK_CreateFramebuffers();
+		VL_SDL2VK_CreateFramebuffers(VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 		VL_SDL2VK_CreatePipeline();
+		result = vkAcquireNextImageKHR(vl_sdl2vk_device, vl_sdl2vk_swapchain, UINT64_MAX, vl_sdl2vk_imageAvailableSemaphore, VK_NULL_HANDLE, &framebufferIndex);
 	}
 		
 	

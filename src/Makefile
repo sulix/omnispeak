@@ -54,13 +54,19 @@ OUTBIN=../bin/omnispeak$(EXE_EXT)
 
 LIBS=
 WITH_SDL2=1
+WITH_VULKAN=0
 ifeq ($(WITH_SDL2), 1)
-	ifeq ($(PLATFORM), WINDOWS)
-		LIBS+= -lopengl32
+	ifeq ($(WITH_VULKAN), 1)
+		LIBS+= -lvulkan -lX11 -lX11-xcb
+		IDOBJECTS+= id_vl_sdl2vk.o 
 	else
-		LIBS+= -lGL
+		ifeq ($(PLATFORM), WINDOWS)
+			LIBS+= -lopengl32
+		else
+			LIBS+= -lGL
+		endif
+		IDOBJECTS+= id_vl_sdl2gl.o 
 	endif
-	IDOBJECTS+= id_vl_sdl2gl.o 
 	SDLCONFIGBIN=sdl2-config #/local/cross-tools/x86_64-w64-mingw32/bin/sdl2-config
 else
 	IDOBJECTS+= id_vl_sdl12.o
