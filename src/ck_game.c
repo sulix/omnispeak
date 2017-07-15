@@ -302,7 +302,6 @@ static bool CK_LoadGameState(FILE* fp, CK_GameState *state)
 	return true;
 }
 
-// FIXME - This is Little Endian compatible only!
 bool CK_SaveGame (FILE *fp)
 {
 	int i;
@@ -327,7 +326,8 @@ bool CK_SaveGame (FILE *fp)
 
 		/* Write the size of the compressed level */
 		*((uint16_t *)buf) = cmplen;
-		if (CK_Cross_fwriteInt8LE(buf, cmplen + 2, fp) != cmplen + 2)
+		cmplen /= 2;
+		if (CK_Cross_fwriteInt16LE(buf, cmplen + 1, fp) != cmplen + 1)
 		{
 			/* Free the buffer and return failure */
 			MM_FreePtr((mm_ptr_t *)&buf);
@@ -410,7 +410,8 @@ bool CK_LoadGame (FILE *fp)
 			MM_FreePtr((mm_ptr_t *)&buf);
 			return false;
 		}
-		if (CK_Cross_freadInt8LE(buf, cmplen, fp) != cmplen)
+		cmplen /= 2;
+		if (CK_Cross_freadInt16LE(buf, cmplen, fp) != cmplen)
 		{
 			MM_FreePtr((mm_ptr_t *)&buf);
 			return false;

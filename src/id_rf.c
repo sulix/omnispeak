@@ -1142,8 +1142,8 @@ void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
 
 #endif
 	int old_sprite_number = (*drawEntry)->chunk - ca_gfxInfoE.offSprites;
-	VH_SpriteTableEntry oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
-	RF_PlaceEraser((*drawEntry)->x + RF_UnitToPixel(oldSprite.originX), (*drawEntry)->y + RF_UnitToPixel(oldSprite.originY), (*drawEntry)->sw, (*drawEntry)->sh);
+	VH_SpriteTableEntry *oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
+	RF_PlaceEraser((*drawEntry)->x + RF_UnitToPixel(oldSprite->originX), (*drawEntry)->y + RF_UnitToPixel(oldSprite->originY), (*drawEntry)->sw, (*drawEntry)->sh);
 
 	if ((*drawEntry)->next)
 		(*drawEntry)->next->prevNextPtr = (*drawEntry)->prevNextPtr;
@@ -1205,8 +1205,8 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	if (sde)
 	{
 		int old_sprite_number = sde->chunk - ca_gfxInfoE.offSprites;
-		VH_SpriteTableEntry oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
-		RF_PlaceEraser(sde->x + RF_UnitToPixel(oldSprite.originX), sde->y + RF_UnitToPixel(oldSprite.originY), sde->sw, sde->sh);
+		VH_SpriteTableEntry *oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
+		RF_PlaceEraser(sde->x + RF_UnitToPixel(oldSprite->originX), sde->y + RF_UnitToPixel(oldSprite->originY), sde->sw, sde->sh);
 
 		//TODO: Support changing zLayers properly.
 		if (zLayer == sde->zLayer)
@@ -1261,8 +1261,8 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	sde->zLayer = zLayer;
 	sde->x = RF_UnitToPixel(unitX);
 	sde->y = RF_UnitToPixel(unitY);
-	sde->sw = VH_GetSpriteTableEntry(sprite_number).width*8;
-	sde->sh = VH_GetSpriteTableEntry(sprite_number).height;
+	sde->sw = VH_GetSpriteTableEntry(sprite_number)->width*8;
+	sde->sh = VH_GetSpriteTableEntry(sprite_number)->height;
 	sde->maskOnly = allWhite;
 	sde->dirty = true;
 

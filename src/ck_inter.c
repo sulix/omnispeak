@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_def.h"
 #include "ck_game.h"
 #include "ck_play.h"
+#include "ck_cross.h"
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_us.h"
@@ -104,12 +105,6 @@ void CK_HandleDemoKeys()
 
 // Pointers to the two monochrome bitmaps that are scrolled during the intro
 
-typedef struct introbmptypestruct {
-	uint16_t height, width;
-	uint16_t linestarts[200];
-	uint8_t data[];
-} introbmptype;
-
 introbmptype *ck_introKeen;
 introbmptype *ck_introCommander;
 
@@ -187,7 +182,7 @@ int AdvanceTerminatorCredit(int elapsedTime)
 {
 
 	int bx, picchunk;
-	VH_BitmapTableEntry bmp;
+	VH_BitmapTableEntry *bmp;
 
 	switch(ck_termCreditStage)
 	{
@@ -198,9 +193,9 @@ int AdvanceTerminatorCredit(int elapsedTime)
 		CA_CacheGrChunk(picchunk);
 		bmp = VH_GetBitmapTableEntry(picchunk - ca_gfxInfoE.offBitmaps);
 		ck_currentTermPicSeg = ca_graphChunks[picchunk];
-		ck_currentTermPicWidth = bmp.width; // This is width in EGA bytes (1/8 px)
+		ck_currentTermPicWidth = bmp->width; // This is width in EGA bytes (1/8 px)
 		ck_currentTermPicHalfWidth = (ck_currentTermPicWidth+3)>>1;
-		ck_currentTermPicHeight = bmp.height;
+		ck_currentTermPicHeight = bmp->height;
 		// The size in bytes of the pic.
 		ck_currentTermPicSize = (ck_currentTermPicWidth * ck_currentTermPicHeight);
 		ck_termCreditStage++;
@@ -520,6 +515,7 @@ void TerminatorExpandRLE(uint16_t *src, uint8_t *dest)
 
 	while ((nextword = *src++) != 0xFFFF)
 	{
+		nextword = CK_Cross_SwapLE16(nextword);
 		// Expand a Black Run of pixels
 		if ((runlength += nextword) > 7)
 		{
@@ -545,6 +541,7 @@ void TerminatorExpandRLE(uint16_t *src, uint8_t *dest)
 			*dest = 0;
 			return;
 		}
+		nextword = CK_Cross_SwapLE16(nextword);
 
 		// the lowest bits in this byte will be black (zero)
 		// so we OR the right most remaining bits so that they are drawn white
@@ -919,9 +916,9 @@ void CK_FizzleFade()
 	// FIXME: This is cached somewhere else
 	CA_CacheGrChunk(PIC_TITLESCREEN);
 
-	VH_BitmapTableEntry dimensions = VH_GetBitmapTableEntry(PIC_TITLESCREEN - ca_gfxInfoE.offBitmaps);
+	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(PIC_TITLESCREEN - ca_gfxInfoE.offBitmaps);
 
-	VL_UnmaskedToSurface(ca_graphChunks[PIC_TITLESCREEN], titleBuffer, 0, 0, dimensions.width*8, dimensions.height);
+	VL_UnmaskedToSurface(ca_graphChunks[PIC_TITLESCREEN], titleBuffer, 0, 0, dimensions->width*8, dimensions->height);
 
 
 	// Do the fizzling
@@ -1538,7 +1535,7 @@ void CK_PlayDemoFile(const char *demoName)
 
 	uint16_t demoMap = *demoBuf;
 	demoBuf += 2;
-	uint16_t demoLen = *((uint16_t *) demoBuf);
+	uint16_t demoLen = CK_Cross_SwapLE16(*((uint16_t *) demoBuf));
 	demoBuf += 2;
 
 	ck_gameState.currentLevel =demoMap;
@@ -1566,7 +1563,7 @@ void CK_PlayDemo(int demoNumber)
 
 	uint16_t demoMap = *demoBuf;
 	demoBuf += 2;
-	uint16_t demoLen = *((uint16_t *) demoBuf);
+	uint16_t demoLen = CK_Cross_SwapLE16(*((uint16_t *) demoBuf));
 	demoBuf += 2;
 
 	ck_gameState.currentLevel =demoMap;

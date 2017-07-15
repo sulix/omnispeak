@@ -188,7 +188,7 @@ redraw:
     chunk = ca_gfxInfoE.offSprites;
   }
 
-  VH_SpriteTableEntry ste = VH_GetSpriteTableEntry(chunk - ca_gfxInfoE.offSprites);
+  VH_SpriteTableEntry *ste = VH_GetSpriteTableEntry(chunk - ca_gfxInfoE.offSprites);
   mm_ptr_t chunk_ptr = ca_graphChunks[chunk];
 
   VH_Bar(startpx, startpy, 0x28, var8 - startpy, 0xF);
@@ -197,23 +197,23 @@ redraw:
 
   US_PrintF("%d\n", chunk);
   US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste.width);
+  US_PrintF("%d\n", ste->width);
   US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste.height);
+  US_PrintF("%d\n", ste->height);
   US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste.originX);
+  US_PrintF("%d\n", ste->originX);
   US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste.originY);
+  US_PrintF("%d\n", ste->originY);
   US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste.xl);
+  US_PrintF("%d\n", ste->xl);
   US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste.yl);
+  US_PrintF("%d\n", ste->yl);
   US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste.xh);
+  US_PrintF("%d\n", ste->xh);
   US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste.yh);
+  US_PrintF("%d\n", ste->yh);
   US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste.shifts);
+  US_PrintF("%d\n", ste->shifts);
   US_SetPrintX(startpx);
 
   if (chunk_ptr) {
@@ -221,7 +221,7 @@ redraw:
     // DOS: memused = (h*w) + (shifts-1) * (h*(w+1))
     // all of this is precomputed and stored in "spritetype" struct on sprite cache in DOS
     // so the DOS game here would read this information out of the spritetype struct
-    US_PrintF("%d=", ste.width * ste.height * 5);
+    US_PrintF("%d=", ste->width * ste->height * 5);
   } else {
     US_PrintF("-----");
   }

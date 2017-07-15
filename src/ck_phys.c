@@ -54,12 +54,12 @@ void CK_ResetClipRects(CK_object *obj)
 	//NOTE: As tile rects are rarely used, keen does not calculate them here.
 	int spriteNumber = obj->gfxChunk - ca_gfxInfoE.offSprites;
 
-	VH_SpriteTableEntry ste = VH_GetSpriteTableEntry(spriteNumber);
+	VH_SpriteTableEntry *ste = VH_GetSpriteTableEntry(spriteNumber);
 
-	obj->clipRects.unitX1 = obj->posX + ste.xl;
-	obj->clipRects.unitX2 = obj->posX + ste.xh;
-	obj->clipRects.unitY1 = obj->posY + ste.yl;
-	obj->clipRects.unitY2 = obj->posY + ste.yh;
+	obj->clipRects.unitX1 = obj->posX + ste->xl;
+	obj->clipRects.unitX2 = obj->posX + ste->xh;
+	obj->clipRects.unitY1 = obj->posY + ste->yl;
+	obj->clipRects.unitY2 = obj->posY + ste->yh;
 
 	obj->clipRects.unitXmid = (obj->clipRects.unitX2 - obj->clipRects.unitX1) / 2 + obj->clipRects.unitX1;
 
@@ -249,12 +249,12 @@ bool CK_PreviewClipRects(CK_object *obj, CK_action *act)
 	obj->gfxChunk = obj->xDirection < 0 ? act->chunkLeft : act->chunkRight;
 	int spriteNumber = obj->gfxChunk - ca_gfxInfoE.offSprites;
 
-	VH_SpriteTableEntry ste = VH_GetSpriteTableEntry(spriteNumber);
+	VH_SpriteTableEntry *ste = VH_GetSpriteTableEntry(spriteNumber);
 
-	obj->clipRects.unitX1 = obj->posX + ste.xl;
-	obj->clipRects.unitX2 = obj->posX + ste.xh;
-	obj->clipRects.unitY1 = obj->posY + ste.yl;
-	obj->clipRects.unitY2 = obj->posY + ste.yh;
+	obj->clipRects.unitX1 = obj->posX + ste->xl;
+	obj->clipRects.unitX2 = obj->posX + ste->xh;
+	obj->clipRects.unitY1 = obj->posY + ste->yl;
+	obj->clipRects.unitY2 = obj->posY + ste->yh;
 
 	obj->clipRects.unitXmid = (obj->clipRects.unitX2 - obj->clipRects.unitX1) / 2 + obj->clipRects.unitX1;
 

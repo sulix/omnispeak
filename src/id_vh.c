@@ -25,30 +25,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 
-typedef struct VH_Font
-{
-	uint16_t height;
-	uint16_t location[256];
-	uint8_t width[256];
-} __attribute((__packed__)) VH_Font;
 
 //TODO: Should these functions cache the bitmap tables?
-VH_BitmapTableEntry VH_GetBitmapTableEntry(int bitmapNumber)
+VH_BitmapTableEntry *VH_GetBitmapTableEntry(int bitmapNumber)
 {
 	VH_BitmapTableEntry *bitmapTable = (VH_BitmapTableEntry*)(ca_graphChunks[ca_gfxInfoE.hdrBitmaps]);
-	return bitmapTable[bitmapNumber];
+	return &bitmapTable[bitmapNumber];
 }
 
-static VH_BitmapTableEntry VH_GetMaskedBitmapTableEntry(int bitmapNumber)
+static VH_BitmapTableEntry *VH_GetMaskedBitmapTableEntry(int bitmapNumber)
 {
 	VH_BitmapTableEntry *maskedTable = (VH_BitmapTableEntry*)(ca_graphChunks[ca_gfxInfoE.hdrMasked]);
-	return maskedTable[bitmapNumber];
+	return &maskedTable[bitmapNumber];
 }
 
-VH_SpriteTableEntry VH_GetSpriteTableEntry(int spriteNumber)
+VH_SpriteTableEntry *VH_GetSpriteTableEntry(int spriteNumber)
 {
 	VH_SpriteTableEntry *spriteTable = (VH_SpriteTableEntry*)(ca_graphChunks[ca_gfxInfoE.hdrSprites]);
-	return spriteTable[spriteNumber];
+	return &spriteTable[spriteNumber];
 }
 
 void VH_Plot(int x, int y, int colour)
@@ -98,29 +92,29 @@ void VH_DrawBitmap(int x, int y, int chunk)
 {
 	int bitmapNumber = chunk - ca_gfxInfoE.offBitmaps;
 
-	VH_BitmapTableEntry dimensions = VH_GetBitmapTableEntry(bitmapNumber);
+	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(bitmapNumber);
 
-	VL_UnmaskedToScreen(ca_graphChunks[chunk], x, y, dimensions.width*8, dimensions.height);
+	VL_UnmaskedToScreen(ca_graphChunks[chunk], x, y, dimensions->width*8, dimensions->height);
 }
 
 void VH_DrawMaskedBitmap(int x, int y, int chunk)
 {
 	int bitmapNumber = chunk - ca_gfxInfoE.offMasked;
 
-	VH_BitmapTableEntry dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
+	VH_BitmapTableEntry *dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
 
-	VL_MaskedBlitToScreen(ca_graphChunks[chunk], x, y, dim.width*8, dim.height);
+	VL_MaskedBlitToScreen(ca_graphChunks[chunk], x, y, dim->width*8, dim->height);
 }
 
 void VH_DrawSprite(int x, int y, int chunk)
 {
 	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
 
-	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
+	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
 
-	int shiftMask = ~((8/spr.shifts)-1) & ~1;
+	int shiftMask = ~((8/spr->shifts)-1) & ~1;
 
-	VL_MaskedBlitToScreen(ca_graphChunks[chunk], (x + (spr.originX >> 4))&shiftMask, y + (spr.originY >> 4) , spr.width*8, spr.height);
+	VL_MaskedBlitToScreen(ca_graphChunks[chunk], (x + (spr->originX >> 4))&shiftMask, y + (spr->originY >> 4) , spr->width*8, spr->height);
 
 }
 
@@ -128,11 +122,11 @@ void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
 {
 	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
 
-	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
+	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
 
-	int shiftMask = ~(4-spr.shifts) & ~1;
+	int shiftMask = ~(4-spr->shifts) & ~1;
 
-	VL_1bppInvBlitToScreen(((uint8_t*)ca_graphChunks[chunk]), (x + (spr.originX >> 4))&shiftMask, y + (spr.originY >> 4) , spr.width*8, spr.height, colour);
+	VL_1bppInvBlitToScreen(((uint8_t*)ca_graphChunks[chunk]), (x + (spr->originX >> 4))&shiftMask, y + (spr->originY >> 4) , spr->width*8, spr->height, colour);
 
 }
 
@@ -220,10 +214,10 @@ void VHB_DrawBitmap(int x, int y, int chunk)
 	x += VL_GetScrollX();
 	y += VL_GetScrollY();
 
-	VH_BitmapTableEntry dimensions = VH_GetBitmapTableEntry(bitmapNumber);
+	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(bitmapNumber);
 
-	if (VH_MarkUpdateBlock(x, y, dimensions.width * 8, dimensions.height))
-		VL_UnmaskedToScreen(ca_graphChunks[chunk], x, y, dimensions.width*8, dimensions.height);
+	if (VH_MarkUpdateBlock(x, y, dimensions->width * 8, dimensions->height))
+		VL_UnmaskedToScreen(ca_graphChunks[chunk], x, y, dimensions->width*8, dimensions->height);
 }
 
 void VHB_DrawMaskedBitmap(int x, int y, int chunk)
@@ -232,10 +226,10 @@ void VHB_DrawMaskedBitmap(int x, int y, int chunk)
 	x += VL_GetScrollX();
 	y += VL_GetScrollY();
 
-	VH_BitmapTableEntry dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
+	VH_BitmapTableEntry *dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
 
-	if (VH_MarkUpdateBlock(x, y, dim.width * 8, dim.height))
-		VL_MaskedBlitToScreen(ca_graphChunks[chunk], x, y, dim.width*8, dim.height);
+	if (VH_MarkUpdateBlock(x, y, dim->width * 8, dim->height))
+		VL_MaskedBlitToScreen(ca_graphChunks[chunk], x, y, dim->width*8, dim->height);
 }
 
 void VHB_Plot(int x, int y, int colour)
