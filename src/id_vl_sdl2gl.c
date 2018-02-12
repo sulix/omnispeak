@@ -86,7 +86,7 @@ static bool VL_SDL2GL_LoadGLProcs()
 	id_glUseProgram = (PFN_ID_GLUSEPROGRAMPROC)SDL_GL_GetProcAddress("glUseProgram");
 	id_glUniform1i = (PFN_ID_GLUNIFORM1IPROC)SDL_GL_GetProcAddress("glUniform1i");
 	// EXT_framebuffer_object
-	if (!SDL_GL_ExtensionSupported("GL_EXT_framebuffer_object")) return true;
+	if (!SDL_GL_ExtensionSupported("GL_EXT_framebuffer_object")) return false;
 	id_glIsFramebufferEXT = (PFN_ID_GLISFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glIsFramebufferEXT");
 	id_glBindFramebufferEXT = (PFN_ID_GLBINDFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glBindFramebufferEXT");
 	id_glDeleteFramebuffersEXT = (PFN_ID_GLDELETEFRAMEBUFFERSEXTPROC)SDL_GL_GetProcAddress("glDeleteFramebuffersEXT");
@@ -110,9 +110,6 @@ static GLuint vl_sdl2gl_palTextureHandle;
 static int vl_sdl2gl_framebufferWidth, vl_sdl2gl_framebufferHeight;
 static int vl_sdl2gl_screenWidth;
 static int vl_sdl2gl_screenHeight;
-static struct { int left, right, top, bottom; } vl_sdl2gl_scaledBorders;
-static int vl_sdl2gl_screenHorizScaleFactor;
-static int vl_sdl2gl_screenVertScaleFactor;
 
 /* TODO (Overscan border):
  * - If a texture is used for offscreen rendering with scaling applied later,
@@ -167,12 +164,6 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 		vl_sdl2gl_context = SDL_GL_CreateContext(vl_sdl2gl_window);
 		vl_sdl2gl_screenWidth = VL_EGAVGA_GFX_WIDTH;
 		vl_sdl2gl_screenHeight = VL_EGAVGA_GFX_HEIGHT;
-		vl_sdl2gl_scaledBorders.left = VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH;
-		vl_sdl2gl_scaledBorders.right = VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH;
-		vl_sdl2gl_scaledBorders.top = VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT;
-		vl_sdl2gl_scaledBorders.bottom = VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT;
-		vl_sdl2gl_screenHorizScaleFactor = VL_VGA_GFX_WIDTH_SCALEFACTOR;
-		vl_sdl2gl_screenVertScaleFactor = VL_VGA_GFX_HEIGHT_SCALEFACTOR;
 
 		SDL_SetWindowMinimumSize(vl_sdl2gl_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 
@@ -180,7 +171,9 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 
 		if (!VL_SDL2GL_LoadGLProcs())
 		{
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Omnispeak", "Omnispeak requires OpenGL 2.0 or higher to run. Check that your drivers are installed correctly.", NULL);
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
+						"Omnispeak", "Omnispeak requires OpenGL 2.0 or higher (with EXT_framebuffer_object) to run. "
+						"Check that your drivers are installed correctly.", NULL);
 			Quit("Your system does not have one or more required OpenGL extensions.");
 		}
 
@@ -432,119 +425,64 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	SDL_Rect borderedWinRect;
 	// Get the real window size
 	SDL_GetWindowSize(vl_sdl2gl_window, &realWinW, &realWinH);
-
-	if (vl_isAspectCorrected)
-	{
-		/* HACK: Naturally, the ratio to compare to may be 4:3,
-		 * but we use the default window dimensions instead
-		 * (so 4:3 covers the contents without the overscan border).
-		 */
-		if (realWinW * VL_SDL2GL_DEFAULT_WINDOW_HEIGHT > realWinH * VL_SDL2GL_DEFAULT_WINDOW_WIDTH) // Wider than default ratio
-		{
-			wholeWinRect.w = realWinH * VL_SDL2GL_DEFAULT_WINDOW_WIDTH / VL_SDL2GL_DEFAULT_WINDOW_HEIGHT;
-			wholeWinRect.h = realWinH;
-			wholeWinRect.x = (realWinW - wholeWinRect.w) / 2;
-			wholeWinRect.y = 0;
-		}
-		else // Thinner or equal to default ratio
-		{
-			wholeWinRect.w = realWinW;
-			wholeWinRect.h = realWinW * VL_SDL2GL_DEFAULT_WINDOW_HEIGHT / VL_SDL2GL_DEFAULT_WINDOW_WIDTH;
-			wholeWinRect.x = 0;
-			wholeWinRect.y = (realWinH - wholeWinRect.h) / 2;
-		}
-	}
-	else
-	{
-		wholeWinRect.w = realWinW;
-		wholeWinRect.h = realWinH;
-		wholeWinRect.x = 0;
-		wholeWinRect.y = 0;
-	}
-
-	borderedWinRect.x = wholeWinRect.x + wholeWinRect.w * vl_sdl2gl_scaledBorders.left / (vl_sdl2gl_screenHorizScaleFactor*vl_sdl2gl_screenWidth + vl_sdl2gl_scaledBorders.left + vl_sdl2gl_scaledBorders.right);
-	borderedWinRect.y = wholeWinRect.y + wholeWinRect.h * vl_sdl2gl_scaledBorders.top / (vl_sdl2gl_screenVertScaleFactor*vl_sdl2gl_screenHeight + vl_sdl2gl_scaledBorders.top + vl_sdl2gl_scaledBorders.bottom);
-	// Tricky calculations that preserve symmetry for the VGA
-	borderedWinRect.w = wholeWinRect.w - (borderedWinRect.x - wholeWinRect.x) - wholeWinRect.w * vl_sdl2gl_scaledBorders.right / (vl_sdl2gl_screenHorizScaleFactor*vl_sdl2gl_screenWidth + vl_sdl2gl_scaledBorders.left + vl_sdl2gl_scaledBorders.right);
-	borderedWinRect.h = wholeWinRect.h - (borderedWinRect.y - wholeWinRect.y) - wholeWinRect.h * vl_sdl2gl_scaledBorders.bottom / (vl_sdl2gl_screenVertScaleFactor*vl_sdl2gl_screenHeight + vl_sdl2gl_scaledBorders.top + vl_sdl2gl_scaledBorders.bottom);
+	
+	VL_CalculateRenderRegions(realWinW, realWinH);
 
 	if (vl_isAspectCorrected)
 	{
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		VL_SDL2GL_SetGLClearColorFromBorder();
-		glScissor(wholeWinRect.x, realWinH-wholeWinRect.y-wholeWinRect.h, wholeWinRect.w, wholeWinRect.h);
-		glEnable(GL_SCISSOR_TEST);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glDisable(GL_SCISSOR_TEST);
 	}
-	else
-		glClear(GL_COLOR_BUFFER_BIT);
 
-#ifndef max
-#define max(a,b) (((a)>(b))?(a):(b))
-#endif
-
-	int integerScaleX = max((borderedWinRect.w/vl_sdl2gl_screenWidth)*vl_sdl2gl_screenWidth,vl_sdl2gl_screenWidth);
-	int integerScaleY = max((borderedWinRect.h/vl_sdl2gl_screenHeight)*vl_sdl2gl_screenHeight,vl_sdl2gl_screenHeight);
-
-
-	// If our gfx hardware supports it, render into an offscreen framebuffer for the final linear phase of scaling.
-	if (SDL_GL_ExtensionSupported("GL_EXT_framebuffer_object"))
+	// Reset the framebuffer object if we can do a better integer scale.
+	if (vl_sdl2gl_framebufferWidth != vl_integerWidth || vl_sdl2gl_framebufferHeight != vl_integerHeight)
 	{
-		// Reset the framebuffer object if we can do a better integer scale.
-		if (vl_sdl2gl_framebufferWidth != integerScaleX || vl_sdl2gl_framebufferHeight != integerScaleY)
+		if (vl_sdl2gl_framebufferTexture)
+			glDeleteTextures(1, &vl_sdl2gl_framebufferTexture);
+		if (vl_sdl2gl_framebufferObject)
+			id_glDeleteFramebuffersEXT(1, &vl_sdl2gl_framebufferObject);
+		vl_sdl2gl_framebufferWidth = vl_integerWidth;
+		vl_sdl2gl_framebufferHeight = vl_integerHeight;
+		vl_sdl2gl_framebufferTexture = 0;
+		vl_sdl2gl_framebufferObject = 0;
+	}
+
+	if (!vl_sdl2gl_framebufferTexture)
+	{
+		glGenTextures(1, &vl_sdl2gl_framebufferTexture);
+		glBindTexture(GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// Use GL_RGBA as GL_RGB causes problems on Mesa/Intel.
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, vl_integerWidth, vl_integerHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	}
+
+	if (!vl_sdl2gl_framebufferObject)
+	{
+		id_glGenFramebuffersEXT(1, &vl_sdl2gl_framebufferObject);
+		id_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
+		id_glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture, 0);
+
+		GLenum framebufferStatus = id_glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+		if (framebufferStatus != GL_FRAMEBUFFER_COMPLETE_EXT)
 		{
-			if (vl_sdl2gl_framebufferTexture)
-				glDeleteTextures(1, &vl_sdl2gl_framebufferTexture);
-			if (vl_sdl2gl_framebufferObject)
-				id_glDeleteFramebuffersEXT(1, &vl_sdl2gl_framebufferObject);
-			vl_sdl2gl_framebufferWidth = integerScaleX;
-			vl_sdl2gl_framebufferHeight = integerScaleY;
-			vl_sdl2gl_framebufferTexture = 0;
-			vl_sdl2gl_framebufferObject = 0;
+			Quit("FBO was not complete!");
 		}
-
-		if (!vl_sdl2gl_framebufferTexture)
-		{
-			glGenTextures(1, &vl_sdl2gl_framebufferTexture);
-			glBindTexture(GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			// Use GL_RGBA as GL_RGB causes problems on Mesa/Intel.
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, integerScaleX, integerScaleY, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-		}
-
-		if (!vl_sdl2gl_framebufferObject)
-		{
-			id_glGenFramebuffersEXT(1, &vl_sdl2gl_framebufferObject);
-			id_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
-			id_glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture, 0);
-
-			GLenum framebufferStatus = id_glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-			if (framebufferStatus != GL_FRAMEBUFFER_COMPLETE_EXT)
-			{
-				Quit("FBO was not complete!");
-			}
-		}
-		else
-		{
-			id_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
-		}
-
-		glViewport(0, 0, integerScaleX, integerScaleY);
-
 	}
 	else
 	{
-		// Otherwise do nearest-neighbour scaling the whole time.
-		glViewport(borderedWinRect.x, realWinH-borderedWinRect.y-borderedWinRect.h, borderedWinRect.w, borderedWinRect.h);
+		id_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
 	}
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	glViewport(vl_renderRgn_x, vl_renderRgn_y, vl_renderRgn_w, vl_renderRgn_h);
+
 
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)surface;
 	glBindTexture(GL_TEXTURE_2D, surf->textureHandle);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, surf->w, surf->h, GL_RED, GL_UNSIGNED_BYTE, surf->data);
 
@@ -570,32 +508,30 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 
 	glDrawArrays(GL_QUADS, 0, 4);
 
-	glViewport(borderedWinRect.x, realWinH-borderedWinRect.y-borderedWinRect.h, borderedWinRect.w, borderedWinRect.h);
-	// If we're using framebuffers, linearly scale it to the screen.
-	if (SDL_GL_ExtensionSupported("GL_EXT_framebuffer_object"))
+	
+	glViewport(vl_fullRgn_x, realWinH-vl_fullRgn_y-vl_fullRgn_h, vl_fullRgn_w, vl_fullRgn_h);
+	// Use EXT_framebuffer_blit if available, otherwise draw a quad.
+	if (0 && SDL_GL_ExtensionSupported("GL_EXT_framebuffer_blit"))
 	{
-		// Use EXT_framebuffer_blit if available, otherwise draw a quad.
-		if (SDL_GL_ExtensionSupported("GL_EXT_framebuffer_blit"))
-		{
-			id_glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
-			id_glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
+		id_glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
+		id_glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
 
-			id_glBlitFramebufferEXT(0, 0, integerScaleX, integerScaleY,
-						borderedWinRect.x, realWinH-borderedWinRect.y-borderedWinRect.h, borderedWinRect.x+borderedWinRect.w, realWinH-borderedWinRect.y,
-						GL_COLOR_BUFFER_BIT,
-						GL_LINEAR);
-		}
-		else
-		{
-			id_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-			float fboCoords[] = {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f};
-			glVertexPointer(2, GL_FLOAT, 0, vtxCoords);
-			glTexCoordPointer(2, GL_FLOAT, 0, fboCoords);
-			id_glUseProgram(0);
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture);
-			glDrawArrays(GL_QUADS, 0, 4);
-		}
+		
+		id_glBlitFramebufferEXT(0, 0, vl_integerWidth, vl_integerHeight,
+					vl_fullRgn_x, realWinH-vl_fullRgn_y-vl_fullRgn_h, vl_fullRgn_x+vl_fullRgn_w, realWinH-vl_fullRgn_y,
+					GL_COLOR_BUFFER_BIT,
+					GL_LINEAR);
+	}
+	else
+	{
+		id_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+		float fboCoords[] = {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f};
+		glVertexPointer(2, GL_FLOAT, 0, vtxCoords);
+		glTexCoordPointer(2, GL_FLOAT, 0, fboCoords);
+		id_glUseProgram(0);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture);
+		glDrawArrays(GL_QUADS, 0, 4);
 	}
 
 	SDL_GL_SwapWindow(vl_sdl2gl_window);
@@ -604,10 +540,6 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 void VL_SDL2GL_FlushParams()
 {
 	SDL_SetWindowFullscreen(vl_sdl2gl_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-	vl_sdl2gl_scaledBorders.left = VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH;
-	vl_sdl2gl_scaledBorders.right = VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH;
-	vl_sdl2gl_scaledBorders.top = VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT;
-	vl_sdl2gl_scaledBorders.bottom = VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT;
 
 	SDL_SetWindowMinimumSize(vl_sdl2gl_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 

@@ -1259,64 +1259,6 @@ static void VL_SDL2VK_CreateCommandBuffers()
 	
 }
 
-static VkRect2D VL_SDL2VK_CalculateFullRgn(int realW, int realH)
-{
-	VkRect2D fullRgn = {};
-	if (vl_isAspectCorrected)
-	{
-		/* HACK: Naturally, the ratio to compare to may be 4:3,
-		 * but we use the default window dimensions instead
-		 * (so 4:3 covers the contents without the overscan border).
-		 */
-		if (realW * VL_SDL2VK_DEFAULT_WINDOW_HEIGHT > realH * VL_SDL2VK_DEFAULT_WINDOW_WIDTH) // Wider than default ratio
-		{
-			fullRgn.extent.width = realH * VL_SDL2VK_DEFAULT_WINDOW_WIDTH / VL_SDL2VK_DEFAULT_WINDOW_HEIGHT;
-			fullRgn.extent.height = realH;
-			fullRgn.offset.x = (realW - fullRgn.extent.width) / 2;
-			fullRgn.offset.y = 0;
-		}
-		else // Thinner or equal to default ratio
-		{
-			fullRgn.extent.width = realW;
-			fullRgn.extent.height = realW * VL_SDL2VK_DEFAULT_WINDOW_HEIGHT / VL_SDL2VK_DEFAULT_WINDOW_WIDTH;
-			fullRgn.offset.x = 0;
-			fullRgn.offset.y = (realH - fullRgn.extent.height) / 2;
-		}
-	}
-	else
-	{
-		fullRgn.extent.width = realW;
-		fullRgn.extent.height = realH;
-		fullRgn.offset.x = 0;
-		fullRgn.offset.y = 0;
-	}
-	return fullRgn;
-}
-
-static VkRect2D VL_SDL2VK_CalculateRenderRgn(VkRect2D fullRgn)
-{
-	VkRect2D renderRgn = {};
-	renderRgn.offset.x = 
-		vl_sdl2vk_integerWidth * VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH /
-		(VL_VGA_GFX_WIDTH_SCALEFACTOR*VL_EGAVGA_GFX_WIDTH +
-			VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
-	renderRgn.offset.y =
-		vl_sdl2vk_integerHeight * VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT /
-		(VL_VGA_GFX_HEIGHT_SCALEFACTOR*VL_EGAVGA_GFX_HEIGHT +
-			VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
-	// Tricky calculations that preserve symmetry for the VGA
-	renderRgn.extent.width = vl_sdl2vk_integerWidth -
-		vl_sdl2vk_integerWidth * (VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH) /
-		(VL_VGA_GFX_WIDTH_SCALEFACTOR*VL_EGAVGA_GFX_WIDTH +
-			VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
-	renderRgn.extent.height = vl_sdl2vk_integerHeight - 
-		vl_sdl2vk_integerHeight * (VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT) /
-		(VL_VGA_GFX_HEIGHT_SCALEFACTOR*VL_EGAVGA_GFX_HEIGHT +
-			VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
-
-	return renderRgn;
-}
-
 static void VL_SDL2VK_PopulateCommandBuffer(int i, VkRect2D fullRgn, VkRect2D renderRgn, VkClearColorValue borderColour)
 {
 	VkResult result = VK_SUCCESS;
@@ -1483,12 +1425,8 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 						    SDL_WINDOW_RESIZABLE|(vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 		vl_sdl2vk_screenWidth = VL_EGAVGA_GFX_WIDTH;
 		vl_sdl2vk_screenHeight = VL_EGAVGA_GFX_HEIGHT;
-		vl_sdl2vk_scaledBorders.left = VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH;
-		vl_sdl2vk_scaledBorders.right = VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH;
-		vl_sdl2vk_scaledBorders.top = VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT;
-		vl_sdl2vk_scaledBorders.bottom = VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT;
-		vl_sdl2vk_screenHorizScaleFactor = VL_VGA_GFX_WIDTH_SCALEFACTOR;
-		vl_sdl2vk_screenVertScaleFactor = VL_VGA_GFX_HEIGHT_SCALEFACTOR;
+		
+		VL_CalculateRenderRegions(VL_SDL2VK_DEFAULT_WINDOW_WIDTH, VL_SDL2VK_DEFAULT_WINDOW_HEIGHT);
 
 		SDL_SetWindowMinimumSize(vl_sdl2vk_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 
@@ -1519,7 +1457,7 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 		VL_SDL2VK_CreatePipeline();
 		
 		VL_SDL2VK_CreateCommandBuffers();
-		VL_SDL2VK_CreateFramebuffers(3*VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, 3*VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
+		VL_SDL2VK_CreateFramebuffers(vl_integerWidth, vl_integerHeight);
 		
 		VL_SDL2VK_CreateUniformBuffer();
 
@@ -1955,11 +1893,12 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 	
 	int newW, newH;
 	SDL_GetWindowSize(vl_sdl2vk_window, &newW, &newH);
+	VL_CalculateRenderRegions(newW, newH);
 	if (vl_sdl2vk_swapchainSize.width != newW || vl_sdl2vk_swapchainSize.height != newH)
 	{
 		VL_SDL2VK_DestroySwapchain();
 		VL_SDL2VK_SetupSwapchain(newW, newH);
-		VL_SDL2VK_CreateFramebuffers(3*VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, 3*VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
+		VL_SDL2VK_CreateFramebuffers(vl_integerWidth, vl_integerHeight);
 		VL_SDL2VK_CreatePipeline();
 	}
 	
@@ -1969,7 +1908,7 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 	{
 		VL_SDL2VK_DestroySwapchain();
 		VL_SDL2VK_SetupSwapchain(newW, newH);
-		VL_SDL2VK_CreateFramebuffers(VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER/VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER/VL_VGA_GFX_HEIGHT_SCALEFACTOR);
+		VL_SDL2VK_CreateFramebuffers(vl_integerWidth, vl_integerHeight);
 		VL_SDL2VK_CreatePipeline();
 		result = vkAcquireNextImageKHR(vl_sdl2vk_device, vl_sdl2vk_swapchain, UINT64_MAX, vl_sdl2vk_imageAvailableSemaphore, VK_NULL_HANDLE, &framebufferIndex);
 	}
@@ -1983,8 +1922,8 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 	
 	VL_SDL2VK_BindTexture(surface);
 	
-	VkRect2D fullRgn = VL_SDL2VK_CalculateFullRgn(newW, newH);
-	VkRect2D renderRgn = VL_SDL2VK_CalculateRenderRgn(fullRgn);
+	VkRect2D fullRgn = {{vl_fullRgn_x, vl_fullRgn_y}, {vl_fullRgn_w, vl_fullRgn_h}};
+	VkRect2D renderRgn = {{vl_renderRgn_x, vl_renderRgn_y}, {vl_renderRgn_w, vl_renderRgn_h}};
 	VkClearColorValue borderColour = {{
 		(float)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][0]/255,
 		(float)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][1]/255,

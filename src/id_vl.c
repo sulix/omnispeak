@@ -899,9 +899,83 @@ int VL_GetScrollY(void)
   return vl_scrollYpixels;
 }
 
+
+// The full on-screen region, including overscan border.
+int vl_fullRgn_x;
+int vl_fullRgn_y;
+int vl_fullRgn_w;
+int vl_fullRgn_h;
+
+// The region of fullRgn, excluding overscan border.
+int vl_renderRgn_x;
+int vl_renderRgn_y;
+int vl_renderRgn_w;
+int vl_renderRgn_h;
+
+// The integer scaled render size.
+int vl_integerWidth;
+int vl_integerHeight;
+
+void VL_CalculateRenderRegions(int realW, int realH)
+{
+	if (vl_isAspectCorrected)
+	{
+		/* HACK: Naturally, the ratio to compare to may be 4:3,
+		 * but we use the default window dimensions instead
+		 * (so 4:3 covers the contents without the overscan border).
+		 */
+		if (realW * VL_DEFAULT_WINDOW_HEIGHT > realH * VL_DEFAULT_WINDOW_WIDTH) // Wider than default ratio
+		{
+			vl_fullRgn_w = realH * VL_DEFAULT_WINDOW_WIDTH / VL_DEFAULT_WINDOW_HEIGHT;
+			vl_fullRgn_h = realH;
+			vl_fullRgn_x = (realW - vl_fullRgn_w) / 2;
+			vl_fullRgn_y = 0;
+		}
+		else // Thinner or equal to default ratio
+		{
+			vl_fullRgn_w = realW;
+			vl_fullRgn_h = realW * VL_DEFAULT_WINDOW_HEIGHT / VL_DEFAULT_WINDOW_WIDTH;
+			vl_fullRgn_x = 0;
+			vl_fullRgn_y = (realH - vl_fullRgn_h) / 2;
+		}
+	}
+	else
+	{
+		vl_fullRgn_w = realW;
+		vl_fullRgn_h = realH;
+		vl_fullRgn_x = 0;
+		vl_fullRgn_y = 0;
+	}
+	
+	vl_integerWidth = max( (vl_fullRgn_w / VL_EGAVGA_GFX_WIDTH) * VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_WIDTH);
+	vl_integerHeight = max( (vl_fullRgn_h / VL_EGAVGA_GFX_HEIGHT) * VL_EGAVGA_GFX_HEIGHT, VL_EGAVGA_GFX_HEIGHT);
+	
+	
+	vl_renderRgn_x = 
+		vl_integerWidth * VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH /
+		(VL_VGA_GFX_WIDTH_SCALEFACTOR*VL_EGAVGA_GFX_WIDTH +
+			VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
+	vl_renderRgn_y =
+		vl_integerHeight * VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT /
+		(VL_VGA_GFX_HEIGHT_SCALEFACTOR*VL_EGAVGA_GFX_HEIGHT +
+			VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
+	// Tricky calculations that preserve symmetry for the VGA
+	vl_renderRgn_w = vl_integerWidth -
+		vl_integerWidth * (VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH) /
+		(VL_VGA_GFX_WIDTH_SCALEFACTOR*VL_EGAVGA_GFX_WIDTH +
+			VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
+	vl_renderRgn_h = vl_integerHeight - 
+		vl_integerHeight * (VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT) /
+		(VL_VGA_GFX_HEIGHT_SCALEFACTOR*VL_EGAVGA_GFX_HEIGHT +
+			VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
+
+}
+
 void VL_ClearScreen(int colour)
 {
 	int screenWidth, screenHeight;
+	if (!vl_emuegavgaadapter.screen)
+		return;
 	vl_currentBackend->getSurfaceDimensions(vl_emuegavgaadapter.screen,
 		&screenWidth, &screenHeight);
 	VL_ScreenRect(0, 0, screenWidth, screenHeight, colour);

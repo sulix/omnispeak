@@ -50,6 +50,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define VL_VGA_GFX_SHRUNK_WIDTH_PLUS_BORDER (VL_EGAVGA_GFX_WIDTH+VL_VGA_GFX_SHRUNK_LEFTBORDER_WIDTH+VL_VGA_GFX_SHRUNK_RIGHTBORDER_WIDTH)
 #define VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER (VL_EGAVGA_GFX_HEIGHT+VL_VGA_GFX_SHRUNK_TOPBORDER_HEIGHT+VL_VGA_GFX_SHRUNK_BOTTOMBORDER_HEIGHT)
 
+
+// Here is how the dimensions of the window are currently picked:
+// 1. The emulated 320x200 sub-window is first zoomed
+// by a factor of 3 (for each dimension) to 960x600.
+// 2. The height is then multiplied by 1.2, so the internal contents
+// (without the borders) have the aspect ratio of 4:3.
+//
+// There are a few more tricks in use to handle the overscan border
+// and VGA line doubling.
+#define VL_DEFAULT_WINDOW_WIDTH (VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER*3/VL_VGA_GFX_WIDTH_SCALEFACTOR)
+#define VL_DEFAULT_WINDOW_HEIGHT (6*VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER*3/(5*VL_VGA_GFX_HEIGHT_SCALEFACTOR))
+
 #define VL_WINDOW_TITLE "Omnispeak"
 
 // EGA color table in RGB format (technically more can be chosen with the VGA)
@@ -68,6 +80,25 @@ extern VL_EGAVGAAdapter vl_emuegavgaadapter;
 extern bool vl_isFullScreen;
 extern bool vl_isAspectCorrected;
 extern bool vl_hasOverscanBorder;
+
+// The full on-screen region, including overscan border.
+extern int vl_fullRgn_x;
+extern int vl_fullRgn_y;
+extern int vl_fullRgn_w;
+extern int vl_fullRgn_h;
+
+// The region of fullRgn, excluding overscan border.
+extern int vl_renderRgn_x;
+extern int vl_renderRgn_y;
+extern int vl_renderRgn_w;
+extern int vl_renderRgn_h;
+
+// The integer scaled render size.
+extern int vl_integerWidth;
+extern int vl_integerHeight;
+
+// Calculates render regions taking the integer scaling into account.
+void VL_CalculateRenderRegions(int realW, int realH);
 
 #endif
 
