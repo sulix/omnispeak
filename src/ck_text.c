@@ -712,31 +712,17 @@ void help_endgame( void )
 		{
 			/* Draw the dim arrow and wait a short time */
 			VH_DrawBitmap( 0x12A & ~3, 0xB8, PIC_ARROWDIM );
-			for ( i = 0; i < 70; i++ )
+			if (IN_UserInput(70, false))
 			{
-				IN_PumpEvents();
-				if (IN_CheckAck())
-				{
-          // DOS: goto loop top...
-					advancePage = true;
-					break;
-				}
-				VL_Present();
-				VL_GetTics( 1 );
+				advancePage = true;
+				break;
 			}
-
-      /* Draw the bright arrow and wait a short time */
+			/* Draw the bright arrow and wait a short time */
 			VH_DrawBitmap( 0x12A & ~3, 0xB8, PIC_ARROWBRIGHT );
-			for ( i = 0; i < 70; i++ )
+			if (IN_UserInput(70, false))
 			{
-				IN_PumpEvents();
-				if (IN_CheckAck())
-				{
-					advancePage = true;
-					break;
-				}
-				VL_Present();
-				VL_GetTics( 1 );
+				advancePage = true;
+				break;
 			}
 		}
 	}
