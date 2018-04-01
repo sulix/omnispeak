@@ -152,6 +152,17 @@ void SD_StartMusic(MusicGroup *music);
 void SD_FadeOutMusic(void);
 bool SD_MusicPlaying(void); // Actually return false for all time
 
+typedef struct SD_Backend
+{
+	void (*startup)();
+	void (*shutdown)();
+	void (*lock)();
+	void (*unlock)();
+	void (*alOut)(uint8_t reg, uint8_t val);
+	void (*pcSpkOn)(bool on, int freq);
+	void (*setTimer0)(int16_t int_8_divisor);
+} SD_Backend;
+
 /* Timing related functions */
 
 uint32_t SD_GetTimeCount(void);

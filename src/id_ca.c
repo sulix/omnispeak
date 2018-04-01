@@ -34,7 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string.h>
 #include <stdio.h>
-#include "SDL_endian.h"
 #include "SDL.h"
 
 // For chdir
@@ -118,12 +117,12 @@ uint8_t CAL_ReadByte(void *offset)
 
 int16_t CAL_ReadWord(void *offset)
 {
-	return (int16_t)SDL_SwapLE16(*((uint16_t*)(offset)));
+	return (int16_t)CK_Cross_SwapLE16(*((uint16_t*)(offset)));
 }
 
 int32_t CAL_ReadLong(void *offset)
 {
-	return (int32_t)SDL_SwapLE32(*((uint32_t*)(offset)));
+	return (int32_t)CK_Cross_SwapLE32(*((uint32_t*)(offset)));
 }
 
 int8_t CAL_ReadSByte(void *offset)
@@ -133,12 +132,12 @@ int8_t CAL_ReadSByte(void *offset)
 
 uint16_t CAL_ReadUWord(void *offset)
 {
-	return SDL_SwapLE16(*((uint16_t*)(offset)));
+	return CK_Cross_SwapLE16(*((uint16_t*)(offset)));
 }
 
 uint32_t CAL_ReadULong(void *offset)
 {
-	return SDL_SwapLE32(*((uint32_t*)(offset)));
+	return CK_Cross_SwapLE32(*((uint32_t*)(offset)));
 }
 
 //Begin locals
@@ -1070,8 +1069,8 @@ void CA_CacheAudioChunk(int16_t chunk)
 	// load the chunk into a buffer, either the miscbuffer if it fits, or allocate
 	// a larger buffer
 	//
-	pos = SDL_SwapLE32(ca_audiostarts[chunk]);
-	compressed = SDL_SwapLE32(ca_audiostarts[chunk+1])-pos; //+1 is not in keen...
+	pos = CK_Cross_SwapLE32(ca_audiostarts[chunk]);
+	compressed = CK_Cross_SwapLE32(ca_audiostarts[chunk+1])-pos; //+1 is not in keen...
 
 	fseek(ca_audiohandle,pos,SEEK_SET);
 

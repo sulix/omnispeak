@@ -32,7 +32,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include "SDL.h"
 
 // Proper dirty-rectangle drawing is not working yet. Disable it for now.
 #define ALWAYS_REDRAW
@@ -980,7 +979,7 @@ void RFL_CalcTics()
 		while (new_time + 6 > SD_GetTimeCount())
 		{
 			// As long as this takes no more than 10ms...
-			SDL_Delay(1);
+			VL_Yield();
 		}
 		// We do not want to lose demo sync
 		SD_SetLastTimeCount(new_time + 3);
@@ -996,7 +995,7 @@ void RFL_CalcTics()
 		if (SD_GetSpriteSync() >= 2)
 			break;
 		// As long as this takes no more than 10ms...
-		SDL_Delay(1);
+		VL_Yield();
 	} while (1);
 	SD_SetLastTimeCount(inctime);
 	if (SD_GetSpriteSync() > 5)

@@ -880,6 +880,11 @@ void VL_DelayTics(int tics)
 	SDL_Delay(tics*1000/70);
 }
 
+void VL_Yield()
+{
+	SDL_Delay(1);
+}
+
 static int vl_scrollXpixels;
 static int vl_scrollYpixels;
 

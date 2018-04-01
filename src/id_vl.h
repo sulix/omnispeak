@@ -140,6 +140,7 @@ void VL_1bppInvBlitToScreen(void *src, int x, int y, int w, int h, int colour);
 
 void VL_DelayTics(int tics);
 int VL_GetTics(int wait);
+void VL_Yield();
 void VL_SetScrollCoords(int x, int y);
 int VL_GetScrollX(void);
 int VL_GetScrollY(void);

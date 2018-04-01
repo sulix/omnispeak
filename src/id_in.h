@@ -256,4 +256,24 @@ void IN_ReadControls(int player, IN_ControlFrame *controls);
 void IN_WaitButton();
 int IN_CheckAck();
 bool IN_UserInput(int tics, bool arg4);
+
+// Called by the backend.
+bool INL_StartJoy(int joystick);
+void INL_StopJoy(int joystick);
+void IN_HandleKeyUp(IN_ScanCode sc, bool special);
+void IN_HandleKeyDown(IN_ScanCode sc, bool special);
+
+typedef struct IN_Backend
+{
+	void (*startup)(bool disableJoysticks);
+	void (*shutdown)();
+	void (*pumpEvents)();
+	void (*waitKey)();
+	bool (*joyStart)(int joystick);
+	void (*joyStop)(int joystick);
+	bool (*joyPresent)(int joystick);
+	void (*joyGetAbs)(int joystick, int *x, int *y);
+	uint16_t (*joyGetButtons)(int joystick);
+} IN_Backend;
+
 #endif
