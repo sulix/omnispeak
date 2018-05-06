@@ -26,12 +26,18 @@ K4DATA=../bin/ACTION.CK4 ../bin/AUDINFOE.CK4 ../bin/AUDIODCT.CK4 ../bin/AUDIOHHD
 K5DATA=../bin/ACTION.CK5 ../bin/AUDINFOE.CK5 ../bin/AUDIODCT.CK5 ../bin/AUDIOHHD.CK5 ../bin/EGADICT.CK5 ../bin/EGAHEAD.CK5 ../bin/GFXINFOE.CK5 ../bin/MAPHEAD.CK5 ../bin/TILEINFO.CK5
 K6DATA=../bin/ACTION.CK6 ../bin/AUDINFOE.CK6 ../bin/AUDIODCT.CK6 ../bin/AUDIOHHD.CK6 ../bin/EGADICT.CK6 ../bin/EGAHEAD.CK6 ../bin/GFXINFOE.CK6 ../bin/MAPHEAD.CK6 ../bin/TILEINFO.CK6
 
+BUILDASCPP=1
+BINPREFIX=
+PLATFORM=
+
 ifeq ($(PLATFORM), WINDOWS)
 	EXE_EXT=.exe
 endif
 
-BUILDASCPP=1
-BINPREFIX=
+ifeq ($(PLATFORM), DOS)
+	EXE_EXT=.exe
+	BINPREFIX=/usr/local/djgpp/bin/i586-pc-msdosdjgpp-
+endif
 
 ifeq ($(BUILDASCPP), 1)
 	CXX=$(BINPREFIX)g++
@@ -54,7 +60,7 @@ OUTBIN=../bin/omnispeak$(EXE_EXT)
 
 LIBS=
 WITH_SDL12=0
-WITH_SDL2=1
+WITH_SDL2=0
 WITH_OPENGL=0
 WITH_VULKAN=0
 ifeq ($(WITH_SDL2), 1)
@@ -84,7 +90,11 @@ else
 		INTCXXFLAGS+= -DWITH_SDL `$(SDLCONFIGBIN) --cflags`
 		LIBS+= `$(SDLCONFIGBIN) --libs`
 	else
-		IDOBJECTS+= id_vl_null.o id_sd_null.o id_in_null.o
+		ifeq ($(PLATFORM), DOS)
+			IDOBJECTS+= id_vl_dos.o id_sd_dos.o id_in_dos.o
+		else
+			IDOBJECTS+= id_vl_null.o id_sd_null.o id_in_null.o
+		endif
 	endif
 endif
 
