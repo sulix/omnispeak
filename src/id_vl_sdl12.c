@@ -273,6 +273,11 @@ static void VL_SDL12_FlushParams()
 {
 }
 
+static void VL_SDL12_WaitVBLs(int vbls)
+{
+	SDL_Delay(vbls*1000/70);
+}
+
 // Unfortunately, we can't take advantage of designated initializers in C++.
 VL_Backend vl_sdl12_backend =
 {
@@ -297,7 +302,8 @@ VL_Backend vl_sdl12_backend =
 	/*.bitBlitToSurface =*/ &VL_SDL12_BitBlitToSurface,
 	/*.bitInvBlitToSurface =*/ &VL_SDL12_BitInvBlitToSurface,
 	/*.present =*/ &VL_SDL12_Present,
-	/*.flushParams =*/ &VL_SDL12_FlushParams
+	/*.flushParams =*/ &VL_SDL12_FlushParams,
+	/*.waitVBLs =*/ &VL_SDL12_WaitVBLs
 };
 
 VL_Backend *VL_Impl_GetBackend()

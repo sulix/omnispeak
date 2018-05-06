@@ -224,7 +224,6 @@ static void INL_SetupKbdControls()
 
 void IN_PumpEvents()
 {
-	in_lastKeyScanned = IN_SC_None;
 	in_backend->pumpEvents();
 }
 
@@ -327,11 +326,9 @@ void IN_SetLastASCII(char c)
 	in_lastASCII = c;
 }
 
-extern IN_Backend in_sdl_backend;
-
 void IN_Startup(void)
 {
-	in_backend = &in_sdl_backend;
+	in_backend = IN_Impl_GetBackend();
 	for (int i = 0; i < 256; ++i)
 		in_keyStates[i] = 0;
 
@@ -556,9 +553,6 @@ void IN_WaitButton()
 	IN_PumpEvents();
 
 	in_keyStates[in_lastKeyScanned] = 0;
-
-	if (in_lastKeyScanned == in_lastKeyScanned)
-		in_lastKeyScanned = 0;
 
 	in_lastKeyScanned = 0;
 

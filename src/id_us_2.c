@@ -356,7 +356,7 @@ int USL_CtlDialog ( const char *s1, const char *s2, const char *s3 )
 	do
 	{
 		k = IN_SC_None;
-		SDL_Delay(1); // Keep CPU usage low
+		VL_Yield(); // Keep CPU usage low
 		IN_PumpEvents();
 		IN_ReadControls(0,  &state );
 		if ( state.jump )
@@ -377,7 +377,7 @@ int USL_CtlDialog ( const char *s1, const char *s2, const char *s3 )
 	/* Wait for the button to be released */
 	do
 	{
-		SDL_Delay(1); // Keep CPU usage low
+		VL_Yield(); // Keep CPU usage low
 		IN_PumpEvents();
 		IN_ReadControls(0, &state );
 		VL_Present();
@@ -997,6 +997,7 @@ void US_RunCards()
 					}
 				}
 			}
+			IN_ClearKeysDown();
 		}
 		else
 		{

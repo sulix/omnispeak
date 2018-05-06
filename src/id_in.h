@@ -276,4 +276,5 @@ typedef struct IN_Backend
 	uint16_t (*joyGetButtons)(int joystick);
 } IN_Backend;
 
+IN_Backend *IN_Impl_GetBackend();
 #endif

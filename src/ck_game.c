@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdbool.h>
 #include <string.h>
-#include "SDL.h"
 
 #include "id_vl.h"
 #include "id_us.h"
@@ -765,7 +764,7 @@ void CK_TryAgainMenu()
 		sel = 0;
 		while ( 1 )
 		{
-			SDL_Delay(1);
+			VL_Yield();
 			IN_PumpEvents();
 
 			/* Decide which selection to draw */

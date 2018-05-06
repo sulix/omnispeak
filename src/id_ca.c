@@ -34,7 +34,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string.h>
 #include <stdio.h>
+#ifdef WITH_SDL
 #include "SDL.h"
+#endif
 
 // For chdir
 #ifdef _MSC_VER
@@ -992,8 +994,10 @@ void CA_AssertFileExists(char *filename)
 #else
 		snprintf(message, 128, "Could not find %s. Please copy it into the Omnispeak directory.", filename);
 #endif
+#ifdef WITH_SDL
 #if SDL_VERSION_ATLEAST(1,3,0)
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Omnispeak", message, NULL);
+#endif
 #endif
 		Quit(message);
 	}
@@ -1007,11 +1011,13 @@ void CA_Startup(void)
 	// If the file isn't in the current directory, it might be in the directory the game binary is in.
 	char checkFile[] = "EGAGRAPH.EXT";
 
+#ifdef WITH_SDL
 #if SDL_VERSION_ATLEAST(2,0,1)
 	if (!CAL_AdjustExtension(checkFile))
 	{
 		chdir(SDL_GetBasePath());
 	}
+#endif
 #endif
 	// Check EGAGRAPH
 	CA_AssertFileExists(CAL_AdjustExtension(checkFile));

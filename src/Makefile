@@ -18,7 +18,7 @@
 
 KEEN6VER=keen6e15
 
-IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_in_sdl.o id_rf.o id_sd.o id_sd_sdl.o id_ti.o id_us_1.o id_us_2.o id_us_textscreen.o id_vh.o id_vl.o id_str.o
+IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id_us_2.o id_us_textscreen.o id_vh.o id_vl.o id_str.o
 CKOBJECTS=ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck4_map.o ck5_map.o ck6_map.o ck4_obj1.o ck4_obj2.o ck4_obj3.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck6_obj1.o ck6_obj2.o ck6_obj3.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck4_misc.o ck5_misc.o ck6_misc.o ck_main.o ck_text.o ck_cross.o icon.o
 OPLOBJECTS=opl/dbopl.o
 
@@ -53,6 +53,7 @@ endif
 OUTBIN=../bin/omnispeak$(EXE_EXT)
 
 LIBS=
+WITH_SDL12=0
 WITH_SDL2=1
 WITH_OPENGL=0
 WITH_VULKAN=0
@@ -72,10 +73,19 @@ ifeq ($(WITH_SDL2), 1)
 			IDOBJECTS+= id_vl_sdl2.o 
 		endif
 	endif
+	IDOBJECTS+= id_sd_sdl.o id_in_sdl.o
 	SDLCONFIGBIN=sdl2-config #/local/cross-tools/x86_64-w64-mingw32/bin/sdl2-config
+	INTCXXFLAGS+= -DWITH_SDL `$(SDLCONFIGBIN) --cflags`
+	LIBS+= `$(SDLCONFIGBIN) --libs`
 else
-	IDOBJECTS+= id_vl_sdl12.o
-	SDLCONFIGBIN=sdl-config
+	ifeq ($(WITH_SDL12), 1)
+		IDOBJECTS+= id_vl_sdl12.o id_sd_sdl.o id_in_sdl.o
+		SDLCONFIGBIN=sdl-config
+		INTCXXFLAGS+= -DWITH_SDL `$(SDLCONFIGBIN) --cflags`
+		LIBS+= `$(SDLCONFIGBIN) --libs`
+	else
+		IDOBJECTS+= id_vl_null.o id_sd_null.o id_in_null.o
+	endif
 endif
 
 OBJ := $(IDOBJECTS:%=../obj/%)
@@ -111,10 +121,10 @@ binfiles: keen4data keen5data keen6data
 
 ../obj/%.o: %.c
 	@mkdir -p $(dir $@)
-	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g `$(SDL_CONFIG) --cflags` -mno-ms-bitfields -c -MMD -o $@ $<
+	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -mno-ms-bitfields -c -MMD -o $@ $<
 
 $(OUTBIN): $(OBJ)
 	@mkdir -p $(dir $@)
-	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -o $(OUTBIN) $(OBJ) `$(SDL_CONFIG) --libs` -lm $(LIBS)
+	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -o $(OUTBIN) $(OBJ) -lm $(LIBS)
 
 -include $(DEPS)

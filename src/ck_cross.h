@@ -3,15 +3,24 @@
 #ifndef CK_CROSS_H
 #define CK_CROSS_H
 
-#include "SDL.h"
 #include <stdint.h>
 
+#ifdef WITH_SDL
+#include "SDL.h"
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define CK_CROSS_IS_BIGENDIAN
 #elif (SDL_BYTEORDER == SDL_LIL_ENDIAN)
 #define CK_CROSS_IS_LITTLEENDIAN
 #else
 #error "ck_cross.h - Unknown platform endianness!"
+#endif
+#else // WITH_SDL
+#if defined(__LITTLE_ENDIAN__) || (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#define CK_CROSS_IS_LITTLEENDIAN
+#elif defined(__BIG_ENDIAN__) || (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+#define CK_CROSS_IS_BIGENDIAN
+#error "cl_cross.h - Couldn't determine platform endianness!"
+#endif
 #endif
 
 #define CK_Cross_Swap16(x) ((uint16_t)(((uint16_t)(x)<<8)|((uint16_t)(x)>>8)))

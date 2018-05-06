@@ -22,7 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vl.h"
 #include "id_vl_private.h"
 
+#ifdef WITH_SDL
 #include <SDL.h>
+#endif
 
 #define max(a,b) (((a) < (b))?(b):(a))
 #define min(a,b) (((a) < (b))?(a):(b))
@@ -864,25 +866,24 @@ static long vl_lastFrameTime;
 
 int VL_GetTics(int wait)
 {
-	int tics;
+	int tics = 0;
 	do
 	{
-		tics = (SDL_GetTicks() - vl_lastFrameTime)/(1000/70);
-		// NOTE: This may be imprecise - can even take 10ms
-		SDL_Delay(1);
+		tics = SD_GetTimeCount() - vl_lastFrameTime;
 	} while (tics < wait);
 	return tics;
 }
 
 void VL_DelayTics(int tics)
 {
-	// NOTE: This may be imprecise and take up to 10ms more than desired.
-	SDL_Delay(tics*1000/70);
+	vl_currentBackend->waitVBLs(tics);
 }
 
 void VL_Yield()
 {
+#ifdef WITH_SDL
 	SDL_Delay(1);
+#endif
 }
 
 static int vl_scrollXpixels;
@@ -993,6 +994,6 @@ void VL_SetMapMask(int mapmask)
 
 void VL_Present()
 {
-	vl_lastFrameTime = SDL_GetTicks();
+	vl_lastFrameTime = SD_GetTimeCount();
 	vl_currentBackend->present(vl_emuegavgaadapter.screen, vl_scrollXpixels, vl_scrollYpixels);
 }

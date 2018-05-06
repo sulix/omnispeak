@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdlib.h>
 #include <string.h>
-#include "SDL.h" // For SDL_Delay
 
 /*
  * CK_INTER: Holds an assortment of screen drawing and state switching routines
@@ -384,7 +383,7 @@ void AnimateTerminator(void)
 	// delay for a tic before starting
 	SD_SetLastTimeCount(SD_GetTimeCount());
 	while (SD_GetLastTimeCount() == SD_GetTimeCount())
-		SDL_Delay(1); // Keep CPU usage low
+		VL_Yield(); // Keep CPU usage low
 
 	SD_SetLastTimeCount(SD_GetTimeCount());
 

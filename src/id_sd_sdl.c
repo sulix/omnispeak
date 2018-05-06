@@ -339,3 +339,8 @@ SD_Backend sd_sdl_backend = {
 	.pcSpkOn = SD_SDL_PCSpkOn,
 	.setTimer0 = SD_SDL_SetTimer0
 };	
+
+SD_Backend *SD_Impl_GetBackend()
+{
+	return &sd_sdl_backend;
+}

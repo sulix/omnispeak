@@ -106,6 +106,7 @@ typedef struct VL_Backend
 	void (*bitInvBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*present)(void *surface, int scrollXpx, int scrollYpx);
 	void (*flushParams)();
+	void (*waitVBLs)(int vbls);
 } VL_Backend;
 
 void VL_InitScreen(void);

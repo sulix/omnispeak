@@ -241,6 +241,7 @@ redraw:
 
     IN_WaitKey();
     IN_ScanCode sc = IN_GetLastScan();
+    IN_ClearKeysDown();
 
     if (sc == IN_SC_LeftArrow) {
       if (--shifts == -1)

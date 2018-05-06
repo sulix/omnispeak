@@ -1,5 +1,6 @@
 /* GIMP RGBA C-Source image dump (icon.c) */
 
+#ifdef WITH_SDL
 #include <SDL.h>
 
 
@@ -561,4 +562,5 @@ void VL_SDL2GL_SetIcon(SDL_Window *wnd)
 	SDL_FreeSurface(iconSurf);
 }
 
+#endif
 #endif

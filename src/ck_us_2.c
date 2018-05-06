@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <errno.h>
 #include <stdlib.h>
 #include <time.h>
-#include "SDL.h"
 
 #include "id_us.h"
 #include "id_in.h"
@@ -619,7 +618,7 @@ void CK_US_SetKeyBinding ( US_CardItem *item, int which_control )
 		last_scan = IN_GetLastScan();
 		while ( state.jump || state.pogo )
 		{
-			SDL_Delay(1); // Keep CPU usage low
+			VL_Yield(); // Keep CPU usage low
 			IN_PumpEvents();
 			IN_ReadControls(0, &state );
 			last_scan = IN_SC_Escape;
@@ -780,7 +779,7 @@ void USL_PlayPaddleWar ( void )
 			// The original code waits in a busy loop.
 			// Bad idea for new code.
 			// TODO: What about checking for input/graphics/other status?
-			SDL_Delay(1);
+			VL_Yield();
 			//CK_SetTicsPerFrame();
 			//IN_PumpEvents();
 			//IN_ReadControls(0, &status );

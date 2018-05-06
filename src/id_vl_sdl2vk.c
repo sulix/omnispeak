@@ -1982,6 +1982,11 @@ void VL_SDL2VK_FlushParams()
 	SDL_SetWindowFullscreen(vl_sdl2vk_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 }
 
+static void VL_SDL2VK_WaitVBLs(int vbls)
+{
+	SDL_Delay(vbls*1000/70);
+}
+
 // Unfortunately, we can't take advantage of designated initializers in C++.
 VL_Backend vl_sdl2vk_backend =
 {
@@ -2006,7 +2011,8 @@ VL_Backend vl_sdl2vk_backend =
 	/*.bitBlitToSurface =*/ &VL_SDL2VK_BitBlitToSurface,
 	/*.bitInvBlitToSurface =*/ &VL_SDL2VK_BitInvBlitToSurface,
 	/*.present =*/ &VL_SDL2VK_Present,
-	/*.flushParams =*/ &VL_SDL2VK_FlushParams
+	/*.flushParams =*/ &VL_SDL2VK_FlushParams,
+	/*.waitVBLs =*/ &VL_SDL2VK_WaitVBLs
 };
 
 VL_Backend *VL_Impl_GetBackend()

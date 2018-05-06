@@ -447,3 +447,8 @@ IN_Backend in_sdl_backend = {
 	.joyGetAbs = IN_SDL_JoyGetAbs,
 	.joyGetButtons = IN_SDL_JoyGetButtons,
 };
+
+IN_Backend *IN_Impl_GetBackend()
+{
+	return &in_sdl_backend;
+}

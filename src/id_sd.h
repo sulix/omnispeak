@@ -163,6 +163,7 @@ typedef struct SD_Backend
 	void (*setTimer0)(int16_t int_8_divisor);
 } SD_Backend;
 
+SD_Backend *SD_Impl_GetBackend();
 /* Timing related functions */
 
 uint32_t SD_GetTimeCount(void);

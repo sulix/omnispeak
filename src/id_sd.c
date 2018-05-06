@@ -31,7 +31,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include "SDL.h"
 
 #include "id_sd.h"
 #include "id_ca.h"
@@ -108,15 +107,8 @@ static int16_t ScaledTimerDivisor = 1;
 // A few variables used for timing measurements (PC_PIT_RATE units per second)
 static uint64_t SD_LastPITTickTime;
 
-uint32_t SD_GetTimeCount(void)
+uint32_t SD_GetTimeCount()
 {
-	// FIXME: What happens when SDL_GetTicks() reaches the upper bound?
-	// May be challenging to fix... A proper solution should
-	// only work with *differences between SDL_GetTicks values*.
-	uint64_t currPitTicks = (uint64_t)(SDL_GetTicks()) * PC_PIT_RATE / 1000;
-	uint32_t ticksToAdd = currPitTicks / ScaledTimerDivisor - SD_LastPITTickTime / ScaledTimerDivisor;
-	SD_LastPITTickTime = currPitTicks;
-	TimeCount += ticksToAdd;
 	return TimeCount;
 }
 
@@ -489,13 +481,10 @@ void SDL_t0Service(void)
 	{
 		SDL_ALService();
 		++count;
-/*		if (!(count & 7))
+		if (!(count & 7))
 		{
-			LocalTime++;
 			TimeCount++;
-			if (SoundUserHook)
-				SoundUserHook();
-		}*/
+		}
 		if (!(count & 3))
 		{
 			switch (SoundMode)
@@ -512,13 +501,10 @@ void SDL_t0Service(void)
 	else
 	{
 		++count;
-/*		if (!(count & 1))
+		if (!(count & 1))
 		{
-			LocalTime++;
 			TimeCount++;
-			if (SoundUserHook)
-				SoundUserHook();
-		}*/
+		}
 		switch (SoundMode)
 		{
 		case sdm_PC:
@@ -642,8 +628,6 @@ bool SD_SetMusicMode(SMMode mode)
 	return result;
 }
 
-extern SD_Backend sd_sdl_backend;
-
 void SD_Startup(void)
 {
 	/****** TODO: FINISH! ******/
@@ -653,7 +637,7 @@ void SD_Startup(void)
 		return;
 	}
 	
-	sd_backend = &sd_sdl_backend;
+	sd_backend = SD_Impl_GetBackend();
 	
 	if (sd_backend)
 		sd_backend->startup();
