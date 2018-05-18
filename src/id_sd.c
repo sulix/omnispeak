@@ -59,7 +59,7 @@ SMMode MusicMode;
 uint16_t SoundPriority, DigiPriority;
 // Internal variables (TODO more to add)
 static bool SD_Started;
-soundnames SoundNumber,DigiNumber;
+volatile soundnames SoundNumber,DigiNumber;
 uint8_t **SoundTable;
 int16_t NeedsDigitized; // Unused
 
