@@ -307,7 +307,7 @@ bool VH_MarkUpdateBlock(int x1px, int y1px, int x2px, int y2px)
 	{
 		for (int x = x1tile; x <= x2tile; x++)
 		{
-			RFL_MarkBlockDirty(x, y, 1);
+			RFL_MarkBlockDirty(x, y, 1, -1);
 		}
 	}
 	return true;

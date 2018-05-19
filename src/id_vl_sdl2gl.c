@@ -1,3 +1,4 @@
+#include "ck_cross.h"
 #include "id_vl.h"
 #include "id_vl_private.h"
 #include "id_us.h"
@@ -418,6 +419,17 @@ static void VL_SDL2GL_BitInvBlitToSurface(void *src, void *dst_surface, int x, i
 	VL_1bppInvBlitClipToPAL8(src, surf->data, x, y, surf->w, w, h, surf->w, surf->h, colour);
 }
 
+static void VL_SDL2GL_ScrollSurface(void *surface, int x, int y)
+{
+	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)surface;
+	int dx = 0, dy = 0, sx = 0, sy = 0;
+	int w = surf->w - CK_Cross_max(x,-x), h = surf->h - CK_Cross_max(y,-y);
+	if (x > 0) { dx = 0; sx = x; } else {dx = -x; sx = 0; }
+	if (y > 0) { dy = 0; sy = y; } else {dy = -y; sy = 0; }
+	VL_SDL2GL_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
+}
+
+
 static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 {
 	int realWinW, realWinH;
@@ -537,6 +549,19 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	SDL_GL_SwapWindow(vl_sdl2gl_window);
 }
 
+static int VL_SDL2GL_GetActiveBufferId(void *surface)
+{
+	(void*)surface;
+	return 0;
+}
+
+static int VL_SDL2GL_GetNumBuffers(void *surface)
+{
+	(void*)surface;
+	return 1;
+}
+
+
 void VL_SDL2GL_FlushParams()
 {
 	SDL_SetWindowFullscreen(vl_sdl2gl_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
@@ -574,7 +599,10 @@ VL_Backend vl_sdl2gl_backend =
 	/*.bitXorWithSurface =*/ &VL_SDL2GL_BitXorWithSurface,
 	/*.bitBlitToSurface =*/ &VL_SDL2GL_BitBlitToSurface,
 	/*.bitInvBlitToSurface =*/ &VL_SDL2GL_BitInvBlitToSurface,
+	/*.scrollSurface =*/ &VL_SDL2GL_ScrollSurface,
 	/*.present =*/ &VL_SDL2GL_Present,
+	/*.getActiveBufferId =*/ &VL_SDL2GL_GetActiveBufferId,
+	/*.getNumBuffers =*/ &VL_SDL2GL_GetNumBuffers,
 	/*.flushParams =*/ &VL_SDL2GL_FlushParams,
 	/*.waitVBLs =*/ &VL_SDL2GL_WaitVBLs
 };

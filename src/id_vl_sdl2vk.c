@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // welcome to try to fix it up and get it working if you want.
 // -- David
 
+#include "ck_cross.h"
 #include "id_vl.h"
 #include "id_vl_private.h"
 #include "id_us.h"
@@ -1886,6 +1887,16 @@ static void VL_SDL2VK_BindTexture(void *surface)
 	
 }
 
+static void VL_SDL2VK_ScrollSurface(void *surface, int x, int y)
+{
+	VL_SDL2VK_Surface *surf = (VL_SDL2VK_Surface *)surface;
+	int dx = 0, dy = 0, sx = 0, sy = 0;
+	int w = surf->w - CK_Cross_max(x,-x), h = surf->h - CK_Cross_max(y,-y);
+	if (x > 0) { dx = 0; sx = x; } else {dx = -x; sx = 0; }
+	if (y > 0) { dy = 0; sy = y; } else {dy = -y; sy = 0; }
+	VL_SDL2VK_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
+}
+
 static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 {
 	VkResult result = VK_SUCCESS;
@@ -1977,6 +1988,19 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 	
 }
 
+static int VL_SDL2VK_GetActiveBufferId(void *surface)
+{
+	(void*)surface;
+	return 0;
+}
+
+static int VL_SDL2VK_GetNumBuffers(void *surface)
+{
+	(void*)surface;
+	return 1;
+}
+
+
 void VL_SDL2VK_FlushParams()
 {
 	SDL_SetWindowFullscreen(vl_sdl2vk_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
@@ -2010,7 +2034,10 @@ VL_Backend vl_sdl2vk_backend =
 	/*.bitXorWithSurface =*/ &VL_SDL2VK_BitXorWithSurface,
 	/*.bitBlitToSurface =*/ &VL_SDL2VK_BitBlitToSurface,
 	/*.bitInvBlitToSurface =*/ &VL_SDL2VK_BitInvBlitToSurface,
+	/*.scrollSurface =*/ &VL_SDL2VK_ScrollSurface,
 	/*.present =*/ &VL_SDL2VK_Present,
+	/*.getActiveBufferId =*/ &VL_SDL2VK_GetActiveBufferId,
+	/*.getNumBuffers =*/ &VL_SDL2VK_GetNumBuffers,
 	/*.flushParams =*/ &VL_SDL2VK_FlushParams,
 	/*.waitVBLs =*/ &VL_SDL2VK_WaitVBLs
 };

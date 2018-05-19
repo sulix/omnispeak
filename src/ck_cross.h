@@ -76,4 +76,8 @@ size_t CK_Cross_fwrite_ ## ourSampleEnum ## _To8LE (const void *ptr, size_t coun
 // End of template
 #endif
 
+// The C standard library doesn't have an implementation of min/max, which is sad.
+#define CK_Cross_max(x,y) ((x)<(y)?(y):(x))
+#define CK_Cross_min(x,y) ((x)<(y)?(y):(x))
+
 #endif

@@ -36,6 +36,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Proper dirty-rectangle drawing is not working yet. Disable it for now.
 #define ALWAYS_REDRAW
 
+// Maximum number of pages we can write to.
+#define RF_MAX_BUFFERS 2
 
 #define MAX(a,b) (((a) > (b))?(a):(b))
 #define MIN(a,b) (((a) < (b))?(a):(b))
@@ -93,8 +95,8 @@ RF_SpriteDrawEntry *rf_freeSpriteTableEntry;
 RF_SpriteDrawEntry *rf_firstSpriteTableEntry[RF_NUM_SPRITE_Z_LAYERS];
 static int rf_numSpriteDraws;
 
-int rf_freeSpriteEraserIndex = 0;
-RF_SpriteEraser rf_spriteErasers[RF_MAX_SPRITETABLEENTRIES];
+int rf_freeSpriteEraserIndex[RF_MAX_BUFFERS] = {0};
+RF_SpriteEraser rf_spriteErasers[RF_MAX_SPRITETABLEENTRIES*RF_MAX_BUFFERS];
 // Animated tile management
 // (This is hairy)
 
@@ -145,13 +147,47 @@ RF_OnscreenAnimTile rf_onscreenAnimTiles[RF_MAX_ONSCREENANIMTILES];
 RF_OnscreenAnimTile *rf_firstOnscreenAnimTile, *rf_freeOnscreenAnimTile;
 
 // Block dirty state
-int rf_dirtyBlocks[RF_BUFFER_WIDTH_TILES * RF_BUFFER_HEIGHT_TILES];
+#define RF_BUFFER_SIZE (RF_BUFFER_WIDTH_TILES * RF_BUFFER_HEIGHT_TILES)
+uint8_t rf_dirtyBlocks[RF_MAX_BUFFERS * RF_BUFFER_SIZE];
 
-void RFL_MarkBlockDirty(int x, int y, int val)
+// An offset added to the dirty block buffer to account for scrolling.
+int rf_dirtyBufferOffset = 0;
+
+void RFL_MarkBlockDirty(int x, int y, int val, int page)
 {
 	if (x >= RF_BUFFER_WIDTH_TILES || y >= RF_BUFFER_HEIGHT_TILES)
 		return;
-	rf_dirtyBlocks[y*RF_BUFFER_WIDTH_TILES+x] = val; 
+	if (page == -1)
+	{
+		for (int _page = 0; _page < VL_GetNumBuffers(); ++_page)
+		{
+			RFL_MarkBlockDirty(x, y, val, _page);
+		}
+	}
+	else
+	{
+		if (rf_dirtyBufferOffset < 0)
+			rf_dirtyBufferOffset += RF_BUFFER_SIZE;
+		size_t offset = ((y * RF_BUFFER_WIDTH_TILES + x) +
+			(page * RF_BUFFER_SIZE) + rf_dirtyBufferOffset)
+			% (RF_MAX_BUFFERS * RF_BUFFER_SIZE);
+		rf_dirtyBlocks[offset] = val; 
+	}
+}
+
+uint8_t RFL_IsBlockDirty(int x, int y, int page)
+{
+	if (x >= RF_BUFFER_WIDTH_TILES || y >= RF_BUFFER_HEIGHT_TILES)
+		return 0;
+	if (page == -1)
+		return RFL_IsBlockDirty(x, y, VL_GetActiveBuffer());
+	
+	if (rf_dirtyBufferOffset < 0)
+		rf_dirtyBufferOffset += RF_BUFFER_SIZE;
+	size_t offset = ((y * RF_BUFFER_WIDTH_TILES + x) +
+		(page * RF_BUFFER_SIZE) + rf_dirtyBufferOffset)
+		% (RF_MAX_BUFFERS * RF_BUFFER_SIZE);
+	return rf_dirtyBlocks[offset];
 }
 
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical)
@@ -561,7 +597,7 @@ void RFL_AnimateTiles()
 
 			RF_RenderTile16(screenTileX, screenTileY, CA_mapPlanes[0][ost->tileY*rf_mapWidthTiles+ost->tileX]);
 			RF_RenderTile16m(screenTileX, screenTileY, CA_mapPlanes[1][ost->tileY*rf_mapWidthTiles+ost->tileX]);
-			RFL_MarkBlockDirty(screenTileX, screenTileY, 1);
+			RFL_MarkBlockDirty(screenTileX, screenTileY, 1, -1);
 		}
 	}
 }
@@ -602,7 +638,8 @@ void RF_NewMap(void)
 	RFL_SetupSpriteTable();
 	//RF_MarkTileGraphics();
 
-	rf_freeSpriteEraserIndex = 0;
+	for (int page = 0; page < VL_GetNumBuffers(); ++page)
+		rf_freeSpriteEraserIndex[page] = 0;
 
 	// Set-up a two-tile wide border
 	RF_SetScrollBlock(0,1,true);
@@ -712,7 +749,7 @@ void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, in
 				// Redraw it if it's different.
 				if (different)
 				{
-					RFL_MarkBlockDirty(screenX, screenY, 1);
+					RFL_MarkBlockDirty(screenX, screenY, 1, -1);
 					RF_RenderTile16(screenX, screenY, *dst_bgtile_ptr);
 					RF_RenderTile16m(screenX, screenY, *dst_fgtile_ptr);
 				}
@@ -759,7 +796,7 @@ void RF_ReplaceTiles(uint16_t *tilePtr, int plane, int dstX, int dstY, int width
 				// Redraw it if it has changed.
 				if (oldTile != newTile)
 				{
-					RFL_MarkBlockDirty(tileScreenX, tileScreenY, 1);
+					RFL_MarkBlockDirty(tileScreenX, tileScreenY, 1, -1);
 					RF_RenderTile16(tileScreenX, tileScreenY, CA_mapPlanes[0][dstTileY*rf_mapWidthTiles+dstTileX]);
 					RF_RenderTile16m(tileScreenX, tileScreenY, CA_mapPlanes[1][dstTileY*rf_mapWidthTiles+dstTileX]);
 				}
@@ -783,7 +820,7 @@ void RFL_RenderForeTiles()
 			int bufferX = stx - scrollXtile;
 			int bufferY = sty - scrollYtile;
 #ifndef ALWAYS_REDRAW
-			if (!rf_dirtyBlocks[bufferY*RF_BUFFER_WIDTH_TILES+bufferX]) continue;
+			if (!RFL_IsBlockDirty(bufferX, bufferY, -1)) continue;
 #endif
 			if (!tile) continue;
 			if (!(TI_ForeMisc(tile) & 0x80)) continue;
@@ -814,7 +851,7 @@ void RFL_NewRowHorz(bool dir)
 	for (int i = 0; i < RF_BUFFER_WIDTH_TILES; ++i)
 	{
 		RFL_CheckForAnimTile(i+xOffset,mapRow);
-		RFL_MarkBlockDirty(i, bufferRow, 1);
+		RFL_MarkBlockDirty(i, bufferRow, 1, -1);
 		RF_RenderTile16(i,bufferRow,CA_mapPlanes[0][mapRow*rf_mapWidthTiles+xOffset+i]);
 		RF_RenderTile16m(i,bufferRow,CA_mapPlanes[1][mapRow*rf_mapWidthTiles+xOffset+i]);
 	}
@@ -841,7 +878,7 @@ void RFL_NewRowVert(bool dir)
 	for (int i = 0; i < RF_BUFFER_HEIGHT_TILES; ++i)
 	{
 		RFL_CheckForAnimTile(mapCol,i+yOffset);
-		RFL_MarkBlockDirty(bufferCol, i, 1);
+		RFL_MarkBlockDirty(bufferCol, i, 1, -1);
 		RF_RenderTile16(bufferCol,i,CA_mapPlanes[0][(yOffset+i)*rf_mapWidthTiles+mapCol]);
 		RF_RenderTile16m(bufferCol,i,CA_mapPlanes[1][(yOffset+i)*rf_mapWidthTiles+mapCol]);
 	}
@@ -1017,15 +1054,14 @@ void RF_Reposition(int scrollXunit, int scrollYunit)
 
 	RFL_SetupOnscreenAnimList();
 
-
 	for (int ty = 0; ty < RF_BUFFER_HEIGHT_TILES; ++ty)
 	{
 		for (int tx = 0; tx < RF_BUFFER_WIDTH_TILES; ++tx)
 		{
 			RFL_CheckForAnimTile(tx+scrollXtile,ty+scrollYtile);
-			RFL_MarkBlockDirty(tx,ty,1);
 			RF_RenderTile16(tx,ty,CA_mapPlanes[0][(ty+scrollYtile) * rf_mapWidthTiles + tx + scrollXtile]);
 			RF_RenderTile16m(tx,ty,CA_mapPlanes[1][(ty+scrollYtile) * rf_mapWidthTiles + tx + scrollXtile]);
+			RFL_MarkBlockDirty(tx, ty, 1, -1);
 		}
 	}
 }
@@ -1061,13 +1097,11 @@ void RF_SmoothScroll(int scrollXdelta, int scrollYdelta)
 	int hOffset = (scrollYTileDelta)?-16:0;
 
 	VL_SurfaceToSelf(rf_tileBuffer,dest_x,dest_y,src_x,src_y,RF_BUFFER_WIDTH_PIXELS+wOffset, RF_BUFFER_HEIGHT_PIXELS+hOffset);
-	for (int y = 0; y < RF_BUFFER_HEIGHT_TILES; ++y)
-	{
-		for (int x = 0; x < RF_BUFFER_WIDTH_TILES; ++x)
-		{
-			RFL_MarkBlockDirty(x,y,1);
-		}
-	}
+	VL_ScrollScreen(scrollXTileDelta * 16, scrollYTileDelta * 16);
+	
+	// Scroll the dirty block buffer.
+	rf_dirtyBufferOffset += scrollXTileDelta + scrollYTileDelta * RF_BUFFER_WIDTH_TILES;
+	if (rf_dirtyBufferOffset < 0) rf_dirtyBufferOffset += RF_BUFFER_SIZE;
 
 	if (scrollXTileDelta)
 	{
@@ -1100,13 +1134,18 @@ void RF_SmoothScroll(int scrollXdelta, int scrollYdelta)
 void RF_PlaceEraser(int pxX, int pxY, int pxW, int pxH)
 {
 #ifndef ALWAYS_REDRAW
-	if (rf_freeSpriteEraserIndex == RF_MAX_SPRITETABLEENTRIES)
-		Quit("Too many sprite erasers.");
-	rf_spriteErasers[rf_freeSpriteEraserIndex].pxX = pxX;
-	rf_spriteErasers[rf_freeSpriteEraserIndex].pxY = pxY;
-	rf_spriteErasers[rf_freeSpriteEraserIndex].pxW = pxW;
-	rf_spriteErasers[rf_freeSpriteEraserIndex].pxH = pxH;
-	rf_freeSpriteEraserIndex++;
+	for (int page = 0; page < VL_GetNumBuffers(); ++page)
+	{
+		int arrayBase = RF_MAX_SPRITETABLEENTRIES * page;
+		if (rf_freeSpriteEraserIndex[page] == RF_MAX_SPRITETABLEENTRIES)
+			Quit("Too many sprite erasers.");
+		int newIndex = rf_freeSpriteEraserIndex[page] + arrayBase;
+		rf_spriteErasers[newIndex].pxX = pxX;
+		rf_spriteErasers[newIndex].pxY = pxY;
+		rf_spriteErasers[newIndex].pxW = pxW;
+		rf_spriteErasers[newIndex].pxH = pxH;
+		rf_freeSpriteEraserIndex[page]++;
+	}
 #endif
 }
 
@@ -1156,7 +1195,8 @@ void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
 void RFL_ProcessSpriteErasers()
 {
 #ifndef ALWAYS_REDRAW
-	for (int i = 0; i < rf_freeSpriteEraserIndex; ++i)
+	int arrayBase = RF_MAX_SPRITETABLEENTRIES * VL_GetActiveBuffer();
+	for (int i = arrayBase; i < arrayBase + rf_freeSpriteEraserIndex[VL_GetActiveBuffer()]; ++i)
 	{
 		rf_spriteErasers[i].pxX -= RF_UnitToTile(rf_scrollXUnit)*16;
 		rf_spriteErasers[i].pxY -= RF_UnitToTile(rf_scrollYUnit)*16;
@@ -1169,7 +1209,7 @@ void RFL_ProcessSpriteErasers()
 		if (x2 < x || y2 < y)
 			continue;
 
-		VL_SurfaceToScreen(rf_tileBuffer, x, y, x, y, x2-x, y2-y);
+		VL_SurfaceToScreen(rf_tileBuffer, x, y, x, y, x2-x+1, y2-y);
 
 		// Mark the affected tiles dirty with '2', to force sprites to
 		// redraw.
@@ -1181,13 +1221,13 @@ void RFL_ProcessSpriteErasers()
 		{
 			for (int tx = tileX1; tx <= tileX2; ++tx)
 			{
-				RFL_MarkBlockDirty(tx, ty, 2);
+				RFL_MarkBlockDirty(tx, ty, 2, VL_GetActiveBuffer());
 			}
 		}
 	}
 #endif
 	//Reset
-	rf_freeSpriteEraserIndex = 0;
+	rf_freeSpriteEraserIndex[VL_GetActiveBuffer()] = 0;
 }
 
 void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int chunk, bool allWhite, int zLayer)
@@ -1263,7 +1303,7 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	sde->sw = VH_GetSpriteTableEntry(sprite_number)->width*8;
 	sde->sh = VH_GetSpriteTableEntry(sprite_number)->height;
 	sde->maskOnly = allWhite;
-	sde->dirty = true;
+	sde->updateCount = VL_GetNumBuffers();
 
 	*drawEntry = sde;
 }
@@ -1316,18 +1356,18 @@ void RFL_DrawSpriteList()
 			if (tileX2 < tileX1 || tileY2 < tileY1)
 				continue;
 #ifdef ALWAYS_REDRAW
-			sde->dirty = 1;
+			sde->updateCount = VL_GetNumBuffers();
 #endif
 
-			if (!sde->dirty)
+			if (!sde->updateCount)
 			{
 				for (int y = tileY1; y <= tileY2; ++y)
 				{
 					for (int x = tileX1; x <= tileX2; ++x)
 					{
-						if (rf_dirtyBlocks[y*RF_BUFFER_WIDTH_TILES+x])
+						if (RFL_IsBlockDirty(x,y,-1))
 						{
-							sde->dirty = true;
+							sde->updateCount = 1;
 							goto drawSprite;
 						}
 					}
@@ -1336,7 +1376,7 @@ void RFL_DrawSpriteList()
 			}
 
 drawSprite:
-			if (sde->dirty)
+			if (sde->updateCount)
 			{
 				if (sde->maskOnly)
 				{
@@ -1350,10 +1390,10 @@ drawSprite:
 				{
 					for (int x = tileX1; x <= tileX2; ++x)
 					{
-						RFL_MarkBlockDirty(x,y,3);
+						RFL_MarkBlockDirty(x,y,3,VL_GetActiveBuffer());
 					}
 				}
-				sde->dirty = false;
+				sde->updateCount--;
 
 			}
 
@@ -1370,7 +1410,7 @@ void RFL_UpdateTiles()
 	{
 		for (int x = 0; x < RF_BUFFER_WIDTH_TILES; ++x)
 		{
-			if (rf_dirtyBlocks[y*RF_BUFFER_WIDTH_TILES+x] == 1)
+			if (RFL_IsBlockDirty(x,y,-1) == 1)
 				VL_SurfaceToScreen(rf_tileBuffer,x*16, y*16, x*16, y*16, 16, 16);
 		}
 	}
@@ -1391,14 +1431,10 @@ void RF_Refresh()
 
 	RFL_DrawSpriteList();
 
-	// No blocks should be dirty after the frame has been rendered.
+	// No blocks should be dirty on this page after the frame has been rendered.
 	for (int y = 0; y < RF_BUFFER_HEIGHT_TILES; ++y)
-	{
 		for (int x = 0; x < RF_BUFFER_WIDTH_TILES; ++x)
-		{
-			RFL_MarkBlockDirty(x,y,0);
-		}
-	}
+			RFL_MarkBlockDirty(x,y,0,VL_GetActiveBuffer());
 
 	if (rf_drawFunc)
 		rf_drawFunc();

@@ -32,7 +32,7 @@ typedef struct RF_SpriteDrawEntry
 	int sx, sy;
 	int sw, sh;
 	bool maskOnly;
-	bool dirty;
+	int updateCount;
 	struct RF_SpriteDrawEntry **prevNextPtr;		// Pointer to the previous entry's 'next' pointer.
 	struct RF_SpriteDrawEntry *next;
 } RF_SpriteDrawEntry;
@@ -75,7 +75,8 @@ extern int rf_scrollYMaxUnit;
 
 extern void (*rf_drawFunc) (void);
 
-void RFL_MarkBlockDirty(int x, int y, int val);
+void RFL_MarkBlockDirty(int x, int y, int val, int page);
+uint8_t RFL_IsBlockDirty(int x, int y, int page);
 
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical);
 void RF_MarkTileGraphics();

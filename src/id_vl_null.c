@@ -185,6 +185,32 @@ static void VL_NULL_BitInvBlitToSurface(void *src, void *dst_surface, int x, int
 	VL_1bppInvBlitClipToPAL8(src, surf->data, x, y, surf->w, w, h, surf->w, surf->h, colour);
 }
 
+static int VL_NULL_GetActiveBufferId(void *surface)
+{
+	(void*)surface;
+	return 0;
+}
+
+static int VL_NULL_GetNumBuffers(void *surface)
+{
+	(void*)surface;
+	return 1;
+}
+
+#ifndef max
+#define max(x,y) (((x) < (y))?(y):(x))
+#endif
+static void VL_NULL_ScrollSurface(void *surface, int x, int y)
+{
+	VL_NULL_Surface *surf = (VL_NULL_Surface *)surface;
+	int dx = 0, dy = 0, sx = 0, sy = 0;
+	int w = surf->w - max(x,-x), h = surf->h - max(y,-y);
+	if (x > 0) { dx = 0; sx = x; } else {dx = -x; sx = 0; }
+	if (y > 0) { dy = 0; sy = y; } else {dy = -y; sy = 0; }
+	VL_NULL_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
+}
+
+
 static void VL_NULL_Present(void *surface, int scrlX, int scrlY)
 {
 }
@@ -220,7 +246,10 @@ VL_Backend vl_null_backend =
 	/*.bitXorWithSurface =*/ &VL_NULL_BitXorWithSurface,
 	/*.bitBlitToSurface =*/ &VL_NULL_BitBlitToSurface,
 	/*.bitInvBlitToSurface =*/ &VL_NULL_BitInvBlitToSurface,
+	/*.scrollSurface =*/ &VL_NULL_ScrollSurface,
 	/*.present =*/ &VL_NULL_Present,
+	/*.getActiveBufferId =*/ &VL_NULL_GetActiveBufferId,
+	/*.getNumBuffers =*/ &VL_NULL_GetNumBuffers,
 	/*.flushParams =*/ &VL_NULL_FlushParams,
 	/*.waitVBLs =*/ &VL_NULL_WaitVBLs
 };

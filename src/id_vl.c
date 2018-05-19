@@ -174,6 +174,18 @@ void VL_FadeFromBlack(void)
 	vl_screenFaded = false;
 }
 
+void VL_Clip(int *src_w, int *src_h, int *dst_x, int *dst_y, int dst_w, int dst_h)
+{
+	int initialX = max(-(*dst_x),0);
+	int initialY = max(-(*dst_y),0);
+	int finalW = min(max(dst_w-(*dst_x),0), min(*src_w, *dst_x + *src_w));
+	int finalH = min(max(dst_h-(*dst_y),0), min(*src_h, *dst_y + *src_h));
+	
+	*src_w = finalW;
+	*src_h = finalH;
+	*dst_x = initialX;
+	*dst_y = initialY;
+}
 #if 0
 void VL_UnmaskedToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h)
 {
@@ -706,7 +718,7 @@ void VL_Shutdown()
 void VL_ResizeScreen(int w, int h)
 {
 	vl_memused -= vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
-  vl_currentBackend->destroySurface(vl_emuegavgaadapter.screen);
+	vl_currentBackend->destroySurface(vl_emuegavgaadapter.screen);
 
 	vl_emuegavgaadapter.screen = vl_currentBackend->createSurface(w,h,VL_SurfaceUsage_FrontBuffer);
 	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
@@ -785,6 +797,11 @@ void VL_ScreenRect_PM(int x, int y, int w, int h, int colour)
 	vl_currentBackend->surfaceRect_PM(vl_emuegavgaadapter.screen,x,y,w,h,colour, vl_mapMask);
 }
 
+void VL_ScreenToScreen(int x, int y, int sx, int sy, int sw, int sh)
+{
+	vl_currentBackend->surfaceToSelf(vl_emuegavgaadapter.screen, x, y, sx, sy, sw, sh);
+}
+
 void VL_SurfaceToSurface(void *src, void *dst, int x, int y, int sx, int sy, int sw, int sh)
 {
 	vl_currentBackend->surfaceToSurface(src, dst, x, y, sx, sy, sw, sh);
@@ -860,6 +877,11 @@ void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour)
 void VL_1bppInvBlitToScreen(void *src, int x, int y, int w, int h, int colour)
 {
 	vl_currentBackend->bitInvBlitToSurface(src, vl_emuegavgaadapter.screen, x, y, w, h, colour);
+}
+
+void VL_ScrollScreen(int x, int y)
+{
+	vl_currentBackend->scrollSurface(vl_emuegavgaadapter.screen, x, y);
 }
 
 static long vl_lastFrameTime;
@@ -990,6 +1012,16 @@ void VL_ClearScreen(int colour)
 void VL_SetMapMask(int mapmask)
 {
   vl_mapMask = mapmask & 0xF;
+}
+
+int VL_GetActiveBuffer()
+{
+	return vl_currentBackend->getActiveBufferId(vl_emuegavgaadapter.screen);
+}
+
+int VL_GetNumBuffers()
+{
+	return vl_currentBackend->getNumBuffers(vl_emuegavgaadapter.screen);
 }
 
 void VL_Present()

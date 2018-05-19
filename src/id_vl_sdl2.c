@@ -1,3 +1,4 @@
+#include "ck_cross.h"
 #include "id_vl.h"
 #include "id_vl_private.h"
 #include "assert.h"
@@ -247,6 +248,16 @@ static void VL_SDL2_BitInvBlitToSurface(void *src, void *dst_surface, int x, int
 	SDL_UnlockSurface(surf);
 }
 
+static void VL_SDL2_ScrollSurface(void *surface, int x, int y)
+{
+	SDL_Surface *surf = (SDL_Surface *)surface;
+	int dx = 0, dy = 0, sx = 0, sy = 0;
+	int w = surf->w - CK_Cross_max(x,-x), h = surf->h - CK_Cross_max(y,-y);
+	if (x > 0) { dx = 0; sx = x; } else {dx = -x; sx = 0; }
+	if (y > 0) { dy = 0; sy = y; } else {dy = -y; sy = 0; }
+	VL_SDL2_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
+}
+
 static void VL_SDL2_ResizeWindow()
 {
 	int realWinH, realWinW, curW, curH;
@@ -304,6 +315,18 @@ static void VL_SDL2_Present(void *surface, int scrlX, int scrlY)
 	SDL_RenderPresent(vl_sdl2_renderer);
 }
 
+static int VL_SDL2_GetActiveBufferId(void *surface)
+{
+	(void*)surface;
+	return 0;
+}
+
+static int VL_SDL2_GetNumBuffers(void *surface)
+{
+	(void*)surface;
+	return 1;
+}
+
 static void VL_SDL2_FlushParams()
 {
 	SDL_SetWindowFullscreen(vl_sdl2_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
@@ -339,7 +362,10 @@ VL_Backend vl_sdl2_backend =
 	/*.bitXorWithSurface =*/ &VL_SDL2_BitXorWithSurface,
 	/*.bitBlitToSurface =*/ &VL_SDL2_BitBlitToSurface,
 	/*.bitInvBlitToSurface =*/ &VL_SDL2_BitInvBlitToSurface,
+	/*.scrollSurface =*/ &VL_SDL2_ScrollSurface,
 	/*.present =*/ &VL_SDL2_Present,
+	/*.getActiveBufferId =*/ &VL_SDL2_GetActiveBufferId,
+	/*.getNumBuffers =*/ &VL_SDL2_GetNumBuffers,
 	/*.flushParams =*/ &VL_SDL2_FlushParams,
 	/*.waitVBLs =*/ &VL_SDL2_WaitVBLs,
 };

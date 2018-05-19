@@ -49,6 +49,7 @@ void VL_FadeToBlack(void);
 void VL_FadeFromBlack(void);
 //void VL_FadeToWhite(void); // Unused in vanilla Keen 5
 //void VL_FadeFromWhite(void); // Unused in vanilla Keen 5
+void VL_Clip(int *src_w, int *src_h, int *dst_x, int *dst_y, int dst_w, int dst_h);
 void VL_UnmaskedToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h);
 void VL_MaskedToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h);
 void VL_MaskedBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h);
@@ -104,7 +105,10 @@ typedef struct VL_Backend
 	void (*bitXorWithSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*bitBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*bitInvBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
+	void (*scrollSurface)(void *surface, int x, int y);
 	void (*present)(void *surface, int scrollXpx, int scrollYpx);
+	int (*getActiveBufferId)(void *surface);
+	int (*getNumBuffers)(void *surface);
 	void (*flushParams)();
 	void (*waitVBLs)(int vbls);
 } VL_Backend;
@@ -123,6 +127,7 @@ int VL_SurfacePGet(void *surf, int x, int y);
 void VL_SurfaceRect(void *dst, int x, int y, int w, int h, int colour);
 void VL_ScreenRect(int x, int y, int w, int h, int colour);
 void VL_ScreenRect_PM(int x, int y, int w, int h, int colour);
+void VL_ScreenToScreen(int x, int y, int sx, int sy, int sw, int sh);
 void VL_SurfaceToSurface(void *src, void *dst, int x, int y, int sx, int sy, int sw, int sh);
 void VL_SurfaceToScreen(void *src, int x, int y, int sx, int sy, int sw, int sh);
 void VL_SurfaceToSelf(void *surf, int x, int y, int sx, int sy, int sw, int sh);
@@ -138,6 +143,7 @@ void VL_1bppToScreen_PM(void *src, int x, int y, int w, int h, int colour);
 void VL_1bppXorWithScreen(void *src, int x, int y, int w, int h, int colour);
 void VL_1bppBlitToScreen(void *src, int x, int y, int w, int h, int colour);
 void VL_1bppInvBlitToScreen(void *src, int x, int y, int w, int h, int colour);
+void VL_ScrollScreen(int x, int y);
 
 void VL_DelayTics(int tics);
 int VL_GetTics(int wait);
@@ -147,6 +153,8 @@ int VL_GetScrollX(void);
 int VL_GetScrollY(void);
 void VL_ClearScreen(int colour);
 void VL_SetMapMask(int mapmask);
+int VL_GetActiveBuffer();
+int VL_GetNumBuffers();
 void VL_Present();
 
 VL_Backend *VL_Impl_GetBackend(void);
