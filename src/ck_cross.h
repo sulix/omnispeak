@@ -4,6 +4,7 @@
 #define CK_CROSS_H
 
 #include <stdint.h>
+#include <stdio.h>
 
 #ifdef WITH_SDL
 #include "SDL.h"
