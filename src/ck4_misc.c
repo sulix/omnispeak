@@ -230,7 +230,7 @@ const char *ck4_levelNames[] = {
 	"Isle of Tar",
   "Isle of Fire",
   "Well of Wishes",
-  "Bean-with-Bacon\nMegarocket"
+  "Bean-with-Bacon\nMegarocket",
 };
 
 // ck_keen.c
@@ -1150,7 +1150,7 @@ const char *ck4_councilMessages[] = {
   "You're the last one,\n"
     "fella. Let's both\n"
     "get back to the\n"
-    "Oracle chamber!"
+    "Oracle chamber!",
 };
 
 void CK4_ShowCouncilMessage(void)

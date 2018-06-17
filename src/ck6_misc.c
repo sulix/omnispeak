@@ -84,7 +84,7 @@ CK_EpisodeDef ck6v15e_episode ={
 int16_t CK6_ItemSpriteChunks[] ={
 	164, 166, 168, 170,
 	150, 152, 154, 156, 158, 160,
-	162, 173
+	162, 173,
 };
 
 void CK6_SetupFunctions()
@@ -623,7 +623,7 @@ static int16_t ck6_itemLumps[] =
 	Lump_2000Pts,
 	Lump_5000Pts,
 	Lump_1UP,
-	Lump_Stunner
+	Lump_Stunner,
 };
 
 static int16_t ck6_lumpStarts[MAXLUMPS] =

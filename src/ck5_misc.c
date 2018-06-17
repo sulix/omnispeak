@@ -780,7 +780,7 @@ static int16_t ck5_lumpEnds[MAXLUMPS] =
 	0x12F,
 	0x11D,
 	0x121,
-	0x125
+	0x125,
 };
 
 
