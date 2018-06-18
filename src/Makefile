@@ -69,11 +69,6 @@ ifeq ($(WITH_SDL2), 1)
 		IDOBJECTS+= id_vl_sdl2vk.o 
 	else
 		ifeq ($(WITH_OPENGL), 1)
-			ifeq ($(PLATFORM), WINDOWS)
-				LIBS+= -lopengl32
-			else
-				LIBS+= -lGL
-			endif
 			IDOBJECTS+= id_vl_sdl2gl.o 
 		else
 			IDOBJECTS+= id_vl_sdl2.o 

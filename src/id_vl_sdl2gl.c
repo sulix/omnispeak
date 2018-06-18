@@ -7,6 +7,49 @@
 #include "id_vl_private.h"
 #include "ck_cross.h"
 
+// OpenGL 1.0 and 1.1 Function Pointers:
+typedef const GLubyte *(APIENTRYP PFN_ID_GLGETSTRING)(GLenum name);
+PFN_ID_GLGETSTRING id_glGetString = 0;
+typedef void(APIENTRYP PFN_ID_GLGENTEXTURES)(GLsizei n, GLuint *textures);
+PFN_ID_GLGENTEXTURES id_glGenTextures = 0;
+typedef void(APIENTRYP PFN_ID_GLBINDTEXTURE)(GLenum target, GLuint texture);
+PFN_ID_GLBINDTEXTURE id_glBindTexture = 0;
+typedef void(APIENTRYP PFN_ID_GLTEXPARAMETERF)(GLenum target, GLenum pname, GLfloat param);
+PFN_ID_GLTEXPARAMETERF id_glTexParameterf = 0;
+typedef void(APIENTRYP PFN_ID_GLTEXPARAMETERI)(GLenum target, GLenum pname, GLint param);
+PFN_ID_GLTEXPARAMETERI id_glTexParameteri = 0;
+typedef void(APIENTRYP PFN_ID_GLTEXIMAGE1D)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
+PFN_ID_GLTEXIMAGE1D id_glTexImage1D = 0;
+typedef void(APIENTRYP PFN_ID_GLTEXIMAGE2D)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
+PFN_ID_GLTEXIMAGE2D id_glTexImage2D = 0;
+typedef void(APIENTRYP PFN_ID_GLTEXSUBIMAGE1D)(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const GLvoid *pixels);
+PFN_ID_GLTEXSUBIMAGE1D id_glTexSubImage1D = 0;
+typedef void(APIENTRYP PFN_ID_GLTEXSUBIMAGE2D)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
+PFN_ID_GLTEXSUBIMAGE2D id_glTexSubImage2D = 0;
+typedef void(APIENTRYP PFN_ID_GLDELETETEXTURES)(GLsizei n, const GLuint *textures);
+PFN_ID_GLDELETETEXTURES id_glDeleteTextures = 0;
+typedef void(APIENTRYP PFN_ID_GLENABLE)(GLenum cap);
+PFN_ID_GLENABLE id_glEnable = 0;
+typedef void(APIENTRYP PFN_ID_GLDISABLE)(GLenum cap);
+PFN_ID_GLDISABLE id_glDisable = 0;
+typedef void(APIENTRYP PFN_ID_GLCLEAR)(GLbitfield mask);
+PFN_ID_GLCLEAR id_glClear = 0;
+typedef void(APIENTRYP PFN_ID_GLCLEARCOLOR)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+PFN_ID_GLCLEARCOLOR id_glClearColor = 0;
+typedef void(APIENTRYP PFN_ID_GLVIEWPORT)(GLint x, GLint y, GLsizei width, GLsizei height);
+PFN_ID_GLVIEWPORT id_glViewport = 0;
+typedef void(APIENTRYP PFN_ID_GLPIXELSTOREI)(GLenum pname, GLint param);
+PFN_ID_GLPIXELSTOREI id_glPixelStorei = 0;
+typedef void(APIENTRYP PFN_ID_GLENABLECLIENTSTATE)(GLenum array);
+PFN_ID_GLENABLECLIENTSTATE id_glEnableClientState = 0;
+typedef void(APIENTRYP PFN_ID_GLDISABLECLIENTSTATE)(GLenum array);
+PFN_ID_GLDISABLECLIENTSTATE id_glDisableClientState = 0;
+typedef void(APIENTRYP PFN_ID_GLDRAWARRAYS)(GLenum mode, GLint first, GLsizei count);
+PFN_ID_GLDRAWARRAYS id_glDrawArrays = 0;
+typedef void(APIENTRYP PFN_ID_GLVERTEXPOINTER)(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
+PFN_ID_GLVERTEXPOINTER id_glVertexPointer = 0;
+typedef void(APIENTRYP PFN_ID_GLTEXCOORDPOINTER)(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
+PFN_ID_GLTEXCOORDPOINTER id_glTexCoordPointer = 0;
 // OpenGL 1.3 Function Pointers:
 typedef void(APIENTRYP PFN_ID_GLACTIVETEXTUREPROC)(GLenum texture);
 PFN_ID_GLACTIVETEXTUREPROC id_glActiveTexture = 0;
@@ -63,10 +106,31 @@ PFN_ID_GLBLITFRAMEBUFFEREXTPROC id_glBlitFramebufferEXT = 0;
 static bool VL_SDL2GL_LoadGLProcs()
 {
 	int majorGLVersion = 0;
-	const char *GLVersion = (const char *)glGetString(GL_VERSION);
+	id_glGetString = (PFN_ID_GLGETSTRING)SDL_GL_GetProcAddress("glGetString");
+	const char *GLVersion = (const char *)id_glGetString(GL_VERSION);
 	sscanf(GLVersion, "%d", &majorGLVersion);
 	if (majorGLVersion < 2)
 		return false;
+	id_glGenTextures = (PFN_ID_GLGENTEXTURES)SDL_GL_GetProcAddress("glGenTextures");
+	id_glBindTexture = (PFN_ID_GLBINDTEXTURE)SDL_GL_GetProcAddress("glBindTexture");
+	id_glTexParameterf = (PFN_ID_GLTEXPARAMETERF)SDL_GL_GetProcAddress("glTexParameterf");
+	id_glTexParameteri = (PFN_ID_GLTEXPARAMETERI)SDL_GL_GetProcAddress("glTexParameteri");
+	id_glTexImage1D = (PFN_ID_GLTEXIMAGE1D)SDL_GL_GetProcAddress("glTexImage1D");
+	id_glTexImage2D = (PFN_ID_GLTEXIMAGE2D)SDL_GL_GetProcAddress("glTexImage2D");
+	id_glTexSubImage1D = (PFN_ID_GLTEXSUBIMAGE1D)SDL_GL_GetProcAddress("glTexSubImage1D");
+	id_glTexSubImage2D = (PFN_ID_GLTEXSUBIMAGE2D)SDL_GL_GetProcAddress("glTexSubImage2D");
+	id_glDeleteTextures = (PFN_ID_GLDELETETEXTURES)SDL_GL_GetProcAddress("glDeleteTextures");
+	id_glEnable = (PFN_ID_GLENABLE)SDL_GL_GetProcAddress("glEnable");
+	id_glDisable = (PFN_ID_GLDISABLE)SDL_GL_GetProcAddress("glDisable");
+	id_glClear = (PFN_ID_GLCLEAR)SDL_GL_GetProcAddress("glClear");
+	id_glClearColor = (PFN_ID_GLCLEARCOLOR)SDL_GL_GetProcAddress("glClearColor");
+	id_glViewport = (PFN_ID_GLVIEWPORT)SDL_GL_GetProcAddress("glViewport");
+	id_glPixelStorei = (PFN_ID_GLPIXELSTOREI)SDL_GL_GetProcAddress("glPixelStorei");
+	id_glEnableClientState = (PFN_ID_GLENABLECLIENTSTATE)SDL_GL_GetProcAddress("glEnableClientState");
+	id_glDisableClientState = (PFN_ID_GLDISABLECLIENTSTATE)SDL_GL_GetProcAddress("glDisableClientState");
+	id_glDrawArrays = (PFN_ID_GLDRAWARRAYS)SDL_GL_GetProcAddress("glDrawArrays");
+	id_glVertexPointer = (PFN_ID_GLVERTEXPOINTER)SDL_GL_GetProcAddress("glVertexPointer");
+	id_glTexCoordPointer = (PFN_ID_GLTEXCOORDPOINTER)SDL_GL_GetProcAddress("glTexCoordPointer");
 	// OpenGL 1.3
 	id_glActiveTexture = (PFN_ID_GLACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glActiveTexture");
 	// OpenGL 2.0
@@ -206,12 +270,12 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 		}
 
 		// Generate palette texture
-		glGenTextures(1, &vl_sdl2gl_palTextureHandle);
+		id_glGenTextures(1, &vl_sdl2gl_palTextureHandle);
 		id_glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_1D, vl_sdl2gl_palTextureHandle);
-		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+		id_glBindTexture(GL_TEXTURE_1D, vl_sdl2gl_palTextureHandle);
+		id_glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		id_glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		id_glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 		id_glActiveTexture(GL_TEXTURE0);
 
 		// Setup framebuffer stuff, just in case.
@@ -226,11 +290,11 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 	else
 	{
 		if (vl_sdl2gl_framebufferTexture)
-			glDeleteTextures(1, &vl_sdl2gl_framebufferTexture);
+			id_glDeleteTextures(1, &vl_sdl2gl_framebufferTexture);
 		if (vl_sdl2gl_framebufferObject)
 			id_glDeleteFramebuffersEXT(1, &vl_sdl2gl_framebufferObject);
 		id_glDeleteProgram(vl_sdl2gl_program);
-		glDeleteTextures(1, &vl_sdl2gl_palTextureHandle);
+		id_glDeleteTextures(1, &vl_sdl2gl_palTextureHandle);
 		SDL_ShowCursor(1);
 		SDL_GL_DeleteContext(vl_sdl2gl_context);
 		SDL_DestroyWindow(vl_sdl2gl_window);
@@ -246,9 +310,9 @@ static void *VL_SDL2GL_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 	surf->textureHandle = 0;
 	if (usage == VL_SurfaceUsage_FrontBuffer)
 	{
-		glGenTextures(1, &(surf->textureHandle));
-		glBindTexture(GL_TEXTURE_2D, surf->textureHandle);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, surf->w, surf->h, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+		id_glGenTextures(1, &(surf->textureHandle));
+		id_glBindTexture(GL_TEXTURE_2D, surf->textureHandle);
+		id_glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, surf->w, surf->h, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 	}
 	surf->data = malloc(w * h); // 8-bit pal for now
 	return surf;
@@ -258,7 +322,7 @@ static void VL_SDL2GL_DestroySurface(void *surface)
 {
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)surface;
 	if (surf->textureHandle)
-		glDeleteTextures(1, &(surf->textureHandle));
+		id_glDeleteTextures(1, &(surf->textureHandle));
 	if (surf->data)
 		free(surf->data);
 	free(surf);
@@ -281,7 +345,7 @@ static void VL_SDL2GL_GetSurfaceDimensions(void *surface, int *w, int *h)
 
 static void VL_SDL2GL_SetGLClearColorFromBorder(void)
 {
-	glClearColor((GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][0] / 255,
+	id_glClearColor((GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][0] / 255,
 		(GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][1] / 255,
 		(GLclampf)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][2] / 255,
 		1.0f);
@@ -297,8 +361,8 @@ static void VL_SDL2GL_RefreshPaletteAndBorderColor(void *screen)
 	}
 	// Load the palette into a texture.
 	id_glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_1D, vl_sdl2gl_palTextureHandle);
-	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 16, GL_RGB, GL_UNSIGNED_BYTE, sdl2gl_palette);
+	id_glBindTexture(GL_TEXTURE_1D, vl_sdl2gl_palTextureHandle);
+	id_glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 16, GL_RGB, GL_UNSIGNED_BYTE, sdl2gl_palette);
 	id_glActiveTexture(GL_TEXTURE0);
 
 	VL_SDL2GL_SetGLClearColorFromBorder();
@@ -462,8 +526,8 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 
 	if (vl_isAspectCorrected)
 	{
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		id_glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		id_glClear(GL_COLOR_BUFFER_BIT);
 		VL_SDL2GL_SetGLClearColorFromBorder();
 	}
 
@@ -471,7 +535,7 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	if (vl_sdl2gl_framebufferWidth != vl_integerWidth || vl_sdl2gl_framebufferHeight != vl_integerHeight)
 	{
 		if (vl_sdl2gl_framebufferTexture)
-			glDeleteTextures(1, &vl_sdl2gl_framebufferTexture);
+			id_glDeleteTextures(1, &vl_sdl2gl_framebufferTexture);
 		if (vl_sdl2gl_framebufferObject)
 			id_glDeleteFramebuffersEXT(1, &vl_sdl2gl_framebufferObject);
 		vl_sdl2gl_framebufferWidth = vl_integerWidth;
@@ -482,12 +546,12 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 
 	if (!vl_sdl2gl_framebufferTexture)
 	{
-		glGenTextures(1, &vl_sdl2gl_framebufferTexture);
-		glBindTexture(GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		id_glGenTextures(1, &vl_sdl2gl_framebufferTexture);
+		id_glBindTexture(GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture);
+		id_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		id_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		// Use GL_RGBA as GL_RGB causes problems on Mesa/Intel.
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, vl_integerWidth, vl_integerHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		id_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, vl_integerWidth, vl_integerHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	}
 
 	if (!vl_sdl2gl_framebufferObject)
@@ -507,15 +571,15 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 		id_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
 	}
 
-	glClear(GL_COLOR_BUFFER_BIT);
-	glViewport(vl_renderRgn_x, vl_renderRgn_y, vl_renderRgn_w, vl_renderRgn_h);
+	id_glClear(GL_COLOR_BUFFER_BIT);
+	id_glViewport(vl_renderRgn_x, vl_renderRgn_y, vl_renderRgn_w, vl_renderRgn_h);
 
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)surface;
-	glBindTexture(GL_TEXTURE_2D, surf->textureHandle);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, surf->w, surf->h, GL_RED, GL_UNSIGNED_BYTE, surf->data);
+	id_glBindTexture(GL_TEXTURE_2D, surf->textureHandle);
+	id_glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	id_glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	id_glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	id_glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, surf->w, surf->h, GL_RED, GL_UNSIGNED_BYTE, surf->data);
 
 	float scaleX = (float)vl_sdl2gl_screenWidth / ((float)surf->w);
 	float scaleY = (float)vl_sdl2gl_screenHeight / ((float)surf->h);
@@ -531,15 +595,15 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	float vtxCoords[] = {-1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f};
 	float texCoords[] = {offX, endY, endX, endY, endX, offY, offX, offY};
 
-	glEnable(GL_TEXTURE_2D);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glVertexPointer(2, GL_FLOAT, 0, vtxCoords);
-	glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+	id_glEnable(GL_TEXTURE_2D);
+	id_glEnableClientState(GL_VERTEX_ARRAY);
+	id_glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	id_glVertexPointer(2, GL_FLOAT, 0, vtxCoords);
+	id_glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
 
-	glDrawArrays(GL_QUADS, 0, 4);
+	id_glDrawArrays(GL_QUADS, 0, 4);
 
-	glViewport(vl_fullRgn_x, realWinH - vl_fullRgn_y - vl_fullRgn_h, vl_fullRgn_w, vl_fullRgn_h);
+	id_glViewport(vl_fullRgn_x, realWinH - vl_fullRgn_y - vl_fullRgn_h, vl_fullRgn_w, vl_fullRgn_h);
 	// Use EXT_framebuffer_blit if available, otherwise draw a quad.
 	if (0 && SDL_GL_ExtensionSupported("GL_EXT_framebuffer_blit"))
 	{
@@ -555,12 +619,12 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	{
 		id_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 		float fboCoords[] = {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f};
-		glVertexPointer(2, GL_FLOAT, 0, vtxCoords);
-		glTexCoordPointer(2, GL_FLOAT, 0, fboCoords);
+		id_glVertexPointer(2, GL_FLOAT, 0, vtxCoords);
+		id_glTexCoordPointer(2, GL_FLOAT, 0, fboCoords);
 		id_glUseProgram(0);
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture);
-		glDrawArrays(GL_QUADS, 0, 4);
+		id_glEnable(GL_TEXTURE_2D);
+		id_glBindTexture(GL_TEXTURE_2D, vl_sdl2gl_framebufferTexture);
+		id_glDrawArrays(GL_QUADS, 0, 4);
 	}
 
 	SDL_GL_SwapWindow(vl_sdl2gl_window);
@@ -623,5 +687,6 @@ VL_Backend vl_sdl2gl_backend =
 VL_Backend *VL_Impl_GetBackend()
 {
 	SDL_Init(SDL_INIT_VIDEO);
+	SDL_GL_LoadLibrary(0);
 	return &vl_sdl2gl_backend;
 }
