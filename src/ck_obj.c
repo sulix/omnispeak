@@ -17,13 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "ck_def.h"
-#include "ck_phys.h"
-#include "ck_play.h"
-#include "ck_act.h"
 #include "id_heads.h"
 #include "id_rf.h"
 #include "id_us.h"
+#include "ck_act.h"
+#include "ck_def.h"
+#include "ck_phys.h"
+#include "ck_play.h"
 
 // This file contains some object functions (think, etc) which are common to
 // several episodes.
@@ -40,7 +40,7 @@ void CK_DoorOpen(CK_object *obj)
 
 	for (int i = 0; i < obj->user1 + 2; ++i)
 	{
-		tilesToReplace[i] = CA_TileAtPos(obj->posX, obj->posY+i, 1) + 1;
+		tilesToReplace[i] = CA_TileAtPos(obj->posX, obj->posY + i, 1) + 1;
 	}
 
 	RF_ReplaceTiles(tilesToReplace, 1, obj->posX, obj->posY, 1, obj->user1 + 2);
@@ -53,7 +53,7 @@ void CK_SecurityDoorOpen(CK_object *obj)
 	{
 		for (int x = 0; x < 4; ++x)
 		{
-			tilesToReplace[y*4+x] = CA_TileAtPos(obj->posX+x, obj->posY+y, 1) - 4;
+			tilesToReplace[y * 4 + x] = CA_TileAtPos(obj->posX + x, obj->posY + y, 1) - 4;
 		}
 	}
 
@@ -67,11 +67,10 @@ void CK_SecurityDoorOpen(CK_object *obj)
 
 // Should be an integer array
 // Is int* array for multiple episode support
-int *CK_ItemSpriteChunks[] ={
-  &SPR_GEM_A1, &SPR_GEM_B1, &SPR_GEM_C1, &SPR_GEM_D1,
-  &SPR_100_PTS1, &SPR_200_PTS1, &SPR_500_PTS1, &SPR_1000_PTS1, &SPR_2000_PTS1, &SPR_5000_PTS1,
-  &SPR_1UP1, &SPR_STUNNER1, &SPR_SECURITYCARD_1
-};
+int *CK_ItemSpriteChunks[] = {
+	&SPR_GEM_A1, &SPR_GEM_B1, &SPR_GEM_C1, &SPR_GEM_D1,
+	&SPR_100_PTS1, &SPR_200_PTS1, &SPR_500_PTS1, &SPR_1000_PTS1, &SPR_2000_PTS1, &SPR_5000_PTS1,
+	&SPR_1UP1, &SPR_STUNNER1, &SPR_SECURITYCARD_1};
 
 // Object and Centilife functions "should" be in ckx_obj1.c
 // but they are similar enough between episodes to put them all here
@@ -90,7 +89,7 @@ void CK_SpawnItem(int tileX, int tileY, int itemNumber)
 	obj->gfxChunk = (int16_t)*CK_ItemSpriteChunks[itemNumber];
 	obj->user2 = obj->gfxChunk;
 	obj->user3 = obj->gfxChunk + 2;
-	CK_SetAction(obj, CK_GetActionByName("CK_ACT_item") );
+	CK_SetAction(obj, CK_GetActionByName("CK_ACT_item"));
 	// TODO: Wrong place to cache?
 	CA_CacheGrChunk(obj->gfxChunk);
 	CA_CacheGrChunk(obj->gfxChunk + 1);
@@ -232,7 +231,7 @@ void CK_AxisPlatform(CK_object *obj)
 			{
 				obj->yDirection = -1;
 				//TODO: Change DeltaVelocity
-				ck_nextY -= ( nextPosUnit & 255);
+				ck_nextY -= (nextPosUnit & 255);
 			}
 		}
 	}
@@ -252,7 +251,7 @@ void CK_AxisPlatform(CK_object *obj)
 			{
 				obj->yDirection = 1;
 				//TODO: Change DeltaVelocity
-				ck_nextY +=  256 - (nextPosUnit & 255);
+				ck_nextY += 256 - (nextPosUnit & 255);
 			}
 		}
 	}
@@ -272,7 +271,7 @@ void CK_SpawnFallPlat(int tileX, int tileY)
 	CK_SetAction(new_object, CK_GetActionByName("CK_ACT_FallPlat0"));
 }
 
-void CK_FallPlatSit (CK_object *obj)
+void CK_FallPlatSit(CK_object *obj)
 {
 
 	if (obj == ck_keenState.platform)
@@ -284,7 +283,7 @@ void CK_FallPlatSit (CK_object *obj)
 	}
 }
 
-void CK_FallPlatFall (CK_object *obj)
+void CK_FallPlatFall(CK_object *obj)
 {
 	uint16_t newY, newYT;
 
@@ -301,14 +300,14 @@ void CK_FallPlatFall (CK_object *obj)
 	}
 }
 
-void CK_FallPlatRise (CK_object *obj)
+void CK_FallPlatRise(CK_object *obj)
 {
 	if (ck_keenState.platform == obj)
 	{
 		obj->velY = 0;
 		obj->currentAction = CK_GetActionByName("CK_ACT_FallPlat1");
 	}
-	else if ((unsigned) obj->posY <= (unsigned) obj->user1)
+	else if ((unsigned)obj->posY <= (unsigned)obj->user1)
 	{
 		ck_nextY = obj->user1 - obj->posY;
 		obj->currentAction = CK_GetActionByName("CK_ACT_FallPlat0");
@@ -331,8 +330,6 @@ void CK_SpawnStandPlatform(int tileX, int tileY)
 	obj->gfxChunk = obj->currentAction->chunkLeft;
 	CA_CacheGrChunk(obj->gfxChunk);
 }
-
-
 
 /*
  * Spawn a GoPlat
@@ -361,23 +358,22 @@ void CK_SpawnGoPlat(int tileX, int tileY, int direction, bool purple)
 		CK_SetAction(obj, CK_GetActionByName("CK_ACT_GoPlat0"));
 	}
 
-
 	CA_SetTileAtPos(tileX, tileY, 2, direction + 0x5B);
 
 	obj->user1 = direction;
 	obj->user2 = 256;
-
 }
 
-int ck_infoplaneArrowsX[8] ={0, 1, 0, -1, 1, 1, -1, -1};
-int ck_infoplaneArrowsY[8] ={-1, 0, 1, 0, -1, 1, 1, -1};
+int ck_infoplaneArrowsX[8] = {0, 1, 0, -1, 1, 1, -1, -1};
+int ck_infoplaneArrowsY[8] = {-1, 0, 1, 0, -1, 1, 1, -1};
 
 void CK_GoPlatThink(CK_object *obj)
 {
 
-	if (ck_nextX || ck_nextY) return;
+	if (ck_nextX || ck_nextY)
+		return;
 
-	int16_t delta = SD_GetSpriteSync()*12;
+	int16_t delta = SD_GetSpriteSync() * 12;
 
 	// Will we reach a new tile?
 	if (obj->user2 > delta)
@@ -502,16 +498,19 @@ void CK_SneakPlatThink(CK_object *obj)
 		if (ck_keenObj->xDirection == 1)
 		{
 			int dist = obj->clipRects.unitX1 - ck_keenObj->clipRects.unitX2;
-			if (dist > 0x400 || dist < 0) return;
+			if (dist > 0x400 || dist < 0)
+				return;
 		}
 		else
 		{
 			int dist = ck_keenObj->clipRects.unitX1 - obj->clipRects.unitX2;
-			if (dist > 0x400 || dist < 0) return;
+			if (dist > 0x400 || dist < 0)
+				return;
 		}
 
 		int vertDist = ck_keenObj->posY - obj->posY;
-		if (vertDist < -0x600 || vertDist > 0x600) return;
+		if (vertDist < -0x600 || vertDist > 0x600)
+			return;
 
 		obj->xDirection = ck_keenObj->xDirection;
 		obj->currentAction = CK_GetActionByName("CK_ACT_sneakPlatSneak");
@@ -543,7 +542,7 @@ void CK_TurretShoot(CK_object *obj)
 {
 	CK_object *shot = CK_GetNewObj(true);
 
-	shot->type = CT5_EnemyShot;	//TurretShot
+	shot->type = CT5_EnemyShot; //TurretShot
 	shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	shot->clipped = CLIP_normal;
 	shot->posX = obj->posX;
@@ -551,23 +550,22 @@ void CK_TurretShoot(CK_object *obj)
 
 	switch (obj->user1)
 	{
-		case 0:
-			shot->velY = -64;
-			break;
-		case 1:
-			shot->velX = 64;
-			break;
-		case 2:
-			shot->velY = 64;
-			break;
-		case 3:
-			shot->velX = -64;
-			break;
+	case 0:
+		shot->velY = -64;
+		break;
+	case 1:
+		shot->velX = 64;
+		break;
+	case 2:
+		shot->velY = 64;
+		break;
+	case 3:
+		shot->velX = -64;
+		break;
 	}
 
 	CK_SetAction(shot, CK_GetActionByName("CK_ACT_turretShot1"));
 	SD_PlaySound(SOUND_ENEMYSHOOT);
-
 }
 
 void CK_TurretShotCol(CK_object *me, CK_object *other)
@@ -589,7 +587,6 @@ void CK_TurretShotDraw(CK_object *obj)
 	}
 
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->currentAction->chunkLeft, false, obj->zLayer);
-
 }
 
 void CK_OBJ_SetupFunctions()

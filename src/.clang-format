@@ -1,0 +1,22 @@
+Language: Cpp
+BreakBeforeBraces: Allman
+AlignAfterOpenBracket: false
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: false
+AlignOperands: false
+ColumnLimit: 0
+IndentCaseLabels: false
+IndentWidth: 8
+IncludeCategories: 
+- Regex:	'^"ck._'
+  Priority:	3
+- Regex:	'^"ck_'
+  Priority:	2
+- Regex:	'^"id_'
+  Priority:	1
+- Regex:	'.*'
+  Priority:	0
+TabWidth: 8
+ContinuationIndentWidth: 8
+UseTab: Always

@@ -41,7 +41,6 @@ extern bool ck_debugActive;
 
 extern int16_t ck_invincibilityTimer;
 
-
 extern bool ck_scoreBoxEnabled;
 extern struct CK_object *ck_scoreBoxObj;
 

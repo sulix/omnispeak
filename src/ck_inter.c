@@ -17,16 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "ck_def.h"
-#include "ck_game.h"
-#include "ck_play.h"
-#include "ck_cross.h"
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_us.h"
 #include "id_vh.h"
 #include "id_vl.h"
-#include "id_in.h"
+#include "ck_cross.h"
+#include "ck_def.h"
+#include "ck_game.h"
+#include "ck_play.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -34,7 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /*
  * CK_INTER: Holds an assortment of screen drawing and state switching routines
  */
-
 
 int ck_startingSavedGame = 0;
 bool ck_inHighScores = false;
@@ -122,15 +120,13 @@ int *terminator_pics[4] = {&PIC_CREDIT1, &PIC_CREDIT2, &PIC_CREDIT3, &PIC_CREDIT
 // storage for the vertically scrolling pics
 mm_ptr_t terminator_pic_memptrs[4];
 
-
 // Width of the COMMANDER graphic, in BYTES
 int ck_introCommanderWidth;
 
 int ck_introScreenWidth;
 
-
 // type-identified variables
-int  ck_currentTermPicTimeRemaining;
+int ck_currentTermPicTimeRemaining;
 int ck_currentTermPicStartTime;
 
 // Which terminator credit image we're drawing
@@ -146,14 +142,12 @@ mm_ptr_t ck_currentTermPicSeg;
 unsigned word_499CB;
 // unknown vairables
 
-
 uint16_t word_46CA2[2];
 uint16_t terminatorPageOn; // always 0 or 1? Maybe a pageflip thing?
 uint16_t word_46CB0;
 
-
 uint16_t word_499C7;
-uint16_t terminatorOfs;	 	// Start of the screen buffer; the KEEN graphic is aligned to the left edge of this
+uint16_t terminatorOfs; // Start of the screen buffer; the KEEN graphic is aligned to the left edge of this
 uint8_t terminatorPlaneOn;
 uint16_t ck_currentTermPicNextLineDist;
 uint16_t ck_currentTermPicSize;
@@ -162,9 +156,6 @@ uint16_t ck_currentTermPicHalfWidth;
 uint16_t ck_currentTermPicWidth;
 uint16_t ck_termPicHeights[5];
 uint16_t ck_termPicWidths[5];
-
-
-
 
 void DoubleSizeTerminatorPics(int pic);
 int AdvanceTerminatorCredit(int elapsedTime);
@@ -183,7 +174,7 @@ int AdvanceTerminatorCredit(int elapsedTime)
 	int bx, picchunk;
 	VH_BitmapTableEntry *bmp;
 
-	switch(ck_termCreditStage)
+	switch (ck_termCreditStage)
 	{
 
 	case -1:
@@ -193,7 +184,7 @@ int AdvanceTerminatorCredit(int elapsedTime)
 		bmp = VH_GetBitmapTableEntry(picchunk - ca_gfxInfoE.offBitmaps);
 		ck_currentTermPicSeg = ca_graphChunks[picchunk];
 		ck_currentTermPicWidth = bmp->width; // This is width in EGA bytes (1/8 px)
-		ck_currentTermPicHalfWidth = (ck_currentTermPicWidth+3)>>1;
+		ck_currentTermPicHalfWidth = (ck_currentTermPicWidth + 3) >> 1;
 		ck_currentTermPicHeight = bmp->height;
 		// The size in bytes of the pic.
 		ck_currentTermPicSize = (ck_currentTermPicWidth * ck_currentTermPicHeight);
@@ -206,7 +197,7 @@ int AdvanceTerminatorCredit(int elapsedTime)
 	case 0:
 
 		// Flying up from bottom of screen
-		ck_currentTermPicTimeRemaining -= (elapsedTime - ck_currentTermPicStartTime)<<1;
+		ck_currentTermPicTimeRemaining -= (elapsedTime - ck_currentTermPicStartTime) << 1;
 
 		if (ck_currentTermPicTimeRemaining < 100)
 		{
@@ -216,8 +207,7 @@ int AdvanceTerminatorCredit(int elapsedTime)
 
 		ck_currentTermPicStartTime = elapsedTime;
 
-		return ck_currentTermPicTimeRemaining - (ck_currentTermPicHeight>>1);
-
+		return ck_currentTermPicTimeRemaining - (ck_currentTermPicHeight >> 1);
 
 	case 1:
 
@@ -228,12 +218,12 @@ int AdvanceTerminatorCredit(int elapsedTime)
 			ck_currentTermPicStartTime = elapsedTime;
 		}
 
-		return 100 - (ck_currentTermPicHeight>>1);
+		return 100 - (ck_currentTermPicHeight >> 1);
 
 	case 2:
 
 		// Flying up and out of the top of the screen
-		ck_currentTermPicTimeRemaining -= (elapsedTime - ck_currentTermPicStartTime)<<1;
+		ck_currentTermPicTimeRemaining -= (elapsedTime - ck_currentTermPicStartTime) << 1;
 
 		if (ck_currentTermPicTimeRemaining < -40)
 		{
@@ -248,30 +238,28 @@ int AdvanceTerminatorCredit(int elapsedTime)
 
 		ck_currentTermPicStartTime = elapsedTime;
 
-		return ck_currentTermPicTimeRemaining - (ck_currentTermPicHeight>>1);
+		return ck_currentTermPicTimeRemaining - (ck_currentTermPicHeight >> 1);
 
 	default:
 		break;
-
 	}
 
-		return -40;
+	return -40;
 }
 
 void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 {
-	int pelpan, picX, numrows,var10;
+	int pelpan, picX, numrows, var10;
 
 	// Vars are static because BP is used during ASM draw routine
 	static int rowsToDraw;
 
 	static int oldY2 = 0;
 
-
 	int creditY1, varA, creditY2, var12, picStartOffset;
 
 	pelpan = xpixel & 7;
-	picX = (xpixel) + (160 - ck_currentTermPicWidth*4);
+	picX = (xpixel) + (160 - ck_currentTermPicWidth * 4);
 
 	VL_SetMapMask(0xC);
 
@@ -281,8 +269,7 @@ void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 	if (creditY2 < 0)
 		creditY2 = 0;
 
-
-	// Erasing the area underneath the credit
+		// Erasing the area underneath the credit
 #if 0
 	if (creditY2 < 200 && oldY2 > creditY2)
 	{
@@ -320,18 +307,15 @@ void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 
 	if (rowsToDraw > 0)
 	{
-		uint8_t *plane_1 = (uint8_t*)(ck_currentTermPicSeg) + picStartOffset;
+		uint8_t *plane_1 = (uint8_t *)(ck_currentTermPicSeg) + picStartOffset;
 		uint8_t *plane_2 = plane_1 + ck_currentTermPicWidth * ck_currentTermPicHeight;
 
 		VL_SetMapMask(0x4);
-		VL_1bppToScreen_PM(plane_1, picX, creditY1, ck_currentTermPicWidth*8, rowsToDraw, 0xF);
+		VL_1bppToScreen_PM(plane_1, picX, creditY1, ck_currentTermPicWidth * 8, rowsToDraw, 0xF);
 		VL_SetMapMask(0x8);
-		VL_1bppToScreen_PM(plane_2, picX, creditY1, ck_currentTermPicWidth*8, rowsToDraw, 0xF);
-
+		VL_1bppToScreen_PM(plane_2, picX, creditY1, ck_currentTermPicWidth * 8, rowsToDraw, 0xF);
 	}
-
 }
-
 
 // Does the terminator scrolling
 void AnimateTerminator(void)
@@ -392,13 +376,13 @@ void AnimateTerminator(void)
 	{
 
 		// Reposition the left edge of the screen in direct proportionality to time elapsed
-		xpixel = (ck_introScreenWidth*(maxTime-elapsedTime)) / maxTime;
+		xpixel = (ck_introScreenWidth * (maxTime - elapsedTime)) / maxTime;
 
 		// Scroll the Credits graphics
 		ScrollTerminatorCredits(elapsedTime, xpixel);
 
-		elapsedCmdrScrollDist = screenWidthInPx + (finalCmdrPosFromScreenRight * elapsedTime)/ maxTime;
-		elapsedCmdrScrollDist += xpixel&7;
+		elapsedCmdrScrollDist = screenWidthInPx + (finalCmdrPosFromScreenRight * elapsedTime) / maxTime;
+		elapsedCmdrScrollDist += xpixel & 7;
 
 		cmdrLeftEdgeFromScreenLeft = (elapsedCmdrScrollDist + 0x800) / 8 - 0x100;
 		cmdrBMPpelpan = ((elapsedCmdrScrollDist + 0x800) & 7);
@@ -408,7 +392,7 @@ void AnimateTerminator(void)
 
 		// DOS: Move the screen start address
 		// screenofs = terminatorOfs + xpixel/8;
-		screenofs = xpixel/8;  // Omnispeak
+		screenofs = xpixel / 8; // Omnispeak
 
 		// Omnispeak: pan the screen to the appropriate spot over the KEEN surface
 		VL_SetScrollCoords(xpixel, 0);
@@ -416,7 +400,7 @@ void AnimateTerminator(void)
 		if (cmdrLeftEdgeFromScreenLeft > 0)
 		{
 			// The COMMANDER graphic has not started to scroll off the left edge of the screen
-			leftMarginBlackWords = (cmdrLeftEdgeFromScreenLeft+1)/2;
+			leftMarginBlackWords = (cmdrLeftEdgeFromScreenLeft + 1) / 2;
 
 			if (cmdrLeftEdgeFromScreenLeft & 1)
 				screenofs--;
@@ -436,12 +420,12 @@ void AnimateTerminator(void)
 		{
 			// The COMMANDER graphic is only clipped by the left side of the screen
 			leftMarginBlackWords = 0;
-			cmdrWords = (ck_introCommanderWidth+cmdrLeftEdgeFromScreenLeft)/2;
+			cmdrWords = (ck_introCommanderWidth + cmdrLeftEdgeFromScreenLeft) / 2;
 			rightMarginBlackWords = 21 - cmdrWords;
 			cmdrLeftDrawStart -= cmdrLeftEdgeFromScreenLeft;
 		}
 
-		offscreenCmdrPixels = ck_introCommanderWidth - (cmdrWords<<1);
+		offscreenCmdrPixels = ck_introCommanderWidth - (cmdrWords << 1);
 		nextRowDist = TERMINATORSCREENWIDTH - ((leftMarginBlackWords + cmdrWords + rightMarginBlackWords) << 1);
 
 		// Only draw to Plane 1 of EGA memory
@@ -452,11 +436,11 @@ void AnimateTerminator(void)
 		int rowptr = 0;
 		for (int row = 0; row < 200; row++)
 		{
-			VL_ScreenRect_PM(screenofs*8, row, leftMarginBlackWords*16, 1, 0x0);
-			VL_1bppToScreen_PM((uint8_t*)bmpsrcseg+rowptr+cmdrLeftDrawStart, screenofs*8+leftMarginBlackWords*16, row, cmdrWords*16, 1, 0xF);
-			VL_ScreenRect_PM(screenofs*8+(leftMarginBlackWords+cmdrWords)*16, row, rightMarginBlackWords*16, 1, 0x0);
+			VL_ScreenRect_PM(screenofs * 8, row, leftMarginBlackWords * 16, 1, 0x0);
+			VL_1bppToScreen_PM((uint8_t *)bmpsrcseg + rowptr + cmdrLeftDrawStart, screenofs * 8 + leftMarginBlackWords * 16, row, cmdrWords * 16, 1, 0xF);
+			VL_ScreenRect_PM(screenofs * 8 + (leftMarginBlackWords + cmdrWords) * 16, row, rightMarginBlackWords * 16, 1, 0x0);
 
-			if (row&1)
+			if (row & 1)
 			{
 				rowptr += ck_introCommanderWidth;
 			}
@@ -464,26 +448,22 @@ void AnimateTerminator(void)
 			{
 				rowptr = rowptr;
 			}
-
 		}
 
-
 		// In DOS, we handle the double-buffering here.
-
 
 		// Update the screen
 		VL_Present();
 
-
 		IN_PumpEvents();
 		// Delay
-		do {
+		do
+		{
 			delaytime = SD_GetTimeCount();
 			SD_SetSpriteSync(delaytime - SD_GetLastTimeCount());
 		} while (SD_GetSpriteSync() < 2);
 
 		SD_SetLastTimeCount(delaytime);
-
 
 		// Stop drawing if key pressed
 		if (IN_CheckAck() /*IN_IsUserInput()*/ && IN_GetLastScan() == IN_SC_F1)
@@ -493,8 +473,7 @@ void AnimateTerminator(void)
 			return;
 	}
 
-	word_499C7 = xpixel/8;
-
+	word_499C7 = xpixel / 8;
 }
 
 // RLE-Expands one line of monochrome terminator BMP data
@@ -525,7 +504,7 @@ void TerminatorExpandRLE(uint16_t *src, uint8_t *dest)
 			lastbyte = 0;
 
 			// write complete bytes
-			di = runlength/8-1;
+			di = runlength / 8 - 1;
 			while (di--)
 				*dest++ = 0;
 
@@ -556,7 +535,7 @@ void TerminatorExpandRLE(uint16_t *src, uint8_t *dest)
 			lastbyte = 0xFF;
 
 			// write runs of 8 light pixels
-			di = runlength/8-1;
+			di = runlength / 8 - 1;
 			while (di--)
 				*dest++ = 0xFF;
 
@@ -592,7 +571,7 @@ void JoinTerminatorPics(void)
 	MM_GetPtr(&introbuffer2, 30000);
 
 	// Where we start writing the bitmap data
-	introBMPDataPtr = (uint16_t*)((introbmptype*)(introbuffer2))->data;
+	introBMPDataPtr = (uint16_t *)((introbmptype *)(introbuffer2))->data;
 
 	// for each row
 	for (i = 0; i < 200; i++)
@@ -601,11 +580,11 @@ void JoinTerminatorPics(void)
 		uint16_t *linestart;
 
 		// Generate a pointer to this line of data
-		((introbmptype *)introbuffer2)->linestarts[i] = (uint16_t)((uint8_t*)(introBMPDataPtr) - (uint8_t*)(introbuffer2));
+		((introbmptype *)introbuffer2)->linestarts[i] = (uint16_t)((uint8_t *)(introBMPDataPtr) - (uint8_t *)(introbuffer2));
 
 		count = 0;
 
-		linestart = (uint16_t*)((uint8_t*)ck_introCommander + ck_introCommander->linestarts[i]);
+		linestart = (uint16_t *)((uint8_t *)ck_introCommander + ck_introCommander->linestarts[i]);
 		inword = *linestart++;
 
 		do
@@ -619,12 +598,12 @@ void JoinTerminatorPics(void)
 		// Add some space between the COMMANDER and the KEEN
 		count += 80;
 
-
-		linestart = (uint16_t*)((uint8_t*)(ck_introKeen) + ck_introKeen->linestarts[i]);
+		linestart = (uint16_t *)((uint8_t *)(ck_introKeen) + ck_introKeen->linestarts[i]);
 		linestart++;
 		inword = *linestart++;
 
-		do {
+		do
+		{
 
 			*introBMPDataPtr++ = count;
 			count += inword;
@@ -634,13 +613,11 @@ void JoinTerminatorPics(void)
 
 		*introBMPDataPtr++ = count;
 		*introBMPDataPtr++ = 0xFFFF;
-
 	}
 }
 
-
 // Originally this function accepted a table of precomputed scaled values.
-// Here we do the scaling ourselves, with 'scaleFactor' being 
+// Here we do the scaling ourselves, with 'scaleFactor' being
 void ZoomOutTerminator_1(uint16_t *rleData, uint16_t arg4, int leftOffset, uint16_t scaleFactor)
 {
 
@@ -662,18 +639,19 @@ void ZoomOutTerminator_1(uint16_t *rleData, uint16_t arg4, int leftOffset, uint1
 
 		runBegin = -leftOffset;
 
-		do {
+		do
+		{
 
 			inputOffset = *rleData++;
 			scaledOffset = (inputOffset * scaleFactor) / 256;
-			if ( scaledOffset > runBegin)
+			if (scaledOffset > runBegin)
 			{
 				goto writeWhiteRun;
 			}
 
 			inputOffset = *rleData++;
 			scaledOffset = (inputOffset * scaleFactor) / 256;
-			if ( scaledOffset > runBegin)
+			if (scaledOffset > runBegin)
 			{
 				goto writeBlackRun;
 			}
@@ -690,28 +668,27 @@ void ZoomOutTerminator_1(uint16_t *rleData, uint16_t arg4, int leftOffset, uint1
 		goto loc_147E5;
 	}
 
-
 writeWhiteRun:
 	do
 	{
 		// Writing a run of pixels
 		runLength = scaledOffset - runBegin;
-		VL_ScreenRect(vidOffset, arg4, runLength, 1, 0xF); 
+		VL_ScreenRect(vidOffset, arg4, runLength, 1, 0xF);
 		runBegin = scaledOffset;
 		vidOffset += runLength;
 
 		if (scaledOffset > rightOffset)
 			return;
 
-loc_147E5:
+	loc_147E5:
 		inputOffset = *rleData++;
 		scaledOffset = (inputOffset * scaleFactor) / 256;
 
-writeBlackRun:
+	writeBlackRun:
 
 		// Writing a run of pixels
 		runLength = scaledOffset - runBegin;
-		VL_ScreenRect(vidOffset, arg4, runLength, 1, 0x0); 
+		VL_ScreenRect(vidOffset, arg4, runLength, 1, 0x0);
 		runBegin = scaledOffset;
 		vidOffset += runLength;
 
@@ -726,10 +703,9 @@ writeBlackRun:
 
 	// Write black until the end of the screen?
 	runLength = 320 - vidOffset;
-	VL_ScreenRect(vidOffset, arg4, runLength, 1, 0); 
+	VL_ScreenRect(vidOffset, arg4, runLength, 1, 0);
 
 	return;
-
 }
 
 // The COMMANDER and KEEN RLE-Encoded bitmaps are first joined together into one big
@@ -749,11 +725,10 @@ void ZoomOutTerminator(void)
 	int leftOffset;
 
 	unsigned elapsedTime, maxTime;
-	uint16_t * var16;
+	uint16_t *var16;
 
 	// finalHeight looks like final Height?
 	uint16_t newTime, scaleFactor, finalHeight, varC, varE;
-
 
 	// Set the palette
 	VL_SetPaletteAndBorderColor(ck_terminator_palette2);
@@ -786,37 +761,35 @@ void ZoomOutTerminator(void)
 			// testing large values of maxtime
 			scaleFactor = 256 - (((long)(256 - finalHeight) * (long)elapsedTime) / (long)maxTime);
 
-			leftOffset = (startingLeftOffset * (long)(maxTime-elapsedTime))/ (long)maxTime;
+			leftOffset = (startingLeftOffset * (long)(maxTime - elapsedTime)) / (long)maxTime;
 
-			yBottom = (long)(elapsedTime*4)/(long)maxTime;
+			yBottom = (long)(elapsedTime * 4) / (long)maxTime;
 		}
-
 
 		if (elapsedTime == maxTime)
 			leftOffset = 0;
 		else
-			leftOffset = ((long)(maxTime-elapsedTime) * startingLeftOffset) / (long)maxTime;
+			leftOffset = ((long)(maxTime - elapsedTime) * startingLeftOffset) / (long)maxTime;
 
-
-		scaledHeight = (200 * scaleFactor) >> 8; 
-		varC =0 ;
+		scaledHeight = (200 * scaleFactor) >> 8;
+		varC = 0;
 		varE = 0x10000L / scaleFactor;
 
 		if (yBottom > 0)
-			VL_ScreenRect(0,0,320,yBottom, 0);
+			VL_ScreenRect(0, 0, 320, yBottom, 0);
 
 		// Draw each line to the screen
 		for (si = 0; si < ((200 * scaleFactor) >> 8); si++)
 		{
-			var16 = (uint16_t *)((uint8_t *)introbuffer2 + ((introbmptype *)introbuffer2)->linestarts[varC>>8]);
-			ZoomOutTerminator_1(var16, si+yBottom, leftOffset, scaleFactor);
+			var16 = (uint16_t *)((uint8_t *)introbuffer2 + ((introbmptype *)introbuffer2)->linestarts[varC >> 8]);
+			ZoomOutTerminator_1(var16, si + yBottom, leftOffset, scaleFactor);
 			varC += varE;
 		}
 
 		var1C = scaledHeight + yBottom;
 		if (var20 > var1C)
 		{
-			VL_ScreenRect(0, var1C, 320, var20 - var1C + 1,0);
+			VL_ScreenRect(0, var1C, 320, var20 - var1C + 1, 0);
 			var20 = var1C;
 		}
 
@@ -837,19 +810,16 @@ void ZoomOutTerminator(void)
 		if (elapsedTime > maxTime)
 			elapsedTime = maxTime;
 
-
 		if (/*IN_IsUserInput() &&*/ IN_GetLastScan() == IN_SC_F1)
 			IN_SetLastScan(IN_SC_Space);
 
 		if (IN_GetLastScan())
 			// return;// should this be break instead? Want to free intro buffers!
 			break;
-
 	}
 
 	MM_FreePtr(&introbuffer2);
 }
-
 
 // The Fizzlefade routine
 // Operates by drawing the title graphic into offscreen video memory, then
@@ -861,7 +831,7 @@ void CK_FizzleFade()
 {
 	int i;
 
-	uint8_t bitmasks[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
+	uint8_t bitmasks[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 	uint16_t columns1[320];
 	uint16_t rows1[200];
 
@@ -869,13 +839,12 @@ void CK_FizzleFade()
 	for (i = 0; i < 320; i++)
 		columns1[i] = i;
 
-
 	// Shuffle the table entries
 	for (i = 0; i < 320; i++)
 	{
 
 		// NOTE: BCC rand() implementation is capped at 0x7FFF
-		int16_t var2 = (320 * (rand()&0x7FFF))/0x8000;
+		int16_t var2 = (320 * (rand() & 0x7FFF)) / 0x8000;
 
 		uint16_t var4 = columns1[var2];
 
@@ -904,7 +873,7 @@ void CK_FizzleFade()
 #endif
 
 	// VW_SetScreen(0, bufferofs_0);
-	VL_SetScrollCoords(0,0);
+	VL_SetScrollCoords(0, 0);
 
 	// DOS: Draw Title Bitmap offscreen
 	// VW_DrawBitmap(0,0,PIC_TITLESCREEN);
@@ -917,14 +886,13 @@ void CK_FizzleFade()
 
 	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(PIC_TITLESCREEN - ca_gfxInfoE.offBitmaps);
 
-	VL_UnmaskedToSurface(ca_graphChunks[PIC_TITLESCREEN], titleBuffer, 0, 0, dimensions->width*8, dimensions->height);
-
+	VL_UnmaskedToSurface(ca_graphChunks[PIC_TITLESCREEN], titleBuffer, 0, 0, dimensions->width * 8, dimensions->height);
 
 	// Do the fizzling
 	//
 	for (i = 0; i < 360; i++)
 	{
-		int16_t var_10 = i-160;
+		int16_t var_10 = i - 160;
 
 		if (var_10 < 0)
 			var_10 = 0;
@@ -946,7 +914,7 @@ void CK_FizzleFade()
 				if (++rows1[y] == 320)
 					rows1[y] = 0;
 
-				// Here's what happens in DOS Keen, for reference
+					// Here's what happens in DOS Keen, for reference
 #if 0
 				_SI = x % 8;
 
@@ -975,9 +943,7 @@ void CK_FizzleFade()
 				// Now the SDL version...
 				VL_SurfaceToScreen(titleBuffer, x, y, x, y, 1, 1);
 				// VL_SurfaceToScreen(titleBuffer, 0, 0, 0, 0, 320, 200);
-
 			}
-
 		}
 
 		VL_Present();
@@ -1016,7 +982,6 @@ void CK_FizzleFade()
 	IN_UserInput(420, false);
 
 	VL_DestroySurface(titleBuffer);
-
 }
 
 void CK_DrawTerminator(void)
@@ -1027,21 +992,17 @@ void CK_DrawTerminator(void)
 	uint16_t *srcptr;
 	uint8_t *destptr;
 
-
 	int cmdrLineStarts[200];
-
 
 	bool terminator_complete = false;
 
 	VL_ResizeScreen(TERMINATORSCREENWIDTH * 8, 200);
 	VL_ClearScreen(0);
 
-
 	// Cache Intro Bitmaps
 	CA_CacheGrChunk(PIC_TITLESCREEN);
 	CA_CacheGrChunk(EXTERN_COMMANDER);
 	CA_CacheGrChunk(EXTERN_KEEN);
-
 
 	ck_introKeen = (introbmptype *)ca_graphChunks[EXTERN_KEEN];
 	ck_introCommander = (introbmptype *)ca_graphChunks[EXTERN_COMMANDER];
@@ -1054,22 +1015,22 @@ void CK_DrawTerminator(void)
 	ck_introScreenWidth = ck_introKeen->width + 25 * 8;
 
 	// Set the screen to the right of the "KEEN" graphic
-	VL_SetScrollCoords(ck_introScreenWidth+1, 0);
+	VL_SetScrollCoords(ck_introScreenWidth + 1, 0);
 
 	// Copy each line of the KEEN graphic into video memory, accounting for the padding amount
 	{
-		uint8_t *destbuf = (uint8_t *)calloc((ck_introScreenWidth + 7)/8+1, sizeof(uint8_t));
+		uint8_t *destbuf = (uint8_t *)calloc((ck_introScreenWidth + 7) / 8 + 1, sizeof(uint8_t));
 		for (int i = 0; i < 200; i++)
 		{
-			 // Left margin of KEEN is 25*8 = 200 pixels
+			// Left margin of KEEN is 25*8 = 200 pixels
 
-			 // Omnispeak: RLE-Expand into temp buffer, then copy into video memory
-			 srcptr = (uint16_t*)((uint8_t *)ck_introKeen + ck_introKeen->linestarts[i]);
-			 TerminatorExpandRLE(srcptr, destbuf + 25);
-			 VL_1bppToScreen_PM(destbuf, 0, i, ck_introScreenWidth, 1, 0xF);
+			// Omnispeak: RLE-Expand into temp buffer, then copy into video memory
+			srcptr = (uint16_t *)((uint8_t *)ck_introKeen + ck_introKeen->linestarts[i]);
+			TerminatorExpandRLE(srcptr, destbuf + 25);
+			VL_1bppToScreen_PM(destbuf, 0, i, ck_introScreenWidth, 1, 0xF);
 		}
 
-		free (destbuf);
+		free(destbuf);
 	}
 
 	// In DOS, we copy the KEEN graphic to the second page, in Omnispeak
@@ -1078,18 +1039,18 @@ void CK_DrawTerminator(void)
 	// Allocate memory for 8 shifts of the COMMANDER graphic
 	// Notice that there are only 100 rows of memory, which means that
 	// each EVEN row of source graphics is duplicated
-	
+
 	// The most shifted version of the image will shifted 7px, taking
 	// at most one extra byte. We + 7 px and then divide by 8 (rounding
 	// down). We actually want to round up, though, so we add 1 to the
 	// result.
-	ck_introCommanderWidth = ((ck_introCommander->width+7) / 8) + 1;
+	ck_introCommanderWidth = ((ck_introCommander->width + 7) / 8) + 1;
 	// We then want to round up to the nearest 16-bit word.
-	ck_introCommanderWidth = (ck_introCommanderWidth+1)&0xFFFE;
+	ck_introCommanderWidth = (ck_introCommanderWidth + 1) & 0xFFFE;
 
 	cmdrWidthX100 = ck_introCommanderWidth * 100;
 	for (int i = 0; i < 8; i++)
-	  MM_GetPtr(&shiftedCmdrBMPsegs[i],cmdrWidthX100);
+		MM_GetPtr(&shiftedCmdrBMPsegs[i], cmdrWidthX100);
 
 	ck_introKeen = (introbmptype *)ca_graphChunks[EXTERN_KEEN];
 	ck_introCommander = (introbmptype *)ca_graphChunks[EXTERN_COMMANDER];
@@ -1097,19 +1058,18 @@ void CK_DrawTerminator(void)
 	// Decompress the RLE-encoded "Commander" bitmap.
 	for (int i = 0; i < 100; i++)
 	{
-		cmdrLineStarts[2*i] = cmdrLineStarts[2*i+1] = i * ck_introCommanderWidth;
+		cmdrLineStarts[2 * i] = cmdrLineStarts[2 * i + 1] = i * ck_introCommanderWidth;
 
-		srcptr = (uint16_t*)((uint8_t *)ck_introCommander + ck_introCommander->linestarts[i*2]);
-		destptr = (uint8_t*)shiftedCmdrBMPsegs[0] + cmdrLineStarts[2*i];
+		srcptr = (uint16_t *)((uint8_t *)ck_introCommander + ck_introCommander->linestarts[i * 2]);
+		destptr = (uint8_t *)shiftedCmdrBMPsegs[0] + cmdrLineStarts[2 * i];
 		TerminatorExpandRLE(srcptr, destptr);
 	}
-
 
 	// Looks like we're making 8 shifts of the "Commander" graphic
 	for (int i = 1; i < 8; i++)
 	{
-		uint8_t* last = (uint8_t*)shiftedCmdrBMPsegs[i-1];
-		uint8_t* next = (uint8_t*)shiftedCmdrBMPsegs[i];
+		uint8_t *last = (uint8_t *)shiftedCmdrBMPsegs[i - 1];
+		uint8_t *next = (uint8_t *)shiftedCmdrBMPsegs[i];
 
 		int c = 0;
 		for (int j = 0; j < cmdrWidthX100; j++)
@@ -1120,13 +1080,11 @@ void CK_DrawTerminator(void)
 		}
 	}
 
-
 	// Set the terminator palette
 	ck_terminator_palette2[16] = vl_border_color;
 	ck_terminator_palette1[16] = vl_border_color;
 
 	VL_SetPaletteAndBorderColor(ck_terminator_palette1);
-
 
 	// Do the terminator
 	ck_currentTermPicStartTime = ck_currentTerminatorCredit = 0;
@@ -1136,8 +1094,7 @@ void CK_DrawTerminator(void)
 	// Omnispeak
 	VL_ResizeScreen(21 * 16, 14 * 16);
 
-	VL_SetScrollCoords(0,0);
-
+	VL_SetScrollCoords(0, 0);
 
 	// After the terminator text has run, keys are checked
 	if (!IN_GetLastScan())
@@ -1147,7 +1104,7 @@ void CK_DrawTerminator(void)
 
 	if (!IN_GetLastScan())
 	{
-	  CK_FizzleFade();
+		CK_FizzleFade();
 		terminator_complete = true;
 	}
 
@@ -1197,7 +1154,6 @@ void CK_DrawTerminator(void)
 			return;
 		}
 #endif
-
 	}
 
 	US_RunCards();
@@ -1209,7 +1165,6 @@ void CK_DrawTerminator(void)
 
 	if (ck_startingSavedGame)
 		ck_gameState.levelState = 6;
-
 }
 
 /*
@@ -1227,7 +1182,7 @@ static const unsigned int log2_SWunitsPerPixel = 11;
 #define CK_SWunitsToPixels(sw) ((sw) >> log2_SWunitsPerPixel)
 #define CK_PixelsToSWunits(px) ((px) << log2_SWunitsPerPixel)
 
-// Table that adds a row-displacement when selecting a line of the master text image to draw, 
+// Table that adds a row-displacement when selecting a line of the master text image to draw,
 // given a row on visible screen as the index
 // Because the table values are skewed, this causes the text to bunch up at the top of the screen.
 uint16_t ck_SWScreenRowToMasterRow[200];
@@ -1244,7 +1199,6 @@ int ck_starWarsTotalHeight;
 // The master text screen for the Star Wars scroller.
 void *ck_starWarsTextSurface;
 
-
 // This replaces CompileSWUpdate in Keen (BuildScalers in CKSRCMOD).
 // As omnispeak is not architecture specific, instead of generating scaling
 // functions for each row, we'll simply determine the scaling parameters.
@@ -1253,8 +1207,7 @@ void CK_PrepareSWUpdate()
 	// TODO: This is where BuildBitTables() would normally happen.
 	// I still need to work out what that actually does, so leaving it for
 	// now.
-	
-	
+
 	// This is the width of the trapezoid at the bottom of the screen.
 	uint32_t trapezoidWidth = CK_PixelsToSWunits(320);
 
@@ -1288,7 +1241,6 @@ void CK_PrepareSWUpdate()
 		trapezoidWidth -= delTrapWidth;
 	}
 }
-
 
 // Converts a string from ASCII to Star Wars font indices.
 // Note that the DOS version acted on strings in-place. For omnispeak, we write
@@ -1351,12 +1303,11 @@ void CK_DrawSWText()
 	void *oldScreen = VL_SetScreen(ck_starWarsTextSurface);
 	VL_ClearScreen(0);
 
-
 	while (*storyTextIndex)
 	{
 		char *lineIndex = currentTextLine;
 		char ch;
-		
+
 		// Extract one line of text.
 		do
 		{
@@ -1377,7 +1328,6 @@ void CK_DrawSWText()
 		// Note that the original game resets its buffer offset here
 		// and incrementally calculates the height. We just let
 		// US_CPrint() increase the PrintY coordinate for us.
-
 	}
 
 	// Save off the total height of the scroller.
@@ -1386,7 +1336,6 @@ void CK_DrawSWText()
 
 	// Restore the screen.
 	VL_SetScreen(oldScreen);
-
 }
 
 // This is StarWarsLoop in CKSRCMOD.
@@ -1412,9 +1361,8 @@ void CK_ScrollSWText()
 			if (masterRowToDraw < 0 || masterRowToDraw >= ck_starWarsTotalHeight)
 				masterRowToDraw = 0;
 
-
-			int rowStart = 160 - ck_SWRowWidthInScreenPx[row]/2;
-			int rowEnd = 160 + ck_SWRowWidthInScreenPx[row]/2;
+			int rowStart = 160 - ck_SWRowWidthInScreenPx[row] / 2;
+			int rowEnd = 160 + ck_SWRowWidthInScreenPx[row] / 2;
 
 			// The x-coordinate of the current pixel in the offscreen
 			// text buffer. Measured in SWunits.
@@ -1425,7 +1373,7 @@ void CK_ScrollSWText()
 			// "master" pixel coordinates in the offscreen buffer,
 			// read the pixel from it, and then mask it to the
 			// screen in plane 4.
-			for(int screenX = rowStart; screenX < rowEnd; ++screenX)
+			for (int screenX = rowStart; screenX < rowEnd; ++screenX)
 			{
 				int masterPixelX = CK_SWunitsToPixels(masterX);
 				int pixelValue = VL_SurfacePGet(ck_starWarsTextSurface, masterPixelX, masterRowToDraw);
@@ -1445,8 +1393,8 @@ void CK_ScrollSWText()
 		if (SD_GetSpriteSync() > 20)
 			SD_SetSpriteSync(20);
 
-		scrollDistance += SD_GetSpriteSync()/4;
-		SD_SetSpriteSync(SD_GetSpriteSync()%4);
+		scrollDistance += SD_GetSpriteSync() / 4;
+		SD_SetSpriteSync(SD_GetSpriteSync() % 4);
 
 		if (IN_GetLastScan() == IN_SC_F1)
 			IN_SetLastScan(IN_SC_Space);
@@ -1460,7 +1408,7 @@ void CK_DrawStarWars()
 {
 	// Keen5 sets the palette to the default one here.
 	VL_ClearScreen(0);
-	VL_SetScrollCoords(0,0);
+	VL_SetScrollCoords(0, 0);
 
 	CA_SetGrPurge();
 	// Cache and set the Star Wars font.
@@ -1470,8 +1418,6 @@ void CK_DrawStarWars()
 	CK_DrawSWText();
 	// Restore the font.
 	US_SetPrintFont(0);
-
-
 
 	CA_CacheGrChunk(PIC_STARWARS); // Story bkg image.
 
@@ -1483,7 +1429,7 @@ void CK_DrawStarWars()
 	// At this point, Keen generates a set of buffers full of machine code,
 	// one per line, which scale the text (from the surface mentioned above)
 	// to make the "Star Wars" effect. (BuildScalers/CompileSWUpdate)
-	
+
 	// Instead, we just precalculate the various scaling factors.
 	CK_PrepareSWUpdate();
 
@@ -1498,7 +1444,7 @@ void CK_DrawStarWars()
 	VL_DestroySurface(ck_starWarsTextSurface);
 
 	VL_ClearScreen(0);
-	VL_SetScrollCoords(0,0);
+	VL_SetScrollCoords(0, 0);
 	VL_SetDefaultPalette();
 	CA_ClearMarks();
 
@@ -1509,10 +1455,10 @@ void CK_ShowTitleScreen()
 {
 	// scrollofs = 0;
 	CA_CacheGrChunk(PIC_TITLESCREEN);
-	VH_DrawBitmap(0,0,PIC_TITLESCREEN);
+	VH_DrawBitmap(0, 0, PIC_TITLESCREEN);
 	// Draw to offscreen buffer and copy?
 	// VW_SetScreen(0,bufferofs_0);
-  VL_SetScrollCoords(0,0);
+	VL_SetScrollCoords(0, 0);
 	// VWL_ScreenToScreen(bufferofs, bufferofs_0, 42, 224);
 	VL_Present();
 	IN_UserInput(420, false);
@@ -1534,10 +1480,10 @@ void CK_PlayDemoFile(const char *demoName)
 
 	uint16_t demoMap = *demoBuf;
 	demoBuf += 2;
-	uint16_t demoLen = CK_Cross_SwapLE16(*((uint16_t *) demoBuf));
+	uint16_t demoLen = CK_Cross_SwapLE16(*((uint16_t *)demoBuf));
 	demoBuf += 2;
 
-	ck_gameState.currentLevel =demoMap;
+	ck_gameState.currentLevel = demoMap;
 
 	IN_DemoStartPlaying(demoBuf, demoLen);
 
@@ -1562,16 +1508,14 @@ void CK_PlayDemo(int demoNumber)
 
 	uint16_t demoMap = *demoBuf;
 	demoBuf += 2;
-	uint16_t demoLen = CK_Cross_SwapLE16(*((uint16_t *) demoBuf));
+	uint16_t demoLen = CK_Cross_SwapLE16(*((uint16_t *)demoBuf));
 	demoBuf += 2;
 
-	ck_gameState.currentLevel =demoMap;
+	ck_gameState.currentLevel = demoMap;
 
 	IN_DemoStartPlaying(demoBuf, demoLen);
 
 	CK_LoadLevel(true);
-
-
 
 	if (ck_inHighScores)
 		CK_OverlayHighScores();
@@ -1587,7 +1531,6 @@ void CK_PlayDemo(int demoNumber)
 
 	// What should we do after playing the demo?
 	CK_HandleDemoKeys();
-
 }
 
 /*
@@ -1595,15 +1538,15 @@ void CK_PlayDemo(int demoNumber)
  */
 
 CK_HighScore ck_highScores[8] =
-{
-	{"Id Software - '91", 10000, 0},
-	{"", 10000, 0},
-	{"Jason Blochowiak", 10000, 0},
-	{"Adrian Carmack", 10000, 0},
-	{"John Carmack", 10000, 0},
-	{"Tom Hall", 10000, 0},
-	{"John Romero", 10000, 0},
-	{"", 10000, 0},
+	{
+		{"Id Software - '91", 10000, 0},
+		{"", 10000, 0},
+		{"Jason Blochowiak", 10000, 0},
+		{"Adrian Carmack", 10000, 0},
+		{"John Carmack", 10000, 0},
+		{"Tom Hall", 10000, 0},
+		{"John Romero", 10000, 0},
+		{"", 10000, 0},
 };
 
 // Draw the high scores overtop the level
@@ -1615,7 +1558,7 @@ void CK_OverlayHighScores()
 	int rightMargin = ck_currentEpisode->highScoreRightMargin;
 	int leftMargin = ck_currentEpisode->highScoreLeftMargin;
 
-	RF_Reposition (0,0);
+	RF_Reposition(0, 0);
 
 	// DOS: Set the back buffer to the master tilebuffer
 	// The print routines draw to the backbuffer
@@ -1633,7 +1576,7 @@ void CK_OverlayHighScores()
 	for (int entry = 0; entry < 8; entry++)
 	{
 		// Print the name
-		US_SetPrintY(16*entry+topMargin);
+		US_SetPrintY(16 * entry + topMargin);
 		US_SetPrintX(leftMargin);
 		US_Print(ck_highScores[entry].name);
 
@@ -1643,7 +1586,7 @@ void CK_OverlayHighScores()
 			US_SetPrintX(0x98);
 			for (int i = 0; i < ck_highScores[entry].arg4; i++)
 			{
-				VH_DrawTile8(US_GetPrintX(), US_GetPrintY()+1, 0x47);
+				VH_DrawTile8(US_GetPrintX(), US_GetPrintY() + 1, 0x47);
 				US_SetPrintX(US_GetPrintX() + 8);
 			}
 		}
@@ -1662,7 +1605,7 @@ void CK_OverlayHighScores()
 		// Align it
 		uint16_t w, h;
 		VH_MeasurePropString(buf, &w, &h, US_GetPrintFont());
-		US_SetPrintX(rightMargin-w);
+		US_SetPrintX(rightMargin - w);
 		US_Print(buf);
 	}
 
@@ -1670,7 +1613,6 @@ void CK_OverlayHighScores()
 
 	// restore the backbuffer
 	VL_SetScreen(screen);
-
 }
 
 // Enter name if a high score has been achieved
@@ -1689,8 +1631,6 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 	newHighScore.score = score;
 	newHighScore.arg4 = arg_4;
 
-
-
 	// Check if this entry made the high scores
 	entryRank = -1;
 	for (entry = 0; entry < 8; entry++)
@@ -1706,17 +1646,15 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 
 		// Made it in!
 		// Insert the new high score into the proper slot
-		for (int e = 8; --e > entry; )
-		memcpy(&ck_highScores[e], &ck_highScores[e-1], sizeof(newHighScore));
+		for (int e = 8; --e > entry;)
+			memcpy(&ck_highScores[e], &ck_highScores[e - 1], sizeof(newHighScore));
 
 		memcpy(&ck_highScores[entry], &newHighScore, sizeof(newHighScore));
 		entryRank = entry;
 		ck_highScoresDirty = true;
 
-
 		break;
 	}
-
 
 	if (entryRank != -1)
 	{
@@ -1731,7 +1669,7 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 		RF_Refresh();
 		RF_Refresh();
 
-		US_SetPrintY(entry*16 + topMargin);
+		US_SetPrintY(entry * 16 + topMargin);
 		US_SetPrintX(leftMargin);
 
 		US_LineInput(US_GetPrintX(), US_GetPrintY(), ck_highScores[entryRank].name, 0, 1, 0x39, 0x70);

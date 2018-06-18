@@ -19,24 +19,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "id_ca.h"
 #include "id_in.h"
-#include "id_vl.h"
 #include "id_rf.h"
 #include "id_sd.h"
-#include "ck_play.h"
-#include "ck_phys.h"
+#include "id_vl.h"
+#include "ck_act.h"
 #include "ck_def.h"
 #include "ck_game.h"
-#include "ck_act.h"
+#include "ck_phys.h"
+#include "ck_play.h"
 #include "ck4_ep.h"
 #include "ck5_ep.h"
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
-void CK_MapKeenWalk(CK_object * obj);
+void CK_MapKeenWalk(CK_object *obj);
 
 // =========================================================================
-
 
 void CK_DemoSignSpawn()
 {
@@ -67,15 +66,15 @@ void CK_DemoSignSpawn()
 	}
 }
 
-void CK_DemoSign( CK_object *demo)
+void CK_DemoSign(CK_object *demo)
 {
-	if (	demo->posX == rf_scrollXUnit && demo->posY == rf_scrollYUnit )
+	if (demo->posX == rf_scrollXUnit && demo->posY == rf_scrollYUnit)
 		return;
 	demo->posX = rf_scrollXUnit;
 	demo->posY = rf_scrollYUnit;
 
 	//place demo sprite in center top
-	RF_AddSpriteDraw( &(demo->sde), demo->posX+0x0A00 - 0x200, demo->posY+0x80,SPR_DEMOSIGN,false,3);
+	RF_AddSpriteDraw(&(demo->sde), demo->posX + 0x0A00 - 0x200, demo->posY + 0x80, SPR_DEMOSIGN, false, 3);
 }
 
 /*
@@ -99,7 +98,7 @@ void CK_ScoreBoxDrawTile8(int tilenum, uint8_t *dest, int destWidth, int planeSi
 	uint8_t *src = (uint8_t *)ca_graphChunks[ca_gfxInfoE.offTiles8] + 32 * tilenum;
 
 	// Copy the tile to the target bitmap
-	for (int plane = 0; plane < 4; plane++, dest+=planeSize)
+	for (int plane = 0; plane < 4; plane++, dest += planeSize)
 	{
 		uint8_t *d = dest;
 		for (int row = 0; row < 8; row++)
@@ -129,19 +128,18 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 	if (!ck_scoreBoxEnabled)
 		return;
 
-
 	// Draw the score if it's changed
-	if ((scorebox->user1 != (ck_gameState.keenScore>>16)) || (scorebox->user2 != (ck_gameState.keenScore&0xFFFF)))
+	if ((scorebox->user1 != (ck_gameState.keenScore >> 16)) || (scorebox->user2 != (ck_gameState.keenScore & 0xFFFF)))
 	{
 		int place, len, planeSize;
 		char buf[16];
-		uint8_t* dest;
+		uint8_t *dest;
 
 		VH_SpriteTableEntry *box = VH_GetSpriteTableEntry(SPR_SCOREBOX - ca_gfxInfoE.offSprites);
 
 		// Start drawing the tiles after the mask plane,
 		// and four rows from the top
-		dest = (uint8_t*)ca_graphChunks[SPR_SCOREBOX];
+		dest = (uint8_t *)ca_graphChunks[SPR_SCOREBOX];
 		dest += (planeSize = box->width * box->height);
 		dest += box->width * 4 + 1;
 
@@ -158,13 +156,11 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		for (char *c = buf; *c != 0; c++)
 		{
 			CK_ScoreBoxDrawTile8(*c - 6, dest++, box->width, planeSize);
-
 		}
 
-		scorebox->user1 = ck_gameState.keenScore>>16;
-		scorebox->user2 = ck_gameState.keenScore&0xFFFF;
+		scorebox->user1 = ck_gameState.keenScore >> 16;
+		scorebox->user2 = ck_gameState.keenScore & 0xFFFF;
 		updated = true;
-
 	}
 
 	// Draw the number of shots if it's changed
@@ -172,13 +168,13 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 	{
 		int place, len, planeSize;
 		char buf[16];
-		uint8_t* dest;
+		uint8_t *dest;
 
 		VH_SpriteTableEntry *box = VH_GetSpriteTableEntry(SPR_SCOREBOX - ca_gfxInfoE.offSprites);
 
 		// Start drawing the tiles after the mask plane,
 		// and 12 rows from the top
-		dest = (uint8_t*)ca_graphChunks[SPR_SCOREBOX];
+		dest = (uint8_t *)ca_graphChunks[SPR_SCOREBOX];
 		dest += (planeSize = box->width * box->height);
 		dest += box->width * 20 + 8;
 
@@ -210,13 +206,13 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 	{
 		int place, len, planeSize;
 		char buf[16];
-		uint8_t* dest;
+		uint8_t *dest;
 
 		VH_SpriteTableEntry *box = VH_GetSpriteTableEntry(SPR_SCOREBOX - ca_gfxInfoE.offSprites);
 
 		// Start drawing the tiles after the mask plane,
 		// and 12 rows from the top
-		dest = (uint8_t*)ca_graphChunks[SPR_SCOREBOX];
+		dest = (uint8_t *)ca_graphChunks[SPR_SCOREBOX];
 		dest += (planeSize = box->width * box->height);
 		dest += box->width * 20 + 3;
 
@@ -253,11 +249,9 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 
 	if (updated)
 		RF_AddSpriteDraw(&scorebox->sde, scorebox->posX + 0x40, scorebox->posY + 0x40, SPR_SCOREBOX, false, 3);
-
 }
 
 // =========================================================================
-
 
 /*
  * MapKeen Thinks
@@ -267,38 +261,38 @@ void CK_UpdateScoreBox(CK_object *scorebox)
  */
 
 int *ck_mapKeenFrames;
-static int word_417BA[] ={ 2, 3, 1, 3, 4, 6, 0, 2};
+static int word_417BA[] = {2, 3, 1, 3, 4, 6, 0, 2};
 
 void CK_SpawnMapKeen(int tileX, int tileY)
 {
-  if (ck_currentEpisode->ep == EP_CK4 && ck_gameState.levelState == LS_Foot)
-  {
-    ck_keenObj->clipped = CLIP_not;
-    ck_keenObj->type = CT_Player;
-    ck_keenObj->posX = ck_gameState.mapPosX;
-    ck_keenObj->posY = ck_gameState.mapPosY;
-    ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
-    ck_keenObj->zLayer = PRIORITIES - 1;
-    ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None;
+	if (ck_currentEpisode->ep == EP_CK4 && ck_gameState.levelState == LS_Foot)
+	{
+		ck_keenObj->clipped = CLIP_not;
+		ck_keenObj->type = CT_Player;
+		ck_keenObj->posX = ck_gameState.mapPosX;
+		ck_keenObj->posY = ck_gameState.mapPosY;
+		ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
+		ck_keenObj->zLayer = PRIORITIES - 1;
+		ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None;
 
-    if (ck_gameState.mapPosX < 0x1400)
-    {
-      // Going to pyramid of forbidden at 1E, 37
-      ck_keenObj->user1 = 280;
-      ck_keenObj->velX = (0x1E00 - ck_keenObj->posX) / 280 + 1;
-      ck_keenObj->velY = (0x3700 - ck_keenObj->posY) / 280 + 1;
-    }
-    else
-    {
-      // Return flight to 0x10, 0x2F
-      ck_keenObj->user1 = 140;
-      ck_keenObj->velX = (0x1000 - ck_keenObj->posX) / 140 + 1;
-      ck_keenObj->velY = (0x2F00 - ck_keenObj->posY) / 140 + 1;
-    }
+		if (ck_gameState.mapPosX < 0x1400)
+		{
+			// Going to pyramid of forbidden at 1E, 37
+			ck_keenObj->user1 = 280;
+			ck_keenObj->velX = (0x1E00 - ck_keenObj->posX) / 280 + 1;
+			ck_keenObj->velY = (0x3700 - ck_keenObj->posY) / 280 + 1;
+		}
+		else
+		{
+			// Return flight to 0x10, 0x2F
+			ck_keenObj->user1 = 140;
+			ck_keenObj->velX = (0x1000 - ck_keenObj->posX) / 140 + 1;
+			ck_keenObj->velY = (0x2F00 - ck_keenObj->posY) / 140 + 1;
+		}
 
-    CK_SetAction(ck_keenObj, CK_GetActionByName("CK4_ACT_MapKeenFoot0"));
-    return;
-  }
+		CK_SetAction(ck_keenObj, CK_GetActionByName("CK4_ACT_MapKeenFoot0"));
+		return;
+	}
 
 	ck_keenObj->type = 2;
 	if (ck_gameState.mapPosX == 0)
@@ -314,17 +308,17 @@ void CK_SpawnMapKeen(int tileX, int tileY)
 
 	ck_keenObj->active = OBJ_ALWAYS_ACTIVE;
 	ck_keenObj->zLayer = 1;
-	ck_keenObj->xDirection= ck_keenObj->yDirection = IN_motion_None;
+	ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None;
 	ck_keenObj->user1 = 6;
 	ck_keenObj->user2 = 3;
 	ck_keenObj->user3 = 0;
-  ck_keenObj->gfxChunk = SPR_MAPKEEN_STAND_W;
+	ck_keenObj->gfxChunk = SPR_MAPKEEN_STAND_W;
 	CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
 }
 
 //look for level entrry
 
-void CK_ScanForLevelEntry(CK_object * obj)
+void CK_ScanForLevelEntry(CK_object *obj)
 {
 
 	int tx, ty;
@@ -334,7 +328,7 @@ void CK_ScanForLevelEntry(CK_object * obj)
 	{
 		for (tx = obj->clipRects.tileX1; tx <= obj->clipRects.tileX2; tx++)
 		{
-			int infotile =CA_TileAtPos(tx, ty, 2);
+			int infotile = CA_TileAtPos(tx, ty, 2);
 			if (infotile > 0xC000 && infotile <= 0xC012)
 			{
 				// Vanilla keen stores the current map loaded in the cache manager
@@ -351,7 +345,7 @@ void CK_ScanForLevelEntry(CK_object * obj)
 	}
 }
 
-void CK_MapKeenStill(CK_object * obj)
+void CK_MapKeenStill(CK_object *obj)
 {
 
 	if (ck_inputFrame.dir != IN_dir_None)
@@ -367,7 +361,7 @@ void CK_MapKeenStill(CK_object * obj)
 	}
 }
 
-void CK_MapKeenWalk(CK_object * obj)
+void CK_MapKeenWalk(CK_object *obj)
 {
 
 	if (obj->user3 == 0)
@@ -421,12 +415,9 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 	int unitX, unitY;
 	uint16_t timer, animTile, ticsx2;
 
-  int boltTile = ck_currentEpisode->ep == EP_CK5 ? 0xA7F :
-    (ck_currentEpisode->ep == EP_CK6 ? 0xA35 : 0);
-  int doneTile = ck_currentEpisode->ep == EP_CK5 ? 0x427 :
-    (ck_currentEpisode->ep == EP_CK6 ? 0xA45 : 0);
-  int doneTile2 = ck_currentEpisode->ep == EP_CK5 ? 0 :
-    (ck_currentEpisode->ep == EP_CK6 ? 0xA45 : 0);
+	int boltTile = ck_currentEpisode->ep == EP_CK5 ? 0xA7F : (ck_currentEpisode->ep == EP_CK6 ? 0xA35 : 0);
+	int doneTile = ck_currentEpisode->ep == EP_CK5 ? 0x427 : (ck_currentEpisode->ep == EP_CK6 ? 0xA45 : 0);
+	int doneTile2 = ck_currentEpisode->ep == EP_CK5 ? 0 : (ck_currentEpisode->ep == EP_CK6 ? 0xA45 : 0);
 
 	SD_PlaySound(SOUND_UNKNOWN41);
 
@@ -434,7 +425,7 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 	unitY = (tileY << 8);
 
 	// Teleport Out
-	for (timer = 0; timer < 130; )
+	for (timer = 0; timer < 130;)
 	{
 		// NOTE: I think that the original keen game used
 		// RF_Refresh() to delay this loop
@@ -483,7 +474,7 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 		ck_keenObj->gfxChunk = ((SD_GetTimeCount() >> 3) % 3) + SPR_MAPKEEN_WALK1_N;
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
 
-		animTile = ((SD_GetTimeCount() >> 2)&1) + boltTile; // lighting bolt tile
+		animTile = ((SD_GetTimeCount() >> 2) & 1) + boltTile; // lighting bolt tile
 
 		RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
 	}
@@ -512,7 +503,7 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 	{
 
 		if (obj->active || obj->type != 8 ||
-				obj->clipRects.tileX2 < (rf_scrollXUnit >> 8) - 1 || obj->clipRects.tileX1 > (rf_scrollXUnit >> 8) + (320 >> 4) + 1 || obj->clipRects.tileY2 < (rf_scrollYUnit >> 8) - 1 || obj->clipRects.tileY1 > (rf_scrollYUnit >> 8) + (208 >> 4) + 1)
+			obj->clipRects.tileX2 < (rf_scrollXUnit >> 8) - 1 || obj->clipRects.tileX1 > (rf_scrollXUnit >> 8) + (320 >> 4) + 1 || obj->clipRects.tileY2 < (rf_scrollYUnit >> 8) - 1 || obj->clipRects.tileY1 > (rf_scrollYUnit >> 8) + (208 >> 4) + 1)
 			continue;
 
 		obj->visible = 1;
@@ -526,7 +517,7 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 	RF_Refresh();
 	SD_PlaySound(SOUND_UNKNOWN41);
 
-	for (timer = 0; timer < 90; )
+	for (timer = 0; timer < 90;)
 	{
 
 		//NOTE: Same delay tactic used here too
@@ -540,7 +531,7 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 		ck_keenObj->posY += SD_GetSpriteSync() * 3;
 		ck_keenObj->gfxChunk = (SD_GetTimeCount() >> 3) % 3 + SPR_MAPKEEN_WALK1_S;
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
-		animTile = ((SD_GetTimeCount() >> 2)&1) + boltTile; // animate return lighting bolt
+		animTile = ((SD_GetTimeCount() >> 2) & 1) + boltTile; // animate return lighting bolt
 		RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);
 	}
 
@@ -550,13 +541,12 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 	CK_PhysUpdateNormalObj(ck_keenObj);
 }
 
-
 // =========================================================================
 // Map Flags
 
 typedef struct
 {
-  uint16_t x, y;
+	uint16_t x, y;
 
 } CK_FlagPoint;
 
@@ -569,24 +559,20 @@ void CK_MapFlagSpawn(int tileX, int tileY)
 
 	flag->clipped = CLIP_not;
 	flag->zLayer = 3;
-  flag->type = CT_CLASS(MapFlag);
+	flag->type = CT_CLASS(MapFlag);
 	flag->active = OBJ_ACTIVE;
-  int xofs = ck_currentEpisode->ep == EP_CK4 ? 0x60 :
-    ck_currentEpisode->ep == EP_CK5 ? -0x50 :
-    ck_currentEpisode->ep == EP_CK6 ? 0xE0 : 0;
-  int yofs = ck_currentEpisode->ep == EP_CK4 ? -0x1E0 :
-    ck_currentEpisode->ep == EP_CK5 ? -0x1E0 :
-    ck_currentEpisode->ep == EP_CK6 ? -0x1A0 : 0;
+	int xofs = ck_currentEpisode->ep == EP_CK4 ? 0x60 : ck_currentEpisode->ep == EP_CK5 ? -0x50 : ck_currentEpisode->ep == EP_CK6 ? 0xE0 : 0;
+	int yofs = ck_currentEpisode->ep == EP_CK4 ? -0x1E0 : ck_currentEpisode->ep == EP_CK5 ? -0x1E0 : ck_currentEpisode->ep == EP_CK6 ? -0x1A0 : 0;
 
-  flag->posX = (tileX << 8) + xofs;
+	flag->posX = (tileX << 8) + xofs;
 	flag->posY = (tileY << 8) + yofs;
 	flag->actionTimer = US_RndT() / 16;
 
-  if (ck_currentEpisode->ep == EP_CK6)
-  {
-    uint16_t tile = CA_TileAtPos(tileX, tileY, 1)+1;
-    RF_ReplaceTiles(&tile, 1, tileX, tileY, 1, 1);
-  }
+	if (ck_currentEpisode->ep == EP_CK6)
+	{
+		uint16_t tile = CA_TileAtPos(tileX, tileY, 1) + 1;
+		RF_ReplaceTiles(&tile, 1, tileX, tileY, 1, 1);
+	}
 
 	CK_SetAction(flag, CK_GetActionByName("CK_ACT_MapFlag0"));
 }
@@ -594,135 +580,129 @@ void CK_MapFlagSpawn(int tileX, int tileY)
 int ck_flagTileSpotX, ck_flagTileSpotY;
 void CK_FlippingFlagSpawn(int tileX, int tileY)
 {
-  int32_t dx, dy;
+	int32_t dx, dy;
 
-  CK_object *obj = CK_GetNewObj(false);
-  obj->clipped = CLIP_not;
-  obj->zLayer = PRIORITIES - 1;
-  obj->type = CT_CLASS(MapFlag);
-  obj->active = OBJ_ALWAYS_ACTIVE;
-  obj->posX = ck_gameState.mapPosX - 0x100;
-  obj->posY = ck_gameState.mapPosY - 0x100;
+	CK_object *obj = CK_GetNewObj(false);
+	obj->clipped = CLIP_not;
+	obj->zLayer = PRIORITIES - 1;
+	obj->type = CT_CLASS(MapFlag);
+	obj->active = OBJ_ALWAYS_ACTIVE;
+	obj->posX = ck_gameState.mapPosX - 0x100;
+	obj->posY = ck_gameState.mapPosY - 0x100;
 
-  ck_flagTileSpotX = tileX;
-  ck_flagTileSpotY = tileY;
+	ck_flagTileSpotX = tileX;
+	ck_flagTileSpotY = tileY;
 
-  // Destination coords
-  int xofs = ck_currentEpisode->ep == EP_CK4 ? 0x60 :
-    (ck_currentEpisode->ep == EP_CK6 ? 0xE0 : 0);
-  int yofs = ck_currentEpisode->ep == EP_CK4 ? -0x260 :
-    (ck_currentEpisode->ep == EP_CK6 ? -0x220 : 0);
+	// Destination coords
+	int xofs = ck_currentEpisode->ep == EP_CK4 ? 0x60 : (ck_currentEpisode->ep == EP_CK6 ? 0xE0 : 0);
+	int yofs = ck_currentEpisode->ep == EP_CK4 ? -0x260 : (ck_currentEpisode->ep == EP_CK6 ? -0x220 : 0);
 
-  obj->user1 = (tileX << G_T_SHIFT) + xofs;
-  obj->user2 = (tileY << G_T_SHIFT) + yofs;
+	obj->user1 = (tileX << G_T_SHIFT) + xofs;
+	obj->user2 = (tileY << G_T_SHIFT) + yofs;
 
-  dx = (int32_t)obj->user1 - (int32_t)obj->posX;
-  dy = (int32_t)obj->user2 - (int32_t)obj->posY;
+	dx = (int32_t)obj->user1 - (int32_t)obj->posX;
+	dy = (int32_t)obj->user2 - (int32_t)obj->posY;
 
-  // Make a table of coordinates for the flag's path
-  if (ck_currentEpisode->ep == EP_CK4)
-  {
-    for (int i = 0; i < 30; i++)
-    {
-       // Draw points in a straight line between keen and the holster
-       ck_flagPoints[i].x = obj->posX + dx * (i < 24 ? i : 24) / 24;
-       ck_flagPoints[i].y = obj->posY + dy * i / 30;
+	// Make a table of coordinates for the flag's path
+	if (ck_currentEpisode->ep == EP_CK4)
+	{
+		for (int i = 0; i < 30; i++)
+		{
+			// Draw points in a straight line between keen and the holster
+			ck_flagPoints[i].x = obj->posX + dx * (i < 24 ? i : 24) / 24;
+			ck_flagPoints[i].y = obj->posY + dy * i / 30;
 
-       // Offset th eY points to mimic a parabolic trajectory
-       if (i < 10)
-         ck_flagPoints[i].y -= i * 0x30; // going up
-       else if (i < 15)
-         ck_flagPoints[i].y -= i * 16 + 0x140;
-       else if (i < 20)
-         ck_flagPoints[i].y -= (20 - i) * 16 + 0x1E0;
-       else
-         ck_flagPoints[i].y -= (29 - i) * 0x30;
-    }
-  }
-  else if (ck_currentEpisode->ep == EP_CK6)
-  {
-    // I think this is just the same code from CK4 that's been optimized differently
-    // by the compiler
-    int point0 = 0;
-    int point1 = 0x140;
-    int point2 = 0x320;
-    int point3 = 0x570;
+			// Offset th eY points to mimic a parabolic trajectory
+			if (i < 10)
+				ck_flagPoints[i].y -= i * 0x30; // going up
+			else if (i < 15)
+				ck_flagPoints[i].y -= i * 16 + 0x140;
+			else if (i < 20)
+				ck_flagPoints[i].y -= (20 - i) * 16 + 0x1E0;
+			else
+				ck_flagPoints[i].y -= (29 - i) * 0x30;
+		}
+	}
+	else if (ck_currentEpisode->ep == EP_CK6)
+	{
+		// I think this is just the same code from CK4 that's been optimized differently
+		// by the compiler
+		int point0 = 0;
+		int point1 = 0x140;
+		int point2 = 0x320;
+		int point3 = 0x570;
 
-    int i = 0;
-    do {
+		int i = 0;
+		do
+		{
 
-     // Draw points in a straight line between keen and the holster
-     ck_flagPoints[i].x = obj->posX + dx * (i < 24 ? i : 24) / 24;
-     ck_flagPoints[i].y = obj->posY + dy * i / 30;
+			// Draw points in a straight line between keen and the holster
+			ck_flagPoints[i].x = obj->posX + dx * (i < 24 ? i : 24) / 24;
+			ck_flagPoints[i].y = obj->posY + dy * i / 30;
 
-     // Offset th eY points to mimic a parabolic trajectory
-     if (i < 10)
-       ck_flagPoints[i].y -= point0;
-     else if (i < 15)
-       ck_flagPoints[i].y -= point1;
-     else if (i < 20)
-       ck_flagPoints[i].y -= point2;
-     else
-       ck_flagPoints[i].y -= point3;
+			// Offset th eY points to mimic a parabolic trajectory
+			if (i < 10)
+				ck_flagPoints[i].y -= point0;
+			else if (i < 15)
+				ck_flagPoints[i].y -= point1;
+			else if (i < 20)
+				ck_flagPoints[i].y -= point2;
+			else
+				ck_flagPoints[i].y -= point3;
 
+			point0 += 0x30;
+			point1 += 0x10;
+			point2 -= 0x10;
+			point3 -= 0x30;
+			i++;
+		} while (i != 30);
+	}
 
-     point0 += 0x30;
-     point1 += 0x10;
-     point2 -= 0x10;
-     point3 -= 0x30;
-     i++;
-    } while (i != 30);
-
-  }
-
-  CK_SetAction(obj, CK_GetActionByName("CK_ACT_MapFlagFlips0"));
-
+	CK_SetAction(obj, CK_GetActionByName("CK_ACT_MapFlagFlips0"));
 }
 
 void CK_MapFlagThrown(CK_object *obj)
 {
-  // Might this be a source of non-determinism?
-  // (if screen unfades at different rates based on diff architecture)
-  if (!vl_screenFaded)
-  {
-    SD_StopSound();
-    SD_PlaySound(SOUND_FLAGFLIP);
-    obj->currentAction = obj->currentAction->next;
-  }
-
+	// Might this be a source of non-determinism?
+	// (if screen unfades at different rates based on diff architecture)
+	if (!vl_screenFaded)
+	{
+		SD_StopSound();
+		SD_PlaySound(SOUND_FLAGFLIP);
+		obj->currentAction = obj->currentAction->next;
+	}
 }
 
 void CK_MapFlagFall(CK_object *obj)
 {
-  obj->user3 += SD_GetSpriteSync();
+	obj->user3 += SD_GetSpriteSync();
 
-  int timer = ck_currentEpisode->ep == EP_CK4 ? 50 :
-    (ck_currentEpisode->ep == EP_CK6 ? 58 : 0);
+	int timer = ck_currentEpisode->ep == EP_CK4 ? 50 : (ck_currentEpisode->ep == EP_CK6 ? 58 : 0);
 
-  if (obj->user3 > timer)
-    obj->user3 = timer;
+	if (obj->user3 > timer)
+		obj->user3 = timer;
 
-  obj->posX = ck_flagPoints[obj->user3/2].x;
-  obj->posY = ck_flagPoints[obj->user3/2].y;
+	obj->posX = ck_flagPoints[obj->user3 / 2].x;
+	obj->posY = ck_flagPoints[obj->user3 / 2].y;
 
-  obj->visible = true;
-  if (!obj->user1)
-    SD_PlaySound(SOUND_FLAGFLIP);
+	obj->visible = true;
+	if (!obj->user1)
+		SD_PlaySound(SOUND_FLAGFLIP);
 }
 
 void CK_MapFlagLand(CK_object *obj)
 {
-  // Plop the flag in its holster
-  obj->posX = obj->user1;
-  obj->posY = obj->user2 + 0x80;
-  obj->zLayer = PRIORITIES - 1;
+	// Plop the flag in its holster
+	obj->posX = obj->user1;
+	obj->posY = obj->user2 + 0x80;
+	obj->zLayer = PRIORITIES - 1;
 
-  SD_PlaySound(SOUND_FLAGLAND);
-  if (ck_currentEpisode->ep == EP_CK6)
-  {
-    uint16_t tile = CA_TileAtPos(ck_flagTileSpotX, ck_flagTileSpotY, 1)+1;
-    RF_ReplaceTiles(&tile, 1, ck_flagTileSpotX, ck_flagTileSpotY, 1, 1);
-  }
+	SD_PlaySound(SOUND_FLAGLAND);
+	if (ck_currentEpisode->ep == EP_CK6)
+	{
+		uint16_t tile = CA_TileAtPos(ck_flagTileSpotX, ck_flagTileSpotY, 1) + 1;
+		RF_ReplaceTiles(&tile, 1, ck_flagTileSpotX, ck_flagTileSpotY, 1, 1);
+	}
 }
 
 /*
@@ -732,7 +712,7 @@ void CK_Map_SetupFunctions()
 {
 	CK_ACT_AddFunction("CK_MapKeenStill", &CK_MapKeenStill);
 	CK_ACT_AddFunction("CK_MapKeenWalk", &CK_MapKeenWalk);
-  CK_ACT_AddFunction("CK_MapFlagThrown", &CK_MapFlagThrown);
-  CK_ACT_AddFunction("CK_MapFlagFall", &CK_MapFlagFall);
-  CK_ACT_AddFunction("CK_MapFlagLand", &CK_MapFlagLand);
+	CK_ACT_AddFunction("CK_MapFlagThrown", &CK_MapFlagThrown);
+	CK_ACT_AddFunction("CK_MapFlagFall", &CK_MapFlagFall);
+	CK_ACT_AddFunction("CK_MapFlagLand", &CK_MapFlagLand);
 }

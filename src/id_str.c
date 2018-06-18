@@ -17,11 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "id_mm.h"
 #include "id_str.h"
+#include "id_mm.h"
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /* String manager, allows objects to be indexed by strings */
@@ -38,13 +38,12 @@ static unsigned int STR_HashString(const char *str)
 	return hash;
 }
 
-
 // Allocate a table 'tabl' of size 'size'
 void STR_AllocTable(STR_Table **tabl, size_t size)
 {
-	MM_GetPtr((mm_ptr_t*)(tabl), sizeof(STR_Table) + size*(sizeof(STR_Entry)));
+	MM_GetPtr((mm_ptr_t *)(tabl), sizeof(STR_Table) + size * (sizeof(STR_Entry)));
 	// Lock it in memory so that it doesn't get purged.
-	MM_SetLock((mm_ptr_t*)(tabl), true);
+	MM_SetLock((mm_ptr_t *)(tabl), true);
 	(*tabl)->size = size;
 	for (size_t i = 0; i < size; ++i)
 	{
@@ -54,25 +53,26 @@ void STR_AllocTable(STR_Table **tabl, size_t size)
 }
 
 // Returns the pointer associated with 'str' in 'tabl'
-void* STR_LookupEntry(STR_Table *tabl, const char* str)
+void *STR_LookupEntry(STR_Table *tabl, const char *str)
 {
 	int hash = STR_HashString(str) % tabl->size;
-	for (size_t i = hash; ; i = (i+1)%tabl->size)
+	for (size_t i = hash;; i = (i + 1) % tabl->size)
 	{
-		if (tabl->arr[i].str == 0) break;
+		if (tabl->arr[i].str == 0)
+			break;
 		if (strcmp(str, tabl->arr[i].str) == 0)
 		{
 			return (tabl->arr[i].ptr);
 		}
 	}
-	return (void*)(0);
+	return (void *)(0);
 }
 
 // Add an entry 'str' with pointer 'value' to 'tabl'. Returns 'true' on success
 bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
 {
 	int hash = STR_HashString(str) % tabl->size;
-	for (size_t i = hash; ; i = (i+1)%tabl->size)
+	for (size_t i = hash;; i = (i + 1) % tabl->size)
 	{
 		if (tabl->arr[i].str == 0)
 		{

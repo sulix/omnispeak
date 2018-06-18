@@ -19,18 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "id_ca.h"
 #include "id_in.h"
-#include "id_vl.h"
 #include "id_rf.h"
 #include "id_sd.h"
-#include "ck_play.h"
-#include "ck_phys.h"
+#include "id_vl.h"
+#include "ck_act.h"
 #include "ck_def.h"
 #include "ck_game.h"
-#include "ck_act.h"
+#include "ck_phys.h"
+#include "ck_play.h"
 #include "ck5_ep.h"
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 // =========================================================================
 
@@ -63,7 +63,6 @@ void CK5_MapMiscFlagsCheck(CK_object *keen)
 		break;
 	}
 }
-
 
 void CK5_MapKeenTeleSpawn(int tileX, int tileY)
 {
@@ -139,7 +138,7 @@ void CK5_MapKeenElevator(CK_object *keen)
 	{
 		ck_nextX = keen->xDirection * 12 * SD_GetSpriteSync();
 		if (keen->xDirection == IN_motion_Right && ck_nextX + keen->posX > keen->user2 ||
-				keen->xDirection == IN_motion_Left && ck_nextX + keen->posX < keen->user2)
+			keen->xDirection == IN_motion_Left && ck_nextX + keen->posX < keen->user2)
 		{
 			ck_nextX = keen->user2 - keen->posX;
 		}
@@ -156,12 +155,12 @@ void CK5_MapKeenElevator(CK_object *keen)
 	// If keen has not yet hit the Y destination, keep moving
 	if (keen->yDirection == IN_motion_Down)
 	{
-		if ((uint16_t) (keen->posY + ck_nextY)<(uint16_t) keen->user1)
+		if ((uint16_t)(keen->posY + ck_nextY) < (uint16_t)keen->user1)
 			return;
 	}
 	else
 	{
-		if ((uint16_t) (keen->posY + ck_nextY)>(uint16_t) keen->user1)
+		if ((uint16_t)(keen->posY + ck_nextY) > (uint16_t)keen->user1)
 			return;
 	}
 
@@ -171,7 +170,7 @@ void CK5_MapKeenElevator(CK_object *keen)
 	keen->posX = keen->user2;
 	keen->posY = keen->user1;
 	keen->zLayer = 1;
-	keen->user1 = 4;  // Keen faces south
+	keen->user1 = 4; // Keen faces south
 	keen->user2 = 3;
 	keen->user3 = 0;
 	ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None;
@@ -206,7 +205,7 @@ void CK5_MapKeenElevator(CK_object *keen)
 				tile_array[y * 2 + x] = CA_TileAtPos(frame * 2 + x, y, 1);
 			}
 		}
-		RF_ReplaceTiles(tile_array, 1, tileX, tileY-2, 2, 2);
+		RF_ReplaceTiles(tile_array, 1, tileX, tileY - 2, 2, 2);
 		RF_Refresh();
 		//VL_DelayTics(2);
 		VL_DelayTics(8); // Simulate 8 calls to VL_WaitVBL();
@@ -218,13 +217,12 @@ void CK5_MapKeenElevator(CK_object *keen)
 	for (int frame = 0; frame < 32; frame++)
 	{
 		keen->posY += 8;
-		keen->gfxChunk = 0xFB + (frame/4)%3;
+		keen->gfxChunk = 0xFB + (frame / 4) % 3;
 		RF_AddSpriteDraw(&keen->sde, keen->posX, keen->posY, keen->gfxChunk, false, keen->zLayer);
 		RF_Refresh();
 		//VL_DelayTics(2);
 		//CK_SetTicsPerFrame();
 		VL_Present();
-
 	}
 
 	keen->clipped = CLIP_normal;
@@ -242,7 +240,7 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 	unitX = RF_TileToUnit(tileX);
 	unitY = RF_TileToUnit(tileY);
 
-	for (timer = 0; timer < 130; )
+	for (timer = 0; timer < 130;)
 	{
 		// NOTE: this function in omnispeak will calculate the new tile clipRects
 		// Here, Vanilla keen calls a function which does not calculate new clipRects
@@ -265,7 +263,6 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 
 		ticsx2 = SD_GetSpriteSync() * 2;
 		timer += SD_GetSpriteSync();
-
 
 		// If keen arrives at the target, then he's done walking
 		if (ck_keenObj->posX == unitX && ck_keenObj->posY == unitY)
@@ -306,7 +303,6 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 
 	SD_PlaySound(SOUND_UNKNOWN63);
 
-
 	// Draw the elevator operation
 	uint16_t tile_array[4];
 	for (int frame = 5; frame >= 0; frame--)
@@ -318,7 +314,7 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 				tile_array[y * 2 + x] = CA_TileAtPos(frame * 2 + x, y, 1);
 			}
 		}
-		RF_ReplaceTiles(tile_array, 1, tileX+dir, tileY-1, 2, 2);
+		RF_ReplaceTiles(tile_array, 1, tileX + dir, tileY - 1, 2, 2);
 		RF_Refresh();
 		//VL_DelayTics(2);
 		VL_DelayTics(8); // Simulate 8 calls to VL_WaitVBL();
@@ -333,15 +329,15 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 	// and store X in map units in user1; Y in user 2
 	int dest_tile = CA_TileAtPos(tileX, tileY, 2);
 	ck_keenObj->user2 = dest_tile / 256 * 256;
-	ck_keenObj->user1 = RF_TileToUnit((dest_tile & 0x007F)+1);
+	ck_keenObj->user1 = RF_TileToUnit((dest_tile & 0x007F) + 1);
 
 	// Move keen based on the relative location of the target
-	if ((uint16_t) ck_keenObj->user1 < (uint16_t) ck_keenObj->posY)
+	if ((uint16_t)ck_keenObj->user1 < (uint16_t)ck_keenObj->posY)
 		ck_keenObj->yDirection = IN_motion_Up;
 	else
 		ck_keenObj->yDirection = IN_motion_Down;
 
-	if ((uint16_t) ck_keenObj->user2 < (uint16_t) ck_keenObj->posX)
+	if ((uint16_t)ck_keenObj->user2 < (uint16_t)ck_keenObj->posX)
 		ck_keenObj->xDirection = IN_motion_Left;
 	else
 		ck_keenObj->xDirection = IN_motion_Right;
@@ -353,7 +349,6 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 	// Note: This should have been added
 	// ck_keenObj->user3 = 1;
 }
-
 
 /*
  * Setup all of the functions in this file.

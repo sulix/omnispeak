@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 typedef void (*CK_ACT_Function)(CK_object *obj);
 typedef void (*CK_ACT_ColFunction)(CK_object *obj1, CK_object *obj2);
 
-
 void CK_ACT_SetupFunctions();
 void CK_ACT_AddFunction(const char *fnName, CK_ACT_Function fn);
 void CK_ACT_AddColFunction(const char *fnName, CK_ACT_ColFunction fn);

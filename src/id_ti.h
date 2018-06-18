@@ -40,6 +40,4 @@ int8_t TI_ForeAnimTile(uint16_t tile);
 
 uint8_t TI_ForeAnimTime(uint16_t tile);
 
-
-
 #endif

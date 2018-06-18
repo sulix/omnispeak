@@ -20,25 +20,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CK_EP_H
 #define CK_EP_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 struct CK_object;
 
 typedef enum CK_Episode
 {
-  EP_Nil,
-  EP_CK4,
-  EP_CK5,
-  EP_CK6,
+	EP_Nil,
+	EP_CK4,
+	EP_CK5,
+	EP_CK6,
 } CK_Episode;
 
 //This structure defines an episode of Commander Keen, providing
 //function pointers to episode specific code and data.
 typedef struct CK_EpisodeDef
 {
-  // Identifier
-  CK_Episode ep;
+	// Identifier
+	CK_Episode ep;
 
 	// Extension for data files
 	char ext[4];
@@ -53,7 +53,7 @@ typedef struct CK_EpisodeDef
 	void (*defineConstants)();
 
 	// World map miscflags check function
-	void (*mapMiscFlagsCheck)(struct CK_object*);
+	void (*mapMiscFlagsCheck)(struct CK_object *);
 
 	// Check if the episode's files are all present.
 	bool (*isPresent)();

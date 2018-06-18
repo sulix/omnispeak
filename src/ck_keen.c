@@ -17,21 +17,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "ck_act.h"
 #include "ck_def.h"
 #include "ck_phys.h"
 #include "ck_play.h"
-#include "ck_act.h"
 
 // TODO: Handle multiple episodes in some way
 #include "ck4_ep.h"
 #include "ck5_ep.h"
 
+#include "id_ca.h"
 #include "id_heads.h"
 #include "id_in.h"
 #include "id_rf.h"
-#include "id_ti.h"
-#include "id_ca.h"
 #include "id_sd.h"
+#include "id_ti.h"
 
 // For all the shitty debug stuff  I have.
 #include <stdio.h>
@@ -44,7 +44,7 @@ CK_keenState ck_keenState;
 void CK_BasicDrawFunc1(CK_object *obj);
 
 soundnames *ck_itemSounds;
-uint16_t ck_itemPoints[]  = {  0,   0,   0,   0, 100, 200, 500, 1000, 2000, 5000,   0,   0,   0};
+uint16_t ck_itemPoints[] = {0, 0, 0, 0, 100, 200, 500, 1000, 2000, 5000, 0, 0, 0};
 uint16_t *ck_itemShadows;
 
 // Episode dependent stuff
@@ -56,8 +56,8 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_CLASS(Item))
 	{
-    if ((ck_currentEpisode->ep == EP_CK4 && b->user1 > 11) ||
-        (ck_currentEpisode->ep == EP_CK5 && b->user1 > 12))
+		if ((ck_currentEpisode->ep == EP_CK4 && b->user1 > 11) ||
+			(ck_currentEpisode->ep == EP_CK5 && b->user1 > 12))
 			return;
 
 		SD_PlaySound(ck_itemSounds[b->user1]);
@@ -80,7 +80,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		}
 		else if (b->user1 == 11)
 		{
-			ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
+			ck_gameState.numShots += (ck_gameState.difficulty == D_Easy) ? 8 : 5;
 		}
 		else if ((ck_currentEpisode->ep == EP_CK5) && (b->user1 == 12))
 		{
@@ -90,78 +90,77 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 	}
 	else if (b->type == CT_CLASS(Platform)) //Platform
 	{
-impossibleBullet:
+	impossibleBullet:
 		if (!ck_keenState.platform)
-			CK_PhysPushY(a,b);
+			CK_PhysPushY(a, b);
 	}
-  else if (ck_currentEpisode->ep == EP_CK4)
-  {
-    if (b->type == CT4_Foot)
-    {
-      ck_gameState.levelState = LS_Foot;
-    }
-    else if (b->type == CT4_StunnedCreature && b->user4 == CT4_Bounder)
-    {
-      if (!ck_keenState.platform)
-        CK_PhysPushY(a,b);
-    }
-    else if (b->type == CT4_Lindsey)
-    {
-       CK4_ShowPrincessMessage();
-       CK_RemoveObj(b);
-       // RF_ForceRefresh();
-    }
-    else if (b->type == CT4_CouncilMember)
-    {
-      if (a->topTI)
-        if (ca_mapOn == 14) // Janitor level
-        {
-          CK4_ShowJanitorMessage();
-          //RF_ForceRefresh();
-          CK_RemoveObj(b);
-        }
-        else
-        {
-           SD_PlaySound(SOUND_COUNCILSAVE);
-           ck_gameState.levelState = LS_CouncilRescued;
-        }
-    }
-    else if (b->type == CT4_Bounder)
-    {
-      CK_PhysPushXY(a, b, false);
-    }
-  }
-  else if (ck_currentEpisode->ep == EP_CK5)
-  {
+	else if (ck_currentEpisode->ep == EP_CK4)
+	{
+		if (b->type == CT4_Foot)
+		{
+			ck_gameState.levelState = LS_Foot;
+		}
+		else if (b->type == CT4_StunnedCreature && b->user4 == CT4_Bounder)
+		{
+			if (!ck_keenState.platform)
+				CK_PhysPushY(a, b);
+		}
+		else if (b->type == CT4_Lindsey)
+		{
+			CK4_ShowPrincessMessage();
+			CK_RemoveObj(b);
+			// RF_ForceRefresh();
+		}
+		else if (b->type == CT4_CouncilMember)
+		{
+			if (a->topTI)
+				if (ca_mapOn == 14) // Janitor level
+				{
+					CK4_ShowJanitorMessage();
+					//RF_ForceRefresh();
+					CK_RemoveObj(b);
+				}
+				else
+				{
+					SD_PlaySound(SOUND_COUNCILSAVE);
+					ck_gameState.levelState = LS_CouncilRescued;
+				}
+		}
+		else if (b->type == CT4_Bounder)
+		{
+			CK_PhysPushXY(a, b, false);
+		}
+	}
+	else if (ck_currentEpisode->ep == EP_CK5)
+	{
+	}
+	else if (ck_currentEpisode->ep == EP_CK6)
+	{
+		if (b->type == CT_Stunner)
+		{
+			// Reflected off of flect
+			if (b->user4)
+			{
+				CK_ShotHit(b);
+				CK_SetAction2(a, CK_GetActionByName("CK6_ACT_keenStunned0"));
+			}
 
-  }
-  else if (ck_currentEpisode->ep == EP_CK6)
-  {
-    if (b->type == CT_Stunner)
-    {
-      // Reflected off of flect
-      if (b->user4)
-      {
-        CK_ShotHit(b);
-        CK_SetAction2(a, CK_GetActionByName("CK6_ACT_keenStunned0"));
-      }
-
-      goto impossibleBullet;
-      // The legendary bug!  For some reason, the control flows to check if
-      // keen is riding a platform he contacts his own stunner bullet.
-    }
-  }
+			goto impossibleBullet;
+			// The legendary bug!  For some reason, the control flows to check if
+			// keen is riding a platform he contacts his own stunner bullet.
+		}
+	}
 }
 
 int ck_KeenRunXVels[8] = {0, 0, 4, 4, 8, -4, -4, -8};
 
 int ck_KeenPoleOffs[3] = {-8, 0, 8};
 
-
 void CK_IncreaseScore(int score)
 {
 	ck_gameState.keenScore += score;
-	if (IN_DemoGetMode() != IN_Demo_Off) return;
+	if (IN_DemoGetMode() != IN_Demo_Off)
+		return;
 	if (ck_gameState.keenScore > ck_gameState.nextKeenAt)
 	{
 		SD_PlaySound(SOUND_GOTEXTRALIFE);
@@ -197,7 +196,7 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 
 	if (itemNumber == 11)
 	{
-		ck_gameState.numShots += (ck_gameState.difficulty == D_Easy)?8:5;
+		ck_gameState.numShots += (ck_gameState.difficulty == D_Easy) ? 8 : 5;
 	}
 
 	CK_object *notify = CK_GetNewObj(true);
@@ -244,22 +243,22 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 	{
 		for (int x = obj->clipRects.tileX1; x <= obj->clipRects.tileX2; ++x)
 		{
-			int specialTileInfo =  (TI_ForeMisc(CA_TileAtPos(x,y,1)) & 0x7F);
+			int specialTileInfo = (TI_ForeMisc(CA_TileAtPos(x, y, 1)) & 0x7F);
 			switch (specialTileInfo)
 			{
-			case 0: break;
-      case MISCFLAG_DEADLY:
+			case 0:
+				break;
+			case MISCFLAG_DEADLY:
 				CK_KillKeen();
 				break;
 			case 4:
-				CK_KeenGetTileCentilife(x,y);
+				CK_KeenGetTileCentilife(x, y);
 				break;
 			case MISCFLAG_GEMHOLDER0:
 			case MISCFLAG_GEMHOLDER1:
 			case MISCFLAG_GEMHOLDER2:
 			case MISCFLAG_GEMHOLDER3:
-				if (y == obj->clipRects.tileY2 && obj->topTI && obj->currentAction != CK_GetActionByName("CK_ACT_keenPlaceGem")
-					&& ck_gameState.keyGems[specialTileInfo - MISCFLAG_GEMHOLDER0])
+				if (y == obj->clipRects.tileY2 && obj->topTI && obj->currentAction != CK_GetActionByName("CK_ACT_keenPlaceGem") && ck_gameState.keyGems[specialTileInfo - MISCFLAG_GEMHOLDER0])
 				{
 					int targetXUnit = RF_TileToUnit(x) - 64;
 					if (obj->posX == targetXUnit)
@@ -287,7 +286,7 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 			case 27:
 			case 28:
 			case 29:
-				CK_KeenGetTileItem(x,y,specialTileInfo - 17);
+				CK_KeenGetTileItem(x, y, specialTileInfo - 17);
 				/*CK_KeenGetTileItem(x,y,specialTileInfo - 21 + 4);*/
 				break;
 			}
@@ -312,10 +311,11 @@ void CK_KeenPressSwitchThink(CK_object *obj)
 	{
 		for (int tileY = switchTargetY; tileY < switchTargetY + 2; ++tileY)
 		{
-			for (int tileX = switchTargetX - ((tileY == switchTargetY)? 0 : 1); tileX < CA_GetMapWidth(); ++tileX)
+			for (int tileX = switchTargetX - ((tileY == switchTargetY) ? 0 : 1); tileX < CA_GetMapWidth(); ++tileX)
 			{
 				uint16_t currentTile = CA_TileAtPos(tileX, tileY, 1);
-				if (!TI_ForeAnimTile(currentTile)) break;
+				if (!TI_ForeAnimTile(currentTile))
+					break;
 				uint16_t newTile = currentTile + TI_ForeAnimTile(currentTile);
 				RF_ReplaceTiles(&newTile, 1, tileX, tileY, 1, 1);
 			}
@@ -323,7 +323,7 @@ void CK_KeenPressSwitchThink(CK_object *obj)
 	}
 	else
 	{
-		int infoPlaneInverses[8] = {2,3,0,1,6,7,4,5};
+		int infoPlaneInverses[8] = {2, 3, 0, 1, 6, 7, 4, 5};
 		uint16_t infoPlaneValue = CA_TileAtPos(switchTargetX, switchTargetY, 2);
 		if (infoPlaneValue >= 91 && infoPlaneValue < 99)
 		{
@@ -336,10 +336,9 @@ void CK_KeenPressSwitchThink(CK_object *obj)
 			infoPlaneValue ^= 0x1F;
 		}
 
-		CA_mapPlanes[2][switchTargetY*CA_GetMapWidth() + switchTargetX] = infoPlaneValue;
+		CA_mapPlanes[2][switchTargetY * CA_GetMapWidth() + switchTargetX] = infoPlaneValue;
 	}
 }
-
 
 bool CK_KeenPressUp(CK_object *obj)
 {
@@ -364,7 +363,7 @@ bool CK_KeenPressUp(CK_object *obj)
 	}
 
 	// Are we enterting a door?
-	if (tileMiscFlag == MISCFLAG_DOOR || tileMiscFlag == MISCFLAG_SECURITYDOOR )
+	if (tileMiscFlag == MISCFLAG_DOOR || tileMiscFlag == MISCFLAG_SECURITYDOOR)
 	{
 		uint16_t destUnitX = RF_TileToUnit(obj->clipRects.tileXmid) + 96;
 
@@ -428,7 +427,6 @@ bool CK_KeenPressUp(CK_object *obj)
 		return true;
 	}
 
-
 	// No? Return to our caller, who will handle poles/looking up.
 	return false;
 }
@@ -442,14 +440,16 @@ void CK_KeenSlide(CK_object *obj)
 		// Move left one px per tick.
 		ck_nextX -= SD_GetSpriteSync() * 16;
 		// If we're not at our target yet, return.
-		if (ck_nextX > deltaX) return;
+		if (ck_nextX > deltaX)
+			return;
 	}
 	else if (deltaX > 0)
 	{
 		// Move right one px per tick.
 		ck_nextX += SD_GetSpriteSync() * 16;
 		// If we're not at our target yet, return.
-		if (ck_nextX < deltaX) return;
+		if (ck_nextX < deltaX)
+			return;
 	}
 
 	// We're at our target.
@@ -493,7 +493,7 @@ void CK_KeenEnterDoor(CK_object *obj)
 		}
 	}
 
-	obj->posY = RF_TileToUnit((destination&0xFF)) - 256 + 15;
+	obj->posY = RF_TileToUnit((destination & 0xFF)) - 256 + 15;
 	obj->posX = RF_TileToUnit((destination >> 8));
 	obj->zLayer = 1;
 	obj->clipped = CLIP_not;
@@ -547,7 +547,6 @@ void CK_KeenRidePlatform(CK_object *obj)
 	// Save the platform pointer, we might be wiping it.
 	CK_object *plat = ck_keenState.platform;
 
-
 	if (obj->clipRects.unitX2 < plat->clipRects.unitX1 || obj->clipRects.unitX1 > plat->clipRects.unitX2)
 	{
 		// We've fallen off the platform horizontally.
@@ -590,12 +589,10 @@ void CK_KeenRidePlatform(CK_object *obj)
 			return;
 		}
 
-
 		// We're standing on something, don't fall down!
 		obj->topTI = 0x19;
 	}
 }
-
 
 bool CK_KeenTryClimbPole(CK_object *obj)
 {
@@ -605,8 +602,7 @@ bool CK_KeenTryClimbPole(CK_object *obj)
 		return false;
 
 	uint16_t candidateTile = CA_TileAtPos(obj->clipRects.tileXmid,
-		((ck_inputFrame.yDirection==-1)?(RF_UnitToTile(obj->clipRects.unitY1+96)):(obj->clipRects.tileY2+1)), 1);
-
+		((ck_inputFrame.yDirection == -1) ? (RF_UnitToTile(obj->clipRects.unitY1 + 96)) : (obj->clipRects.tileY2 + 1)), 1);
 
 	if ((TI_ForeMisc(candidateTile) & 0x7F) == 1)
 	{
@@ -635,13 +631,15 @@ void CK_KeenRunningThink(CK_object *obj)
 
 	if (ck_inputFrame.yDirection == -1)
 	{
-		if (CK_KeenTryClimbPole(obj)) return;
+		if (CK_KeenTryClimbPole(obj))
+			return;
 		if (ck_keenState.keenSliding || CK_KeenPressUp(obj))
 			return;
 	}
 	else if (ck_inputFrame.yDirection == 1)
 	{
-		if (CK_KeenTryClimbPole(obj)) return;
+		if (CK_KeenTryClimbPole(obj))
+			return;
 	}
 
 	if (ck_keenState.shootIsPressed && !ck_keenState.shootWasPressed)
@@ -687,7 +685,7 @@ void CK_KeenRunningThink(CK_object *obj)
 
 	// Andy seems to think this is Y as well. Need to do some more disasm.
 	// If this is an X vel, then surely we'd want to multiply it by the direction?
-	ck_nextX += ck_KeenRunXVels[obj->topTI&7] * SD_GetSpriteSync();
+	ck_nextX += ck_KeenRunXVels[obj->topTI & 7] * SD_GetSpriteSync();
 
 	if ((obj->currentAction->chunkLeft == CK_GetActionByName("CK_ACT_keenRun1")->chunkLeft) && !(obj->user3))
 	{
@@ -708,8 +706,6 @@ void CK_KeenRunningThink(CK_object *obj)
 	}
 }
 
-
-
 void CK_HandleInputOnGround(CK_object *obj)
 {
 	// If we're riding a platform, do it surfin' style!
@@ -726,7 +722,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenRun1");
 		CK_KeenRunningThink(obj);
-		ck_nextX = (obj->xDirection * obj->currentAction->velX * SD_GetSpriteSync())/4;
+		ck_nextX = (obj->xDirection * obj->currentAction->velX * SD_GetSpriteSync()) / 4;
 		return;
 	}
 
@@ -770,19 +766,21 @@ void CK_HandleInputOnGround(CK_object *obj)
 
 	if (ck_inputFrame.yDirection == -1)
 	{
-		if (CK_KeenTryClimbPole(obj)) return;
-		if (!ck_keenState.keenSliding && CK_KeenPressUp(obj)) return;
+		if (CK_KeenTryClimbPole(obj))
+			return;
+		if (!ck_keenState.keenSliding && CK_KeenPressUp(obj))
+			return;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookUp1");
 	}
 	else if (ck_inputFrame.yDirection == 1)
 	{
 		// Try poles.
-		if (CK_KeenTryClimbPole(obj)) return;
+		if (CK_KeenTryClimbPole(obj))
+			return;
 		// Keen looks down.
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookDown1");
 		return;
 	}
-
 }
 
 void CK_KeenStandingThink(CK_object *obj)
@@ -797,9 +795,9 @@ void CK_KeenStandingThink(CK_object *obj)
 		}
 	}
 
-	if (ck_inputFrame.xDirection || ck_inputFrame.yDirection || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed || ck_keenState.shootIsPressed )
+	if (ck_inputFrame.xDirection || ck_inputFrame.yDirection || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed || ck_keenState.shootIsPressed)
 	{
-		obj->user1 = obj->user2 = 0;	//Idle Time + Idle State
+		obj->user1 = obj->user2 = 0; //Idle Time + Idle State
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
 		CK_HandleInputOnGround(obj);
 
@@ -840,16 +838,15 @@ void CK_KeenStandingThink(CK_object *obj)
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenOpenBook1");
 		obj->user1 = 0;
 	}
-
 }
 
 void CK_KeenLookUpThink(CK_object *obj)
 {
 	if (ck_inputFrame.yDirection != -1 ||
-			ck_inputFrame.xDirection != 0 ||
-			(ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed) ||
-			(ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed) ||
-			(ck_keenState.shootIsPressed))
+		ck_inputFrame.xDirection != 0 ||
+		(ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed) ||
+		(ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed) ||
+		(ck_keenState.shootIsPressed))
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
 		CK_HandleInputOnGround(obj);
@@ -859,29 +856,28 @@ void CK_KeenLookUpThink(CK_object *obj)
 void CK_KeenLookDownThink(CK_object *obj)
 {
 	//Try to jump down
-	if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed && (obj->topTI&7) == 1)
+	if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed && (obj->topTI & 7) == 1)
 	{
 		ck_keenState.jumpWasPressed = true;
 
 		//If the tiles below the player are blocking on any side but the top, they cannot be jumped through
 		int tile1 = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2, 1);
-		int tile2 = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2+1, 1);
+		int tile2 = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2 + 1, 1);
 
 		if (TI_ForeLeft(tile1) || TI_ForeBottom(tile1) || TI_ForeRight(tile1))
 			return;
 
 		if (TI_ForeLeft(tile2) || TI_ForeBottom(tile2) || TI_ForeRight(tile2))
 			return;
-		#define max(a,b) (((a)>(b))?(a):(b))
+#define max(a, b) (((a) > (b)) ? (a) : (b))
 
-		uint16_t deltay = max(SD_GetSpriteSync(),4) << 4;
+		uint16_t deltay = max(SD_GetSpriteSync(), 4) << 4;
 
 		//Moving platforms
 		if (ck_keenState.platform)
 			deltay += ck_keenState.platform->deltaPosY;
 
 		ck_keenState.platform = 0;
-
 
 		obj->clipRects.unitY2 += deltay;
 		obj->posY += deltay;
@@ -893,9 +889,7 @@ void CK_KeenLookDownThink(CK_object *obj)
 		return;
 	}
 
-
-	if (ck_inputFrame.yDirection != 1 || ck_inputFrame.xDirection != 0 || (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
-		|| (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed))
+	if (ck_inputFrame.yDirection != 1 || ck_inputFrame.xDirection != 0 || (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed) || (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed))
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookDown4");
 		return;
@@ -1033,7 +1027,7 @@ void CK_KeenJumpThink(CK_object *obj)
 		{
 			CK_PhysGravityMid(obj);
 		}
-		else	// Normal or Hard
+		else // Normal or Hard
 		{
 			CK_PhysGravityHigh(obj);
 		}
@@ -1044,15 +1038,15 @@ void CK_KeenJumpThink(CK_object *obj)
 		}
 	}
 
-
 	//Move horizontally
 	if (ck_inputFrame.xDirection)
 	{
 
 		obj->xDirection = ck_inputFrame.xDirection;
-		CK_PhysAccelHorz(obj, ck_inputFrame.xDirection*2, 24);
+		CK_PhysAccelHorz(obj, ck_inputFrame.xDirection * 2, 24);
 	}
-	else CK_PhysDampHorz(obj);
+	else
+		CK_PhysDampHorz(obj);
 
 	//Pole
 	if (obj->bottomTI == 17)
@@ -1092,7 +1086,6 @@ void CK_KeenJumpThink(CK_object *obj)
 	{
 		CK_KeenTryClimbPole(obj);
 	}
-
 }
 
 extern int rf_scrollXUnit, rf_scrollYUnit;
@@ -1112,7 +1105,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 	if (obj->bottomTI)
 	{
 		//TODO: Something to do with poles (push keen into the centre)
-		if (obj->bottomTI == 17)	//Pole
+		if (obj->bottomTI == 17) //Pole
 		{
 			obj->posY -= 32;
 			obj->clipRects.unitY1 -= 32;
@@ -1121,8 +1114,8 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 		}
 		else
 		{
-			if (obj->bottomTI == 0x21)  // Bloog switches
-			CK6_ToggleBigSwitch(obj, false);
+			if (obj->bottomTI == 0x21) // Bloog switches
+				CK6_ToggleBigSwitch(obj, false);
 
 			if (!ck_gameState.jumpCheat)
 			{
@@ -1163,7 +1156,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 			}
 			if (obj->topTI != 0x19 || !ck_keenState.jumpTimer) // Or standing on a platform.
 			{
-				obj->user1 = obj->user2 = 0;	// Being on the ground is boring.
+				obj->user1 = obj->user2 = 0; // Being on the ground is boring.
 
 				//TODO: Finish these
 				if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShoot1"))
@@ -1193,7 +1186,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 		// temp8 = Keen's current upper y coord - 1.5 tiles, rounded to nearest tile, + 1.5 tiles
 		int temp8 = ((obj->clipRects.unitY1 - 64) & 0xFF00) + 64;
 		// temp10 = temp8 in tile coords, - 1
-		int temp10 = RF_UnitToTile(temp8) - 1 ;
+		int temp10 = RF_UnitToTile(temp8) - 1;
 
 		// If we're moving past a tile boundary.
 		if (temp6 < temp8 && obj->clipRects.unitY1 >= temp8)
@@ -1201,12 +1194,12 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 			// Moving left...
 			if (ck_inputFrame.xDirection == -1)
 			{
-				int tileX = obj->clipRects.tileX1 - ((obj->rightTI)?1:0);
+				int tileX = obj->clipRects.tileX1 - ((obj->rightTI) ? 1 : 0);
 				int tileY = temp10;
 				//VL_ScreenRect((tileX << 4) - (rf_scrollXUnit >> 4), (tileY << 4) - (rf_scrollYUnit >> 4), 16, 16, 1);
 				int upperTile = CA_TileAtPos(tileX, tileY, 1);
-				int lowerTile = CA_TileAtPos(tileX, tileY+1, 1);
-				if ( (!TI_ForeLeft(upperTile) && !TI_ForeRight(upperTile) && !TI_ForeTop(upperTile) && !TI_ForeBottom(upperTile)) &&
+				int lowerTile = CA_TileAtPos(tileX, tileY + 1, 1);
+				if ((!TI_ForeLeft(upperTile) && !TI_ForeRight(upperTile) && !TI_ForeTop(upperTile) && !TI_ForeBottom(upperTile)) &&
 					TI_ForeRight(lowerTile) && TI_ForeTop(lowerTile))
 				{
 					obj->xDirection = -1;
@@ -1219,10 +1212,10 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 			}
 			else if (ck_inputFrame.xDirection == 1)
 			{
-				int tileX = obj->clipRects.tileX2 + ((obj->leftTI)?1:0);
+				int tileX = obj->clipRects.tileX2 + ((obj->leftTI) ? 1 : 0);
 				int tileY = temp10;
 				int upperTile = CA_TileAtPos(tileX, tileY, 1);
-				int lowerTile = CA_TileAtPos(tileX, tileY+1, 1);
+				int lowerTile = CA_TileAtPos(tileX, tileY + 1, 1);
 
 				if (!TI_ForeLeft(upperTile) && !TI_ForeRight(upperTile) && !TI_ForeTop(upperTile) && !TI_ForeBottom(upperTile) &&
 					TI_ForeLeft(lowerTile) && TI_ForeTop(lowerTile))
@@ -1264,13 +1257,18 @@ void CK_KeenPogoThink(CK_object *obj)
 	}
 	else
 	{
-		if (ck_keenState.jumpIsPressed || ck_keenState.jumpTimer <= 9) CK_PhysGravityLow(obj);
-		else CK_PhysGravityHigh(obj);
+		if (ck_keenState.jumpIsPressed || ck_keenState.jumpTimer <= 9)
+			CK_PhysGravityLow(obj);
+		else
+			CK_PhysGravityHigh(obj);
 
-		if (ck_keenState.jumpTimer <= SD_GetSpriteSync()) ck_keenState.jumpTimer = 0;
-		else ck_keenState.jumpTimer -= SD_GetSpriteSync();
+		if (ck_keenState.jumpTimer <= SD_GetSpriteSync())
+			ck_keenState.jumpTimer = 0;
+		else
+			ck_keenState.jumpTimer -= SD_GetSpriteSync();
 
-		if (!ck_keenState.jumpTimer && obj->currentAction->next) obj->currentAction = obj->currentAction->next;
+		if (!ck_keenState.jumpTimer && obj->currentAction->next)
+			obj->currentAction = obj->currentAction->next;
 	}
 	if (ck_inputFrame.xDirection)
 	{
@@ -1281,8 +1279,10 @@ void CK_KeenPogoThink(CK_object *obj)
 	else
 	{
 		ck_nextX += obj->velX * SD_GetSpriteSync();
-		if (obj->velX < 0) obj->xDirection = -1;
-		else if (obj->velX > 0) obj->xDirection = 1;
+		if (obj->velX < 0)
+			obj->xDirection = -1;
+		else if (obj->velX > 0)
+			obj->xDirection = 1;
 	}
 
 	// Stop for poles?
@@ -1320,15 +1320,15 @@ void CK_KeenPogoThink(CK_object *obj)
 
 void CK_KeenBreakFuse(int x, int y)
 {
-	CK5_SpawnFuseExplosion(x,y);
+	CK5_SpawnFuseExplosion(x, y);
 	if (!(--ck_gameState.ep.ck5.fusesRemaining))
 	{
 		CK5_SpawnLevelEnd();
 	}
 
 	uint16_t brokenFuseTiles[] = {0, 0};
-	brokenFuseTiles[0] = CA_TileAtPos(0,0,1);
-	brokenFuseTiles[1] = CA_TileAtPos(0,1,1);
+	brokenFuseTiles[0] = CA_TileAtPos(0, 0, 1);
+	brokenFuseTiles[1] = CA_TileAtPos(0, 1, 1);
 
 	RF_ReplaceTiles(brokenFuseTiles, 1, x, y, 1, 2);
 }
@@ -1347,7 +1347,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 	if (obj->bottomTI)
 	{
 
-		if (obj->bottomTI == 17)	//Pole
+		if (obj->bottomTI == 17) //Pole
 		{
 			obj->posY -= 32;
 			obj->clipRects.unitY1 -= 32;
@@ -1355,24 +1355,26 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 			obj->posX = RF_TileToUnit(obj->clipRects.tileXmid) - 32;
 		}
 		else
-    {
-      if (obj->bottomTI == 0x21)  // Bloog switches
-        CK6_ToggleBigSwitch(obj, false);
+		{
+			if (obj->bottomTI == 0x21) // Bloog switches
+				CK6_ToggleBigSwitch(obj, false);
 
-      if (!ck_gameState.jumpCheat)
-      {
-        SD_PlaySound(SOUND_KEENHITCEILING);
+			if (!ck_gameState.jumpCheat)
+			{
+				SD_PlaySound(SOUND_KEENHITCEILING);
 
-        if (obj->bottomTI > 1)
-        {
-          obj->velY += 16;
-          if (obj->velY < 0) obj->velY = 0;
-        }
-        else obj->velY = 0;
+				if (obj->bottomTI > 1)
+				{
+					obj->velY += 16;
+					if (obj->velY < 0)
+						obj->velY = 0;
+				}
+				else
+					obj->velY = 0;
 
-        ck_keenState.jumpTimer = 0;
-      }
-    }
+				ck_keenState.jumpTimer = 0;
+			}
+		}
 	}
 
 	// Houston, we've landed!
@@ -1386,10 +1388,10 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 		}
 		else
 		{
-      if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
-      {
-        CK6_ToggleBigSwitch(obj, true);
-      }
+			if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
+			{
+				CK6_ToggleBigSwitch(obj, true);
+			}
 			else if (obj->topTI == 0x39) // Fuse
 			{
 				if (obj->velY >= 0x30)
@@ -1422,17 +1424,15 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		ck_keenState.jumpTimer = 0;
 		obj->velX = 0;
 		obj->velY = 0;
-		CK_PhysPushY(obj,other);
+		CK_PhysPushY(obj, other);
 	}
 	else if ((ck_currentEpisode->ep == EP_CK4) &&
-		 ((other->type == CT4_Mushroom) || (other->type == CT4_Arachnut) || (other->type == CT4_Berkeloid))
-	)
+		((other->type == CT4_Mushroom) || (other->type == CT4_Arachnut) || (other->type == CT4_Berkeloid)))
 	{
 		CK_KillKeen();
 	}
 	else if (((ck_currentEpisode->ep == EP_CK4) && (other->type == CT4_Bounder)) ||
-	         ((ck_currentEpisode->ep == EP_CK5) && ((other->type == CT5_Ampton) || (other->type == CT5_Korath)))
-	)
+		((ck_currentEpisode->ep == EP_CK5) && ((other->type == CT5_Ampton) || (other->type == CT5_Korath))))
 	{
 		obj->zLayer = 1;
 		obj->clipped = CLIP_normal;
@@ -1443,7 +1443,6 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		if (ck_currentEpisode->ep == EP_CK4)
 			CK_PhysPushXY(obj, other, false);
 	}
-
 }
 
 void CK_KeenSpecialDrawFunc(CK_object *obj)
@@ -1454,9 +1453,8 @@ void CK_KeenSpecialDrawFunc(CK_object *obj)
 // Used by CK6
 void CK_KeenJumpDownThink(CK_object *obj)
 {
-  obj->clipped = CLIP_normal;
+	obj->clipped = CLIP_normal;
 }
-
 
 void CK_KeenHangThink(CK_object *obj)
 {
@@ -1465,14 +1463,14 @@ void CK_KeenHangThink(CK_object *obj)
 		uint16_t tile;
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenPull1");
 
-		if(obj->xDirection == 1)
+		if (obj->xDirection == 1)
 		{
-			tile = CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1-1, 1);
+			tile = CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1 - 1, 1);
 			ck_nextY = -256;
 		}
 		else
 		{
-			tile = CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1-1, 1);
+			tile = CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY1 - 1, 1);
 			ck_nextY = -128;
 		}
 
@@ -1513,7 +1511,6 @@ void CK_KeenPullThink4(CK_object *obj)
 	ck_nextY = 128;
 }
 
-
 void CK_KeenDeathThink(CK_object *obj)
 {
 	CK_PhysGravityMid(obj);
@@ -1537,28 +1534,28 @@ void CK_KillKeen()
 	ck_scrollDisabled = true;
 	obj->clipped = CLIP_not;
 	obj->zLayer = 3;
-  if ((ck_currentEpisode->ep == EP_CK4) && ca_mapOn == 17)
-  {
-    if (US_RndT() < 0x80)
-    {
-      CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_KeenSwimDie0"));
-    }
-    else
-    {
-      CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_KeenSwimDie1"));
-    }
-  }
-  else
-  {
-    if (US_RndT() < 0x80)
-    {
-      CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie0"));
-    }
-    else
-    {
-      CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie1"));
-    }
-  }
+	if ((ck_currentEpisode->ep == EP_CK4) && ca_mapOn == 17)
+	{
+		if (US_RndT() < 0x80)
+		{
+			CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_KeenSwimDie0"));
+		}
+		else
+		{
+			CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_KeenSwimDie1"));
+		}
+	}
+	else
+	{
+		if (US_RndT() < 0x80)
+		{
+			CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie0"));
+		}
+		else
+		{
+			CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie1"));
+		}
+	}
 
 	SD_PlaySound(SOUND_KEENDIE);
 
@@ -1590,12 +1587,11 @@ void CK_KeenPoleHandleInput(CK_object *obj)
 		}
 	}
 
-
 	if (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed)
 	{
 		ck_keenState.jumpWasPressed = true;
 		SD_PlaySound(SOUND_KEENJUMP);
-		obj->velX = ck_KeenPoleOffs[ck_inputFrame.xDirection+1];
+		obj->velX = ck_KeenPoleOffs[ck_inputFrame.xDirection + 1];
 		obj->velY = -20;
 		obj->clipped = CLIP_normal;
 		ck_keenState.jumpTimer = 10;
@@ -1629,7 +1625,7 @@ void CK_KeenPoleSitThink(CK_object *obj)
 	// When keen is at ground level, allow dismounting using left/right.
 	if (ck_inputFrame.xDirection)
 	{
-		int groundTile = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2+1, 1);
+		int groundTile = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2 + 1, 1);
 		if (TI_ForeTop(groundTile))
 		{
 			obj->velX = 0;
@@ -1678,7 +1674,7 @@ void CK_KeenPoleUpThink(CK_object *obj)
 void CK_KeenPoleDownThink(CK_object *obj)
 {
 
-	int tileUnderneath = CA_TileAtPos(obj->clipRects.tileXmid, RF_UnitToTile(obj->clipRects.unitY2-64), 1);
+	int tileUnderneath = CA_TileAtPos(obj->clipRects.tileXmid, RF_UnitToTile(obj->clipRects.unitY2 - 64), 1);
 
 	if ((TI_ForeMisc(tileUnderneath) & 127) != 1)
 	{
@@ -1689,7 +1685,7 @@ void CK_KeenPoleDownThink(CK_object *obj)
 		obj->velX = ck_KeenPoleOffs[ck_inputFrame.xDirection + 1];
 		obj->velY = 0;
 		obj->clipped = CLIP_normal;
-		obj->clipRects.tileY2 -= 1;	//WTF?
+		obj->clipRects.tileY2 -= 1; //WTF?
 		return;
 	}
 
@@ -1754,7 +1750,7 @@ void CK_SpawnShot(int x, int y, int direction)
 
 	SD_PlaySound(SOUND_KEENSHOOT);
 
-	switch(direction)
+	switch (direction)
 	{
 	case 0:
 		shot->xDirection = 0;
@@ -1783,12 +1779,11 @@ void CK_SpawnShot(int x, int y, int direction)
 	{
 		for (CK_object *currentObj = ck_keenObj; currentObj; currentObj = currentObj->next)
 			if (currentObj->active &&
-			    (shot->clipRects.unitX2 > currentObj->clipRects.unitX1) &&
-			    (shot->clipRects.unitX1 < currentObj->clipRects.unitX2) &&
-			    (shot->clipRects.unitY1 < currentObj->clipRects.unitY2) &&
-			    (shot->clipRects.unitY2 > currentObj->clipRects.unitY1) &&
-			    currentObj->currentAction->collide
-			)
+				(shot->clipRects.unitX2 > currentObj->clipRects.unitX1) &&
+				(shot->clipRects.unitX1 < currentObj->clipRects.unitX2) &&
+				(shot->clipRects.unitY1 < currentObj->clipRects.unitY2) &&
+				(shot->clipRects.unitY2 > currentObj->clipRects.unitY1) &&
+				currentObj->currentAction->collide)
 				currentObj->currentAction->collide(currentObj, shot);
 	}
 }
@@ -1805,14 +1800,14 @@ void CK_ShotThink(CK_object *shot)
 {
 	// Stun things which are offscreen.
 	if ((shot->clipRects.tileX2 < RF_UnitToTile(rf_scrollXUnit)) ||
-	    (shot->clipRects.tileY2 < RF_UnitToTile(rf_scrollYUnit)) ||
-	    (shot->clipRects.tileX1 > RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320)) ||
-	    (shot->clipRects.tileY1 > RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
+		(shot->clipRects.tileY2 < RF_UnitToTile(rf_scrollYUnit)) ||
+		(shot->clipRects.tileX1 > RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320)) ||
+		(shot->clipRects.tileY1 > RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
 	{
 		if ((shot->clipRects.tileX2 + 10 < RF_UnitToTile(rf_scrollXUnit)) ||
-		    (shot->clipRects.tileX1 - 10 > RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320)) ||
-		    (shot->clipRects.tileY2 + 6 < RF_UnitToTile(rf_scrollYUnit)) ||
-		    (shot->clipRects.tileY1 - 6 > RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
+			(shot->clipRects.tileX1 - 10 > RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320)) ||
+			(shot->clipRects.tileY2 + 6 < RF_UnitToTile(rf_scrollYUnit)) ||
+			(shot->clipRects.tileY1 - 6 > RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
 		{
 			CK_RemoveObj(shot);
 			return;
@@ -1820,10 +1815,10 @@ void CK_ShotThink(CK_object *shot)
 		for (CK_object *currentObj = ck_keenObj->next; currentObj; currentObj = currentObj->next)
 		{
 			if (currentObj->active ||
-			    (shot->clipRects.unitX2 <= currentObj->clipRects.unitX1) ||
-			    (shot->clipRects.unitX1 >= currentObj->clipRects.unitX2) ||
-			    (shot->clipRects.unitY1 >= currentObj->clipRects.unitY2) ||
-			    (shot->clipRects.unitY2 <= currentObj->clipRects.unitY1))
+				(shot->clipRects.unitX2 <= currentObj->clipRects.unitX1) ||
+				(shot->clipRects.unitX1 >= currentObj->clipRects.unitX2) ||
+				(shot->clipRects.unitY1 >= currentObj->clipRects.unitY2) ||
+				(shot->clipRects.unitY2 <= currentObj->clipRects.unitY1))
 				continue;
 			if (currentObj->currentAction->collide)
 			{
@@ -1844,7 +1839,7 @@ void CK_ShotDrawFunc(CK_object *obj)
 	// shoot down through a pole hole
 	if (obj->topTI == 1 && obj->clipRects.tileX1 != obj->clipRects.tileX2)
 	{
-		t = CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1-1, 1);
+		t = CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY1 - 1, 1);
 		if (TI_ForeTop(t) == 0x11)
 		{
 			obj->topTI = 0x11;
@@ -1860,7 +1855,7 @@ void CK_ShotDrawFunc(CK_object *obj)
 	// shoot through pole hole upwards
 	if (obj->bottomTI == 1 && obj->clipRects.tileX1 != obj->clipRects.tileX2)
 	{
-		t = CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2+1, 1);
+		t = CA_TileAtPos(obj->clipRects.tileX2, obj->clipRects.tileY2 + 1, 1);
 		if (TI_ForeBottom(t) == 0x11)
 		{
 			obj->bottomTI = 0x11;
@@ -1967,40 +1962,40 @@ void CK_KeenSpawnShot(CK_object *obj)
 
 void CK_KeenSetupFunctions()
 {
-	CK_ACT_AddFunction("CK_KeenSlide",&CK_KeenSlide);
-	CK_ACT_AddFunction("CK_KeenEnterDoor0",&CK_KeenEnterDoor0);
-	CK_ACT_AddFunction("CK_KeenEnterDoor1",&CK_KeenEnterDoor1);
-	CK_ACT_AddFunction("CK_KeenEnterDoor",&CK_KeenEnterDoor);
-	CK_ACT_AddFunction("CK_KeenPlaceGem",&CK_KeenPlaceGem);
-	CK_ACT_AddFunction("CK_KeenRunningThink",&CK_KeenRunningThink);
-	CK_ACT_AddFunction("CK_KeenStandingThink",&CK_KeenStandingThink);
-	CK_ACT_AddFunction("CK_HandleInputOnGround",&CK_HandleInputOnGround);
-	CK_ACT_AddFunction("CK_KeenLookUpThink",&CK_KeenLookUpThink);
-	CK_ACT_AddFunction("CK_KeenLookDownThink",&CK_KeenLookDownThink);
-	CK_ACT_AddFunction("CK_KeenPressSwitchThink",&CK_KeenPressSwitchThink);
-	CK_ACT_AddFunction("CK_KeenDrawFunc",&CK_KeenDrawFunc);
-	CK_ACT_AddFunction("CK_KeenRunDrawFunc",&CK_KeenRunDrawFunc);
-	CK_ACT_AddFunction("CK_KeenReadThink",&CK_KeenReadThink);
-	CK_ACT_AddFunction("CK_KeenJumpThink",&CK_KeenJumpThink);
-	CK_ACT_AddFunction("CK_KeenJumpDrawFunc",&CK_KeenJumpDrawFunc);
-	CK_ACT_AddFunction("CK_KeenPogoThink",&CK_KeenPogoThink);
-	CK_ACT_AddFunction("CK_KeenPogoBounceThink",&CK_KeenPogoBounceThink);
-	CK_ACT_AddFunction("CK_KeenPogoDrawFunc",&CK_KeenPogoDrawFunc);
-	CK_ACT_AddFunction("CK_KeenSpecialDrawFunc",&CK_KeenSpecialDrawFunc);
-	CK_ACT_AddColFunction("CK_KeenSpecialColFunc",&CK_KeenSpecialColFunc);
-	CK_ACT_AddFunction("CK_KeenHangThink",&CK_KeenHangThink);
-	CK_ACT_AddFunction("CK_KeenPullThink1",&CK_KeenPullThink1);
-	CK_ACT_AddFunction("CK_KeenPullThink2",&CK_KeenPullThink2);
-	CK_ACT_AddFunction("CK_KeenPullThink3",&CK_KeenPullThink3);
-	CK_ACT_AddFunction("CK_KeenPullThink4",&CK_KeenPullThink4);
-	CK_ACT_AddFunction("CK_KeenPoleSitThink",&CK_KeenPoleSitThink);
-	CK_ACT_AddFunction("CK_KeenPoleUpThink",&CK_KeenPoleUpThink);
-	CK_ACT_AddFunction("CK_KeenPoleDownThink",&CK_KeenPoleDownThink);
-	CK_ACT_AddFunction("CK_KeenJumpDownThink",&CK_KeenJumpDownThink);
-	CK_ACT_AddFunction("CK_KeenPoleDownDrawFunc",&CK_KeenPoleDownDrawFunc);
-	CK_ACT_AddFunction("CK_KeenSetClipped",&CK_KeenSetClipped);
-	CK_ACT_AddColFunction("CK_KeenColFunc",&CK_KeenColFunc);
-	CK_ACT_AddFunction("CK_KeenDeathThink",&CK_KeenDeathThink);
+	CK_ACT_AddFunction("CK_KeenSlide", &CK_KeenSlide);
+	CK_ACT_AddFunction("CK_KeenEnterDoor0", &CK_KeenEnterDoor0);
+	CK_ACT_AddFunction("CK_KeenEnterDoor1", &CK_KeenEnterDoor1);
+	CK_ACT_AddFunction("CK_KeenEnterDoor", &CK_KeenEnterDoor);
+	CK_ACT_AddFunction("CK_KeenPlaceGem", &CK_KeenPlaceGem);
+	CK_ACT_AddFunction("CK_KeenRunningThink", &CK_KeenRunningThink);
+	CK_ACT_AddFunction("CK_KeenStandingThink", &CK_KeenStandingThink);
+	CK_ACT_AddFunction("CK_HandleInputOnGround", &CK_HandleInputOnGround);
+	CK_ACT_AddFunction("CK_KeenLookUpThink", &CK_KeenLookUpThink);
+	CK_ACT_AddFunction("CK_KeenLookDownThink", &CK_KeenLookDownThink);
+	CK_ACT_AddFunction("CK_KeenPressSwitchThink", &CK_KeenPressSwitchThink);
+	CK_ACT_AddFunction("CK_KeenDrawFunc", &CK_KeenDrawFunc);
+	CK_ACT_AddFunction("CK_KeenRunDrawFunc", &CK_KeenRunDrawFunc);
+	CK_ACT_AddFunction("CK_KeenReadThink", &CK_KeenReadThink);
+	CK_ACT_AddFunction("CK_KeenJumpThink", &CK_KeenJumpThink);
+	CK_ACT_AddFunction("CK_KeenJumpDrawFunc", &CK_KeenJumpDrawFunc);
+	CK_ACT_AddFunction("CK_KeenPogoThink", &CK_KeenPogoThink);
+	CK_ACT_AddFunction("CK_KeenPogoBounceThink", &CK_KeenPogoBounceThink);
+	CK_ACT_AddFunction("CK_KeenPogoDrawFunc", &CK_KeenPogoDrawFunc);
+	CK_ACT_AddFunction("CK_KeenSpecialDrawFunc", &CK_KeenSpecialDrawFunc);
+	CK_ACT_AddColFunction("CK_KeenSpecialColFunc", &CK_KeenSpecialColFunc);
+	CK_ACT_AddFunction("CK_KeenHangThink", &CK_KeenHangThink);
+	CK_ACT_AddFunction("CK_KeenPullThink1", &CK_KeenPullThink1);
+	CK_ACT_AddFunction("CK_KeenPullThink2", &CK_KeenPullThink2);
+	CK_ACT_AddFunction("CK_KeenPullThink3", &CK_KeenPullThink3);
+	CK_ACT_AddFunction("CK_KeenPullThink4", &CK_KeenPullThink4);
+	CK_ACT_AddFunction("CK_KeenPoleSitThink", &CK_KeenPoleSitThink);
+	CK_ACT_AddFunction("CK_KeenPoleUpThink", &CK_KeenPoleUpThink);
+	CK_ACT_AddFunction("CK_KeenPoleDownThink", &CK_KeenPoleDownThink);
+	CK_ACT_AddFunction("CK_KeenJumpDownThink", &CK_KeenJumpDownThink);
+	CK_ACT_AddFunction("CK_KeenPoleDownDrawFunc", &CK_KeenPoleDownDrawFunc);
+	CK_ACT_AddFunction("CK_KeenSetClipped", &CK_KeenSetClipped);
+	CK_ACT_AddColFunction("CK_KeenColFunc", &CK_KeenColFunc);
+	CK_ACT_AddFunction("CK_KeenDeathThink", &CK_KeenDeathThink);
 	CK_ACT_AddFunction("CK_KeenSpawnShot", &CK_KeenSpawnShot);
 	CK_ACT_AddFunction("CK_ShotThink", &CK_ShotThink);
 	CK_ACT_AddFunction("CK_ShotDrawFunc", &CK_ShotDrawFunc);

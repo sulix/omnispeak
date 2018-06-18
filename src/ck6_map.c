@@ -19,34 +19,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "id_ca.h"
 #include "id_in.h"
-#include "id_vl.h"
 #include "id_rf.h"
 #include "id_sd.h"
-#include "ck_play.h"
-#include "ck_phys.h"
+#include "id_vl.h"
+#include "ck_act.h"
 #include "ck_def.h"
 #include "ck_game.h"
-#include "ck_act.h"
+#include "ck_phys.h"
+#include "ck_play.h"
 #include "ck6_ep.h"
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 // =========================================================================
 
 void CK6_MapMiscFlagsCheck(CK_object *obj)
 {
-  if (obj->user3 == 0)
-  {
-    int tileX = obj->clipRects.tileXmid;
-    int tileY = RF_UnitToTile(obj->clipRects.unitY1 +
-      (obj->clipRects.unitY2 - obj->clipRects.unitY1)/2);
-    uint16_t tile = CA_TileAtPos(tileX, tileY, 1);
-    uint8_t miscValue = TI_ForeMisc(tile);
+	if (obj->user3 == 0)
+	{
+		int tileX = obj->clipRects.tileXmid;
+		int tileY = RF_UnitToTile(obj->clipRects.unitY1 +
+			(obj->clipRects.unitY2 - obj->clipRects.unitY1) / 2);
+		uint16_t tile = CA_TileAtPos(tileX, tileY, 1);
+		uint8_t miscValue = TI_ForeMisc(tile);
 
-    if (miscValue == MISCFLAG_TELEPORT)
-      CK_AnimateMapTeleporter(tileX, tileY);
-  }
+		if (miscValue == MISCFLAG_TELEPORT)
+			CK_AnimateMapTeleporter(tileX, tileY);
+	}
 }
 
 void CK6_Map_SetupFunctions()

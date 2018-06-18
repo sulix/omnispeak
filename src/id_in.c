@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string.h>
 
-char nonchar_keys[] ={
+char nonchar_keys[] = {
 	0x01, 0x0E, 0x0F, 0x1D,
 	0x2A, 0x39, 0x3A, 0x3B,
 	0x3C, 0x3D, 0x3E, 0x3F,
@@ -33,79 +33,74 @@ char nonchar_keys[] ={
 	0x1C, 0x36, 0x37, 0x38,
 	0x47, 0x49, 0x4F, 0x51,
 	0x52, 0x53, 0x45, 0x48,
-	0x50, 0x4B, 0x4D, 0x00
-};
-const char *nonchar_key_strings[] ={
-	"Esc",		"Bksp",		"Tab",		"Ctrl",
-	"LShft",	"Space",	"CapsLk",	"F1",
-	"F2",		"F3",		"F4",		"F5",
-	"F6",		"F7", 		"F8", 		"F9",
-	"F10",		"F11",		"F12",		"ScrlLk",
-	"Enter",	"RShft",	"PrtSc",	"Alt",
-	"Home",		"PgUp",		"End",		"PgDn",
-	"Ins",		"Del",		"NumLk",	"Up",
-	"Down",		"Left",		"Right",	""
-};
-const char *char_key_strings[] ={
+	0x50, 0x4B, 0x4D, 0x00};
+const char *nonchar_key_strings[] = {
+	"Esc", "Bksp", "Tab", "Ctrl",
+	"LShft", "Space", "CapsLk", "F1",
+	"F2", "F3", "F4", "F5",
+	"F6", "F7", "F8", "F9",
+	"F10", "F11", "F12", "ScrlLk",
+	"Enter", "RShft", "PrtSc", "Alt",
+	"Home", "PgUp", "End", "PgDn",
+	"Ins", "Del", "NumLk", "Up",
+	"Down", "Left", "Right", ""};
+const char *char_key_strings[] = {
 	/*	 0	 	 1	 	 2	 	 3		 4	     5	 	 6	 	7	     */
 	/*	 8	 	 9	 	 A	 	 B		 C		 D 		 E		 F	     */
-	"?",	"?",	"1",	"2",	"3",	"4",	"5",	"6",	/* 0 */
-	"7",	"8",	"9",	"0",	"-",	"+",	"?",	"?",
-	"Q",	"W",	"E",	"R",	"T",	"Y",	"U",	"I",	/* 1 */
-	"O",	"P",	"[",	"]",	"|",	"?",	"A",	"S",
-	"D",	"F",	"G",	"H",	"J",	"K",	"L",	";",	/* 2 */
-	"\"",	"?",	"?",	"?",	"Z",	"X",	"C",	"V",
-	"B",	"N",	"M",	",",	".",	"/",	"?",	"?",	/* 3 */
-	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",
-	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",	/* 4 */
-	"\x0F",	"?",	"-",	"\x15",	"5",	"\x11",	"+",	"?",
-	"\x13",	"?",	"?",	"?",	"?",	"?",	"?",	"?",	/* 5 */
-	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",
-	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",	/* 6 */
-	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",
-	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?",	/* 7 */
-	"?",	"?",	"?",	"?",	"?",	"?",	"?",	"?"
-};
+	"?", "?", "1", "2", "3", "4", "5", "6", /* 0 */
+	"7", "8", "9", "0", "-", "+", "?", "?",
+	"Q", "W", "E", "R", "T", "Y", "U", "I", /* 1 */
+	"O", "P", "[", "]", "|", "?", "A", "S",
+	"D", "F", "G", "H", "J", "K", "L", ";", /* 2 */
+	"\"", "?", "?", "?", "Z", "X", "C", "V",
+	"B", "N", "M", ",", ".", "/", "?", "?", /* 3 */
+	"?", "?", "?", "?", "?", "?", "?", "?",
+	"?", "?", "?", "?", "?", "?", "?", "?", /* 4 */
+	"\x0F", "?", "-", "\x15", "5", "\x11", "+", "?",
+	"\x13", "?", "?", "?", "?", "?", "?", "?", /* 5 */
+	"?", "?", "?", "?", "?", "?", "?", "?",
+	"?", "?", "?", "?", "?", "?", "?", "?", /* 6 */
+	"?", "?", "?", "?", "?", "?", "?", "?",
+	"?", "?", "?", "?", "?", "?", "?", "?", /* 7 */
+	"?", "?", "?", "?", "?", "?", "?", "?"};
 
 // =========================================================================
-static	char in_ASCIINames[] =		// Unshifted ASCII for scan codes
-{
-	//	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
-	0  , 27 , '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 8  , 9  ,	// 0
-	'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 13 , 0  , 'a', 's',	// 1
-	'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', 39 , '`', 0  , 92 , 'z', 'x', 'c', 'v',	// 2
-	'b', 'n', 'm', ',', '.', '/', 0  , '*', 0  , ' ', 0  , 0  , 0  , 0  , 0  , 0  ,	// 3
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , '7', '8', '9', '-', '4', '5', '6', '+', '1',	// 4
-	'2', '3', '0', 127, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 5
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 6
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0		// 7
+static char in_ASCIINames[] = // Unshifted ASCII for scan codes
+	{
+		//	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+		0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 8, 9,     // 0
+		'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 13, 0, 'a', 's', // 1
+		'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', 39, '`', 0, 92, 'z', 'x', 'c', 'v',  // 2
+		'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' ', 0, 0, 0, 0, 0, 0,		     // 3
+		0, 0, 0, 0, 0, 0, 0, '7', '8', '9', '-', '4', '5', '6', '+', '1',	    // 4
+		'2', '3', '0', 127, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,			     // 5
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,				     // 6
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0				     // 7
 },
-in_shiftNames[] =		// Shifted ASCII for scan codes
-{
-	//	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
-	0  , 27 , '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 8  , 9  ,	// 0
-	'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', 13 , 0  , 'A', 'S',	// 1
-	'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', 34 , '~', 0  , '|', 'Z', 'X', 'C', 'V',	// 2
-	'B', 'N', 'M', '<', '>', '?', 0  , '*', 0  , ' ', 0  , 0  , 0  , 0  , 0  , 0  ,	// 3
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , '7', '8', '9', '-', '4', '5', '6', '+', '1',	// 4
-	'2', '3', '0', 127, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 5
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 6
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0   	// 7
+	    in_shiftNames[] = // Shifted ASCII for scan codes
+	{
+		//	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+		0, 27, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 8, 9,     // 0
+		'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', 13, 0, 'A', 'S', // 1
+		'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', 34, '~', 0, '|', 'Z', 'X', 'C', 'V', // 2
+		'B', 'N', 'M', '<', '>', '?', 0, '*', 0, ' ', 0, 0, 0, 0, 0, 0,		     // 3
+		0, 0, 0, 0, 0, 0, 0, '7', '8', '9', '-', '4', '5', '6', '+', '1',	    // 4
+		'2', '3', '0', 127, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,			     // 5
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,				     // 6
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0				     // 7
 },
-in_specialNames[] =	// ASCII for 0xe0 prefixed codes
-{
-	//	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 0
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 13 , 0  , 0  , 0  ,	// 1
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 2
-	0  , 0  , 0  , 0  , 0  , '/', 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 3
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 4
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 5
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  ,	// 6
-	0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0   	// 7
+	    in_specialNames[] = // ASCII for 0xe0 prefixed codes
+	{
+		//	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   // 0
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0,  // 1
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   // 2
+		0, 0, 0, 0, 0, '/', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 3
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   // 4
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   // 5
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   // 6
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    // 7
 };
-
-
 
 bool in_Paused;
 IN_ControlType in_controlType = IN_ctrl_Keyboard1;
@@ -120,27 +115,23 @@ IN_Backend *in_backend = 0;
 
 #define IN_MAX_JOYSTICKS 2
 
-
-
 IN_KeyMapping in_kbdControls;
 
 int16_t in_gamepadButtons[4];
 
-IN_ScanCode *key_controls[] ={
+IN_ScanCode *key_controls[] = {
 	&in_kbdControls.jump, &in_kbdControls.pogo, &in_kbdControls.fire,
 	&in_kbdControls.upLeft, &in_kbdControls.up, &in_kbdControls.upRight,
 	&in_kbdControls.right, &in_kbdControls.downRight, &in_kbdControls.down,
-	&in_kbdControls.downLeft, &in_kbdControls.left
-};
+	&in_kbdControls.downLeft, &in_kbdControls.left};
 
-static	bool		CapsLock;
+static bool CapsLock;
 
-static IN_Direction	in_dirTable[] =		// Quick lookup for total direction
-{
-	IN_dir_NorthWest,	IN_dir_North,	IN_dir_NorthEast,
-	IN_dir_West,		IN_dir_None,	IN_dir_East,
-	IN_dir_SouthWest,	IN_dir_South,	IN_dir_SouthEast
-};
+static IN_Direction in_dirTable[] = // Quick lookup for total direction
+	{
+		IN_dir_NorthWest, IN_dir_North, IN_dir_NorthEast,
+		IN_dir_West, IN_dir_None, IN_dir_East,
+		IN_dir_SouthWest, IN_dir_South, IN_dir_SouthEast};
 
 void IN_HandleKeyUp(IN_ScanCode sc, bool special)
 {
@@ -157,20 +148,20 @@ void IN_HandleKeyDown(IN_ScanCode sc, bool special)
 	in_lastKeyScanned = sc;
 	char c;
 
-	if (sc == 0xe0)		// Special key prefix
+	if (sc == 0xe0) // Special key prefix
 		special = true;
-	else if (sc == IN_SC_Pause)	// Handle Pause key
+	else if (sc == IN_SC_Pause) // Handle Pause key
 		in_Paused = true;
 	else
 	{
-		if (sc & 0x80)	// Break code
+		if (sc & 0x80) // Break code
 		{
 			sc &= 0x7f;
 
 			// DEBUG - handle special keys: ctl-alt-delete, print scrn
 			in_keyStates[sc] = false;
 		}
-		else			// Make code
+		else // Make code
 		{
 			/*
 			LastCode = CurCode;
@@ -188,7 +179,7 @@ void IN_HandleKeyDown(IN_ScanCode sc, bool special)
 					// DEBUG - make caps lock light work
 				}
 
-				if (in_keyStates[IN_SC_LeftShift] || in_keyStates[IN_SC_RightShift])	// If shifted
+				if (in_keyStates[IN_SC_LeftShift] || in_keyStates[IN_SC_RightShift]) // If shifted
 				{
 					c = in_shiftNames[sc];
 					if ((c >= 'A') && (c <= 'Z') && CapsLock)
@@ -227,7 +218,7 @@ void IN_PumpEvents()
 	in_backend->pumpEvents();
 }
 
-const char *IN_GetScanName ( IN_ScanCode scan)
+const char *IN_GetScanName(IN_ScanCode scan)
 {
 	char *p;
 	const char **ps;
@@ -235,15 +226,15 @@ const char *IN_GetScanName ( IN_ScanCode scan)
 	p = nonchar_keys;
 	ps = nonchar_key_strings;
 
-	while ( *p)
+	while (*p)
 	{
-		if ( *p == scan )
+		if (*p == scan)
 			return *ps;
 
 		ps++;
 		p++;
 	}
-	return char_key_strings [scan];
+	return char_key_strings[scan];
 }
 
 void IN_WaitKey()
@@ -271,7 +262,7 @@ void IN_WaitForButtonPress()
 			return;
 		}
 
-	#if 0
+#if 0
 		if (MousePresent)
 		{
 			if (INL_GetMouseButtons())
@@ -281,7 +272,7 @@ void IN_WaitForButtonPress()
 			return;
 		}
 
-	#endif
+#endif
 		for (int i = 0; i < IN_MAX_JOYSTICKS; i++)
 		{
 			if (IN_JoyPresent(i))
@@ -334,12 +325,12 @@ void IN_Startup(void)
 
 	// Set the default kbd controls.
 	INL_SetupKbdControls();
-	
+
 	in_backend->startup(in_disableJoysticks);
 }
 
 // TODO: IMPLEMENT!
-void IN_Default(bool gotit,int16_t inputChoice)
+void IN_Default(bool gotit, int16_t inputChoice)
 {
 	in_controlType = (IN_ControlType)inputChoice;
 }
@@ -378,20 +369,20 @@ void IN_ClearKeysDown()
 {
 	in_lastKeyScanned = IN_SC_None;
 	in_lastASCII = IN_KP_None;
-	memset (in_keyStates, 0, sizeof (in_keyStates));
+	memset(in_keyStates, 0, sizeof(in_keyStates));
 }
 
-void CK_US_UpdateOptionsMenus( void );
+void CK_US_UpdateOptionsMenus(void);
 
 bool INL_StartJoy(int joystick)
 {
 	if (in_disableJoysticks)
 		return false;
-	
+
 	in_backend->joyStart(joystick);
-	
+
 	CK_US_UpdateOptionsMenus();
-	
+
 	return true;
 }
 
@@ -402,9 +393,8 @@ void INL_StopJoy(int joystick)
 	// If the joystick is unplugged, switch to keyboard immediately.
 	if (in_controlType == IN_ctrl_Joystick1 + joystick)
 		in_controlType = IN_ctrl_Keyboard1;
-	
+
 	CK_US_UpdateOptionsMenus();
-	
 }
 
 bool IN_JoyPresent(int joystick)
@@ -448,7 +438,7 @@ void IN_ReadCursor(IN_Cursor *cursor)
 			cursor->yMotion = IN_motion_Up;
 		else if (rawY > 0)
 			cursor->yMotion = IN_motion_Down;
-		
+
 		uint16_t buttons = IN_GetJoyButtonsDB(joy);
 		cursor->button0 = buttons & 1;
 		cursor->button1 = buttons & 2;
@@ -466,13 +456,13 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	if (in_demoState == IN_Demo_Playback)
 	{
 		uint8_t ctrlByte = in_demoBuf[in_demoPtr + 1];
-		controls->yDirection = (IN_Motion) ((ctrlByte & 3) - 1);
-		controls->xDirection = (IN_Motion) (((ctrlByte >> 2) & 3) - 1);
+		controls->yDirection = (IN_Motion)((ctrlByte & 3) - 1);
+		controls->xDirection = (IN_Motion)(((ctrlByte >> 2) & 3) - 1);
 		controls->jump = (ctrlByte >> 4) & 1;
 		controls->pogo = (ctrlByte >> 5) & 1;
 
 		// Delay for n frames.
-		if ((--in_demoBuf[in_demoPtr]) == 0 )
+		if ((--in_demoBuf[in_demoPtr]) == 0)
 		{
 			in_demoPtr += 2;
 			if (in_demoPtr >= in_demoBytes)
@@ -487,37 +477,44 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	{
 		if (in_controlType == IN_ctrl_Keyboard1 || in_controlType == IN_ctrl_Keyboard2)
 		{
-		if (IN_GetKeyState(in_kbdControls.upLeft))
-		{
-			controls->xDirection = IN_motion_Left;
-			controls->yDirection = IN_motion_Up;
-		}
-		else if (IN_GetKeyState(in_kbdControls.upRight))
-		{
-			controls->xDirection = IN_motion_Right;
-			controls->yDirection = IN_motion_Up;
-		}
-		else if (IN_GetKeyState(in_kbdControls.downLeft))
-		{
-			controls->xDirection = IN_motion_Left;
-			controls->yDirection = IN_motion_Down;
-		}
-		else if (IN_GetKeyState(in_kbdControls.downRight))
-		{
-			controls->xDirection = IN_motion_Right;
-			controls->yDirection = IN_motion_Down;
-		}
+			if (IN_GetKeyState(in_kbdControls.upLeft))
+			{
+				controls->xDirection = IN_motion_Left;
+				controls->yDirection = IN_motion_Up;
+			}
+			else if (IN_GetKeyState(in_kbdControls.upRight))
+			{
+				controls->xDirection = IN_motion_Right;
+				controls->yDirection = IN_motion_Up;
+			}
+			else if (IN_GetKeyState(in_kbdControls.downLeft))
+			{
+				controls->xDirection = IN_motion_Left;
+				controls->yDirection = IN_motion_Down;
+			}
+			else if (IN_GetKeyState(in_kbdControls.downRight))
+			{
+				controls->xDirection = IN_motion_Right;
+				controls->yDirection = IN_motion_Down;
+			}
 
-		if (IN_GetKeyState(in_kbdControls.up)) controls->yDirection = IN_motion_Up;
-		else if (IN_GetKeyState(in_kbdControls.down)) controls->yDirection = IN_motion_Down;
+			if (IN_GetKeyState(in_kbdControls.up))
+				controls->yDirection = IN_motion_Up;
+			else if (IN_GetKeyState(in_kbdControls.down))
+				controls->yDirection = IN_motion_Down;
 
-		if (IN_GetKeyState(in_kbdControls.left)) controls->xDirection = IN_motion_Left;
-		else if (IN_GetKeyState(in_kbdControls.right)) controls->xDirection = IN_motion_Right;
+			if (IN_GetKeyState(in_kbdControls.left))
+				controls->xDirection = IN_motion_Left;
+			else if (IN_GetKeyState(in_kbdControls.right))
+				controls->xDirection = IN_motion_Right;
 
-		if (IN_GetKeyState(in_kbdControls.jump)) controls->jump = true;
-		if (IN_GetKeyState(in_kbdControls.pogo)) controls->pogo = true;
-		// TODO: Handle fire input separately? (e.g. two-button firing)
-		if (IN_GetKeyState(in_kbdControls.fire)) controls->button2 = true;
+			if (IN_GetKeyState(in_kbdControls.jump))
+				controls->jump = true;
+			if (IN_GetKeyState(in_kbdControls.pogo))
+				controls->pogo = true;
+			// TODO: Handle fire input separately? (e.g. two-button firing)
+			if (IN_GetKeyState(in_kbdControls.fire))
+				controls->button2 = true;
 		}
 		else if (in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2)
 		{
@@ -534,14 +531,13 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 				controls->yDirection = IN_motion_Up;
 			else if (rawY > 0)
 				controls->yDirection = IN_motion_Down;
-			
+
 			uint16_t buttons = IN_GetJoyButtonsDB(joy);
 			controls->jump = buttons & 1;
 			controls->pogo = buttons & 2;
 		}
 
 		controls->dir = in_dirTable[3 * (controls->yDirection + 1) + controls->xDirection + 1];
-		
 	}
 
 	//TODO: Record this inputFrame
@@ -573,7 +569,6 @@ void IN_WaitButton()
 
 	// Now wait for a button press
 	IN_WaitForButtonPress();
-
 }
 
 // TODO: Handle Joy/Mouse
@@ -595,9 +590,7 @@ int IN_CheckAck()
 				di = 1;
 	}
 
-
 	return di;
-
 }
 
 bool IN_UserInput(int tics, bool waitPress)
@@ -614,7 +607,6 @@ bool IN_UserInput(int tics, bool waitPress)
 				IN_WaitForButtonPress();
 
 			return true;
-
 		}
 		VL_Present();
 	} while (SD_GetTimeCount() - lasttime < tics);

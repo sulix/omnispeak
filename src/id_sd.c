@@ -32,12 +32,16 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "id_sd.h"
 #include "id_ca.h"
+#include "id_sd.h"
 #include "id_us.h"
 #include "ck_cross.h"
 
-#define	SDL_SoundFinished() {SoundNumber = (soundnames)0; SoundPriority = 0;}
+#define SDL_SoundFinished()                  \
+	{                                    \
+		SoundNumber = (soundnames)0; \
+		SoundPriority = 0;           \
+	}
 
 #define PC_PIT_RATE 1193182
 #define SD_SFX_PART_RATE 140
@@ -59,7 +63,7 @@ SMMode MusicMode;
 uint16_t SoundPriority, DigiPriority;
 // Internal variables (TODO more to add)
 static bool SD_Started;
-volatile soundnames SoundNumber,DigiNumber;
+volatile soundnames SoundNumber, DigiNumber;
 uint8_t **SoundTable;
 int16_t NeedsDigitized; // Unused
 
@@ -79,11 +83,11 @@ Instrument alZeroInst;
 bool quiet_sfx;
 
 // This table maps channel numbers to carrier and modulator op cells
-static uint8_t carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
-               modifiers[9] = { 0, 1, 2, 8, 9,10,16,17,18},
-// This table maps percussive voice numbers to op cells
-               pcarriers[5] = {19,0xff,0xff,0xff,0xff},
-               pmodifiers[5] = {16,17,18,20,21};
+static uint8_t carriers[9] = {3, 4, 5, 11, 12, 13, 19, 20, 21},
+	       modifiers[9] = {0, 1, 2, 8, 9, 10, 16, 17, 18},
+	       // This table maps percussive voice numbers to op cells
+	pcarriers[5] = {19, 0xff, 0xff, 0xff, 0xff},
+	       pmodifiers[5] = {16, 17, 18, 20, 21};
 
 // Sequencer variables
 bool sqActive;
@@ -98,7 +102,7 @@ Originally SDL_t0Service is responsible for incrementing TimeCount.
 /*****************************************************************/
 
 // PRIVATE variables (in this source port)
-static uint32_t TimeCount = 0; // Kind of same as Wolf3D's TimeCount from ID_SD.C
+static uint32_t TimeCount = 0;    // Kind of same as Wolf3D's TimeCount from ID_SD.C
 static int32_t lasttimecount = 0; // Same as Wolf3D's lasttimecount from WL_DRAW.C?
 static uint16_t SpriteSync = 0;
 // PIT timer divisor, scaled (bt 8 if music is on, 2 otherwise).
@@ -199,7 +203,7 @@ void SDL_PCService(void)
 		asm	cli
 #endif
 			pcLastSample = s;
-			if (s)					// We have a frequency!
+			if (s) // We have a frequency!
 			{
 				t = pcSoundLookup[s];
 				// Turn the speaker & gate on
@@ -219,7 +223,7 @@ void SDL_PCService(void)
 			asm	out	0x61,al
 #endif
 			}
-			else					// Time for some silence
+			else // Time for some silence
 			{
 				// Turn the speaker & gate off
 				sd_backend->pcSpkOn(false, 0);
@@ -263,7 +267,7 @@ void SDL_ShutPC(void)
 void SDL_ALStopSound_Low(void)
 {
 	alSound = 0;
-	sd_backend->alOut(alFreqH + 0,0);
+	sd_backend->alOut(alFreqH + 0, 0);
 }
 
 /* NEVER call this from the callback!!! */
@@ -278,17 +282,17 @@ void SDL_ALStopSound(void)
 
 static void SDL_AlSetFXInst(Instrument *inst)
 {
-	uint8_t	c,m,cScale;
+	uint8_t c, m, cScale;
 
 	m = modifiers[0];
 	c = carriers[0];
-	sd_backend->alOut(m + alChar,inst->mChar);
-	sd_backend->alOut(m + alScale,inst->mScale);
-	sd_backend->alOut(m + alAttack,inst->mAttack);
-	sd_backend->alOut(m + alSus,inst->mSus);
-	sd_backend->alOut(m + alWave,inst->mWave);
+	sd_backend->alOut(m + alChar, inst->mChar);
+	sd_backend->alOut(m + alScale, inst->mScale);
+	sd_backend->alOut(m + alAttack, inst->mAttack);
+	sd_backend->alOut(m + alSus, inst->mSus);
+	sd_backend->alOut(m + alWave, inst->mWave);
 
-	sd_backend->alOut(c + alChar,inst->cChar);
+	sd_backend->alOut(c + alChar, inst->cChar);
 
 	cScale = inst->cScale;
 	if (quiet_sfx)
@@ -300,11 +304,11 @@ static void SDL_AlSetFXInst(Instrument *inst)
 		cScale = (uint8_t)((((int16_t)0) | cScale) >> 1) + (uint8_t)((((int16_t)0) | cScale) >> 2);
 		cScale = 0x3F - cScale;
 	}
-	sd_backend->alOut(c + alScale,cScale);
+	sd_backend->alOut(c + alScale, cScale);
 
-	sd_backend->alOut(c + alAttack,inst->cAttack);
-	sd_backend->alOut(c + alSus,inst->cSus);
-	sd_backend->alOut(c + alWave,inst->cWave);
+	sd_backend->alOut(c + alAttack, inst->cAttack);
+	sd_backend->alOut(c + alSus, inst->cSus);
+	sd_backend->alOut(c + alWave, inst->cWave);
 }
 
 static void SDL_ALPlaySound_Low(AdLibSound *sound)
@@ -347,17 +351,17 @@ void SDL_ALSoundService(void)
 	{
 		s = *alSound++;
 		if (!s)
-			sd_backend->alOut(alFreqH + 0,0);
+			sd_backend->alOut(alFreqH + 0, 0);
 		else
 		{
-			sd_backend->alOut(alFreqL + 0,s);
-			sd_backend->alOut(alFreqH + 0,alBlock);
+			sd_backend->alOut(alFreqL + 0, s);
+			sd_backend->alOut(alFreqH + 0, alBlock);
 		}
 
 		if (!(--alLengthLeft))
 		{
 			alSound = 0;
-			sd_backend->alOut(alFreqH + 0,0);
+			sd_backend->alOut(alFreqH + 0, 0);
 			SDL_SoundFinished();
 		}
 	}
@@ -365,7 +369,7 @@ void SDL_ALSoundService(void)
 
 void SDL_ALService(void)
 {
-	uint8_t a,v;
+	uint8_t a, v;
 	uint16_t w;
 
 	if (!sqActive)
@@ -378,7 +382,7 @@ void SDL_ALService(void)
 		// TODO/FIXME: Endianness??
 		a = *((uint8_t *)&w);
 		v = *((uint8_t *)&w + 1);
-		sd_backend->alOut(a,v);
+		sd_backend->alOut(a, v);
 		sqHackLen -= 4;
 	}
 	alTimeCount++;
@@ -428,21 +432,21 @@ static void SDL_StartAL(void)
 /* NEVER call this from the callback!!! */
 static bool SDL_DetectAdlib(bool assumepresence)
 {
-	uint8_t status1,status2;
+	uint8_t status1, status2;
 	int16_t i;
 
-	alOut(4,0x60);	// Reset T1 & T2
-	alOut(4,0x80);	// Reset IRQ
-//	status1 = readstat();
-	alOut(2,0xff);	// Set timer 1
-	alOut(4,0x21);	// Start timer 1
+	alOut(4, 0x60); // Reset T1 & T2
+	alOut(4, 0x80); // Reset IRQ
+			//	status1 = readstat();
+	alOut(2, 0xff); // Set timer 1
+	alOut(4, 0x21); // Start timer 1
 
 	/* Not relevant for us; We always assume the answer is "yes".
 	 * Besides, the original code is speed-sensitive and tends
 	 * to malfunction in too fast environments.
 	 */
 
-/*
+	/*
 	asm	mov	dx,0x388
 	asm	mov	cx,100
 	usecloop:
@@ -450,24 +454,24 @@ static bool SDL_DetectAdlib(bool assumepresence)
 	asm	loop usecloop
 */
 
-//	status2 = readstat();
-	alOut(4,0x60);
-	alOut(4,0x80);
+	//	status2 = readstat();
+	alOut(4, 0x60);
+	alOut(4, 0x80);
 
 	// Assume the answer is always "Yes"...
 
-//	if (assumepresence || (((status1 & 0xe0) == 0x00) && ((status2 & 0xe0) == 0xc0)))
+	//	if (assumepresence || (((status1 & 0xe0) == 0x00) && ((status2 & 0xe0) == 0xc0)))
 	{
-		for (i = 1;i <= 0xf5;i++) // Zero all the registers
-			alOut(i,0);
+		for (i = 1; i <= 0xf5; i++) // Zero all the registers
+			alOut(i, 0);
 
-		alOut(1,0x20); // Set WSE=1
-		alOut(8,0);    // Set CSM=0 & SEL=0
+		alOut(1, 0x20); // Set WSE=1
+		alOut(8, 0);    // Set CSM=0 & SEL=0
 
 		return true;
 	}
-//	else
-//		return false;
+	//	else
+	//		return false;
 }
 
 void SDL_PCService(void);
@@ -521,8 +525,12 @@ void SDL_ShutDevice(void)
 {
 	switch (SoundMode)
 	{
-		case sdm_PC: SDL_ShutPC(); break;
-		case sdm_AdLib: SDL_ShutAL(); break;
+	case sdm_PC:
+		SDL_ShutPC();
+		break;
+	case sdm_AdLib:
+		SDL_ShutAL();
+		break;
 	}
 	SoundMode = sdm_Off;
 }
@@ -541,14 +549,15 @@ void SDL_StartDevice(void)
 	{
 		SDL_StartAL();
 	}
-	SoundNumber = (soundnames)0; SoundPriority = 0;
+	SoundNumber = (soundnames)0;
+	SoundPriority = 0;
 }
 
 void SDL_SetTimerSpeed(void)
 {
 	int16_t scaleFactor = (MusicMode == smm_AdLib) ? 4 : 1;
 	SDL_SetIntsPerSecond(SD_SFX_PART_RATE * scaleFactor);
-	ScaledTimerDivisor *= (2*scaleFactor);
+	ScaledTimerDivisor *= (2 * scaleFactor);
 }
 
 void SD_StopSound(void);
@@ -560,26 +569,26 @@ bool SD_SetSoundMode(SDMode mode)
 	SD_StopSound();
 	switch (mode)
 	{
-		case sdm_Off:
-			NeedsDigitized = 0;
-			any_sound = true;
+	case sdm_Off:
+		NeedsDigitized = 0;
+		any_sound = true;
+		break;
+	case sdm_PC:
+		offset = 0;
+		NeedsDigitized = 0;
+		any_sound = true;
+		break;
+	case sdm_AdLib:
+		if (!AdLibPresent)
+		{
 			break;
-		case sdm_PC:
-			offset = 0;
-			NeedsDigitized = 0;
-			any_sound = true;
-			break;
-		case sdm_AdLib:
-			if (!AdLibPresent)
-			{
-				break;
-			}
-      offset = ca_audInfoE.numSounds;
-			NeedsDigitized = 0;
-			any_sound = true;
-			break;
-		default:
-			any_sound = false;
+		}
+		offset = ca_audInfoE.numSounds;
+		NeedsDigitized = 0;
+		any_sound = true;
+		break;
+	default:
+		any_sound = false;
 	}
 	if (any_sound && (mode != SoundMode))
 	{
@@ -636,12 +645,12 @@ void SD_Startup(void)
 	{
 		return;
 	}
-	
+
 	sd_backend = SD_Impl_GetBackend();
-	
+
 	if (sd_backend)
 		sd_backend->startup();
-	
+
 	/*word_4E19A = 0; */ /* TODO: Unused variable? */
 	alNoCheck = false;
 
@@ -660,7 +669,7 @@ void SD_Startup(void)
 	// For PC speaker
 	for (int16_t loopvar = 0; loopvar < 255; loopvar++)
 	{
-		pcSoundLookup[loopvar] = loopvar*60;
+		pcSoundLookup[loopvar] = loopvar * 60;
 	}
 
 	SD_Started = true;
@@ -672,14 +681,13 @@ void SD_Startup(void)
 //		the config file was present or not.
 //
 ///////////////////////////////////////////////////////////////////////////
-void
-SD_Default(bool gotit,SDMode sd,SMMode sm)
+void SD_Default(bool gotit, SDMode sd, SMMode sm)
 {
-	bool	gotsd,gotsm;
+	bool gotsd, gotsm;
 
 	gotsd = gotsm = gotit;
 
-	if (gotsd)	// Make sure requested sound hardware is available
+	if (gotsd) // Make sure requested sound hardware is available
 	{
 		switch (sd)
 		{
@@ -698,8 +706,7 @@ SD_Default(bool gotit,SDMode sd,SMMode sm)
 	if (sd != SoundMode)
 		SD_SetSoundMode(sd);
 
-
-	if (gotsm)	// Make sure requested music hardware is available
+	if (gotsm) // Make sure requested music hardware is available
 	{
 		switch (sm)
 		{
@@ -755,9 +762,14 @@ void SD_PlaySound(soundnames sound)
 	}
 	switch (SoundMode)
 	{
-		case sdm_PC: SDL_PCPlaySound((PCSound *)(SoundTable[sound])); break;
-		case sdm_AdLib: SDL_ALPlaySound((AdLibSound *)(SoundTable[sound])); break;
-		default: break;
+	case sdm_PC:
+		SDL_PCPlaySound((PCSound *)(SoundTable[sound]));
+		break;
+	case sdm_AdLib:
+		SDL_ALPlaySound((AdLibSound *)(SoundTable[sound]));
+		break;
+	default:
+		break;
 	}
 	SoundNumber = sound;
 	SoundPriority = priority;
@@ -767,9 +779,12 @@ uint16_t SD_SoundPlaying(void)
 {
 	switch (SoundMode)
 	{
-		case sdm_PC: return pcSound ? SoundNumber : 0;
-		case sdm_AdLib: return alSound ? SoundNumber : 0;
-		default: break;
+	case sdm_PC:
+		return pcSound ? SoundNumber : 0;
+	case sdm_AdLib:
+		return alSound ? SoundNumber : 0;
+	default:
+		break;
 	}
 	return 0;
 }
@@ -778,9 +793,14 @@ void SD_StopSound(void)
 {
 	switch (SoundMode)
 	{
-		case sdm_PC: SDL_PCStopSound(); break;
-		case sdm_AdLib: SDL_ALStopSound(); break;
-		default: break;
+	case sdm_PC:
+		SDL_PCStopSound();
+		break;
+	case sdm_AdLib:
+		SDL_ALStopSound();
+		break;
+	default:
+		break;
 	}
 	SDL_SoundFinished();
 }

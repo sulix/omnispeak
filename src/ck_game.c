@@ -24,10 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <string.h>
 
-#include "id_vl.h"
-#include "id_us.h"
 #include "id_ca.h"
 #include "id_rf.h"
+#include "id_us.h"
+#include "id_vl.h"
 #include "ck_act.h"
 #include "ck_cross.h"
 #include "ck_def.h"
@@ -44,21 +44,20 @@ static int ck_lastLevelFinished;
 
 // =========================================================================
 
-
 // Purge stuff for endgame
 void CK_EndingPurge()
 {
-  for (int i = ca_gfxInfoE.offSprites; i < ca_gfxInfoE.offTiles8; i++)
-  {
-    if (ca_graphChunks[i])
-      MM_SetPurge(ca_graphChunks + i, 1);
-  }
+	for (int i = ca_gfxInfoE.offSprites; i < ca_gfxInfoE.offTiles8; i++)
+	{
+		if (ca_graphChunks[i])
+			MM_SetPurge(ca_graphChunks + i, 1);
+	}
 
-  for (int i = ca_gfxInfoE.offTiles16; i < ca_gfxInfoE.offBinaries; i++)
-  {
-    if (ca_graphChunks[i])
-      MM_SetPurge(ca_graphChunks + i, 1);
-  }
+	for (int i = ca_gfxInfoE.offTiles16; i < ca_gfxInfoE.offBinaries; i++)
+	{
+		if (ca_graphChunks[i])
+			MM_SetPurge(ca_graphChunks + i, 1);
+	}
 }
 
 /*
@@ -82,7 +81,7 @@ void CK_GameOver()
 	US_PrintCentered("Game Over!");
 	VL_Present(); // VW_UpdateScreen();
 	IN_ClearKeysDown();
-	IN_UserInput(4*70, false);
+	IN_UserInput(4 * 70, false);
 }
 
 // OMNISPEAK - New cross-platform methods for reading/writing objects from/to saved games
@@ -103,6 +102,7 @@ bool CK_SaveObject(FILE *fp, CK_object *o)
 	// Just tells if "o->next" is zero or not
 	int16_t isnext = o->next ? 1 : 0;
 #endif
+	// clang-format off
 	// Now writing
 	return ((CK_Cross_fwriteInt16LE(&o->type, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(&activeInt, 1, fp) == 1)
@@ -153,6 +153,7 @@ bool CK_SaveObject(FILE *fp, CK_object *o)
 	        && (CK_Cross_fwriteInt16LE(&dummy, 1, fp) == 1) // prev
 #endif
 	);
+	// clang-format on
 }
 
 static bool CK_LoadObject(FILE *fp, CK_object *o)
@@ -165,6 +166,7 @@ static bool CK_LoadObject(FILE *fp, CK_object *o)
 	// Just tells if "o->next" is zero or not
 	int16_t isnext;
 	// Now reading
+	// clang-format off
 	if ((CK_Cross_freadInt16LE(&o->type, 1, fp) != 1)
 	    || (CK_Cross_freadInt16LE(&activeInt, 1, fp) != 1)
 	    || (CK_Cross_freadBoolFrom16LE(&o->visible, 1, fp) != 1)
@@ -209,6 +211,7 @@ static bool CK_LoadObject(FILE *fp, CK_object *o)
 	    || (CK_Cross_freadInt16LE(&dummy, 1, fp) != 1) // prev
 	)
 		return false;
+	// clang-format on
 
 	o->active = (CK_objActive)activeInt;
 	o->clipped = (CK_ClipType)clippedInt;
@@ -219,11 +222,13 @@ static bool CK_LoadObject(FILE *fp, CK_object *o)
 }
 
 // Similar new methods for writing/reading game state
-bool CK_SaveGameState(FILE* fp, CK_GameState *state)
+bool CK_SaveGameState(FILE *fp, CK_GameState *state)
 {
 	int16_t difficultyInt = (int16_t)state->difficulty; // Convert enum
 	// TODO - platform should be a part of the game state
 	uint16_t platformObjOffset = CK_ConvertObjPointerTo16BitOffset(ck_keenState.platform);
+
+	// clang-format off
 	return ((CK_Cross_fwriteInt16LE(&state->mapPosX, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(&state->mapPosY, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(state->levelsDone, sizeof(state->levelsDone)/2, fp) == sizeof(state->levelsDone)/2)
@@ -253,12 +258,14 @@ bool CK_SaveGameState(FILE* fp, CK_GameState *state)
 	        && (CK_Cross_fwriteInt16LE(&difficultyInt, 1, fp) == 1)
 	        && (CK_Cross_fwriteInt16LE(&platformObjOffset, 1, fp) == 1) // BACKWARDS COMPATIBILITY
 	);
+	// clang-format on
 }
 
-static bool CK_LoadGameState(FILE* fp, CK_GameState *state)
+static bool CK_LoadGameState(FILE *fp, CK_GameState *state)
 {
 	int16_t difficultyInt; // Convert num
 	uint16_t platformObjOffset;
+	// clang-format off
 	if ((CK_Cross_freadInt16LE(&state->mapPosX, 1, fp) != 1)
 	    || (CK_Cross_freadInt16LE(&state->mapPosY, 1, fp) != 1)
 	    || (CK_Cross_freadInt16LE(state->levelsDone, sizeof(state->levelsDone)/2, fp) != sizeof(state->levelsDone)/2)
@@ -294,6 +301,7 @@ static bool CK_LoadGameState(FILE* fp, CK_GameState *state)
 	    || (CK_Cross_freadInt16LE(&platformObjOffset, 1, fp) != 1) // BACKWARDS COMPATIBILITY
 	)
 		return false;
+	// clang-format on
 
 	state->difficulty = (CK_Difficulty)difficultyInt;
 	// TODO - platform should be a part of the game state
@@ -301,7 +309,7 @@ static bool CK_LoadGameState(FILE* fp, CK_GameState *state)
 	return true;
 }
 
-bool CK_SaveGame (FILE *fp)
+bool CK_SaveGame(FILE *fp)
 {
 	int i;
 	uint16_t cmplen, bufsize;
@@ -321,7 +329,7 @@ bool CK_SaveGame (FILE *fp)
 	/* Compress and save the current level */
 	for (i = 0; i < 3; i++)
 	{
-		cmplen = CAL_RLEWCompress( CA_TilePtrAtPos(0,0,i), bufsize, buf + 2, 0xABCD );
+		cmplen = CAL_RLEWCompress(CA_TilePtrAtPos(0, 0, i), bufsize, buf + 2, 0xABCD);
 
 		/* Write the size of the compressed level */
 		*((uint16_t *)buf) = cmplen;
@@ -348,10 +356,9 @@ bool CK_SaveGame (FILE *fp)
 	/* Free the buffer and return success */
 	MM_FreePtr((mm_ptr_t *)&buf);
 	return true;
-
 }
 
-bool CK_LoadGame (FILE *fp)
+bool CK_LoadGame(FILE *fp)
 {
 	int i;
 	uint16_t cmplen, bufsize;
@@ -369,7 +376,7 @@ bool CK_LoadGame (FILE *fp)
 	ca_levelnum--;
 	CK_LoadLevel(false);
 	// TODO - REIMPLEMENT
-/*
+	/*
 	if (mmerror)
 	{
 		mmerror = false;
@@ -388,7 +395,7 @@ bool CK_LoadGame (FILE *fp)
 	// MM_BombOnError(true) // TODO
 	MM_GetPtr((mm_ptr_t *)&buf, bufsize);
 	// TODO
-/*
+	/*
 	MM_BombOnError(false)
 	if (mmerror)
 	{
@@ -402,7 +409,7 @@ bool CK_LoadGame (FILE *fp)
 	}
 */
 	/* Decompress and load the level */
-	for (i = 0; i < 3; i++ )
+	for (i = 0; i < 3; i++)
 	{
 		if (CK_Cross_freadInt16LE(&cmplen, 1, fp) != 1)
 		{
@@ -416,7 +423,7 @@ bool CK_LoadGame (FILE *fp)
 			return false;
 		}
 
-		CAL_RLEWExpand(buf, CA_TilePtrAtPos(0,0,i), bufsize, 0xABCD );
+		CAL_RLEWExpand(buf, CA_TilePtrAtPos(0, 0, i), bufsize, 0xABCD);
 	}
 
 	MM_FreePtr((mm_ptr_t *)&buf);
@@ -476,7 +483,7 @@ bool CK_LoadGame (FILE *fp)
 			break;
 
 		/* Otherwise we add a new object */
-		newObj = CK_GetNewObj( false );
+		newObj = CK_GetNewObj(false);
 	}
 
 	ck_scoreBoxObj->user1 = -1;
@@ -489,7 +496,6 @@ bool CK_LoadGame (FILE *fp)
 
 	return true;
 }
-
 
 //TODO: KillKeen
 
@@ -509,31 +515,31 @@ void CK_MapLevelMarkAsDone(void)
 	uint16_t *pw;
 
 	i = 0;
-	pw = CA_TilePtrAtPos(0,0,2);	/* info layer */
+	pw = CA_TilePtrAtPos(0, 0, 2); /* info layer */
 
 	/* Look through the map for level-related tiles */
-	for ( y = 0; y < CA_GetMapHeight(); y++ )
+	for (y = 0; y < CA_GetMapHeight(); y++)
 	{
-		for ( x = 0; x < CA_GetMapWidth(); x++, pw++, i++ )
+		for (x = 0; x < CA_GetMapWidth(); x++, pw++, i++)
 		{
 			w = *pw;
 			level = w & 0xFF;
-			if ( level >= 1 && level <= ck_currentEpisode->lastLevelToMarkAsDone && ck_gameState.levelsDone[level] )
-			{	/* Is this a level tile */
+			if (level >= 1 && level <= ck_currentEpisode->lastLevelToMarkAsDone && ck_gameState.levelsDone[level])
+			{ /* Is this a level tile */
 				flags = w >> 8;
 				/* Set the info tile at this position to 0 */
 				*pw = 0;
-				if ( flags == 0xD0 )
-				{	/* If this is a 'blocking' part of the level */
+				if (flags == 0xD0)
+				{ /* If this is a 'blocking' part of the level */
 					/* Set the foreground tile at this position to 0 also (remove the fences) */
-					CA_SetTileAtPos(x,y,1,0);
+					CA_SetTileAtPos(x, y, 1, 0);
 				}
-				else if ( flags == 0xF0 )
-				{	/* If this is the flag holder for the level */
-          if (ck_currentEpisode->ep != EP_CK5 && ck_lastLevelFinished == level)
-            CK_FlippingFlagSpawn(x,y);
-          else
-					  CK_MapFlagSpawn(x,y);
+				else if (flags == 0xF0)
+				{ /* If this is the flag holder for the level */
+					if (ck_currentEpisode->ep != EP_CK5 && ck_lastLevelFinished == level)
+						CK_FlippingFlagSpawn(x, y);
+					else
+						CK_MapFlagSpawn(x, y);
 				}
 			}
 		}
@@ -560,7 +566,6 @@ void CK_BeginFadeDrawing(void)
 	RF_SetDrawFunc(&CK_UpdateFadeDrawing);
 }
 
-
 const char **ck_levelEntryTexts;
 const char **ck_levelNames;
 
@@ -583,8 +588,8 @@ void CK_LoadLevel(bool doCache)
 	RF_NewMap();
 	CA_ClearMarks();
 
-  CK_SetupObjArray(); // This is done inside ScanInfoLayer in CK4
-  ck_currentEpisode->scanInfoLayer();
+	CK_SetupObjArray(); // This is done inside ScanInfoLayer in CK4
+	ck_currentEpisode->scanInfoLayer();
 
 	if (ca_mapOn == 0)
 	{
@@ -606,7 +611,7 @@ void CK_LoadLevel(bool doCache)
 		{
 			CA_CacheMarks("DEMO");
 		}
-    else if (ck_currentEpisode->ep == EP_CK5 && ca_mapOn == 0 && ck_keenObj->clipRects.tileY1 > 100)
+		else if (ck_currentEpisode->ep == EP_CK5 && ca_mapOn == 0 && ck_keenObj->clipRects.tileY1 > 100)
 		{
 			/* Stepping on to korath*/
 			CA_CacheMarks("Keen steps out\nonto Korath III");
@@ -617,19 +622,17 @@ void CK_LoadLevel(bool doCache)
 		}
 	}
 
-
 	// CA_CacheMarks(0);
 	if (doCache)
 		CK_BeginFadeDrawing();
 }
-
 
 // Cache Box Routines
 // These are accessed as callbacks by the caching manager
 
 static int ck_cacheCountdownNum, ck_cacheBoxChunksPerPic, ck_cacheBoxChunkCounter;
 
-void CK_BeginCacheBox (const char *title, int numChunks)
+void CK_BeginCacheBox(const char *title, int numChunks)
 {
 	int totalfree;
 	uint16_t w, h;
@@ -706,23 +709,22 @@ void CK_UpdateCacheBox()
 {
 	ck_cacheBoxChunkCounter--;
 
-	if ( ck_cacheBoxChunkCounter == 0 && ck_cacheCountdownNum <= 4 )
+	if (ck_cacheBoxChunkCounter == 0 && ck_cacheCountdownNum <= 4)
 	{
 
 		ck_cacheBoxChunkCounter = ck_cacheBoxChunksPerPic;
-		if ( ca_graphChunks[PIC_COUNTDOWN4 + ck_cacheCountdownNum] )
-			VH_DrawBitmap( US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN4 + ck_cacheCountdownNum);
+		if (ca_graphChunks[PIC_COUNTDOWN4 + ck_cacheCountdownNum])
+			VH_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN4 + ck_cacheCountdownNum);
 		VL_Present();
 		// Because loading is VERY fast on omnispeak, add artificial delay
 		VL_DelayTics(10);
-AZ:
+	AZ:
 		ck_cacheCountdownNum++;
 	}
 }
 
 void CK_FinishCacheBox()
 {
-
 }
 
 void CK_TryAgainMenu()
@@ -734,94 +736,94 @@ void CK_TryAgainMenu()
 	char buf[80];
 
 	/* Copy and measure the level name */
-	strcpy( buf, ck_levelNames[ca_mapOn] );
-	CK_MeasureMultiline( buf, &w, &h );
+	strcpy(buf, ck_levelNames[ca_mapOn]);
+	CK_MeasureMultiline(buf, &w, &h);
 
 	/* Take away all gems */
-	memset( ck_gameState.keyGems, 0, sizeof (ck_gameState.keyGems) );
+	memset(ck_gameState.keyGems, 0, sizeof(ck_gameState.keyGems));
 
 	/* If lives remain, see if they want to try this level again */
-	if ( --ck_gameState.numLives >= 0 )
+	if (--ck_gameState.numLives >= 0)
 	{
 		//VW_SyncPages();
-		US_CenterWindow( 20, 8 );
+		US_CenterWindow(20, 8);
 		US_SetPrintY(US_GetPrintY() + 3);
-		US_CPrint( "You didn't make it past");
+		US_CPrint("You didn't make it past");
 		y1 = US_GetPrintY() + 22;
 
 		/* Center the level name vertically */
-		if ( h < 15 )
+		if (h < 15)
 			US_SetPrintY(US_GetPrintY() + 4);
 		US_CPrint(buf);
 
 		US_SetPrintY(y1 + 2);
-		US_CPrint( "Try Again");
+		US_CPrint("Try Again");
 		US_SetPrintY(US_GetPrintY() + 4);
 		y2 = US_GetPrintY() - 2;
 		US_CPrint(STR_EXIT_TO_MAP);
 
 		IN_ClearKeysDown();
 		sel = 0;
-		while ( 1 )
+		while (1)
 		{
 			VL_Yield();
 			IN_PumpEvents();
 
 			/* Decide which selection to draw */
-			if ( sel != 0 )
+			if (sel != 0)
 				y = y2;
 			else
 				y = y1;
 
 			/* Choose a color to draw it in */
-			if ( (SD_GetTimeCount() >> 4) & 1 )
+			if ((SD_GetTimeCount() >> 4) & 1)
 				clr = 12;
 			else
 				clr = 1;
 
 			/* And draw the selection box */
-			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y, clr );
-			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 1, clr );
-			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 12, clr );
-			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 13, clr );
-			VH_VLine( y + 1, y + 11, US_GetWindowX() + 4, clr );
-			VH_VLine( y + 1, y + 11, US_GetWindowX() + 5, clr );
-			VH_VLine( y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 4, clr );
-			VH_VLine( y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 5, clr );
+			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y, clr);
+			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 1, clr);
+			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 12, clr);
+			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 13, clr);
+			VH_VLine(y + 1, y + 11, US_GetWindowX() + 4, clr);
+			VH_VLine(y + 1, y + 11, US_GetWindowX() + 5, clr);
+			VH_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 4, clr);
+			VH_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 5, clr);
 			VL_Present();
 
 			/* Erase the box for next time */
-			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y, 15 );
-			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 1, 15 );
-			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 12, 15 );
-			VH_HLine( US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 13, 15 );
-			VH_VLine( y + 1, y + 11, US_GetWindowX() + 4, 15 );
-			VH_VLine( y + 1, y + 11, US_GetWindowX() + 5, 15 );
-			VH_VLine( y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 4, 15 );
-			VH_VLine( y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 5, 15 );
+			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y, 15);
+			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 1, 15);
+			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 12, 15);
+			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 13, 15);
+			VH_VLine(y + 1, y + 11, US_GetWindowX() + 4, 15);
+			VH_VLine(y + 1, y + 11, US_GetWindowX() + 5, 15);
+			VH_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 4, 15);
+			VH_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 5, 15);
 
 			/* If they press Esc, they want to go back to the Map */
-			if ( IN_GetLastScan() == IN_SC_Escape )
+			if (IN_GetLastScan() == IN_SC_Escape)
 			{
 				ck_gameState.currentLevel = 0;
 				IN_ClearKeysDown();
 				return;
 			}
 
-			IN_ReadControls( 0, &ck_inputFrame );
-			if ( ck_inputFrame.jump || ck_inputFrame.pogo || IN_GetLastScan() == IN_SC_Enter || IN_GetLastScan() == IN_SC_Space )
+			IN_ReadControls(0, &ck_inputFrame);
+			if (ck_inputFrame.jump || ck_inputFrame.pogo || IN_GetLastScan() == IN_SC_Enter || IN_GetLastScan() == IN_SC_Space)
 			{
 				/* If they want to go back to the Map, set the current level to zero */
-				if ( sel != 0 )
+				if (sel != 0)
 					ck_gameState.currentLevel = 0;
 				return;
 			}
 
-			if ( ck_inputFrame.yDirection == -1 || IN_GetLastScan() == IN_SC_UpArrow )
+			if (ck_inputFrame.yDirection == -1 || IN_GetLastScan() == IN_SC_UpArrow)
 			{
 				sel = 0;
 			}
-			else if ( ck_inputFrame.yDirection == 1 || IN_GetLastScan() == IN_SC_DownArrow )
+			else if (ck_inputFrame.yDirection == 1 || IN_GetLastScan() == IN_SC_DownArrow)
 			{
 				sel = 1;
 			}
@@ -829,54 +831,51 @@ void CK_TryAgainMenu()
 	}
 }
 
-
 extern CK_Difficulty ck_startingDifficulty;
 
 bool CK6_CreatureQuestion();
 void CK_GameLoop()
 {
-  if (ck_currentEpisode->ep == EP_CK6)
-  {
-    // if !demoParm
-    if (!CK6_CreatureQuestion())
-    {
-      ck_startingSavedGame = false;
-      ck_startingDifficulty = D_NotPlaying;
-      return;
-    }
-
-  }
+	if (ck_currentEpisode->ep == EP_CK6)
+	{
+		// if !demoParm
+		if (!CK6_CreatureQuestion())
+		{
+			ck_startingSavedGame = false;
+			ck_startingDifficulty = D_NotPlaying;
+			return;
+		}
+	}
 
 	do
 	{
 		if (ck_gameState.levelState != 6)
 		{
-resetDifficultyAndLevel:
+		resetDifficultyAndLevel:
 			ck_gameState.difficulty = ck_startingDifficulty;
 			ck_startingDifficulty = D_NotPlaying;
-loadLevel:
+		loadLevel:
 			CK_LoadLevel(true);
 
 			//TODO: If this didn't succeed, return to level 0.
 		}
 
-replayLevel:
+	replayLevel:
 		ck_scrollDisabled = false;
 		SD_WaitSoundDone();
 		CK_PlayLoop();
 
 		if (ck_gameState.levelState != 6)
 		{
-			memset(ck_gameState.keyGems, 0, sizeof (ck_gameState.keyGems));
+			memset(ck_gameState.keyGems, 0, sizeof(ck_gameState.keyGems));
 			// TODO: This is probably (but not necessarily) Keen 5 specific
-      if (ck_currentEpisode->ep == EP_CK5)
-        ck_gameState.ep.ck5.securityCard = 0;
+			if (ck_currentEpisode->ep == EP_CK5)
+				ck_gameState.ep.ck5.securityCard = 0;
 		}
 
 		//TODO: Some TED launching stuff
 
-
-    ck_lastLevelFinished = -1;
+		ck_lastLevelFinished = -1;
 		switch (ck_gameState.levelState)
 		{
 		case LS_Died: //1
@@ -885,13 +884,13 @@ replayLevel:
 			break;
 
 		case LS_Foot:
-      if (ck_currentEpisode->ep == EP_CK6)
-      {
-        IN_ClearKeysDown();
-        break;
-      }
+			if (ck_currentEpisode->ep == EP_CK6)
+			{
+				IN_ClearKeysDown();
+				break;
+			}
 		case LS_LevelComplete: // 2:
-levelcomplete:
+		levelcomplete:
 		case 13:
 			if (ca_mapOn == 0)
 			{
@@ -929,62 +928,62 @@ levelcomplete:
 			IN_ClearKeysDown();
 			return;
 
-    // Episode Specific Level Endings
-    case LS_CouncilRescued: // 3
-      if (ck_currentEpisode->ep == EP_CK4)
-      {
-         if (ca_mapOn)
-           SD_PlaySound(SOUND_LEVELEXIT);
+		// Episode Specific Level Endings
+		case LS_CouncilRescued: // 3
+			if (ck_currentEpisode->ep == EP_CK4)
+			{
+				if (ca_mapOn)
+					SD_PlaySound(SOUND_LEVELEXIT);
 
-         ck_lastLevelFinished = ca_mapOn;
-         ck_gameState.levelsDone[ca_mapOn] = 1;
-         CK4_ShowCouncilMessage();
+				ck_lastLevelFinished = ca_mapOn;
+				ck_gameState.levelsDone[ca_mapOn] = 1;
+				CK4_ShowCouncilMessage();
 
-         if (ck_gameState.ep.ck4.membersRescued == 8)
-         {
-            // Game won
-            CK_EndingPurge();
-            // RF_Reset();
-            // VW_SyncPages();
-            help_endgame();
-            CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
-            return;
-         }
-         else
-         {
-           // Back to map
-           ck_gameState.currentLevel = 0;
-         }
-      }
-      break;
+				if (ck_gameState.ep.ck4.membersRescued == 8)
+				{
+					// Game won
+					CK_EndingPurge();
+					// RF_Reset();
+					// VW_SyncPages();
+					help_endgame();
+					CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
+					return;
+				}
+				else
+				{
+					// Back to map
+					ck_gameState.currentLevel = 0;
+				}
+			}
+			break;
 
-    case LS_Sandwich:
-      CK6_ShowGetSandwich();
-      goto levelcomplete;
-    case LS_Rope:
-      CK6_ShowGetRope();
-      goto levelcomplete;
-    case LS_Passcard:
-      CK6_ShowGetPasscard();
-      goto levelcomplete;
-    case LS_Molly:
-      // Game won
-      CK_EndingPurge();
-      // RF_Reset();
-      // VW_SyncPages();
-      help_endgame();
-      goto highscores;
+		case LS_Sandwich:
+			CK6_ShowGetSandwich();
+			goto levelcomplete;
+		case LS_Rope:
+			CK6_ShowGetRope();
+			goto levelcomplete;
+		case LS_Passcard:
+			CK6_ShowGetPasscard();
+			goto levelcomplete;
+		case LS_Molly:
+			// Game won
+			CK_EndingPurge();
+			// RF_Reset();
+			// VW_SyncPages();
+			help_endgame();
+			goto highscores;
 
 		case 14:
-      if (ck_currentEpisode->ep == EP_CK5)
-      {
-        // The level has been ended by fuse destruction
-        SD_PlaySound(SOUND_LEVELEXIT);
-        ck_lastLevelFinished = ca_mapOn;
-        ck_gameState.levelsDone[ca_mapOn] = 14;
-        CK5_FuseMessage();
-        ck_gameState.currentLevel = 0;
-      }
+			if (ck_currentEpisode->ep == EP_CK5)
+			{
+				// The level has been ended by fuse destruction
+				SD_PlaySound(SOUND_LEVELEXIT);
+				ck_lastLevelFinished = ca_mapOn;
+				ck_gameState.levelsDone[ca_mapOn] = 14;
+				CK5_FuseMessage();
+				ck_gameState.currentLevel = 0;
+			}
 			break;
 
 		case LS_DestroyedQED: //15:
@@ -1008,43 +1007,42 @@ levelcomplete:
 			ck_gameState.currentLevel = ck_nextMapNumber;
 			break;
 #endif
-
 		}
 
 		if (ck_gameState.numLives < 0)
 			break;
 
 		goto loadLevel; //livesLeft >= 0
-	}	while (true);
+	} while (true);
 
 	// Keen 5: Blow up the galaxy
-  if (ck_currentEpisode->ep == EP_CK5)
-  {
-    CK5_ExplodeGalaxy();
-  }
-  else
-  {
-    CK_GameOver();
-  }
+	if (ck_currentEpisode->ep == EP_CK5)
+	{
+		CK5_ExplodeGalaxy();
+	}
+	else
+	{
+		CK_GameOver();
+	}
 
 	//TODO: Update High Scores
 highscores:
-  if (ck_currentEpisode->ep == EP_CK4)
-  {
-    CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
-  }
-  else if (ck_currentEpisode->ep == EP_CK5)
-  {
-    CK_SubmitHighScore(ck_gameState.keenScore, 0);
-  }
-  else if (ck_currentEpisode->ep == EP_CK6)
-  {
-    int complete = 0;
-    for (int i = 0; i < 25; i++)
-    {
-      if (ck_gameState.levelsDone[i])
-        complete++;
-    }
-    CK_SubmitHighScore(ck_gameState.keenScore, complete);
-  }
+	if (ck_currentEpisode->ep == EP_CK4)
+	{
+		CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
+	}
+	else if (ck_currentEpisode->ep == EP_CK5)
+	{
+		CK_SubmitHighScore(ck_gameState.keenScore, 0);
+	}
+	else if (ck_currentEpisode->ep == EP_CK6)
+	{
+		int complete = 0;
+		for (int i = 0; i < 25; i++)
+		{
+			if (ck_gameState.levelsDone[i])
+				complete++;
+		}
+		CK_SubmitHighScore(ck_gameState.keenScore, complete);
+	}
 }

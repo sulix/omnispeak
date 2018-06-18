@@ -17,18 +17,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include "id_us.h"
 #include "id_vl.h"
 #include "id_vl_private.h"
-#include "id_us.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-#include <pc.h>
 #include <dos.h>
 #include <dpmi.h>
-#include <sys/nearptr.h>
+#include <pc.h>
 #include <sys/movedata.h>
+#include <sys/nearptr.h>
 
 static int vl_null_screenWidth;
 static int vl_null_screenHeight;
@@ -85,7 +85,7 @@ static void VL_DOS_SetEGAWriteMode(int write_mode)
 
 static uint8_t *VL_DOS_GetSurfacePlanePointer(VL_DOS_Surface *surf, int plane)
 {
-	uint8_t *base_ptr = (uint8_t*)surf->data;
+	uint8_t *base_ptr = (uint8_t *)surf->data;
 	size_t plane_length = surf->h * (surf->w / 8);
 	if (surf->use == VL_SurfaceUsage_FrontBuffer)
 	{
@@ -103,7 +103,7 @@ static uint8_t *VL_DOS_GetSurfacePlanePointer(VL_DOS_Surface *surf, int plane)
 static void VL_DOS_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
 static void *VL_DOS_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 {
-	VL_DOS_Surface *surf = (VL_DOS_Surface*)malloc(sizeof(VL_DOS_Surface));
+	VL_DOS_Surface *surf = (VL_DOS_Surface *)malloc(sizeof(VL_DOS_Surface));
 	surf->use = usage;
 	surf->w = w;
 	surf->h = h;
@@ -112,7 +112,7 @@ static void *VL_DOS_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 	{
 		if (__djgpp_nearptr_enable())
 		{
-			surf->data = (void*)(__djgpp_conventional_base + vl_dos_vmemAlloc);
+			surf->data = (void *)(__djgpp_conventional_base + vl_dos_vmemAlloc);
 		}
 		else
 		{
@@ -126,7 +126,7 @@ static void *VL_DOS_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 
 static void VL_DOS_DestroySurface(void *surface)
 {
-	VL_DOS_Surface *surf = (VL_DOS_Surface*)surface;
+	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
 	if ((surf->use != VL_SurfaceUsage_FrontBuffer) && surf->data)
 		free(surf->data);
 	free(surf);
@@ -135,14 +135,16 @@ static void VL_DOS_DestroySurface(void *surface)
 static long VL_DOS_GetSurfaceMemUse(void *surface)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
-	return (surf->w*surf->h / 8) * 4;
+	return (surf->w * surf->h / 8) * 4;
 }
 
 static void VL_DOS_GetSurfaceDimensions(void *surface, int *w, int *h)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
-	if (w) *w = surf->w;
-	if (h) *h = surf->h;
+	if (w)
+		*w = surf->w;
+	if (h)
+		*h = surf->h;
 }
 
 static void VL_DOS_RefreshPaletteAndBorderColor(void *screen)
@@ -150,12 +152,12 @@ static void VL_DOS_RefreshPaletteAndBorderColor(void *screen)
 	for (int i = 0; i < 16; i++)
 	{
 		outportb(0x3C8, i);
-		
+
 		outportb(0x3C9, VL_EGARGBColorTable[vl_emuegavgaadapter.palette[i]][0]); // red
 		outportb(0x3C9, VL_EGARGBColorTable[vl_emuegavgaadapter.palette[i]][1]); // green
 		outportb(0x3C9, VL_EGARGBColorTable[vl_emuegavgaadapter.palette[i]][2]); // blue
 	}
-	
+
 	__dpmi_regs r;
 	r.x.ax = 0x1001;
 	r.h.bh = 0x00;
@@ -165,7 +167,7 @@ static void VL_DOS_RefreshPaletteAndBorderColor(void *screen)
 
 static int VL_DOS_SurfacePGet(void *surface, int x, int y)
 {
-	VL_DOS_Surface *surf = (VL_DOS_Surface*) surface;
+	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
 	int pixel_index_byte = (y * surf->w + x) / 8;
 	int pixel_index_bit = (y * surf->w + x) % 8;
 	uint8_t val = 0;
@@ -178,12 +180,12 @@ static int VL_DOS_SurfacePGet(void *surface, int x, int y)
 	return val;
 }
 
-uint8_t vl_dos_leftmask[8] = {0xff,0x7f,0x3f,0x1f,0xf,7,3,1};
-uint8_t vl_dos_rightmask[8] = {0x80,0xc0,0xe0,0xf0,0xf8,0xfc,0xfe,0xff};
+uint8_t vl_dos_leftmask[8] = {0xff, 0x7f, 0x3f, 0x1f, 0xf, 7, 3, 1};
+uint8_t vl_dos_rightmask[8] = {0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff};
 
 static void VL_DOS_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour)
 {
-	VL_DOS_Surface *surf = (VL_DOS_Surface*) dst_surface;
+	VL_DOS_Surface *surf = (VL_DOS_Surface *)dst_surface;
 	int pitch = surf->w / 8;
 	int line_width = w / 8;
 	int x_end_bit = x + w - 1;
@@ -192,7 +194,7 @@ static void VL_DOS_SurfaceRect(void *dst_surface, int x, int y, int w, int h, in
 	for (int plane = 0; plane < 4; ++plane)
 	{
 		uint8_t *plane_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane);
-		for (int _y = y; _y < y+h; ++_y)
+		for (int _y = y; _y < y + h; ++_y)
 		{
 			uint8_t *line_ptr = plane_ptr + (_y * pitch) + x_low_byte;
 			if (x_low_byte == x_high_byte)
@@ -204,12 +206,12 @@ static void VL_DOS_SurfaceRect(void *dst_surface, int x, int y, int w, int h, in
 			}
 			else
 			{
-				
+
 				line_ptr[0] &= ~vl_dos_leftmask[x & 7];
 				if ((colour & (1 << plane)))
 					line_ptr[0] |= vl_dos_leftmask[x & 7];
 				if (x_high_byte - x_low_byte > 0)
-					memset(line_ptr+1, (colour & (1 << plane))?255:0, x_high_byte - x_low_byte - 1);
+					memset(line_ptr + 1, (colour & (1 << plane)) ? 255 : 0, x_high_byte - x_low_byte - 1);
 				line_ptr[x_high_byte - x_low_byte] &= ~vl_dos_rightmask[x_end_bit & 7];
 				if ((colour & (1 << plane)))
 					line_ptr[x_high_byte - x_low_byte] |= vl_dos_rightmask[x_end_bit & 7];
@@ -220,7 +222,7 @@ static void VL_DOS_SurfaceRect(void *dst_surface, int x, int y, int w, int h, in
 
 static void VL_DOS_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int h, int colour, int mapmask)
 {
-	VL_DOS_Surface *surf = (VL_DOS_Surface*) dst_surface;
+	VL_DOS_Surface *surf = (VL_DOS_Surface *)dst_surface;
 	mapmask &= 0xF;
 	colour &= mapmask;
 	int pitch = surf->w / 8;
@@ -231,7 +233,7 @@ static void VL_DOS_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int h,
 	for (int plane = 0; plane < 4; ++plane)
 	{
 		uint8_t *plane_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane);
-		for (int _y = y; _y < y+h; ++_y)
+		for (int _y = y; _y < y + h; ++_y)
 		{
 			uint8_t *line_ptr = plane_ptr + (_y * pitch) + x_low_byte;
 			if (x_low_byte == x_high_byte)
@@ -243,15 +245,15 @@ static void VL_DOS_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int h,
 			}
 			else
 			{
-				
+
 				line_ptr[0] &= ~vl_dos_leftmask[x & 7];
 				if ((colour & (1 << plane)))
 					line_ptr[0] |= vl_dos_leftmask[x & 7];
 				if (x_high_byte - x_low_byte > 0)
-					memset(line_ptr+1, (colour & (1 << plane))?255:0, x_high_byte - x_low_byte - 1);
-				line_ptr[x_high_byte - x_low_byte+1] &= ~vl_dos_rightmask[x_end_bit & 7];
+					memset(line_ptr + 1, (colour & (1 << plane)) ? 255 : 0, x_high_byte - x_low_byte - 1);
+				line_ptr[x_high_byte - x_low_byte + 1] &= ~vl_dos_rightmask[x_end_bit & 7];
 				if ((colour & (1 << plane)))
-					line_ptr[x_high_byte - x_low_byte+1] |= vl_dos_rightmask[x_end_bit & 7];
+					line_ptr[x_high_byte - x_low_byte + 1] |= vl_dos_rightmask[x_end_bit & 7];
 			}
 		}
 	}
@@ -261,12 +263,12 @@ static void VL_DOS_SurfaceToSurface(void *src_surface, void *dst_surface, int x,
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)src_surface;
 	VL_DOS_Surface *dest = (VL_DOS_Surface *)dst_surface;
-	int dst_byte_x_offset = x / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
+	int dst_byte_x_offset = x / 8;  // We automatically round coordinates to multiples of 8 (byte boundaries)
 	int src_byte_x_offset = sx / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		for (int _y = sy; _y < sy+sh; ++_y)
+		for (int _y = sy; _y < sy + sh; ++_y)
 		{
 			uint8_t *src_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + (_y * (surf->w / 8)) + src_byte_x_offset;
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(dest, plane) + ((_y - sy + y) * (dest->w / 8)) + dst_byte_x_offset;
@@ -282,17 +284,17 @@ static void VL_DOS_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, in
 	bool directionX = sx > x;
 	bool directionY = sy > y;
 
-	int dst_byte_x_offset = x / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
+	int dst_byte_x_offset = x / 8;  // We automatically round coordinates to multiples of 8 (byte boundaries)
 	int src_byte_x_offset = sx / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
-	
+
 	int pitch = srf->w / 8;
-	
+
 	if (srf->use == VL_SurfaceUsage_FrontBuffer)
 	{
 		//int page = srf->activePage;
 		for (int page = 0; page < 2; ++page)
 		{
-			uint8_t *plane_ptr = (uint8_t*)srf->data + page*(srf->w / 8)*(srf->h);
+			uint8_t *plane_ptr = (uint8_t *)srf->data + page * (srf->w / 8) * (srf->h);
 			// Enable all planes.
 			outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
 			VL_DOS_SetEGAWriteMode(1);
@@ -300,8 +302,8 @@ static void VL_DOS_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, in
 			{
 				for (int yi = 0; yi < sh; ++yi)
 				{
-					uint8_t *src_ptr = plane_ptr + ((sy+yi) * pitch) + src_byte_x_offset;
-					uint8_t *dst_ptr = plane_ptr + ((yi+y) * pitch) + dst_byte_x_offset;
+					uint8_t *src_ptr = plane_ptr + ((sy + yi) * pitch) + src_byte_x_offset;
+					uint8_t *dst_ptr = plane_ptr + ((yi + y) * pitch) + dst_byte_x_offset;
 					if (directionX)
 					{
 						for (int xi = 0; xi < (sw / 8); ++xi)
@@ -316,10 +318,10 @@ static void VL_DOS_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, in
 			}
 			else
 			{
-				for (int yi = sh-1; yi >= 0; --yi)
+				for (int yi = sh - 1; yi >= 0; --yi)
 				{
-					uint8_t *src_ptr = plane_ptr + ((sy+yi) * pitch) + src_byte_x_offset;
-					uint8_t *dst_ptr = plane_ptr + ((yi+y) * pitch) + dst_byte_x_offset;
+					uint8_t *src_ptr = plane_ptr + ((sy + yi) * pitch) + src_byte_x_offset;
+					uint8_t *dst_ptr = plane_ptr + ((yi + y) * pitch) + dst_byte_x_offset;
 					if (directionX)
 					{
 						for (int xi = 0; xi < (sw / 8); ++xi)
@@ -344,31 +346,31 @@ static void VL_DOS_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, in
 			{
 				for (int yi = 0; yi < sh; ++yi)
 				{
-					uint8_t *src_ptr = plane_ptr + ((sy+yi) * pitch) + src_byte_x_offset;
-					uint8_t *dst_ptr = plane_ptr + ((yi+y) * pitch) + dst_byte_x_offset;
+					uint8_t *src_ptr = plane_ptr + ((sy + yi) * pitch) + src_byte_x_offset;
+					uint8_t *dst_ptr = plane_ptr + ((yi + y) * pitch) + dst_byte_x_offset;
 					memmove(dst_ptr, src_ptr, sw / 8);
 				}
 			}
 			else
 			{
-				for (int yi = sh-1; yi >= 0; --yi)
+				for (int yi = sh - 1; yi >= 0; --yi)
 				{
-					uint8_t *src_ptr = plane_ptr + ((sy+yi) * pitch) + src_byte_x_offset;
-					uint8_t *dst_ptr = plane_ptr + ((yi+y) * pitch) + dst_byte_x_offset;
+					uint8_t *src_ptr = plane_ptr + ((sy + yi) * pitch) + src_byte_x_offset;
+					uint8_t *dst_ptr = plane_ptr + ((yi + y) * pitch) + dst_byte_x_offset;
 					memmove(dst_ptr, src_ptr, sw / 8);
 				}
 			}
 		}
 	}
-
 }
 
-static void VL_DOS_UnmaskedToSurface(void *src, void *dst_surface, int x, int y, int w, int h) {
+static void VL_DOS_UnmaskedToSurface(void *src, void *dst_surface, int x, int y, int w, int h)
+{
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)dst_surface;
-	
+
 	int initial_x = x, initial_y = y, final_w = w, final_h = h;
 	VL_Clip(&final_w, &final_h, &initial_x, &initial_y, surf->w, surf->h);
-	
+
 	int src_plane_size = (w / 8) * h;
 	int dst_byte_x_offset = (x) / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
 	VL_DOS_SetEGAWriteMode(0);
@@ -376,7 +378,7 @@ static void VL_DOS_UnmaskedToSurface(void *src, void *dst_surface, int x, int y,
 	{
 		for (int _y = initial_y; _y < final_h; ++_y)
 		{
-			uint8_t *src_ptr = (uint8_t*)src + (src_plane_size * plane) + (_y * (w/8)) + initial_x / 8;
+			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * plane) + (_y * (w / 8)) + initial_x / 8;
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
 			size_t copy_len = (final_w + 7) / 8;
 			memcpy(dst_ptr, src_ptr, copy_len);
@@ -384,7 +386,8 @@ static void VL_DOS_UnmaskedToSurface(void *src, void *dst_surface, int x, int y,
 	}
 }
 
-static void VL_DOS_UnmaskedToSurface_PM(void *src, void *dst_surface, int x, int y, int w, int h, int mapmask) {
+static void VL_DOS_UnmaskedToSurface_PM(void *src, void *dst_surface, int x, int y, int w, int h, int mapmask)
+{
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)dst_surface;
 	int initial_x = x, initial_y = y, final_w = w, final_h = h;
 	VL_Clip(&final_w, &final_h, &initial_x, &initial_y, surf->w, surf->h);
@@ -395,7 +398,7 @@ static void VL_DOS_UnmaskedToSurface_PM(void *src, void *dst_surface, int x, int
 	{
 		for (int _y = initial_y; _y < final_h; ++_y)
 		{
-			uint8_t *src_ptr = (uint8_t*)src + (src_plane_size * plane) + (_y * (w/8)) + initial_x / 8;
+			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * plane) + (_y * (w / 8)) + initial_x / 8;
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
 			size_t copy_len = (final_w + 7) / 8;
 			memcpy(dst_ptr, src_ptr, copy_len);
@@ -413,7 +416,7 @@ static void VL_DOS_MaskedToSurface(void *src, void *dst_surface, int x, int y, i
 	{
 		for (int _y = 0; _y < h; ++_y)
 		{
-			uint8_t *src_ptr = (uint8_t*)src + (src_plane_size * (plane+1)) + (_y * (w/8));
+			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * (plane + 1)) + (_y * (w / 8));
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
 			size_t copy_len = w / 8;
 			memcpy(dst_ptr, src_ptr, copy_len);
@@ -429,15 +432,16 @@ static void VL_DOS_MaskedBlitToSurface(void *src, void *dst_surface, int x, int 
 	int src_plane_size = (w / 8) * h;
 	int dst_byte_x_offset = (x + initial_x) / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
 	int dst_bit_x_offset = (x + initial_x) & 7;
-	int src_bit_x_offset = (initial_x) & 7;
-	if (final_w == 0) return;
+	int src_bit_x_offset = (initial_x)&7;
+	if (final_w == 0)
+		return;
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
 		for (int _y = initial_y; _y < final_h; ++_y)
 		{
-			uint8_t *mask_ptr = (uint8_t*)src + (_y *w/8);
-			uint8_t *src_ptr = (uint8_t*)src + (src_plane_size * (plane + 1)) + (_y * (w/8));
+			uint8_t *mask_ptr = (uint8_t *)src + (_y * w / 8);
+			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * (plane + 1)) + (_y * (w / 8));
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
 			size_t copy_len = final_w / 8;
 			uint8_t prev_byte = 0;
@@ -475,11 +479,12 @@ static void VL_DOS_BitToSurface(void *src, void *dst_surface, int x, int y, int 
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		if (!(colour & (1 << plane))) continue;
+		if (!(colour & (1 << plane)))
+			continue;
 		uint8_t prev_byte = 0;
 		for (int _y = 0; _y < h; ++_y)
 		{
-			uint8_t *src_ptr = (uint8_t*)src + (_y * ((w+7)/8));
+			uint8_t *src_ptr = (uint8_t *)src + (_y * ((w + 7) / 8));
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
 			size_t copy_len = (w + 7) / 8;
 			for (int i = 0; i < copy_len; ++i)
@@ -499,11 +504,13 @@ static void VL_DOS_BitToSurface_PM(void *src, void *dst_surface, int x, int y, i
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		if (!(colour & (1 << plane))) continue;
-		if (!(mapmask & (1 << plane))) continue;
+		if (!(colour & (1 << plane)))
+			continue;
+		if (!(mapmask & (1 << plane)))
+			continue;
 		for (int _y = 0; _y < h; ++_y)
 		{
-			uint8_t *src_ptr = (uint8_t*)src + (_y * (w/8));
+			uint8_t *src_ptr = (uint8_t *)src + (_y * (w / 8));
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
 			size_t copy_len = w / 8;
 			memcpy(dst_ptr, src_ptr, copy_len);
@@ -519,12 +526,13 @@ static void VL_DOS_BitXorWithSurface(void *src, void *dst_surface, int x, int y,
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		if (!(colour & (1 << plane))) continue;
+		if (!(colour & (1 << plane)))
+			continue;
 		for (int _y = 0; _y < h; ++_y)
 		{
-			uint8_t *src_ptr = (uint8_t*)src + (_y * ((w+7)/8));
+			uint8_t *src_ptr = (uint8_t *)src + (_y * ((w + 7) / 8));
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
-			size_t copy_len = (w+7) / 8;
+			size_t copy_len = (w + 7) / 8;
 			uint8_t prev_byte = 0x00;
 			for (int x_byte = 0; x_byte < copy_len; ++x_byte)
 			{
@@ -550,11 +558,12 @@ static void VL_DOS_BitBlitToSurface(void *src, void *dst_surface, int x, int y, 
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		if (!(colour & (1 << plane))) continue;
+		if (!(colour & (1 << plane)))
+			continue;
 		uint8_t prev_byte = 0;
 		for (int _y = 0; _y < h; ++_y)
 		{
-			uint8_t *src_ptr = (uint8_t*)src + (_y * ((w+7)/8));
+			uint8_t *src_ptr = (uint8_t *)src + (_y * ((w + 7) / 8));
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
 			size_t copy_len = (w + 7) / 8;
 			for (int i = 0; i < copy_len; ++i)
@@ -576,50 +585,52 @@ static void VL_DOS_BitInvBlitToSurface(void *src, void *dst_surface, int x, int 
 static void VL_DOS_ScrollSurface(void *surface, int x, int y)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
-	int dest_x = (x < 0)?-x:0;
-	int dest_y = (y < 0)?-y:0;
+	int dest_x = (x < 0) ? -x : 0;
+	int dest_y = (y < 0) ? -y : 0;
 
-	int src_x = (x > 0)?x:0;
-	int src_y = (y > 0)?y:0;
+	int src_x = (x > 0) ? x : 0;
+	int src_y = (y > 0) ? y : 0;
 
-	int wOffset = (x)?-16:0;
-	int hOffset = (y)?-16:0;
+	int wOffset = (x) ? -16 : 0;
+	int hOffset = (y) ? -16 : 0;
 	if (surf->use == VL_SurfaceUsage_FrontBuffer)
 	{
 		size_t bytesToShift = (x / 8) + y * (surf->w / 8);
-		uint8_t *oldData = (uint8_t*)surf->data;
+		uint8_t *oldData = (uint8_t *)surf->data;
 		uint8_t *newData = oldData + bytesToShift;
-		if (newData < (uint8_t*)(__djgpp_conventional_base + 0xA0000) || newData + (surf->w /4 * surf->h) > (uint8_t*)(__djgpp_conventional_base + 0xAFFFF))
+		if (newData < (uint8_t *)(__djgpp_conventional_base + 0xA0000) || newData + (surf->w / 4 * surf->h) > (uint8_t *)(__djgpp_conventional_base + 0xAFFFF))
 		{
 			// We've shifted outside of valid video memory.
-			oldData = (uint8_t*)(__djgpp_conventional_base + 0xA8000);
+			oldData = (uint8_t *)(__djgpp_conventional_base + 0xA8000);
 			outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
 			VL_DOS_SetEGAWriteMode(1);
 			for (int i = 0; i < surf->w * surf->h / 4; ++i)
-				oldData[i] = ((uint8_t*)surf->data)[i];
+				oldData[i] = ((uint8_t *)surf->data)[i];
 			newData = oldData + bytesToShift;
 		}
-			
+
 		surf->data = newData;
 	}
 	else
 	{
-		VL_ScreenToScreen(dest_x, dest_y, src_x, src_y, surf->w+wOffset, surf->h+hOffset);
+		VL_ScreenToScreen(dest_x, dest_y, src_x, src_y, surf->w + wOffset, surf->h + hOffset);
 	}
 }
 
 static void VL_DOS_Present(void *surface, int scrlX, int scrlY)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
-	
+
 	// Wait for the previous horizontal retrace to end
-	do {} while (inportb(0x3DA) & 1);
-	
+	do
+	{
+	} while (inportb(0x3DA) & 1);
+
 	int were_interrupts_enabled = disable();
 	// We need to make sure that the EGA/VGA has the right pitch
 	uint16_t val = ((surf->w >> 4) << 8) | EGA_CRTC_OFFSET;
 	outportw(EGA_CRTC_INDEX, val);
-	
+
 	// Set the offset for scanout
 	uint16_t surface_vmem_offset = (uint16_t)(((uintptr_t)surf->data - (__djgpp_conventional_base + 0xA0000)) & 0xFFFF);
 	uint16_t byte_offset = surface_vmem_offset + ((scrlY * surf->w + scrlX) >> 3) + surf->activePage * (surf->w * surf->h) / 8;
@@ -630,9 +641,10 @@ static void VL_DOS_Present(void *surface, int scrlX, int scrlY)
 	// though, so clearly this wasn't a universal problem.)
 	outportw(EGA_CRTC_INDEX, crtc_start_high);
 	outportw(EGA_CRTC_INDEX, crtc_start_low);
-	
+
 	// Wait for the next retrace to begin
-	do {
+	do
+	{
 		// Enable interrupts while we wait.
 		if (were_interrupts_enabled)
 			enable();
@@ -641,8 +653,7 @@ static void VL_DOS_Present(void *surface, int scrlX, int scrlY)
 	uint8_t pel_pan_offset = (scrlX & 7);
 	outportb(EGA_ATR_INDEX, EGA_ATR_PELPAN | 0x20);
 	outportb(EGA_ATR_INDEX, pel_pan_offset);
-	
-	
+
 	if (were_interrupts_enabled)
 		enable();
 	surf->activePage ^= 1;
@@ -668,46 +679,47 @@ void VL_DOS_WaitVBLs(int vbls)
 	for (int i = 0; i < vbls; ++i)
 	{
 		// Wait for the previous retrace to end
-		do {} while (inportb(0x3DA) & 8);
+		do
+		{
+		} while (inportb(0x3DA) & 8);
 		// Wait for the next retrace to begin
-		do {} while (!(inportb(0x3DA) & 8));
+		do
+		{
+		} while (!(inportb(0x3DA) & 8));
 	}
 }
 
 // Unfortunately, we can't take advantage of designated initializers in C++.
 VL_Backend vl_dos_backend =
-{
-	/*.setVideoMode =*/ &VL_DOS_SetVideoMode,
-	/*.createSurface =*/ &VL_DOS_CreateSurface,
-	/*.destroySurface =*/ &VL_DOS_DestroySurface,
-	/*.getSurfaceMemUse =*/ &VL_DOS_GetSurfaceMemUse,
-	/*.getSurfaceDimensions =*/ &VL_DOS_GetSurfaceDimensions,
-	/*.refreshPaletteAndBorderColor =*/ &VL_DOS_RefreshPaletteAndBorderColor,
-	/*.surfacePGet =*/ &VL_DOS_SurfacePGet,
-	/*.surfaceRect =*/ &VL_DOS_SurfaceRect,
-	/*.surfaceRect_PM =*/ &VL_DOS_SurfaceRect_PM,
-	/*.surfaceToSurface =*/ &VL_DOS_SurfaceToSurface,
-	/*.surfaceToSelf =*/ &VL_DOS_SurfaceToSelf,
-	/*.unmaskedToSurface =*/ &VL_DOS_UnmaskedToSurface,
-	/*.unmaskedToSurface_PM =*/ &VL_DOS_UnmaskedToSurface_PM,
-	/*.maskedToSurface =*/ &VL_DOS_MaskedToSurface,
-	/*.maskedBlitToSurface =*/ &VL_DOS_MaskedBlitToSurface,
-	/*.bitToSurface =*/ &VL_DOS_BitToSurface,
-	/*.bitToSurface_PM =*/ &VL_DOS_BitToSurface_PM,
-	/*.bitXorWithSurface =*/ &VL_DOS_BitXorWithSurface,
-	/*.bitBlitToSurface =*/ &VL_DOS_BitBlitToSurface,
-	/*.bitInvBlitToSurface =*/ &VL_DOS_BitInvBlitToSurface,
-	/*.scrollSurface =*/ &VL_DOS_ScrollSurface,
-	/*.present =*/ &VL_DOS_Present,
-	/*.getActiveBufferId =*/ &VL_DOS_GetActiveBufferId,
-	/*.getNumBuffers =*/ &VL_DOS_GetNumBuffers,
-	/*.flushParams =*/ &VL_DOS_FlushParams,
-	/*.waitVBLs =*/ &VL_DOS_WaitVBLs
-};
+	{
+		/*.setVideoMode =*/&VL_DOS_SetVideoMode,
+		/*.createSurface =*/&VL_DOS_CreateSurface,
+		/*.destroySurface =*/&VL_DOS_DestroySurface,
+		/*.getSurfaceMemUse =*/&VL_DOS_GetSurfaceMemUse,
+		/*.getSurfaceDimensions =*/&VL_DOS_GetSurfaceDimensions,
+		/*.refreshPaletteAndBorderColor =*/&VL_DOS_RefreshPaletteAndBorderColor,
+		/*.surfacePGet =*/&VL_DOS_SurfacePGet,
+		/*.surfaceRect =*/&VL_DOS_SurfaceRect,
+		/*.surfaceRect_PM =*/&VL_DOS_SurfaceRect_PM,
+		/*.surfaceToSurface =*/&VL_DOS_SurfaceToSurface,
+		/*.surfaceToSelf =*/&VL_DOS_SurfaceToSelf,
+		/*.unmaskedToSurface =*/&VL_DOS_UnmaskedToSurface,
+		/*.unmaskedToSurface_PM =*/&VL_DOS_UnmaskedToSurface_PM,
+		/*.maskedToSurface =*/&VL_DOS_MaskedToSurface,
+		/*.maskedBlitToSurface =*/&VL_DOS_MaskedBlitToSurface,
+		/*.bitToSurface =*/&VL_DOS_BitToSurface,
+		/*.bitToSurface_PM =*/&VL_DOS_BitToSurface_PM,
+		/*.bitXorWithSurface =*/&VL_DOS_BitXorWithSurface,
+		/*.bitBlitToSurface =*/&VL_DOS_BitBlitToSurface,
+		/*.bitInvBlitToSurface =*/&VL_DOS_BitInvBlitToSurface,
+		/*.scrollSurface =*/&VL_DOS_ScrollSurface,
+		/*.present =*/&VL_DOS_Present,
+		/*.getActiveBufferId =*/&VL_DOS_GetActiveBufferId,
+		/*.getNumBuffers =*/&VL_DOS_GetNumBuffers,
+		/*.flushParams =*/&VL_DOS_FlushParams,
+		/*.waitVBLs =*/&VL_DOS_WaitVBLs};
 
 VL_Backend *VL_Impl_GetBackend()
 {
 	return &vl_dos_backend;
 }
-
-

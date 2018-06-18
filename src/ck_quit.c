@@ -19,11 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "ck_cross.h"
 #include "id_heads.h"
+#include "ck_cross.h"
 #include "ck_def.h"
 
-void Quit(const char *msg) {
+void Quit(const char *msg)
+{
 	if (!msg || !(*msg))
 	{
 		// Avoid trying to re-print the order screen if caching it failed.
@@ -35,7 +36,7 @@ void Quit(const char *msg) {
 			// There is a 7-byte BSAVE header at the start of the
 			// chunk, and we don't want to print the last row, as
 			// originally it would be overwritten by DOS anyway.
-			US_PrintB8000Text((uint8_t*)(ca_graphChunks[EXTERN_ORDERSCREEN]) + 7, 2000 - 80);
+			US_PrintB8000Text((uint8_t *)(ca_graphChunks[EXTERN_ORDERSCREEN]) + 7, 2000 - 80);
 		}
 		else
 			CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Thanks for playing Commander Keen!\n");

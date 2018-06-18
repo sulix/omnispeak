@@ -26,9 +26,8 @@ extern const char **ck_levelNames;
 void CK_GameLoop();
 void CK_LoadLevel(bool unknown);
 
-void CK_BeginCacheBox (const char *title, int numChunks);
-void CK_UpdateCacheBox ();
-void CK_FinishCacheBox ();
+void CK_BeginCacheBox(const char *title, int numChunks);
+void CK_UpdateCacheBox();
+void CK_FinishCacheBox();
 
 #endif
-

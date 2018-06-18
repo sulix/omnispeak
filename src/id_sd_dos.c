@@ -17,13 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include <dos.h>
+#include <dpmi.h>
+#include <go32.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <dos.h>
-#include <go32.h>
-#include <dpmi.h>
 
 #include "id_sd.h"
 #include "ck_cross.h"
@@ -37,7 +37,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * to obtain a better approximation of the actual rate.
  */
 #define SD_SOUND_PART_RATE_BASE 1192030
-
 
 #define SD_ADLIB_REG_PORT 0x388
 #define SD_ADLIB_DATA_PORT 0x389
@@ -53,19 +52,17 @@ void SD_DOS_SetTimer0(int16_t int_8_divisor)
 	ScaledTimerDivisor = ((int32_t)SD_SOUND_PART_RATE_BASE / (int32_t)int_8_divisor) & 0xFFFF;
 }
 
-
 void SD_DOS_alOut(uint8_t reg, uint8_t val)
 {
 	int wereIntsEnabled = disable();
-	
+
 	outportb(SD_ADLIB_REG_PORT, reg);
 	// TODO: Delay (TimerDelay10)
 	outportb(SD_ADLIB_DATA_PORT, val);
-	
+
 	if (wereIntsEnabled)
 		enable();
 }
-
 
 /* FIXME: The SDL prefix may conflict with SDL functions in the future(???)
  * Best (but hackish) solution, if it happens: Add our own custom prefix.
@@ -84,10 +81,10 @@ void SD_DOS_PCSpkOn(bool on, int freq)
 	if (on)
 	{
 		outportb(0x43, 0xb6);
-		
+
 		outportb(0x42, freq & 0xFF);
 		outportb(0x42, freq >> 8);
-		
+
 		uint8_t oldPcState = inportb(0x61);
 		outportb(0x61, oldPcState | 3);
 	}
@@ -97,8 +94,6 @@ void SD_DOS_PCSpkOn(bool on, int freq)
 		outportb(0x61, oldPcState & 0xFC);
 	}
 }
-
-
 
 void SDL_PCService(void);
 void SDL_ALSoundService(void);
@@ -110,7 +105,7 @@ void SD_DOS_Startup(void)
 {
 	sd_dos_newISR.pm_offset = (intptr_t)&SD_DOS_t0InterruptProxy;
 	sd_dos_newISR.pm_selector = _go32_my_cs();
-	
+
 	_go32_dpmi_get_protected_mode_interrupt_vector(8, &sd_dos_oldISR);
 	_go32_dpmi_allocate_iret_wrapper(&sd_dos_newISR);
 	_go32_dpmi_set_protected_mode_interrupt_vector(8, &sd_dos_newISR);
@@ -126,7 +121,7 @@ bool SD_DOS_WereInterruptsEnabled = false;
 
 void SD_DOS_Lock()
 {
-	   SD_DOS_WereInterruptsEnabled = disable();
+	SD_DOS_WereInterruptsEnabled = disable();
 }
 
 void SD_DOS_Unlock()
@@ -142,8 +137,7 @@ SD_Backend sd_dos_backend = {
 	.unlock = SD_DOS_Unlock,
 	.alOut = SD_DOS_alOut,
 	.pcSpkOn = SD_DOS_PCSpkOn,
-	.setTimer0 = SD_DOS_SetTimer0
-};	
+	.setTimer0 = SD_DOS_SetTimer0};
 
 SD_Backend *SD_Impl_GetBackend()
 {

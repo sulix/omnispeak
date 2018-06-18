@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef ID_RF_H
 #define ID_RF_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 // Sprite Draw object
 typedef struct RF_SpriteDrawEntry
@@ -33,7 +33,7 @@ typedef struct RF_SpriteDrawEntry
 	int sw, sh;
 	bool maskOnly;
 	int updateCount;
-	struct RF_SpriteDrawEntry **prevNextPtr;		// Pointer to the previous entry's 'next' pointer.
+	struct RF_SpriteDrawEntry **prevNextPtr; // Pointer to the previous entry's 'next' pointer.
 	struct RF_SpriteDrawEntry *next;
 } RF_SpriteDrawEntry;
 
@@ -56,16 +56,16 @@ typedef struct RF_SpriteDrawEntry
 #define TILEGLOBAL 256
 #define PIXGLOBAL 16
 
-#define G_T_SHIFT 8  // global >> ?? = tile
-#define G_P_SHIFT 4  // global >> ?? = pixels
-#define P_T_SHIFT 4  // pixels >> ?? = tile
+#define G_T_SHIFT 8 // global >> ?? = tile
+#define G_P_SHIFT 4 // global >> ?? = pixels
+#define P_T_SHIFT 4 // pixels >> ?? = tile
 
-#define RF_UnitToTile(u)	((u) >> G_T_SHIFT)
-#define RF_TileToUnit(t)	((t) << G_T_SHIFT)
-#define RF_UnitToPixel(u)	((u) >> G_P_SHIFT)
-#define RF_PixelToUnit(p)	((p) << G_P_SHIFT)
-#define RF_PixelToTile(p)	((p) >> P_T_SHIFT)
-#define RF_TileToPixel(t)	((t) << P_T_SHIFT)
+#define RF_UnitToTile(u) ((u) >> G_T_SHIFT)
+#define RF_TileToUnit(t) ((t) << G_T_SHIFT)
+#define RF_UnitToPixel(u) ((u) >> G_P_SHIFT)
+#define RF_PixelToUnit(p) ((p) << G_P_SHIFT)
+#define RF_PixelToTile(p) ((p) >> P_T_SHIFT)
+#define RF_TileToPixel(t) ((t) << P_T_SHIFT)
 
 extern int rf_scrollXUnit, rf_scrollYUnit;
 extern int rf_scrollXMinUnit;
@@ -73,14 +73,14 @@ extern int rf_scrollYMinUnit;
 extern int rf_scrollXMaxUnit;
 extern int rf_scrollYMaxUnit;
 
-extern void (*rf_drawFunc) (void);
+extern void (*rf_drawFunc)(void);
 
 void RFL_MarkBlockDirty(int x, int y, int val, int page);
 uint8_t RFL_IsBlockDirty(int x, int y, int page);
 
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical);
 void RF_MarkTileGraphics();
-void RF_SetDrawFunc(void (*func) (void));
+void RF_SetDrawFunc(void (*func)(void));
 void RF_Startup();
 void RF_Shutdown();
 void RF_NewMap(void);

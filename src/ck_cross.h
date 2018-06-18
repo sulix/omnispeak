@@ -24,9 +24,9 @@
 #endif
 #endif
 
-#define CK_Cross_Swap16(x) ((uint16_t)(((uint16_t)(x)<<8)|((uint16_t)(x)>>8)))
+#define CK_Cross_Swap16(x) ((uint16_t)(((uint16_t)(x) << 8) | ((uint16_t)(x) >> 8)))
 
-#define CK_Cross_Swap32(x) ((uint32_t)(((uint32_t)(x)<<24)|(((uint32_t)(x)<<8)&0x00FF0000)|(((uint32_t)(x)>>8)&0x0000FF00)|((uint32_t)(x)>>24)))
+#define CK_Cross_Swap32(x) ((uint32_t)(((uint32_t)(x) << 24) | (((uint32_t)(x) << 8) & 0x00FF0000) | (((uint32_t)(x) >> 8) & 0x0000FF00) | ((uint32_t)(x) >> 24)))
 
 #ifdef CK_CROSS_IS_LITTLEENDIAN
 #define CK_Cross_SwapLE16(x) (x)
@@ -36,8 +36,11 @@
 #define CK_Cross_SwapLE32(x) CK_Cross_Swap32(x)
 #endif
 
-typedef enum CK_Log_Message_Class_T {
-	CK_LOG_MSG_NORMAL, CK_LOG_MSG_WARNING, CK_LOG_MSG_ERROR
+typedef enum CK_Log_Message_Class_T
+{
+	CK_LOG_MSG_NORMAL,
+	CK_LOG_MSG_WARNING,
+	CK_LOG_MSG_ERROR
 } CK_Log_Message_Class_T;
 
 // Used for debugging
@@ -71,14 +74,14 @@ size_t CK_Cross_fwriteBoolTo16LE(const void *ptr, size_t count, FILE *stream);
 #if 0
 // Similar functions for enum <-> 8-bit conversions, given as a template
 // (Declarations only; Implementations should be done in ck_cross.c)
-#define CK_CROSS_DECLARE_FP_READWRITE_8LE_FUNCS(ourSampleEnum) \
-size_t CK_Cross_fread_ ## ourSampleEnum ## _From8LE (void *ptr, size_t count, FILE *stream); \
-size_t CK_Cross_fwrite_ ## ourSampleEnum ## _To8LE (const void *ptr, size_t count, FILE *stream);
+#define CK_CROSS_DECLARE_FP_READWRITE_8LE_FUNCS(ourSampleEnum)                                  \
+	size_t CK_Cross_fread_##ourSampleEnum##_From8LE(void *ptr, size_t count, FILE *stream); \
+	size_t CK_Cross_fwrite_##ourSampleEnum##_To8LE(const void *ptr, size_t count, FILE *stream);
 // End of template
 #endif
 
 // The C standard library doesn't have an implementation of min/max, which is sad.
-#define CK_Cross_max(x,y) ((x)<(y)?(y):(x))
-#define CK_Cross_min(x,y) ((x)<(y)?(y):(x))
+#define CK_Cross_max(x, y) ((x) < (y) ? (y) : (x))
+#define CK_Cross_min(x, y) ((x) < (y) ? (y) : (x))
 
 #endif

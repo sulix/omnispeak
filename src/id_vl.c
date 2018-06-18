@@ -17,17 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "id_mm.h"
-#include "id_ca.h"
 #include "id_vl.h"
+#include "id_ca.h"
+#include "id_mm.h"
 #include "id_vl_private.h"
 
 #ifdef WITH_SDL
 #include <SDL.h>
 #endif
 
-#define max(a,b) (((a) < (b))?(b):(a))
-#define min(a,b) (((a) < (b))?(a):(b))
+#define max(a, b) (((a) < (b)) ? (b) : (a))
+#define min(a, b) (((a) < (b)) ? (a) : (b))
 
 // EGA color palette in RGB format (technically more can be chosen with the VGA)
 const uint8_t VL_EGARGBColorTable[16][3] = {
@@ -52,12 +52,12 @@ const uint8_t VL_EGARGBColorTable[16][3] = {
 // EGA signal palettes (the 17th entry of each row is the overscan border color)
 // NOTE: Vanilla Keen can modify some of these (e.g. the border color)
 uint8_t vl_palette[6][17] = {
- 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Pitch black
- 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 0,
- 0, 0, 0, 0, 0, 0, 0, 0,24,25,26,27,28,29,30,31, 0,
- 0, 1, 2, 3, 4, 5, 6, 7,24,25,26,27,28,29,30,31, 0, // Default palette
- 0, 1, 2, 3, 4, 5, 6, 7,31,31,31,31,31,31,31,31, 0,
-31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31, // Full bright
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Pitch black
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 24, 25, 26, 27, 28, 29, 30, 31, 0,
+	0, 1, 2, 3, 4, 5, 6, 7, 24, 25, 26, 27, 28, 29, 30, 31, 0, // Default palette
+	0, 1, 2, 3, 4, 5, 6, 7, 31, 31, 31, 31, 31, 31, 31, 31, 0,
+	31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, // Full bright
 };
 
 bool vl_screenFaded = false;
@@ -176,11 +176,11 @@ void VL_FadeFromBlack(void)
 
 void VL_Clip(int *src_w, int *src_h, int *dst_x, int *dst_y, int dst_w, int dst_h)
 {
-	int initialX = max(-(*dst_x),0);
-	int initialY = max(-(*dst_y),0);
-	int finalW = min(max(dst_w-(*dst_x),0), min(*src_w, *dst_x + *src_w));
-	int finalH = min(max(dst_h-(*dst_y),0), min(*src_h, *dst_y + *src_h));
-	
+	int initialX = max(-(*dst_x), 0);
+	int initialY = max(-(*dst_y), 0);
+	int finalW = min(max(dst_w - (*dst_x), 0), min(*src_w, *dst_x + *src_w));
+	int finalH = min(max(dst_h - (*dst_y), 0), min(*src_h, *dst_y + *src_h));
+
 	*src_w = finalW;
 	*src_h = finalH;
 	*dst_x = initialX;
@@ -217,56 +217,56 @@ void VL_UnmaskedToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 }
 #endif
 
-void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h)
+void VL_UnmaskedToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h)
 {
-	uint8_t *dstptr = (uint8_t*)dest;
-	uint8_t *srcptr_b = (uint8_t*)src;
-	uint8_t *srcptr_g = srcptr_b + (w/8)*h;
-	uint8_t *srcptr_r = srcptr_g + (w/8)*h;
-	uint8_t *srcptr_i = srcptr_r + (w/8)*h;
+	uint8_t *dstptr = (uint8_t *)dest;
+	uint8_t *srcptr_b = (uint8_t *)src;
+	uint8_t *srcptr_g = srcptr_b + (w / 8) * h;
+	uint8_t *srcptr_r = srcptr_g + (w / 8) * h;
+	uint8_t *srcptr_i = srcptr_r + (w / 8) * h;
 
-	for(int sy = 0; sy < h; ++sy)
+	for (int sy = 0; sy < h; ++sy)
 	{
-		for(int sx = 0; sx < w; ++sx)
+		for (int sx = 0; sx < w; ++sx)
 		{
 			int plane_off = (sy * w + sx) >> 3;
-			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			int plane_bit = 1 << (7 - ((sy * w + sx) & 7));
 
-			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
-					((srcptr_r[plane_off] & plane_bit)?4:0) |
-					((srcptr_g[plane_off] & plane_bit)?2:0) |
-					((srcptr_b[plane_off] & plane_bit)?1:0);
+			int pixel = ((srcptr_i[plane_off] & plane_bit) ? 8 : 0) |
+				((srcptr_r[plane_off] & plane_bit) ? 4 : 0) |
+				((srcptr_g[plane_off] & plane_bit) ? 2 : 0) |
+				((srcptr_b[plane_off] & plane_bit) ? 1 : 0);
 
-			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
+			dstptr[(sy + y) * pitch + (sx + x)] = pixel;
 		}
 	}
 }
 
 // Used by the Terminator and Star Wars sequences to draw bitmaps to select planes
-void VL_UnmaskedToPAL8_PM(void *src,void *dest, int x, int y, int pitch, int w, int h, int mapmask)
+void VL_UnmaskedToPAL8_PM(void *src, void *dest, int x, int y, int pitch, int w, int h, int mapmask)
 {
-	uint8_t *dstptr = (uint8_t*)dest;
-	uint8_t *srcptr_b = (uint8_t*)src;
-	uint8_t *srcptr_g = srcptr_b + (w/8)*h;
-	uint8_t *srcptr_r = srcptr_g + (w/8)*h;
-	uint8_t *srcptr_i = srcptr_r + (w/8)*h;
+	uint8_t *dstptr = (uint8_t *)dest;
+	uint8_t *srcptr_b = (uint8_t *)src;
+	uint8_t *srcptr_g = srcptr_b + (w / 8) * h;
+	uint8_t *srcptr_r = srcptr_g + (w / 8) * h;
+	uint8_t *srcptr_i = srcptr_r + (w / 8) * h;
 
-  mapmask &= 0xF;
+	mapmask &= 0xF;
 
-	for(int sy = 0; sy < h; ++sy)
+	for (int sy = 0; sy < h; ++sy)
 	{
-		for(int sx = 0; sx < w; ++sx)
+		for (int sx = 0; sx < w; ++sx)
 		{
 			int plane_off = (sy * w + sx) >> 3;
-			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			int plane_bit = 1 << (7 - ((sy * w + sx) & 7));
 
-			int pixel = ((mapmask&8)&&(srcptr_i[plane_off] & plane_bit)?8:0) |
-					((mapmask&4)&&(srcptr_r[plane_off] & plane_bit)?4:0) |
-					((mapmask&2)&&(srcptr_g[plane_off] & plane_bit)?2:0) |
-					((mapmask&1)&&(srcptr_b[plane_off] & plane_bit)?1:0);
+			int pixel = ((mapmask & 8) && (srcptr_i[plane_off] & plane_bit) ? 8 : 0) |
+				((mapmask & 4) && (srcptr_r[plane_off] & plane_bit) ? 4 : 0) |
+				((mapmask & 2) && (srcptr_g[plane_off] & plane_bit) ? 2 : 0) |
+				((mapmask & 1) && (srcptr_b[plane_off] & plane_bit) ? 1 : 0);
 
-			dstptr[(sy+y)*pitch+(sx+x)] &= ~mapmask;
-			dstptr[(sy+y)*pitch+(sx+x)] |= pixel;
+			dstptr[(sy + y) * pitch + (sx + x)] &= ~mapmask;
+			dstptr[(sy + y) * pitch + (sx + x)] |= pixel;
 		}
 	}
 }
@@ -303,28 +303,28 @@ void VL_MaskedToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h
 }
 #endif
 
-void VL_MaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h)
+void VL_MaskedToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h)
 {
-	uint8_t *dstptr = (uint8_t*)dest;
-	uint8_t *srcptr_a = (uint8_t*)src;
-	uint8_t *srcptr_b = srcptr_a + (w/8)*h;
-	uint8_t *srcptr_g = srcptr_b + (w/8)*h;
-	uint8_t *srcptr_r = srcptr_g + (w/8)*h;
-	uint8_t *srcptr_i = srcptr_r + (w/8)*h;
+	uint8_t *dstptr = (uint8_t *)dest;
+	uint8_t *srcptr_a = (uint8_t *)src;
+	uint8_t *srcptr_b = srcptr_a + (w / 8) * h;
+	uint8_t *srcptr_g = srcptr_b + (w / 8) * h;
+	uint8_t *srcptr_r = srcptr_g + (w / 8) * h;
+	uint8_t *srcptr_i = srcptr_r + (w / 8) * h;
 
-	for(int sy = 0; sy < h; ++sy)
+	for (int sy = 0; sy < h; ++sy)
 	{
-		for(int sx = 0; sx < w; ++sx)
+		for (int sx = 0; sx < w; ++sx)
 		{
 			int plane_off = (sy * w + sx) >> 3;
-			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			int plane_bit = 1 << (7 - ((sy * w + sx) & 7));
 
-			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
-					((srcptr_r[plane_off] & plane_bit)?4:0) |
-					((srcptr_g[plane_off] & plane_bit)?2:0) |
-					((srcptr_b[plane_off] & plane_bit)?1:0);
+			int pixel = ((srcptr_i[plane_off] & plane_bit) ? 8 : 0) |
+				((srcptr_r[plane_off] & plane_bit) ? 4 : 0) |
+				((srcptr_g[plane_off] & plane_bit) ? 2 : 0) |
+				((srcptr_b[plane_off] & plane_bit) ? 1 : 0);
 
-			dstptr[(sy+y)*pitch+(sx+x)] = pixel & ((srcptr_a[plane_off] & plane_bit)?0xF0:0x00);
+			dstptr[(sy + y) * pitch + (sx + x)] = pixel & ((srcptr_a[plane_off] & plane_bit) ? 0xF0 : 0x00);
 		}
 	}
 }
@@ -365,32 +365,32 @@ void VL_MaskedBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, in
 }
 #endif
 
-void VL_MaskedBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h)
+void VL_MaskedBlitToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h)
 {
-	uint8_t *dstptr = (uint8_t*)dest;
-	uint8_t *srcptr_a = (uint8_t*)src;
-	uint8_t *srcptr_b = srcptr_a + (w/8)*h;
-	uint8_t *srcptr_g = srcptr_b + (w/8)*h;
-	uint8_t *srcptr_r = srcptr_g + (w/8)*h;
-	uint8_t *srcptr_i = srcptr_r + (w/8)*h;
+	uint8_t *dstptr = (uint8_t *)dest;
+	uint8_t *srcptr_a = (uint8_t *)src;
+	uint8_t *srcptr_b = srcptr_a + (w / 8) * h;
+	uint8_t *srcptr_g = srcptr_b + (w / 8) * h;
+	uint8_t *srcptr_r = srcptr_g + (w / 8) * h;
+	uint8_t *srcptr_i = srcptr_r + (w / 8) * h;
 
-	for(int sy = 0; sy < h; ++sy)
+	for (int sy = 0; sy < h; ++sy)
 	{
-		for(int sx = 0; sx < w; ++sx)
+		for (int sx = 0; sx < w; ++sx)
 		{
 			int plane_off = (sy * w + sx) >> 3;
-			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			int plane_bit = 1 << (7 - ((sy * w + sx) & 7));
 
-
-			if ((srcptr_a[plane_off] & plane_bit) != 0) {
+			if ((srcptr_a[plane_off] & plane_bit) != 0)
+			{
 				continue;
 			}
-			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
-					((srcptr_r[plane_off] & plane_bit)?4:0) |
-					((srcptr_g[plane_off] & plane_bit)?2:0) |
-					((srcptr_b[plane_off] & plane_bit)?1:0);
+			int pixel = ((srcptr_i[plane_off] & plane_bit) ? 8 : 0) |
+				((srcptr_r[plane_off] & plane_bit) ? 4 : 0) |
+				((srcptr_g[plane_off] & plane_bit) ? 2 : 0) |
+				((srcptr_b[plane_off] & plane_bit) ? 1 : 0);
 
-			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
+			dstptr[(sy + y) * pitch + (sx + x)] = pixel;
 		}
 	}
 }
@@ -435,40 +435,39 @@ void VL_MaskedBlitClipToRGB(void *src,void *dest, int x, int y, int pitch, int w
 }
 #endif
 
-void VL_MaskedBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh)
+void VL_MaskedBlitClipToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int dw, int dh)
 {
-	uint8_t *dstptr = (uint8_t*)dest;
-	uint8_t *srcptr_a = (uint8_t*)src;
-	uint8_t *srcptr_b = srcptr_a + (w/8)*h;
-	uint8_t *srcptr_g = srcptr_b + (w/8)*h;
-	uint8_t *srcptr_r = srcptr_g + (w/8)*h;
-	uint8_t *srcptr_i = srcptr_r + (w/8)*h;
-	int initialX = max(-x,0);
-	int initialY = max(-y,0);
-	int finalW = min(max(dw-x,0), w);
-	int finalH = min(max(dh-y,0), h);
+	uint8_t *dstptr = (uint8_t *)dest;
+	uint8_t *srcptr_a = (uint8_t *)src;
+	uint8_t *srcptr_b = srcptr_a + (w / 8) * h;
+	uint8_t *srcptr_g = srcptr_b + (w / 8) * h;
+	uint8_t *srcptr_r = srcptr_g + (w / 8) * h;
+	uint8_t *srcptr_i = srcptr_r + (w / 8) * h;
+	int initialX = max(-x, 0);
+	int initialY = max(-y, 0);
+	int finalW = min(max(dw - x, 0), w);
+	int finalH = min(max(dh - y, 0), h);
 
-	for(int sy = initialY; sy < finalH; ++sy)
+	for (int sy = initialY; sy < finalH; ++sy)
 	{
-		for(int sx = initialX; sx < finalW; ++sx)
+		for (int sx = initialX; sx < finalW; ++sx)
 		{
 			int plane_off = (sy * w + sx) >> 3;
-			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			int plane_bit = 1 << (7 - ((sy * w + sx) & 7));
 
-
-			if ((srcptr_a[plane_off] & plane_bit) != 0) {
+			if ((srcptr_a[plane_off] & plane_bit) != 0)
+			{
 				continue;
 			}
-			int pixel = ((srcptr_i[plane_off] & plane_bit)?8:0) |
-					((srcptr_r[plane_off] & plane_bit)?4:0) |
-					((srcptr_g[plane_off] & plane_bit)?2:0) |
-					((srcptr_b[plane_off] & plane_bit)?1:0);
+			int pixel = ((srcptr_i[plane_off] & plane_bit) ? 8 : 0) |
+				((srcptr_r[plane_off] & plane_bit) ? 4 : 0) |
+				((srcptr_g[plane_off] & plane_bit) ? 2 : 0) |
+				((srcptr_b[plane_off] & plane_bit) ? 1 : 0);
 
-			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
+			dstptr[(sy + y) * pitch + (sx + x)] = pixel;
 		}
 	}
 }
-
 
 #if 0
 void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
@@ -495,43 +494,43 @@ void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, 
 }
 #endif
 
-void VL_1bppToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
+void VL_1bppToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
-	uint8_t *dstptr = (uint8_t*)dest;
-	uint8_t *srcptr= (uint8_t*)src;
+	uint8_t *dstptr = (uint8_t *)dest;
+	uint8_t *srcptr = (uint8_t *)src;
 
-	for(int sy = 0; sy < h; ++sy)
+	for (int sy = 0; sy < h; ++sy)
 	{
-		for(int sx = 0; sx < w; ++sx)
+		for (int sx = 0; sx < w; ++sx)
 		{
 			int plane_off = (sy * w + sx) >> 3;
-			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			int plane_bit = 1 << (7 - ((sy * w + sx) & 7));
 
-			int pixel = ((srcptr[plane_off] & plane_bit)?colour:colour&0xF0);
+			int pixel = ((srcptr[plane_off] & plane_bit) ? colour : colour & 0xF0);
 
-			dstptr[(sy+y)*pitch+(sx+x)] = pixel;
+			dstptr[(sy + y) * pitch + (sx + x)] = pixel;
 		}
 	}
 }
 
-void VL_1bppToPAL8_PM(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour, int mapmask)
+void VL_1bppToPAL8_PM(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour, int mapmask)
 {
-	uint8_t *dstptr = (uint8_t*)dest;
-	uint8_t *srcptr= (uint8_t*)src;
+	uint8_t *dstptr = (uint8_t *)dest;
+	uint8_t *srcptr = (uint8_t *)src;
 
-  mapmask &= 0xF;
+	mapmask &= 0xF;
 
-	for(int sy = 0; sy < h; ++sy)
+	for (int sy = 0; sy < h; ++sy)
 	{
-		for(int sx = 0; sx < w; ++sx)
+		for (int sx = 0; sx < w; ++sx)
 		{
 			int plane_off = (sy * w + sx) >> 3;
-			int plane_bit = 1<<(7-((sy * w + sx) & 7));
+			int plane_bit = 1 << (7 - ((sy * w + sx) & 7));
 
-			int pixel = ((srcptr[plane_off] & plane_bit)?colour:colour&0xF0) & mapmask;
+			int pixel = ((srcptr[plane_off] & plane_bit) ? colour : colour & 0xF0) & mapmask;
 
-			dstptr[(sy+y)*pitch+(sx+x)] &= ~mapmask;
-			dstptr[(sy+y)*pitch+(sx+x)] |= pixel;
+			dstptr[(sy + y) * pitch + (sx + x)] &= ~mapmask;
+			dstptr[(sy + y) * pitch + (sx + x)] |= pixel;
 		}
 	}
 }
@@ -564,23 +563,24 @@ void VL_1bppXorWithRGB(void *src,void *dest, int x, int y, int pitch, int w, int
 }
 #endif
 
-void VL_1bppXorWithPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
+void VL_1bppXorWithPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
-	uint8_t *dstptr = (uint8_t*)dest;
-	uint8_t *srcptr= (uint8_t*)src;
+	uint8_t *dstptr = (uint8_t *)dest;
+	uint8_t *srcptr = (uint8_t *)src;
 
-	int spitch = ((w + 7)/8)*8;
+	int spitch = ((w + 7) / 8) * 8;
 
-	for(int sy = 0; sy < h; ++sy)
+	for (int sy = 0; sy < h; ++sy)
 	{
-		for(int sx = 0; sx < w; ++sx)
+		for (int sx = 0; sx < w; ++sx)
 		{
 			int plane_off = (sy * spitch + sx) >> 3;
-			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
+			int plane_bit = 1 << (7 - ((sy * spitch + sx) & 7));
 
-			if (!(srcptr[plane_off] & plane_bit)) continue;
+			if (!(srcptr[plane_off] & plane_bit))
+				continue;
 
-			dstptr[(sy+y)*pitch+(sx+x)] ^= colour;
+			dstptr[(sy + y) * pitch + (sx + x)] ^= colour;
 		}
 	}
 }
@@ -614,69 +614,72 @@ void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int 
 }
 #endif
 
-void VL_1bppBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
+void VL_1bppBlitToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
-	uint8_t *dstptr = (uint8_t*)dest;
-	uint8_t *srcptr= (uint8_t*)src;
+	uint8_t *dstptr = (uint8_t *)dest;
+	uint8_t *srcptr = (uint8_t *)src;
 
-	int spitch = ((w + 7)/8)*8;
+	int spitch = ((w + 7) / 8) * 8;
 
-	for(int sy = 0; sy < h; ++sy)
+	for (int sy = 0; sy < h; ++sy)
 	{
-		for(int sx = 0; sx < w; ++sx)
+		for (int sx = 0; sx < w; ++sx)
 		{
 			int plane_off = (sy * spitch + sx) >> 3;
-			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
+			int plane_bit = 1 << (7 - ((sy * spitch + sx) & 7));
 
-			if (!(srcptr[plane_off] & plane_bit)) continue;
+			if (!(srcptr[plane_off] & plane_bit))
+				continue;
 
-			dstptr[(sy+y)*pitch+(sx+x)] = colour;
+			dstptr[(sy + y) * pitch + (sx + x)] = colour;
 		}
 	}
 }
 
 // This is used in VH_DrawSpriteMask.
-void VL_1bppInvBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour)
+void VL_1bppInvBlitToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour)
 {
-	uint8_t *dstptr = (uint8_t*)dest;
-	uint8_t *srcptr= (uint8_t*)src;
+	uint8_t *dstptr = (uint8_t *)dest;
+	uint8_t *srcptr = (uint8_t *)src;
 
-	int spitch = ((w + 7)/8)*8;
+	int spitch = ((w + 7) / 8) * 8;
 
-	for(int sy = 0; sy < h; ++sy)
+	for (int sy = 0; sy < h; ++sy)
 	{
-		for(int sx = 0; sx < w; ++sx)
+		for (int sx = 0; sx < w; ++sx)
 		{
 			int plane_off = (sy * spitch + sx) >> 3;
-			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
+			int plane_bit = 1 << (7 - ((sy * spitch + sx) & 7));
 
-			if ((srcptr[plane_off] & plane_bit)) continue;
+			if ((srcptr[plane_off] & plane_bit))
+				continue;
 
-			dstptr[(sy+y)*pitch+(sx+x)] = colour;
+			dstptr[(sy + y) * pitch + (sx + x)] = colour;
 		}
 	}
 }
 
-void VL_1bppInvBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh, int colour)
+void VL_1bppInvBlitClipToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int dw, int dh, int colour)
 {
-	uint8_t *dstptr = (uint8_t*)dest;
-	uint8_t *srcptr = (uint8_t*)src;
-	int initialX = max(-x,0);
-	int initialY = max(-y,0);
-	int finalW = min(max(dw-x,0), w);
-	int finalH = min(max(dh-y,0), h);
-	int spitch = ((w + 7)/8)*8;
+	uint8_t *dstptr = (uint8_t *)dest;
+	uint8_t *srcptr = (uint8_t *)src;
+	int initialX = max(-x, 0);
+	int initialY = max(-y, 0);
+	int finalW = min(max(dw - x, 0), w);
+	int finalH = min(max(dh - y, 0), h);
+	int spitch = ((w + 7) / 8) * 8;
 
-	for(int sy = initialY; sy < finalH; ++sy)
+	for (int sy = initialY; sy < finalH; ++sy)
 	{
-		for(int sx = initialX; sx < finalW; ++sx)
+		for (int sx = initialX; sx < finalW; ++sx)
 		{
 			int plane_off = (sy * spitch + sx) >> 3;
-			int plane_bit = 1<<(7-((sy * spitch + sx) & 7));
+			int plane_bit = 1 << (7 - ((sy * spitch + sx) & 7));
 
-			if ((srcptr[plane_off] & plane_bit)) continue;
+			if ((srcptr[plane_off] & plane_bit))
+				continue;
 
-			dstptr[(sy+y)*pitch+(sx+x)] = colour;
+			dstptr[(sy + y) * pitch + (sx + x)] = colour;
 		}
 	}
 }
@@ -697,7 +700,7 @@ void VL_InitScreen(void)
 	vl_memused = 0;
 	vl_numsurfaces = 1;
 	vl_currentBackend->setVideoMode(0xD);
-	vl_emuegavgaadapter.screen = vl_currentBackend->createSurface(21*16,14*16,VL_SurfaceUsage_FrontBuffer);
+	vl_emuegavgaadapter.screen = vl_currentBackend->createSurface(21 * 16, 14 * 16, VL_SurfaceUsage_FrontBuffer);
 	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
 	// NOTE: The overscan border color is *not* yet set to cyan here
 	VL_SetPaletteAndBorderColor(vl_palette[3]);
@@ -720,7 +723,7 @@ void VL_ResizeScreen(int w, int h)
 	vl_memused -= vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
 	vl_currentBackend->destroySurface(vl_emuegavgaadapter.screen);
 
-	vl_emuegavgaadapter.screen = vl_currentBackend->createSurface(w,h,VL_SurfaceUsage_FrontBuffer);
+	vl_emuegavgaadapter.screen = vl_currentBackend->createSurface(w, h, VL_SurfaceUsage_FrontBuffer);
 	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
 }
 
@@ -754,7 +757,7 @@ void VL_ToggleBorder()
 
 void *VL_CreateSurface(int w, int h)
 {
-	void *s = vl_currentBackend->createSurface(w,h,VL_SurfaceUsage_Default);
+	void *s = vl_currentBackend->createSurface(w, h, VL_SurfaceUsage_Default);
 	vl_memused += vl_currentBackend->getSurfaceMemUse(s);
 	vl_numsurfaces++;
 	return s;
@@ -784,17 +787,17 @@ int VL_SurfacePGet(void *surf, int x, int y)
 
 void VL_SurfaceRect(void *dst, int x, int y, int w, int h, int colour)
 {
-	vl_currentBackend->surfaceRect(dst,x,y,w,h,colour);
+	vl_currentBackend->surfaceRect(dst, x, y, w, h, colour);
 }
 
 void VL_ScreenRect(int x, int y, int w, int h, int colour)
 {
-	vl_currentBackend->surfaceRect(vl_emuegavgaadapter.screen,x,y,w,h,colour);
+	vl_currentBackend->surfaceRect(vl_emuegavgaadapter.screen, x, y, w, h, colour);
 }
 
 void VL_ScreenRect_PM(int x, int y, int w, int h, int colour)
 {
-	vl_currentBackend->surfaceRect_PM(vl_emuegavgaadapter.screen,x,y,w,h,colour, vl_mapMask);
+	vl_currentBackend->surfaceRect_PM(vl_emuegavgaadapter.screen, x, y, w, h, colour, vl_mapMask);
 }
 
 void VL_ScreenToScreen(int x, int y, int sx, int sy, int sw, int sh)
@@ -809,7 +812,7 @@ void VL_SurfaceToSurface(void *src, void *dst, int x, int y, int sx, int sy, int
 
 void VL_SurfaceToScreen(void *src, int x, int y, int sx, int sy, int sw, int sh)
 {
-	vl_currentBackend->surfaceToSurface(src,vl_emuegavgaadapter.screen, x, y, sx, sy, sw, sh);
+	vl_currentBackend->surfaceToSurface(src, vl_emuegavgaadapter.screen, x, y, sx, sy, sw, sh);
 }
 
 void VL_SurfaceToSelf(void *surf, int x, int y, int sx, int sy, int sw, int sh)
@@ -861,7 +864,7 @@ void VL_1bppToScreen(void *src, int x, int y, int w, int h, int colour)
 
 void VL_1bppToScreen_PM(void *src, int x, int y, int w, int h, int colour)
 {
-  vl_currentBackend->bitToSurface_PM(src, vl_emuegavgaadapter.screen, x, y, w, h, colour, vl_mapMask);
+	vl_currentBackend->bitToSurface_PM(src, vl_emuegavgaadapter.screen, x, y, w, h, colour, vl_mapMask);
 }
 
 void VL_1bppXorWithScreen(void *src, int x, int y, int w, int h, int colour)
@@ -919,14 +922,13 @@ void VL_SetScrollCoords(int x, int y)
 
 int VL_GetScrollX(void)
 {
-  return vl_scrollXpixels;
+	return vl_scrollXpixels;
 }
 
 int VL_GetScrollY(void)
 {
-  return vl_scrollYpixels;
+	return vl_scrollYpixels;
 }
-
 
 // The full on-screen region, including overscan border.
 int vl_fullRgn_x;
@@ -974,29 +976,27 @@ void VL_CalculateRenderRegions(int realW, int realH)
 		vl_fullRgn_x = 0;
 		vl_fullRgn_y = 0;
 	}
-	
-	vl_integerWidth = max( (vl_fullRgn_w / VL_EGAVGA_GFX_WIDTH) * VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_WIDTH);
-	vl_integerHeight = max( (vl_fullRgn_h / VL_EGAVGA_GFX_HEIGHT) * VL_EGAVGA_GFX_HEIGHT, VL_EGAVGA_GFX_HEIGHT);
-	
-	
-	vl_renderRgn_x = 
+
+	vl_integerWidth = max((vl_fullRgn_w / VL_EGAVGA_GFX_WIDTH) * VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_WIDTH);
+	vl_integerHeight = max((vl_fullRgn_h / VL_EGAVGA_GFX_HEIGHT) * VL_EGAVGA_GFX_HEIGHT, VL_EGAVGA_GFX_HEIGHT);
+
+	vl_renderRgn_x =
 		vl_integerWidth * VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH /
-		(VL_VGA_GFX_WIDTH_SCALEFACTOR*VL_EGAVGA_GFX_WIDTH +
+		(VL_VGA_GFX_WIDTH_SCALEFACTOR * VL_EGAVGA_GFX_WIDTH +
 			VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
 	vl_renderRgn_y =
 		vl_integerHeight * VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT /
-		(VL_VGA_GFX_HEIGHT_SCALEFACTOR*VL_EGAVGA_GFX_HEIGHT +
+		(VL_VGA_GFX_HEIGHT_SCALEFACTOR * VL_EGAVGA_GFX_HEIGHT +
 			VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
 	// Tricky calculations that preserve symmetry for the VGA
 	vl_renderRgn_w = vl_integerWidth -
 		vl_integerWidth * (VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH) /
-		(VL_VGA_GFX_WIDTH_SCALEFACTOR*VL_EGAVGA_GFX_WIDTH +
-			VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
-	vl_renderRgn_h = vl_integerHeight - 
+			(VL_VGA_GFX_WIDTH_SCALEFACTOR * VL_EGAVGA_GFX_WIDTH +
+				VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
+	vl_renderRgn_h = vl_integerHeight -
 		vl_integerHeight * (VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT) /
-		(VL_VGA_GFX_HEIGHT_SCALEFACTOR*VL_EGAVGA_GFX_HEIGHT +
-			VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
-
+			(VL_VGA_GFX_HEIGHT_SCALEFACTOR * VL_EGAVGA_GFX_HEIGHT +
+				VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
 }
 
 void VL_ClearScreen(int colour)
@@ -1011,7 +1011,7 @@ void VL_ClearScreen(int colour)
 
 void VL_SetMapMask(int mapmask)
 {
-  vl_mapMask = mapmask & 0xF;
+	vl_mapMask = mapmask & 0xF;
 }
 
 int VL_GetActiveBuffer()

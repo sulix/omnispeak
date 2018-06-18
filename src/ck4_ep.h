@@ -67,7 +67,7 @@ void CK4_ScanInfoLayer();
 /* ck4_misc.c */
 void CK4_SpawnLevelEnd(void);
 CK_object *CK4_SpawnEnemyShot(int posX, int posY, CK_action *action);
-void CK4_SpawnScubaKeen (int tileX, int tileY);
+void CK4_SpawnScubaKeen(int tileX, int tileY);
 
 void CK4_ShowCouncilMessage(void);
 void CK4_ShowWetsuitMessage(void);

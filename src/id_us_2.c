@@ -35,16 +35,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string.h>
 
 #include "id_heads.h"
-#include "id_us.h"
 #include "id_in.h"
+#include "id_sd.h"
+#include "id_us.h"
 #include "id_vh.h"
 #include "id_vl.h"
-#include "id_sd.h"
 #include "ck_def.h"
 #include "ck_text.h"
 
 void USL_DrawCardItemIcon(US_CardItem *item);
-void CK_US_SetKeyBinding ( US_CardItem *item, int which_control );
+void CK_US_SetKeyBinding(US_CardItem *item, int which_control);
 #include "ck_us_2.c"
 
 // Card stack can have at most 7 cards
@@ -61,29 +61,28 @@ static int us_cardStackIndex;
 US_Card *us_currentCard;
 US_Card *us_cardStack[US_MAX_CARDSTACK];
 
-US_CardItem new_game_menu_items[] ={
-	{ US_ITEM_Normal, 0, IN_SC_E, "BEGIN EASY GAME", US_Comm_NewEasyGame, NULL, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_N, "BEGIN NORMAL GAME", US_Comm_NewNormalGame, NULL, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_H, "BEGIN HARD GAME", US_Comm_NewHardGame, NULL, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, NULL,             US_Comm_None,  NULL, 0, 0 },
+US_CardItem new_game_menu_items[] = {
+	{US_ITEM_Normal, 0, IN_SC_E, "BEGIN EASY GAME", US_Comm_NewEasyGame, NULL, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_N, "BEGIN NORMAL GAME", US_Comm_NewNormalGame, NULL, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_H, "BEGIN HARD GAME", US_Comm_NewHardGame, NULL, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, NULL, US_Comm_None, NULL, 0, 0},
 };
 
-US_Card new_game_menu ={ 8, 0, &PIC_NEWGAMECARD, 0, new_game_menu_items, NULL, 0, 0, 0 };
+US_Card new_game_menu = {8, 0, &PIC_NEWGAMECARD, 0, new_game_menu_items, NULL, 0, 0, 0};
 
-US_CardItem main_menu_items[] ={
-	{ US_ITEM_Submenu, 0, IN_SC_N,    "NEW GAME",   US_Comm_None, &new_game_menu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_L,    "LOAD GAME",  US_Comm_None, /*load_game_menu*/NULL,  0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_S,    "SAVE GAME",  US_Comm_None, /*save_game_menu*/NULL,  0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_C,    "CONFIGURE",  US_Comm_None, /*&configure_menu*/NULL,  0, 0 },
-	{ US_ITEM_Normal,  0, IN_SC_R,    NULL,         US_Comm_ReturnToGame, NULL, 0, 0 },
-	{ US_ITEM_Normal,  0, IN_SC_E,    "END GAME",   US_Comm_EndGame, NULL,            0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_P,    "PADDLE WAR", US_Comm_None, /*paddlewar_menu*/NULL, 0, 0 },
-	{ US_ITEM_Normal,  0, IN_SC_Q,    "QUIT",       US_Comm_Quit, NULL,  0, 0 },
-	{ US_ITEM_None,    0, IN_SC_None, NULL,         US_Comm_None,  NULL,            0, 0 }
-};
+US_CardItem main_menu_items[] = {
+	{US_ITEM_Submenu, 0, IN_SC_N, "NEW GAME", US_Comm_None, &new_game_menu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_L, "LOAD GAME", US_Comm_None, /*load_game_menu*/ NULL, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_S, "SAVE GAME", US_Comm_None, /*save_game_menu*/ NULL, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_C, "CONFIGURE", US_Comm_None, /*&configure_menu*/ NULL, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_R, NULL, US_Comm_ReturnToGame, NULL, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_E, "END GAME", US_Comm_EndGame, NULL, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_P, "PADDLE WAR", US_Comm_None, /*paddlewar_menu*/ NULL, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_Q, "QUIT", US_Comm_Quit, NULL, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, NULL, US_Comm_None, NULL, 0, 0}};
 
 //AS:00A2
-US_Card main_menu ={ 32, 4, &PIC_MENUCARD, 0, main_menu_items, NULL, 0, 0, 0 };
+US_Card main_menu = {32, 4, &PIC_MENUCARD, 0, main_menu_items, NULL, 0, 0, 0};
 
 void US_SetupCards(US_Card *initial)
 {
@@ -173,26 +172,26 @@ void USL_DrawCardItem(US_CardItem *item)
 
 const char *footer_str[3];
 
-void USL_DrawMenuFooter( void )
+void USL_DrawMenuFooter(void)
 {
 	uint16_t w, h;
 
 	US_SetPrintColour(10);
 
 	/* "Arrows move" */
-	VH_DrawPropString( footer_str[2], 78, 135, 1, US_GetPrintColour() );
+	VH_DrawPropString(footer_str[2], 78, 135, 1, US_GetPrintColour());
 
 	/* "Enter selects" */
-	VH_MeasurePropString( footer_str[1], &w, &h, 1 );
-	VH_DrawPropString( footer_str[1], 230 - w, 135, 1, US_GetPrintColour() );
+	VH_MeasurePropString(footer_str[1], &w, &h, 1);
+	VH_DrawPropString(footer_str[1], 230 - w, 135, 1, US_GetPrintColour());
 
 	/* "Esc to quit/back out" */
-	VH_MeasurePropString( footer_str[0], &w, &h, 1 );
-	VH_DrawPropString( footer_str[0], 74 + ((160 - w) / 2), 135 + h + 1, 1, US_GetPrintColour() );
+	VH_MeasurePropString(footer_str[0], &w, &h, 1);
+	VH_DrawPropString(footer_str[0], 74 + ((160 - w) / 2), 135 + h + 1, 1, US_GetPrintColour());
 
 	US_SetPrintColour(0);
 
-	VH_HLine( 77, 231, 133, 10 );
+	VH_HLine(77, 231, 133, 10);
 }
 
 void USL_DrawCard()
@@ -252,56 +251,55 @@ void US_DrawCards()
 	VL_Present();
 }
 
-void USL_DialogSetup ( uint16_t w, uint16_t h, uint16_t *x, uint16_t *y )
+void USL_DialogSetup(uint16_t w, uint16_t h, uint16_t *x, uint16_t *y)
 {
-	VH_DrawMaskedBitmap( 74, 48, MPIC_WRISTWATCHSCREEN );
+	VH_DrawMaskedBitmap(74, 48, MPIC_WRISTWATCHSCREEN);
 
 	/* Calculate the position */
 	*x = 74 + (160 - w) / 2;
 	*y = 48 + (102 - h) / 2;
 
 	/* Fill the background */
-	VH_Bar( *x, *y, w + 1, h + 1, 8 );
+	VH_Bar(*x, *y, w + 1, h + 1, 8);
 
 	/* Draw the border */
-	VH_HLine( *x - 1, *x + w + 1, *y - 1, 10 );
-	VH_HLine( *x - 1, *x + w + 1, *y + h + 1, 10 );
-	VH_VLine( *y - 1, *y + h + 1, *x - 1, 10 );
-	VH_VLine( *y - 1, *y + h + 1, *x + w + 1, 10 );
+	VH_HLine(*x - 1, *x + w + 1, *y - 1, 10);
+	VH_HLine(*x - 1, *x + w + 1, *y + h + 1, 10);
+	VH_VLine(*y - 1, *y + h + 1, *x - 1, 10);
+	VH_VLine(*y - 1, *y + h + 1, *x + w + 1, 10);
 }
 
-void USL_LoadSaveMessage ( const char *s1, const char *s2 )
+void USL_LoadSaveMessage(const char *s1, const char *s2)
 {
 	uint16_t x, y, w2, h, w1;
 	uint16_t window_w;
 	uint16_t print_x, print_y;
 	char buf[36];
 
+	strcpy(buf, "'");
+	strcat(buf, s2);
+	strcat(buf, "'");
 
-	strcpy( buf, "'" );
-	strcat( buf, s2 );
-	strcat( buf, "'" );
-
-	VH_MeasurePropString( s1, &w1, &h, 1 );
-	VH_MeasurePropString( buf, &w2, &h, 1 );
+	VH_MeasurePropString(s1, &w1, &h, 1);
+	VH_MeasurePropString(buf, &w2, &h, 1);
 
 	window_w = (w1 > w2) ? w1 : w2;
 	window_w += 6;
-	USL_DialogSetup ( window_w, (h * 2) + 2, &x, &y );
+	USL_DialogSetup(window_w, (h * 2) + 2, &x, &y);
 
 	print_y = y + 2;
 	print_x = x + (window_w - w1) / 2;
-	VH_DrawPropString( s1, print_x, print_y, 1, US_GetPrintColour() );
+	VH_DrawPropString(s1, print_x, print_y, 1, US_GetPrintColour());
 
 	print_y += h;
 	print_x = x + (window_w - w2) / 2;
-	VH_DrawPropString( buf, print_x, print_y, 1, US_GetPrintColour() );
+	VH_DrawPropString(buf, print_x, print_y, 1, US_GetPrintColour());
 
 	// VW_UpdateScreen();
 	VL_Present();
 }
 
-int USL_CtlDialog ( const char *s1, const char *s2, const char *s3 )
+int USL_CtlDialog(const char *s1, const char *s2, const char *s3)
 {
 	uint16_t w1, w2, w3, h, sh;
 	uint16_t window_w, x, y;
@@ -311,10 +309,10 @@ int USL_CtlDialog ( const char *s1, const char *s2, const char *s3 )
 	uint16_t print_x, print_y;
 
 	/* Find the lengths of the strings */
-	VH_MeasurePropString( s1, &w1, &h, 1 );
-	VH_MeasurePropString( s2, &w2, &h, 1 );
-	if ( s3 )
-		VH_MeasurePropString( s3, &w3, &h, 1 );
+	VH_MeasurePropString(s1, &w1, &h, 1);
+	VH_MeasurePropString(s2, &w2, &h, 1);
+	if (s3)
+		VH_MeasurePropString(s3, &w3, &h, 1);
 	else
 		w3 = 0;
 
@@ -323,29 +321,29 @@ int USL_CtlDialog ( const char *s1, const char *s2, const char *s3 )
 	window_w += 7;
 	sh = h;
 	h *= (s3 ? 5 : 4);
-	USL_DialogSetup ( window_w, h, &x, &y );
+	USL_DialogSetup(window_w, h, &x, &y);
 
 	/* Print the message */
 	US_SetPrintColour(2);
 	print_x = x + (window_w - w1) / 2;
 	print_y = y + sh + 1;
-	VH_DrawPropString( s1, print_x, print_y, 1, US_GetPrintColour() );
+	VH_DrawPropString(s1, print_x, print_y, 1, US_GetPrintColour());
 
 	print_y += (sh * 2) - 1;
-	VH_HLine( x + 3, x + window_w - 3, print_y, 10 );
+	VH_HLine(x + 3, x + window_w - 3, print_y, 10);
 
 	/* Print the OK prompt */
 	print_y += 2;
 	US_SetPrintColour(10);
 	print_x = x + (window_w - w2) / 2;
-	VH_DrawPropString( s2, print_x, print_y, 1, US_GetPrintColour() );
+	VH_DrawPropString(s2, print_x, print_y, 1, US_GetPrintColour());
 
 	/* Print the third string ( if any ) */
 	print_y += sh;
-	if ( s3 )
+	if (s3)
 	{
 		print_x = x + (window_w - w3) / 2;
-		VH_DrawPropString( s3, print_x, print_y, 1, US_GetPrintColour() );
+		VH_DrawPropString(s3, print_x, print_y, 1, US_GetPrintColour());
 	}
 
 	// VW_UpdateScreen();
@@ -358,8 +356,8 @@ int USL_CtlDialog ( const char *s1, const char *s2, const char *s3 )
 		k = IN_SC_None;
 		VL_Yield(); // Keep CPU usage low
 		IN_PumpEvents();
-		IN_ReadControls(0,  &state );
-		if ( state.jump )
+		IN_ReadControls(0, &state);
+		if (state.jump)
 		{
 			k = IN_SC_Y;
 		}
@@ -372,45 +370,45 @@ int USL_CtlDialog ( const char *s1, const char *s2, const char *s3 )
 			k = IN_GetLastScan();
 		}
 		VL_Present();
-	} while ( k == IN_SC_None );
+	} while (k == IN_SC_None);
 
 	/* Wait for the button to be released */
 	do
 	{
 		VL_Yield(); // Keep CPU usage low
 		IN_PumpEvents();
-		IN_ReadControls(0, &state );
+		IN_ReadControls(0, &state);
 		VL_Present();
-	} while ( state.jump || state.pogo );
+	} while (state.jump || state.pogo);
 	IN_ClearKeysDown();
 
 	US_DrawCards();
 
 	/* Return true or false based on the user's choice */
-	if ( k == IN_SC_Y )
+	if (k == IN_SC_Y)
 		return 1;
 	else
 		return 0;
 }
 
-int USL_ConfirmComm( US_CardCommand command )
+int USL_ConfirmComm(US_CardCommand command)
 {
 	int result;
 	const char *s1, *s2, *s3;
 	int ask_user;
 
-	if ( command == US_Comm_None )
-		Quit( "USL_ConfirmComm() - empty comm" );	/* quit */
+	if (command == US_Comm_None)
+		Quit("USL_ConfirmComm() - empty comm"); /* quit */
 
 	result = 1;
 	ask_user = 0;
 	s3 = "ESC TO BACK OUT";
-	switch ( command )
+	switch (command)
 	{
 	case US_Comm_EndGame:
 		s1 = "REALLY END CURRENT GAME?";
 		s2 = "PRESS Y TO END IT";
-		if ( game_in_progress && game_unsaved )
+		if (game_in_progress && game_unsaved)
 			ask_user = 1;
 		break;
 
@@ -423,7 +421,7 @@ int USL_ConfirmComm( US_CardCommand command )
 	case 4:
 		s1 = "YOU'RE IN A GAME";
 		s2 = "PRESS Y TO LOAD GAME";
-		if ( game_in_progress && game_unsaved )
+		if (game_in_progress && game_unsaved)
 			ask_user = 1;
 		break;
 
@@ -432,13 +430,13 @@ int USL_ConfirmComm( US_CardCommand command )
 	case US_Comm_NewHardGame:
 		s1 = "YOU'RE IN A GAME";
 		s2 = "PRESS Y FOR NEW GAME";
-		if ( game_in_progress && game_unsaved )
+		if (game_in_progress && game_unsaved)
 			ask_user = 1;
 		break;
 	}
 
-	result = ask_user ? USL_CtlDialog ( s1, s2, s3 ) : 1;
-	if ( result )
+	result = ask_user ? USL_CtlDialog(s1, s2, s3) : 1;
+	if (result)
 	{
 		us_currentCommand = command;
 		command_confirmed = 1;
@@ -446,41 +444,41 @@ int USL_ConfirmComm( US_CardCommand command )
 	return result;
 }
 
-void USL_HandleError ( int error )
+void USL_HandleError(int error)
 {
 	// FIXME
 }
 
-void USL_EnableMenuItems( US_Card *card )
+void USL_EnableMenuItems(US_Card *card)
 {
 	US_CardItem *item;
 
-	if ( card->items )
+	if (card->items)
 	{
 		item = card->items;
-		while ( item->type != US_ITEM_None )
+		while (item->type != US_ITEM_None)
 		{
 			item->state &= ~US_IS_Disabled;
 			item->state &= ~US_IS_Selected;
 			item->state &= ~US_IS_Checked;
 
-			if ( item->subMenu  )
-				USL_EnableMenuItems( item->subMenu );
+			if (item->subMenu)
+				USL_EnableMenuItems(item->subMenu);
 			item++;
 		}
 	}
 }
 
-int USL_GetCheckedItem( US_Card *card )
+int USL_GetCheckedItem(US_Card *card)
 {
 	US_CardItem *item;
 	int index;
 
 	item = card->items;
 	index = 0;
-	while ( item->type != US_ITEM_None )
+	while (item->type != US_ITEM_None)
 	{
-		if ( item->state & US_IS_Checked )
+		if (item->state & US_IS_Checked)
 		{
 
 			return index;
@@ -491,23 +489,23 @@ int USL_GetCheckedItem( US_Card *card )
 	return -1;
 }
 
-void USL_SelectCardItem( US_Card *card, int index, int redraw )
+void USL_SelectCardItem(US_Card *card, int index, int redraw)
 {
 	US_CardItem *item;
 
-	if ( card->selectedItem != index )
+	if (card->selectedItem != index)
 	{
-		item = &(card->items[ card->selectedItem ]);
+		item = &(card->items[card->selectedItem]);
 		item->state &= ~US_IS_Selected;
-		if ( redraw )
-			USL_DrawCardItem( item );
+		if (redraw)
+			USL_DrawCardItem(item);
 	}
 	card->selectedItem = index;
-	item = &(card->items[ card->selectedItem ]);
+	item = &(card->items[card->selectedItem]);
 	item->state |= US_IS_Selected;
 
-	if ( redraw )
-		USL_DrawCardItem( item );
+	if (redraw)
+		USL_DrawCardItem(item);
 }
 
 void US_SelectItem(US_Card *card, int itemIndex, bool redraw)
@@ -571,10 +569,9 @@ void USL_CheckCardItem(US_Card *card, int itemIndex, bool redraw)
 	}
 }
 
-
 void US_SelectNextItem()
 {
-	if (us_currentCard->items[ us_currentCard->selectedItem + 1 ].type != US_ITEM_None )
+	if (us_currentCard->items[us_currentCard->selectedItem + 1].type != US_ITEM_None)
 	{
 
 		US_SelectItem(us_currentCard, us_currentCard->selectedItem + 1, true);
@@ -590,12 +587,12 @@ void US_SelectPrevItem()
 	}
 }
 
-void USL_SetMenuFooter( void )
+void USL_SetMenuFooter(void)
 {
 	footer_str[2] = "Arrows move";
 	footer_str[1] = "Enter selects";
 	footer_str[0] = (us_cardStackIndex != 0) ? "ESC to back out" : "ESC to quit";
-	USL_SelectCardItem( us_currentCard, us_currentCard->selectedItem, 0 );
+	USL_SelectCardItem(us_currentCard, us_currentCard->selectedItem, 0);
 	US_DrawCards();
 }
 
@@ -643,51 +640,51 @@ void US_SelectCurrentItem()
 {
 	US_CardItem *item;
 
-	item = &(us_currentCard->items[ us_currentCard->selectedItem ]);
+	item = &(us_currentCard->items[us_currentCard->selectedItem]);
 
 	// Play disallowed sound if menu item is disabled
-	if ( item->state & US_IS_Disabled )
+	if (item->state & US_IS_Disabled)
 	{
 		SD_PlaySound(SOUND_NEEDKEYCARD);
 		return;
 	}
 
 	// Handle the various Card item types
-	switch ( item->type )
+	switch (item->type)
 	{
 	case US_ITEM_Normal:
-		if ( us_currentCard->msgCallback )
+		if (us_currentCard->msgCallback)
 		{
-			if ( us_currentCard->msgCallback( US_MSG_ItemEntered, item ) )
+			if (us_currentCard->msgCallback(US_MSG_ItemEntered, item))
 				break;
 		}
-		USL_ConfirmComm( item->command );
+		USL_ConfirmComm(item->command);
 		return;
 	case US_ITEM_Radio:
-		USL_CheckCardItem( us_currentCard, us_currentCard->selectedItem, 1 );
+		USL_CheckCardItem(us_currentCard, us_currentCard->selectedItem, 1);
 		return;
 	case US_ITEM_Submenu:
-		USL_DownLevel( item->subMenu );
+		USL_DownLevel(item->subMenu);
 		break;
 	}
 }
 
 extern void CK_US_UpdateOptionsMenus();
 
-void USL_UpdateCards( void )
+void USL_UpdateCards(void)
 {
 	int i;
 
 	/* SFX and Music menus */
 	i = SoundMode;
 
-	if ( (i == sdm_AdLib) && quiet_sfx )
+	if ((i == sdm_AdLib) && quiet_sfx)
 		i++;
 
-	USL_CheckCardItem( &ck_us_soundMenu, i, 0 );
-	USL_CheckCardItem( &ck_us_musicMenu, MusicMode, 0 );
+	USL_CheckCardItem(&ck_us_soundMenu, i, 0);
+	USL_CheckCardItem(&ck_us_musicMenu, MusicMode, 0);
 
-	if ( !AdLibPresent )
+	if (!AdLibPresent)
 	{
 		/* Disable adlib & sb menu items */
 		ck_us_soundMenuItems[2].state |= US_IS_Disabled;
@@ -696,9 +693,9 @@ void USL_UpdateCards( void )
 	}
 
 	/* Joystick and gamepad menu items*/
-	if ( true ) //!joystick_present[0] )
+	if (true) //!joystick_present[0] )
 		ck_us_configureMenuItems[4].state |= US_IS_Disabled;
-	if ( true ) //!joystick_present[1] )
+	if (true) //!joystick_present[1] )
 		ck_us_configureMenuItems[5].state |= US_IS_Disabled;
 #if 0
 	if ( !joystick_present[0] && !joystick_present[1] )
@@ -706,7 +703,7 @@ void USL_UpdateCards( void )
 #endif
 	ck_us_mainMenuItems[4].caption = (game_in_progress) ? "RETURN TO GAME" : "RETURN TO DEMO";
 	/* Save game and end game items */
-	if ( !game_in_progress )
+	if (!game_in_progress)
 	{
 		ck_us_mainMenuItems[2].state |= US_IS_Disabled;
 		ck_us_mainMenuItems[5].state |= US_IS_Disabled;
@@ -775,36 +772,36 @@ void USL_BeginCards()
 	IN_ClearKeysDown();
 }
 
-void USL_HandleComm( int command )
+void USL_HandleComm(int command)
 {
-	switch ( command )
+	switch (command)
 	{
-	case US_Comm_EndGame:	/* end game */
+	case US_Comm_EndGame: /* end game */
 		load_game_error = 1;
 		return;
 
-	case US_Comm_Quit:	/* quit */
+	case US_Comm_Quit: /* quit */
 		quit_to_dos = 1;
 		return;
 
-	case US_Comm_NewEasyGame:	/* easy game */
+	case US_Comm_NewEasyGame: /* easy game */
 		ck_startingDifficulty = D_Easy;
 		return;
 
-	case US_Comm_NewNormalGame:	/* normal game */
+	case US_Comm_NewNormalGame: /* normal game */
 		ck_startingDifficulty = D_Normal;
 		return;
 
-	case US_Comm_NewHardGame:	/* hard game */
+	case US_Comm_NewHardGame: /* hard game */
 		ck_startingDifficulty = D_Hard;
 		return;
 
 	case US_Comm_ReturnToGame:
-	case 4:	/* return to game, ? */
+	case 4: /* return to game, ? */
 		return;
 
 	default:
-		Quit( "USL_HandleComm() - unknown" );	/* quit */
+		Quit("USL_HandleComm() - unknown"); /* quit */
 	}
 }
 
@@ -812,9 +809,9 @@ void USL_SetSoundAndMusic()
 {
 	int i;
 
-	i = USL_GetCheckedItem( &ck_us_soundMenu );
+	i = USL_GetCheckedItem(&ck_us_soundMenu);
 	// Quiet AdLib sound effects
-	if ( i == 3 )
+	if (i == 3)
 	{
 		quiet_sfx = true;
 		i--;
@@ -823,11 +820,11 @@ void USL_SetSoundAndMusic()
 	{
 		quiet_sfx = false;
 	}
-	if ( i != (int)SoundMode )
-		SD_SetSoundMode( (SDMode)i );
-	i = USL_GetCheckedItem( &ck_us_musicMenu );
-	if ( i != (int)MusicMode )
-		SD_SetMusicMode( (SMMode)i );
+	if (i != (int)SoundMode)
+		SD_SetSoundMode((SDMode)i);
+	i = USL_GetCheckedItem(&ck_us_musicMenu);
+	if (i != (int)MusicMode)
+		SD_SetMusicMode((SMMode)i);
 }
 
 void USL_EndCards()
@@ -871,7 +868,7 @@ void USL_EnterCurrentItem()
 {
 	US_CardItem *item = &us_currentCard->items[us_currentCard->selectedItem];
 
-	if ( item->state & US_IS_Disabled )
+	if (item->state & US_IS_Disabled)
 	{
 		SD_PlaySound(SOUND_NEEDKEYCARD);
 		return;
@@ -880,7 +877,7 @@ void USL_EnterCurrentItem()
 	switch (item->type)
 	{
 	case US_ITEM_Normal:
-		if (us_currentCard->msgCallback )
+		if (us_currentCard->msgCallback)
 		{
 			if (us_currentCard->msgCallback(US_MSG_ItemEntered, item))
 			{
@@ -888,13 +885,13 @@ void USL_EnterCurrentItem()
 			}
 		}
 
-		USL_ConfirmComm( item->command );
+		USL_ConfirmComm(item->command);
 		return;
 	case US_ITEM_Radio:
 		USL_CheckCardItem(us_currentCard, us_currentCard->selectedItem, 1);
 		return;
 	case US_ITEM_Submenu:
-		USL_PushCard( item->subMenu );
+		USL_PushCard(item->subMenu);
 		break;
 	}
 }
@@ -929,22 +926,22 @@ void US_RunCards()
 		IN_ScanCode lastScan = IN_GetLastScan();
 
 		/* Draw the icon for the current item highlighted or not */
-		if ( action_taken )
+		if (action_taken)
 		{
 			cursor_time = SD_GetTimeCount() + 35; // 1/2 second flashes
 			action_taken = false;
 		}
 
 		// draw icon with cursor blink
-		if ( SD_GetTimeCount() >= cursor_time )
+		if (SD_GetTimeCount() >= cursor_time)
 		{
 			cursor = !cursor;
 			action_taken = true;
 
-			if ( !cursor)
+			if (!cursor)
 				item->state &= ~US_IS_Selected;
 
-			USL_DrawCardItemIcon( item );
+			USL_DrawCardItemIcon(item);
 			item->state |= US_IS_Selected;
 		}
 
@@ -1003,9 +1000,9 @@ void US_RunCards()
 		{
 			IN_Cursor cursor;
 			IN_ReadCursor(&cursor);
-			
+
 			controller_dy += cursor.yMotion;
-			
+
 			if (cursor.button0)
 			{
 				while (cursor.button0)

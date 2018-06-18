@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include <string.h>
 
-#include "ck_cross.h"
-#include "ck_def.h"
 #include "id_ca.h"
 #include "id_in.h"
 #include "id_us.h"
 #include "id_vh.h"
 #include "id_vl.h"
+#include "ck_cross.h"
+#include "ck_def.h"
 
 int help_delay, help_pic, help_y, help_x;
 char *help_ptr;
@@ -38,25 +38,24 @@ int help_cur_page, help_num_pages, help_topic;
 int help_full_page;
 /* The chunks for each of the topics */
 // Converted into an array of pointers for multiple-episode support
-int *help_chunks[] ={
-  &TEXT_HELPMENU, &TEXT_CONTROLS, &TEXT_STORY, &TEXT_ORDER, &TEXT_ABOUTID
-};
+int *help_chunks[] = {
+	&TEXT_HELPMENU, &TEXT_CONTROLS, &TEXT_STORY, &TEXT_ORDER, &TEXT_ABOUTID};
 
-void RipToEOL( void )
+void RipToEOL(void)
 {
-	while ( *help_ptr++ != '\n' )
+	while (*help_ptr++ != '\n')
 		;
 }
 
-int ParseNumber( void )
+int ParseNumber(void)
 {
 	char s[81];
 	char *p;
 	char c;
 
 	/* Find first digit */
-	c = *(char *) help_ptr;
-	while ( c < '0' || c > '9' )
+	c = *(char *)help_ptr;
+	while (c < '0' || c > '9')
 	{
 		help_ptr++;
 		c = *help_ptr;
@@ -70,14 +69,14 @@ int ParseNumber( void )
 
 		help_ptr++;
 		c = *help_ptr;
-	} while ( c >= '0' && c <= '9' );
+	} while (c >= '0' && c <= '9');
 
 	*p = 0; /* Null terminator */
 
-	return atoi( s );
+	return atoi(s);
 }
 
-void ParsePicCommand( void )
+void ParsePicCommand(void)
 {
 	help_y = ParseNumber();
 	help_x = ParseNumber();
@@ -86,7 +85,7 @@ void ParsePicCommand( void )
 }
 
 /*   F.00A1                       sub_276         proc    near */
-void ParseTimedCommand( void )
+void ParseTimedCommand(void)
 {
 	help_y = ParseNumber();
 	help_x = ParseNumber();
@@ -95,7 +94,7 @@ void ParseTimedCommand( void )
 	RipToEOL();
 }
 
-void TimedPicCommand( void )
+void TimedPicCommand(void)
 {
 	// int timeCount = 0;
 
@@ -103,23 +102,23 @@ void TimedPicCommand( void )
 	// VW_WaitVBL( 1 );
 	VL_GetTics(1);
 	// VWL_ScreenToScreen( AZ : A7B4, AZ : A7B2, 40, 200 );
-  VL_Present();
+	VL_Present();
 	// (long) TimeCount = 0;
-  // SD_SetTimeCount(0);
+	// SD_SetTimeCount(0);
 
 	//while ( timeCount+=VL_GetTics(1) < help_delay )
-		//;
-  VL_DelayTics(help_delay);
-	VH_DrawBitmap( help_x & 0xFFF8, help_y, help_pic );
+	//;
+	VL_DelayTics(help_delay);
+	VH_DrawBitmap(help_x & 0xFFF8, help_y, help_pic);
 }
 
-void HandleCommand( void )
+void HandleCommand(void)
 {
 	int16_t i, w, h, midx, wrapx, miny, maxy;
 	VH_BitmapTableEntry *bmpinfo;
 
 	help_ptr++;
-	switch ( CK_Cross_toupper( *help_ptr ) )
+	switch (CK_Cross_toupper(*help_ptr))
 	{
 	case 'B':
 		/* Solid red box y, x, w, h */
@@ -127,11 +126,12 @@ void HandleCommand( void )
 		help_x = ParseNumber();
 		w = ParseNumber();
 		h = ParseNumber();
-		VH_Bar( help_x, help_y, w, h, 4 );
+		VH_Bar(help_x, help_y, w, h, 4);
 		RipToEOL();
 		break;
 
-	case 'P': case 'E':
+	case 'P':
+	case 'E':
 		/* Page or end of text */
 		help_full_page = 1;
 		help_ptr--;
@@ -142,14 +142,14 @@ void HandleCommand( void )
 		help_ptr++;
 
 		/* A single hex digit is used for the text color */
-		i = CK_Cross_toupper( *help_ptr );
-		if ( i >= '0' && i <= '9' )
-			US_SetPrintColour( i - '0');
-		else if ( i >= 'A' && i <= 'F' )
-			US_SetPrintColour( i - 'A' + 10);
+		i = CK_Cross_toupper(*help_ptr);
+		if (i >= '0' && i <= '9')
+			US_SetPrintColour(i - '0');
+		else if (i >= 'A' && i <= 'F')
+			US_SetPrintColour(i - 'A' + 10);
 
 		/* We're writing on a red background, so take that into account */
-		US_SetPrintColour(US_GetPrintColour()^4);
+		US_SetPrintColour(US_GetPrintColour() ^ 4);
 		help_ptr++;
 		break;
 
@@ -165,7 +165,7 @@ void HandleCommand( void )
 		US_SetPrintX(ParseNumber());
 
 		/* Skip to the next line */
-		while ( *help_ptr++ != '\n' )
+		while (*help_ptr++ != '\n')
 			;
 		break;
 
@@ -176,59 +176,59 @@ void HandleCommand( void )
 	case 'G':
 		/* Draw the picture */
 		ParsePicCommand();
-		VH_DrawBitmap( help_x & ~7, help_y, help_pic );
-    bmpinfo = VH_GetBitmapTableEntry(help_pic - ca_gfxInfoE.offBitmaps);
+		VH_DrawBitmap(help_x & ~7, help_y, help_pic);
+		bmpinfo = VH_GetBitmapTableEntry(help_pic - ca_gfxInfoE.offBitmaps);
 		w = bmpinfo->width * 8;
 		h = bmpinfo->height;
 
 		/* Wrap text either on the left or the right-hand-side of the picture */
 		midx = help_x + w / 2;
-		if ( midx > 160 )
+		if (midx > 160)
 			wrapx = help_x - 8;
 		else
 			wrapx = help_x + w + 8;
 
 		/* Get the first line that the picture covers */
 		miny = (help_y - 10) / 10;
-		if ( miny < 0 )
+		if (miny < 0)
 			miny = 0;
 
 		/* Get the last line that the picture covers */
 		maxy = (help_y + h - 10) / 10;
-		if ( maxy >= 18 )
+		if (maxy >= 18)
 			maxy = 17;
 
 		/* Set the lines' starting or finishing text positions */
-		for ( i = miny; i <= maxy; i++ )
+		for (i = miny; i <= maxy; i++)
 		{
-			if ( midx > 160 )	/* Wrapping to the left */
-				help_line_endx[ i ] = wrapx;
-			else			/* Wrapping to the right */
-				help_line_startx[ i ] = wrapx;
+			if (midx > 160) /* Wrapping to the left */
+				help_line_endx[i] = wrapx;
+			else /* Wrapping to the right */
+				help_line_startx[i] = wrapx;
 		}
 
 		/* Make sure the next print doesn't start in the middle of the pic */
-		if ( help_line_startx[ help_line ] > US_GetPrintX() )
-			US_SetPrintX(help_line_startx[ help_line ]);
+		if (help_line_startx[help_line] > US_GetPrintX())
+			US_SetPrintX(help_line_startx[help_line]);
 		break;
 	}
 }
 
-void NewLine( void )
+void NewLine(void)
 {
 	char c;
 
 	help_line++;
-	if ( help_line == 18 )
+	if (help_line == 18)
 	{
 		/* Move back to line 1 and read input till the next ^P or ^E command */
 		help_full_page = 1;
-		while ( 1 )
+		while (1)
 		{
-			if ( *help_ptr == '^' )
+			if (*help_ptr == '^')
 			{
-				c = CK_Cross_toupper( *(help_ptr + 1) );
-				if ( c == 'E' || c == 'P' )
+				c = CK_Cross_toupper(*(help_ptr + 1));
+				if (c == 'E' || c == 'P')
 				{
 					help_full_page = 1;
 					return;
@@ -239,21 +239,21 @@ void NewLine( void )
 	}
 
 	/* Move to the next line */
-	US_SetPrintX(help_line_startx[ help_line ]);
+	US_SetPrintX(help_line_startx[help_line]);
 	US_SetPrintY(US_GetPrintY() + 10);
 }
 
-void HandleChar( void )
+void HandleChar(void)
 {
 	char c;
 	c = *help_ptr++;
 
 	/* If the last character was a newline, do something about it! */
-	if ( c == '\n' )
+	if (c == '\n')
 		NewLine();
 }
 
-void HandleWord( void )
+void HandleWord(void)
 {
 	char buf[80];
 	uint16_t w, h, maxx;
@@ -262,41 +262,41 @@ void HandleWord( void )
 	/* Read a word into the buffer */
 	buf[0] = *help_ptr++;
 	i = 1;
-	while ( *help_ptr > ' ' )
+	while (*help_ptr > ' ')
 	{
 		buf[i++] = *help_ptr++;
-		if ( i == 80 )
-			Quit( "PageLayout: Word limit exceeded" );
+		if (i == 80)
+			Quit("PageLayout: Word limit exceeded");
 	}
 
 	/* Terminate the buffer with a null */
 	buf[i] = 0;
 
 	/* Measure the word */
-	VH_MeasurePropString( buf,  &w, &h, US_GetPrintFont()  );
+	VH_MeasurePropString(buf, &w, &h, US_GetPrintFont());
 
 	/* See if we can find a line to fit the word on */
-	while ( help_line_endx[ help_line ] < US_GetPrintX() + w )
+	while (help_line_endx[help_line] < US_GetPrintX() + w)
 	{
 		NewLine();
-		if ( help_full_page )
+		if (help_full_page)
 			return;
 	}
 
 	/* Display the word */
 	maxx = US_GetPrintX() + w;
-	VH_DrawPropString( buf, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour() );
+	VH_DrawPropString(buf, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
 	US_SetPrintX(maxx);
 
 	/* Handle spaces between this word and the next */
-	while ( *help_ptr == ' ' )
+	while (*help_ptr == ' ')
 	{
 		US_SetPrintX(US_GetPrintX() + 7);
 		help_ptr++;
 	}
 }
 
-void PageLayout( int show_status )
+void PageLayout(int show_status)
 {
 	int16_t old_print_color, i;
 	char c;
@@ -306,23 +306,23 @@ void PageLayout( int show_status )
 	US_SetPrintColour(10);
 
 	/* We want to scanout from the right offset. */
-	VL_SetScrollCoords(0,0);
+	VL_SetScrollCoords(0, 0);
 
 	/* Fill the background and draw the border */
-	VH_Bar( 0, 0, 320, 200, 4 );
-  if (ck_currentEpisode->ep != EP_CK6)
-  {
-    VH_DrawBitmap( 0, 0, PIC_BORDERTOP );	/* Top border */
-    VH_DrawBitmap( 0, 8, PIC_BORDERLEFT );	/* Left border */
-    VH_DrawBitmap( 312, 8, PIC_BORDERRIGHT ); /* Right border */
-    if ( show_status )
-      VH_DrawBitmap( 8, 176, PIC_BORDERBOTTOMSTATUS ); /* Bottom status bar */
-    else
-      VH_DrawBitmap( 8, 192, PIC_BORDERBOTTOM ); /* Bottom border */
-  }
+	VH_Bar(0, 0, 320, 200, 4);
+	if (ck_currentEpisode->ep != EP_CK6)
+	{
+		VH_DrawBitmap(0, 0, PIC_BORDERTOP);     /* Top border */
+		VH_DrawBitmap(0, 8, PIC_BORDERLEFT);    /* Left border */
+		VH_DrawBitmap(312, 8, PIC_BORDERRIGHT); /* Right border */
+		if (show_status)
+			VH_DrawBitmap(8, 176, PIC_BORDERBOTTOMSTATUS); /* Bottom status bar */
+		else
+			VH_DrawBitmap(8, 192, PIC_BORDERBOTTOM); /* Bottom border */
+	}
 
 	/* Set the lines' start and end positions so the text stays within the border */
-	for ( i = 0; i < 18; i++ )
+	for (i = 0; i < 18; i++)
 	{
 		help_line_startx[i] = 10;
 		help_line_endx[i] = 310;
@@ -335,56 +335,56 @@ void PageLayout( int show_status )
 	help_full_page = 0;
 
 	/* Skip any nonprinting characters at the start */
-	while ( *help_ptr <= ' ' )
+	while (*help_ptr <= ' ')
 		help_ptr++;
 
 	/* Make sure we start with a "new page" command */
-	if ( !(*help_ptr++ == '^' && CK_Cross_toupper( *help_ptr ) == 'P') )
-		Quit( "PageLayout: Text not headed with ^P" );
+	if (!(*help_ptr++ == '^' && CK_Cross_toupper(*help_ptr) == 'P'))
+		Quit("PageLayout: Text not headed with ^P");
 
 	/* Move to the next line after the ^P */
-	while ( *help_ptr++ != '\n' )
+	while (*help_ptr++ != '\n')
 		;
 
 	do
 	{
 		/* Parse a command or print a word */
 		c = *help_ptr;
-		if ( c == '^' )
+		if (c == '^')
 			HandleCommand();
-		else if ( c <= ' ' )
+		else if (c <= ' ')
 			HandleChar();
 		else
 			HandleWord();
-	} while ( help_full_page == 0 );
+	} while (help_full_page == 0);
 
 	/* Set the page number that we're on */
 	help_cur_page++;
 
 	/* Show the current page number */
-	if ( show_status )
+	if (show_status)
 	{
 		char buf[64], buf2[64];
-		strcpy( buf, "pg " );
+		strcpy(buf, "pg ");
 		// itoa( help_cur_page, buf2, 10 );
 		sprintf(buf2, "%d", help_cur_page);
-		strcat( buf, buf2);
-		strcat( buf, " of " );
+		strcat(buf, buf2);
+		strcat(buf, " of ");
 		// itoa( help_num_pages, buf2, 10 );
 		sprintf(buf2, "%d", help_num_pages);
-		strcat( buf, buf2);
+		strcat(buf, buf2);
 
 		US_SetPrintColour(8);
 		US_SetPrintY(186);
 		US_SetPrintX(218);
-		VH_DrawPropString( buf, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour() );
+		VH_DrawPropString(buf, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
 	}
 
 	/* Restore the original print color */
 	US_SetPrintColour(old_print_color);
 }
 
-void BackPage( void )
+void BackPage(void)
 {
 	help_cur_page--;
 
@@ -392,14 +392,14 @@ void BackPage( void )
 	do
 	{
 		help_ptr--;
-	} while ( !(*help_ptr == '^' && CK_Cross_toupper( *(help_ptr + 1) ) == 'P') );
+	} while (!(*help_ptr == '^' && CK_Cross_toupper(*(help_ptr + 1)) == 'P'));
 }
 
 extern uint8_t ca_levelnum;
 extern uint8_t ca_levelbit;
 extern uint8_t ca_graphChunkNeeded[CA_MAX_GRAPH_CHUNKS];
 
-void CacheLayoutGraphics( void )
+void CacheLayoutGraphics(void)
 {
 	char *pstart;
 	char *pmax;
@@ -420,31 +420,31 @@ void CacheLayoutGraphics( void )
 
 	do
 	{
-		if ( *help_ptr == '^' )
+		if (*help_ptr == '^')
 		{
 			help_ptr++;
-			c = CK_Cross_toupper( *help_ptr );
+			c = CK_Cross_toupper(*help_ptr);
 
 			/* Count pages */
-			if ( c == 'P' )
+			if (c == 'P')
 			{
 				help_num_pages++;
 			}
 			/* If we've reached the end, rewind the help pointer and return */
-			if ( c == 'E' )
+			if (c == 'E')
 			{
-				CA_CacheMarks( 0 );
+				CA_CacheMarks(0);
 				help_ptr = pstart;
 				return;
 			}
 			/* Cache ordinary graphics */
-			if ( c == 'G' )
+			if (c == 'G')
 			{
 				ParsePicCommand();
 				ca_graphChunkNeeded[help_pic] |= ca_levelbit;
 			}
 			/* Cache timed graphics */
-			if ( c == 'T' )
+			if (c == 'T')
 			{
 				ParseTimedCommand();
 				ca_graphChunkNeeded[help_pic] |= ca_levelbit;
@@ -454,68 +454,66 @@ void CacheLayoutGraphics( void )
 		{
 			help_ptr++;
 		}
-	} while ( help_ptr < pmax );
+	} while (help_ptr < pmax);
 
 	/* If we got here, we didn't find the end of the text */
-	Quit( "CacheLayoutGraphics: No ^E to terminate file!" );
+	Quit("CacheLayoutGraphics: No ^E to terminate file!");
 }
 
-int ShowHelp( void )
+int ShowHelp(void)
 {
 	int ymove, key;
 	IN_ControlFrame cinfo;
 	//CONTROLLER_STATUS cstatus;
 
-
 	/* Erase the screen */
-	VH_Bar( 0, 0, 320, 200, 4 );
+	VH_Bar(0, 0, 320, 200, 4);
 
 	/* Cache graphics */
-	CA_CacheGrChunk( PIC_HELPMENU );	/* Help menu pic */
-	CA_CacheGrChunk( PIC_HELPPOINTER );	/* Help menu pointer */
-	CA_CacheGrChunk( PIC_BORDERTOP );	/* Top border */
-	CA_CacheGrChunk( PIC_BORDERLEFT );	/* Left border */
-	CA_CacheGrChunk( PIC_BORDERRIGHT );	/* Right border */
-	CA_CacheGrChunk( PIC_BORDERBOTTOM );	/* Bottom border */
+	CA_CacheGrChunk(PIC_HELPMENU);     /* Help menu pic */
+	CA_CacheGrChunk(PIC_HELPPOINTER);  /* Help menu pointer */
+	CA_CacheGrChunk(PIC_BORDERTOP);    /* Top border */
+	CA_CacheGrChunk(PIC_BORDERLEFT);   /* Left border */
+	CA_CacheGrChunk(PIC_BORDERRIGHT);  /* Right border */
+	CA_CacheGrChunk(PIC_BORDERBOTTOM); /* Bottom border */
 
 	/* Draw the border and the main menu pic */
-	VH_DrawBitmap( 0, 0, PIC_BORDERTOP );	/* Top border */
-	VH_DrawBitmap( 0, 8, PIC_BORDERLEFT );	/* Left border */
-	VH_DrawBitmap( 312, 8, PIC_BORDERRIGHT );	/* Right border */
-	VH_DrawBitmap( 8, 192, PIC_BORDERBOTTOM );	/* Bottom border */
-	VH_DrawBitmap( 96, 8, PIC_HELPMENU );		/* Menu picture */
+	VH_DrawBitmap(0, 0, PIC_BORDERTOP);      /* Top border */
+	VH_DrawBitmap(0, 8, PIC_BORDERLEFT);     /* Left border */
+	VH_DrawBitmap(312, 8, PIC_BORDERRIGHT);  /* Right border */
+	VH_DrawBitmap(8, 192, PIC_BORDERBOTTOM); /* Bottom border */
+	VH_DrawBitmap(96, 8, PIC_HELPMENU);      /* Menu picture */
 
 	ymove = 0;
 	IN_ClearKeysDown();
-	while ( 1 )
+	while (1)
 	{
 		IN_PumpEvents();
 
 		/* Make sure the pointer is in a valid place */
-		if ( help_topic < 0 )
+		if (help_topic < 0)
 			help_topic = 0;
-		else if ( help_topic > 4 )
+		else if (help_topic > 4)
 			help_topic = 4;
 
 		/* Draw the pointer */
-		VH_DrawBitmap( 48, 48 + help_topic * 24, PIC_HELPPOINTER );
-		VL_SetScrollCoords(0,0);
+		VH_DrawBitmap(48, 48 + help_topic * 24, PIC_HELPPOINTER);
+		VL_SetScrollCoords(0, 0);
 		VL_Present(); //update_screen();
 
-
 		/* Erase the pointer */
-		VH_Bar( 48, 48 + help_topic * 24, 39, 24, 4 );
+		VH_Bar(48, 48 + help_topic * 24, 39, 24, 4);
 
 		/* Check for input */
-		IN_ReadControls( 0, &cinfo );
+		IN_ReadControls(0, &cinfo);
 		// get_controller_status( &cstatus );
 
 		/* Handle keys */
-		if ( IN_GetLastScan() != IN_SC_None )
+		if (IN_GetLastScan() != IN_SC_None)
 		{
 			key = IN_GetLastScan();
 			IN_ClearKeysDown();
-			switch ( key )
+			switch (key)
 			{
 			case IN_SC_UpArrow:
 				help_topic--;
@@ -534,18 +532,18 @@ int ShowHelp( void )
 
 		/* Handle other input */
 		//ymove += cstatus.dy;
-		if ( /*cstatus.button1 || cstatus.button2 || */cinfo.jump || cinfo.pogo )
+		if (/*cstatus.button1 || cstatus.button2 || */ cinfo.jump || cinfo.pogo)
 		{
 			VL_ClearScreen(4);
 			return help_topic;
 		}
 
-		if ( ymove < -40 )
+		if (ymove < -40)
 		{
 			ymove += 40;
 			help_topic--;
 		}
-		else if ( ymove > 40 )
+		else if (ymove > 40)
 		{
 			ymove -= 40;
 			help_topic++;
@@ -584,13 +582,13 @@ AZ:
 	if (ck_currentEpisode->ep == EP_CK5)
 		StartMusic(19);
 
-	while ( 1 )
+	while (1)
 	{
 		n = ShowHelp();
 		VL_ClearScreen(4);
 
 		/* If the user pressed Esc */
-		if ( n == -1 )
+		if (n == -1)
 		{
 			/* Clean up and return */
 			// CA_DownLevel();
@@ -609,19 +607,19 @@ AZ:
 
 		/* Cache the chunk with the topic */
 		n = *help_chunks[n];
-		CA_CacheGrChunk( n );
+		CA_CacheGrChunk(n);
 
 		/* Set up the help ptr and initialise the parser */
-		help_ptr = (char *) ca_graphChunks[n];
+		help_ptr = (char *)ca_graphChunks[n];
 		CacheLayoutGraphics();
 
 		page_changed = 1;
 		do
 		{
-			if ( page_changed )
+			if (page_changed)
 			{
 				page_changed = 0;
-				PageLayout( 1 );
+				PageLayout(1);
 
 				/*
 				sub_679( AZ : A7B4, 0 );
@@ -635,36 +633,40 @@ AZ:
 			/* Wait for the user to press a key */
 			// last_scan = 0;
 			IN_ClearKeysDown();
-			while ( IN_GetLastScan() == IN_SC_None )
+			while (IN_GetLastScan() == IN_SC_None)
 				IN_PumpEvents();
 
 			/* Take action */
-			switch ( IN_GetLastScan() )
+			switch (IN_GetLastScan())
 			{
-			case IN_SC_UpArrow: case IN_SC_PgUp: case IN_SC_LeftArrow:
-				if ( help_cur_page <= 1 )
+			case IN_SC_UpArrow:
+			case IN_SC_PgUp:
+			case IN_SC_LeftArrow:
+				if (help_cur_page <= 1)
 					break;
-				BackPage();	/* This one only takes us back to the *current* page */
+				BackPage(); /* This one only takes us back to the *current* page */
 				BackPage();
 				page_changed = 1;
 				break;
-			case IN_SC_RightArrow: case IN_SC_DownArrow: case IN_SC_PgDown:
-				if ( help_cur_page >= help_num_pages )
+			case IN_SC_RightArrow:
+			case IN_SC_DownArrow:
+			case IN_SC_PgDown:
+				if (help_cur_page >= help_num_pages)
 					break;
 				page_changed = 1;
 				break;
 			}
-		} while ( IN_GetLastScan() != IN_SC_Escape );
+		} while (IN_GetLastScan() != IN_SC_Escape);
 
 		/* Uncache the topic we just saw */
-		MM_FreePtr( &ca_graphChunks[n] );
+		MM_FreePtr(&ca_graphChunks[n]);
 		IN_ClearKeysDown();
 
 		/* Return to main help menu loop */
 	}
 }
 
-void help_endgame( void )
+void help_endgame(void)
 {
 	char *ptext;
 	int i;
@@ -677,48 +679,48 @@ void help_endgame( void )
 	// CA_SetGrPurge2();
 
 	/* Cache the chunkss we need */
-	CA_CacheGrChunk( PIC_ARROWDIM );	/* Dim arrow */
-	CA_CacheGrChunk( PIC_ARROWBRIGHT );	/* Bright arrow */
+	CA_CacheGrChunk(PIC_ARROWDIM);    /* Dim arrow */
+	CA_CacheGrChunk(PIC_ARROWBRIGHT); /* Bright arrow */
 
 	// Check for Korath Fuse
-  if (/*ck_currentEpisode->ep == EP_CK5 &&*/ ck_gameState.levelsDone[13] == 0x0E)
+	if (/*ck_currentEpisode->ep == EP_CK5 &&*/ ck_gameState.levelsDone[13] == 0x0E)
 	{
-    CA_CacheGrChunk( TEXT_SECRETEND );
+		CA_CacheGrChunk(TEXT_SECRETEND);
 		ptext = (char *)ca_graphChunks[TEXT_SECRETEND];
 	}
 	else
 	{
-		CA_CacheGrChunk( TEXT_END );
+		CA_CacheGrChunk(TEXT_END);
 		ptext = (char *)ca_graphChunks[TEXT_END];
 	}
 
 	/* Initialise the parser */
-	help_ptr = (char *) ptext;
+	help_ptr = (char *)ptext;
 	CacheLayoutGraphics();
 
 	/* Play some music */
-  StartMusic( ck_currentEpisode->endSongLevel );
+	StartMusic(ck_currentEpisode->endSongLevel);
 
-	while ( help_cur_page < help_num_pages )
+	while (help_cur_page < help_num_pages)
 	{
 		/* Draw the current page (which also advances to the next page) */
-		PageLayout( 0 );
+		PageLayout(0);
 		IN_ClearKeysDown();
 		//VW_SetScreen( AZ : A7B4, 0 );
 
-    // This looks like it was written with a GOTO instead of an "advancePage" variable
+		// This looks like it was written with a GOTO instead of an "advancePage" variable
 		bool advancePage = false;
-		while ( !advancePage )
+		while (!advancePage)
 		{
 			/* Draw the dim arrow and wait a short time */
-			VH_DrawBitmap( 0x12A & ~3, 0xB8, PIC_ARROWDIM );
+			VH_DrawBitmap(0x12A & ~3, 0xB8, PIC_ARROWDIM);
 			if (IN_UserInput(70, false))
 			{
 				advancePage = true;
 				break;
 			}
 			/* Draw the bright arrow and wait a short time */
-			VH_DrawBitmap( 0x12A & ~3, 0xB8, PIC_ARROWBRIGHT );
+			VH_DrawBitmap(0x12A & ~3, 0xB8, PIC_ARROWBRIGHT);
 			if (IN_UserInput(70, false))
 			{
 				advancePage = true;
@@ -730,17 +732,14 @@ void help_endgame( void )
 	/* Uncache our graphics and clean up */
 	StopMusic();
 	if (ck_gameState.levelsDone[13] == 0x0E)
-		MM_FreePtr( &ca_graphChunks[TEXT_SECRETEND] );
+		MM_FreePtr(&ca_graphChunks[TEXT_SECRETEND]);
 	else
-		MM_FreePtr( &ca_graphChunks[TEXT_END] );
-	MM_FreePtr( &ca_graphChunks[PIC_ARROWBRIGHT] );
-	MM_FreePtr( &ca_graphChunks[PIC_ARROWDIM] );
+		MM_FreePtr(&ca_graphChunks[TEXT_END]);
+	MM_FreePtr(&ca_graphChunks[PIC_ARROWBRIGHT]);
+	MM_FreePtr(&ca_graphChunks[PIC_ARROWDIM]);
 	// CA_DownLevel();
 	IN_ClearKeysDown();
 	VL_ClearScreen(4);
 	// RF_Reset();
 	// CA_SetGrPurge();
 }
-
-
-

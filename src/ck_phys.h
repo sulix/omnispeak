@@ -34,7 +34,6 @@ typedef struct CK_objPhysData
 	uint16_t unitY2;
 	uint16_t unitXmid;
 
-
 	// Tile clipping box
 	uint16_t tileX1;
 	uint16_t tileY1;
@@ -51,7 +50,6 @@ typedef struct CK_objPhysDataDelta
 	int16_t unitY2;
 	int16_t unitXmid;
 } CK_objPhysDataDelta;
-
 
 struct CK_object;
 struct CK_action;

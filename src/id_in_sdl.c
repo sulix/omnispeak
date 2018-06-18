@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_vl.h"
 
-#include <string.h>
 #include <SDL.h>
+#include <string.h>
 
 #define IN_MAX_JOYSTICKS 2
 
@@ -31,9 +31,11 @@ SDL_Joystick *in_joysticks[IN_MAX_JOYSTICKS];
 bool in_joystickPresent[IN_MAX_JOYSTICKS];
 
 // SDLKey -> IN_SC
-#define INL_MapKey(sdl,in_sc) case sdl: return in_sc
+#define INL_MapKey(sdl, in_sc) \
+	case sdl:              \
+		return in_sc
 
-#if SDL_VERSION_ATLEAST(1,3,0)
+#if SDL_VERSION_ATLEAST(1, 3, 0)
 static IN_ScanCode INL_SDLKeySymToScanCode(const SDL_Keysym *keySym)
 {
 	int sdlScanCode = keySym->scancode;
@@ -155,7 +157,8 @@ static IN_ScanCode INL_SDLKeySymToScanCode(const SDL_Keysym *keySym)
 
 		INL_MapKey(SDL_SCANCODE_NONUSBACKSLASH, IN_SC_SecondaryBackSlash);
 
-	default: return IN_SC_Invalid;
+	default:
+		return IN_SC_Invalid;
 	}
 }
 #else
@@ -280,13 +283,13 @@ static IN_ScanCode INL_SDLKeySymToScanCode(const SDL_keysym *keySym)
 
 		INL_MapKey(SDLK_LESS, IN_SC_SecondaryBackSlash);
 
-	default: return IN_SC_Invalid;
+	default:
+		return IN_SC_Invalid;
 	}
 }
 #endif
 
 #undef INL_MapKey
-
 
 static void IN_SDL_HandleSDLEvent(SDL_Event *event)
 {
@@ -302,7 +305,7 @@ static void IN_SDL_HandleSDLEvent(SDL_Event *event)
 	case SDL_KEYDOWN:
 		sc = INL_SDLKeySymToScanCode(&event->key.keysym);
 
-		if (sc == 0xe0)		// Special key prefix
+		if (sc == 0xe0) // Special key prefix
 			special = true;
 		else
 		{
@@ -315,7 +318,7 @@ static void IN_SDL_HandleSDLEvent(SDL_Event *event)
 		sc = INL_SDLKeySymToScanCode(&event->key.keysym);
 		IN_HandleKeyUp(sc, false);
 		break;
-#if SDL_VERSION_ATLEAST(2,0,0)
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 	case SDL_JOYDEVICEADDED:
 		INL_StartJoy(event->jdevice.which);
 		break;
@@ -348,7 +351,6 @@ void IN_SDL_WaitKey()
 	}
 }
 
-
 void IN_SDL_Startup(bool disableJoysticks)
 {
 	if (!disableJoysticks)
@@ -360,15 +362,14 @@ void IN_SDL_Startup(bool disableJoysticks)
 	}
 }
 
-
 bool IN_SDL_StartJoy(int joystick)
 {
 	if (joystick > SDL_NumJoysticks())
 		return false;
-	
+
 	int joystick_id = -1;
-	
-#if SDL_VERSION_ATLEAST(2,0,0)
+
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 	// On SDL2, with hotplug support, we can get hotplug events for joysticks
 	// we've already got open. Check we don't have any duplicates here.
 	SDL_JoystickGUID newGUID = SDL_JoystickGetDeviceGUID(joystick);
@@ -377,12 +378,12 @@ bool IN_SDL_StartJoy(int joystick)
 		if (in_joystickPresent[i])
 		{
 			SDL_JoystickGUID GUID_i = SDL_JoystickGetGUID(in_joysticks[i]);
-			if (!memcmp((void*)&newGUID, (void*)&GUID_i, sizeof(SDL_JoystickGUID)))
+			if (!memcmp((void *)&newGUID, (void *)&GUID_i, sizeof(SDL_JoystickGUID)))
 				return false;
 		}
 	}
 #endif
-	
+
 	// Find an available joystick ID.
 	for (int i = 0; i < IN_MAX_JOYSTICKS; ++i)
 	{
@@ -392,21 +393,21 @@ bool IN_SDL_StartJoy(int joystick)
 			break;
 		}
 	}
-	
+
 	if (joystick_id == -1)
 		return false;
-	
+
 	in_joysticks[joystick_id] = SDL_JoystickOpen(joystick);
-	
+
 	in_joystickPresent[joystick_id] = true;
-	
+
 	return true;
 }
 
 void IN_SDL_StopJoy(int joystick)
 {
 	in_joystickPresent[joystick] = false;
-	
+
 	SDL_JoystickClose(in_joysticks[joystick]);
 }
 
@@ -415,18 +416,18 @@ bool IN_SDL_JoyPresent(int joystick)
 	return in_joystickPresent[joystick];
 }
 
-#define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  7849
+#define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE 7849
 #define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
-#define IN_DO_DEADZONE(val, zone) (((val)*(val) < (zone)*(zone))?0:val) 
+#define IN_DO_DEADZONE(val, zone) (((val) * (val) < (zone) * (zone)) ? 0 : val)
 
 void IN_SDL_JoyGetAbs(int joystick, int *x, int *y)
 {
 	// We apply the XInput (Xbox 360 controller)'s right analogue stick's deadzone,
 	// as it's one of the worst in common use.
 	if (x)
-		*x = IN_DO_DEADZONE (SDL_JoystickGetAxis(in_joysticks[joystick], 0), XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+		*x = IN_DO_DEADZONE(SDL_JoystickGetAxis(in_joysticks[joystick], 0), XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
 	if (y)
-		*y = IN_DO_DEADZONE (SDL_JoystickGetAxis(in_joysticks[joystick], 1), XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+		*y = IN_DO_DEADZONE(SDL_JoystickGetAxis(in_joysticks[joystick], 1), XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
 }
 
 uint16_t IN_SDL_JoyGetButtons(int joystick)

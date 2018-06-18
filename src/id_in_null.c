@@ -29,11 +29,9 @@ void IN_NULL_WaitKey()
 {
 }
 
-
 void IN_NULL_Startup(bool disableJoysticks)
 {
 }
-
 
 bool IN_NULL_StartJoy(int joystick)
 {

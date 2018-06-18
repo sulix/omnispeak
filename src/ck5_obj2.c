@@ -17,14 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "ck_def.h"
-#include "ck_phys.h"
-#include "ck_play.h"
-#include "ck_act.h"
-#include "ck5_ep.h"
 #include "id_heads.h"
 #include "id_rf.h"
 #include "id_us.h"
+#include "ck_act.h"
+#include "ck_def.h"
+#include "ck_phys.h"
+#include "ck_play.h"
+#include "ck5_ep.h"
 
 #include <stdio.h>
 
@@ -55,7 +55,7 @@ void CK5_SparkyWait(CK_object *obj)
 void CK5_SparkyPrepareCharge(CK_object *obj)
 {
 	if (--obj->user1 == 0)
-		obj->currentAction= CK_GetActionByName("CK5_ACT_SparkyCharge0");
+		obj->currentAction = CK_GetActionByName("CK5_ACT_SparkyCharge0");
 }
 
 void CK5_SparkySearchLeft(CK_object *obj)
@@ -151,7 +151,6 @@ void CK5_SpawnAmpton(int tileX, int tileY)
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Ampton0"));
 }
 
-
 void CK5_AmptonWalk(CK_object *obj)
 {
 
@@ -184,8 +183,8 @@ void CK5_AmptonWalk(CK_object *obj)
 			// Don't always climb the pole
 			if (US_RndT() < 0xC4)
 			{
-				bool polebelow = ((TI_ForeMisc(CA_TileAtPos(tileX, tileY + 2, 1))&0x7F) == MISCFLAG_POLE);
-				bool poleabove = ((TI_ForeMisc(CA_TileAtPos(tileX, tileY - 2, 1))&0x7F) == MISCFLAG_POLE);
+				bool polebelow = ((TI_ForeMisc(CA_TileAtPos(tileX, tileY + 2, 1)) & 0x7F) == MISCFLAG_POLE);
+				bool poleabove = ((TI_ForeMisc(CA_TileAtPos(tileX, tileY - 2, 1)) & 0x7F) == MISCFLAG_POLE);
 
 				// Pick direction if there is a choice
 				if (poleabove && polebelow)
@@ -245,7 +244,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 			// Dismount if there are fewer than 4 pole tiles above the hole
 			// or randomly, if there are more than 4
 			if (((TI_ForeMisc(CA_TileAtPos(tileX, tileY - 4, 1)) & 0x7F) != MISCFLAG_POLE) ||
-					US_RndT() >= 0x80)
+				US_RndT() >= 0x80)
 			{
 
 				// Set the ampton on the ground
@@ -280,7 +279,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 			// Dismount if not landing on pole hole
 			// If pole hole, randomly dismount
 			if ((TI_ForeMisc(CA_TileAtPos(tileX, tileY, 1)) & 0x7F) != MISCFLAG_POLE ||
-					US_RndT() >= 0x80)
+				US_RndT() >= 0x80)
 			{
 
 				// Set ampton on the ground
@@ -362,7 +361,6 @@ void CK5_AmptonTileCol(CK_object *obj)
 
 void CK5_SpawnSlice(int tileX, int tileY, int dir)
 {
-
 
 	CK_object *new_object = CK_GetNewObj(false);
 
@@ -600,7 +598,7 @@ void CK5_ShellyGroundTileCol(CK_object *obj)
 
 	if (obj->xDirection == IN_motion_Right && obj->leftTI)
 	{
-		obj->posX -=obj->deltaPosX;
+		obj->posX -= obj->deltaPosX;
 		obj->xDirection = IN_motion_Left;
 	}
 	else if (obj->xDirection == IN_motion_Left && obj->rightTI)

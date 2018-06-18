@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include <time.h>
 
-#include "id_us.h"
 #include "id_in.h"
 #include "id_sd.h"
+#include "id_us.h"
 #include "id_vl.h"
 #include "ck_cross.h"
 #include "ck_play.h"
@@ -32,44 +32,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 bool CK_US_ScoreBoxMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	if ( msg != US_MSG_CardEntered )
+	if (msg != US_MSG_CardEntered)
 		return false;
 
 	ck_scoreBoxEnabled = !ck_scoreBoxEnabled;
-	USL_CtlDialog ( (ck_scoreBoxEnabled ? "Score box now on" : "Score box now off"), "Press any key", NULL );
+	USL_CtlDialog((ck_scoreBoxEnabled ? "Score box now on" : "Score box now off"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
 
 bool CK_US_TwoButtonFiringMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	if ( msg != US_MSG_CardEntered )
+	if (msg != US_MSG_CardEntered)
 		return false;
 
 	ck_twoButtonFiring = !ck_twoButtonFiring;
-	USL_CtlDialog ( (ck_twoButtonFiring ? "Two-button firing now on" : "Two-button firing now off"), "Press any key", NULL );
+	USL_CtlDialog((ck_twoButtonFiring ? "Two-button firing now on" : "Two-button firing now off"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
 
 bool CK_US_FixJerkyMotionMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	if ( msg != US_MSG_CardEntered )
+	if (msg != US_MSG_CardEntered)
 		return false;
 
 	ck_fixJerkyMotion = !ck_fixJerkyMotion;
-	USL_CtlDialog ( (ck_fixJerkyMotion ? "Jerky motion fix enabled" : "Jerky motion fix disabled"), "Press any key", NULL );
+	USL_CtlDialog((ck_fixJerkyMotion ? "Jerky motion fix enabled" : "Jerky motion fix disabled"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
 
 bool CK_US_SVGACompatibilityMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	if ( msg != US_MSG_CardEntered )
+	if (msg != US_MSG_CardEntered)
 		return false;
 
 	ck_svgaCompatibility = !ck_svgaCompatibility;
-	USL_CtlDialog ( (ck_svgaCompatibility ? "SVGA compatibility now on" : "SVGA compatibility now off"), "Press any key", NULL );
+	USL_CtlDialog((ck_svgaCompatibility ? "SVGA compatibility now on" : "SVGA compatibility now off"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
@@ -78,33 +78,33 @@ bool CK_US_SVGACompatibilityMenuProc(US_CardMsg msg, US_CardItem *item)
 
 bool CK_US_FullscreenMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	if ( msg != US_MSG_CardEntered )
+	if (msg != US_MSG_CardEntered)
 		return false;
 
 	VL_ToggleFullscreen();
-	USL_CtlDialog ( (vl_isFullScreen ? "Fullscreen mode enabled" : "Windowed mode enabled"), "Press any key", NULL );
+	USL_CtlDialog((vl_isFullScreen ? "Fullscreen mode enabled" : "Windowed mode enabled"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
 
 bool CK_US_AspectCorrectMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	if ( msg != US_MSG_CardEntered )
+	if (msg != US_MSG_CardEntered)
 		return false;
 
 	VL_ToggleAspect();
-	USL_CtlDialog ( (vl_isAspectCorrected ? "Aspect ratio correction now on" : "Aspect ratio correction now off"), "Press any key", NULL );
+	USL_CtlDialog((vl_isAspectCorrected ? "Aspect ratio correction now on" : "Aspect ratio correction now off"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
 
 bool CK_US_BorderMenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	if ( msg != US_MSG_CardEntered )
+	if (msg != US_MSG_CardEntered)
 		return false;
-	
+
 	VL_ToggleBorder();
-	USL_CtlDialog ( (vl_hasOverscanBorder ? "Overscan border now on" : "Overscan border now off"), "Press any key", NULL );
+	USL_CtlDialog((vl_hasOverscanBorder ? "Overscan border now on" : "Overscan border now off"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
@@ -120,56 +120,51 @@ bool CK_US_ConfigureMenuProc(US_CardMsg msg, US_CardItem *item);
 bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item);
 
 // A debug menu which doesn't seem to ever appear in the game.
-US_CardItem ck_us_debugMenuItems[] ={
-	{ US_ITEM_Normal, 0, IN_SC_None, "DEBUG", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
+US_CardItem ck_us_debugMenuItems[] = {
+	{US_ITEM_Normal, 0, IN_SC_None, "DEBUG", US_Comm_None, 0, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_debugMenu ={ 0, 0, &PIC_DEBUGCARD, 0, ck_us_debugMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_debugMenu = {0, 0, &PIC_DEBUGCARD, 0, ck_us_debugMenuItems, 0, 0, 0, 0};
 
 // Sound Menu
-US_CardItem ck_us_soundMenuItems[] ={
-	{ US_ITEM_Radio, 0, IN_SC_N, "NO SOUND EFFECTS", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Radio, 0, IN_SC_P, "PC SPEAKER", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Radio, 0, IN_SC_A, "ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Radio, 0, IN_SC_Q, "QUIET ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
+US_CardItem ck_us_soundMenuItems[] = {
+	{US_ITEM_Radio, 0, IN_SC_N, "NO SOUND EFFECTS", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Radio, 0, IN_SC_P, "PC SPEAKER", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Radio, 0, IN_SC_A, "ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Radio, 0, IN_SC_Q, "QUIET ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_soundMenu ={ 8, 0, &PIC_SOUNDCARD, 0, ck_us_soundMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_soundMenu = {8, 0, &PIC_SOUNDCARD, 0, ck_us_soundMenuItems, 0, 0, 0, 0};
 
 // Music Menu
-US_CardItem ck_us_musicMenuItems[] ={
-	{ US_ITEM_Radio, 0, IN_SC_N, "NO MUSIC", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Radio, 0, IN_SC_A, "ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
+US_CardItem ck_us_musicMenuItems[] = {
+	{US_ITEM_Radio, 0, IN_SC_N, "NO MUSIC", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Radio, 0, IN_SC_A, "ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_musicMenu ={ 8, 0, &PIC_MUSICCARD, 0, ck_us_musicMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_musicMenu = {8, 0, &PIC_MUSICCARD, 0, ck_us_musicMenuItems, 0, 0, 0, 0};
 
 // New Game Menu
-US_CardItem ck_us_newGameMenuItems[] ={
-	{ US_ITEM_Normal, 0, IN_SC_E, "BEGIN EASY GAME", US_Comm_NewEasyGame, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_N, "BEGIN NORMAL GAME", US_Comm_NewNormalGame, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_H, "BEGIN HARD GAME", US_Comm_NewHardGame, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
+US_CardItem ck_us_newGameMenuItems[] = {
+	{US_ITEM_Normal, 0, IN_SC_E, "BEGIN EASY GAME", US_Comm_NewEasyGame, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_N, "BEGIN NORMAL GAME", US_Comm_NewNormalGame, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_H, "BEGIN HARD GAME", US_Comm_NewHardGame, 0, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_newGameMenu ={ 8, 0, &PIC_NEWGAMECARD, 0, ck_us_newGameMenuItems, 0, 1, 0, 0/*, 0*/ };
+US_Card ck_us_newGameMenu = {8, 0, &PIC_NEWGAMECARD, 0, ck_us_newGameMenuItems, 0, 1, 0, 0 /*, 0*/};
 
 // Load/Save Game Menus
-US_CardItem ck_us_loadSaveMenuItems[] ={
-	{ US_ITEM_Normal, 0, IN_SC_One, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Two, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Three, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Four, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Five, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Six, 0, US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
+US_CardItem ck_us_loadSaveMenuItems[] = {
+	{US_ITEM_Normal, 0, IN_SC_One, 0, US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_Two, 0, US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_Three, 0, US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_Four, 0, US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_Five, 0, US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_Six, 0, US_Comm_None, 0, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
 extern US_Card *us_currentCard;
-void CK_US_DrawSavegameItemBorder( US_CardItem *item )
+void CK_US_DrawSavegameItemBorder(US_CardItem *item)
 {
 
 	int c;
@@ -183,22 +178,22 @@ void CK_US_DrawSavegameItemBorder( US_CardItem *item )
 	c = US_GetPrintColour() ^ 8;
 
 	/* Draw the rectangle */
-	VH_HLine( item->x, item->x + 148, item->y, c );
-	VH_HLine( item->x, item->x + 148, item->y + 9, c );
-	VH_VLine( item->y, item->y + 9, item->x, c );
-	VH_VLine( item->y, item->y + 9, item->x + 148, c );
+	VH_HLine(item->x, item->x + 148, item->y, c);
+	VH_HLine(item->x, item->x + 148, item->y + 9, c);
+	VH_VLine(item->y, item->y + 9, item->x, c);
+	VH_VLine(item->y, item->y + 9, item->x + 148, c);
 }
 
 extern int load_game_error, ck_startingSavedGame;
 extern US_CardCommand us_currentCommand;
 extern bool command_confirmed;
 const char *US_GetSavefileName(int index);
-void USL_HandleError ( int error );
-void USL_LoadSaveMessage ( const char *s1, const char *s2 );
-void USL_SetMenuFooter( void );
-int USL_ConfirmComm( US_CardCommand command );
+void USL_HandleError(int error);
+void USL_LoadSaveMessage(const char *s1, const char *s2);
+void USL_SetMenuFooter(void);
+int USL_ConfirmComm(US_CardCommand command);
 
-void load_savegame_item( US_CardItem * item )
+void load_savegame_item(US_CardItem *item)
 {
 	int i;
 	US_Savefile *e;
@@ -210,41 +205,40 @@ void load_savegame_item( US_CardItem * item )
 	{
 		i = item - ck_us_loadSaveMenuItems;
 		e = &us_savefiles[i];
-		USL_LoadSaveMessage ( "Loading", us_savefiles[i].name );
+		USL_LoadSaveMessage("Loading", us_savefiles[i].name);
 
-		file = US_GetSavefileName( i );
-		if ( (fp = fopen(file, "rb")) != NULL )
+		file = US_GetSavefileName(i);
+		if ((fp = fopen(file, "rb")) != NULL)
 		{
 			// Omnispeak - reading US_Savefile fields one-by-one
 			// for cross-platform support
 			uint8_t padding; // One byte of struct padding
 			if ((fread(e->id, sizeof(e->id), 1, fp) == 1) &&
-			    (CK_Cross_freadInt16LE(&e->printXOffset, 1, fp) == 1) &&
-			    (CK_Cross_freadBoolFrom16LE(&e->used, 1, fp) == 1) &&
-			    (fread(e->name, sizeof(e->name), 1, fp) == 1) &&
-			    (fread(&padding, sizeof(padding), 1, fp) == 1)
-			)
+				(CK_Cross_freadInt16LE(&e->printXOffset, 1, fp) == 1) &&
+				(CK_Cross_freadBoolFrom16LE(&e->used, 1, fp) == 1) &&
+				(fread(e->name, sizeof(e->name), 1, fp) == 1) &&
+				(fread(&padding, sizeof(padding), 1, fp) == 1))
 			//if ( read( handle, e, sizeof ( SAVEFILE_ENTRY ) ) != sizeof ( SAVEFILE_ENTRY ) )
 			{
-				if ( p_load_game && !(*p_load_game)(fp) )
-					USL_HandleError ( error = errno );
+				if (p_load_game && !(*p_load_game)(fp))
+					USL_HandleError(error = errno);
 			}
 			else
 			{
-				USL_HandleError ( error = errno );
+				USL_HandleError(error = errno);
 			}
-			fclose( fp );
+			fclose(fp);
 		}
 		else
 		{
-			USL_HandleError ( error = errno );
+			USL_HandleError(error = errno);
 		}
 
-		if ( error )
-		{	/* is this condition right? */
+		if (error)
+		{ /* is this condition right? */
 			load_game_error = 1;
-			us_currentCommand = US_Comm_None;	/* ? last command ? */
-			command_confirmed = 0;	/* ? command success state ? */
+			us_currentCommand = US_Comm_None; /* ? last command ? */
+			command_confirmed = 0;		  /* ? command success state ? */
 		}
 		else
 		{
@@ -258,22 +252,21 @@ void load_savegame_item( US_CardItem * item )
 	}
 }
 
-
 bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 {
 	int result, i;
 
 	result = 0;
 
-	switch ( msg )
+	switch (msg)
 	{
 	case US_MSG_CardEntered:
-		if ( getenv( "UID" ) )
+		if (getenv("UID"))
 			US_GetSavefiles();
 
-		for ( i = 0; i < US_MAX_NUM_OF_SAVED_GAMES; i++ )
+		for (i = 0; i < US_MAX_NUM_OF_SAVED_GAMES; i++)
 		{
-			if ( us_savefiles[i].used )
+			if (us_savefiles[i].used)
 				ck_us_loadSaveMenuItems[i].state &= ~US_IS_Disabled;
 			else
 				ck_us_loadSaveMenuItems[i].state |= US_IS_Disabled;
@@ -281,23 +274,23 @@ bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 		break;
 
 	case US_MSG_DrawItemIcon:
-		CK_US_DrawSavegameItemBorder( item );
+		CK_US_DrawSavegameItemBorder(item);
 		result = 1;
 		break;
 
 	case US_MSG_DrawItem:
-		CK_US_DrawSavegameItemBorder( item );
+		CK_US_DrawSavegameItemBorder(item);
 
 		/* Draw the caption */
-		VH_Bar( item->x + 1, item->y + 2, 146, 7, 8 );
+		VH_Bar(item->x + 1, item->y + 2, 146, 7, 8);
 		i = item - ck_us_loadSaveMenuItems;
-		if ( us_savefiles[i].used )
+		if (us_savefiles[i].used)
 			US_SetPrintX(item->x + 2);
 		else
 			US_SetPrintX(item->x + 60);
 
 		US_SetPrintY(item->y + 2);
-		VH_DrawPropString( us_savefiles[i].used ? us_savefiles[i].name : "Empty", US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour() );
+		VH_DrawPropString(us_savefiles[i].used ? us_savefiles[i].name : "Empty", US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
 		result = 1;
 		break;
 
@@ -313,7 +306,7 @@ bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 extern int game_unsaved;
 extern const char *footer_str[3];
 
-void save_savegame_item( US_CardItem *item )
+void save_savegame_item(US_CardItem *item)
 {
 	int i, n;
 	FILE *fp;
@@ -331,21 +324,21 @@ void save_savegame_item( US_CardItem *item )
 	/* Prompt the user to enter a name */
 	US_SetPrintColour(2);
 	//fontcolour = 2;
-	VH_Bar( item->x + 1, item->y + 2, 146, 7, 8 );
+	VH_Bar(item->x + 1, item->y + 2, 146, 7, 8);
 	e->printXOffset = ck_currentEpisode->printXOffset;
-	n = US_LineInput( item->x + 2, item->y + 2, e->name, (e->used ? e->name : NULL), 1, 32, 138 );
+	n = US_LineInput(item->x + 2, item->y + 2, e->name, (e->used ? e->name : NULL), 1, 32, 138);
 
 	/* If they entered no name, give a default */
-	if ( strlen( e->name ) == 0 )
-		strcpy( e->name, "Untitled" );
+	if (strlen(e->name) == 0)
+		strcpy(e->name, "Untitled");
 
 	/* If the input was not canceled */
-	if ( n != 0 )
+	if (n != 0)
 	{
-		USL_LoadSaveMessage ( "Saving", e->name );
+		USL_LoadSaveMessage("Saving", e->name);
 
 		/* Save the file */
-		fname = US_GetSavefileName( i );
+		fname = US_GetSavefileName(i);
 		error = 0;
 		fp = fopen(fname, "wb");
 		if (fp != NULL)
@@ -354,41 +347,40 @@ void save_savegame_item( US_CardItem *item )
 			// for cross-platform support
 			uint8_t padding = 0; // One byte of struct padding
 			if ((fwrite(e->id, sizeof(e->id), 1, fp) == 1) &&
-			    (CK_Cross_fwriteInt16LE(&e->printXOffset, 1, fp) == 1) &&
-			    (CK_Cross_fwriteBoolTo16LE(&e->used, 1, fp) == 1) &&
-			    (fwrite(e->name, sizeof(e->name), 1, fp) == 1) &&
-			    (fwrite(&padding, sizeof(padding), 1, fp) == 1)
-			)
+				(CK_Cross_fwriteInt16LE(&e->printXOffset, 1, fp) == 1) &&
+				(CK_Cross_fwriteBoolTo16LE(&e->used, 1, fp) == 1) &&
+				(fwrite(e->name, sizeof(e->name), 1, fp) == 1) &&
+				(fwrite(&padding, sizeof(padding), 1, fp) == 1))
 			//if ( write( handle, e, sizeof ( SAVEFILE_ENTRY ) ) == sizeof ( SAVEFILE_ENTRY ) )
 			{
-				if ( p_save_game && !(n = (*p_save_game)( fp )) )
-					USL_HandleError ( error = errno );
+				if (p_save_game && !(n = (*p_save_game)(fp)))
+					USL_HandleError(error = errno);
 			}
 			else
 			{
 				error = (errno == 2) ? 8 : errno;
-				USL_HandleError ( error );
+				USL_HandleError(error);
 			}
 			fclose(fp);
 		}
 		else
 		{
 			error = (errno == 2) ? 8 : errno;
-			USL_HandleError ( error );
+			USL_HandleError(error);
 		}
 
 		/* Delete the file if an error occurred */
-		if ( error )
+		if (error)
 		{
-			remove( fname );
+			remove(fname);
 			n = 0;
 		}
 	}
 
-	if ( e->used == 0 )
+	if (e->used == 0)
 		e->used = n;
 
-	if ( n )
+	if (n)
 		game_unsaved = 0;
 
 	USL_SetMenuFooter();
@@ -398,14 +390,14 @@ bool CK_US_SaveGameMenuProc(US_CardMsg msg, US_CardItem *item)
 {
 	int i;
 
-	switch ( msg )
+	switch (msg)
 	{
 	case US_MSG_CardEntered:
-		if ( getenv( "UID" ) )
+		if (getenv("UID"))
 			US_GetSavefiles();
 
 		/* Enable all the entries */
-		for ( i = 0; i < US_MAX_NUM_OF_SAVED_GAMES; i++ )
+		for (i = 0; i < US_MAX_NUM_OF_SAVED_GAMES; i++)
 			ck_us_loadSaveMenuItems[i].state &= ~US_IS_Disabled;
 
 		return false;
@@ -419,110 +411,103 @@ bool CK_US_SaveGameMenuProc(US_CardMsg msg, US_CardItem *item)
 	}
 }
 
-US_Card ck_us_loadGameMenu ={ 4, 3, &PIC_LOADCARD, 0, ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0 };
-US_Card ck_us_saveGameMenu ={ 4, 3, &PIC_SAVECARD, 0, ck_us_loadSaveMenuItems, &CK_US_SaveGameMenuProc, 0, 0, 0 };
+US_Card ck_us_loadGameMenu = {4, 3, &PIC_LOADCARD, 0, ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0};
+US_Card ck_us_saveGameMenu = {4, 3, &PIC_SAVECARD, 0, ck_us_loadSaveMenuItems, &CK_US_SaveGameMenuProc, 0, 0, 0};
 
 // Dummy Menus
 
-US_Card ck_us_scoreBoxMenu ={ 0, 0, 0, 0, 0, &CK_US_ScoreBoxMenuProc, 0, 0, 0 };
-US_Card ck_us_twoButtonFiringMenu ={0, 0, 0, 0, 0, &CK_US_TwoButtonFiringMenuProc, 0, 0, 0 };
-US_Card ck_us_fixJerkyMotionMenu ={ 0, 0, 0, 0, 0, &CK_US_FixJerkyMotionMenuProc, 0, 0, 0 };
-US_Card ck_us_svgaCompatibilityMenu ={ 0, 0, 0, 0, 0, &CK_US_SVGACompatibilityMenuProc, 0, 0, 0 };
+US_Card ck_us_scoreBoxMenu = {0, 0, 0, 0, 0, &CK_US_ScoreBoxMenuProc, 0, 0, 0};
+US_Card ck_us_twoButtonFiringMenu = {0, 0, 0, 0, 0, &CK_US_TwoButtonFiringMenuProc, 0, 0, 0};
+US_Card ck_us_fixJerkyMotionMenu = {0, 0, 0, 0, 0, &CK_US_FixJerkyMotionMenuProc, 0, 0, 0};
+US_Card ck_us_svgaCompatibilityMenu = {0, 0, 0, 0, 0, &CK_US_SVGACompatibilityMenuProc, 0, 0, 0};
 #ifdef EXTRA_GRAPHICS_OPTIONS
-US_Card ck_us_fullscreenMenu ={ 0, 0, 0, 0, 0, &CK_US_FullscreenMenuProc, 0, 0, 0 };
-US_Card ck_us_aspectCorrectMenu ={ 0, 0, 0, 0, 0, &CK_US_AspectCorrectMenuProc, 0, 0, 0 };
-US_Card ck_us_borderMenu ={ 0, 0, 0, 0, 0, &CK_US_BorderMenuProc, 0, 0, 0 };
+US_Card ck_us_fullscreenMenu = {0, 0, 0, 0, 0, &CK_US_FullscreenMenuProc, 0, 0, 0};
+US_Card ck_us_aspectCorrectMenu = {0, 0, 0, 0, 0, &CK_US_AspectCorrectMenuProc, 0, 0, 0};
+US_Card ck_us_borderMenu = {0, 0, 0, 0, 0, &CK_US_BorderMenuProc, 0, 0, 0};
 #endif
-
 
 // Options menu
-US_CardItem ck_us_optionsMenuItems[] ={
-	{ US_ITEM_Submenu, 0, IN_SC_S, "", US_Comm_None, &ck_us_scoreBoxMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_T, "", US_Comm_None, &ck_us_twoButtonFiringMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_M, "", US_Comm_None, &ck_us_fixJerkyMotionMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_C, "", US_Comm_None, &ck_us_svgaCompatibilityMenu, 0, 0 },
+US_CardItem ck_us_optionsMenuItems[] = {
+	{US_ITEM_Submenu, 0, IN_SC_S, "", US_Comm_None, &ck_us_scoreBoxMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_T, "", US_Comm_None, &ck_us_twoButtonFiringMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_M, "", US_Comm_None, &ck_us_fixJerkyMotionMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_C, "", US_Comm_None, &ck_us_svgaCompatibilityMenu, 0, 0},
 #ifdef EXTRA_GRAPHICS_OPTIONS
-	{ US_ITEM_Submenu, 0, IN_SC_F, "", US_Comm_None, &ck_us_fullscreenMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_A, "", US_Comm_None, &ck_us_aspectCorrectMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_B, "", US_Comm_None, &ck_us_borderMenu, 0, 0 },
+	{US_ITEM_Submenu, 0, IN_SC_F, "", US_Comm_None, &ck_us_fullscreenMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_A, "", US_Comm_None, &ck_us_aspectCorrectMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_B, "", US_Comm_None, &ck_us_borderMenu, 0, 0},
 #endif
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_optionsMenu ={ 8, 0, &PIC_OPTIONSCARD, 0, ck_us_optionsMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_optionsMenu = {8, 0, &PIC_OPTIONSCARD, 0, ck_us_optionsMenuItems, 0, 0, 0, 0};
 
 // Movement Kbd Controls Menu
-US_CardItem ck_us_movementMenuItems[] ={
-	{ US_ITEM_Normal, 0, IN_SC_None, "UP & LEFT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "UP", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "UP & RIGHT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "RIGHT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "DOWN & RIGHT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "DOWN", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "DOWN & LEFT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_None, "LEFT", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
+US_CardItem ck_us_movementMenuItems[] = {
+	{US_ITEM_Normal, 0, IN_SC_None, "UP & LEFT", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_None, "UP", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_None, "UP & RIGHT", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_None, "RIGHT", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_None, "DOWN & RIGHT", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_None, "DOWN", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_None, "DOWN & LEFT", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_None, "LEFT", US_Comm_None, 0, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_movementMenu ={ 0, 0, &PIC_MOVEMENTCARD, 0, ck_us_movementMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
+US_Card ck_us_movementMenu = {0, 0, &PIC_MOVEMENTCARD, 0, ck_us_movementMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
 
 // Buttons Kbd Controls Menu
-US_CardItem ck_us_buttonsMenuItems[] ={
-	{ US_ITEM_Normal, 0, IN_SC_J, "JUMP", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_P, "POGO", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_F, "FIRE", US_Comm_None, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
+US_CardItem ck_us_buttonsMenuItems[] = {
+	{US_ITEM_Normal, 0, IN_SC_J, "JUMP", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_P, "POGO", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_F, "FIRE", US_Comm_None, 0, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_buttonsMenu ={ 0, 0, &PIC_BUTTONSCARD, 0, ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0 };
+US_Card ck_us_buttonsMenu = {0, 0, &PIC_BUTTONSCARD, 0, ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
 
 // Keyboard Menu
-US_CardItem ck_us_keyboardMenuItems[] ={
-	{ US_ITEM_Submenu, 0, IN_SC_M, "MOVEMENT", US_Comm_None, &ck_us_movementMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_M, "BUTTONS", US_Comm_None, &ck_us_buttonsMenu, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
+US_CardItem ck_us_keyboardMenuItems[] = {
+	{US_ITEM_Submenu, 0, IN_SC_M, "MOVEMENT", US_Comm_None, &ck_us_movementMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_M, "BUTTONS", US_Comm_None, &ck_us_buttonsMenu, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_keyboardMenu ={ 8, 0, &PIC_KEYBOARDCARD, 0, ck_us_keyboardMenuItems, &CK_US_KeyboardMenuProc, 0, 0, 0 };
+US_Card ck_us_keyboardMenu = {8, 0, &PIC_KEYBOARDCARD, 0, ck_us_keyboardMenuItems, &CK_US_KeyboardMenuProc, 0, 0, 0};
 
 // Custom Menus
 
-US_Card ck_us_joystick1Menu ={ 0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick1MenuProc, 0, 0, 0 };
-US_Card ck_us_joystick2Menu ={ 0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0 };
-US_Card ck_us_gamepadMenu ={ 0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0 };
+US_Card ck_us_joystick1Menu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick1MenuProc, 0, 0, 0};
+US_Card ck_us_joystick2Menu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0};
+US_Card ck_us_gamepadMenu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0};
 
 // Configure Menu
-US_CardItem ck_us_configureMenuItems[] ={
-	{ US_ITEM_Submenu, 0, IN_SC_S, "SOUND", US_Comm_None, &ck_us_soundMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_M, "MUSIC", US_Comm_None, &ck_us_musicMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_O, "OPTIONS", US_Comm_None, &ck_us_optionsMenu, 0, 0 },
-	{ US_ITEM_Submenu, US_IS_Gap, IN_SC_K, "KEYBOARD", US_Comm_None, &ck_us_keyboardMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_One, "USE JOYSTICK #1", US_Comm_None, &ck_us_joystick1Menu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_Two, "USE JOYSTICK #2", US_Comm_None, &ck_us_joystick2Menu, 0, 0 },
+US_CardItem ck_us_configureMenuItems[] = {
+	{US_ITEM_Submenu, 0, IN_SC_S, "SOUND", US_Comm_None, &ck_us_soundMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_M, "MUSIC", US_Comm_None, &ck_us_musicMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_O, "OPTIONS", US_Comm_None, &ck_us_optionsMenu, 0, 0},
+	{US_ITEM_Submenu, US_IS_Gap, IN_SC_K, "KEYBOARD", US_Comm_None, &ck_us_keyboardMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_One, "USE JOYSTICK #1", US_Comm_None, &ck_us_joystick1Menu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_Two, "USE JOYSTICK #2", US_Comm_None, &ck_us_joystick2Menu, 0, 0},
 	//{ US_ITEM_Submenu, 0, IN_SC_G, "", US_Comm_None, &ck_us_gamepadMenu, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_configureMenu ={ 0, 0, &PIC_CONFIGURECARD, 0, ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0 };
+US_Card ck_us_configureMenu = {0, 0, &PIC_CONFIGURECARD, 0, ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0};
 
 // Paddle War!
 
-US_Card ck_us_paddleWarMenu ={ 0, 0, 0, 0, 0, &CK_PaddleWar, 0, 0, 0 };
+US_Card ck_us_paddleWarMenu = {0, 0, 0, 0, 0, &CK_PaddleWar, 0, 0, 0};
 
 // Main Menu
-US_CardItem ck_us_mainMenuItems[] ={
-	{ US_ITEM_Submenu, 0, IN_SC_N, "NEW GAME", US_Comm_None, &ck_us_newGameMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_L, "LOAD GAME", US_Comm_None, &ck_us_loadGameMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_S, "SAVE GAME", US_Comm_None, &ck_us_saveGameMenu, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_C, "CONFIGURE", US_Comm_None, &ck_us_configureMenu, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_R, NULL, US_Comm_ReturnToGame, 0, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_E, "END GAME", US_Comm_EndGame, 0, 0, 0 },
-	{ US_ITEM_Submenu, 0, IN_SC_P, "PADDLE WAR", US_Comm_None, &ck_us_paddleWarMenu, 0, 0 },
-	{ US_ITEM_Normal, 0, IN_SC_Q, "QUIT", US_Comm_Quit, 0, 0, 0 },
-	{ US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0 }
-};
+US_CardItem ck_us_mainMenuItems[] = {
+	{US_ITEM_Submenu, 0, IN_SC_N, "NEW GAME", US_Comm_None, &ck_us_newGameMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_L, "LOAD GAME", US_Comm_None, &ck_us_loadGameMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_S, "SAVE GAME", US_Comm_None, &ck_us_saveGameMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_C, "CONFIGURE", US_Comm_None, &ck_us_configureMenu, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_R, NULL, US_Comm_ReturnToGame, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_E, "END GAME", US_Comm_EndGame, 0, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_P, "PADDLE WAR", US_Comm_None, &ck_us_paddleWarMenu, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_Q, "QUIT", US_Comm_Quit, 0, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_mainMenu ={ 32, 4, &PIC_MENUCARD, 0, ck_us_mainMenuItems, 0, 0, 0, 0 };
+US_Card ck_us_mainMenu = {32, 4, &PIC_MENUCARD, 0, ck_us_mainMenuItems, 0, 0, 0, 0};
 
 extern US_Card *us_currentCard;
 extern IN_ScanCode *key_controls[];
@@ -533,10 +518,9 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 	int result = 0;
 	int print_x, print_y;
 
-	which_control = (us_currentCard == &ck_us_movementMenu) ?
-		(item - ck_us_movementMenuItems) + 3 : (item - ck_us_buttonsMenuItems);
+	which_control = (us_currentCard == &ck_us_movementMenu) ? (item - ck_us_movementMenuItems) + 3 : (item - ck_us_buttonsMenuItems);
 
-	switch ( msg )
+	switch (msg)
 	{
 	case US_MSG_CardEntered:
 		// game_controller[0] = CTRL_KEYBOARD;
@@ -545,27 +529,27 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 	case US_MSG_DrawItem:
 
 		// Draw the item Icon and the key's name
-		VH_Bar( 75, item->y, 159, 8, 8 );
-		USL_DrawCardItemIcon( item );
+		VH_Bar(75, item->y, 159, 8, 8);
+		USL_DrawCardItemIcon(item);
 
 		US_SetPrintColour((item->state & US_IS_Selected) ? 2 : 10);
 		print_x = item->x + 8;
 		print_y = item->y + 1;
-		VH_DrawPropString( item->caption, print_x, print_y, 1, US_GetPrintColour() );
+		VH_DrawPropString(item->caption, print_x, print_y, 1, US_GetPrintColour());
 
 		// Draw the outer green bo
-		VH_Bar( item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8);
-		VH_Bar( item->x + 91, item->y + 1, 38, 6, 8 );
+		VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8);
+		VH_Bar(item->x + 91, item->y + 1, 38, 6, 8);
 
 		print_x = item->x + 96;
 		print_y = item->y + 1;
-		VH_DrawPropString( IN_GetScanName( *key_controls[which_control] ), print_x, print_y, 1, US_GetPrintColour() );
+		VH_DrawPropString(IN_GetScanName(*key_controls[which_control]), print_x, print_y, 1, US_GetPrintColour());
 		result = 1;
 		break;
 
 	case US_MSG_ItemEntered:
-		CK_US_ControlsMenuProc( US_MSG_DrawItem, item );
-		CK_US_SetKeyBinding( item, which_control );
+		CK_US_ControlsMenuProc(US_MSG_DrawItem, item);
+		CK_US_SetKeyBinding(item, which_control);
 		US_DrawCards();
 		result = 1;
 		break;
@@ -574,7 +558,7 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 	return result;
 }
 
-void CK_US_SetKeyBinding ( US_CardItem *item, int which_control )
+void CK_US_SetKeyBinding(US_CardItem *item, int which_control)
 {
 	bool cursor = false;
 	uint32_t lasttime = 0;
@@ -595,56 +579,56 @@ void CK_US_SetKeyBinding ( US_CardItem *item, int which_control )
 		IN_PumpEvents();
 
 		/* Flicker the cursor */
-		if ( SD_GetTimeCount() >= lasttime )
+		if (SD_GetTimeCount() >= lasttime)
 		{
 			/* time_count */
 			cursor = !cursor;
 
 			/* Draw the rectangle */
-			VH_Bar( item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8 );
-			VH_Bar( item->x + 91, item->y + 1, 38, 6, 8 );
+			VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8);
+			VH_Bar(item->x + 91, item->y + 1, 38, 6, 8);
 
 			/* Draw the cursor */
-			if ( cursor )
-				VH_DrawTile8( item->x + 106, item->y, 100 );
+			if (cursor)
+				VH_DrawTile8(item->x + 106, item->y, 100);
 
 			//VW_UpdateScreen();
-			lasttime = SD_GetTimeCount() + 35;	/* time_count */
+			lasttime = SD_GetTimeCount() + 35; /* time_count */
 			VL_Present();
 		}
 
 		/* A button push will cancel the key selection */
-		IN_ReadControls(0, &state );
+		IN_ReadControls(0, &state);
 		last_scan = IN_GetLastScan();
-		while ( state.jump || state.pogo )
+		while (state.jump || state.pogo)
 		{
 			VL_Yield(); // Keep CPU usage low
 			IN_PumpEvents();
-			IN_ReadControls(0, &state );
+			IN_ReadControls(0, &state);
 			last_scan = IN_SC_Escape;
 		}
 
 		/* Disallow left shift for some reason */
 		// disable();
-		if ( IN_GetLastScan() == IN_SC_LeftShift )
+		if (IN_GetLastScan() == IN_SC_LeftShift)
 			last_scan = 0;
 		// enable();
 
-	} while ( (k = last_scan) == 0 );
+	} while ((k = last_scan) == 0);
 
 	/* If they didn't cancel the process with ESC */
-	if ( last_scan != IN_SC_Escape )
+	if (last_scan != IN_SC_Escape)
 	{
 		used = 0;
 		i = 0;
 
 		/* Make sure the key they chose is not already used */
-		for ( i = 0; i < 11; i++ )
+		for (i = 0; i < 11; i++)
 		{
 			/* Don't check the one we're setting */
-			if ( i != which_control )
+			if (i != which_control)
 			{
-				if ( *(key_controls[i]) == k )
+				if (*(key_controls[i]) == k)
 				{
 					used = 1;
 					break;
@@ -652,10 +636,10 @@ void CK_US_SetKeyBinding ( US_CardItem *item, int which_control )
 			}
 		}
 
-		if ( used )
-			USL_CtlDialog ( "Key already used", "Press any key", NULL );
+		if (used)
+			USL_CtlDialog("Key already used", "Press any key", NULL);
 		else
-			*(key_controls[ which_control ]) = k;
+			*(key_controls[which_control]) = k;
 	}
 
 	IN_ClearKeysDown();
@@ -664,7 +648,7 @@ void CK_US_SetKeyBinding ( US_CardItem *item, int which_control )
 bool CK_US_KeyboardMenuProc(US_CardMsg msg, US_CardItem *item)
 {
 	// Set keyboard as game controller if this menu is entered
-	if ( msg == US_MSG_CardEntered )
+	if (msg == US_MSG_CardEntered)
 	{
 		IN_SetControlType(0, IN_ctrl_Keyboard1);
 		CK_US_UpdateOptionsMenus();
@@ -674,10 +658,10 @@ bool CK_US_KeyboardMenuProc(US_CardMsg msg, US_CardItem *item)
 
 bool CK_US_Joystick1MenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	if ( msg == US_MSG_CardEntered )
+	if (msg == US_MSG_CardEntered)
 	{
 		IN_SetControlType(0, IN_ctrl_Joystick1);
-		USL_CtlDialog ("USING JOYSTICK #1", "PRESS ANY KEY", 0);
+		USL_CtlDialog("USING JOYSTICK #1", "PRESS ANY KEY", 0);
 		CK_US_UpdateOptionsMenus();
 		return true;
 	}
@@ -686,10 +670,10 @@ bool CK_US_Joystick1MenuProc(US_CardMsg msg, US_CardItem *item)
 
 bool CK_US_Joystick2MenuProc(US_CardMsg msg, US_CardItem *item)
 {
-	if ( msg == US_MSG_CardEntered )
+	if (msg == US_MSG_CardEntered)
 	{
 		IN_SetControlType(0, IN_ctrl_Joystick2);
-		USL_CtlDialog ("USING JOYSTICK #2", "PRESS ANY KEY", 0);
+		USL_CtlDialog("USING JOYSTICK #2", "PRESS ANY KEY", 0);
 		CK_US_UpdateOptionsMenus();
 		return true;
 	}
@@ -706,7 +690,7 @@ bool CK_US_ConfigureMenuProc(US_CardMsg msg, US_CardItem *item)
 	return false;
 }
 
-void USL_DrawPaddleWarScore ( int16_t keen_score, int16_t comp_score )
+void USL_DrawPaddleWarScore(int16_t keen_score, int16_t comp_score)
 {
 	// NOTE: This is modified a little from the original
 	// exe in order to align the text and to set the proper font and color
@@ -733,10 +717,10 @@ void USL_DrawPaddleWarScore ( int16_t keen_score, int16_t comp_score )
 
 	// Draw Comp score
 	print_x = 182;
-	VH_Bar( print_x, print_y, 50, 6, 8 );
+	VH_Bar(print_x, print_y, 50, 6, 8);
 	const char *compString = "COMP:";
 	VH_MeasurePropString(compString, &w, &h, 1);
-	VH_DrawPropString(compString, print_x, print_y, 1, print_color );
+	VH_DrawPropString(compString, print_x, print_y, 1, print_color);
 
 	US_SetPrintX(print_x + w);
 	US_SetPrintY(print_y);
@@ -746,7 +730,7 @@ void USL_DrawPaddleWarScore ( int16_t keen_score, int16_t comp_score )
 	//US_SetPrintColour(old_print_color);
 }
 
-void USL_PlayPaddleWar ( void )
+void USL_PlayPaddleWar(void)
 {
 	int16_t ball_visible, new_round, y_bounce, done, keen_won_last, comp_move_counter;
 	int16_t ball_y, keen_x, comp_x, bounce_point, ball_real_x, ball_real_y;
@@ -762,7 +746,7 @@ void USL_PlayPaddleWar ( void )
 	old_ball_x = old_comp_x = old_keen_x = 78;
 	old_ball_y = 62;
 	keen_score = comp_score = 0;
-	USL_DrawPaddleWarScore ( 0, 0 );
+	USL_DrawPaddleWarScore(0, 0);
 	comp_move_counter = 0;
 	y_bounce = 0;
 	new_round = 1;
@@ -774,7 +758,7 @@ void USL_PlayPaddleWar ( void )
 	{
 		// Delay Processing
 		// TODO/FIXME: Better handling of this in the future
-		while ( (timediff = SD_GetTimeCount() - lasttime) == 0 )
+		while ((timediff = SD_GetTimeCount() - lasttime) == 0)
 		{
 			// The original code waits in a busy loop.
 			// Bad idea for new code.
@@ -785,32 +769,32 @@ void USL_PlayPaddleWar ( void )
 			//IN_ReadControls(0, &status );
 		}
 		lasttime = SD_GetTimeCount();
-		if ( timediff > 4 )
+		if (timediff > 4)
 		{
 			timediff = 4;
 		}
 
 		// Move the game elements
-		while ( timediff-- && !done && (IN_GetLastScan() != IN_SC_Escape) )
+		while (timediff-- && !done && (IN_GetLastScan() != IN_SC_Escape))
 		{
 			IN_PumpEvents();
-			IN_ReadControls(0, &status );
+			IN_ReadControls(0, &status);
 			// Move Keen's paddle
-			if ( status.xDirection < 0 || IN_GetKeyState(IN_SC_LeftArrow) )
+			if (status.xDirection < 0 || IN_GetKeyState(IN_SC_LeftArrow))
 			{
-				if ( keen_x > 78 )
+				if (keen_x > 78)
 				{
 					keen_x -= 2;
 				}
 			}
-			else if ( status.xDirection > 0 || IN_GetKeyState(IN_SC_RightArrow) )
+			else if (status.xDirection > 0 || IN_GetKeyState(IN_SC_RightArrow))
 			{
-				if ( keen_x < 219 )
+				if (keen_x < 219)
 					keen_x += 2;
 			}
 
 			// Start a new round if there was a point
-			if ( new_round )
+			if (new_round)
 			{
 				ball_visible = 0;
 				start_delay = 70;
@@ -818,30 +802,30 @@ void USL_PlayPaddleWar ( void )
 				new_round = 0;
 
 				/* Erase the ball */
-				VH_Bar( old_ball_x, old_ball_y, 6, 5, 8 );
+				VH_Bar(old_ball_x, old_ball_y, 6, 5, 8);
 			}
 
-			if ( ball_visible && (comp_move_counter++ % 3) != 0 )
+			if (ball_visible && (comp_move_counter++ % 3) != 0)
 			{
 				ball_x = ball_real_x / 4;
-				if ( ball_x & 1 == 0 )
+				if (ball_x & 1 == 0)
 					ball_x += US_RndT() & 1;
 
 				// Move computer paddle to the ball
-				if ( comp_x + 6 < ball_x && comp_x < 219 )
+				if (comp_x + 6 < ball_x && comp_x < 219)
 					comp_x++;
-				else if ( comp_x + 6 > ball_x && comp_x > 78 )
+				else if (comp_x + 6 > ball_x && comp_x > 78)
 					comp_x--;
 			}
 
-			if ( ball_visible == 0  )
+			if (ball_visible == 0)
 			{
-				if ( --start_delay == 0 )
+				if (--start_delay == 0)
 				{
 					ball_visible = 1;
 					ball_x_speed = 1 - (US_RndT() % 3);
 					ball_y_speed = 3;
-					if ( keen_won_last )
+					if (keen_won_last)
 						ball_y_speed = -ball_y_speed;
 					ball_real_x = 612;
 					ball_real_y = 396;
@@ -849,13 +833,13 @@ void USL_PlayPaddleWar ( void )
 			}
 
 			// Wait until the ball has been served
-			if ( !ball_visible)
+			if (!ball_visible)
 			{
 				continue;
 			}
 
 			// Bounce ball off of side wall
-			if ( (ball_real_x + ball_x_speed) / 4 > 228 || (ball_real_x + ball_x_speed) / 4 < 78 )
+			if ((ball_real_x + ball_x_speed) / 4 > 228 || (ball_real_x + ball_x_speed) / 4 < 78)
 			{
 				SD_PlaySound(SOUND_PONGWALL);
 				ball_x_speed = -ball_x_speed;
@@ -865,31 +849,31 @@ void USL_PlayPaddleWar ( void )
 			ball_real_x += ball_x_speed;
 
 			// Check if computer scores a point
-			if ( (ball_real_y + ball_y_speed) / 4 > 137 )
+			if ((ball_real_y + ball_y_speed) / 4 > 137)
 			{
 				new_round = 1;
 				keen_won_last = 0;
 				comp_score++;
 				SD_PlaySound(SOUND_COMPSCORE);
-				USL_DrawPaddleWarScore ( keen_score, comp_score );
-				if ( comp_score == 21 )
+				USL_DrawPaddleWarScore(keen_score, comp_score);
+				if (comp_score == 21)
 				{
-					USL_CtlDialog ( "You lost!", "Press any key", NULL );
+					USL_CtlDialog("You lost!", "Press any key", NULL);
 					done = 1;
 					continue;
 				}
 			}
-				// Check if Keen scores a point
-			else if ( (ball_real_y + ball_y_speed) / 4 < 62 )
+			// Check if Keen scores a point
+			else if ((ball_real_y + ball_y_speed) / 4 < 62)
 			{
 				new_round = 1;
 				keen_won_last = 1;
 				keen_score++;
-				SD_PlaySound(SOUND_KEENSCORE);	/* play_sound */
-				USL_DrawPaddleWarScore ( keen_score, comp_score );
-				if ( keen_score == 21 )
+				SD_PlaySound(SOUND_KEENSCORE); /* play_sound */
+				USL_DrawPaddleWarScore(keen_score, comp_score);
+				if (keen_score == 21)
 				{
-					USL_CtlDialog ( "You won!", "Press any key", NULL );
+					USL_CtlDialog("You won!", "Press any key", NULL);
 					done = 1;
 					continue;
 				}
@@ -899,20 +883,20 @@ void USL_PlayPaddleWar ( void )
 			ball_x = ball_real_x / 4;
 			ball_y = ball_real_y / 4;
 
-			if ( !new_round )
+			if (!new_round)
 			{
 				// Check if ball hits comp paddle
-				if ( ball_y_speed < 0 && ball_y >= 66 && ball_y < 69 && (comp_x - 5) <= ball_x && (comp_x + 11) > ball_x )
+				if (ball_y_speed < 0 && ball_y >= 66 && ball_y < 69 && (comp_x - 5) <= ball_x && (comp_x + 11) > ball_x)
 				{
 					bounce_point = comp_x;
 					y_bounce = 1;
 					SD_PlaySound(SOUND_COMPPADDLE);
 				}
-				else if ( ball_y_speed > 0 && ball_y >= 132 && ball_y < 135 && (keen_x - 5) <= ball_x && (keen_x + 11) > ball_x )
+				else if (ball_y_speed > 0 && ball_y >= 132 && ball_y < 135 && (keen_x - 5) <= ball_x && (keen_x + 11) > ball_x)
 				{
-					if ( ball_y_speed / 4 < 3 )
+					if (ball_y_speed / 4 < 3)
 					{
-						if ( --speedup_delay == 0 )
+						if (--speedup_delay == 0)
 						{
 							ball_y_speed++;
 							speedup_delay = 10;
@@ -923,21 +907,20 @@ void USL_PlayPaddleWar ( void )
 					SD_PlaySound(SOUND_KEENPADDLE);
 				}
 
-				if ( y_bounce )
+				if (y_bounce)
 				{
 					ball_y_speed = -ball_y_speed;
-					ball_x_speed = (ball_x + 5 - bounce_point) / 2 - 4;	/* or / 4? */
-					if ( ball_x_speed == 0 )
+					ball_x_speed = (ball_x + 5 - bounce_point) / 2 - 4; /* or / 4? */
+					if (ball_x_speed == 0)
 						ball_x_speed--;
 					y_bounce = 0;
 				}
 			}
 		}
 
-
-		if ( ball_visible )
+		if (ball_visible)
 		{
-			VH_Bar( old_ball_x, old_ball_y, 6, 5, 8 );
+			VH_Bar(old_ball_x, old_ball_y, 6, 5, 8);
 			old_ball_x = ball_x;
 			old_ball_y = ball_y;
 
@@ -946,50 +929,50 @@ void USL_PlayPaddleWar ( void )
 			// (which works around this by having two sprites, one shifted one
 			// pixel over) ends up shifted an extra pixel sometimes. By ignoring
 			// the lower bit of ball_x here, we emulate the shift behaviour we need.
-			VH_DrawSprite( ball_x & ~1, ball_y, (ball_x & 1) ? SPR_BALL1 : SPR_BALL0 );
+			VH_DrawSprite(ball_x & ~1, ball_y, (ball_x & 1) ? SPR_BALL1 : SPR_BALL0);
 		}
 
 		// Draw Computer Paddle
-		VH_Bar( old_comp_x - 3, 66, 16, 3, 8 );
+		VH_Bar(old_comp_x - 3, 66, 16, 3, 8);
 		old_comp_x = comp_x;
-		VH_DrawSprite( comp_x, 66, SPR_PADDLE );
+		VH_DrawSprite(comp_x, 66, SPR_PADDLE);
 
 		// Draw Keen paddle
-		VH_Bar( old_keen_x - 3, 135, 16, 3, 8 );
+		VH_Bar(old_keen_x - 3, 135, 16, 3, 8);
 		old_keen_x = keen_x;
-		VH_DrawSprite( keen_x, 135, SPR_PADDLE );
+		VH_DrawSprite(keen_x, 135, SPR_PADDLE);
 
 		//sub_658();
 		VL_Present();
 
-	}  while ( (IN_GetLastScan() != IN_SC_Escape) && !done );
+	} while ((IN_GetLastScan() != IN_SC_Escape) && !done);
 
 	IN_ClearKeysDown();
 }
 
 bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item)
 {
-	if ( msg != US_MSG_CardEntered )
+	if (msg != US_MSG_CardEntered)
 		return 0;
 
 	/* Draw the watch */
-	VH_DrawBitmap( 0, 0, PIC_WRISTWATCH );
+	VH_DrawBitmap(0, 0, PIC_WRISTWATCH);
 
 	/* Draw the PaddleWar title */
-	VH_DrawBitmap( 130, 48, PIC_PADDLEWAR );
+	VH_DrawBitmap(130, 48, PIC_PADDLEWAR);
 
 	/* Draw a line above the playing area */
-	VH_HLine( 77, 231, 60, 10 );
+	VH_HLine(77, 231, 60, 10);
 
 	/* Draw a line below the playing area */
-	VH_HLine( 77, 231, 143, 10 );
+	VH_HLine(77, 231, 143, 10);
 
 	/* Play the game */
 	USL_PlayPaddleWar();
 	return 1;
 }
 
-void CK_US_UpdateOptionsMenus( void )
+void CK_US_UpdateOptionsMenus(void)
 {
 
 	ck_us_optionsMenuItems[0].caption = ck_scoreBoxEnabled ? "SCORE BOX (ON)" : "SCORE BOX (OFF)";
@@ -1004,20 +987,19 @@ void CK_US_UpdateOptionsMenus( void )
 
 	// Disable Two button firing selection if required
 	ck_us_buttonsMenuItems[2].state &= ~US_IS_Disabled;
-	if ( ck_twoButtonFiring )
+	if (ck_twoButtonFiring)
 		ck_us_buttonsMenuItems[2].state |= US_IS_Disabled;
 
-	
-	if ( IN_JoyPresent(0) )
+	if (IN_JoyPresent(0))
 		ck_us_configureMenuItems[4].state &= ~US_IS_Disabled;
 	else
 		ck_us_configureMenuItems[4].state |= US_IS_Disabled;
-	if ( IN_JoyPresent(1) )
+	if (IN_JoyPresent(1))
 		ck_us_configureMenuItems[5].state &= ~US_IS_Disabled;
 	else
 		ck_us_configureMenuItems[5].state |= US_IS_Disabled;
-	
-	/* Set up the gamepad menu item */
+
+		/* Set up the gamepad menu item */
 #if 0
 	ck_us_configureMenuItems[6].state |= US_IS_Disabled;
 	if ( in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2 )
@@ -1028,100 +1010,100 @@ void CK_US_UpdateOptionsMenus( void )
 
 typedef struct
 {
-  const char *name;
-  int sprite;
-  int xofs;
-  int yofs;
+	const char *name;
+	int sprite;
+	int xofs;
+	int yofs;
 } CK_CreatureType;
 
 static int currentCreature = -1;
 
 CK_CreatureType ck6_creatures[] = {
-  {"Bip", 269, -2, 0},
-  {"Babobba", 288, 0, 0},
-  {"Blorb", 399, -2, 0},
-  {"Gik", 387, -1, 0},
-  {"Ceilick", 246, 0, 0},
-  {"Blooglet", 351, -2, 0},
-  {"Blooguard", 254, -3, -1},
-  {"Flect", 317, -1, 0},
-  {"Bobba", 405, -2, 0},
-  {"Nospike", 298, -2, 0},
-  {"Orbatrix", 335, -2, 1},
-  {"Fleex", 239, -2, 0},
+	{"Bip", 269, -2, 0},
+	{"Babobba", 288, 0, 0},
+	{"Blorb", 399, -2, 0},
+	{"Gik", 387, -1, 0},
+	{"Ceilick", 246, 0, 0},
+	{"Blooglet", 351, -2, 0},
+	{"Blooguard", 254, -3, -1},
+	{"Flect", 317, -1, 0},
+	{"Bobba", 405, -2, 0},
+	{"Nospike", 298, -2, 0},
+	{"Orbatrix", 335, -2, 1},
+	{"Fleex", 239, -2, 0},
 };
 
 bool CK6_CreatureQuestion()
 {
-  static bool alreadyPassed = 0;
+	static bool alreadyPassed = 0;
 
-  if (alreadyPassed)
-    return true;
+	if (alreadyPassed)
+		return true;
 
-  int var2 = 0;
-  if (currentCreature == -1)
-  {
-    time_t t;
-    struct tm *tt;
-    time(&t);
-    tt = localtime(&t);
-    currentCreature = (tt->tm_hour + tt->tm_mday) % 12;
-  }
+	int var2 = 0;
+	if (currentCreature == -1)
+	{
+		time_t t;
+		struct tm *tt;
+		time(&t);
+		tt = localtime(&t);
+		currentCreature = (tt->tm_hour + tt->tm_mday) % 12;
+	}
 
-  CA_UpLevel();
-  CK_CreatureType creature = ck6_creatures[currentCreature];
-  CA_ClearMarks();
-  CA_MarkGrChunk(creature.sprite);
-  CA_CacheMarks(NULL);
+	CA_UpLevel();
+	CK_CreatureType creature = ck6_creatures[currentCreature];
+	CA_ClearMarks();
+	CA_MarkGrChunk(creature.sprite);
+	CA_CacheMarks(NULL);
 
-  VH_Bar(0, 0, 320, 200, 8);
-  VH_SpriteTableEntry *sprite = VH_GetSpriteTableEntry(creature.sprite - ca_gfxInfoE.offSprites);
-  int w = sprite->width;
-  int h = sprite->height;
+	VH_Bar(0, 0, 320, 200, 8);
+	VH_SpriteTableEntry *sprite = VH_GetSpriteTableEntry(creature.sprite - ca_gfxInfoE.offSprites);
+	int w = sprite->width;
+	int h = sprite->height;
 
-  US_CenterWindow(30, (h+41)/8+1);
-  US_SetPrintY(US_GetWindowY() +2);
-  US_CPrint("What is the name of this creature?");
-  int x = US_GetWindowX() + (US_GetWindowW() - w)/2 + (creature.xofs * 8);
-  int y = US_GetWindowY() + 15;
+	US_CenterWindow(30, (h + 41) / 8 + 1);
+	US_SetPrintY(US_GetWindowY() + 2);
+	US_CPrint("What is the name of this creature?");
+	int x = US_GetWindowX() + (US_GetWindowW() - w) / 2 + (creature.xofs * 8);
+	int y = US_GetWindowY() + 15;
 
-  if (creature.sprite == 246)
-    y++;
-  else
-    y += creature.yofs * 3;
+	if (creature.sprite == 246)
+		y++;
+	else
+		y += creature.yofs * 3;
 
-  VH_DrawSprite(x, y, creature.sprite);
+	VH_DrawSprite(x, y, creature.sprite);
 
-  y = US_GetWindowY() + US_GetWindowH() - 0x10;
-  int varC = 100;
-  x = US_GetWindowX() + (US_GetWindowW() - 100)/2;
-  VH_Bar(x, y, 100, 14, 0);
-  VH_Bar(x+1, y+1, varC-2 , 12, 15);
-  x+=2;
-  y+=2;
-  varC -= 8;
-  VL_Present();
+	y = US_GetWindowY() + US_GetWindowH() - 0x10;
+	int varC = 100;
+	x = US_GetWindowX() + (US_GetWindowW() - 100) / 2;
+	VH_Bar(x, y, 100, 14, 0);
+	VH_Bar(x + 1, y + 1, varC - 2, 12, 15);
+	x += 2;
+	y += 2;
+	varC -= 8;
+	VL_Present();
 
-  char buf[16];
-  if (US_LineInput(x, y, buf, NULL, true, 16, varC))
-  {
-    var2 = 1;
-    // In the disassembly, a loop which appears to do a  case-insensitve strcmp
-    if (CK_Cross_strcasecmp(buf, creature.name))
-    {
-      VH_Bar(0,0,320,200,8);
-      US_CenterWindow(35,5);
-      US_SetPrintY(US_GetPrintY() + 11);
-      US_CPrint("Sorry, that's not quite right.");
-      US_CPrint("Please check your manual and try again.");
-      VL_Present();
-      IN_WaitButton();
-      var2 = 0;
-    }
-  }
+	char buf[16];
+	if (US_LineInput(x, y, buf, NULL, true, 16, varC))
+	{
+		var2 = 1;
+		// In the disassembly, a loop which appears to do a  case-insensitve strcmp
+		if (CK_Cross_strcasecmp(buf, creature.name))
+		{
+			VH_Bar(0, 0, 320, 200, 8);
+			US_CenterWindow(35, 5);
+			US_SetPrintY(US_GetPrintY() + 11);
+			US_CPrint("Sorry, that's not quite right.");
+			US_CPrint("Please check your manual and try again.");
+			VL_Present();
+			IN_WaitButton();
+			var2 = 0;
+		}
+	}
 
-  VH_Bar(0,0, 320, 200, 8);
-  CA_DownLevel();
-  alreadyPassed = var2;
-  return var2;
+	VH_Bar(0, 0, 320, 200, 8);
+	CA_DownLevel();
+	alreadyPassed = var2;
+	return var2;
 }

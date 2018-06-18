@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_in.h"
 #include "id_mm.h"
 #include "id_ti.h"
-#include "id_vh.h"
 #include "id_us.h"
+#include "id_vh.h"
 
 #endif //ID_HEADS_H

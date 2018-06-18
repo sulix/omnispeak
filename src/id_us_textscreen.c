@@ -1,8 +1,8 @@
-#include <stdio.h>
-#include <stdint.h>
 #include <stdbool.h>
-#include <string.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Conversion for Codepage 437 (the IBM BIOS font character set) to unicode.
 uint32_t cp437[] = {
@@ -42,8 +42,7 @@ uint32_t cp437[] = {
 	0x03B1, 0x00DF, 0x0393, 0x03C0, 0x03A3, 0x03C3, 0x00B5, 0x03C4,
 	0x03A6, 0x0398, 0x03A8, 0x03B4, 0x221E, 0x03C6, 0x03B5, 0x2229,
 	0x2261, 0x00B1, 0x2265, 0x2264, 0x2320, 0x2321, 0x00F7, 0x2248,
-	0x00B0, 0x2219, 0x00B7, 0x221A, 0x207F, 0x00B2, 0x25A0, 0x00A0
-};
+	0x00B0, 0x2219, 0x00B7, 0x221A, 0x207F, 0x00B2, 0x25A0, 0x00A0};
 
 // Conversion table for EGA colours to ANSI.
 int colorconv[] = {
@@ -70,8 +69,7 @@ const char *okterms[] = {
 	"konsole",
 	"konsole-16color",
 	"konsole-256color",
-	0
-};
+	0};
 
 // Checks if the terminal is compatible with our B8000 text mode emulation.
 bool US_TerminalOk()
@@ -79,28 +77,29 @@ bool US_TerminalOk()
 #ifndef _WIN32
 	// We need a UTF-8 character encoding.
 	const char *lang = getenv("LANG");
-	if (!lang) return false;
+	if (!lang)
+		return false;
 	if (!strstr(lang, "UTF-8"))
 		return false;
 
 	// We need a terminal which supports ANSI escape codes.
 	const char *term = getenv("TERM");
-	if (!term) return false;
+	if (!term)
+		return false;
 	for (int i = 0; okterms[i]; ++i)
 		if (!strcmp(term, okterms[i]))
 			return true;
 #endif
-		
+
 	return false;
 }
-
 
 void US_PrintB8000Text(const uint8_t *textscreen, int numChars)
 {
 	for (int i = 0; i < numChars; ++i)
 	{
-		uint8_t ch = textscreen[i*2];
-		uint8_t attrib = textscreen[i*2+1];
+		uint8_t ch = textscreen[i * 2];
+		uint8_t attrib = textscreen[i * 2 + 1];
 
 		// Decode the attribute byte.
 		int fgcol = colorconv[attrib & 7];
@@ -119,15 +118,20 @@ void US_PrintB8000Text(const uint8_t *textscreen, int numChars)
 		uint32_t unich = cp437[ch];
 
 		// Output as UTF-8 (
-		if (unich < 0x80) printf("%c", unich);
-		else if (unich < 0x800) printf("%c%c", (unich >> 6) | 0xC0, (unich & 0x3F) | 0x80);
-		else if (unich < 0x10000) printf("%c%c%c", (unich >> 12) | 0xE0, (unich >> 6) & 0x3F | 0x80, (unich & 0x3F) | 0x80);
-		else printf("HELP!");
+		if (unich < 0x80)
+			printf("%c", unich);
+		else if (unich < 0x800)
+			printf("%c%c", (unich >> 6) | 0xC0, (unich & 0x3F) | 0x80);
+		else if (unich < 0x10000)
+			printf("%c%c%c", (unich >> 12) | 0xE0, (unich >> 6) & 0x3F | 0x80, (unich & 0x3F) | 0x80);
+		else
+			printf("HELP!");
 
 		// Reset
 		printf("\x1b[0m");
 
 		// We want to print a newline after every 80 characters
-		if ((i%80) == 79) printf("\n");
+		if ((i % 80) == 79)
+			printf("\n");
 	}
 }

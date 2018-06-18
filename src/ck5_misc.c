@@ -17,19 +17,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include <stdio.h>
 #include "id_ca.h"
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_vl.h"
-#include "ck_game.h"
-#include "ck_play.h"
-#include "ck_phys.h"
-#include "ck_def.h"
 #include "ck_act.h"
+#include "ck_def.h"
+#include "ck_game.h"
+#include "ck_phys.h"
+#include "ck_play.h"
 #include "ck5_ep.h"
-#include <stdio.h>
 
-CK_EpisodeDef ck5_episode ={
+CK_EpisodeDef ck5_episode = {
 	EP_CK5,
 	"CK5",
 	&CK5_SetupFunctions,
@@ -52,7 +52,6 @@ CK_EpisodeDef ck5_episode ={
 	/* .animTilesOffset = */ 0xD4DC,
 	/* .animTileSize = */ 4,
 };
-
 
 // Contains some keen-5 specific functions.
 
@@ -88,7 +87,7 @@ bool CK5_IsPresent()
 
 	if (!CA_IsFilePresent("ACTION.CK5"))
 		return false;
-	
+
 	// We clearly have all of the required files.
 	return true;
 }
@@ -144,7 +143,7 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 			{
 				obj->yDirection = -1;
 				//TODO: Change DeltaVelocity
-				ck_nextY -= ( nextPosUnit & 255);
+				ck_nextY -= (nextPosUnit & 255);
 			}
 		}
 	}
@@ -164,19 +163,17 @@ void CK5_PurpleAxisPlatform(CK_object *obj)
 			{
 				obj->yDirection = 1;
 				//TODO: Change DeltaVelocity
-				ck_nextY +=  256 - (nextPosUnit & 255);
+				ck_nextY += 256 - (nextPosUnit & 255);
 			}
 		}
 	}
 }
 
-
-
 // MISC Keen 5 functions
 
 // Teleporter Lightning Spawn
 
-void CK5_SpawnLightning ()
+void CK5_SpawnLightning()
 {
 	CK_object *new_object;
 
@@ -250,8 +247,8 @@ uint8_t ck5_starWarsPalette[] = {
 	0x00, 0x01, 0x18, 0x1E, 0x1F, 0x1C, 0x06, 0x07,
 	0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x00};
 
-uint8_t ck5_terminator_palette1[] = {0,4,4,0x1c,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,0x13,0};
-uint8_t ck5_terminator_palette2[] = {0,4,4,0x1c,1,1,1,1,0x11,0x11,0x11,0x11,0x13,0x13,0x13,4,0};
+uint8_t ck5_terminator_palette1[] = {0, 4, 4, 0x1c, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x13, 0};
+uint8_t ck5_terminator_palette2[] = {0, 4, 4, 0x1c, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 4, 0};
 
 const char *ck5_storyText =
 	"Episode Five\n"
@@ -291,7 +288,6 @@ const char *ck5_storyText =
 	"begins his most\n"
 	"dangerous adventure\n"
 	"yet...\n";
-
 
 // ck_game.c
 const char *ck5_levelEntryTexts[] = {
@@ -379,218 +375,217 @@ soundnames ck5_itemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND
                                SOUND_GOTEXTRALIFE, SOUND_GOTSTUNNER, SOUND_GOTKEYCARD
 };
 */
-soundnames ck5_itemSounds[]  = { 19, 19, 19, 19, 8,8,8,8,8,8, 17, 9, 55 };
-uint16_t ck5_itemShadows[] = {232, 232, 232, 232, 195, 196, 197,  198,  199,  200, 201, 202, 209};
+soundnames ck5_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9, 55};
+uint16_t ck5_itemShadows[] = {232, 232, 232, 232, 195, 196, 197, 198, 199, 200, 201, 202, 209};
 
 // ck_map.c
-int ck5_mapKeenFrames[] = { 0xF7, 0x106, 0xF4, 0xFD, 0xFA, 0x100, 0xF1, 0x103 };
+int ck5_mapKeenFrames[] = {0xF7, 0x106, 0xF4, 0xFD, 0xFA, 0x100, 0xF1, 0x103};
 
 // ck_play.c
-int16_t ck5_levelMusic[] ={11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
+int16_t ck5_levelMusic[] = {11, 5, 7, 9, 10, 9, 10, 9, 10, 9, 10, 3, 13, 4, 12, 2, 6, 1, 0, 8};
 
 void CK5_DefineConstants(void)
 {
-  FON_MAINFONT = 3;
-  FON_WATCHFONT = 4;
+	FON_MAINFONT = 3;
+	FON_WATCHFONT = 4;
 
-  PIC_HELPMENU = 6;
-  PIC_ARROWDIM = 26;
-  PIC_ARROWBRIGHT = 27;
-  PIC_HELPPOINTER = 24;
-  PIC_BORDERTOP = 28;
-  PIC_BORDERLEFT = 29;
-  PIC_BORDERRIGHT = 30;
-  PIC_BORDERBOTTOMSTATUS = 31;
-  PIC_BORDERBOTTOM = 32;
+	PIC_HELPMENU = 6;
+	PIC_ARROWDIM = 26;
+	PIC_ARROWBRIGHT = 27;
+	PIC_HELPPOINTER = 24;
+	PIC_BORDERTOP = 28;
+	PIC_BORDERLEFT = 29;
+	PIC_BORDERRIGHT = 30;
+	PIC_BORDERBOTTOMSTATUS = 31;
+	PIC_BORDERBOTTOM = 32;
 
-  PIC_MENUCARD = 67;
-  PIC_NEWGAMECARD = 68;
-  PIC_LOADCARD = 69;
-  PIC_SAVECARD = 70;
-  PIC_CONFIGURECARD = 71;
-  PIC_SOUNDCARD = 72;
-  PIC_MUSICCARD = 73;
-  PIC_KEYBOARDCARD = 74;
-  PIC_MOVEMENTCARD = 75;
-  PIC_BUTTONSCARD = 76;
-  PIC_JOYSTICKCARD = 77;
-  PIC_OPTIONSCARD = 78;
-  PIC_PADDLEWAR = 79;
-  PIC_DEBUGCARD = 88;
+	PIC_MENUCARD = 67;
+	PIC_NEWGAMECARD = 68;
+	PIC_LOADCARD = 69;
+	PIC_SAVECARD = 70;
+	PIC_CONFIGURECARD = 71;
+	PIC_SOUNDCARD = 72;
+	PIC_MUSICCARD = 73;
+	PIC_KEYBOARDCARD = 74;
+	PIC_MOVEMENTCARD = 75;
+	PIC_BUTTONSCARD = 76;
+	PIC_JOYSTICKCARD = 77;
+	PIC_OPTIONSCARD = 78;
+	PIC_PADDLEWAR = 79;
+	PIC_DEBUGCARD = 88;
 
-  PIC_WRISTWATCH = 82;
-  PIC_CREDIT1 = 83;
-  PIC_CREDIT2 = 84;
-  PIC_CREDIT3 = 85;
-  PIC_CREDIT4 = 86;
+	PIC_WRISTWATCH = 82;
+	PIC_CREDIT1 = 83;
+	PIC_CREDIT2 = 84;
+	PIC_CREDIT3 = 85;
+	PIC_CREDIT4 = 86;
 
-  PIC_STARWARS = 87;
-  PIC_TITLESCREEN = 88;
-  PIC_COUNTDOWN5 = 92;
-  PIC_COUNTDOWN4 = 93;
-  PIC_COUNTDOWN0 = 97;
+	PIC_STARWARS = 87;
+	PIC_TITLESCREEN = 88;
+	PIC_COUNTDOWN5 = 92;
+	PIC_COUNTDOWN4 = 93;
+	PIC_COUNTDOWN0 = 97;
 
-  MPIC_WRISTWATCHSCREEN = 99;
-  MPIC_STATUSLEFT = 100;
-  MPIC_STATUSRIGHT = 101;
+	MPIC_WRISTWATCHSCREEN = 99;
+	MPIC_STATUSLEFT = 100;
+	MPIC_STATUSRIGHT = 101;
 
-  SPR_PADDLE = 102;
-  SPR_BALL0 = 103;
-  SPR_BALL1 = 104;
-  SPR_BALL2 = 105;
-  SPR_BALL3 = 106;
+	SPR_PADDLE = 102;
+	SPR_BALL0 = 103;
+	SPR_BALL1 = 104;
+	SPR_BALL2 = 105;
+	SPR_BALL3 = 106;
 
-  SPR_DEMOSIGN = 0x6B;
+	SPR_DEMOSIGN = 0x6B;
 
-  SPR_STARS1 = 143;
+	SPR_STARS1 = 143;
 
-  SPR_CENTILIFE1UPSHADOW = 194;
+	SPR_CENTILIFE1UPSHADOW = 194;
 
-  SPR_SECURITYCARD_1 = 207;
-  SPR_GEM_A1 = 224;
-  SPR_GEM_B1 = 226;
-  SPR_GEM_C1 = 228;
-  SPR_GEM_D1 = 230;
-  SPR_100_PTS1 = 210;
-  SPR_200_PTS1 = 212;
-  SPR_500_PTS1 = 214;
-  SPR_1000_PTS1 = 216;
-  SPR_2000_PTS1 = 218;
-  SPR_5000_PTS1 = 220;
-  SPR_1UP1 = 222;
-  SPR_STUNNER1 = 233;
+	SPR_SECURITYCARD_1 = 207;
+	SPR_GEM_A1 = 224;
+	SPR_GEM_B1 = 226;
+	SPR_GEM_C1 = 228;
+	SPR_GEM_D1 = 230;
+	SPR_100_PTS1 = 210;
+	SPR_200_PTS1 = 212;
+	SPR_500_PTS1 = 214;
+	SPR_1000_PTS1 = 216;
+	SPR_2000_PTS1 = 218;
+	SPR_5000_PTS1 = 220;
+	SPR_1UP1 = 222;
+	SPR_STUNNER1 = 233;
 
-  SPR_SCOREBOX = 235;
+	SPR_SCOREBOX = 235;
 
-  SPR_MAPKEEN_WALK1_N = 248;
-  SPR_MAPKEEN_STAND_N = 250;
-  SPR_MAPKEEN_STAND_NE = 265;
-  SPR_MAPKEEN_STAND_E = 247;
-  SPR_MAPKEEN_STAND_SE = 256;
-  SPR_MAPKEEN_WALK1_S = 251;
-  SPR_MAPKEEN_STAND_S = 253;
-  SPR_MAPKEEN_STAND_SW = 259;
-  SPR_MAPKEEN_STAND_W = 244;
-  SPR_MAPKEEN_STAND_NW = 262;
+	SPR_MAPKEEN_WALK1_N = 248;
+	SPR_MAPKEEN_STAND_N = 250;
+	SPR_MAPKEEN_STAND_NE = 265;
+	SPR_MAPKEEN_STAND_E = 247;
+	SPR_MAPKEEN_STAND_SE = 256;
+	SPR_MAPKEEN_WALK1_S = 251;
+	SPR_MAPKEEN_STAND_S = 253;
+	SPR_MAPKEEN_STAND_SW = 259;
+	SPR_MAPKEEN_STAND_W = 244;
+	SPR_MAPKEEN_STAND_NW = 262;
 
-  TEXT_HELPMENU = 4914;
-  TEXT_CONTROLS = 4915;
-  TEXT_STORY = 4916;
-  TEXT_ABOUTID = 4917;
-  TEXT_END = 4918;
-  TEXT_SECRETEND = 4919;
-  TEXT_ORDER = 4920;
+	TEXT_HELPMENU = 4914;
+	TEXT_CONTROLS = 4915;
+	TEXT_STORY = 4916;
+	TEXT_ABOUTID = 4917;
+	TEXT_END = 4918;
+	TEXT_SECRETEND = 4919;
+	TEXT_ORDER = 4920;
 
-  EXTERN_ORDERSCREEN = 4921;
-  EXTERN_COMMANDER = 4922;
-  EXTERN_KEEN = 4923;
+	EXTERN_ORDERSCREEN = 4921;
+	EXTERN_COMMANDER = 4922;
+	EXTERN_KEEN = 4923;
 
-  DEMOSTART = 4926;
+	DEMOSTART = 4926;
 
-  SOUND_KEENWALK0 = 0;
-  SOUND_KEENWALK1 = 1;
-  SOUND_KEENJUMP = 2;
-  SOUND_KEENLAND = 3;
-  SOUND_KEENSHOOT = 4;
-  SOUND_MINEEXPLODE = 5;
-  SOUND_SLICEBUMP = 6;
-  SOUND_KEENPOGO = 7;
-  SOUND_GOTITEM = 8;
-  SOUND_GOTSTUNNER = 9;
-  SOUND_GOTCENTILIFE = 10;
-  SOUND_UNKNOWN11 = 11;
-  SOUND_UNKNOWN12 = 12;
-  SOUND_LEVELEXIT = 13;
-  SOUND_NEEDKEYCARD = 14;
-  SOUND_KEENHITCEILING = 15;
-  SOUND_SPINDREDFLYUP = 16;
-  SOUND_GOTEXTRALIFE = 17;
-  SOUND_OPENSECURITYDOOR = 18;
-  SOUND_GOTGEM = 19;
-  SOUND_KEENFALL = 20;
-  SOUND_KEENOUTOFAMMO = 21;
-  SOUND_UNKNOWN22 = 22;
-  SOUND_KEENDIE = 23;
-  SOUND_UNKNOWN24 = 24;
-  SOUND_KEENSHOTHIT = 25;
-  SOUND_UNKNOWN26 = 26;
-  SOUND_SPIROSLAM = 27;
-  SOUND_SPINDREDSLAM = 28;
-  SOUND_ENEMYSHOOT = 29;
-  SOUND_ENEMYSHOTHIT = 30;
-  SOUND_AMPTONWALK0 = 31;
-  SOUND_AMPTONWALK1 = 32;
-  SOUND_AMPTONSTUN = 33;
-  SOUND_UNKNOWN34 = 34;
-  SOUND_UNKNOWN35 = 35;
-  SOUND_SHELLYEXPLODE = 36;
-  SOUND_SPINDREDFLYDOWN = 37;
-  SOUND_MASTERSHOT = 38;
-  SOUND_MASTERTELE = 39;
-  SOUND_POLEZAP = 40;
-  SOUND_UNKNOWN41 = 41;
-  SOUND_SHOCKSUNDBARK = 42;
-  //SOUND_UNKNOWN43 = 43;
-  //SOUND_UNKNOWN44 = 44;
-  SOUND_BARKSHOTDIE = 45;
-  SOUND_KEENPADDLE = 46;
-  SOUND_PONGWALL = 47;
-  SOUND_COMPPADDLE = 48;
-  SOUND_COMPSCORE = 49;
-  SOUND_KEENSCORE = 50;
-  SOUND_UNKNOWN51 = 51;
-  SOUND_UNKNOWN52 = 52;
-  SOUND_GALAXYEXPLODE = 53;
-  SOUND_GALAXYEXPLODEPRE = 54;
-  SOUND_GOTKEYCARD = 55;
-  SOUND_UNKNOWN56 = 56;
-  SOUND_KEENLANDONFUSE = 57;
-  SOUND_SPARKYPREPCHARGE = 58;
-  SOUND_SPHEREFULCEILING = 59;
-  SOUND_OPENGEMDOOR = 60;
-  SOUND_SPIROFLY = 61;
-  SOUND_UNKNOWN62 = 62;
-  SOUND_UNKNOWN63 = 63;
-  LASTSOUND = 64;
+	SOUND_KEENWALK0 = 0;
+	SOUND_KEENWALK1 = 1;
+	SOUND_KEENJUMP = 2;
+	SOUND_KEENLAND = 3;
+	SOUND_KEENSHOOT = 4;
+	SOUND_MINEEXPLODE = 5;
+	SOUND_SLICEBUMP = 6;
+	SOUND_KEENPOGO = 7;
+	SOUND_GOTITEM = 8;
+	SOUND_GOTSTUNNER = 9;
+	SOUND_GOTCENTILIFE = 10;
+	SOUND_UNKNOWN11 = 11;
+	SOUND_UNKNOWN12 = 12;
+	SOUND_LEVELEXIT = 13;
+	SOUND_NEEDKEYCARD = 14;
+	SOUND_KEENHITCEILING = 15;
+	SOUND_SPINDREDFLYUP = 16;
+	SOUND_GOTEXTRALIFE = 17;
+	SOUND_OPENSECURITYDOOR = 18;
+	SOUND_GOTGEM = 19;
+	SOUND_KEENFALL = 20;
+	SOUND_KEENOUTOFAMMO = 21;
+	SOUND_UNKNOWN22 = 22;
+	SOUND_KEENDIE = 23;
+	SOUND_UNKNOWN24 = 24;
+	SOUND_KEENSHOTHIT = 25;
+	SOUND_UNKNOWN26 = 26;
+	SOUND_SPIROSLAM = 27;
+	SOUND_SPINDREDSLAM = 28;
+	SOUND_ENEMYSHOOT = 29;
+	SOUND_ENEMYSHOTHIT = 30;
+	SOUND_AMPTONWALK0 = 31;
+	SOUND_AMPTONWALK1 = 32;
+	SOUND_AMPTONSTUN = 33;
+	SOUND_UNKNOWN34 = 34;
+	SOUND_UNKNOWN35 = 35;
+	SOUND_SHELLYEXPLODE = 36;
+	SOUND_SPINDREDFLYDOWN = 37;
+	SOUND_MASTERSHOT = 38;
+	SOUND_MASTERTELE = 39;
+	SOUND_POLEZAP = 40;
+	SOUND_UNKNOWN41 = 41;
+	SOUND_SHOCKSUNDBARK = 42;
+	//SOUND_UNKNOWN43 = 43;
+	//SOUND_UNKNOWN44 = 44;
+	SOUND_BARKSHOTDIE = 45;
+	SOUND_KEENPADDLE = 46;
+	SOUND_PONGWALL = 47;
+	SOUND_COMPPADDLE = 48;
+	SOUND_COMPSCORE = 49;
+	SOUND_KEENSCORE = 50;
+	SOUND_UNKNOWN51 = 51;
+	SOUND_UNKNOWN52 = 52;
+	SOUND_GALAXYEXPLODE = 53;
+	SOUND_GALAXYEXPLODEPRE = 54;
+	SOUND_GOTKEYCARD = 55;
+	SOUND_UNKNOWN56 = 56;
+	SOUND_KEENLANDONFUSE = 57;
+	SOUND_SPARKYPREPCHARGE = 58;
+	SOUND_SPHEREFULCEILING = 59;
+	SOUND_OPENGEMDOOR = 60;
+	SOUND_SPIROFLY = 61;
+	SOUND_UNKNOWN62 = 62;
+	SOUND_UNKNOWN63 = 63;
+	LASTSOUND = 64;
 
-  CAMEIN_MUS = 0;
-  LITTLEAMPTON_MUS = 1;
-  THEICE_MUS = 2;
-  SNOOPIN_MUS = 3;
-  BAGPIPES_MUS = 4;
-  WEDNESDAY_MUS = 5;
-  ROCKNOSTONE_MUS = 6;
-  OUTOFBREATH_MUS = 7;
-  SHIKADIAIRE_MUS = 8;
-  DIAMONDS_MUS = 9;
-  TIGHTER_MUS = 10;
-  ROBOREDROCK_MUS = 11;
-  FANFARE_MUS = 12;
-  BRINGEROFWAR_MUS = 13;
-  LASTMUSTRACK = 14;
+	CAMEIN_MUS = 0;
+	LITTLEAMPTON_MUS = 1;
+	THEICE_MUS = 2;
+	SNOOPIN_MUS = 3;
+	BAGPIPES_MUS = 4;
+	WEDNESDAY_MUS = 5;
+	ROCKNOSTONE_MUS = 6;
+	OUTOFBREATH_MUS = 7;
+	SHIKADIAIRE_MUS = 8;
+	DIAMONDS_MUS = 9;
+	TIGHTER_MUS = 10;
+	ROBOREDROCK_MUS = 11;
+	FANFARE_MUS = 12;
+	BRINGEROFWAR_MUS = 13;
+	LASTMUSTRACK = 14;
 
-  STR_EXIT_TO_MAP = "Exit to Armageddon";
+	STR_EXIT_TO_MAP = "Exit to Armageddon";
 
-  // ck_inter.c
-  ck_starWarsPalette = ck5_starWarsPalette;
-  ck_terminator_palette1 = ck5_terminator_palette1;
-  ck_terminator_palette2 = ck5_terminator_palette2;
-  ck_storyText = ck5_storyText;
+	// ck_inter.c
+	ck_starWarsPalette = ck5_starWarsPalette;
+	ck_terminator_palette1 = ck5_terminator_palette1;
+	ck_terminator_palette2 = ck5_terminator_palette2;
+	ck_storyText = ck5_storyText;
 
-  // ck_game.c
-  ck_levelEntryTexts = ck5_levelEntryTexts;
-  ck_levelNames = ck5_levelNames;
+	// ck_game.c
+	ck_levelEntryTexts = ck5_levelEntryTexts;
+	ck_levelNames = ck5_levelNames;
 
-  // ck_keen.c
-  ck_itemSounds = ck5_itemSounds;
-  ck_itemShadows = ck5_itemShadows;
+	// ck_keen.c
+	ck_itemSounds = ck5_itemSounds;
+	ck_itemShadows = ck5_itemShadows;
 
-  // ck_map.c
-  ck_mapKeenFrames = ck5_mapKeenFrames;
+	// ck_map.c
+	ck_mapKeenFrames = ck5_mapKeenFrames;
 
-  // ck_play.c
-  ck_levelMusic = ck5_levelMusic;
-
+	// ck_play.c
+	ck_levelMusic = ck5_levelMusic;
 }
 
 /*
@@ -692,97 +687,95 @@ typedef enum
 } CK_Lumptype;
 
 static int16_t ck5_itemLumps[] =
-{
-	Lump_Gems,
-	Lump_Gems,
-	Lump_Gems,
-	Lump_Gems,
-	Lump_Candy,
-	Lump_Marshmallow,
-	Lump_Cola,
-	Lump_Stix,
-	Lump_SugarStoopies,
-	Lump_BagOSugar,
-	Lump_VitalinKeg,
-	Lump_Stunner
-};
+	{
+		Lump_Gems,
+		Lump_Gems,
+		Lump_Gems,
+		Lump_Gems,
+		Lump_Candy,
+		Lump_Marshmallow,
+		Lump_Cola,
+		Lump_Stix,
+		Lump_SugarStoopies,
+		Lump_BagOSugar,
+		Lump_VitalinKeg,
+		Lump_Stunner};
 
 static int16_t ck5_lumpStarts[MAXLUMPS] =
-{
-	0,
-	0x6C,
-	0xD2,
-	0xD4,
-	0xD6,
-	0xD8,
-	0xDA,
-	0xDC,
-	0xDE,
-	0xE0,
-	0xE9,
-	0xEC,
-	0xF2,
-	0x130,
-	0x140,
-	0x151,
-	0x166,
-	0x16E,
-	0x17A,
-	0x181,
-	0x183,
-	0x189,
-	0x195,
-	0x1A1,
-	0x1A6,
-	0x1A8,
-	0x1AC,
-	0x1BE,
-	0x1BF,
-	0xCF,
-	0x126,
-	0x11B,
-	0x11E,
-	0x122,
+	{
+		0,
+		0x6C,
+		0xD2,
+		0xD4,
+		0xD6,
+		0xD8,
+		0xDA,
+		0xDC,
+		0xDE,
+		0xE0,
+		0xE9,
+		0xEC,
+		0xF2,
+		0x130,
+		0x140,
+		0x151,
+		0x166,
+		0x16E,
+		0x17A,
+		0x181,
+		0x183,
+		0x189,
+		0x195,
+		0x1A1,
+		0x1A6,
+		0x1A8,
+		0x1AC,
+		0x1BE,
+		0x1BF,
+		0xCF,
+		0x126,
+		0x11B,
+		0x11E,
+		0x122,
 };
 
 static int16_t ck5_lumpEnds[MAXLUMPS] =
-{
-	0,
-	0xCE,
-	0xD3,
-	0xD5,
-	0xD7,
-	0xD9,
-	0xDB,
-	0xDD,
-	0xDF,
-	0xE8,
-	0xEA,
-	0xF1,
-	0x11A,
-	0x13F,
-	0x150,
-	0x165,
-	0x16D,
-	0x179,
-	0x180,
-	0x182,
-	0x188,
-	0x194,
-	0x1A0,
-	0x1A5,
-	0x1A7,
-	0x1AB,
-	0x1BD,
-	0x1BE,
-	0x1BF,
-	0xD1,
-	0x12F,
-	0x11D,
-	0x121,
-	0x125,
+	{
+		0,
+		0xCE,
+		0xD3,
+		0xD5,
+		0xD7,
+		0xD9,
+		0xDB,
+		0xDD,
+		0xDF,
+		0xE8,
+		0xEA,
+		0xF1,
+		0x11A,
+		0x13F,
+		0x150,
+		0x165,
+		0x16D,
+		0x179,
+		0x180,
+		0x182,
+		0x188,
+		0x194,
+		0x1A0,
+		0x1A5,
+		0x1A7,
+		0x1AB,
+		0x1BD,
+		0x1BE,
+		0x1BF,
+		0xD1,
+		0x12F,
+		0x11D,
+		0x121,
+		0x125,
 };
-
 
 void CK5_ScanInfoLayer()
 {
@@ -822,63 +815,77 @@ void CK5_ScanInfoLayer()
 				break;
 
 			case 6:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 5:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 4:
 				CK5_SpawnSparky(x, y);
 				ck5_lumpsNeeded[Lump_Sparky] = true;
 				break;
 
 			case 9:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 8:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 7:
 				CK5_SpawnMine(x, y);
 				ck5_lumpsNeeded[Lump_Mine] = true;
 				break;
 
 			case 12:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 11:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 10:
 				CK5_SpawnSlice(x, y, CD_north);
 				ck5_lumpsNeeded[Lump_Slicestar] = true;
 				break;
 
 			case 15:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 14:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 13:
 				CK5_SpawnRobo(x, y);
 				ck5_lumpsNeeded[Lump_RoboRed] = true;
 				break;
 
 			case 18:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 17:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 16:
 				CK5_SpawnSpirogrip(x, y);
 				ck5_lumpsNeeded[Lump_Spirogrip] = true;
 				break;
 
 			case 21:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 20:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 19:
 				CK5_SpawnSliceDiag(x, y);
 				ck5_lumpsNeeded[Lump_Slicestar] = true;
 				break;
 
 			case 24:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 23:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 22:
 				CK5_SpawnSlice(x, y, CD_east);
 				ck5_lumpsNeeded[Lump_Slicestar] = true;
@@ -905,9 +912,11 @@ void CK5_ScanInfoLayer()
 				break;
 
 			case 33:
-				if (ck_gameState.difficulty > D_Easy) break;
+				if (ck_gameState.difficulty > D_Easy)
+					break;
 			case 34:
-				if (ck_gameState.difficulty > D_Normal) break;
+				if (ck_gameState.difficulty > D_Normal)
+					break;
 			case 35:
 				CK_SpawnStandPlatform(x, y);
 				ck5_lumpsNeeded[Lump_RedPlat] = true;
@@ -937,45 +946,55 @@ void CK5_ScanInfoLayer()
 				ck5_lumpsNeeded[Lump_QEDFuse] = true;
 				break;
 			case 44:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 43:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 42:
 				CK5_SpawnAmpton(x, y);
 				ck5_lumpsNeeded[Lump_Ampton] = true;
 				break;
 
 			case 53:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 49:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 45:
 				CK_TurretSpawn(x, y, 0);
 				ck5_lumpsNeeded[Lump_PinkShot] = true;
 				break;
 
 			case 54:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 50:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 46:
 				CK_TurretSpawn(x, y, 1);
 				ck5_lumpsNeeded[Lump_PinkShot] = true;
 				break;
 
 			case 55:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 51:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 47:
 				CK_TurretSpawn(x, y, 2);
 				ck5_lumpsNeeded[Lump_PinkShot] = true;
 				break;
 
 			case 56:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 52:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 48:
 				CK_TurretSpawn(x, y, 3);
 				ck5_lumpsNeeded[Lump_PinkShot] = true;
@@ -1007,27 +1026,33 @@ void CK5_ScanInfoLayer()
 				break;
 
 			case 73:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 72:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 71:
 				CK5_SpawnVolte(x, y);
 				ck5_lumpsNeeded[Lump_VolteFace] = true;
 				break;
 
 			case 76:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 75:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 74:
 				CK5_SpawnShelly(x, y);
 				ck5_lumpsNeeded[Lump_Shelley] = true;
 				break;
 
 			case 79:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 78:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 77:
 				CK5_SpawnSpindred(x, y);
 				ck5_lumpsNeeded[Lump_Spindred] = true;
@@ -1049,36 +1074,44 @@ void CK5_ScanInfoLayer()
 				break;
 
 			case 90:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 89:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 88:
 				CK5_SpawnMaster(x, y);
 				ck5_lumpsNeeded[Lump_ShikadiMaster] = true;
 				break;
 
 			case 101:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 100:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 99:
 				CK5_SpawnShikadi(x, y);
 				ck5_lumpsNeeded[Lump_Shikadi] = true;
 				break;
 
 			case 104:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 103:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 102:
 				CK5_SpawnShocksund(x, y);
 				ck5_lumpsNeeded[Lump_Shocksund] = true;
 				break;
 
 			case 107:
-				if (ck_gameState.difficulty < D_Hard) break;
+				if (ck_gameState.difficulty < D_Hard)
+					break;
 			case 106:
-				if (ck_gameState.difficulty < D_Normal) break;
+				if (ck_gameState.difficulty < D_Normal)
+					break;
 			case 105:
 				CK5_SpawnSphereful(x, y);
 				ck5_lumpsNeeded[Lump_Sphereful] = true;
@@ -1108,7 +1141,7 @@ void CK5_ScanInfoLayer()
 		if (ck5_lumpsNeeded[i])
 			for (int j = ck5_lumpStarts[i]; j <= ck5_lumpEnds[i]; j++)
 				CA_MarkGrChunk(j);
-	
+
 	if (ck_gameState.currentLevel == 0)
 	{
 		int keenYTilePos = ck_keenObj->posY >> 8;
@@ -1142,12 +1175,12 @@ void CK5_ScanInfoLayer()
 
 // Galaxy Explosion Ending Sequence
 uint8_t endsplosion_pal_change[][18] =
-{
-	{ 0x8, 0x8, 0x7, 0xF, 0x7, 0x8, 0x0, 0x8, 0x7, 0xF, 0x7, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
-	{ 0x7, 0x7, 0x7, 0x7, 0x7, 0xF, 0x7, 0x8, 0x0, 0x7, 0xF, 0x7, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0},
+	{
+		{0x8, 0x8, 0x7, 0xF, 0x7, 0x8, 0x0, 0x8, 0x7, 0xF, 0x7, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
+		{0x7, 0x7, 0x7, 0x7, 0x7, 0xF, 0x7, 0x8, 0x0, 0x7, 0xF, 0x7, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0},
 };
 
-uint8_t endsplosion_palette[17] = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x3 };
+uint8_t endsplosion_palette[17] = {0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x3};
 
 /*
  * There can be 4000 stars in the galaxy ending
@@ -1179,7 +1212,7 @@ void CK_GalExplodeUpdateCoords(int offset)
 	// Blank the video buffer
 	VH_Bar(0, 0, 320, 200, 0);
 
-	CK5_GalExplode *info = (CK5_GalExplode*)ca_graphChunks[4925];
+	CK5_GalExplode *info = (CK5_GalExplode *)ca_graphChunks[4925];
 
 	// Update the star positions
 	// Each pixel is 0x80 x 0x80 "distance units"
@@ -1197,19 +1230,19 @@ void CK_GalExplodeUpdateCoords(int offset)
 			continue;
 		info->y[i] = newPos;
 
-		VH_Plot(info->x[i]/0x80, info->y[i]/0x80, 0xF);
+		VH_Plot(info->x[i] / 0x80, info->y[i] / 0x80, 0xF);
 	}
 }
 
 void CK5_ExplodeGalaxy()
 {
 	// purge_chunks()
-	VL_SetScrollCoords(0,0);
+	VL_SetScrollCoords(0, 0);
 
 	VL_FadeToBlack();
-	CA_CacheGrChunk(89); // Galaxy Pic
+	CA_CacheGrChunk(89);   // Galaxy Pic
 	CA_CacheGrChunk(4925); // Star Coords
-	CA_CacheGrChunk(98);  // Game Over Pic
+	CA_CacheGrChunk(98);   // Game Over Pic
 
 	// VW_SetLineWidth(40);
 	// VH_SetScreen(0);
@@ -1221,7 +1254,6 @@ void CK5_ExplodeGalaxy()
 	VL_FadeFromBlack();
 	IN_ClearKeysDown();
 	SD_PlaySound(SOUND_GALAXYEXPLODEPRE);
-
 
 	// Galaxy is about to explode
 	for (int i = 0; i < 18; i++)
@@ -1239,7 +1271,6 @@ void CK5_ExplodeGalaxy()
 
 		VL_Present();
 	}
-
 
 	// Write Mode 2();
 	// Set Plane Write Mask;
@@ -1271,7 +1302,6 @@ void CK5_ExplodeGalaxy()
 
 		if (IN_GetLastScan())
 			goto done;
-
 	}
 
 done:
@@ -1338,4 +1368,3 @@ void CK5_FuseMessage()
 	CA_DownLevel();
 	// StopMusic();
 }
-

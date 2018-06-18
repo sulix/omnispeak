@@ -34,8 +34,8 @@ void CA_Shutdown(void);
 #define CA_MAX_AUDIO_CHUNKS 256
 typedef struct ca_audinfo
 {
-  uint16_t numSongs, numSounds, numSndChunks;
-  uint16_t startPCSounds, startAdlibSounds, startDigiSounds, startMusic;
+	uint16_t numSongs, numSounds, numSndChunks;
+	uint16_t startPCSounds, startAdlibSounds, startDigiSounds, startMusic;
 } ca_audinfo;
 
 extern ca_audinfo ca_audInfoE;
@@ -48,14 +48,14 @@ void CA_LoadAllSounds(void);
 size_t CA_GetFileSize(char *filename);
 bool CAL_AdjustFilenameCase(char *filename);
 bool CA_IsFilePresent(const char *filename);
-char* CAL_AdjustExtension(const char *filename);
+char *CAL_AdjustExtension(const char *filename);
 bool CA_FarWrite(int handle, uint8_t *source, int length);
 bool CA_ReadFile(const char *filename, void *offset);
 bool CA_SafeReadFile(const char *filename, void *offset, int bufLength);
 bool CA_WriteFile(const char *filename, void *offset, int bufLength);
 bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize);
-int CAL_RLEWCompress (void *src, int expLength, void *dest, uint16_t rletag);
-void CAL_RLEWExpand (void *src, void *dest, int expLength, uint16_t rletag);
+int CAL_RLEWCompress(void *src, int expLength, void *dest, uint16_t rletag);
+void CAL_RLEWExpand(void *src, void *dest, int expLength, uint16_t rletag);
 
 // -- Graphics --
 
@@ -93,7 +93,6 @@ void CA_DownLevel(void);
 #define CA_NUMMAPPLANES 3
 #define CA_NUMMAPS 100
 
-
 typedef struct CA_MapHeader
 {
 	uint32_t planeOffsets[CA_NUMMAPPLANES];
@@ -110,10 +109,9 @@ extern uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
 extern uint8_t *CA_audio[CA_MAX_AUDIO_CHUNKS];
 
 // Keen: custom cachebox hooks
-extern void	(*ca_beginCacheBox)	(const char *title, int numcache);
-extern void	(*ca_updateCacheBox)	(void);
-extern void	(*ca_finishCacheBox)	(void);
-
+extern void (*ca_beginCacheBox)(const char *title, int numcache);
+extern void (*ca_updateCacheBox)(void);
+extern void (*ca_finishCacheBox)(void);
 
 void CA_CacheMap(int mapIndex);
 uint16_t *CA_TilePtrAtPos(int16_t x, int16_t y, int16_t plane);
@@ -121,6 +119,5 @@ uint16_t CA_TileAtPos(int16_t x, int16_t y, int16_t plane);
 void CA_SetTileAtPos(int16_t x, int16_t y, int16_t plane, uint16_t value);
 uint16_t CA_GetMapHeight();
 uint16_t CA_GetMapWidth();
-
 
 #endif

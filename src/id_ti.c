@@ -39,44 +39,42 @@ uint8_t TI_BackAnimTime(uint16_t tile)
 
 uint8_t TI_ForeTop(uint16_t tile)
 {
-	const int index = tile + ca_gfxInfoE.numTiles16*2;
+	const int index = tile + ca_gfxInfoE.numTiles16 * 2;
 	return ti_tileInfo[index];
 }
 
 uint8_t TI_ForeBottom(uint16_t tile)
 {
-	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m*2;
+	const int index = tile + ca_gfxInfoE.numTiles16 * 2 + ca_gfxInfoE.numTiles16m * 2;
 	return ti_tileInfo[index];
 }
 
 uint8_t TI_ForeLeft(uint16_t tile)
 {
-	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m*3;
+	const int index = tile + ca_gfxInfoE.numTiles16 * 2 + ca_gfxInfoE.numTiles16m * 3;
 	return ti_tileInfo[index];
 }
 
 uint8_t TI_ForeRight(uint16_t tile)
 {
-	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m;
+	const int index = tile + ca_gfxInfoE.numTiles16 * 2 + ca_gfxInfoE.numTiles16m;
 	return ti_tileInfo[index];
 }
 
 uint8_t TI_ForeMisc(uint16_t tile)
 {
-	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m*5;
+	const int index = tile + ca_gfxInfoE.numTiles16 * 2 + ca_gfxInfoE.numTiles16m * 5;
 	return ti_tileInfo[index];
 }
 
 int8_t TI_ForeAnimTile(uint16_t tile)
 {
-	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m*4;
+	const int index = tile + ca_gfxInfoE.numTiles16 * 2 + ca_gfxInfoE.numTiles16m * 4;
 	return ti_tileInfo[index];
 }
 
 uint8_t TI_ForeAnimTime(uint16_t tile)
 {
-	const int index = tile + ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m*6;
+	const int index = tile + ca_gfxInfoE.numTiles16 * 2 + ca_gfxInfoE.numTiles16m * 6;
 	return ti_tileInfo[index];
 }
-
-

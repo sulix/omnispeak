@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 mm_ptr_t buffer; // Misc buffer
 
-#define MM_MAXBLOCKS	2048 	//1200 in Keen5
+#define MM_MAXBLOCKS 2048 //1200 in Keen5
 
 typedef struct ID_MM_MemBlock
 {
@@ -55,18 +55,20 @@ static int mm_blocksused;
 static int mm_numpurgeable;
 static int mm_memused;
 
-
 static void MML_ClearBlock()
 {
 	ID_MM_MemBlock *bestBlock = 0;
 	for (int i = 0; i < MM_MAXBLOCKS; ++i)
 	{
 		//Is the block free?
-		if (!mm_blocks[i].ptr) continue;
+		if (!mm_blocks[i].ptr)
+			continue;
 		//Can we purge it?
-		if (!mm_blocks[i].purgelevel) continue;
+		if (!mm_blocks[i].purgelevel)
+			continue;
 		//Is it locked?
-		if (mm_blocks[i].locked) continue;
+		if (mm_blocks[i].locked)
+			continue;
 
 		if (!bestBlock || mm_blocks[i].purgelevel > bestBlock->purgelevel)
 		{
@@ -104,32 +106,32 @@ static void MML_UpdateUserPointer(ID_MM_MemBlock *blk)
 
 static ID_MM_MemBlock *MML_BlockFromUserPointer(mm_ptr_t *ptr)
 {
-	for (int i =0; i < MM_MAXBLOCKS; ++i)
+	for (int i = 0; i < MM_MAXBLOCKS; ++i)
 		if (mm_blocks[i].userptr == ptr)
 			return &(mm_blocks[i]);
 
-	return (ID_MM_MemBlock*)(0);
+	return (ID_MM_MemBlock *)(0);
 }
 
 void MM_Startup(void)
 {
 	//NOP
-	for (int i = MM_MAXBLOCKS-1; i >= 0; --i)
+	for (int i = MM_MAXBLOCKS - 1; i >= 0; --i)
 	{
 		mm_blocks[i].ptr = 0;
-		mm_blocks[i].next = (i==MM_MAXBLOCKS-1)?0:&(mm_blocks[i+1]);
+		mm_blocks[i].next = (i == MM_MAXBLOCKS - 1) ? 0 : &(mm_blocks[i + 1]);
 	}
 	mm_free = &(mm_blocks[0]);
 	mm_purgeable = 0;
 	// Misc buffer
-	MM_GetPtr(&buffer,BUFFERSIZE);
+	MM_GetPtr(&buffer, BUFFERSIZE);
 }
 
 void MM_Shutdown(void)
 {
 	for (int i = 0; i < MM_MAXBLOCKS; ++i)
 	{
-		if (mm_blocks[i].ptr)	
+		if (mm_blocks[i].ptr)
 			free(mm_blocks[i].ptr);
 	}
 }
@@ -138,7 +140,8 @@ void MM_GetPtr(mm_ptr_t *ptr, unsigned long size)
 {
 	ID_MM_MemBlock *blk = MML_GetNewBlock();
 	//Try to allocate memory, freeing if we can't.
-	do {
+	do
+	{
 		blk->ptr = malloc(size);
 		if (!blk->ptr)
 		{
@@ -148,7 +151,7 @@ void MM_GetPtr(mm_ptr_t *ptr, unsigned long size)
 			else
 				Quit("MM_GetPtr: Out of Memory!");
 		}
-	} while(!blk->ptr);
+	} while (!blk->ptr);
 
 	//Setup the block details (unlocked, non-purgable)
 	blk->length = size;
@@ -266,8 +269,6 @@ void MM_BombOnError(bool bomb)
 //NOTE: Keen/Wolf3d have MML_UseSpace. This is incompatible with our use of the
 //system allocator, so it is unused for now.
 
-
-
 #ifndef ID_MM_DEBUGARENA
 
 struct ID_MM_Arena
@@ -281,10 +282,11 @@ ID_MM_Arena *MM_ArenaCreate(size_t size)
 {
 	if (size < sizeof(ID_MM_Arena))
 		Quit("Tried to create an arena which was too small.");
-	uint8_t *memblk = (uint8_t*)malloc(size);
-	if (!memblk) return 0;
+	uint8_t *memblk = (uint8_t *)malloc(size);
+	if (!memblk)
+		return 0;
 
-	ID_MM_Arena *arena = (ID_MM_Arena*)memblk;
+	ID_MM_Arena *arena = (ID_MM_Arena *)memblk;
 	arena->size = size;
 	arena->currentOffset = sizeof(ID_MM_Arena);
 
@@ -298,7 +300,7 @@ void *MM_ArenaAlloc(ID_MM_Arena *arena, size_t size)
 		Quit("Arena is full!");
 	}
 
-	uint8_t *ptr = ((uint8_t*)arena) + arena->currentOffset;
+	uint8_t *ptr = ((uint8_t *)arena) + arena->currentOffset;
 	arena->currentOffset += size;
 	return ptr;
 }
@@ -306,9 +308,9 @@ void *MM_ArenaAlloc(ID_MM_Arena *arena, size_t size)
 char *MM_ArenaStrDup(ID_MM_Arena *arena, const char *str)
 {
 	size_t len = strlen(str) + 1;
-	char *newStr = (char*)MM_ArenaAlloc(arena, len);
+	char *newStr = (char *)MM_ArenaAlloc(arena, len);
 	strcpy(newStr, str);
-	newStr[len-1] = '\0';
+	newStr[len - 1] = '\0';
 	return newStr;
 }
 
@@ -340,7 +342,7 @@ struct ID_MM_Arena
 
 ID_MM_Arena *MM_ArenaCreate(size_t size)
 {
-	ID_MM_Arena *arena = (ID_MM_Arena*)malloc(sizeof(ID_MM_Arena));
+	ID_MM_Arena *arena = (ID_MM_Arena *)malloc(sizeof(ID_MM_Arena));
 	arena->arena_size = size;
 	arena->arena_used = 0;
 	arena->data = 0;
@@ -354,26 +356,26 @@ void *MM_ArenaAlloc(ID_MM_Arena *arena, size_t size)
 	ID_MM_Arena *lastBlock = arena;
 	if (arena->arena_used + size >= arena->arena_size)
 		Quit("Arena is full!");
-	
+
 	while (lastBlock->next)
 		lastBlock = lastBlock->next;
-	
+
 	// Allocate and record the block
 	lastBlock->data = malloc(size);
 	lastBlock->size = size;
 	// Add a new tail element.
-	lastBlock->next = (ID_MM_Arena*)malloc(sizeof(ID_MM_Arena));
+	lastBlock->next = (ID_MM_Arena *)malloc(sizeof(ID_MM_Arena));
 	lastBlock->next->next = 0;
-	
+
 	return lastBlock->data;
 }
 
 char *MM_ArenaStrDup(ID_MM_Arena *arena, const char *str)
 {
 	size_t len = strlen(str) + 1;
-	char *newStr = (char*)MM_ArenaAlloc(arena, len);
+	char *newStr = (char *)MM_ArenaAlloc(arena, len);
 	strcpy(newStr, str);
-	newStr[len-1] = '\0';
+	newStr[len - 1] = '\0';
 	return newStr;
 }
 

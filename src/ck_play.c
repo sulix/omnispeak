@@ -19,14 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //#inclucd "id_heads.h"
 #include "ck_play.h"
-#include "ck_game.h"
-#include "ck_def.h"
 #include "id_ca.h"
 #include "id_in.h"
-#include "id_us.h"
 #include "id_rf.h"
-#include "id_vl.h"
 #include "id_sd.h"
+#include "id_us.h"
+#include "id_vl.h"
+#include "ck_def.h"
+#include "ck_game.h"
 
 #include "ck_act.h"
 #include "ck_text.h"
@@ -34,12 +34,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ck_cross.h" /* For CK_Cross_SwapLE16 */
 
+#include <stdio.h>  /* for sscanf() */
 #include <stdlib.h> /* For abs() */
 #include <string.h> /* For memset() */
-#include <stdio.h> /* for sscanf() */
 
-#define max(a,b) ((a<b)?b:a)
-#define min(a,b) ((a<b)?a:b)
+#define max(a, b) ((a < b) ? b : a)
+#define min(a, b) ((a < b) ? a : b)
 
 CK_object ck_objArray[CK_MAX_OBJECTS];
 
@@ -60,7 +60,6 @@ int ck_activeX0Tile;
 int ck_activeY0Tile;
 int ck_activeX1Tile;
 int ck_activeY1Tile;
-
 
 void CK_KeenCheckSpecialTileInfo(CK_object *obj);
 
@@ -152,120 +151,141 @@ void CK_DebugMemory()
 	//MM_ShowMemory();
 }
 
-void CK_SpriteTest() {
+void CK_SpriteTest()
+{
 
-  // VW_SyncPages();
-  US_CenterWindow(30, 17);
-  US_CPrint("Sprite Test");
-  US_CPrint("-----------");
-  int startpy = US_GetPrintY();
-  int startpx = (US_GetPrintX() + 0x38) & ~7;
+	// VW_SyncPages();
+	US_CenterWindow(30, 17);
+	US_CPrint("Sprite Test");
+	US_CPrint("-----------");
+	int startpy = US_GetPrintY();
+	int startpx = (US_GetPrintX() + 0x38) & ~7;
 
-  int startpx_2 = startpx + 0x28;
-  US_PrintF(
-      "Chunk:\n"
-      "Width:\n"
-      "Height:\n"
-      "Orgx:\n"
-      "Orgy:\n"
-      "Xl:\n"
-      "Yl:\n"
-      "Xh:\n"
-      "Yh:\n"
-      "Shifts:\n"
-      "Mem:\n"
-      );
+	int startpx_2 = startpx + 0x28;
+	US_PrintF(
+		"Chunk:\n"
+		"Width:\n"
+		"Height:\n"
+		"Orgx:\n"
+		"Orgy:\n"
+		"Xl:\n"
+		"Yl:\n"
+		"Xh:\n"
+		"Yh:\n"
+		"Shifts:\n"
+		"Mem:\n");
 
-  int var8 = US_GetPrintY();
-  int chunk = ca_gfxInfoE.offSprites;
-  int shifts = 0;
+	int var8 = US_GetPrintY();
+	int chunk = ca_gfxInfoE.offSprites;
+	int shifts = 0;
 
-  // max min chunks
+	// max min chunks
 redraw:
-  if (chunk >= ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites) {
-    chunk = ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites - 1;
-  } else if (chunk < ca_gfxInfoE.offSprites) {
-    chunk = ca_gfxInfoE.offSprites;
-  }
+	if (chunk >= ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites)
+	{
+		chunk = ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites - 1;
+	}
+	else if (chunk < ca_gfxInfoE.offSprites)
+	{
+		chunk = ca_gfxInfoE.offSprites;
+	}
 
-  VH_SpriteTableEntry *ste = VH_GetSpriteTableEntry(chunk - ca_gfxInfoE.offSprites);
-  mm_ptr_t chunk_ptr = ca_graphChunks[chunk];
+	VH_SpriteTableEntry *ste = VH_GetSpriteTableEntry(chunk - ca_gfxInfoE.offSprites);
+	mm_ptr_t chunk_ptr = ca_graphChunks[chunk];
 
-  VH_Bar(startpx, startpy, 0x28, var8 - startpy, 0xF);
-  US_SetPrintX(startpx);
-  US_SetPrintY(startpy);
+	VH_Bar(startpx, startpy, 0x28, var8 - startpy, 0xF);
+	US_SetPrintX(startpx);
+	US_SetPrintY(startpy);
 
-  US_PrintF("%d\n", chunk);
-  US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste->width);
-  US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste->height);
-  US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste->originX);
-  US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste->originY);
-  US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste->xl);
-  US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste->yl);
-  US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste->xh);
-  US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste->yh);
-  US_SetPrintX(startpx);
-  US_PrintF("%d\n", ste->shifts);
-  US_SetPrintX(startpx);
+	US_PrintF("%d\n", chunk);
+	US_SetPrintX(startpx);
+	US_PrintF("%d\n", ste->width);
+	US_SetPrintX(startpx);
+	US_PrintF("%d\n", ste->height);
+	US_SetPrintX(startpx);
+	US_PrintF("%d\n", ste->originX);
+	US_SetPrintX(startpx);
+	US_PrintF("%d\n", ste->originY);
+	US_SetPrintX(startpx);
+	US_PrintF("%d\n", ste->xl);
+	US_SetPrintX(startpx);
+	US_PrintF("%d\n", ste->yl);
+	US_SetPrintX(startpx);
+	US_PrintF("%d\n", ste->xh);
+	US_SetPrintX(startpx);
+	US_PrintF("%d\n", ste->yh);
+	US_SetPrintX(startpx);
+	US_PrintF("%d\n", ste->shifts);
+	US_SetPrintX(startpx);
 
-  if (chunk_ptr) {
-    // Omnispeak: don't store preshifted sprites
-    // DOS: memused = (h*w) + (shifts-1) * (h*(w+1))
-    // all of this is precomputed and stored in "spritetype" struct on sprite cache in DOS
-    // so the DOS game here would read this information out of the spritetype struct
-    US_PrintF("%d=", ste->width * ste->height * 5);
-  } else {
-    US_PrintF("-----");
-  }
+	if (chunk_ptr)
+	{
+		// Omnispeak: don't store preshifted sprites
+		// DOS: memused = (h*w) + (shifts-1) * (h*(w+1))
+		// all of this is precomputed and stored in "spritetype" struct on sprite cache in DOS
+		// so the DOS game here would read this information out of the spritetype struct
+		US_PrintF("%d=", ste->width * ste->height * 5);
+	}
+	else
+	{
+		US_PrintF("-----");
+	}
 
-  int selectedChunk = chunk;
-  do {
+	int selectedChunk = chunk;
+	do
+	{
 
-    VH_Bar(startpx_2, startpy, 0x6E, var8 - startpy, 0xF);
-    if (chunk_ptr) {
-      US_SetPrintX(startpx_2);
-      US_SetPrintY(startpy);
-      US_PrintF("Shift:%d\n", shifts);
-      VH_DrawSprite(startpx_2 + shifts*2 + 0x10, US_GetPrintY(), chunk);
-    }
+		VH_Bar(startpx_2, startpy, 0x6E, var8 - startpy, 0xF);
+		if (chunk_ptr)
+		{
+			US_SetPrintX(startpx_2);
+			US_SetPrintY(startpy);
+			US_PrintF("Shift:%d\n", shifts);
+			VH_DrawSprite(startpx_2 + shifts * 2 + 0x10, US_GetPrintY(), chunk);
+		}
 
-    VL_Present();
+		VL_Present();
 
-    IN_WaitKey();
-    IN_ScanCode sc = IN_GetLastScan();
-    IN_ClearKeysDown();
+		IN_WaitKey();
+		IN_ScanCode sc = IN_GetLastScan();
+		IN_ClearKeysDown();
 
-    if (sc == IN_SC_LeftArrow) {
-      if (--shifts == -1)
-        shifts = 3;
-    } else if (sc == IN_SC_RightArrow) {
-      if (++shifts == 4)
-        shifts = 0;
-    } else if (sc == IN_SC_DownArrow) {
-      chunk--;
-    } else if (sc == IN_SC_PgDown) {
-      if ((chunk -= 10) < ca_gfxInfoE.offSprites)
-        chunk = ca_gfxInfoE.offSprites;
-    } else if (sc == IN_SC_UpArrow) {
-      chunk++;
-    } else if (sc == IN_SC_PgUp) {
-      if ((chunk += 10) >= ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites)
-        chunk = ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites;
-    } else if (sc == IN_SC_Escape) {
-      break;
-    }
+		if (sc == IN_SC_LeftArrow)
+		{
+			if (--shifts == -1)
+				shifts = 3;
+		}
+		else if (sc == IN_SC_RightArrow)
+		{
+			if (++shifts == 4)
+				shifts = 0;
+		}
+		else if (sc == IN_SC_DownArrow)
+		{
+			chunk--;
+		}
+		else if (sc == IN_SC_PgDown)
+		{
+			if ((chunk -= 10) < ca_gfxInfoE.offSprites)
+				chunk = ca_gfxInfoE.offSprites;
+		}
+		else if (sc == IN_SC_UpArrow)
+		{
+			chunk++;
+		}
+		else if (sc == IN_SC_PgUp)
+		{
+			if ((chunk += 10) >= ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites)
+				chunk = ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites;
+		}
+		else if (sc == IN_SC_Escape)
+		{
+			break;
+		}
 
-    if (chunk != selectedChunk)
-      goto redraw;
-  } while (1);
+		if (chunk != selectedChunk)
+			goto redraw;
+	} while (1);
 }
 
 void CK_ItemCheat()
@@ -292,8 +312,8 @@ void CK_ItemCheat()
 	ck_gameState.ep.ck5.securityCard = 1;
 	ck_gameState.keyGems[0] =
 		ck_gameState.keyGems[1] =
-		ck_gameState.keyGems[2] =
-		ck_gameState.keyGems[3] = 1;
+			ck_gameState.keyGems[2] =
+				ck_gameState.keyGems[3] = 1;
 }
 
 void CK_SetupObjArray()
@@ -332,8 +352,7 @@ CK_object *CK_GetNewObj(bool nonCritical)
 	ck_freeObject = ck_freeObject->prev;
 
 	//Clear any old crap out of the struct.
-	memset(newObj, 0, sizeof (CK_object));
-
+	memset(newObj, 0, sizeof(CK_object));
 
 	if (ck_lastObject)
 	{
@@ -341,13 +360,11 @@ CK_object *CK_GetNewObj(bool nonCritical)
 	}
 	newObj->prev = ck_lastObject;
 
-
 	newObj->active = OBJ_ACTIVE;
 	newObj->clipped = CLIP_normal;
 
 	ck_lastObject = newObj;
 	ck_numObjects++;
-
 
 	return newObj;
 }
@@ -386,7 +403,7 @@ void CK_RemoveObj(CK_object *obj)
 uint16_t CK_ConvertObjPointerTo16BitOffset(CK_object *obj)
 {
 	if ((obj >= ck_objArray) && (obj < ck_objArray + CK_MAX_OBJECTS))
-		return (obj-ck_objArray)*COMPAT_ORIG_OBJ_SIZE+ck_currentEpisode->objArrayOffset;
+		return (obj - ck_objArray) * COMPAT_ORIG_OBJ_SIZE + ck_currentEpisode->objArrayOffset;
 	if (obj == &tempObj)
 		return ck_currentEpisode->tempObjOffset;
 	return 0;
@@ -397,7 +414,7 @@ CK_object *CK_ConvertObj16BitOffsetToPointer(uint16_t offset)
 	uint16_t objArrayOffset = ck_currentEpisode->objArrayOffset;
 	// Original size of each object was 76 bytes
 	if ((offset >= objArrayOffset) && (offset < objArrayOffset + COMPAT_ORIG_OBJ_SIZE * CK_MAX_OBJECTS))
-		return ck_objArray+(offset-objArrayOffset)/COMPAT_ORIG_OBJ_SIZE;
+		return ck_objArray + (offset - objArrayOffset) / COMPAT_ORIG_OBJ_SIZE;
 	if (offset == ck_currentEpisode->tempObjOffset)
 		return &tempObj;
 	return NULL;
@@ -405,7 +422,7 @@ CK_object *CK_ConvertObj16BitOffsetToPointer(uint16_t offset)
 
 // Used for reproduction of vanilla Keen bugs; Does NOT include function pointers
 static const CK_action ck_partialNullAction =
-{0, 0, AT_NullActionTypeValue, 0x6C72, 0x6E61, 0x2064, 0x2B43, 0x202B};
+	{0, 0, AT_NullActionTypeValue, 0x6C72, 0x6E61, 0x2064, 0x2B43, 0x202B};
 
 int16_t CK_ActionThink(CK_object *obj, int16_t time)
 {
@@ -566,7 +583,6 @@ void CK_RunAction(CK_object *obj)
 			obj->actionTimer = 0;
 			prevAction = obj->currentAction;
 		}
-
 	}
 
 	if (!prevAction)
@@ -602,35 +618,104 @@ void CK_OverlayForegroundTile(int fgTile, int overlayTile)
 	//
 	// Note: CK_WallDebug makes sure dst is never NULL; It's src which may be NULL.
 	static const uint16_t nullTile[80] =
-	{
-		CK_Cross_SwapLE16(0x0162), CK_Cross_SwapLE16(0x01A2), CK_Cross_SwapLE16(0x0008), CK_Cross_SwapLE16(0x0070), CK_Cross_SwapLE16(0x0008), CK_Cross_SwapLE16(0x0070), CK_Cross_SwapLE16(0x0008), CK_Cross_SwapLE16(0x0070),
-		CK_Cross_SwapLE16(0x0008), CK_Cross_SwapLE16(0x0070), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000),
-		CK_Cross_SwapLE16(0x05F5), CK_Cross_SwapLE16(0x1A16), CK_Cross_SwapLE16(0x000B), CK_Cross_SwapLE16(0x1602), CK_Cross_SwapLE16(0xFF55), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000),
-		CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1080), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000),
-		CK_Cross_SwapLE16(0x1320), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1120), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1140), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1160), CK_Cross_SwapLE16(0xF000),
-		CK_Cross_SwapLE16(0x11C0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x11E0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1200), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1240), CK_Cross_SwapLE16(0xF000),
-		CK_Cross_SwapLE16(0x12E0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x12E0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1260), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000),
-		CK_Cross_SwapLE16(0x1280), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0xF0A4), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1060), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x0500), CK_Cross_SwapLE16(0xC000),
-		CK_Cross_SwapLE16(0x14A0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x14C0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x20C8), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x0000), CK_Cross_SwapLE16(0x0118),
-		CK_Cross_SwapLE16(0x1AAB), CK_Cross_SwapLE16(0x01A2), CK_Cross_SwapLE16(0x14E0), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1500), CK_Cross_SwapLE16(0xF000), CK_Cross_SwapLE16(0x1520), CK_Cross_SwapLE16(0xF000),
-	};
+		{
+			CK_Cross_SwapLE16(0x0162),
+			CK_Cross_SwapLE16(0x01A2),
+			CK_Cross_SwapLE16(0x0008),
+			CK_Cross_SwapLE16(0x0070),
+			CK_Cross_SwapLE16(0x0008),
+			CK_Cross_SwapLE16(0x0070),
+			CK_Cross_SwapLE16(0x0008),
+			CK_Cross_SwapLE16(0x0070),
+			CK_Cross_SwapLE16(0x0008),
+			CK_Cross_SwapLE16(0x0070),
+			CK_Cross_SwapLE16(0x1060),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1060),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1060),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x05F5),
+			CK_Cross_SwapLE16(0x1A16),
+			CK_Cross_SwapLE16(0x000B),
+			CK_Cross_SwapLE16(0x1602),
+			CK_Cross_SwapLE16(0xFF55),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1060),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1060),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1060),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1080),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1060),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1320),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1120),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1140),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1160),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x11C0),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x11E0),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1200),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1240),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x12E0),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x12E0),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1260),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1060),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1280),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0xF0A4),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1060),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x0500),
+			CK_Cross_SwapLE16(0xC000),
+			CK_Cross_SwapLE16(0x14A0),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x14C0),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x20C8),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x0000),
+			CK_Cross_SwapLE16(0x0118),
+			CK_Cross_SwapLE16(0x1AAB),
+			CK_Cross_SwapLE16(0x01A2),
+			CK_Cross_SwapLE16(0x14E0),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1500),
+			CK_Cross_SwapLE16(0xF000),
+			CK_Cross_SwapLE16(0x1520),
+			CK_Cross_SwapLE16(0xF000),
+		};
 
-	const uint16_t *src = (uint16_t*)ca_graphChunks[ca_gfxInfoE.offTiles16m + overlayTile];
-	uint16_t *dst = (uint16_t*)ca_graphChunks[ca_gfxInfoE.offTiles16m + fgTile];
+	const uint16_t *src = (uint16_t *)ca_graphChunks[ca_gfxInfoE.offTiles16m + overlayTile];
+	uint16_t *dst = (uint16_t *)ca_graphChunks[ca_gfxInfoE.offTiles16m + fgTile];
 
 	src = src ? src : nullTile;
 
 	for (int i = 0; i < 64; i++)
 	{
 		uint16_t row, overlayMask, overlayColor;
-		row = i & 0xF;				            // Row of the tile we're on
-		overlayColor = *(src + i + 0x10);	// Get the overlay color plane
-		overlayMask = *(src + row);	      // Get the overlay mask plane
-		*(dst + row) &= overlayMask;      // Mask dest mask w/ overlay mask
-		*(dst + 0x10 + i) &= overlayMask; // Now draw the overlayTile (mask...)
-		*(dst + 0x10 + i) |= overlayColor;// (... and draw color plane)
+		row = i & 0xF;			   // Row of the tile we're on
+		overlayColor = *(src + i + 0x10);  // Get the overlay color plane
+		overlayMask = *(src + row);	// Get the overlay mask plane
+		*(dst + row) &= overlayMask;       // Mask dest mask w/ overlay mask
+		*(dst + 0x10 + i) &= overlayMask;  // Now draw the overlayTile (mask...)
+		*(dst + 0x10 + i) |= overlayColor; // (... and draw color plane)
 	}
-
 }
 
 // TODO: make this interoperable between episodes
@@ -640,7 +725,6 @@ void CK_WallDebug()
 	US_CenterWindow(24, 3);
 	US_PrintCentered("WORKING");
 	VL_Present();
-
 
 	// Cache the slope info foreground tiles
 	for (int i = ca_gfxInfoE.offTiles16m + 0x6C; i < ca_gfxInfoE.offTiles16m + 0x6C + 16; i++)
@@ -699,7 +783,7 @@ bool CK_DebugKeys()
 	if (IN_GetKeyState(IN_SC_B) && game_in_progress)
 	{
 		char str[4];
-		uint16_t w,h;
+		uint16_t w, h;
 		// VW_SyncPages();
 		US_CenterWindow(0x18, 3);
 		US_SetPrintY(US_GetPrintY() + 6);
@@ -709,7 +793,7 @@ bool CK_DebugKeys()
 		US_Print(" Border color (0-15):");
 		VL_Present(); // VW_UpdateScreen();
 
-		if (US_LineInput(saveX, saveY, str, NULL, true , 2, 0))
+		if (US_LineInput(saveX, saveY, str, NULL, true, 2, 0))
 		{
 			int colour;
 
@@ -769,12 +853,12 @@ bool CK_DebugKeys()
 			ck_gameState.keyGems[i]++;
 
 		ck_gameState.numShots = 99;
-    if (ck_currentEpisode->ep == EP_CK4)
-      ck_gameState.ep.ck4.wetsuit = 1;
-    else if (ck_currentEpisode->ep == EP_CK5)
-      ck_gameState.ep.ck5.securityCard = 1;
-    else if (ck_currentEpisode->ep == EP_CK6)
-      ck_gameState.ep.ck6.sandwich = ck_gameState.ep.ck6.rope = ck_gameState.ep.ck6.passcard = 1;
+		if (ck_currentEpisode->ep == EP_CK4)
+			ck_gameState.ep.ck4.wetsuit = 1;
+		else if (ck_currentEpisode->ep == EP_CK5)
+			ck_gameState.ep.ck5.securityCard = 1;
+		else if (ck_currentEpisode->ep == EP_CK6)
+			ck_gameState.ep.ck6.sandwich = ck_gameState.ep.ck6.rope = ck_gameState.ep.ck6.passcard = 1;
 
 		VL_Present();
 		IN_WaitButton();
@@ -840,10 +924,11 @@ bool CK_DebugKeys()
 	}
 
 	// Sprite Test
-  if (IN_GetKeyState(IN_SC_T)) {
-    CK_SpriteTest();
-    return true;
-  }
+	if (IN_GetKeyState(IN_SC_T))
+	{
+		CK_SpriteTest();
+		return true;
+	}
 
 	// Extra Vibbles
 
@@ -863,7 +948,7 @@ bool CK_DebugKeys()
 		US_Print(msg);
 		VL_Present(); // VW_UpdateScreen();
 
-		if (US_LineInput(saveX, saveY, str, NULL, true , 2, 0))
+		if (US_LineInput(saveX, saveY, str, NULL, true, 2, 0))
 		{
 			int level;
 
@@ -909,9 +994,9 @@ void CK_CheckKeys()
 	// Drop down status
 	if (IN_GetKeyState(IN_SC_Enter))
 	{
-    CK_ShowStatusWindow();
-    RF_ForceRefresh(); // Reanimate the tiles
-    SD_SetLastTimeCount(SD_GetTimeCount());
+		CK_ShowStatusWindow();
+		RF_ForceRefresh(); // Reanimate the tiles
+		SD_SetLastTimeCount(SD_GetTimeCount());
 	}
 
 	// TODO: If Paused
@@ -940,9 +1025,7 @@ void CK_CheckKeys()
 		{
 			ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
 		}
-
 	}
-
 
 	if (!ck_demoParm)
 	{
@@ -961,11 +1044,11 @@ void CK_CheckKeys()
 			if (!ck_scoreBoxEnabled && ck_scoreBoxObj->sde)
 				RF_RemoveSpriteDraw(&ck_scoreBoxObj->sde);
 
-		// Force scorebox redraw if it's enabled
-		if (ck_scoreBoxEnabled)
-		{
-			ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
-		}
+			// Force scorebox redraw if it's enabled
+			if (ck_scoreBoxEnabled)
+			{
+				ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
+			}
 
 			IN_ClearKeysDown();
 
@@ -991,10 +1074,8 @@ void CK_CheckKeys()
 		// Do Boss Key
 		if (IN_GetLastScan() == IN_SC_F9)
 		{
-
 		}
 	}
-
 
 	// BAT ITEM CHEAT
 	if (IN_GetKeyState(IN_SC_B) && IN_GetKeyState(IN_SC_A) && IN_GetKeyState(IN_SC_T))
@@ -1040,10 +1121,13 @@ void CK_HandleInput()
 			ck_keenState.jumpIsPressed = ck_inputFrame.jump;
 			ck_keenState.pogoIsPressed = ck_inputFrame.pogo;
 			ck_keenState.shootIsPressed = ck_inputFrame.button2;
-			if (!ck_keenState.jumpIsPressed) ck_keenState.jumpWasPressed = false;
-			if (!ck_keenState.pogoIsPressed) ck_keenState.pogoWasPressed = false;
+			if (!ck_keenState.jumpIsPressed)
+				ck_keenState.jumpWasPressed = false;
+			if (!ck_keenState.pogoIsPressed)
+				ck_keenState.pogoWasPressed = false;
 
-			if (!ck_keenState.shootIsPressed) ck_keenState.shootWasPressed = false;
+			if (!ck_keenState.shootIsPressed)
+				ck_keenState.shootWasPressed = false;
 		}
 		else
 		{
@@ -1115,7 +1199,7 @@ void StopMusic(void)
 	for (i = 0; i < LASTMUSTRACK; i++)
 
 		if (CA_audio[ca_audInfoE.startMusic + i])
-			MM_SetPurge((void **) &CA_audio[ca_audInfoE.startMusic + i], 3);
+			MM_SetPurge((void **)&CA_audio[ca_audInfoE.startMusic + i], 3);
 }
 
 int16_t *ck_levelMusic;
@@ -1164,7 +1248,7 @@ void StartMusic(int16_t level)
 			VW_FadeToBlack();
 	}
 #endif
-	SD_StartMusic((MusicGroup *) CA_audio[ca_audInfoE.startMusic + song]);
+	SD_StartMusic((MusicGroup *)CA_audio[ca_audInfoE.startMusic + song]);
 }
 
 //===========================================================================
@@ -1172,7 +1256,6 @@ void StartMusic(int16_t level)
 // DROPDOWN STATUS WINDOW
 //
 //===========================================================================
-
 
 #define SOUND_STATUSDOWN 34
 #define SOUND_STATUSUP 35
@@ -1190,48 +1273,43 @@ void CK_ShowStatusWindow(void);
 // extern const char **ck_levelNames;
 int ck_statusWindowYPx;
 bool ck_statusDown;
-unsigned statusWindowOfs;  // screen buffer
-
+unsigned statusWindowOfs; // screen buffer
 
 void CK_DrawLongRight(int x, int y, int digits, int zerotile, int value)
 {
 	char s[20];
-	int len,i;
+	int len, i;
 
-
-		sprintf(s, "%d", value);
+	sprintf(s, "%d", value);
 	// itoa(value, s, 10);
 	len = strlen(s);
 
 	for (i = digits; i > len; i--)
 	{
 		VH_DrawTile8(x, y, zerotile);
-		x+=8;
+		x += 8;
 	}
 
 	while (i > 0)
 	{
-		VH_DrawTile8(x,y,zerotile + s[len-i] - 47);
+		VH_DrawTile8(x, y, zerotile + s[len - i] - 47);
 		i--;
-		x+=8;
+		x += 8;
 	}
-
 }
 
 void CK_DrawStatusWindow(void)
 {
 	int si, i, oldcolor;
 
-
 	// Draw the backdrop
 	int var2 = 64;
 	int di = 16;
-	int statusWidth = STATUS_W-8;
-	int statusHeight = STATUS_H-8;
-
+	int statusWidth = STATUS_W - 8;
+	int statusHeight = STATUS_H - 8;
 
 	VH_DrawTile8(var2, di, 54);
-	VH_DrawTile8(var2, di+statusHeight, 60);
+	VH_DrawTile8(var2, di + statusHeight, 60);
 	si = var2 + 8;
 
 	while (var2 + statusWidth - 8 >= si)
@@ -1251,7 +1329,7 @@ void CK_DrawStatusWindow(void)
 	{
 
 		VH_DrawTile8(var2, si, 57);
-		VH_DrawTile8(var2+statusWidth, si, 59);
+		VH_DrawTile8(var2 + statusWidth, si, 59);
 		si += 8;
 	}
 
@@ -1261,17 +1339,17 @@ void CK_DrawStatusWindow(void)
 	oldcolor = US_GetPrintColour();
 
 	// Level
-  uint16_t strW, strH;
-  char str[256];
+	uint16_t strW, strH;
+	char str[256];
 	US_SetPrintY(28);
 	US_SetWindowX(80);
 	US_SetWindowW(160);
 	US_SetPrintColour(15);
 	US_CPrint("LOCATION");
 	VH_Bar(79, 38, 162, 20, 15);
-  strcpy(str, ck_levelNames[ca_mapOn]);
+	strcpy(str, ck_levelNames[ca_mapOn]);
 	CK_MeasureMultiline(str, &strW, &strH);
-	US_SetPrintY ((20 - strH)/2 + 40 - 2);
+	US_SetPrintY((20 - strH) / 2 + 40 - 2);
 	US_CPrint(str);
 
 	// Score
@@ -1292,52 +1370,53 @@ void CK_DrawStatusWindow(void)
 	VH_Bar(175, 71, 66, 10, 0);
 	CK_DrawLongRight(176, 72, 8, 41, ck_gameState.nextKeenAt);
 
-  // Episode-dependent field
-  switch (ck_currentEpisode->ep)
-  {
-    case EP_CK4:
-      US_SetPrintY(85);
-      US_SetWindowX(80);
-      US_SetWindowW(64);
-      US_CPrint("RESCUED");
+	// Episode-dependent field
+	switch (ck_currentEpisode->ep)
+	{
+	case EP_CK4:
+		US_SetPrintY(85);
+		US_SetWindowX(80);
+		US_SetWindowW(64);
+		US_CPrint("RESCUED");
 
-      VH_Bar(79, 95, 66, 10, 0);
-      for (int i = 0; i < ck_gameState.ep.ck4.membersRescued; i++) {
-        VH_DrawTile8(80 + 8 * i, 96, 40);
-      }
-      break;
+		VH_Bar(79, 95, 66, 10, 0);
+		for (int i = 0; i < ck_gameState.ep.ck4.membersRescued; i++)
+		{
+			VH_DrawTile8(80 + 8 * i, 96, 40);
+		}
+		break;
 
-    case EP_CK5:
-      US_SetPrintY(91);
-      US_SetPrintX(80);
-      US_Print("KEYCARD");
+	case EP_CK5:
+		US_SetPrintY(91);
+		US_SetPrintX(80);
+		US_Print("KEYCARD");
 
-      VH_Bar(135, 90, 10, 10, 0);
-      if (ck_gameState.ep.ck5.securityCard)
-        VH_DrawTile8(136, 91, 40);
-      break;
+		VH_Bar(135, 90, 10, 10, 0);
+		if (ck_gameState.ep.ck5.securityCard)
+			VH_DrawTile8(136, 91, 40);
+		break;
 
-    case EP_CK6:
-      US_SetPrintX(80);
-      US_SetPrintY(96);
-      US_Print("ITEMS");
-      VH_Bar(127, 95, 26, 10, 0);
+	case EP_CK6:
+		US_SetPrintX(80);
+		US_SetPrintY(96);
+		US_Print("ITEMS");
+		VH_Bar(127, 95, 26, 10, 0);
 
-      if (ck_gameState.ep.ck6.sandwich == 1)
-        VH_DrawTile8(128, 96, 2);
-      else
-        VH_DrawTile8(128, 96, 1);
+		if (ck_gameState.ep.ck6.sandwich == 1)
+			VH_DrawTile8(128, 96, 2);
+		else
+			VH_DrawTile8(128, 96, 1);
 
-      if (ck_gameState.ep.ck6.rope == 1)
-        VH_DrawTile8(136, 96, 4);
-      else
-        VH_DrawTile8(136, 96, 3);
+		if (ck_gameState.ep.ck6.rope == 1)
+			VH_DrawTile8(136, 96, 4);
+		else
+			VH_DrawTile8(136, 96, 3);
 
-      if (ck_gameState.ep.ck6.passcard == 1)
-        VH_DrawTile8(144, 96, 6);
-      else
-        VH_DrawTile8(144, 96, 5);
-  }
+		if (ck_gameState.ep.ck6.passcard == 1)
+			VH_DrawTile8(144, 96, 6);
+		else
+			VH_DrawTile8(144, 96, 5);
+	}
 
 	// Difficulty
 	US_SetPrintY(85);
@@ -1376,7 +1455,7 @@ void CK_DrawStatusWindow(void)
 	for (i = 0; i < 4; i++)
 	{
 		if (ck_gameState.keyGems[i])
-			VH_DrawTile8(120+i*8, 112, 36+i);
+			VH_DrawTile8(120 + i * 8, 112, 36 + i);
 	}
 
 	// AMMO
@@ -1396,48 +1475,48 @@ void CK_DrawStatusWindow(void)
 	// Lifeups
 	US_SetPrintX(176);
 	US_SetPrintY(128);
-  switch (ck_currentEpisode->ep)
-  {
-    case EP_CK4:
-      US_Print("DROPS");
-      break;
-    case EP_CK5:
-      US_Print("VITALIN");
-      break;
-    case EP_CK6:
-      US_Print("VIVAS");
-      break;
-  }
+	switch (ck_currentEpisode->ep)
+	{
+	case EP_CK4:
+		US_Print("DROPS");
+		break;
+	case EP_CK5:
+		US_Print("VITALIN");
+		break;
+	case EP_CK6:
+		US_Print("VIVAS");
+		break;
+	}
 	VH_Bar(224, 127, 16, 10, 0);
 	CK_DrawLongRight(224, 128, 2, 41, ck_gameState.numCentilife);
 
-  // Episode-dependent field
-  int addX = 0;
-  switch (ck_currentEpisode->ep)
-  {
+	// Episode-dependent field
+	int addX = 0;
+	switch (ck_currentEpisode->ep)
+	{
 
-    case EP_CK4:
+	case EP_CK4:
 
-      // Wetsuit
-      VH_Bar(79, 143, 66, 10, 15);
+		// Wetsuit
+		VH_Bar(79, 143, 66, 10, 15);
 
-      US_SetPrintY(144);
-      US_SetWindowX(80);
-      US_SetWindowW(64);
-      US_SetPrintColour(15);
-      US_CPrint(ck_gameState.ep.ck4.wetsuit ? "Wetsuit" : "???");
+		US_SetPrintY(144);
+		US_SetWindowX(80);
+		US_SetWindowW(64);
+		US_SetPrintColour(15);
+		US_CPrint(ck_gameState.ep.ck4.wetsuit ? "Wetsuit" : "???");
 
-      addX = 5;
+		addX = 5;
 
-    case EP_CK5:
-    case EP_CK6:
+	case EP_CK5:
+	case EP_CK6:
 
-      for (int y = 0; y < 2; y++)
-        for (int x = 0; x < 10; x++)
-          VH_DrawTile8(120 + 8 * (x + addX), 140 + 8 * y, 72 + y*10+x);
+		for (int y = 0; y < 2; y++)
+			for (int x = 0; x < 10; x++)
+				VH_DrawTile8(120 + 8 * (x + addX), 140 + 8 * y, 72 + y * 10 + x);
 
-      break;
-  }
+		break;
+	}
 
 	US_SetPrintColour(oldcolor);
 }
@@ -1445,15 +1524,15 @@ void CK_DrawStatusWindow(void)
 void CK_ScrollStatusWindow(void)
 {
 	int dest, height, source;
-  int dx, dy, sx, sy;
+	int dx, dy, sx, sy;
 
-  int scrX = VL_GetScrollX();
-  int scrY = VL_GetScrollY();
+	int scrX = VL_GetScrollX();
+	int scrY = VL_GetScrollY();
 
 	if (ck_statusWindowYPx > 152)
 	{
-    // In DOS keen, the bit of tilemap behind the status window would need to be
-    // redrawn after the top border of the status window scrolled on to the screen
+		// In DOS keen, the bit of tilemap behind the status window would need to be
+		// redrawn after the top border of the status window scrolled on to the screen
 #if 0
 		height = ck_statusWindowYPx - 152;
 		source = statusWindowOfs + panadjust + 8;
@@ -1461,13 +1540,15 @@ void CK_ScrollStatusWindow(void)
 		VW_ScreenToScreen(source, dest, 24, height);
 #endif
 
-    // MPic atop the statusbox
+		// MPic atop the statusbox
 		// VW_ClipDrawMPic((pansx + 136)/8, pansy - (16-height), STATUSTOPPICM);
 		height = 152;
-		sx = 64; sy = 16; // source = statusWindowOfs + panadjust + 0x408;
-    dx = 64; dy = ck_statusWindowYPx - height; // dest = bufferofs + panadjust + (height << 6) + 8;
+		sx = 64;
+		sy = 16; // source = statusWindowOfs + panadjust + 0x408;
+		dx = 64;
+		dy = ck_statusWindowYPx - height; // dest = bufferofs + panadjust + (height << 6) + 8;
 
-    VH_DrawMaskedBitmap(136 + scrX % 16, 16-dy + scrY % 16, MPIC_STATUSRIGHT);
+		VH_DrawMaskedBitmap(136 + scrX % 16, 16 - dy + scrY % 16, MPIC_STATUSRIGHT);
 	}
 	else
 	{
@@ -1476,18 +1557,17 @@ void CK_ScrollStatusWindow(void)
 
 		height = ck_statusWindowYPx;
 
-    dx = 64;
-    dy = 0;
-    sx = 64;
-    sy = 16 + STATUS_H - height;
-
+		dx = 64;
+		dy = 0;
+		sx = 64;
+		sy = 16 + STATUS_H - height;
 	}
 
 	if (height > 0)
-  {
+	{
 		//VW_ScreenToScreen(source, dest, 24, height);
-    VL_SurfaceToScreen(ck_statusSurface, dx + scrX % 16, dy + scrY % 16, sx, sy, STATUS_W, height);
-  }
+		VL_SurfaceToScreen(ck_statusSurface, dx + scrX % 16, dy + scrY % 16, sx, sy, STATUS_W, height);
+	}
 
 	// Draw the tile map underneath the scrolling status box
 #if 0
@@ -1525,9 +1605,9 @@ void CK_ScrollStatusWindow(void)
 
 	if (ck_statusWindowYPx >= 72)
 		//VW_ClipDrawMPic((pansx + 40)/8, pansy + ck_statusWindowYPx - 168, STATUSLEFTPICM);
-    VH_DrawMaskedBitmap(40 + scrX % 16, ck_statusWindowYPx - 168 + scrY % 16, MPIC_STATUSLEFT);
+		VH_DrawMaskedBitmap(40 + scrX % 16, ck_statusWindowYPx - 168 + scrY % 16, MPIC_STATUSLEFT);
 
-  VL_Present();//VW_UpdateScreen();
+	VL_Present(); //VW_UpdateScreen();
 }
 
 extern void RFL_SetupOnscreenAnimList();
@@ -1546,9 +1626,9 @@ void CK_ShowStatusWindow(void)
 	if (IN_GetKeyState(IN_SC_A) && IN_GetKeyState(IN_SC_Two))
 	{
 		US_CenterWindow(20, 2);
-		US_SetPrintY(US_GetPrintY()+2);
+		US_SetPrintY(US_GetPrintY() + 2);
 		US_Print("Debug keys active");
-    VL_Present(); //VW_UpdateScreen();
+		VL_Present(); //VW_UpdateScreen();
 		IN_WaitButton();
 		ck_debugActive = true;
 	}
@@ -1556,7 +1636,7 @@ void CK_ShowStatusWindow(void)
 	RF_Refresh();
 
 	// Clear out all animating tiles
-  RFL_SetupOnscreenAnimList();
+	RFL_SetupOnscreenAnimList();
 
 	// Draw the status window to scratch area in the buffer
 #if 0
@@ -1567,9 +1647,9 @@ void CK_ShowStatusWindow(void)
 	VW_ScreenToScreen(displayofs, bufferofs, 44, 168);
 #endif
 
-  // Omnispeak: make a surface and set it as the screen, temporarily,
-  // in order to use the VH_ functions for drawing
-  void *screen = vl_emuegavgaadapter.screen;
+	// Omnispeak: make a surface and set it as the screen, temporarily,
+	// in order to use the VH_ functions for drawing
+	void *screen = vl_emuegavgaadapter.screen;
 	vl_emuegavgaadapter.screen = ck_statusSurface;
 	CK_DrawStatusWindow();
 	vl_emuegavgaadapter.screen = screen;
@@ -1587,8 +1667,7 @@ void CK_ShowStatusWindow(void)
 		if (ck_statusWindowYPx == 168)
 			break;
 
-
-		if ((ck_statusWindowYPx += SD_GetSpriteSync()*8) <= 168)
+		if ((ck_statusWindowYPx += SD_GetSpriteSync() * 8) <= 168)
 			continue;
 
 		ck_statusWindowYPx = 168;
@@ -1598,8 +1677,7 @@ void CK_ShowStatusWindow(void)
 	RF_Refresh();
 	RF_SetDrawFunc(NULL);
 	IN_ClearKeysDown();
-	IN_WaitButton();//IN_Ack();
-
+	IN_WaitButton(); //IN_Ack();
 
 	// Scroll the window up
 	SD_PlaySound(SOUND_STATUSUP);
@@ -1613,8 +1691,7 @@ void CK_ShowStatusWindow(void)
 		if (ck_statusWindowYPx == 0)
 			break;
 
-
-		if ((ck_statusWindowYPx -= SD_GetSpriteSync()*8) >= 0)
+		if ((ck_statusWindowYPx -= SD_GetSpriteSync() * 8) >= 0)
 			continue;
 
 		ck_statusWindowYPx = 0;
@@ -1626,9 +1703,7 @@ void CK_ShowStatusWindow(void)
 	ck_scoreBoxObj->posX = 0;
 }
 
-
 // ===========================================================================
-
 
 extern int rf_scrollXUnit;
 extern int rf_scrollYUnit;
@@ -1683,7 +1758,7 @@ void CK_CentreCamera(CK_object *obj)
  * Move the camera that follows keen on the world map
  */
 
-void CK_MapCamera( CK_object *keen )
+void CK_MapCamera(CK_object *keen)
 {
 	int16_t scr_y, scr_x;
 
@@ -1691,36 +1766,36 @@ void CK_MapCamera( CK_object *keen )
 		return;
 
 	// Scroll Left, Right, or nowhere
-	if ( keen->clipRects.unitX1 < rf_scrollXUnit + RF_PixelToUnit(144) )
+	if (keen->clipRects.unitX1 < rf_scrollXUnit + RF_PixelToUnit(144))
 		scr_x = keen->clipRects.unitX1 - (rf_scrollXUnit + RF_PixelToUnit(144));
-	else if ( keen->clipRects.unitX2 > rf_scrollXUnit + RF_PixelToUnit(192) )
+	else if (keen->clipRects.unitX2 > rf_scrollXUnit + RF_PixelToUnit(192))
 		scr_x = keen->clipRects.unitX2 + 16 - (rf_scrollXUnit + RF_PixelToUnit(192));
 	else
 		scr_x = 0;
 
 	// Scroll Up, Down, or nowhere
-	if ( keen->clipRects.unitY1 < rf_scrollYUnit + RF_PixelToUnit(80) )
+	if (keen->clipRects.unitY1 < rf_scrollYUnit + RF_PixelToUnit(80))
 		scr_y = keen->clipRects.unitY1 - (rf_scrollYUnit + RF_PixelToUnit(80));
-	else if ( keen->clipRects.unitY2 > rf_scrollYUnit + RF_PixelToUnit(112) )
+	else if (keen->clipRects.unitY2 > rf_scrollYUnit + RF_PixelToUnit(112))
 		scr_y = keen->clipRects.unitY2 - (rf_scrollYUnit + RF_PixelToUnit(112));
 	else
 		scr_y = 0;
 
 	// Limit scrolling to 256 map units (1 tile)
 	// And update the active boundaries of the map
-	if ( scr_x != 0 || scr_y != 0 )
+	if (scr_x != 0 || scr_y != 0)
 	{
-		if ( scr_x >= 256 )
+		if (scr_x >= 256)
 			scr_x = 255;
-		else if ( scr_x <= -256 )
+		else if (scr_x <= -256)
 			scr_x = -255;
 
-		if ( scr_y >= 256 )
+		if (scr_y >= 256)
 			scr_y = 255;
-		else if ( scr_y <= -256 )
+		else if (scr_y <= -256)
 			scr_y = -255;
 
-		RF_SmoothScroll( scr_x, scr_y );
+		RF_SmoothScroll(scr_x, scr_y);
 
 		/*
 		 * No ScrollX1_T in omnispeak; it's computed whenever it's needed
@@ -1741,7 +1816,7 @@ void CK_MapCamera( CK_object *keen )
 void CK_NormalCamera(CK_object *obj)
 {
 
-	int16_t deltaX = 0, deltaY = 0;	// in Units
+	int16_t deltaX = 0, deltaY = 0; // in Units
 
 	//TODO: some unknown var must be 0
 	//This var is a "ScrollDisabled flag." If keen dies, it's set so he
@@ -1766,14 +1841,12 @@ void CK_NormalCamera(CK_object *obj)
 		return;
 	}
 
-
 	// Keep keen's x-coord between 144-192 pixels
 	if (obj->posX < (rf_scrollXUnit + RF_PixelToUnit(144)))
 		deltaX = obj->posX - (rf_scrollXUnit + RF_PixelToUnit(144));
 
 	if (obj->posX > (rf_scrollXUnit + RF_PixelToUnit(192)))
 		deltaX = obj->posX - (rf_scrollXUnit + RF_PixelToUnit(192));
-
 
 	// Keen should be able to look up and down.
 	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookUp2"))
@@ -1792,7 +1865,6 @@ void CK_NormalCamera(CK_object *obj)
 		}
 		screenYpx += pxToMove;
 		deltaY = RF_PixelToUnit(-pxToMove);
-
 	}
 	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookDown3"))
 	{
@@ -1819,15 +1891,14 @@ void CK_NormalCamera(CK_object *obj)
 		int16_t dx, ax;
 
 		ax = ck6_smashScreenOfs[ck6_smashScreenDistance] + obj->clipRects.unitY2;
-		deltaY += (dx - ax);  // Undefined behaviour here
-
+		deltaY += (dx - ax); // Undefined behaviour here
 	}
 	else if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_keenHang1"))
 	{
 		if (obj->currentAction != CK_GetActionByName("CK_ACT_keenPull1") &&
-				obj->currentAction != CK_GetActionByName("CK_ACT_keenPull2") &&
-				obj->currentAction != CK_GetActionByName("CK_ACT_keenPull3") &&
-				obj->currentAction != CK_GetActionByName("CK_ACT_keenPull4"))
+			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull2") &&
+			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull3") &&
+			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull4"))
 		{
 			deltaY += obj->deltaPosY;
 
@@ -1873,7 +1944,6 @@ void CK_NormalCamera(CK_object *obj)
 #endif
 			}
 		}
-
 	}
 	else
 	{
@@ -1881,11 +1951,9 @@ void CK_NormalCamera(CK_object *obj)
 		screenYpx = 140;
 	}
 
-
 	// Scroll the screen to keep keen between 33 and 167 px.
 	if (obj->clipRects.unitY2 < (rf_scrollYUnit + deltaY + RF_PixelToUnit(32)))
 		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + RF_PixelToUnit(32));
-
 
 	if (obj->clipRects.unitY2 > (rf_scrollYUnit + deltaY + RF_PixelToUnit(168)))
 		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + RF_PixelToUnit(168));
@@ -1893,13 +1961,17 @@ void CK_NormalCamera(CK_object *obj)
 	//Don't scroll more than one tile's worth per frame.
 	if (deltaX || deltaY)
 	{
-		if (deltaX > 255) deltaX = 255;
-		else if (deltaX < -255) deltaX = -255;
+		if (deltaX > 255)
+			deltaX = 255;
+		else if (deltaX < -255)
+			deltaX = -255;
 
-		if (deltaY > 255) deltaY = 255;
+		if (deltaY > 255)
+			deltaY = 255;
 		else
 
-			if (deltaY < -255) deltaY = -255;
+			if (deltaY < -255)
+			deltaY = -255;
 
 		// Do the scroll!
 		RF_SmoothScroll(deltaX, deltaY);
@@ -1911,8 +1983,6 @@ void CK_NormalCamera(CK_object *obj)
 		ck_activeY1Tile = max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + ck_currentEpisode->activeLimit, 0);
 	}
 }
-
-
 
 // Play a level.
 
@@ -1953,10 +2023,10 @@ int CK_PlayLoop()
 		{
 
 			if (!currentObj->active &&
-					(currentObj->clipRects.tileX2 >= RF_UnitToTile(rf_scrollXUnit) - 1) &&
-					(currentObj->clipRects.tileX1 <= RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + 1) &&
-					(currentObj->clipRects.tileY1 <= RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + 1) &&
-					(currentObj->clipRects.tileY2 >= RF_UnitToTile(rf_scrollYUnit) - 1))
+				(currentObj->clipRects.tileX2 >= RF_UnitToTile(rf_scrollXUnit) - 1) &&
+				(currentObj->clipRects.tileX1 <= RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + 1) &&
+				(currentObj->clipRects.tileY1 <= RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + 1) &&
+				(currentObj->clipRects.tileY2 >= RF_UnitToTile(rf_scrollYUnit) - 1))
 			{
 				currentObj->active = OBJ_ACTIVE;
 				currentObj->visible = true;
@@ -1964,9 +2034,9 @@ int CK_PlayLoop()
 			if (currentObj->active)
 			{
 				if ((currentObj->clipRects.tileX2 < ck_activeX0Tile) ||
-				    (currentObj->clipRects.tileX1 > ck_activeX1Tile) ||
-				    (currentObj->clipRects.tileY1 > ck_activeY1Tile) ||
-				    (currentObj->clipRects.tileY2 < ck_activeY0Tile))
+					(currentObj->clipRects.tileX1 > ck_activeX1Tile) ||
+					(currentObj->clipRects.tileY1 > ck_activeY1Tile) ||
+					(currentObj->clipRects.tileY2 < ck_activeY0Tile))
 				{
 					//TODO: Add an Episode callback. Ep 4 requires
 					// type 33 to remove int33 (Andy's decomp)
@@ -1994,8 +2064,8 @@ int CK_PlayLoop()
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 		if (ck_dumperFile)
 		{
-			bool CK_SaveObject(FILE *fp, CK_object *o);
-			bool CK_SaveGameState(FILE* fp, CK_GameState *state);
+			bool CK_SaveObject(FILE * fp, CK_object * o);
+			bool CK_SaveGameState(FILE * fp, CK_GameState * state);
 
 			uint32_t timecountToDump = SD_GetTimeCount();
 			CK_Cross_fwriteInt32LE(&timecountToDump, 1, ck_dumperFile);
@@ -2012,17 +2082,17 @@ int CK_PlayLoop()
 		{
 			// Some strange Keen4 stuff here. Ignoring for now.
 
-
-			if (!currentObj->active) continue;
+			if (!currentObj->active)
+				continue;
 			for (CK_object *collideObj = currentObj->next; collideObj; collideObj = collideObj->next)
 			{
 				if (!collideObj->active)
 					continue;
 
-				if (	(currentObj->clipRects.unitX2 > collideObj->clipRects.unitX1) &&
-						(currentObj->clipRects.unitX1 < collideObj->clipRects.unitX2) &&
-						(currentObj->clipRects.unitY1 < collideObj->clipRects.unitY2) &&
-						(currentObj->clipRects.unitY2 > collideObj->clipRects.unitY1) )
+				if ((currentObj->clipRects.unitX2 > collideObj->clipRects.unitX1) &&
+					(currentObj->clipRects.unitX1 < collideObj->clipRects.unitX2) &&
+					(currentObj->clipRects.unitY1 < collideObj->clipRects.unitY2) &&
+					(currentObj->clipRects.unitY2 > collideObj->clipRects.unitY1))
 				{
 					if (currentObj->currentAction->collide)
 						currentObj->currentAction->collide(currentObj, collideObj);
@@ -2040,9 +2110,6 @@ int CK_PlayLoop()
 			ck_currentEpisode->mapMiscFlagsCheck(ck_keenObj);
 		else
 			CK_KeenCheckSpecialTileInfo(ck_keenObj);
-
-
-
 
 		for (CK_object *currentObj = ck_keenObj; currentObj; currentObj = currentObj->next)
 		{
@@ -2064,7 +2131,7 @@ int CK_PlayLoop()
 				}
 				if (currentObj->visible && currentObj->currentAction->draw)
 				{
-					currentObj->visible = false;	//We don't need to render it twice!
+					currentObj->visible = false; //We don't need to render it twice!
 					currentObj->currentAction->draw(currentObj);
 				}
 			}
@@ -2085,8 +2152,6 @@ int CK_PlayLoop()
 		// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
 		VL_SetScrollCoords(RF_UnitToPixel(rf_scrollXUnit & 0xef), RF_UnitToPixel(rf_scrollYUnit & 0xff));
 		RF_Refresh();
-
-
 
 		if (ck_invincibilityTimer)
 		{

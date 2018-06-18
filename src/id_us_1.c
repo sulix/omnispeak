@@ -17,22 +17,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "id_vh.h"
-#include "id_vl.h"
 #include "id_ca.h"
 #include "id_us.h"
+#include "id_vh.h"
+#include "id_vl.h"
 #include "ck_cross.h"
 #include "ck_def.h"
-#include "ck_play.h"
 #include "ck_ep.h"
+#include "ck_play.h"
 
 #include <ctype.h>
-#include <stdio.h>
-#include <string.h>
 #include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <time.h>
 
@@ -44,7 +43,8 @@ int US_CheckParm(const char *parm, const char **strings)
 	// Strip any non-alphabetic characters from 'parm'
 	while (*parm)
 	{
-		if (isalpha(*(parm))) break;
+		if (isalpha(*(parm)))
+			break;
 		parm++;
 	}
 
@@ -52,12 +52,13 @@ int US_CheckParm(const char *parm, const char **strings)
 	for (int i = 0; strings[i]; ++i)
 	{
 
-		if (strings[i][0] == '\0') continue;
-		if (!CK_Cross_strcasecmp(parm, strings[i])) return i;
+		if (strings[i][0] == '\0')
+			continue;
+		if (!CK_Cross_strcasecmp(parm, strings[i]))
+			return i;
 	}
 	return -1;
 }
-
 
 // Coords in pixels
 static int16_t us_windowX;
@@ -115,11 +116,10 @@ void US_Print(const char *str)
 		VH_MeasurePropString(strbuf, &w, &h, us_printFont);
 		VH_DrawPropString(strbuf, us_printX, us_printY, us_printFont, us_printColour);
 
-
 		if (ch)
 		{
-      // strbuf[sboff] = ch
-      // str++;
+			// strbuf[sboff] = ch
+			// str++;
 			us_printX = us_windowX;
 			us_printY += h;
 		}
@@ -178,15 +178,15 @@ void US_CPrint(const char *str)
 {
 	char lastChar;
 	char *strInLine, *strLineStart;
-  char buf[256];
+	char buf[256];
 
-  if (strlen(str) > sizeof(buf)/sizeof(char))
-  {
-    Quit("US_CPrint() - String too long");
-  }
+	if (strlen(str) > sizeof(buf) / sizeof(char))
+	{
+		Quit("US_CPrint() - String too long");
+	}
 
-  strcpy(buf, str);
-  strLineStart = buf;
+	strcpy(buf, str);
+	strLineStart = buf;
 
 	while (*strLineStart)
 	{
@@ -273,20 +273,20 @@ void US_DrawWindow(int x, int y, int w, int h)
 
 	US_ClearWindow();
 
-	VH_DrawTile8M(borderX, borderY, 0); //Top Left Corner
-	VH_DrawTile8M(borderX, borderY + borderH, 6); //Bottom Left Corner
-	VH_DrawTile8M(borderX + borderW, borderY, 2); //Top Right Corner
+	VH_DrawTile8M(borderX, borderY, 0);			//Top Left Corner
+	VH_DrawTile8M(borderX, borderY + borderH, 6);		//Bottom Left Corner
+	VH_DrawTile8M(borderX + borderW, borderY, 2);		//Top Right Corner
 	VH_DrawTile8M(borderX + borderW, borderY + borderH, 8); //Bottom Right Corner
 	// Draw Horizontal sides
 	for (int i = borderX + 8; i <= borderX + borderW - 8; i += 8)
 	{
-		VH_DrawTile8M(i, borderY, 1); //Top row
+		VH_DrawTile8M(i, borderY, 1);		//Top row
 		VH_DrawTile8M(i, borderY + borderH, 7); //Bottom Row
 	}
 	//Draw Vertical sides
 	for (int i = borderY + 8; i <= borderY + borderH - 8; i += 8)
 	{
-		VH_DrawTile8M(borderX, i, 3); //Left col
+		VH_DrawTile8M(borderX, i, 3);		//Left col
 		VH_DrawTile8M(borderX + borderW, i, 5); //Right col
 	}
 }
@@ -332,7 +332,7 @@ static void USL_XORICursor(uint16_t x, uint16_t y, char *s, uint16_t cursor)
 {
 	//static	bool	status;		// VGA doesn't XOR...
 	static char cursorStr[2] = {(char)0x80, 0};
-	char	buf[128];
+	char buf[128];
 	uint16_t w, h;
 
 	strcpy(buf, s);
@@ -367,16 +367,16 @@ static void USL_XORICursor(uint16_t x, uint16_t y, char *s, uint16_t cursor)
 
 bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint16_t maxchars, uint16_t maxwidth)
 {
-	bool		redraw,
+	bool redraw,
 		cursorvis, cursormoved,
 		done, result;
-	IN_ScanCode	sc;
-	char	c,
+	IN_ScanCode sc;
+	char c,
 		s[128], olds[128];
 	uint16_t i,
-	         cursor,
-	         w, h,
-	         len/*, temp*/;
+		cursor,
+		w, h,
+		len /*, temp*/;
 	uint32_t lasttime;
 
 	if (def)
@@ -468,7 +468,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 			cursormoved = true;
 			break;
 
-		case 0x4c:	// Keypad 5
+		case 0x4c: // Keypad 5
 		case IN_SC_UpArrow:
 		case IN_SC_DownArrow:
 		case IN_SC_PgUp:
@@ -483,13 +483,8 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 			len = strlen(s);
 			VH_MeasurePropString(s, &w, &h, US_GetPrintFont());
 
-			if
-				(
-				 isprint(c)
-				 &&	(len < 128 - 1)
-				 &&	((!maxchars) || (len < maxchars))
-				 &&	((!maxwidth) || (w < maxwidth))
-				 )
+			if (
+				isprint(c) && (len < 128 - 1) && ((!maxchars) || (len < maxchars)) && ((!maxwidth) || (w < maxwidth)))
 			{
 				for (i = len + 1; i > cursor; i--)
 					s[i] = s[i - 1];
@@ -526,9 +521,9 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 
 			cursormoved = false;
 		}
-		if (SD_GetTimeCount()-lasttime > 35 /*TimeCount - lasttime > TickBase / 2*/)
+		if (SD_GetTimeCount() - lasttime > 35 /*TimeCount - lasttime > TickBase / 2*/)
 		{
-			lasttime = SD_GetTimeCount();//TimeCount;
+			lasttime = SD_GetTimeCount(); //TimeCount;
 
 			cursorvis ^= true;
 		}
@@ -563,27 +558,26 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
  * from a random index. This makes behaviour predictable during demos, and
  * ensures a uniform (enough) distribution.
  */
-uint8_t us_RandomTable[256] ={
-	0,   8, 109, 220, 222, 241, 149, 107,  75, 248, 254, 140,  16,  66,
-	74,  21, 211,  47,  80, 242, 154,  27, 205, 128, 161,  89,  77,  36,
-	95, 110,  85,  48, 212, 140, 211, 249,  22,  79, 200,  50,  28, 188,
-	52, 140, 202, 120,  68, 145,  62,  70, 184, 190,  91, 197, 152, 224,
-	149, 104,  25, 178, 252, 182, 202, 182, 141, 197,   4,  81, 181, 242,
-	145,  42,  39, 227, 156, 198, 225, 193, 219,  93, 122, 175, 249,   0,
-	175, 143,  70, 239,  46, 246, 163,  53, 163, 109, 168, 135,   2, 235,
-	25,  92,  20, 145, 138,  77,  69, 166,  78, 176, 173, 212, 166, 113,
-	94, 161,  41,  50, 239,  49, 111, 164,  70,  60,   2,  37, 171,  75,
-	136, 156,  11,  56,  42, 146, 138, 229,  73, 146,  77,  61,  98, 196,
-	135, 106,  63, 197, 195,  86,  96, 203, 113, 101, 170, 247, 181, 113,
-	80, 250, 108,   7, 255, 237, 129, 226,  79, 107, 112, 166, 103, 241,
-	24, 223, 239, 120, 198,  58,  60,  82, 128,   3, 184,  66, 143, 224,
-	145, 224,  81, 206, 163,  45,  63,  90, 168, 114,  59,  33, 159,  95,
-	28, 139, 123,  98, 125, 196,  15,  70, 194, 253,  54,  14, 109, 226,
-	71,  17, 161,  93, 186,  87, 244, 138,  20,  52, 123, 251,  26,  36,
-	17,  46,  52, 231, 232,  76,  31, 221,  84,  37, 216, 165, 212, 106,
-	197, 242,  98,  43,  39, 175, 254, 145, 190,  84, 118, 222, 187, 136,
-	120, 163, 236, 249
-};
+uint8_t us_RandomTable[256] = {
+	0, 8, 109, 220, 222, 241, 149, 107, 75, 248, 254, 140, 16, 66,
+	74, 21, 211, 47, 80, 242, 154, 27, 205, 128, 161, 89, 77, 36,
+	95, 110, 85, 48, 212, 140, 211, 249, 22, 79, 200, 50, 28, 188,
+	52, 140, 202, 120, 68, 145, 62, 70, 184, 190, 91, 197, 152, 224,
+	149, 104, 25, 178, 252, 182, 202, 182, 141, 197, 4, 81, 181, 242,
+	145, 42, 39, 227, 156, 198, 225, 193, 219, 93, 122, 175, 249, 0,
+	175, 143, 70, 239, 46, 246, 163, 53, 163, 109, 168, 135, 2, 235,
+	25, 92, 20, 145, 138, 77, 69, 166, 78, 176, 173, 212, 166, 113,
+	94, 161, 41, 50, 239, 49, 111, 164, 70, 60, 2, 37, 171, 75,
+	136, 156, 11, 56, 42, 146, 138, 229, 73, 146, 77, 61, 98, 196,
+	135, 106, 63, 197, 195, 86, 96, 203, 113, 101, 170, 247, 181, 113,
+	80, 250, 108, 7, 255, 237, 129, 226, 79, 107, 112, 166, 103, 241,
+	24, 223, 239, 120, 198, 58, 60, 82, 128, 3, 184, 66, 143, 224,
+	145, 224, 81, 206, 163, 45, 63, 90, 168, 114, 59, 33, 159, 95,
+	28, 139, 123, 98, 125, 196, 15, 70, 194, 253, 54, 14, 109, 226,
+	71, 17, 161, 93, 186, 87, 244, 138, 20, 52, 123, 251, 26, 36,
+	17, 46, 52, 231, 232, 76, 31, 221, 84, 37, 216, 165, 212, 106,
+	197, 242, 98, 43, 39, 175, 254, 145, 190, 84, 118, 222, 187, 136,
+	120, 163, 236, 249};
 
 static uint16_t us_randomIndex; // Was 16-bit, even if storing just a 8-bit val
 
@@ -608,7 +602,7 @@ int US_RndT()
 	us_randomIndex++;
 	us_randomIndex &= 0xFF;
 #ifdef CK_RAND_DEBUG
-	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL,"Returning random number %d, %d for:\n", us_randomIndex, us_RandomTable[us_randomIndex]);
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Returning random number %d, %d for:\n", us_randomIndex, us_RandomTable[us_randomIndex]);
 	CK_Cross_StackTrace();
 #endif
 	return us_RandomTable[us_randomIndex];
@@ -628,7 +622,6 @@ int US_GetRndI()
 	return us_randomIndex;
 }
 
-
 // Common
 
 /*
@@ -636,16 +629,15 @@ int US_GetRndI()
  * Startup routine for the 'User Manager'
  */
 
-static const char *us_parmStrings[] ={"TEDLEVEL", "NOWAIT", "\0", NULL};
+static const char *us_parmStrings[] = {"TEDLEVEL", "NOWAIT", "\0", NULL};
 
-bool us_noWait; // Debug mode enabled.
-bool us_tedLevel; // Launching a level from TED
+bool us_noWait;	// Debug mode enabled.
+bool us_tedLevel;      // Launching a level from TED
 int us_tedLevelNumber; // Number of level to launch from TED
 
 // We need to steal these from main().
 const char **us_argv;
 int us_argc;
-
 
 void US_LoadConfig(void)
 {
@@ -728,7 +720,6 @@ void US_LoadConfig(void)
 	}
 	SD_Default(configFileLoaded && (hadAdlib == AdLibPresent), sd, sm);
 	IN_Default(configFileLoaded, inputDevice);
-
 }
 
 void US_SaveConfig(void)
@@ -801,7 +792,7 @@ US_Savefile us_savefiles[US_MAX_NUM_OF_SAVED_GAMES];
 /* as well as a similar internal buffer used by CAL_AdjustExtension. */
 const char *US_GetSavefileName(int index)
 {
-	us_savefile[7] = (char)(index + '0'); 		/* 'x' in "SAVEGAMx.CK5" */
+	us_savefile[7] = (char)(index + '0'); /* 'x' in "SAVEGAMx.CK5" */
 	return CAL_AdjustExtension(us_savefile);
 }
 
@@ -815,42 +806,40 @@ void US_GetSavefiles(void)
 
 	for (i = 0; i < US_MAX_NUM_OF_SAVED_GAMES; i++, psfe++)
 	{
-		filename = US_GetSavefileName( i );
+		filename = US_GetSavefileName(i);
 		valid = 0;
 		// handle = open( filename, O_RDONLY | O_BINARY );
-		handle = fopen( filename, "rb");
+		handle = fopen(filename, "rb");
 
-		if( handle )
+		if (handle)
 		{
 			// Omnispeak - reading US_Savefile fields one-by-one
 			// for cross-platform support
 			uint8_t padding; // One byte of struct padding
 			if ((fread(psfe->id, sizeof(psfe->id), 1, handle) == 1) &&
-			    (CK_Cross_freadInt16LE(&psfe->printXOffset, 1, handle) == 1) &&
-			    (CK_Cross_freadBoolFrom16LE(&psfe->used, 1, handle) == 1) &&
-			    (fread(psfe->name, sizeof(psfe->name), 1, handle) == 1) &&
-			    (fread(&padding, sizeof(padding), 1, handle) == 1)
-			)
-			//if( fread( psfe, sizeof( US_Savefile ), 1, handle) == 1 )
-				if( strcmp( psfe->id, ck_currentEpisode->ext ) == 0 )	/* AZ:46AA */
-					if( psfe->printXOffset == ck_currentEpisode->printXOffset )
+				(CK_Cross_freadInt16LE(&psfe->printXOffset, 1, handle) == 1) &&
+				(CK_Cross_freadBoolFrom16LE(&psfe->used, 1, handle) == 1) &&
+				(fread(psfe->name, sizeof(psfe->name), 1, handle) == 1) &&
+				(fread(&padding, sizeof(padding), 1, handle) == 1))
+				//if( fread( psfe, sizeof( US_Savefile ), 1, handle) == 1 )
+				if (strcmp(psfe->id, ck_currentEpisode->ext) == 0) /* AZ:46AA */
+					if (psfe->printXOffset == ck_currentEpisode->printXOffset)
 						valid = 1;
 
-			fclose( handle );
+			fclose(handle);
 		}
 
-		if( !valid )
+		if (!valid)
 		{
-			strcpy( psfe->id, ck_currentEpisode->ext );		/* AZ:46AE */
+			strcpy(psfe->id, ck_currentEpisode->ext); /* AZ:46AE */
 			psfe->used = false;
-			strcpy( psfe->name, "Empty" );		/* AZ:46B2 */
+			strcpy(psfe->name, "Empty"); /* AZ:46B2 */
 		}
 		else
 		{
 			psfe->used = true;
 		}
 	}
-
 }
 
 static bool us_started = false;
@@ -880,7 +869,6 @@ void US_Startup(void)
 		}
 	}
 	us_started = true;
-
 }
 
 void US_Setup(void)

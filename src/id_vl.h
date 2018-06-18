@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef ID_VL_H
 #define ID_VL_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 /* Util Functions */
 
@@ -50,27 +50,27 @@ void VL_FadeFromBlack(void);
 //void VL_FadeToWhite(void); // Unused in vanilla Keen 5
 //void VL_FadeFromWhite(void); // Unused in vanilla Keen 5
 void VL_Clip(int *src_w, int *src_h, int *dst_x, int *dst_y, int dst_w, int dst_h);
-void VL_UnmaskedToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h);
-void VL_MaskedToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h);
-void VL_MaskedBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h);
-void VL_MaskedBlitClipToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh);
-void VL_1bppToRGBA(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
-void VL_1bppXorWithRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
-void VL_1bppBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
-void VL_1bppInvBlitToRGB(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_UnmaskedToRGB(void *src, void *dest, int x, int y, int pitch, int w, int h);
+void VL_MaskedToRGBA(void *src, void *dest, int x, int y, int pitch, int w, int h);
+void VL_MaskedBlitToRGB(void *src, void *dest, int x, int y, int pitch, int w, int h);
+void VL_MaskedBlitClipToRGB(void *src, void *dest, int x, int y, int pitch, int w, int h, int dw, int dh);
+void VL_1bppToRGBA(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_1bppXorWithRGB(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_1bppBlitToRGB(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_1bppInvBlitToRGB(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour);
 //TODO: 1bppInvBlitClipToRGB
 
-void VL_UnmaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h);
-void VL_UnmaskedToPAL8_PM(void *src,void *dest, int x, int y, int pitch, int w, int h, int mapmask);
-void VL_MaskedToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h);
-void VL_MaskedBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h);
-void VL_MaskedBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh);
-void VL_1bppToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
-void VL_1bppToPAL8_PM(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour, int mapmask);
-void VL_1bppXorWithPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
-void VL_1bppBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
-void VL_1bppInvBlitToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int colour);
-void VL_1bppInvBlitClipToPAL8(void *src,void *dest, int x, int y, int pitch, int w, int h, int dw, int dh, int colour);
+void VL_UnmaskedToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h);
+void VL_UnmaskedToPAL8_PM(void *src, void *dest, int x, int y, int pitch, int w, int h, int mapmask);
+void VL_MaskedToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h);
+void VL_MaskedBlitToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h);
+void VL_MaskedBlitClipToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int dw, int dh);
+void VL_1bppToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_1bppToPAL8_PM(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour, int mapmask);
+void VL_1bppXorWithPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_1bppBlitToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_1bppInvBlitToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int colour);
+void VL_1bppInvBlitClipToPAL8(void *src, void *dest, int x, int y, int pitch, int w, int h, int dw, int dh, int colour);
 
 int VL_MemUsed();
 int VL_NumSurfaces();
@@ -86,7 +86,7 @@ typedef enum VL_SurfaceUsage
 typedef struct VL_Backend
 {
 	void (*setVideoMode)(int mode);
-	void* (*createSurface)(int w, int h, VL_SurfaceUsage usage);
+	void *(*createSurface)(int w, int h, VL_SurfaceUsage usage);
 	void (*destroySurface)(void *surface);
 	long (*getSurfaceMemUse)(void *surface);
 	void (*getSurfaceDimensions)(void *surface, int *w, int *h);

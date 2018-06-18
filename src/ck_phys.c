@@ -18,26 +18,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #include "ck_phys.h"
-#include "ck_play.h"
-#include "ck_def.h"
-#include "id_vh.h"
 #include "id_ca.h"
 #include "id_rf.h"
 #include "id_us.h"
+#include "id_vh.h"
+#include "ck_def.h"
+#include "ck_play.h"
 
 #include <stdio.h>
 #include <stdlib.h> /* For abs() */
 
-static int16_t ck_physSlopeHeight[8][16] ={
-	{ 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100 },
-	{ 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000 },
-	{ 0x000,  0x08, 0x010, 0x018, 0x020, 0x028, 0x030, 0x038, 0x040, 0x048, 0x050, 0x058, 0x060, 0x068, 0x070, 0x078 },
-	{ 0x080, 0x088, 0x090, 0x098, 0x0a0, 0x0a8, 0x0b0, 0x0b8, 0x0c0, 0x0c8, 0x0d0, 0x0d8, 0x0e0, 0x0e8, 0x0f0, 0x0f8 },
-	{ 0x000, 0x010, 0x020, 0x030, 0x040, 0x050, 0x060, 0x070, 0x080, 0x090, 0x0a0, 0x0b0, 0x0c0, 0x0d0, 0x0e0, 0x0f0 },
-	{ 0x078, 0x070, 0x068, 0x060, 0x058, 0x050, 0x048, 0x040, 0x038, 0x030, 0x028, 0x020, 0x018, 0x010, 0x008, 0x000 },
-	{ 0x0F8, 0x0F0, 0x0E8, 0x0E0, 0x0D8, 0x0D0, 0x0C8, 0x0C0, 0x0B8, 0x0B0, 0x0A8, 0x0A0, 0x098, 0x090, 0x088, 0x080 },
-	{ 0x0F0, 0x0E0, 0x0D0, 0x0C0, 0x0B0, 0x0A0, 0x090, 0x080, 0x070, 0x060, 0x050, 0x040, 0x030, 0x020, 0x010, 0x000 }
-};
+static int16_t ck_physSlopeHeight[8][16] = {
+	{0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100},
+	{0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000},
+	{0x000, 0x08, 0x010, 0x018, 0x020, 0x028, 0x030, 0x038, 0x040, 0x048, 0x050, 0x058, 0x060, 0x068, 0x070, 0x078},
+	{0x080, 0x088, 0x090, 0x098, 0x0a0, 0x0a8, 0x0b0, 0x0b8, 0x0c0, 0x0c8, 0x0d0, 0x0d8, 0x0e0, 0x0e8, 0x0f0, 0x0f8},
+	{0x000, 0x010, 0x020, 0x030, 0x040, 0x050, 0x060, 0x070, 0x080, 0x090, 0x0a0, 0x0b0, 0x0c0, 0x0d0, 0x0e0, 0x0f0},
+	{0x078, 0x070, 0x068, 0x060, 0x058, 0x050, 0x048, 0x040, 0x038, 0x030, 0x028, 0x020, 0x018, 0x010, 0x008, 0x000},
+	{0x0F8, 0x0F0, 0x0E8, 0x0E0, 0x0D8, 0x0D0, 0x0C8, 0x0C0, 0x0B8, 0x0B0, 0x0A8, 0x0A0, 0x098, 0x090, 0x088, 0x080},
+	{0x0F0, 0x0E0, 0x0D0, 0x0C0, 0x0B0, 0x0A0, 0x090, 0x080, 0x070, 0x060, 0x050, 0x040, 0x030, 0x020, 0x010, 0x000}};
 
 CK_objPhysData ck_oldRects;
 CK_objPhysDataDelta ck_deltaRects;
@@ -170,7 +169,6 @@ void CK_PhysKeenClipDown(CK_object *obj)
 		}
 	}
 
-
 	// If we're about to land on something flat:
 	// TODO: This doesn't make any sense. Why would we make sure we're not
 	// on a slope before doing slope calculations. Something fishy, methinks.
@@ -225,7 +223,6 @@ void CK_PhysKeenClipUp(CK_object *obj)
 			CK_PhysUpdateY(obj, deltaY);
 		}
 	}
-
 }
 
 bool CK_NotStuckInWall(CK_object *obj)
@@ -272,12 +269,7 @@ void CK_PhysClipVert(CK_object *obj)
 {
 	int16_t midTileXOffset = RF_UnitToPixel(obj->clipRects.unitXmid) & 0x0F;
 
-
-
-
-	int16_t vertDisplace = -abs(ck_deltaRects.unitXmid) - ck_deltaRects.unitY2 - 16;	// Move above slope first.
-
-
+	int16_t vertDisplace = -abs(ck_deltaRects.unitXmid) - ck_deltaRects.unitY2 - 16; // Move above slope first.
 
 	for (uint16_t y = ck_oldRects.tileY2 - 1; obj->clipRects.tileY2 >= y; ++y)
 	{
@@ -285,7 +277,7 @@ void CK_PhysClipVert(CK_object *obj)
 		if (TI_ForeTop(tile))
 		{
 
-			int16_t slopeAmt = ck_physSlopeHeight[TI_ForeTop(tile)&0x07][midTileXOffset];
+			int16_t slopeAmt = ck_physSlopeHeight[TI_ForeTop(tile) & 0x07][midTileXOffset];
 
 			int16_t objYOffset = obj->clipRects.unitY2 - (y * 256);
 
@@ -310,7 +302,7 @@ void CK_PhysClipVert(CK_object *obj)
 
 			int16_t objYOffset = obj->clipRects.unitY1 - RF_TileToUnit(y + 1);
 
-			int16_t slopeAmt = -ck_physSlopeHeight[TI_ForeBottom(tile)&0x07][midTileXOffset];
+			int16_t slopeAmt = -ck_physSlopeHeight[TI_ForeBottom(tile) & 0x07][midTileXOffset];
 
 			if ((slopeAmt - objYOffset > 0) && ((slopeAmt - objYOffset) <= vertDisplace) && ((ck_nextY + slopeAmt - objYOffset) < 256) && ((ck_nextY + slopeAmt - objYOffset) > -256))
 			{
@@ -327,15 +319,14 @@ void CK_PhysClipHorz(CK_object *obj)
 	uint16_t tileY2 = obj->clipRects.tileY2;
 
 	//TODO: Increment on topFlags, bottomFlags.
-	if (obj->topTI > 1)	//If we're on a slope
+	if (obj->topTI > 1) //If we're on a slope
 	{
-		tileY2--;	//Collide horizontally
+		tileY2--; //Collide horizontally
 	}
 	if (obj->bottomTI > 1)
 	{
 		tileY1++;
 	}
-
 
 	//Check if our left side is intersecting with a wall.
 	for (uint16_t y = tileY1; y <= tileY2; ++y)
@@ -361,7 +352,6 @@ void CK_PhysClipHorz(CK_object *obj)
 			// Push us left until we're no-longer intersecting.
 			CK_PhysUpdateX(obj, RF_TileToUnit(obj->clipRects.tileX2) - 1 - obj->clipRects.unitX2);
 			return;
-
 		}
 	}
 }
@@ -417,7 +407,6 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 	obj->posX += ck_nextX;
 	obj->posY += ck_nextY;
 
-
 	obj->visible = true;
 
 	if (obj->gfxChunk)
@@ -467,7 +456,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 					int16_t tile = CA_TileAtPos(obj->clipRects.tileXmid, y, 1);
 					if (TI_ForeTop(tile))
 					{
-						int16_t slopeAmt = ck_physSlopeHeight[TI_ForeTop(tile)&0x07][midTileXOffset];
+						int16_t slopeAmt = ck_physSlopeHeight[TI_ForeTop(tile) & 0x07][midTileXOffset];
 						int16_t objYOffset = obj->clipRects.unitY2 - (y * 256);
 						int16_t dy = (slopeAmt - objYOffset) - 1;
 
@@ -491,9 +480,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 		obj->deltaPosX += obj->posX - oldUnitX;
 		obj->deltaPosY += obj->posY - oldUnitY;
 	}
-
 }
-
 
 //TODO: Finish Implementing!!!!
 
@@ -516,62 +503,61 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 	obj->visible = true;
 
 	//TODO: Verify object class (need callback to episode struct)
-  int16_t delX, delY;
+	int16_t delX, delY;
 
-  switch (ck_currentEpisode->ep)
-  {
-    case EP_CK4:
-      if (obj->type == CT4_Schoolfish)
-      {
-        delX = 0x100;
-        delY = 0x80;
-      }
-      else if (obj->type == CT4_Dopefish)
-      {
-        delX = 0x580;
-        delY = 0x400;
-      }
-      else if (obj->type == CT4_Bird)
-      {
-        delX = 0x400;
-        delY = 0x200;
-      }
-      else if (obj->type == CT_Player)
-      {
-        // Scubakeen
-        delX = 0x280;
-        delY = 0x180;
-      }
-      break;
-    case EP_CK5:
-      if (obj->type == CT5_SliceStar || obj->type == CT5_Sphereful)
-      {
-        delX = delY = 512;
-      }
-      else
-      {
-        goto badobjclass;
-      }
-      break;
+	switch (ck_currentEpisode->ep)
+	{
+	case EP_CK4:
+		if (obj->type == CT4_Schoolfish)
+		{
+			delX = 0x100;
+			delY = 0x80;
+		}
+		else if (obj->type == CT4_Dopefish)
+		{
+			delX = 0x580;
+			delY = 0x400;
+		}
+		else if (obj->type == CT4_Bird)
+		{
+			delX = 0x400;
+			delY = 0x200;
+		}
+		else if (obj->type == CT_Player)
+		{
+			// Scubakeen
+			delX = 0x280;
+			delY = 0x180;
+		}
+		break;
+	case EP_CK5:
+		if (obj->type == CT5_SliceStar || obj->type == CT5_Sphereful)
+		{
+			delX = delY = 512;
+		}
+		else
+		{
+			goto badobjclass;
+		}
+		break;
 
-    case EP_CK6:
-      if (obj->type == CT6_Blorb)
-      {
-        delX = delY = 0x200;
-      }
-      else
-      {
-        goto badobjclass;
-      }
-      break;
+	case EP_CK6:
+		if (obj->type == CT6_Blorb)
+		{
+			delX = delY = 0x200;
+		}
+		else
+		{
+			goto badobjclass;
+		}
+		break;
 
-    default:
-      break;
+	default:
+		break;
 
-badobjclass:
+	badobjclass:
 		Quit("FullClipToWalls: Bad obclass");
-  }
-
+	}
 
 	obj->clipRects.unitX2 = obj->posX + delX;
 	obj->clipRects.unitX1 = obj->posX;
@@ -628,10 +614,8 @@ void CK_PhysUpdateSimpleObj(CK_object *obj)
 	oldUnitX = obj->posX;
 	oldUnitY = obj->posY;
 
-
 	obj->posX += ck_nextX;
 	obj->posY += ck_nextY;
-
 
 	obj->visible = true;
 
@@ -658,7 +642,6 @@ void CK_PhysUpdateSimpleObj(CK_object *obj)
 		obj->deltaPosX += obj->posX - oldUnitX;
 		obj->deltaPosY += obj->posY - oldUnitY;
 	}
-
 }
 
 void CK_PhysPushX(CK_object *pushee, CK_object *pusher)
@@ -715,81 +698,84 @@ void CK_PhysPushY(CK_object *pushee, CK_object *pusher)
 
 void CK_PhysPushXY(CK_object *passenger, CK_object *platform, bool squish)
 {
-  int16_t dx = platform->deltaPosX - passenger->deltaPosX;
-  ck_nextX = ck_nextY = 0;
-  int16_t dLeft = platform->clipRects.unitX2 - passenger->clipRects.unitX1;
-  int16_t dRight = passenger->clipRects.unitX2 - platform->clipRects.unitX1;
+	int16_t dx = platform->deltaPosX - passenger->deltaPosX;
+	ck_nextX = ck_nextY = 0;
+	int16_t dLeft = platform->clipRects.unitX2 - passenger->clipRects.unitX1;
+	int16_t dRight = passenger->clipRects.unitX2 - platform->clipRects.unitX1;
 
-  //Push in all four directions
+	//Push in all four directions
 
-  if (dLeft > 0 && dx+1 >= dLeft)
-  {
-    ck_nextX = dLeft;
-    passenger->velX = 0;
-    CK_PhysUpdateSimpleObj(passenger);
+	if (dLeft > 0 && dx + 1 >= dLeft)
+	{
+		ck_nextX = dLeft;
+		passenger->velX = 0;
+		CK_PhysUpdateSimpleObj(passenger);
 
-    if (squish && passenger->leftTI)
-      CK_KillKeen();
+		if (squish && passenger->leftTI)
+			CK_KillKeen();
 
-    passenger->rightTI = 1;
-    return;
-  }
+		passenger->rightTI = 1;
+		return;
+	}
 
-  if (dRight > 0 && -dx+1 >= dRight)
-  {
-    ck_nextX = -dRight;
-    passenger->velX = 0;
-    CK_PhysUpdateSimpleObj(passenger);
+	if (dRight > 0 && -dx + 1 >= dRight)
+	{
+		ck_nextX = -dRight;
+		passenger->velX = 0;
+		CK_PhysUpdateSimpleObj(passenger);
 
-    if (squish && passenger->rightTI)
-      CK_KillKeen();
+		if (squish && passenger->rightTI)
+			CK_KillKeen();
 
-    passenger->leftTI = 1;
-    return;
-  }
+		passenger->leftTI = 1;
+		return;
+	}
 
-  int16_t dy = passenger->deltaPosY - platform->deltaPosY;
-  int16_t dTop = platform->clipRects.unitY2 - passenger->clipRects.unitY1;
-  int16_t dBottom = passenger->clipRects.unitY2 - platform->clipRects.unitY1;
+	int16_t dy = passenger->deltaPosY - platform->deltaPosY;
+	int16_t dTop = platform->clipRects.unitY2 - passenger->clipRects.unitY1;
+	int16_t dBottom = passenger->clipRects.unitY2 - platform->clipRects.unitY1;
 
-  if (dBottom >= 0 && dBottom <= dy)
-  {
-     if (passenger == ck_keenObj)
-       ck_keenState.platform = platform;
+	if (dBottom >= 0 && dBottom <= dy)
+	{
+		if (passenger == ck_keenObj)
+			ck_keenState.platform = platform;
 
-     ck_nextY = -dBottom;
-     CK_PhysUpdateSimpleObj(passenger);
+		ck_nextY = -dBottom;
+		CK_PhysUpdateSimpleObj(passenger);
 
-     if (squish && passenger->bottomTI)
-       CK_KillKeen();
+		if (squish && passenger->bottomTI)
+			CK_KillKeen();
 
-     // Riding the platform, unless passenger hits its head
-     if (!passenger->bottomTI)
-       passenger->topTI = 0x19;
+		// Riding the platform, unless passenger hits its head
+		if (!passenger->bottomTI)
+			passenger->topTI = 0x19;
 
-     return;
-  }
+		return;
+	}
 
-  if (dTop >= 0 && dTop <= dy)
-  {
-    ck_nextY = dTop;
-    CK_PhysUpdateNormalObj(passenger);
-    if (squish && passenger->topTI)
-      CK_KillKeen();
+	if (dTop >= 0 && dTop <= dy)
+	{
+		ck_nextY = dTop;
+		CK_PhysUpdateNormalObj(passenger);
+		if (squish && passenger->topTI)
+			CK_KillKeen();
 
-    passenger->bottomTI = 0x19;
-    return;
-  }
+		passenger->bottomTI = 0x19;
+		return;
+	}
 }
 
 void CK_SetAction(CK_object *obj, CK_action *act)
 {
 	obj->currentAction = act;
 
-	if (act->chunkRight && obj->xDirection > 0) obj->gfxChunk = act->chunkRight;
-	else if (act->chunkLeft) obj->gfxChunk = act->chunkLeft;
+	if (act->chunkRight && obj->xDirection > 0)
+		obj->gfxChunk = act->chunkRight;
+	else if (act->chunkLeft)
+		obj->gfxChunk = act->chunkLeft;
 
-	if (obj->gfxChunk == (uint16_t)-1) obj->gfxChunk = 0;
+	if (obj->gfxChunk == (uint16_t)-1)
+		obj->gfxChunk = 0;
 
 	ck_nextX = 0;
 	ck_nextY = 0;
@@ -820,25 +806,21 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 	if (act->chunkRight && obj->xDirection > 0) obj->gfxChunk = act->chunkRight;
 	else if (act->chunkLeft) obj->gfxChunk = act->chunkLeft;
 #endif
-	if (obj->gfxChunk == (uint16_t)-1) obj->gfxChunk = 0;
+	if (obj->gfxChunk == (uint16_t)-1)
+		obj->gfxChunk = 0;
 
 	obj->visible = true;
 	ck_nextX = 0;
 	ck_nextY = 0;
 
-
 	if (obj->topTI != 0x19)
 		CK_PhysUpdateNormalObj(obj);
-
 }
 
 bool CK_ObjectVisible(CK_object *obj)
 {
 	// TODO: Use ScrollX0_T,  ScrollX1_T and co. directly?
-	if (obj->clipRects.tileX2 < RF_UnitToTile(rf_scrollXUnit)
-		|| obj->clipRects.tileY2 < RF_UnitToTile(rf_scrollYUnit)
-		|| obj->clipRects.tileX1 > (RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320))
-		|| obj->clipRects.tileY1 > (RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
+	if (obj->clipRects.tileX2 < RF_UnitToTile(rf_scrollXUnit) || obj->clipRects.tileY2 < RF_UnitToTile(rf_scrollYUnit) || obj->clipRects.tileX1 > (RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320)) || obj->clipRects.tileY1 > (RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
 	{
 		return false;
 	}
@@ -901,7 +883,7 @@ void CK_PhysGravityLow(CK_object *obj)
 	{
 		// TODO: recheck this condition
 		//if ((tickCount & 3) == 1)
-		if ((tickCount?0:1) & 3)
+		if ((tickCount ? 0 : 1) & 3)
 		//if (tickCount == 0)	// This condition is seriously fucked up.
 		{
 			obj->velY += 1;
@@ -972,9 +954,9 @@ void CK_PhysAccelHorz(CK_object *obj, int16_t accX, int16_t velLimit)
 
 void CK_PhysAccelHorz2(CK_object *obj, int16_t accX, int16_t velLimit)
 {
-  int32_t lastTimeCount = SD_GetLastTimeCount();
+	int32_t lastTimeCount = SD_GetLastTimeCount();
 	for (int32_t tickCount = lastTimeCount - SD_GetSpriteSync(); tickCount < lastTimeCount; tickCount++)
-  {
+	{
 		// Every odd tic...
 		if (tickCount & 1)
 		{
@@ -995,9 +977,9 @@ void CK_PhysAccelHorz2(CK_object *obj, int16_t accX, int16_t velLimit)
 
 void CK_PhysAccelVert1(CK_object *obj, int16_t accY, int16_t velLimit)
 {
-  int32_t lastTimeCount = SD_GetLastTimeCount();
+	int32_t lastTimeCount = SD_GetLastTimeCount();
 	for (int32_t tickCount = lastTimeCount - SD_GetSpriteSync(); tickCount < lastTimeCount; tickCount++)
-  {
+	{
 		// Every odd tic...
 		if (tickCount & 1)
 		{

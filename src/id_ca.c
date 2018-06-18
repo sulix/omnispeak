@@ -24,16 +24,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // NOTE: At the moment this is not endian-independent.
 
-
 #include "id_ca.h"
 #include "id_us.h"
-#include "ck_ep.h"
 #include "id_vh.h"
 #include "ck_cross.h"
 #include "ck_def.h"
+#include "ck_ep.h"
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #ifdef WITH_SDL
 #include "SDL.h"
 #endif
@@ -48,15 +47,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CA_THREEBYTEHEADERS
 
 #ifndef _WIN32
-#include <sys/stat.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 size_t CA_GetFileSize(char *filename)
 {
 	struct stat fileStat;
 	if (stat(filename, &fileStat))
 		return 0;
-	
+
 	return fileStat.st_size;
 }
 
@@ -97,7 +96,7 @@ size_t CA_GetFileSize(char *filename)
 	WIN32_FILE_ATTRIBUTE_DATA fileStat;
 	if (!GetFileAttributesEx(filename, GetFileExInfoStandard, &fileStat))
 		return 0;
-	
+
 	return fileStat.nFileSizeLow + (fileStat.nFileSizeHigh << 32);
 }
 
@@ -114,32 +113,32 @@ bool CAL_AdjustFilenameCase(char *filename)
 
 uint8_t CAL_ReadByte(void *offset)
 {
-	return *((uint8_t*)(offset));
+	return *((uint8_t *)(offset));
 }
 
 int16_t CAL_ReadWord(void *offset)
 {
-	return (int16_t)CK_Cross_SwapLE16(*((uint16_t*)(offset)));
+	return (int16_t)CK_Cross_SwapLE16(*((uint16_t *)(offset)));
 }
 
 int32_t CAL_ReadLong(void *offset)
 {
-	return (int32_t)CK_Cross_SwapLE32(*((uint32_t*)(offset)));
+	return (int32_t)CK_Cross_SwapLE32(*((uint32_t *)(offset)));
 }
 
 int8_t CAL_ReadSByte(void *offset)
 {
-	return *((int8_t*)(offset));
+	return *((int8_t *)(offset));
 }
 
 uint16_t CAL_ReadUWord(void *offset)
 {
-	return CK_Cross_SwapLE16(*((uint16_t*)(offset)));
+	return CK_Cross_SwapLE16(*((uint16_t *)(offset)));
 }
 
 uint32_t CAL_ReadULong(void *offset)
 {
-	return CK_Cross_SwapLE32(*((uint32_t*)(offset)));
+	return CK_Cross_SwapLE32(*((uint32_t *)(offset)));
 }
 
 //Begin locals
@@ -155,18 +154,18 @@ ca_gfxinfo ca_gfxInfoE;
 mm_ptr_t ca_graphChunks[CA_MAX_GRAPH_CHUNKS];
 
 // Keen: custom cachebox hooks
-void	(*ca_beginCacheBox)	(const char *title, int numcache);
-void	(*ca_updateCacheBox)	(void);
-void	(*ca_finishCacheBox)	(void);
+void (*ca_beginCacheBox)(const char *title, int numcache);
+void (*ca_updateCacheBox)(void);
+void (*ca_finishCacheBox)(void);
 
 // Does a file exist (with filename case correction)
 bool CA_IsFilePresent(const char *filename)
 {
 	static char newname[16];
-	strcpy(newname,filename);
+	strcpy(newname, filename);
 	if (!CAL_AdjustFilenameCase(newname))
 	{
-		return false;	
+		return false;
 	}
 	return true;
 }
@@ -174,14 +173,14 @@ bool CA_IsFilePresent(const char *filename)
 // Adjusts the extension on a filename to match the current episode.
 // This function is NOT thread safe, and the string returned is only
 // valid until the NEXT invocation of this function.
-char* CAL_AdjustExtension(const char *filename)
+char *CAL_AdjustExtension(const char *filename)
 {
 	static char newname[16];
-	strcpy(newname,filename);
+	strcpy(newname, filename);
 	size_t fnamelen = strlen(filename);
-	newname[fnamelen-3] = ck_currentEpisode->ext[0];
-	newname[fnamelen-2] = ck_currentEpisode->ext[1];
-	newname[fnamelen-1] = ck_currentEpisode->ext[2];
+	newname[fnamelen - 3] = ck_currentEpisode->ext[0];
+	newname[fnamelen - 2] = ck_currentEpisode->ext[1];
+	newname[fnamelen - 1] = ck_currentEpisode->ext[2];
 	if (!CAL_AdjustFilenameCase(newname))
 	{
 		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Couldn't find file \"%s\" in the current directory.\n", newname);
@@ -193,7 +192,6 @@ bool CA_FarWrite(int handle, uint8_t *source, int length)
 {
 	// TODO: Implement
 	return false;
-
 }
 
 // CA_ReadFile reads a whole file into the preallocated memory buffer at 'offset'
@@ -204,9 +202,9 @@ bool CA_ReadFile(const char *filename, void *offset)
 	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
 
 	//Find the length of the file.
-	fseek(f,0,SEEK_END);
+	fseek(f, 0, SEEK_END);
 	int length = ftell(f);
-	fseek(f,0,SEEK_SET);
+	fseek(f, 0, SEEK_SET);
 
 	int totalRead = fread(offset, length, 1, f);
 
@@ -221,11 +219,11 @@ bool CA_SafeReadFile(const char *filename, void *offset, int bufLength)
 	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
 
 	//Find length of the file.
-	fseek(f,0,SEEK_END);
+	fseek(f, 0, SEEK_END);
 	int length = ftell(f);
-	fseek(f,0,SEEK_SET);
+	fseek(f, 0, SEEK_SET);
 
-	int amountToRead = (length > bufLength)?bufLength:length;
+	int amountToRead = (length > bufLength) ? bufLength : length;
 
 	int totalRead = fread(offset, amountToRead, 1, f);
 
@@ -238,9 +236,10 @@ bool CA_WriteFile(const char *filename, void *offset, int bufLength)
 {
 	FILE *f = fopen(CAL_AdjustExtension(filename), "wb");
 
-	if (!f) return false;
+	if (!f)
+		return false;
 
-	int amountWritten = fwrite(offset,bufLength,1,f);
+	int amountWritten = fwrite(offset, bufLength, 1, f);
 
 	fclose(f);
 
@@ -251,19 +250,20 @@ bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 {
 	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
 
-	if (!f) return false;
+	if (!f)
+		return false;
 
 	//Get length of file
-	fseek(f,0,SEEK_END);
+	fseek(f, 0, SEEK_END);
 	int length = ftell(f);
-	fseek(f,0,SEEK_SET);
+	fseek(f, 0, SEEK_SET);
 
-	MM_GetPtr(ptr,length);
+	MM_GetPtr(ptr, length);
 
 	if (memsize)
 		*memsize = length;
 
-	int amountRead = fread(*ptr,1, length,f);
+	int amountRead = fread(*ptr, 1, length, f);
 
 	fclose(f);
 
@@ -276,7 +276,8 @@ bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 // Huffman Decompression Code
 //
 
-typedef struct {
+typedef struct
+{
 	uint16_t bit_0;
 	uint16_t bit_1;
 } ca_huffnode;
@@ -286,13 +287,12 @@ void CAL_OptimizeNodes(ca_huffnode *table)
 	//STUB: This optimization is not very helpful on modern machines.
 }
 
-
 void CAL_HuffExpand(void *src, void *dest, int expLength, ca_huffnode *table)
 {
 	int headptr = 254;
-	uint8_t *srcptr = (uint8_t*)src;
-	uint8_t *dstptr = (uint8_t*)dest;
-	int src_bit = 1;	//ch in asm src
+	uint8_t *srcptr = (uint8_t *)src;
+	uint8_t *dstptr = (uint8_t *)dest;
+	int src_bit = 1; //ch in asm src
 	uint8_t src_char = *(srcptr++);
 	int len = 0;
 	int complen = 1;
@@ -309,17 +309,20 @@ void CAL_HuffExpand(void *src, void *dest, int expLength, ca_huffnode *table)
 			headptr = table[headptr].bit_0;
 		}
 
-
-		if (headptr > 255) headptr -= 256;
-		else {
+		if (headptr > 255)
+			headptr -= 256;
+		else
+		{
 			*(dstptr++) = (uint8_t)(headptr & 0xff);
 			headptr = 254;
 			len++;
-			if (len == expLength) break;
+			if (len == expLength)
+				break;
 		}
 
 		src_bit <<= 1;
-		if (src_bit == 256) {
+		if (src_bit == 256)
+		{
 			src_char = *(srcptr++);
 			src_bit = 1;
 			complen++;
@@ -332,11 +335,11 @@ void CAL_HuffExpand(void *src, void *dest, int expLength, ca_huffnode *table)
 
 void CAL_CarmackExpand(void *src, void *dest, int expLength)
 {
-	uint16_t *srcptr = (uint16_t*)src;
-	uint16_t *dstptr = (uint16_t*)dest;
+	uint16_t *srcptr = (uint16_t *)src;
+	uint16_t *dstptr = (uint16_t *)dest;
 	uint16_t *runptr;
 	uint16_t ch, count, offset;
-	expLength /= 2;	//We're dealing with two-byte words
+	expLength /= 2; //We're dealing with two-byte words
 
 	while (expLength > 0)
 	{
@@ -349,17 +352,18 @@ void CAL_CarmackExpand(void *src, void *dest, int expLength)
 				//Read a byte and output a7xx
 				ch &= 0xff00;
 				ch |= CAL_ReadByte(srcptr);
-				srcptr = (uint16_t*)(((uint8_t*)srcptr) + 1);
+				srcptr = (uint16_t *)(((uint8_t *)srcptr) + 1);
 				*(dstptr++) = ch;
 				expLength--;
 			}
 			else
 			{
 				offset = CAL_ReadByte(srcptr);
-				srcptr = (uint16_t*)(((uint8_t*)srcptr) + 1);
-				runptr = dstptr - offset;//(uint16_t*)offset;
+				srcptr = (uint16_t *)(((uint8_t *)srcptr) + 1);
+				runptr = dstptr - offset; //(uint16_t*)offset;
 				expLength -= count;
-				while (count--) *(dstptr++) = *(runptr++);
+				while (count--)
+					*(dstptr++) = *(runptr++);
 			}
 		}
 		else if ((ch & 0xff00) == CA_CARMACK_FARTAG)
@@ -370,32 +374,32 @@ void CAL_CarmackExpand(void *src, void *dest, int expLength)
 				//Read a byte and output a8xx
 				ch &= 0xff00;
 				ch |= CAL_ReadByte(srcptr);
-				srcptr = (uint16_t*)(((uint8_t*)srcptr) + 1);
+				srcptr = (uint16_t *)(((uint8_t *)srcptr) + 1);
 				*(dstptr++) = ch;
 				expLength--;
 			}
 			else
 			{
 				offset = CAL_ReadWord(srcptr++);
-				runptr = (uint16_t*)dest + offset;//(uint16_t*)offset;
+				runptr = (uint16_t *)dest + offset; //(uint16_t*)offset;
 				expLength -= count;
-				while (count--) *(dstptr++) = *(runptr++);
+				while (count--)
+					*(dstptr++) = *(runptr++);
 			}
 		}
 		else
 		{
-			*(dstptr++) = ch;//*(srcptr++);
+			*(dstptr++) = ch; //*(srcptr++);
 			--expLength;
 		}
 	}
 }
 
-
-int CAL_RLEWCompress (void *src, int expLength, void *dest, uint16_t rletag)
+int CAL_RLEWCompress(void *src, int expLength, void *dest, uint16_t rletag)
 {
 	int compLength = 0;
-	uint16_t *srcptr = (uint16_t*)src;
-	uint16_t *dstptr = (uint16_t*)dest;
+	uint16_t *srcptr = (uint16_t *)src;
+	uint16_t *dstptr = (uint16_t *)dest;
 	uint16_t count;
 
 	while (expLength)
@@ -418,17 +422,18 @@ int CAL_RLEWCompress (void *src, int expLength, void *dest, uint16_t rletag)
 		}
 		else
 		{
-			compLength += count*2;
-			while(count--) *dstptr++ = val;
+			compLength += count * 2;
+			while (count--)
+				*dstptr++ = val;
 		}
 	}
 	return compLength;
 }
 
-void CAL_RLEWExpand (void *src, void *dest, int expLength, uint16_t rletag)
+void CAL_RLEWExpand(void *src, void *dest, int expLength, uint16_t rletag)
 {
-	uint16_t *srcptr = (uint16_t*)src;
-	uint16_t *dstptr = (uint16_t*)dest;
+	uint16_t *srcptr = (uint16_t *)src;
+	uint16_t *dstptr = (uint16_t *)dest;
 	uint16_t count, value;
 
 	while (expLength > 0)
@@ -443,9 +448,13 @@ void CAL_RLEWExpand (void *src, void *dest, int expLength, uint16_t rletag)
 		{
 			count = *(srcptr++);
 			value = *(srcptr++);
-			expLength -= count*2;
-			if(expLength < 0) return;
-			for(int i = 0; i < count; ++i) { *(dstptr++) = value; }
+			expLength -= count * 2;
+			if (expLength < 0)
+				return;
+			for (int i = 0; i < count; ++i)
+			{
+				*(dstptr++) = value;
+			}
 		}
 	}
 }
@@ -456,7 +465,7 @@ void CAL_RLEWExpand (void *src, void *dest, int expLength, uint16_t rletag)
 
 static ca_huffnode *ca_gr_huffdict;
 
-static FILE *ca_graphHandle;	//File Pointer for ?GAGRAPH file.
+static FILE *ca_graphHandle; //File Pointer for ?GAGRAPH file.
 void *ca_graphStarts;
 
 // Size of the ?GAHEAD file (i.e. number of chunks * 3)
@@ -467,12 +476,10 @@ int ca_graphFileSize;
 //Get the offset of a (compressed) chunk in the ?GAGRAPH file.
 long CAL_GetGrChunkStart(int chunk)
 {
-	int offset = chunk*3;
+	int offset = chunk * 3;
 	if (offset >= ca_graphHeadSize)
 		return -1;
-	long value = ((uint8_t*)ca_graphStarts)[offset]
-		| ((uint8_t*)ca_graphStarts)[offset+1] << 8
-		| ((uint8_t*)ca_graphStarts)[offset+2] << 16;
+	long value = ((uint8_t *)ca_graphStarts)[offset] | ((uint8_t *)ca_graphStarts)[offset + 1] << 8 | ((uint8_t *)ca_graphStarts)[offset + 2] << 16;
 	if (value == 0xffffff)
 		return -1;
 	return value;
@@ -497,7 +504,7 @@ int CAL_GetGrChunkExpLength(int chunk)
 		}
 		else if (chunk < ca_gfxInfoE.offTiles32)
 		{
-			chunkExpandedLength = 40*4;
+			chunkExpandedLength = 40 * 4;
 		}
 		else if (chunk < ca_gfxInfoE.offTiles32m)
 		{
@@ -520,13 +527,14 @@ int CAL_GetGrChunkExpLength(int chunk)
 
 int CAL_GetGrChunkCompLength(int chunk)
 {
-	int nextChunk = chunk +1;
+	int nextChunk = chunk + 1;
 	int sizeOffset = 0;
 	if (chunk < ca_gfxInfoE.offTiles8 && chunk >= ca_gfxInfoE.offBinaries)
 		sizeOffset = 4;
 	if (nextChunk * 3 >= ca_graphHeadSize)
 		return ca_graphFileSize - CAL_GetGrChunkStart(chunk) - sizeOffset;
-	while (CAL_GetGrChunkStart(nextChunk) == -1) nextChunk++;
+	while (CAL_GetGrChunkStart(nextChunk) == -1)
+		nextChunk++;
 	return CAL_GetGrChunkStart(nextChunk) - CAL_GetGrChunkStart(chunk) - sizeOffset;
 }
 
@@ -540,7 +548,7 @@ void CAL_SetupGrFile()
 	//TODO: Setup cfg mechanism for filenames, chunk data.
 
 	//Load the ?GADICT
-	CA_LoadFile("EGADICT.EXT", (void**)(&ca_gr_huffdict), 0);
+	CA_LoadFile("EGADICT.EXT", (void **)(&ca_gr_huffdict), 0);
 
 #ifdef CK_CROSS_IS_BIGENDIAN
 	for (int i = 0; i < 256; ++i)
@@ -557,17 +565,17 @@ void CAL_SetupGrFile()
 	CA_LoadFile("EGAHEAD.EXT", &ca_graphStarts, &ca_graphHeadSize);
 
 	// Read chunk type info from GFEINFO?
-	FILE *gfxinfoe = fopen(CAL_AdjustExtension("GFXINFOE.EXT"),"rb");
+	FILE *gfxinfoe = fopen(CAL_AdjustExtension("GFXINFOE.EXT"), "rb");
 	fread(&ca_gfxInfoE, 1, sizeof(ca_gfxinfo), gfxinfoe);
 	fclose(gfxinfoe);
 #ifdef CK_CROSS_IS_BIGENDIAN
 	uint16_t *uptr = (uint16_t *)&ca_gfxInfoE;
-	for (size_t loopVar = 0; loopVar < sizeof(ca_gfxInfoE)/2; loopVar++, uptr++)
+	for (size_t loopVar = 0; loopVar < sizeof(ca_gfxInfoE) / 2; loopVar++, uptr++)
 		*uptr = CK_Cross_Swap16(*uptr);
 #endif
 
 	//Load the graphics --- we will keep the file open for the duration of the game.
-	ca_graphHandle = fopen(CAL_AdjustExtension("EGAGRAPH.EXT"),"rb");
+	ca_graphHandle = fopen(CAL_AdjustExtension("EGAGRAPH.EXT"), "rb");
 
 	// Find the size of the file. Some mods do not have the last entry in the ?GAHEAD,
 	// so we compute it like so.
@@ -597,11 +605,11 @@ void CAL_ExpandGrChunk(int chunk, void *source)
 	if (!length)
 	{
 		length = CAL_ReadLong(source);
-		source = (uint8_t*)source+4;
+		source = (uint8_t *)source + 4;
 	}
 
-	MM_GetPtr(&ca_graphChunks[chunk],length);
-	CAL_HuffExpand(source,ca_graphChunks[chunk],length,ca_gr_huffdict);
+	MM_GetPtr(&ca_graphChunks[chunk], length);
+	CAL_HuffExpand(source, ca_graphChunks[chunk], length, ca_gr_huffdict);
 }
 
 void CA_CacheGrChunk(int chunk)
@@ -612,22 +620,23 @@ void CA_CacheGrChunk(int chunk)
 	if (ca_graphChunks[chunk])
 	{
 		//If so, keep it in memory.
-		MM_SetPurge(&ca_graphChunks[chunk],0);
+		MM_SetPurge(&ca_graphChunks[chunk], 0);
 		return;
 	}
 
 	int compressedLength = CAL_GetGrChunkCompLength(chunk);
 
-	if (CAL_GetGrChunkStart(chunk) == -1) return;
+	if (CAL_GetGrChunkStart(chunk) == -1)
+		return;
 
 	fseek(ca_graphHandle, CAL_GetGrChunkStart(chunk), SEEK_SET);
 
 	mm_ptr_t compdata;
-	MM_GetPtr(&compdata,compressedLength);
-	int read = 0;// fread(compdata,1,compressedLength, ca_graphHandle);
+	MM_GetPtr(&compdata, compressedLength);
+	int read = 0; // fread(compdata,1,compressedLength, ca_graphHandle);
 	do
 	{
-		int curRead = fread(((uint8_t*)compdata)+read,1,compressedLength - read, ca_graphHandle);
+		int curRead = fread(((uint8_t *)compdata) + read, 1, compressedLength - read, ca_graphHandle);
 		if (curRead < 0)
 		{
 			Quit("Error reading compressed graphics chunk.");
@@ -640,7 +649,7 @@ void CA_CacheGrChunk(int chunk)
 #ifdef CK_CROSS_IS_BIGENDIAN
 	if (chunk == ca_gfxInfoE.hdrBitmaps)
 	{
-		VH_BitmapTableEntry *bitmapTable = (VH_BitmapTableEntry*)(ca_graphChunks[chunk]);
+		VH_BitmapTableEntry *bitmapTable = (VH_BitmapTableEntry *)(ca_graphChunks[chunk]);
 		for (int i = 0; i < ca_gfxInfoE.numBitmaps; ++i)
 		{
 			bitmapTable[i].width = CK_Cross_SwapLE16(bitmapTable[i].width);
@@ -649,7 +658,7 @@ void CA_CacheGrChunk(int chunk)
 	}
 	else if (chunk == ca_gfxInfoE.hdrMasked)
 	{
-		VH_BitmapTableEntry *maskedTable = (VH_BitmapTableEntry*)(ca_graphChunks[chunk]);
+		VH_BitmapTableEntry *maskedTable = (VH_BitmapTableEntry *)(ca_graphChunks[chunk]);
 		for (int i = 0; i < ca_gfxInfoE.numMasked; ++i)
 		{
 			maskedTable[i].width = CK_Cross_SwapLE16(maskedTable[i].width);
@@ -658,7 +667,7 @@ void CA_CacheGrChunk(int chunk)
 	}
 	else if (chunk == ca_gfxInfoE.hdrSprites)
 	{
-		VH_SpriteTableEntry *spriteTable = (VH_SpriteTableEntry*)(ca_graphChunks[chunk]);
+		VH_SpriteTableEntry *spriteTable = (VH_SpriteTableEntry *)(ca_graphChunks[chunk]);
 		for (int i = 0; i < ca_gfxInfoE.numSprites; ++i)
 		{
 			spriteTable[i].width = CK_Cross_SwapLE16(spriteTable[i].width);
@@ -672,11 +681,11 @@ void CA_CacheGrChunk(int chunk)
 			spriteTable[i].shifts = CK_Cross_SwapLE16(spriteTable[i].shifts);
 		}
 	}
-	else if (chunk >= FON_MAINFONT && chunk <= /*FON_WATCHFONT*/FON_MAINFONT+2)
+	else if (chunk >= FON_MAINFONT && chunk <= /*FON_WATCHFONT*/ FON_MAINFONT + 2)
 	{
-		VH_Font *font = (VH_Font*)ca_graphChunks[chunk];
+		VH_Font *font = (VH_Font *)ca_graphChunks[chunk];
 		font->height = CK_Cross_SwapLE16(font->height);
-		for (int i = 0; i < (int)(sizeof(font->location)/sizeof(*(font->location))); ++i)
+		for (int i = 0; i < (int)(sizeof(font->location) / sizeof(*(font->location))); ++i)
 		{
 			font->location[i] = CK_Cross_SwapLE16(font->location[i]);
 		}
@@ -686,7 +695,7 @@ void CA_CacheGrChunk(int chunk)
 		introbmptype *intro = (introbmptype *)ca_graphChunks[chunk];
 		intro->height = CK_Cross_SwapLE16(intro->height);
 		intro->width = CK_Cross_SwapLE16(intro->width);
-		for (int i = 0; i < (int)(sizeof(intro->linestarts)/sizeof(*(intro->linestarts))); ++i)
+		for (int i = 0; i < (int)(sizeof(intro->linestarts) / sizeof(*(intro->linestarts))); ++i)
 		{
 			intro->linestarts[i] = CK_Cross_SwapLE16(intro->linestarts[i]);
 		}
@@ -710,7 +719,7 @@ void CA_SetGrPurge(void)
 	{
 		if (ca_graphChunks[i])
 		{
-			MM_SetPurge((mm_ptr_t*)(&ca_graphChunks[i]),3);
+			MM_SetPurge((mm_ptr_t *)(&ca_graphChunks[i]), 3);
 		}
 	}
 }
@@ -722,7 +731,7 @@ void CA_MarkGrChunk(int chunk)
 
 void CA_CacheMarks(const char *msg)
 {
-	bool isMessage = msg? true : false;
+	bool isMessage = msg ? true : false;
 	int numChunksToCache = 0;
 
 	// Mark all unused chunks as purgeable, needed chunks as unpurgeable,
@@ -744,12 +753,13 @@ void CA_CacheMarks(const char *msg)
 		{
 			if (ca_graphChunks[i])
 			{
-				MM_SetPurge(&ca_graphChunks[i],3);
+				MM_SetPurge(&ca_graphChunks[i], 3);
 			}
 		}
 	}
 
-	if (!numChunksToCache) return;
+	if (!numChunksToCache)
+		return;
 
 	//Loading screen.
 	if (isMessage && ca_beginCacheBox)
@@ -758,7 +768,7 @@ void CA_CacheMarks(const char *msg)
 	// Cache all of the chunks we'll need.
 	for (int i = 0; i < CA_MAX_GRAPH_CHUNKS; ++i)
 	{
-		if ( (ca_graphChunkNeeded[i] & ca_levelbit) && (!ca_graphChunks[i]) )
+		if ((ca_graphChunkNeeded[i] & ca_levelbit) && (!ca_graphChunks[i]))
 		{
 			//Update loading screen.
 			if (isMessage && ca_updateCacheBox)
@@ -769,7 +779,6 @@ void CA_CacheMarks(const char *msg)
 			// given that we'll be loading things in file order anyway, so we just
 			// use CA_CacheGrChunk instead.
 
-
 			CA_CacheGrChunk(i);
 		}
 	}
@@ -777,7 +786,6 @@ void CA_CacheMarks(const char *msg)
 	//Finish Loading Screen
 	if (isMessage && ca_finishCacheBox)
 		ca_finishCacheBox();
-
 }
 
 // CA_UpLevel:
@@ -827,7 +835,7 @@ extern uint8_t *ti_tileInfo;
 void CAL_SetupMapFile(void)
 {
 	int mapHeadFileSize = 0;
-	CA_LoadFile("MAPHEAD.EXT", (void**)(&ca_MapHead), &mapHeadFileSize);
+	CA_LoadFile("MAPHEAD.EXT", (void **)(&ca_MapHead), &mapHeadFileSize);
 #ifdef CK_CROSS_IS_BIGENDIAN
 	ca_MapHead->rleTag = CK_Cross_SwapLE16(ca_MapHead->rleTag);
 	for (int i = 0; i < CA_NUMMAPS; ++i)
@@ -838,37 +846,37 @@ void CAL_SetupMapFile(void)
 	ca_GameMaps = fopen(CAL_AdjustExtension("GAMEMAPS.EXT"), "rb");
 	// Try reading TILEINFO.EXT first, otherwise use data from MAPHEAD.EXT
 	ti_tileInfo = NULL;
-	if (!CA_LoadFile("TILEINFO.EXT",(void**)(&ti_tileInfo), 0))
+	if (!CA_LoadFile("TILEINFO.EXT", (void **)(&ti_tileInfo), 0))
 	{
 		if (ti_tileInfo) // CA_LoadFile may leave a memory leak
-			MM_FreePtr((void**)&ti_tileInfo);
+			MM_FreePtr((void **)&ti_tileInfo);
 
 		if (mapHeadFileSize <= sizeof(*ca_MapHead))
 			Quit("Can't open TILEINFO file, and MAPHEAD file lacks tileinfo data!");
 
-		ti_tileInfo = (uint8_t *)(ca_MapHead+1);
+		ti_tileInfo = (uint8_t *)(ca_MapHead + 1);
 	}
 }
 
 static ca_huffnode *ca_audiohuffman;
 
-static FILE *ca_audiohandle;	//File Pointer for AUDIO file.
+static FILE *ca_audiohandle; //File Pointer for AUDIO file.
 int32_t *ca_audiostarts;
 
 void CAL_SetupAudioFile(void)
 {
 	// Read audio chunk type info from AUDINFOE
-  FILE *audinfoe = fopen(CAL_AdjustExtension("AUDINFOE.EXT"),"rb");
+	FILE *audinfoe = fopen(CAL_AdjustExtension("AUDINFOE.EXT"), "rb");
 	fread(&ca_audInfoE, 1, sizeof(ca_audinfo), audinfoe);
 	fclose(audinfoe);
 #ifdef CK_CROSS_IS_BIGENDIAN
 	uint16_t *uptr = (uint16_t *)&ca_audInfoE;
-	for (size_t loopVar = 0; loopVar < sizeof(ca_audInfoE)/2; loopVar++, uptr++)
+	for (size_t loopVar = 0; loopVar < sizeof(ca_audInfoE) / 2; loopVar++, uptr++)
 		*uptr = CK_Cross_Swap16(*uptr);
 #endif
 
 	//Load the AUDIODCT
-	CA_LoadFile("AUDIODCT.EXT", (void**)(&ca_audiohuffman), 0);
+	CA_LoadFile("AUDIODCT.EXT", (void **)(&ca_audiohuffman), 0);
 
 #ifdef CK_CROSS_IS_BIGENDIAN
 	for (int i = 0; i < 256; ++i)
@@ -885,7 +893,7 @@ void CAL_SetupAudioFile(void)
 	CA_LoadFile("AUDIOHHD.EXT", (void **)(&ca_audiostarts), 0);
 
 	//Load the sound data --- we will keep the file open for the duration of the game.
-	ca_audiohandle = fopen(CAL_AdjustExtension("AUDIO.EXT"),"rb");
+	ca_audiohandle = fopen(CAL_AdjustExtension("AUDIO.EXT"), "rb");
 	if (!ca_audiohandle)
 	{
 		Quit("Can't open AUDIO.CK5!");
@@ -900,7 +908,7 @@ void CA_CacheMap(int mapIndex)
 	{
 		if (CA_mapPlanes[plane])
 		{
-			MM_FreePtr((void**)(&CA_mapPlanes[plane]));
+			MM_FreePtr((void **)(&CA_mapPlanes[plane]));
 		}
 	}
 	ca_mapOn = mapIndex;
@@ -915,7 +923,7 @@ void CA_CacheMap(int mapIndex)
 			Quit("CA_CacheMap: Tried to load a non-existant map!");
 		}
 
-		MM_GetPtr((void**)(&CA_MapHeaders[mapIndex]),sizeof(CA_MapHeader));
+		MM_GetPtr((void **)(&CA_MapHeaders[mapIndex]), sizeof(CA_MapHeader));
 
 		fseek(ca_GameMaps, headerOffset, SEEK_SET);
 
@@ -933,7 +941,7 @@ void CA_CacheMap(int mapIndex)
 	else
 	{
 		//Make sure we don't purge it accidentally.
-		MM_SetPurge((void**)(&CA_MapHeaders[mapIndex]), 0);
+		MM_SetPurge((void **)(&CA_MapHeaders[mapIndex]), 0);
 	}
 
 	int planeSize = CA_MapHeaders[mapIndex]->width * CA_MapHeaders[mapIndex]->height * 2;
@@ -944,19 +952,18 @@ void CA_CacheMap(int mapIndex)
 		int32_t planeOffset = CA_MapHeaders[mapIndex]->planeOffsets[plane];
 		int32_t planeCompLength = CA_MapHeaders[mapIndex]->planeLengths[plane];
 
-		MM_GetPtr((void**)&CA_mapPlanes[plane],planeSize);
+		MM_GetPtr((void **)&CA_mapPlanes[plane], planeSize);
 
 		fseek(ca_GameMaps, planeOffset, SEEK_SET);
 
 		uint16_t *compBuffer;
-		MM_GetPtr((void**)(&compBuffer),planeCompLength);
+		MM_GetPtr((void **)(&compBuffer), planeCompLength);
 		//MM_SetLock(&compBuffer,true);
-
 
 		int read = 0;
 		do
 		{
-			int curRead = fread(((uint8_t*)compBuffer)+read, 1, planeCompLength - read, ca_GameMaps);
+			int curRead = fread(((uint8_t *)compBuffer) + read, 1, planeCompLength - read, ca_GameMaps);
 			if (curRead < 0)
 			{
 				Quit("Error reading compressed map plane.");
@@ -967,16 +974,16 @@ void CA_CacheMap(int mapIndex)
 		uint16_t carmackExpanded = CK_Cross_SwapLE16(*compBuffer);
 
 		uint16_t *rlewBuffer;
-		MM_GetPtr((void**)(&rlewBuffer), carmackExpanded);
+		MM_GetPtr((void **)(&rlewBuffer), carmackExpanded);
 
 		//Decompress the map.
-		CAL_CarmackExpand(compBuffer+1, rlewBuffer, carmackExpanded);
-		CAL_RLEWExpand(rlewBuffer+1, CA_mapPlanes[plane], planeSize, ca_MapHead->rleTag);
+		CAL_CarmackExpand(compBuffer + 1, rlewBuffer, carmackExpanded);
+		CAL_RLEWExpand(rlewBuffer + 1, CA_mapPlanes[plane], planeSize, ca_MapHead->rleTag);
 
 		//Release the temp buffers.
 		//MM_UnLockPtr(&compBuffer);
-		MM_FreePtr((void**)(&compBuffer));
-		MM_FreePtr((void**)(&rlewBuffer));
+		MM_FreePtr((void **)(&compBuffer));
+		MM_FreePtr((void **)(&rlewBuffer));
 	}
 }
 
@@ -995,7 +1002,7 @@ void CA_AssertFileExists(char *filename)
 		snprintf(message, 128, "Could not find %s. Please copy it into the Omnispeak directory.", filename);
 #endif
 #ifdef WITH_SDL
-#if SDL_VERSION_ATLEAST(1,3,0)
+#if SDL_VERSION_ATLEAST(1, 3, 0)
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Omnispeak", message, NULL);
 #endif
 #endif
@@ -1012,7 +1019,7 @@ void CA_Startup(void)
 	char checkFile[] = "EGAGRAPH.EXT";
 
 #ifdef WITH_SDL
-#if SDL_VERSION_ATLEAST(2,0,1)
+#if SDL_VERSION_ATLEAST(2, 0, 1)
 	if (!CAL_AdjustExtension(checkFile))
 	{
 		chdir(SDL_GetBasePath());
@@ -1028,13 +1035,12 @@ void CA_Startup(void)
 	char gameMapsCheckFile[] = "GAMEMAPS.EXT";
 	CA_AssertFileExists(CAL_AdjustExtension(gameMapsCheckFile));
 
-
 	// Load the ?GAGRAPH.EXT file!
 	CAL_SetupGrFile();
 
 	// Load some other chunks needed by the game
-  // (Moved to CK_InitGame())
-  // CA_CacheGrChunk(88);	//Title Screen
+	// (Moved to CK_InitGame())
+	// CA_CacheGrChunk(88);	//Title Screen
 	// CA_CacheGrChunk(3);	// Main font
 
 	// Setup the map file
@@ -1067,7 +1073,7 @@ void CA_CacheAudioChunk(int16_t chunk)
 	mm_ptr_t bigbuffer, source;
 	if (CA_audio[chunk])
 	{
-		MM_SetPurge((void**)(&CA_audio[chunk]), 0);
+		MM_SetPurge((void **)(&CA_audio[chunk]), 0);
 		return;
 	}
 
@@ -1076,40 +1082,40 @@ void CA_CacheAudioChunk(int16_t chunk)
 	// a larger buffer
 	//
 	pos = CK_Cross_SwapLE32(ca_audiostarts[chunk]);
-	compressed = CK_Cross_SwapLE32(ca_audiostarts[chunk+1])-pos; //+1 is not in keen...
+	compressed = CK_Cross_SwapLE32(ca_audiostarts[chunk + 1]) - pos; //+1 is not in keen...
 
-	fseek(ca_audiohandle,pos,SEEK_SET);
+	fseek(ca_audiohandle, pos, SEEK_SET);
 
-	if (compressed<=BUFFERSIZE)
+	if (compressed <= BUFFERSIZE)
 	{
-		fread(buffer,compressed,1,ca_audiohandle);
+		fread(buffer, compressed, 1, ca_audiohandle);
 		source = buffer;
 	}
 	else
 	{
-		MM_GetPtr(&bigbuffer,compressed);
+		MM_GetPtr(&bigbuffer, compressed);
 		// TODO: Check for mmerror
 #if 0
 		if (mmerror)
 			return;
 #endif
-		MM_SetLock(&bigbuffer,true);
-		fread(bigbuffer,compressed,1,ca_audiohandle);
+		MM_SetLock(&bigbuffer, true);
+		fread(bigbuffer, compressed, 1, ca_audiohandle);
 		source = bigbuffer;
 	}
 
 	expanded = CAL_ReadLong(source);
 	source = (mm_ptr_t)((uint8_t *)source + 4); // skip over length
-	MM_GetPtr((void**)(&CA_audio[chunk]),expanded);
+	MM_GetPtr((void **)(&CA_audio[chunk]), expanded);
 	// TODO: Check for mmerror
 #if 0
 	if (mmerror)
 		goto done;
 #endif
-	CAL_HuffExpand (source,CA_audio[chunk],expanded,ca_audiohuffman);
+	CAL_HuffExpand(source, CA_audio[chunk], expanded, ca_audiohuffman);
 
-//done:
-	if (compressed>BUFFERSIZE)
+	//done:
+	if (compressed > BUFFERSIZE)
 		MM_FreePtr(&bigbuffer);
 
 #ifdef CK_CROSS_IS_BIGENDIAN
@@ -1131,7 +1137,6 @@ void CA_CacheAudioChunk(int16_t chunk)
 #endif
 }
 
-
 void CA_LoadAllSounds(void)
 {
 	int16_t offset; // FIXME: What about a mode differing from 1 or 2?
@@ -1144,7 +1149,7 @@ void CA_LoadAllSounds(void)
 			offset = ca_audInfoE.startPCSounds; // STARTPCSOUNDS;
 			break;
 		case sdm_AdLib:
-      offset = ca_audInfoE.startAdlibSounds; //STARTADLIBSOUNDS;
+			offset = ca_audInfoE.startAdlibSounds; //STARTADLIBSOUNDS;
 			break;
 		default:
 			// Shut up some gcc warnings.
@@ -1154,7 +1159,7 @@ void CA_LoadAllSounds(void)
 		{
 			if (CA_audio[offset])
 			{
-				MM_SetPurge((void**)(&CA_audio[offset]), 3);
+				MM_SetPurge((void **)(&CA_audio[offset]), 3);
 			}
 		}
 	}
@@ -1186,7 +1191,7 @@ void CA_LoadAllSounds(void)
 
 uint16_t *CA_TilePtrAtPos(int16_t x, int16_t y, int16_t plane)
 {
-	return &CA_mapPlanes[plane][y*CA_MapHeaders[ca_mapOn]->width+x];
+	return &CA_mapPlanes[plane][y * CA_MapHeaders[ca_mapOn]->width + x];
 }
 
 uint16_t CA_TileAtPos(int16_t x, int16_t y, int16_t plane)
@@ -1196,13 +1201,13 @@ uint16_t CA_TileAtPos(int16_t x, int16_t y, int16_t plane)
 	// (not reproduced in the exact same manner)
 	CA_MapHeader *mapheader = CA_MapHeaders[ca_mapOn];
 	if ((x >= 0) && (x < mapheader->width) && (y >= 0) && (y < mapheader->height))
-		return CA_mapPlanes[plane][y*mapheader->width+x];
-	return (y*x*y*x) % (ca_gfxInfoE.numTiles16*2 + ca_gfxInfoE.numTiles16m*6);
+		return CA_mapPlanes[plane][y * mapheader->width + x];
+	return (y * x * y * x) % (ca_gfxInfoE.numTiles16 * 2 + ca_gfxInfoE.numTiles16m * 6);
 }
 
 void CA_SetTileAtPos(int16_t x, int16_t y, int16_t plane, uint16_t value)
 {
-	CA_mapPlanes[plane][y*CA_MapHeaders[ca_mapOn]->width+x] = value;
+	CA_mapPlanes[plane][y * CA_MapHeaders[ca_mapOn]->width + x] = value;
 }
 
 uint16_t CA_GetMapWidth()

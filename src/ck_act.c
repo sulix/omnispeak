@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_str.h"
 #include "id_us.h"
 
-#include "ck_act.h"
-#include "ck_cross.h"
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include "ck_act.h"
+#include "ck_cross.h"
 
 /* The Action Manager
  * This subsystem loads the 'ACTION.CKx' file, which is a text file
@@ -44,7 +44,7 @@ void CK_ACT_SetupFunctions()
 
 void CK_ACT_AddFunction(const char *fnName, CK_ACT_Function fn)
 {
-	if (!STR_AddEntry(ck_functionTable, fnName, (void*)fn))
+	if (!STR_AddEntry(ck_functionTable, fnName, (void *)fn))
 	{
 		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Function array is full: %s is %d\n", fnName, CK_FUNCTABL_SIZE);
 		Quit("AddFunction: Function table is full!");
@@ -53,7 +53,7 @@ void CK_ACT_AddFunction(const char *fnName, CK_ACT_Function fn)
 
 void CK_ACT_AddColFunction(const char *fnName, CK_ACT_ColFunction fn)
 {
-	if (!STR_AddEntry(ck_functionTable, fnName, (void*)fn))
+	if (!STR_AddEntry(ck_functionTable, fnName, (void *)fn))
 	{
 		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Function array is full: %s is %d\n", fnName, CK_FUNCTABL_SIZE);
 		Quit("AddColFunction: Function table is full!");
@@ -62,11 +62,12 @@ void CK_ACT_AddColFunction(const char *fnName, CK_ACT_ColFunction fn)
 
 CK_ACT_Function CK_ACT_GetFunction(const char *fnName)
 {
-	if (!strcmp(fnName,"NULL")) return 0;
+	if (!strcmp(fnName, "NULL"))
+		return 0;
 	CK_ACT_Function fnPtr = (CK_ACT_Function)(STR_LookupEntry(ck_functionTable, fnName));
 	if (fnPtr == 0)
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "GetFunction: Could not find function \"%s\"\n",fnName);
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "GetFunction: Could not find function \"%s\"\n", fnName);
 		Quit("GetFunction: Function not found. Check your 'ACTION.CKx' file!");
 	}
 	return fnPtr;
@@ -74,11 +75,12 @@ CK_ACT_Function CK_ACT_GetFunction(const char *fnName)
 
 CK_ACT_ColFunction CK_ACT_GetColFunction(const char *fnName)
 {
-	if (!strcmp(fnName,"NULL")) return 0;
+	if (!strcmp(fnName, "NULL"))
+		return 0;
 	CK_ACT_ColFunction fnPtr = (CK_ACT_ColFunction)(STR_LookupEntry(ck_functionTable, fnName));
 	if (fnPtr == 0)
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "GetColFunction: Could not find function \"%s\"\n",fnName);
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "GetColFunction: Could not find function \"%s\"\n", fnName);
 		Quit("GetColFunction: Collision function not found. Check your 'ACTION.CKx' file!");
 	}
 	return fnPtr;
@@ -102,7 +104,7 @@ typedef struct CK_ACT_ParserState
 
 void CK_ACT_SetupActionDB()
 {
-	MM_GetPtr((mm_ptr_t*)&ck_actionData, CK_ACT_MAXACTIONS*sizeof(CK_action));
+	MM_GetPtr((mm_ptr_t *)&ck_actionData, CK_ACT_MAXACTIONS * sizeof(CK_action));
 	STR_AllocTable(&ck_actionTable, CK_ACT_MAXACTIONS);
 	ck_actionStringArena = MM_ArenaCreate(16384);
 }
@@ -114,27 +116,30 @@ CK_action *CK_GetActionByName(const char *name)
 
 CK_action *CK_GetOrCreateActionByName(const char *name)
 {
-	CK_action *ptr = (CK_action*)STR_LookupEntry(ck_actionTable, name);
+	CK_action *ptr = (CK_action *)STR_LookupEntry(ck_actionTable, name);
 	if (!ptr)
 	{
 		ptr = &ck_actionData[ck_actionsUsed++];
 		char *dupName = MM_ArenaStrDup(ck_actionStringArena, name);
-		STR_AddEntry(ck_actionTable, dupName, (void*)(ptr));
+		STR_AddEntry(ck_actionTable, dupName, (void *)(ptr));
 	}
 	return ptr;
 }
 
 static char CK_ACT_PeekCharacter(CK_ACT_ParserState *ps)
 {
-	if (ps->dataindex >= ps->datasize) return '\0';
+	if (ps->dataindex >= ps->datasize)
+		return '\0';
 	return ps->data[ps->dataindex];
 }
 
 static char CK_ACT_GetCharacter(CK_ACT_ParserState *ps)
 {
-	if (ps->dataindex >= ps->datasize) return '\0';
+	if (ps->dataindex >= ps->datasize)
+		return '\0';
 	char c = ps->data[ps->dataindex++];
-	if (c == '\n') ps->linecount++;
+	if (c == '\n')
+		ps->linecount++;
 	return c;
 }
 
@@ -164,12 +169,11 @@ const char *CK_ACT_GetToken(CK_ACT_ParserState *ps)
 	char tokenbuf[CK_ACT_MAX_TOKEN_LENGTH];
 	int i = 0;
 	CK_ACT_SkipWhitespace(ps);
-	while (CK_ACT_PeekCharacter(ps) && !isspace(CK_ACT_PeekCharacter(ps))) tokenbuf[i++] = CK_ACT_GetCharacter(ps);
+	while (CK_ACT_PeekCharacter(ps) && !isspace(CK_ACT_PeekCharacter(ps)))
+		tokenbuf[i++] = CK_ACT_GetCharacter(ps);
 	tokenbuf[i] = '\0';
 	return MM_ArenaStrDup(ck_actionLoadTempArena, tokenbuf);
 }
-
-
 
 int CK_ACT_GetInteger(CK_ACT_ParserState *ps)
 {
@@ -178,7 +182,7 @@ int CK_ACT_GetInteger(CK_ACT_ParserState *ps)
 
 	/* strtol does not support the '$' prefix for hex */
 	if (token[0] == '$')
-		result = strtol(token+1, 0 , 16);
+		result = strtol(token + 1, 0, 16);
 	else
 		result = strtol(token, 0, 0);
 	//printf("GetInteger %s -> %d\n", token, result);
@@ -188,8 +192,9 @@ int CK_ACT_GetInteger(CK_ACT_ParserState *ps)
 bool CK_ACT_ExpectToken(CK_ACT_ParserState *ps, const char *str)
 {
 	const char *c = CK_ACT_GetToken(ps);
-	bool result = !strcmp(c,str);
-	if (!result) CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "ExpectToken, got \"%s\" expected \"%s\" on line %d\n", c, str, ps->linecount);
+	bool result = !strcmp(c, str);
+	if (!result)
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "ExpectToken, got \"%s\" expected \"%s\" on line %d\n", c, str, ps->linecount);
 	return result;
 }
 
@@ -214,7 +219,6 @@ CK_ActionType CK_ACT_GetActionType(CK_ACT_ParserState *ps)
 		at = (CK_ActionType)(atoi(tok));
 	}
 	return at;
-		
 }
 
 bool CK_ACT_ParseAction(CK_ACT_ParserState *ps)
@@ -227,7 +231,7 @@ bool CK_ACT_ParseAction(CK_ACT_ParserState *ps)
 	CK_action *act = CK_GetOrCreateActionByName(actName);
 
 	act->compatDosPointer = CK_ACT_GetInteger(ps);
-	
+
 	act->chunkLeft = CK_ACT_GetInteger(ps);
 
 	act->chunkRight = CK_ACT_GetInteger(ps);
@@ -254,10 +258,10 @@ bool CK_ACT_ParseAction(CK_ACT_ParserState *ps)
 
 	const char *nextActionName = CK_ACT_GetToken(ps);
 
-	act->next = strcmp(nextActionName,"NULL")?CK_GetOrCreateActionByName(nextActionName):0;
+	act->next = strcmp(nextActionName, "NULL") ? CK_GetOrCreateActionByName(nextActionName) : 0;
 
 	MM_ArenaReset(ck_actionLoadTempArena);
-	
+
 	return true;
 }
 
@@ -271,7 +275,6 @@ CK_action *CK_LookupActionFrom16BitOffset(uint16_t offset)
 	return NULL;
 }
 
-
 void CK_ACT_LoadActions(const char *filename)
 {
 	ck_actionsUsed = 0;
@@ -279,19 +282,17 @@ void CK_ACT_LoadActions(const char *filename)
 	int numActionsParsed = 0;
 	//TODO: Parse ACTION.CKx
 	CK_ACT_ParserState parserstate;
-	
-	CA_LoadFile(filename, (mm_ptr_t*)(&parserstate.data), &(parserstate.datasize));
+
+	CA_LoadFile(filename, (mm_ptr_t *)(&parserstate.data), &(parserstate.datasize));
 	parserstate.dataindex = 0;
 	parserstate.linecount = 0;
 
 	ck_actionLoadTempArena = MM_ArenaCreate(1024);
-	
-	while (CK_ACT_ParseAction(&parserstate)) numActionsParsed++;
+
+	while (CK_ACT_ParseAction(&parserstate))
+		numActionsParsed++;
 
 	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Parsed %d actions over %d lines.\n", numActionsParsed, parserstate.linecount);
-	
+
 	MM_ArenaDestroy(ck_actionLoadTempArena);
 }
-
-
-

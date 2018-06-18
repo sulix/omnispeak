@@ -32,9 +32,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 
 // Record used to save & restore screen windows
-typedef	struct
+typedef struct
 {
-	int	x,y, w,h, px,py;
+	int x, y, w, h, px, py;
 } US_WindowRec;
 
 // In ck_quit.c, as it may be customized by individual games.
@@ -82,8 +82,8 @@ void US_SetPrintFont(int16_t parm);
 void US_SetPrintColour(int8_t parm);
 
 // Common
-extern bool us_noWait; // Debug mode enabled.
-extern bool us_tedLevel; // Launching a level from TED
+extern bool us_noWait;	// Debug mode enabled.
+extern bool us_tedLevel;      // Launching a level from TED
 extern int us_tedLevelNumber; // Number of level to launch from TED
 
 // We need to steal these from main().
@@ -99,20 +99,20 @@ void US_Shutdown(void);
 // Messages passed to the callback.
 typedef enum US_CardMsg
 {
-	US_MSG_CardEntered,	//The card has become the active card
-	US_MSG_Draw,		//Allows the callback to draw the card
-	US_MSG_PostDraw,	//Called after the card is drawn, for overlays
-	US_MSG_DrawItemIcon,	//Draws the icon of a single CardItem
-	US_MSG_DrawItem,	//Draws an item
-	US_MSG_ItemEntered	//An item was triggered
+	US_MSG_CardEntered,  //The card has become the active card
+	US_MSG_Draw,	 //Allows the callback to draw the card
+	US_MSG_PostDraw,     //Called after the card is drawn, for overlays
+	US_MSG_DrawItemIcon, //Draws the icon of a single CardItem
+	US_MSG_DrawItem,     //Draws an item
+	US_MSG_ItemEntered   //An item was triggered
 } US_CardMsg;
 
 typedef enum US_CardItemType
 {
-	US_ITEM_None,		//An empty CardItem to end the list
-	US_ITEM_Normal,		//A normal item
-	US_ITEM_Radio,		//A 'radio' item, only one can be selected in a given card
-	US_ITEM_Submenu		//The item triggers a submenu when activated
+	US_ITEM_None,   //An empty CardItem to end the list
+	US_ITEM_Normal, //A normal item
+	US_ITEM_Radio,  //A 'radio' item, only one can be selected in a given card
+	US_ITEM_Submenu //The item triggers a submenu when activated
 } US_CardItemType;
 
 // Used for storing flags, so not an enum (C++ doesn't like that)
@@ -124,7 +124,6 @@ typedef uint16_t US_CardItemState;
 	US_IS_Disabled = 0x04,
 	US_IS_Gap = 0x08
 } /*US_CardItemState*/;
-
 
 /*
  * Menu items can have 'commands', which cause the menu to quit, and something
@@ -142,7 +141,6 @@ typedef enum US_CardCommand
 	US_Comm_NewHardGame = 7
 } US_CardCommand;
 
-
 struct US_Card;
 
 typedef struct US_CardItem
@@ -157,19 +155,19 @@ typedef struct US_CardItem
 	int y;
 } US_CardItem;
 
-typedef bool (*US_CardCallbackFunc) (US_CardMsg, US_CardItem*);
+typedef bool (*US_CardCallbackFunc)(US_CardMsg, US_CardItem *);
 
 typedef struct US_Card
 {
 	int x;
 	int y;
 	//int gfxChunk;
-  int *gfxChunk; // converted to pointer for multiple episode support
+	int *gfxChunk; // converted to pointer for multiple episode support
 	// An unknown int
 	int unknown;
-	US_CardItem *items;	//Pointer to item array.
+	US_CardItem *items; //Pointer to item array.
 	US_CardCallbackFunc msgCallback;
-	int selectedItem;		//Index of selected item.
+	int selectedItem; //Index of selected item.
 	int unk1, unk2;
 } US_Card;
 
@@ -177,7 +175,7 @@ void US_DrawCards();
 void US_RunCards();
 
 // Related
-int USL_CtlDialog ( const char *s1, const char *s2, const char *s3 );
+int USL_CtlDialog(const char *s1, const char *s2, const char *s3);
 
 // A few function pointers
 extern bool (*p_save_game)(FILE *handle);
@@ -188,15 +186,15 @@ void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FILE *), bool (*savegamefun
 
 // Savefiles
 
-#define	US_MAX_SAVEDGAMENAME_LEN 32
-#define	US_MAX_NUM_OF_SAVED_GAMES 6
+#define US_MAX_SAVEDGAMENAME_LEN 32
+#define US_MAX_NUM_OF_SAVED_GAMES 6
 
 typedef struct US_Savefile
 {
 	char id[4];
 	uint16_t printXOffset;
 	bool used;
-	char name[US_MAX_SAVEDGAMENAME_LEN+1];
+	char name[US_MAX_SAVEDGAMENAME_LEN + 1];
 } __attribute__((packed)) US_Savefile;
 
 extern US_Savefile us_savefiles[US_MAX_NUM_OF_SAVED_GAMES];
@@ -206,6 +204,5 @@ void US_GetSavefiles(void);
 // Text-mode order screen functions
 bool US_TerminalOk();
 void US_PrintB8000Text(const uint8_t *textscreen, int numChars);
-
 
 #endif //ID_US_H

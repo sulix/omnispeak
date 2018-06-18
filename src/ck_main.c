@@ -17,17 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "id_us.h"
-#include "id_mm.h"
 #include "id_ca.h"
 #include "id_in.h"
-#include "id_vl.h"
+#include "id_mm.h"
 #include "id_rf.h"
-#include "ck_def.h"
-#include "ck_play.h"
-#include "ck_game.h"
+#include "id_us.h"
+#include "id_vl.h"
 #include "ck_act.h"
 #include "ck_cross.h"
+#include "ck_def.h"
+#include "ck_game.h"
+#include "ck_play.h"
 #include "ck4_ep.h"
 #include "ck5_ep.h"
 #include "ck6_ep.h"
@@ -235,22 +235,22 @@ void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h)
 	char buf[80] = {0};
 	char *p;
 
-	*h = *w = (uint16_t) 0;
-	p = buf;	/* must be a local buffer */
+	*h = *w = (uint16_t)0;
+	p = buf; /* must be a local buffer */
 
-	while ( (c = *str++) != 0 )
+	while ((c = *str++) != 0)
 	{
 		*p++ = c;
 
-		if ( c == '\n' || *str == 0 )
+		if (c == '\n' || *str == 0)
 		{
-			VH_MeasurePropString( buf, &x, &y, US_GetPrintFont() );
+			VH_MeasurePropString(buf, &x, &y, US_GetPrintFont());
 
 			*h += y;
-			if ( *w < x )
+			if (*w < x)
 				*w = x;
 
-			p = (char *) buf;
+			p = (char *)buf;
 			// Shouldn't buf be cleared so that a newline is not read over by
 			// VH_MeasurePropString?
 		}
@@ -276,7 +276,6 @@ void CK_ShutdownID(void)
 #ifdef WITH_SDL
 	SDL_Quit();
 #endif
-	
 }
 
 /*
@@ -334,7 +333,6 @@ void CK_InitGame()
 	// TODO: Palette initialization should be done in the terminator code
 	VL_SetDefaultPalette();
 
-
 	// Setup input
 	IN_Startup();
 
@@ -352,7 +350,7 @@ void CK_InitGame()
 	VL_Present();
 
 	// Create a surface for the dropdown menu
-	ck_statusSurface = VL_CreateSurface(STATUS_W+64, STATUS_H+16);
+	ck_statusSurface = VL_CreateSurface(STATUS_W + 64, STATUS_H + 16);
 }
 
 /*
@@ -400,7 +398,7 @@ void CK_DemoLoop()
 	{
 		switch (demoNumber++)
 		{
-		case 0:		// Terminator scroller and Title Screen
+		case 0: // Terminator scroller and Title Screen
 #if 0
 			// If no pixel panning capability
 			// Then the terminator screen isn't shown
@@ -408,8 +406,8 @@ void CK_DemoLoop()
 				CK_ShowTitleScreen();
 			else
 #endif
-				CK_DrawTerminator();	//TODO: Move this to an episode struct.
-#if 1 //DEMO_LOOP_ENABLED
+			CK_DrawTerminator(); //TODO: Move this to an episode struct.
+#if 1					     //DEMO_LOOP_ENABLED
 			break;
 		case 1:
 			CK_PlayDemo(0);
@@ -422,7 +420,7 @@ void CK_DemoLoop()
 			CK_PlayDemo(1);
 			break;
 		case 4:
-			CK_DoHighScores();// High Scores
+			CK_DoHighScores(); // High Scores
 			// CK_PlayDemo(4);
 			break;
 		case 5:
@@ -460,7 +458,6 @@ void CK_DemoLoop()
 	}
 
 	Quit("Demo loop exited!?");
-
 }
 
 /* Basically a set of hacks: By commenting out the relevant "define" line,
@@ -529,7 +526,6 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-
 	switch (atoi(argv[3]))
 	{
 	case 4:
@@ -595,29 +591,28 @@ int main(int argc, char *argv[])
 		char *dataToCompare = &dsegBuffer[act->compatDosPointer];
 		if (*(int16_t *)dataToCompare != act->chunkLeft)
 			printf("chunkLeft mismatch found for action no. %d: %s\n", count, name);
-		if (*(int16_t *)(dataToCompare+2) != act->chunkRight)
+		if (*(int16_t *)(dataToCompare + 2) != act->chunkRight)
 			printf("chunkRight mismatch found for action no. %d: %s\n", count, name);
-		if (*(int16_t *)(dataToCompare+4) != act->type)
+		if (*(int16_t *)(dataToCompare + 4) != act->type)
 			printf("type mismatch found for action no. %d: %s\n", count, name);
-		if (*(int16_t *)(dataToCompare+6) != act->protectAnimation)
+		if (*(int16_t *)(dataToCompare + 6) != act->protectAnimation)
 			printf("protectAnimation mismatch found for action no. %d: %s\n", count, name);
-		if (*(int16_t *)(dataToCompare+8) != act->stickToGround)
+		if (*(int16_t *)(dataToCompare + 8) != act->stickToGround)
 			printf("stickToGround mismatch found for action no. %d: %s\n", count, name);
-		if (*(int16_t *)(dataToCompare+10) != act->timer)
+		if (*(int16_t *)(dataToCompare + 10) != act->timer)
 			printf("timer mismatch found for action no. %d: %s\n", count, name);
-		if (*(int16_t *)(dataToCompare+12) != act->velX)
+		if (*(int16_t *)(dataToCompare + 12) != act->velX)
 			printf("velX mismatch found for action no. %d: %s\n", count, name);
-		if (*(int16_t *)(dataToCompare+14) != act->velY)
+		if (*(int16_t *)(dataToCompare + 14) != act->velY)
 			printf("velY mismatch found for action no. %d: %s\n", count, name);
-		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+16), (void *)(act->think)))
+		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare + 16), (void *)(act->think)))
 			printf("think mismatch found (possibly) for action no. %d: %s\n", count, name);
-		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+20), (void *)(act->collide)))
+		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare + 20), (void *)(act->collide)))
 			printf("collide mismatch found (possibly) for action no. %d: %s\n", count, name);
-		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare+24), (void *)(act->draw)))
+		if (!compareFunctionDOSPtrToNativePtr(*(uint32_t *)(dataToCompare + 24), (void *)(act->draw)))
 			printf("draw mismatch found (possibly) for action no. %d: %s\n", count, name);
-		if (((act->next == NULL) && (*(uint16_t *)(dataToCompare+28) != 0)) ||
-		    ((act->next != NULL) && (*(uint16_t *)(dataToCompare+28) != act->next->compatDosPointer))
-		)
+		if (((act->next == NULL) && (*(uint16_t *)(dataToCompare + 28) != 0)) ||
+			((act->next != NULL) && (*(uint16_t *)(dataToCompare + 28) != act->next->compatDosPointer)))
 			printf("next mismatch found for action no. %d: %s\n", count, name);
 
 		++count;
@@ -632,15 +627,13 @@ CK_EpisodeDef *ck_episodes[] = {
 	&ck5_episode,
 	&ck6v14e_episode,
 	&ck6v15e_episode,
-	0
-};
-
+	0};
 
 int main(int argc, char *argv[])
 {
 	// Send the cmd-line args to the User Manager.
 	us_argc = argc;
-	us_argv = (const char **) argv;
+	us_argv = (const char **)argv;
 
 	// Default to the first episode with all files present.
 	// If no episodes are found, we default to Keen 4, in order
@@ -667,13 +660,13 @@ int main(int argc, char *argv[])
 		if (!CK_Cross_strcasecmp(argv[i], "/EPISODE"))
 		{
 			// A bit of stuff from the usual demo loop
-			if (argc >= i+1)
+			if (argc >= i + 1)
 			{
-				if (!strcmp(argv[i+1], "4"))
+				if (!strcmp(argv[i + 1], "4"))
 					ck_currentEpisode = &ck4_episode;
-				else if (!strcmp(argv[i+1], "5"))
+				else if (!strcmp(argv[i + 1], "5"))
 					ck_currentEpisode = &ck5_episode;
-				else if (!strcmp(argv[i+1], "6"))
+				else if (!strcmp(argv[i + 1], "6"))
 				{
 					// For now, we use the 1.4 structure to
 					// call the IsPresent function, which
@@ -682,9 +675,9 @@ int main(int argc, char *argv[])
 					ck6v14e_episode.isPresent();
 					ck_currentEpisode = ck6_episode;
 				}
-				else if (!strcmp(argv[i+1], "6v14"))
+				else if (!strcmp(argv[i + 1], "6v14"))
 					ck_currentEpisode = &ck6v14e_episode;
-				else if (!strcmp(argv[i+1], "6v15"))
+				else if (!strcmp(argv[i + 1], "6v15"))
 					ck_currentEpisode = &ck6v15e_episode;
 				else
 					Quit("Unsupported episode!");
@@ -709,7 +702,7 @@ int main(int argc, char *argv[])
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 		else if (!CK_Cross_strcasecmp(argv[i], "/DUMPFILE"))
 		{
-			if (i < argc+1)
+			if (i < argc + 1)
 				dumperFilename = argv[++i]; // Yes, we increment i twice
 		}
 #endif

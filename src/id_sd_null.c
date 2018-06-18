@@ -37,24 +37,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Sort of replacements for x86 behaviors and assembly code
 
-
 static bool SD_NULL_AudioSubsystem_Up;
-
 
 /* NEVER call this from the SDL callback!!! (Or you want a deadlock?) */
 void SD_NULL_SetTimer0(int16_t int_8_divisor)
 {
 }
 
-
-
 /* FIXME: The SDL prefix may conflict with SDL functions in the future(???)
  * Best (but hackish) solution, if it happens: Add our own custom prefix.
  */
 
 void SDL_t0Service(void);
-
-
 
 void SD_NULL_alOut(uint8_t reg, uint8_t val)
 {
@@ -63,8 +57,6 @@ void SD_NULL_alOut(uint8_t reg, uint8_t val)
 void SD_NULL_PCSpkOn(bool on, int freq)
 {
 }
-
-
 
 void SDL_PCService(void);
 void SDL_ALSoundService(void);
@@ -107,8 +99,7 @@ SD_Backend sd_null_backend = {
 	.unlock = SD_NULL_Unlock,
 	.alOut = SD_NULL_alOut,
 	.pcSpkOn = SD_NULL_PCSpkOn,
-	.setTimer0 = SD_NULL_SetTimer0
-};	
+	.setTimer0 = SD_NULL_SetTimer0};
 
 SD_Backend *SD_Impl_GetBackend()
 {

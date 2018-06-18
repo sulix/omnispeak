@@ -17,12 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "id_ca.h"
+#include "id_rf.h"
+#include "ck_act.h"
 #include "ck_def.h"
 #include "ck_phys.h"
 #include "ck_play.h"
-#include "ck_act.h"
-#include "id_ca.h"
-#include "id_rf.h"
 
 #include <stdio.h>
 
@@ -32,9 +32,10 @@ extern int ck_infoplaneArrowsY[];
 void CK5_PurpleGoPlatThink(CK_object *obj)
 {
 
-	if (ck_nextX || ck_nextY) return;
+	if (ck_nextX || ck_nextY)
+		return;
 
-	int16_t delta = SD_GetSpriteSync()*12;
+	int16_t delta = SD_GetSpriteSync() * 12;
 
 	// Will we reach a new tile?
 	if (obj->user2 > delta)
@@ -149,31 +150,31 @@ void CK5_SpawnVolte(int tileX, int tileY)
 
 	// Initialize Volte Direction
 	// (Vanilla keen does this with far pointer arithmetic)
-	if (CA_TileAtPos(tileX-1, tileY, 2) == 0x5C)
+	if (CA_TileAtPos(tileX - 1, tileY, 2) == 0x5C)
 		dir = 1;
-	else if (CA_TileAtPos(tileX+1, tileY, 2) == 0x5E)
+	else if (CA_TileAtPos(tileX + 1, tileY, 2) == 0x5E)
 		dir = 3;
-	else if (CA_TileAtPos(tileX, tileY-1, 2) == 0x5D)
+	else if (CA_TileAtPos(tileX, tileY - 1, 2) == 0x5D)
 		dir = 2;
-	else if (CA_TileAtPos(tileX, tileY+1, 2) == 0x5B)
+	else if (CA_TileAtPos(tileX, tileY + 1, 2) == 0x5B)
 		dir = 0;
 	else
-		Quit ("Volte spawned at bad spot!");  // Not present in vanilla keen
+		Quit("Volte spawned at bad spot!"); // Not present in vanilla keen
 
 	CA_SetTileAtPos(tileX, tileY, 2, dir + 0x5B);
 	new_object->user1 = dir;
 	new_object->user2 = 0x100;
 }
 
-
 // This is very similar to the GoPlat function
 // The only difference is the increased speed and the error message
 void CK5_VolteMove(CK_object *obj)
 {
 
-	if (ck_nextX || ck_nextY) return;
+	if (ck_nextX || ck_nextY)
+		return;
 
-	int16_t delta = SD_GetSpriteSync()*32;
+	int16_t delta = SD_GetSpriteSync() * 32;
 
 	// Will we reach a new tile?
 	if (obj->user2 > delta)
