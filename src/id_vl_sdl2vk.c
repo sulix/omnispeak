@@ -30,8 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "assert.h"
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_syswm.h>
+#include <SDL2/SDL_vulkan.h>
 #include <stdlib.h>
 #include "id_mm.h"
 #include "id_us.h"
@@ -41,13 +41,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define VK_USE_PLATFORM_XCB_KHR
 #include <vulkan/vulkan.h>
-
-#ifdef VK_USE_PLATFORM_XLIB_KHR
-#define VL_SDL2VK_SURFACE_EXTENSION_NAME VK_KHR_XLIB_SURFACE_EXTENSION_NAME
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-#define VL_SDL2VK_SURFACE_EXTENSION_NAME VK_KHR_XCB_SURFACE_EXTENSION_NAME
-#include <X11/Xlib-xcb.h>
-#endif
 
 PFN_vkGetDeviceProcAddr id_vkGetDeviceProcAddr;
 PFN_vkGetPhysicalDeviceSurfaceSupportKHR id_vkGetPhysicalDeviceSurfaceSupportKHR;
@@ -436,7 +429,7 @@ static VkCommandBuffer VL_SDL2VK_StartCommandBuffer(VkCommandBufferUsageFlagBits
 	return cmdBuf;
 }
 
-static void VL_SDL2VK_ImageLayoutBarrier(VkCommandBuffer buf, VkImage img, VkFormat imgFormat, VkImageLayout oldLayout, VkAccessFlags oldAccess, VkImageLayout newLayout, VkAccessFlags newAccess)
+static void VL_SDL2VK_ImageLayoutBarrier(VkCommandBuffer buf, VkImage img, VkFormat imgFormat, VkImageLayout oldLayout, VkAccessFlags oldAccess, VkPipelineStageFlags oldStageFlags, VkImageLayout newLayout, VkAccessFlags newAccess, VkPipelineStageFlags newStageFlags)
 {
 	VkImageMemoryBarrier memBarrier = {};
 	memBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -453,13 +446,23 @@ static void VL_SDL2VK_ImageLayoutBarrier(VkCommandBuffer buf, VkImage img, VkFor
 	memBarrier.subresourceRange.baseArrayLayer = 0;
 	memBarrier.subresourceRange.layerCount = 1;
 
-	vkCmdPipelineBarrier(buf, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+	vkCmdPipelineBarrier(buf, oldStageFlags, newStageFlags,
 		0, 0, 0, 0, 0, 1, &memBarrier);
 }
 
 static void VL_SDL2VK_CreateVulkanInstance()
 {
-	const char *requiredInstanceExtensions[] = {VK_KHR_SURFACE_EXTENSION_NAME, VL_SDL2VK_SURFACE_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_EXTENSION_NAME};
+	const char *requiredInstanceExtensions[] = {VK_EXT_DEBUG_REPORT_EXTENSION_NAME};
+
+	unsigned int totalRequiredInstExtCount;
+	if (!SDL_Vulkan_GetInstanceExtensions(vl_sdl2vk_window, &totalRequiredInstExtCount, 0))
+		Quit("Couldn't get Vulkan instance extension list from SDL.");
+
+	const char **totalRequiredInstanceExtensions = (const char **)MM_ArenaAlloc(vl_sdl2vk_tempArena, sizeof(const char *) * (totalRequiredInstExtCount + 2));
+	SDL_Vulkan_GetInstanceExtensions(vl_sdl2vk_window, &totalRequiredInstExtCount, totalRequiredInstanceExtensions);
+	memcpy(totalRequiredInstanceExtensions + totalRequiredInstExtCount, requiredInstanceExtensions, sizeof(const char *));
+	totalRequiredInstExtCount++;
+
 	const char *desiredDebugLayers[] = {"VK_LAYER_LUNARG_standard_validation", "VK_LAYER_LUNARG_object_tracker", "VK_LAYER_LUNARG_parameter_validation"};
 	VkResult result = VK_SUCCESS;
 	vl_sdl2vk_applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -473,10 +476,10 @@ static void VL_SDL2VK_CreateVulkanInstance()
 	vl_sdl2vk_instanceCreateInfo.pNext = 0;
 	vl_sdl2vk_instanceCreateInfo.flags = 0;
 	vl_sdl2vk_instanceCreateInfo.pApplicationInfo = &vl_sdl2vk_applicationInfo;
-	vl_sdl2vk_instanceCreateInfo.enabledLayerCount = 0;
+	vl_sdl2vk_instanceCreateInfo.enabledLayerCount = 3;
 	vl_sdl2vk_instanceCreateInfo.ppEnabledLayerNames = desiredDebugLayers;
-	vl_sdl2vk_instanceCreateInfo.enabledExtensionCount = 0;
-	vl_sdl2vk_instanceCreateInfo.ppEnabledExtensionNames = requiredInstanceExtensions;
+	vl_sdl2vk_instanceCreateInfo.enabledExtensionCount = totalRequiredInstExtCount;
+	vl_sdl2vk_instanceCreateInfo.ppEnabledExtensionNames = totalRequiredInstanceExtensions;
 
 	// Search for the required surface extensions.
 	uint32_t instanceExtensionCount = 0;
@@ -484,6 +487,7 @@ static void VL_SDL2VK_CreateVulkanInstance()
 	if (result != VK_SUCCESS || instanceExtensionCount < 2)
 		Quit("No suitable Vulkan instance.");
 
+	/*
 	VkExtensionProperties *allInstanceExtensions = (VkExtensionProperties *)MM_ArenaAlloc(vl_sdl2vk_tempArena, sizeof(VkExtensionProperties) * instanceExtensionCount);
 	result = vkEnumerateInstanceExtensionProperties(0, &instanceExtensionCount, allInstanceExtensions);
 	if (result != VK_SUCCESS)
@@ -496,11 +500,6 @@ static void VL_SDL2VK_CreateVulkanInstance()
 			// We've found the KHR_surface extension.
 			vl_sdl2vk_instanceCreateInfo.enabledExtensionCount++;
 		}
-		if (!strcmp(VL_SDL2VK_SURFACE_EXTENSION_NAME, allInstanceExtensions[i].extensionName))
-		{
-			// We've found our platform-specific surface extension.
-			vl_sdl2vk_instanceCreateInfo.enabledExtensionCount++;
-		}
 		if (!strcmp(VK_EXT_DEBUG_REPORT_EXTENSION_NAME, allInstanceExtensions[i].extensionName))
 		{
 			// We've found the debug report extension.
@@ -510,6 +509,7 @@ static void VL_SDL2VK_CreateVulkanInstance()
 	if (vl_sdl2vk_instanceCreateInfo.enabledExtensionCount < 3)
 		Quit("Vulkan Surface Extensions not available.");
 
+	*/
 	result = vkCreateInstance(&vl_sdl2vk_instanceCreateInfo, 0, &vl_sdl2vk_instance);
 	if (result != VK_SUCCESS)
 	{
@@ -542,29 +542,8 @@ static void VL_SDL2VK_InitPhysicalDevice()
 {
 	VkResult result = VK_SUCCESS;
 
-	// Platform-specific surface stuff
-	SDL_SysWMinfo sysWindowInfo;
-	SDL_VERSION(&sysWindowInfo.version);
-	if (!SDL_GetWindowWMInfo(vl_sdl2vk_window, &sysWindowInfo))
-		Quit("Couldn't get system window info.");
-#ifdef VK_USE_PLATFORM_XLIB_KHR
-	VkXlibSurfaceCreateInfoKHR surfaceCreateInfo = {};
-	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
-	surfaceCreateInfo.pNext = 0;
-	surfaceCreateInfo.dpy = sysWindowInfo.info.x11.display;
-	surfaceCreateInfo.window = sysWindowInfo.info.x11.window;
-
-	result = vkCreateXlibSurfaceKHR(vl_sdl2vk_instance, &surfaceCreateInfo, 0, &vl_sdl2vk_windowSurface);
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-	VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
-	surfaceCreateInfo.pNext = 0;
-	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
-	surfaceCreateInfo.connection = XGetXCBConnection((Display *)sysWindowInfo.info.x11.display);
-	surfaceCreateInfo.window = sysWindowInfo.info.x11.window;
-
-	result = vkCreateXcbSurfaceKHR(vl_sdl2vk_instance, &surfaceCreateInfo, 0, &vl_sdl2vk_windowSurface);
-#endif
-	if (result != VK_SUCCESS)
+	bool surfaceResult = SDL_Vulkan_CreateSurface(vl_sdl2vk_window, vl_sdl2vk_instance, &vl_sdl2vk_windowSurface);
+	if (surfaceResult != true)
 		Quit("Couldn't create window surface.");
 
 	uint32_t physicalDeviceCount = 0;
@@ -1009,8 +988,8 @@ static void VL_SDL2VK_CreateFramebuffers(int integerScaleX, int integerScaleY)
 	for (int i = 0; i < vl_sdl2vk_numSwapchainImages; ++i)
 	{
 		VL_SDL2VK_ImageLayoutBarrier(layoutChange, vl_sdl2vk_swapchainImages[i], vl_sdl2vk_swapchainFormat,
-			VK_IMAGE_LAYOUT_UNDEFINED, 0,
-			VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_ACCESS_MEMORY_READ_BIT);
+			VK_IMAGE_LAYOUT_UNDEFINED, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+			VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_ACCESS_MEMORY_READ_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
 	}
 	vkEndCommandBuffer(layoutChange);
 	// And submit it...
@@ -1299,8 +1278,8 @@ static void VL_SDL2VK_PopulateCommandBuffer(int i, VkRect2D fullRgn, VkRect2D re
 	blitRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
 	VL_SDL2VK_ImageLayoutBarrier(vl_sdl2vk_commandBuffers[i], vl_sdl2vk_swapchainImages[i], vl_sdl2vk_swapchainFormat,
-		VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_ACCESS_MEMORY_READ_BIT,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT);
+		VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_ACCESS_MEMORY_READ_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
 	vkCmdBeginRenderPass(vl_sdl2vk_commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 	vkCmdSetViewport(vl_sdl2vk_commandBuffers[i], 0, 1, &viewport);
@@ -1315,16 +1294,16 @@ static void VL_SDL2VK_PopulateCommandBuffer(int i, VkRect2D fullRgn, VkRect2D re
 	vkCmdEndRenderPass(vl_sdl2vk_commandBuffers[i]);
 
 	VL_SDL2VK_ImageLayoutBarrier(vl_sdl2vk_commandBuffers[i], vl_sdl2vk_integerImage, vl_sdl2vk_swapchainFormat,
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_READ_BIT);
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_READ_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
 	vkCmdBlitImage(vl_sdl2vk_commandBuffers[i],
 		vl_sdl2vk_integerImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 		vl_sdl2vk_swapchainImages[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		1, &blitRegion, VK_FILTER_LINEAR);
 
 	VL_SDL2VK_ImageLayoutBarrier(vl_sdl2vk_commandBuffers[i], vl_sdl2vk_swapchainImages[i], vl_sdl2vk_swapchainFormat,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT,
-		VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_ACCESS_MEMORY_READ_BIT);
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+		VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_ACCESS_MEMORY_READ_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
 	result = vkEndCommandBuffer(vl_sdl2vk_commandBuffers[i]);
 
 	if (result != VK_SUCCESS)
@@ -1397,7 +1376,7 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 		// and VGA line doubling.
 		vl_sdl2vk_window = SDL_CreateWindow(VL_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			VL_SDL2VK_DEFAULT_WINDOW_WIDTH, VL_SDL2VK_DEFAULT_WINDOW_HEIGHT,
-			SDL_WINDOW_RESIZABLE | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+			SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 		vl_sdl2vk_screenWidth = VL_EGAVGA_GFX_WIDTH;
 		vl_sdl2vk_screenHeight = VL_EGAVGA_GFX_HEIGHT;
 
@@ -1595,8 +1574,8 @@ static void *VL_SDL2VK_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 			Quit("Couldn't create sampler for surface.");
 
 		VkCommandBuffer layoutChange = VL_SDL2VK_StartCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-		VL_SDL2VK_ImageLayoutBarrier(layoutChange, surf->stagingImage, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_PREINITIALIZED, VK_ACCESS_HOST_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_READ_BIT);
-		VL_SDL2VK_ImageLayoutBarrier(layoutChange, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_PREINITIALIZED, VK_ACCESS_HOST_WRITE_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT);
+		VL_SDL2VK_ImageLayoutBarrier(layoutChange, surf->stagingImage, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_PREINITIALIZED, VK_ACCESS_HOST_WRITE_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_READ_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
+		VL_SDL2VK_ImageLayoutBarrier(layoutChange, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_PREINITIALIZED, VK_ACCESS_HOST_WRITE_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
 		vkEndCommandBuffer(layoutChange);
 
 		VkSubmitInfo submitInfo = {};
@@ -1625,7 +1604,7 @@ static void VL_SDL2VK_UploadSurface(void *surface)
 
 	VkCommandBuffer copyImageCmdBuf = VL_SDL2VK_StartCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-	VL_SDL2VK_ImageLayoutBarrier(copyImageCmdBuf, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT);
+	VL_SDL2VK_ImageLayoutBarrier(copyImageCmdBuf, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
 	// Copy
 	VkImageSubresourceLayers subresourceLayers = {};
 	subresourceLayers.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -1635,16 +1614,16 @@ static void VL_SDL2VK_UploadSurface(void *surface)
 
 	VkImageCopy imageCopy = {};
 	imageCopy.srcSubresource = subresourceLayers;
-	imageCopy.srcOffset = {0, 0, 0};
+	imageCopy.srcOffset = (VkOffset3D){0, 0, 0};
 	imageCopy.dstSubresource = subresourceLayers;
-	imageCopy.dstOffset = {0, 0, 0};
+	imageCopy.dstOffset = (VkOffset3D){0, 0, 0};
 	imageCopy.extent.width = surf->w;
 	imageCopy.extent.height = surf->h;
 	imageCopy.extent.depth = 1;
 
 	vkCmdCopyImage(copyImageCmdBuf, surf->stagingImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, surf->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
 
-	VL_SDL2VK_ImageLayoutBarrier(copyImageCmdBuf, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT);
+	VL_SDL2VK_ImageLayoutBarrier(copyImageCmdBuf, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
 
 	vkEndCommandBuffer(copyImageCmdBuf);
 
@@ -1891,7 +1870,7 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 	uint32_t framebufferIndex;
 
 	int newW, newH;
-	SDL_GetWindowSize(vl_sdl2vk_window, &newW, &newH);
+	SDL_Vulkan_GetDrawableSize(vl_sdl2vk_window, &newW, &newH);
 	VL_CalculateRenderRegions(newW, newH);
 	if (vl_sdl2vk_swapchainSize.width != newW || vl_sdl2vk_swapchainSize.height != newH)
 	{
