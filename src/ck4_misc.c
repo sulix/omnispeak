@@ -1134,8 +1134,7 @@ void CK4_ShowWetsuitMessage(void)
 	IN_ClearKeysDown();
 	IN_WaitButton();
 
-	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x70);
+	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), 0x70);
 	VL_Present(); // VW_UpdateScreen();
 	// VL_WaitVBL(30);
 	IN_ClearKeysDown();
