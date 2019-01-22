@@ -1126,7 +1126,7 @@ void CK4_ShowWetsuitMessage(void)
 	US_CenterWindow(26, 8);
 	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
 	US_SetWindowW(US_GetWindowW() - 0x30);
-	US_SetPrintY(US_GetPrintY() + 6);
+	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint("Cool!  I can breathe\n"
 		  "under water now!");
 	VL_Present(); // VW_UpdateScreen();

@@ -768,7 +768,7 @@ void CK4_SpawnWetsuit(int tileX, int tileY)
 
 void CK4_WetsuitCol(CK_object *a, CK_object *b)
 {
-	if (b->type == CT_Player && !b->topTI)
+	if (b->type == CT_Player && b->topTI)
 	{
 		ck_gameState.ep.ck4.wetsuit = true;
 		SD_PlaySound(SOUND_FOOTAPPEAR);
