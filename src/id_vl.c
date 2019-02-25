@@ -22,12 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_mm.h"
 #include "id_vl_private.h"
 
+#include "ck_cross.h"
+
 #ifdef WITH_SDL
 #include <SDL.h>
 #endif
-
-#define max(a, b) (((a) < (b)) ? (b) : (a))
-#define min(a, b) (((a) < (b)) ? (a) : (b))
 
 // EGA color palette in RGB format (technically more can be chosen with the VGA)
 const uint8_t VL_EGARGBColorTable[16][3] = {
@@ -176,10 +175,10 @@ void VL_FadeFromBlack(void)
 
 void VL_Clip(int *src_w, int *src_h, int *dst_x, int *dst_y, int dst_w, int dst_h)
 {
-	int initialX = max(-(*dst_x), 0);
-	int initialY = max(-(*dst_y), 0);
-	int finalW = min(max(dst_w - (*dst_x), 0), min(*src_w, *dst_x + *src_w));
-	int finalH = min(max(dst_h - (*dst_y), 0), min(*src_h, *dst_y + *src_h));
+	int initialX = CK_Cross_max(-(*dst_x), 0);
+	int initialY = CK_Cross_max(-(*dst_y), 0);
+	int finalW = CK_Cross_min(CK_Cross_max(dst_w - (*dst_x), 0), CK_Cross_min(*src_w, *dst_x + *src_w));
+	int finalH = CK_Cross_min(CK_Cross_max(dst_h - (*dst_y), 0), CK_Cross_min(*src_h, *dst_y + *src_h));
 
 	*src_w = finalW;
 	*src_h = finalH;
@@ -404,10 +403,10 @@ void VL_MaskedBlitClipToRGB(void *src,void *dest, int x, int y, int pitch, int w
 	uint8_t *srcptr_g = srcptr_b + (w/8)*h;
 	uint8_t *srcptr_r = srcptr_g + (w/8)*h;
 	uint8_t *srcptr_i = srcptr_r + (w/8)*h;
-	int initialX = max(-x,0);
-	int initialY = max(-y,0);
-	int finalW = min(max(dw-x,0), w);
-	int finalH = min(max(dh-y,0), h);
+	int initialX = CK_Cross_max(-x,0);
+	int initialY = CK_Cross_max(-y,0);
+	int finalW = CK_Cross_min(CK_Cross_max(dw-x,0), w);
+	int finalH = CK_Cross_min(CK_Cross_max(dh-y,0), h);
 
 	for(int sy = initialY; sy < finalH; ++sy)
 	{
@@ -443,10 +442,10 @@ void VL_MaskedBlitClipToPAL8(void *src, void *dest, int x, int y, int pitch, int
 	uint8_t *srcptr_g = srcptr_b + (w / 8) * h;
 	uint8_t *srcptr_r = srcptr_g + (w / 8) * h;
 	uint8_t *srcptr_i = srcptr_r + (w / 8) * h;
-	int initialX = max(-x, 0);
-	int initialY = max(-y, 0);
-	int finalW = min(max(dw - x, 0), w);
-	int finalH = min(max(dh - y, 0), h);
+	int initialX = CK_Cross_max(-x, 0);
+	int initialY = CK_Cross_max(-y, 0);
+	int finalW = CK_Cross_min(CK_Cross_max(dw - x, 0), w);
+	int finalH = CK_Cross_min(CK_Cross_max(dh - y, 0), h);
 
 	for (int sy = initialY; sy < finalH; ++sy)
 	{
@@ -663,10 +662,10 @@ void VL_1bppInvBlitClipToPAL8(void *src, void *dest, int x, int y, int pitch, in
 {
 	uint8_t *dstptr = (uint8_t *)dest;
 	uint8_t *srcptr = (uint8_t *)src;
-	int initialX = max(-x, 0);
-	int initialY = max(-y, 0);
-	int finalW = min(max(dw - x, 0), w);
-	int finalH = min(max(dh - y, 0), h);
+	int initialX = CK_Cross_max(-x, 0);
+	int initialY = CK_Cross_max(-y, 0);
+	int finalW = CK_Cross_min(CK_Cross_max(dw - x, 0), w);
+	int finalH = CK_Cross_min(CK_Cross_max(dh - y, 0), h);
 	int spitch = ((w + 7) / 8) * 8;
 
 	for (int sy = initialY; sy < finalH; ++sy)
@@ -977,8 +976,8 @@ void VL_CalculateRenderRegions(int realW, int realH)
 		vl_fullRgn_y = 0;
 	}
 
-	vl_integerWidth = max((vl_fullRgn_w / VL_EGAVGA_GFX_WIDTH) * VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_WIDTH);
-	vl_integerHeight = max((vl_fullRgn_h / VL_EGAVGA_GFX_HEIGHT) * VL_EGAVGA_GFX_HEIGHT, VL_EGAVGA_GFX_HEIGHT);
+	vl_integerWidth = CK_Cross_max((vl_fullRgn_w / VL_EGAVGA_GFX_WIDTH) * VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_WIDTH);
+	vl_integerHeight = CK_Cross_max((vl_fullRgn_h / VL_EGAVGA_GFX_HEIGHT) * VL_EGAVGA_GFX_HEIGHT, VL_EGAVGA_GFX_HEIGHT);
 
 	vl_renderRgn_x =
 		vl_integerWidth * VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH /

@@ -2,6 +2,8 @@
 #include "id_vl.h"
 #include "id_vl_private.h"
 
+#include "ck_cross.h"
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -199,14 +201,11 @@ static int VL_NULL_GetNumBuffers(void *surface)
 	return 1;
 }
 
-#ifndef max
-#define max(x, y) (((x) < (y)) ? (y) : (x))
-#endif
 static void VL_NULL_ScrollSurface(void *surface, int x, int y)
 {
 	VL_NULL_Surface *surf = (VL_NULL_Surface *)surface;
 	int dx = 0, dy = 0, sx = 0, sy = 0;
-	int w = surf->w - max(x, -x), h = surf->h - max(y, -y);
+	int w = surf->w - CK_Cross_max(x, -x), h = surf->h - CK_Cross_max(y, -y);
 	if (x > 0)
 	{
 		dx = 0;

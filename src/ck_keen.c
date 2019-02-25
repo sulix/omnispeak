@@ -33,6 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_sd.h"
 #include "id_ti.h"
 
+#include "ck_cross.h"
+
 // For all the shitty debug stuff  I have.
 #include <stdio.h>
 
@@ -869,9 +871,8 @@ void CK_KeenLookDownThink(CK_object *obj)
 
 		if (TI_ForeLeft(tile2) || TI_ForeBottom(tile2) || TI_ForeRight(tile2))
 			return;
-#define max(a, b) (((a) > (b)) ? (a) : (b))
 
-		uint16_t deltay = max(SD_GetSpriteSync(), 4) << 4;
+		uint16_t deltay = CK_Cross_max(SD_GetSpriteSync(), 4) << 4;
 
 		//Moving platforms
 		if (ck_keenState.platform)
