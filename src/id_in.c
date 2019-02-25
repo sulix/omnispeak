@@ -18,9 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #include "id_in.h"
+#include "id_mm.h"
 #include "id_sd.h"
 #include "id_us.h"
 #include "id_vl.h"
+#include "ck_cross.h"
 
 #include <string.h>
 
@@ -340,6 +342,23 @@ int in_demoPtr;
 int in_demoBytes;
 IN_DemoMode in_demoState;
 
+bool IN_DemoStartRecording(int bufferSize)
+{
+	if (!bufferSize)
+		return false;
+	MM_GetPtr((mm_ptr_t*)&in_demoBuf, bufferSize);
+	
+	in_demoState = IN_Demo_Record;
+	in_demoBytes = bufferSize & ~1;
+	in_demoPtr = 0;
+	
+	in_demoBuf[0] = 0;
+	in_demoBuf[1] = 0;
+	
+	return true;
+}
+	
+
 void IN_DemoStartPlaying(uint8_t *data, int len)
 {
 	in_demoBuf = data;
@@ -350,6 +369,9 @@ void IN_DemoStartPlaying(uint8_t *data, int len)
 
 void IN_DemoStopPlaying()
 {
+	if (in_demoState == IN_Demo_Record && in_demoPtr != 0)
+		in_demoPtr += 2;
+	
 	in_demoState = IN_Demo_Off;
 }
 
@@ -363,6 +385,24 @@ bool IN_DemoIsPlaying()
 IN_DemoMode IN_DemoGetMode()
 {
 	return in_demoState;
+}
+
+void IN_DemoFreeBuffer()
+{
+	if (in_demoBuf)
+		MM_FreePtr((mm_ptr_t*) &in_demoBuf);
+}
+
+void IN_DemoSaveToFile(const char *fileName, uint16_t mapNumber)
+{
+	uint16_t demoSize = in_demoPtr;
+	FILE *demoFile = fopen(fileName, "wb");
+	CK_Cross_fwriteInt16LE(&mapNumber, 1, demoFile);
+	CK_Cross_fwriteInt16LE(&demoSize, 1, demoFile);
+	
+	fwrite(in_demoBuf, in_demoPtr, 1, demoFile);
+	
+	fclose(demoFile);
 }
 
 void IN_ClearKeysDown()
@@ -409,7 +449,7 @@ void IN_GetJoyAbs(int joystick, int *x, int *y)
 
 uint16_t IN_GetJoyButtonsDB(int joystick)
 {
-	in_backend->joyGetButtons(joystick);
+	return in_backend->joyGetButtons(joystick);
 }
 
 void IN_SetControlType(int player, IN_ControlType type)
@@ -540,7 +580,41 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 		controls->dir = in_dirTable[3 * (controls->yDirection + 1) + controls->xDirection + 1];
 	}
 
-	//TODO: Record this inputFrame
+	if (in_demoState == IN_Demo_Record)
+	{
+		uint8_t ctrlByte = 0;
+		ctrlByte |= (controls->yDirection + 1);
+		ctrlByte |= (controls->xDirection + 1) << 2;
+		ctrlByte |= (controls->jump) << 4;
+		ctrlByte |= (controls->pogo) << 5;
+		
+		// If the controls haven't changed…
+		if ((in_demoBuf[in_demoPtr+1] == ctrlByte) &&
+			// and we have room left…
+			(in_demoBuf[in_demoPtr] < 254) &&
+			// and it isn't the first frame
+			(in_demoPtr != 0))
+		{
+			// The current input lasts for another frame.
+			in_demoBuf[in_demoPtr]++;
+		}
+		else
+		{
+			// We have new input, record it.
+			
+			// Use the first slot if it is empty. 
+			if (in_demoPtr || in_demoBuf[in_demoPtr])
+				in_demoPtr += 2;
+			
+			if (in_demoPtr >= in_demoBytes)
+				Quit("Demo buffer overflow");
+			
+			// One frame…
+			in_demoBuf[in_demoPtr] = 1;
+			// with these controls:
+			in_demoBuf[in_demoPtr+1] = ctrlByte;
+		}
+	}
 }
 
 void IN_WaitButton()

@@ -257,12 +257,15 @@ bool IN_JoyPresent(int joystick);
 void IN_ReadCursor(IN_Cursor *cursor);
 void IN_Startup(void);
 void IN_Default(bool gotit, int16_t inputChoice);
+bool IN_DemoStartRecording(int bufferSize);
 void IN_DemoStartPlaying(uint8_t *data, int len);
 void IN_DemoStopPlaying();
+void IN_DemoFreeBuffer();
 #if 0
 bool IN_DemoIsPlaying();
 #endif
 IN_DemoMode IN_DemoGetMode();
+void IN_DemoSaveToFile(const char *fileName, uint16_t mapNumber);
 void IN_ClearKeysDown();
 void IN_ReadControls(int player, IN_ControlFrame *controls);
 void IN_WaitButton();

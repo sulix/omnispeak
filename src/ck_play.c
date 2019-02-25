@@ -151,6 +151,59 @@ void CK_DebugMemory()
 	//MM_ShowMemory();
 }
 
+void CK_BeginDemoRecord()
+{
+	// VW_SyncPages();
+	US_CenterWindow(30, 3);
+	US_SetPrintY(US_GetPrintY() + 3);
+	US_Print("  Record a demo from level (0-21):");
+	VL_Present();
+	uint16_t saveX = US_GetPrintX();
+	uint16_t saveY = US_GetPrintY();
+	char str[4];
+	
+	if (US_LineInput(saveX, saveY, str, NULL, true, 2, 0))
+	{
+		int level;
+		sscanf(str, "%d", &level);
+		
+		ck_gameState.currentLevel = level;
+		ck_gameState.levelState = LS_AboutToRecordDemo;
+		
+		IN_DemoStartRecording(0x1000);
+	}
+}
+
+void CK_EndDemoRecord()
+{
+	char demoFileName[] = "DEMO?.EXT";
+	// VW_SyncPages();
+	IN_DemoStopPlaying();
+	US_CenterWindow(22, 3);
+	
+	US_SetPrintY(US_GetPrintY() + 6);
+	
+	US_Print("  Save as demo #(0-9):");
+	
+	VL_Present();
+	
+	
+	uint16_t saveX = US_GetPrintX();
+	uint16_t saveY = US_GetPrintY();
+	char str[4];
+	
+	if (US_LineInput(saveX, saveY, str, NULL, true, 2, 0))
+	{
+		if (str[0] >= '0' && str[0] <= '9')
+		{
+			demoFileName[4] = str[0];
+			char *fixedFileName = CAL_AdjustExtension(demoFileName);
+			IN_DemoSaveToFile(fixedFileName, ck_gameState.currentLevel);
+		}
+		IN_DemoFreeBuffer();
+	}
+}
+
 void CK_SpriteTest()
 {
 
@@ -813,6 +866,19 @@ bool CK_DebugKeys()
 		return true;
 	}
 	// TODO: Demo Recording
+	if (IN_GetKeyState(IN_SC_D) && game_in_progress)
+	{
+		if (IN_DemoGetMode() == IN_Demo_Off)
+		{
+			CK_BeginDemoRecord();
+		}
+		else if (IN_DemoGetMode() == IN_Demo_Record)
+		{
+			CK_EndDemoRecord();
+			ck_gameState.levelState = LS_LevelComplete;
+		}
+		return true;
+	}
 
 	// End Level
 	if (IN_GetKeyState(IN_SC_E) && game_in_progress)
