@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+
+#include "id_mm.h"
 /* String manager, allows objects to be indexed by strings */
 
 typedef struct STR_Entry
@@ -40,5 +42,21 @@ typedef struct STR_Table
 void STR_AllocTable(STR_Table **tabl, size_t size);
 void *STR_LookupEntry(STR_Table *tabl, const char *str);
 bool STR_AddEntry(STR_Table *tabl, const char *str, void *value);
+
+
+
+typedef struct STR_ParserState
+{
+	char *data;
+	int dataindex;
+	int datasize;
+	int linecount;
+	ID_MM_Arena *tempArena;
+} STR_ParserState;
+
+#define ID_STR_MAX_TOKEN_LENGTH 64
+const char *STR_GetToken(STR_ParserState *ps);
+int STR_GetInteger(STR_ParserState *ps);
+bool STR_ExpectToken(STR_ParserState *ps, const char *str);
 
 #endif //ID_STR_H
