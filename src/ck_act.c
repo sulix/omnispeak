@@ -86,37 +86,119 @@ CK_ACT_ColFunction CK_ACT_GetColFunction(const char *fnName)
 	return fnPtr;
 }
 
-#define CK_ACT_MAXACTIONS 512
+#define CK_VAR_MAXVARS 1024
+#define CK_VAR_MAXACTIONS 512
 
-STR_Table *ck_actionTable;
+STR_Table *ck_varTable;
+ID_MM_Arena *ck_varArena;
 CK_action *ck_actionData;
-ID_MM_Arena *ck_actionStringArena;
 int ck_actionsUsed;
 
-void CK_ACT_SetupActionDB()
+typedef enum CK_VAR_VarType
 {
-	MM_GetPtr((mm_ptr_t *)&ck_actionData, CK_ACT_MAXACTIONS * sizeof(CK_action));
-	STR_AllocTable(&ck_actionTable, CK_ACT_MAXACTIONS);
-	ck_actionStringArena = MM_ArenaCreate(16384);
+	VAR_Invalid,
+	VAR_Bool,
+	VAR_Int,
+	VAR_String,
+	VAR_Action
+} CK_VAR_VarType;
+
+void CK_VAR_Startup()
+{
+	STR_AllocTable(&ck_varTable, CK_VAR_MAXVARS);
+	ck_varArena = MM_ArenaCreate(16384);
+	MM_GetPtr((mm_ptr_t*)&ck_actionData, sizeof(CK_action)*CK_VAR_MAXACTIONS);
+}
+
+void CK_VAR_SetEntry(const char *name, void *val)
+{
+	STR_AddEntry(ck_varTable, name, val);
+}
+
+void *CK_VAR_GetByName(const char *name, void *def)
+{
+	return STR_LookupEntryWithDefault(ck_varTable, name, def);
+}
+
+const char *CK_VAR_GetString(const char *name, const char *def)
+{
+	return (const char*)CK_VAR_GetByName(name, (void*)def);
+}
+
+const char *CK_VAR_GetStringByNameAndIndex(const char *name, int index)
+{
+	char fullName[256];
+	sprintf(fullName, "%s%d", name, index);
+	return CK_VAR_GetString(fullName, fullName);
+}
+
+intptr_t CK_VAR_GetInt(const char *name, intptr_t def)
+{
+	return (intptr_t)CK_VAR_GetByName(name, (void*)def);
 }
 
 CK_action *CK_GetActionByName(const char *name)
 {
-	return (CK_action *)STR_LookupEntry(ck_actionTable, name);
+	return (CK_action *)CK_VAR_GetByName(name, (void*)0);
 }
 
 CK_action *CK_GetOrCreateActionByName(const char *name)
 {
-	CK_action *ptr = (CK_action *)STR_LookupEntry(ck_actionTable, name);
+	CK_action *ptr = (CK_action *)STR_LookupEntry(ck_varTable, name);
 	if (!ptr)
 	{
-		ptr = &ck_actionData[ck_actionsUsed++];
-		char *dupName = MM_ArenaStrDup(ck_actionStringArena, name);
-		STR_AddEntry(ck_actionTable, dupName, (void *)(ptr));
+		if (ck_actionsUsed >= CK_VAR_MAXACTIONS)
+			Quit("Too many actions!");
+		ptr = &(ck_actionData[ck_actionsUsed++]);
+		char *dupName = MM_ArenaStrDup(ck_varArena, name);
+		STR_AddEntry(ck_varTable, dupName, (void *)(ptr));
 	}
 	return ptr;
 }
 
+// POTENTIALLY SLOW function - Use in game loading only!
+CK_action *CK_LookupActionFrom16BitOffset(uint16_t offset)
+{
+	for (int i = 0; i < ck_actionsUsed; ++i)
+		if (ck_actionData[i].compatDosPointer == offset)
+			return &ck_actionData[i];
+
+	return NULL;
+}
+
+void CK_VAR_SetInt(const char *name, intptr_t val)
+{
+	const char *realName = MM_ArenaStrDup(ck_varArena, name);
+	CK_VAR_SetEntry(realName, (void*)val);
+}
+
+void CK_VAR_SetString(const char *name, const char *val)
+{
+	const char *realName = MM_ArenaStrDup(ck_varArena, name);
+	const char *realVal = MM_ArenaStrDup(ck_varArena, val);
+	CK_VAR_SetEntry(realName, (void*)realVal);
+}
+
+
+// == Parser ===
+
+CK_VAR_VarType CK_VAR_ParseVarType(STR_ParserState *ps)
+{
+	const char *tok = STR_GetToken(ps);
+	CK_VAR_VarType varType = VAR_Invalid;
+	if (!strcmp(tok, "%bool"))
+		varType = VAR_Bool;
+	else if (!strcmp(tok, "%int"))
+		varType = VAR_Int;
+	else if (!strcmp(tok, "%string"))
+		varType = VAR_String;
+	else if (!strcmp(tok, "%action"))
+		varType = VAR_Action;
+	else
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Unknown var type \"%s\"\n", tok);
+	
+	return varType;
+}
 
 CK_ActionType CK_ACT_GetActionType(STR_ParserState *ps)
 {
@@ -141,11 +223,8 @@ CK_ActionType CK_ACT_GetActionType(STR_ParserState *ps)
 	return at;
 }
 
-bool CK_ACT_ParseAction(STR_ParserState *ps)
+bool CK_VAR_ParseAction(STR_ParserState *ps)
 {
-	if (!STR_ExpectToken(ps, "%action"))
-		return false;
-
 	const char *actName = STR_GetToken(ps);
 
 	CK_action *act = CK_GetOrCreateActionByName(actName);
@@ -180,26 +259,57 @@ bool CK_ACT_ParseAction(STR_ParserState *ps)
 
 	act->next = strcmp(nextActionName, "NULL") ? CK_GetOrCreateActionByName(nextActionName) : 0;
 
-	MM_ArenaReset(ps->tempArena);
 
 	return true;
 }
 
-// POTENTIALLY SLOW function - Use in game loading only!
-CK_action *CK_LookupActionFrom16BitOffset(uint16_t offset)
+void CK_VAR_ParseInt(STR_ParserState *ps)
 {
-	for (int i = 0; i < ck_actionsUsed; ++i)
-		if (ck_actionData[i].compatDosPointer == offset)
-			return &ck_actionData[i];
-
-	return NULL;
+	const char *varName = STR_GetToken(ps);
+	intptr_t val = STR_GetInteger(ps);
+	CK_VAR_SetInt(varName, val);
 }
 
-void CK_ACT_LoadActions(const char *filename)
+void CK_VAR_ParseString(STR_ParserState *ps)
+{
+	const char *varName = STR_GetToken(ps);
+	const char *val = STR_GetToken(ps);
+	CK_VAR_SetString(varName, val);
+}
+
+bool CK_VAR_ParseVar(STR_ParserState *ps)
+{
+	CK_VAR_VarType varType = CK_VAR_ParseVarType(ps);
+	
+	if (varType == VAR_Invalid)
+	{
+		MM_ArenaReset(ps->tempArena);
+		return false;
+	}
+	
+	switch (varType)
+	{
+	case VAR_Int:
+		CK_VAR_ParseInt(ps);
+		break;
+	case VAR_String:
+		CK_VAR_ParseString(ps);
+		break;
+	case VAR_Action:
+		CK_VAR_ParseAction(ps);
+		break;
+	default:
+		Quit("Unsupported var type.");
+	}
+	
+	MM_ArenaReset(ps->tempArena);
+	return true;
+}
+void CK_VAR_LoadVars(const char *filename)
 {
 	ck_actionsUsed = 0;
-	CK_ACT_SetupActionDB();
-	int numActionsParsed = 0;
+	CK_VAR_Startup();
+	int numVarsParsed = 0;
 	STR_ParserState parserstate;
 
 	CA_LoadFile(filename, (mm_ptr_t *)(&parserstate.data), &(parserstate.datasize));
@@ -208,10 +318,10 @@ void CK_ACT_LoadActions(const char *filename)
 
 	parserstate.tempArena = MM_ArenaCreate(1024);
 
-	while (CK_ACT_ParseAction(&parserstate))
-		numActionsParsed++;
+	while (CK_VAR_ParseVar(&parserstate))
+		numVarsParsed++;
 
-	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Parsed %d actions over %d lines.\n", numActionsParsed, parserstate.linecount);
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Parsed %d vars over %d lines (%d actions created).\n", numVarsParsed, parserstate.linecount, ck_actionsUsed);
 
 	MM_ArenaDestroy(parserstate.tempArena);
 }

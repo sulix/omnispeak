@@ -53,8 +53,8 @@ void STR_AllocTable(STR_Table **tabl, size_t size)
 	}
 }
 
-// Returns the pointer associated with 'str' in 'tabl'
-void *STR_LookupEntry(STR_Table *tabl, const char *str)
+// Returns the pointer associated with 'str' in 'tabl', defaulting to 'def'
+void *STR_LookupEntryWithDefault(STR_Table *tabl, const char *str, void *def)
 {
 	int hash = STR_HashString(str) % tabl->size;
 	for (size_t i = hash;; i = (i + 1) % tabl->size)
@@ -66,7 +66,13 @@ void *STR_LookupEntry(STR_Table *tabl, const char *str)
 			return (tabl->arr[i].ptr);
 		}
 	}
-	return (void *)(0);
+	return def;
+}
+
+// Returns the pointer associated with 'str' in 'tabl'
+void *STR_LookupEntry(STR_Table *tabl, const char *str)
+{
+	return STR_LookupEntryWithDefault(tabl, str, (void *)(0));
 }
 
 // Add an entry 'str' with pointer 'value' to 'tabl'. Returns 'true' on success
@@ -128,8 +134,34 @@ const char *STR_GetToken(STR_ParserState *ps)
 	char tokenbuf[ID_STR_MAX_TOKEN_LENGTH];
 	int i = 0;
 	STR_SkipWhitespace(ps);
-	while (STR_PeekCharacter(ps) && !isspace(STR_PeekCharacter(ps)))
-		tokenbuf[i++] = STR_GetCharacter(ps);
+	if (STR_PeekCharacter(ps) && STR_PeekCharacter(ps) == '"')
+	{
+		STR_GetCharacter(ps);
+		while (STR_PeekCharacter(ps) != '"')
+		{
+			char c = STR_GetCharacter(ps);
+			if (c == '\\')
+			{
+				c = STR_GetCharacter(ps);
+				switch (c)
+				{
+				case 'n':
+					c = '\n';
+					break;
+				default:
+					// c is now whatever was escaped (e.g. '\')
+					break;
+				}
+			}
+			tokenbuf[i++] = c;
+		}
+		STR_GetCharacter(ps);
+	}
+	else
+	{
+		while (STR_PeekCharacter(ps) && !isspace(STR_PeekCharacter(ps)))
+			tokenbuf[i++] = STR_GetCharacter(ps);
+	}
 	tokenbuf[i] = '\0';
 	return MM_ArenaStrDup(ps->tempArena, tokenbuf);
 }

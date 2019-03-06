@@ -326,7 +326,7 @@ void CK_InitGame()
 	CK_Map_SetupFunctions();
 	CK_Misc_SetupFunctions();
 	ck_currentEpisode->setupFunctions();
-	CK_ACT_LoadActions("ACTION.EXT");
+	CK_VAR_LoadVars("ACTION.EXT");
 
 	// Setup the screen
 	VL_InitScreen();
