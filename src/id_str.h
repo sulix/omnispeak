@@ -46,6 +46,24 @@ bool STR_AddEntry(STR_Table *tabl, const char *str, void *value);
 
 
 
+
+#define ID_STR_MAX_TOKEN_LENGTH 64
+
+typedef enum STR_TokenType
+{
+	STR_TOK_EOF,
+	STR_TOK_Ident,
+	STR_TOK_Number,
+	STR_TOK_String
+} STR_TokenType;
+
+typedef struct STR_Token
+{
+	STR_TokenType tokenType;
+	const char *valuePtr;
+	int valueLength;
+} STR_Token;
+
 typedef struct STR_ParserState
 {
 	char *data;
@@ -53,10 +71,15 @@ typedef struct STR_ParserState
 	int datasize;
 	int linecount;
 	ID_MM_Arena *tempArena;
+	// This is a token whose value has been PeekToken()ed.
+	bool haveBufferedToken;
+	STR_Token bufferedToken;
 } STR_ParserState;
 
-#define ID_STR_MAX_TOKEN_LENGTH 64
-const char *STR_GetToken(STR_ParserState *ps);
+STR_Token STR_GetToken(STR_ParserState *ps);
+STR_Token STR_PeekToken(STR_ParserState *ps);
+const char *STR_GetString(STR_ParserState *ps);
+const char *STR_GetIdent(STR_ParserState *ps);
 int STR_GetInteger(STR_ParserState *ps);
 bool STR_ExpectToken(STR_ParserState *ps, const char *str);
 

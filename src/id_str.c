@@ -91,7 +91,6 @@ bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
 	return false;
 }
 
-
 static char STR_PeekCharacter(STR_ParserState *ps)
 {
 	if (ps->dataindex >= ps->datasize)
@@ -129,13 +128,23 @@ static void STR_SkipWhitespace(STR_ParserState *ps)
 	} while (c && isspace(c));
 }
 
-const char *STR_GetToken(STR_ParserState *ps)
+STR_Token STR_GetToken(STR_ParserState *ps)
 {
+	// Return a buffered token if we have one.
+	if (ps->haveBufferedToken)
+	{
+		ps->haveBufferedToken = false;
+		return ps->bufferedToken;
+	}
 	char tokenbuf[ID_STR_MAX_TOKEN_LENGTH];
 	int i = 0;
 	STR_SkipWhitespace(ps);
+	STR_Token tok;
+	tok.tokenType = STR_TOK_EOF;
 	if (STR_PeekCharacter(ps) && STR_PeekCharacter(ps) == '"')
 	{
+		// This is a string.
+		tok.tokenType = STR_TOK_String;
 		STR_GetCharacter(ps);
 		while (STR_PeekCharacter(ps) != '"')
 		{
@@ -157,35 +166,73 @@ const char *STR_GetToken(STR_ParserState *ps)
 		}
 		STR_GetCharacter(ps);
 	}
-	else
+	else if (STR_PeekCharacter(ps))
+		tok.tokenType = STR_TOK_Ident;
 	{
 		while (STR_PeekCharacter(ps) && !isspace(STR_PeekCharacter(ps)))
 			tokenbuf[i++] = STR_GetCharacter(ps);
 	}
 	tokenbuf[i] = '\0';
-	return MM_ArenaStrDup(ps->tempArena, tokenbuf);
+
+	// Copy the token into the temp Arena
+	// TODO: Use a range into the input instead
+	const char *value = MM_ArenaStrDup(ps->tempArena, tokenbuf);
+	tok.valuePtr = value;
+	tok.valueLength = i;
+	return tok;
+}
+
+STR_Token STR_PeekToken(STR_ParserState *ps)
+{
+	STR_Token tok = STR_GetToken(ps);
+
+	// Unget the token.
+	ps->haveBufferedToken = true;
+	ps->bufferedToken = tok;
+
+	return tok;
+}
+
+const char *STR_GetString(STR_ParserState *ps)
+{
+	STR_Token tok = STR_GetToken(ps);
+	//TODO: If we actually use valueLength, this will need reallocating to
+	// add the NULL terminator.
+	return tok.valuePtr;
+}
+
+const char *STR_GetIdent(STR_ParserState *ps)
+{
+	STR_Token tok = STR_GetToken(ps);
+	//TODO: If we actually use valueLength, this will need reallocating to
+	// add the NULL terminator.
+	return tok.valuePtr;
 }
 
 int STR_GetInteger(STR_ParserState *ps)
 {
-	const char *token = STR_GetToken(ps);
+	STR_Token token = STR_GetToken(ps);
 	int result = 0;
 
+	// NOTE: For the time being,
+	if (token.tokenType != STR_TOK_Ident && token.tokenType != STR_TOK_Number)
+		return 0;
+
 	/* strtol does not support the '$' prefix for hex */
-	if (token[0] == '$')
-		result = strtol(token + 1, 0, 16);
+	if (token.valuePtr[0] == '$')
+		result = strtol(token.valuePtr + 1, 0, 16);
 	else
-		result = strtol(token, 0, 0);
+		result = strtol(token.valuePtr, 0, 0);
 	//printf("GetInteger %s -> %d\n", token, result);
 	return result;
 }
 
 bool STR_ExpectToken(STR_ParserState *ps, const char *str)
 {
-	const char *c = STR_GetToken(ps);
-	bool result = !strcmp(c, str);
+	STR_Token tok = STR_GetToken(ps);
+	bool result = !strncmp(tok.valuePtr, str, tok.valueLength);
+	//TODO: ValuePtr may not be NULL-terminated in the future.
 	if (!result)
-		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "ExpectToken, got \"%s\" expected \"%s\" on line %d\n", c, str, ps->linecount);
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "ExpectToken, got \"%s\" expected \"%s\" on line %d\n", tok.valuePtr, str, ps->linecount);
 	return result;
 }
-
