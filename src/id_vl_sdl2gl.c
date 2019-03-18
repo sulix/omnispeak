@@ -312,7 +312,7 @@ static void *VL_SDL2GL_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 	{
 		id_glGenTextures(1, &(surf->textureHandle));
 		id_glBindTexture(GL_TEXTURE_2D, surf->textureHandle);
-		id_glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, surf->w, surf->h, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+		id_glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, surf->w, surf->h, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
 	}
 	surf->data = malloc(w * h); // 8-bit pal for now
 	return surf;
