@@ -716,6 +716,10 @@ void US_LoadConfig(void)
 		ck_scoreBoxEnabled = true;
 		ck_twoButtonFiring = false;
 		configFileLoaded = false;
+		in_gamepadButtons[0] = 0;
+		in_gamepadButtons[1] = 1;
+		in_gamepadButtons[2] = -1;
+		in_gamepadButtons[3] = 30;
 		//ck_highScoresDirty = 1; // Unused?
 	}
 	SD_Default(configFileLoaded && (hadAdlib == AdLibPresent), sd, sm);

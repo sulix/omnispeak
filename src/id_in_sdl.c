@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 SDL_Joystick *in_joysticks[IN_MAX_JOYSTICKS];
 bool in_joystickPresent[IN_MAX_JOYSTICKS];
+static int in_joystickDeadzone = 8689;
 
 // SDLKey -> IN_SC
 #define INL_MapKey(sdl, in_sc) \
@@ -416,25 +417,35 @@ bool IN_SDL_JoyPresent(int joystick)
 	return in_joystickPresent[joystick];
 }
 
-#define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE 7849
-#define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
-#define IN_DO_DEADZONE(val, zone) (((val) * (val) < (zone) * (zone)) ? 0 : val)
+static int IN_ApplyDeadZone(int value)
+{
+	return (abs(value) <= in_joystickDeadzone) ? 0 : value;
+}
 
 void IN_SDL_JoyGetAbs(int joystick, int *x, int *y)
 {
-	// We apply the XInput (Xbox 360 controller)'s right analogue stick's deadzone,
-	// as it's one of the worst in common use.
 	if (x)
-		*x = IN_DO_DEADZONE(SDL_JoystickGetAxis(in_joysticks[joystick], 0), XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+		*x = IN_ApplyDeadZone(SDL_JoystickGetAxis(in_joysticks[joystick], 0));
 	if (y)
-		*y = IN_DO_DEADZONE(SDL_JoystickGetAxis(in_joysticks[joystick], 1), XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+		*y = IN_ApplyDeadZone(SDL_JoystickGetAxis(in_joysticks[joystick], 1));
 }
 
 uint16_t IN_SDL_JoyGetButtons(int joystick)
 {
-	int button0 = SDL_JoystickGetButton(in_joysticks[joystick], 0);
-	int button1 = SDL_JoystickGetButton(in_joysticks[joystick], 1);
-	return (button0) | (button1 << 1);
+	uint16_t mask = 0;
+	int i, n = SDL_JoystickNumButtons(in_joysticks[joystick]);
+	if (n > 16)
+		n = 16;  /* the mask is just 16 bits wide anyway */
+	for (i = 0;  i < n;  i++)
+	{
+		mask |= SDL_JoystickGetButton(in_joysticks[joystick], i) << i;
+	}
+	return mask;
+}
+
+void IN_SDL_JoySetDeadzone(int percent) {
+	if ((percent >= 0) && (percent <= 100))
+		in_joystickDeadzone = (32768 * percent + 50) / 100;
 }
 
 IN_Backend in_sdl_backend = {
@@ -447,6 +458,7 @@ IN_Backend in_sdl_backend = {
 	.joyPresent = IN_SDL_JoyPresent,
 	.joyGetAbs = IN_SDL_JoyGetAbs,
 	.joyGetButtons = IN_SDL_JoyGetButtons,
+	.joySetDeadzone = IN_SDL_JoySetDeadzone,
 };
 
 IN_Backend *IN_Impl_GetBackend()
