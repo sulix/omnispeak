@@ -36,6 +36,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #ifdef WITH_SDL
 #include <SDL.h> // For main (SDL_main) function prototype
 #endif
@@ -754,3 +759,64 @@ int main(int argc, char *argv[])
 }
 
 #endif // CK_RUN_ACTION_VALIDATOR
+
+
+#ifdef _WIN32
+
+/* Win32 WinMain wrapper
+ * If there was a CmdLineToArgvA function, we'd use that, but as it stands,
+ * we need to parse the command line "by hand" ... */
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+	char *p_in = GetCommandLine();
+	char *p_out = p_in;
+	#define MAX_ARGS 10
+	int argc = 0;
+	char* argv[MAX_ARGS];
+	char newarg = 1;
+	char quote = 0;
+	while (*p_in)
+	{
+		if (newarg)  /* inside whitespace between arguments */
+		{
+			if (*p_in == ' ')
+			{
+				++p_in;
+				continue;
+			}
+			if (argc < MAX_ARGS)
+			{
+				argv[argc++] = p_out;
+			}
+			newarg = 0;
+		}
+		if (quote)  /* inside a quoted argument */
+		{
+			if (*p_in == '"')
+			{
+				quote = 0;
+				++p_in;
+				continue;
+			}
+			*p_out++ = *p_in++;
+		}
+		else if (*p_in == '"')  /* begin of a quote */
+		{
+			quote = 1;
+			++p_in;
+		}
+		else if (*p_in == ' ')  /* end of an argument */
+		{
+			*p_out++ = '\0';
+			newarg = 1;
+			++p_in;
+		}
+		else  /* normal character inside an argument */
+		{
+			*p_out++ = *p_in++;
+		}
+	}
+	*p_out = '\0';
+	return main(argc, argv);
+}
+
+#endif  // _WIN32 WinMain
