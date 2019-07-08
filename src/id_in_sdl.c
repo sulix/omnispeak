@@ -448,6 +448,11 @@ void IN_SDL_JoySetDeadzone(int percent) {
 		in_joystickDeadzone = (32768 * percent + 50) / 100;
 }
 
+const char* IN_SDL_JoyGetName(int joystick)
+{
+	return SDL_JoystickName(in_joysticks[joystick]);
+}
+
 IN_Backend in_sdl_backend = {
 	.startup = IN_SDL_Startup,
 	.shutdown = 0,
@@ -459,6 +464,7 @@ IN_Backend in_sdl_backend = {
 	.joyGetAbs = IN_SDL_JoyGetAbs,
 	.joyGetButtons = IN_SDL_JoyGetButtons,
 	.joySetDeadzone = IN_SDL_JoySetDeadzone,
+	.joyGetName = IN_SDL_JoyGetName,
 };
 
 IN_Backend *IN_Impl_GetBackend()

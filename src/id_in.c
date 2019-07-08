@@ -715,3 +715,8 @@ bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn)
 	return (btn_id < 0) ? 0 : ((mask >> btn_id) & 1);
 }
 
+const char* IN_GetJoyName(int joystick)
+{
+	return (in_backend->joyPresent(joystick) && in_backend->joyGetName)
+	     ? in_backend->joyGetName(joystick) : NULL;
+}

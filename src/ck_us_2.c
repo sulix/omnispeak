@@ -28,6 +28,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_cross.h"
 #include "ck_play.h"
 
+#define US_MAX_JOYSTICK_NAME_LENGTH 28
+
+#define US_MAX_JOYSTICKS 2
+
 #define EXTRA_GRAPHICS_OPTIONS
 
 bool CK_US_ScoreBoxMenuProc(US_CardMsg msg, US_CardItem *item)
@@ -819,7 +823,7 @@ void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control)
 		}
 
 	        /* poll joysticks */
-		for (int i = 0; i < 2 /*IN_MAX_JOYSTICKS*/; i++)
+		for (int i = 0; i < US_MAX_JOYSTICKS; i++)
 		{
 			if (IN_JoyPresent(i))
 			{
@@ -852,7 +856,7 @@ void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control)
 	{
 		IN_PumpEvents();
 		button_mask = 0;
-		for (int i = 0; i < 2 /*IN_MAX_JOYSTICKS*/; i++)
+		for (int i = 0; i < US_MAX_JOYSTICKS; i++)
 		{
 			if (IN_JoyPresent(i))
 				button_mask |= IN_GetJoyButtonsDB(i);
@@ -1152,6 +1156,32 @@ bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item)
 	return 1;
 }
 
+void CK_US_SetJoystickName(US_CardItem *item, int joystick)
+{
+	static char str[US_MAX_JOYSTICKS][US_MAX_JOYSTICK_NAME_LENGTH + 1];
+	char *pos = str[joystick];
+	const char* name = IN_GetJoyName(joystick);
+	if (name)
+	{
+		strcpy(pos, "USE ");
+		pos += 4;
+		if ((strlen(name) + 4) > US_MAX_JOYSTICK_NAME_LENGTH)
+		{
+			int n = US_MAX_JOYSTICK_NAME_LENGTH - 7;
+			memcpy(pos, name, n);
+			pos += n;
+			strcpy(pos, "...");
+		}
+		else
+		{
+			strcpy(pos, name);
+		}
+	}
+	else
+		sprintf(pos, "USE JOYSTICK #%d", joystick + 1);
+	item->caption = str[joystick];
+}
+
 void CK_US_UpdateOptionsMenus(void)
 {
 
@@ -1174,10 +1204,12 @@ void CK_US_UpdateOptionsMenus(void)
 		ck_us_configureMenuItems[4].state &= ~US_IS_Disabled;
 	else
 		ck_us_configureMenuItems[4].state |= US_IS_Disabled;
+	CK_US_SetJoystickName(&ck_us_configureMenuItems[4], 0);
 	if (IN_JoyPresent(1))
 		ck_us_configureMenuItems[5].state &= ~US_IS_Disabled;
 	else
 		ck_us_configureMenuItems[5].state |= US_IS_Disabled;
+	CK_US_SetJoystickName(&ck_us_configureMenuItems[5], 1);
 	if (IN_JoyPresent(0) || IN_JoyPresent(1))
 		ck_us_configureMenuItems[6].state &= ~US_IS_Disabled;
 	else
