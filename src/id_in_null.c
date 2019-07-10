@@ -63,6 +63,15 @@ uint16_t IN_NULL_JoyGetButtons(int joystick)
 	return (button0) | (button1 << 1);
 }
 
+void IN_NULL_JoySetDeadzone(int percent)
+{
+}
+
+const char* IN_NULL_JoyGetName(int joystick)
+{
+	return NULL;
+}
+
 IN_Backend in_null_backend = {
 	.startup = IN_NULL_Startup,
 	.shutdown = 0,
@@ -73,6 +82,8 @@ IN_Backend in_null_backend = {
 	.joyPresent = IN_NULL_JoyPresent,
 	.joyGetAbs = IN_NULL_JoyGetAbs,
 	.joyGetButtons = IN_NULL_JoyGetButtons,
+	.joySetDeadzone = IN_NULL_JoySetDeadzone,
+	.joyGetName = IN_NULL_JoyGetName,
 };
 
 IN_Backend *IN_Impl_GetBackend()

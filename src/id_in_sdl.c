@@ -443,14 +443,19 @@ uint16_t IN_SDL_JoyGetButtons(int joystick)
 	return mask;
 }
 
-void IN_SDL_JoySetDeadzone(int percent) {
+void IN_SDL_JoySetDeadzone(int percent)
+{
 	if ((percent >= 0) && (percent <= 100))
 		in_joystickDeadzone = (32768 * percent + 50) / 100;
 }
 
 const char* IN_SDL_JoyGetName(int joystick)
 {
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 	return SDL_JoystickName(in_joysticks[joystick]);
+#else
+	return SDL_JoystickName(joystick);
+#endif
 }
 
 IN_Backend in_sdl_backend = {
