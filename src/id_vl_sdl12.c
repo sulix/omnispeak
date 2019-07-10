@@ -3,6 +3,7 @@
 #include <string.h>
 #include "id_vl.h"
 #include "id_vl_private.h"
+#include "ck_cross.h"
 
 static SDL_Surface *vl_sdl12_screenSurface;
 static SDL_Rect vl_sdl12_screenBorderedRect;
