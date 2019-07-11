@@ -60,29 +60,26 @@ The source code for Omnispeak is available on GitHub:
 
 You'll find it in the src/ directory and built with make.
 
-Omnispeak should build fine on most Linux distributions, and can be made to
-build for Windows with MinGW with a small amount of tweaking.
+Omnispeak should build fine on most Linux distributions.
 
 You'll need to have the Simple Directmedia Layer 2.0 installed, with the
 sdl2-config program somewhere in your path.
 
-Running 'make' from within the src/ directory will output When compiled, an
-'omnispeak' binary will appear in 'bin/', along with the files from the 'data'
-directories.
+When compiled, an 'omnispeak' binary will appear in 'bin/', along with
+the files from the 'data' directories.
 
-There are some variables you can change in the Makefile:
-	KEEN6VER: The version of Keen 6's data files to copy to 'bin'.
-	PLATFORM: Set this to 'WINDOWS' to build for Windows.
-	BUILDASCPP: Build as C++ (using g++) instead of as C99.
-	WITH_SDL2: Use SDL2 (recommended) rather than SDL1.2.
+Cross-compilation for 32-bit and 64-bit Windows targets using MinGW32-Win64
+is also supported.
+
+To see a full list of build options, just run `make help`.
+
 
 == KNOWN ISSUES ==
 
 - Modding support is not implemented.
-- Mouse / Gamepad support is not implemented.
-- Joystick support is new and very buggy.
-- Some debug cheats (notably demo recording) are not supported.
-- New settings ("Fullscreen", "Aspect Ratio", "Overscan border" are not saved.
+- Mouse support is not implemented.
+- Some debug cheats are not supported.
+- New settings ("Fullscreen", "Aspect Ratio", "Overscan border") are not saved.
 - The game always redraws everything every frame.
 - Some chunks are not cached properly at load time (doors, especially)
 - No fallbacks for systems without GLSL and non-power-of-two texture support.
