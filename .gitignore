@@ -1,0 +1,4 @@
+SDL2-2.*
+bin
+bin-win*
+obj

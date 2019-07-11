@@ -16,18 +16,54 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+
+# This Makefile is for Win32 builds using Ubuntu's MinGW cross-build toolchain.
+# Builds are 32-bit by default; use 'make BITS=64' for 64 bits.
+# SDL is statically linked into the resulting executable.
+
+# Suitable SDL2 development headers and libraries are downloaded automatically
+# during the build process; if you don't want that, use the USE_LOCAL_SDL2=0
+# option and ensure that the sdl2-config program is callable somehow.
+
+PLATFORM ?= WINDOWS
+
+# enter a reasonably current SDL2 version number here
+SDL2_VERSION ?= 2.0.9
+
+ifeq ($(BITS),64)
+	TOOLSET=x86_64-w64-mingw32
+	BINDIR=../bin-win64
+else
+	TOOLSET=i686-w64-mingw32
+	BINDIR=../bin-win32
+endif
+
+# whether to build code as C++ or C99
+BUILDASCPP ?= 0
+
+# whether to use SDL2 (if unset: use SDL 1.2)
+WITH_SDL2 ?= 1
+
+# whether to use a local copy of SDL2 for MinGW builds
+USE_LOCAL_SDL2 ?= 1
+
+# whether to build a statically linked executable
+STATIC ?= 1
+
 IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id_us_2.o id_us_textscreen.o id_vh.o id_vl.o id_str.o
 CKOBJECTS=ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck4_map.o ck5_map.o ck6_map.o ck4_obj1.o ck4_obj2.o ck4_obj3.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck6_obj1.o ck6_obj2.o ck6_obj3.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck4_misc.o ck5_misc.o ck6_misc.o ck_main.o ck_text.o ck_cross.o icon.o
 OPLOBJECTS=opl/dbopl.o
 
-PLATFORM=WINDOWS
+KEEN6VER ?= keen6e15
+K4DATA=$(BINDIR)/ACTION.CK4 $(BINDIR)/AUDINFOE.CK4 $(BINDIR)/AUDIODCT.CK4 $(BINDIR)/AUDIOHHD.CK4 $(BINDIR)/EGADICT.CK4 $(BINDIR)/EGAHEAD.CK4 $(BINDIR)/GFXINFOE.CK4 $(BINDIR)/MAPHEAD.CK4 $(BINDIR)/TILEINFO.CK4
+K5DATA=$(BINDIR)/ACTION.CK5 $(BINDIR)/AUDINFOE.CK5 $(BINDIR)/AUDIODCT.CK5 $(BINDIR)/AUDIOHHD.CK5 $(BINDIR)/EGADICT.CK5 $(BINDIR)/EGAHEAD.CK5 $(BINDIR)/GFXINFOE.CK5 $(BINDIR)/MAPHEAD.CK5 $(BINDIR)/TILEINFO.CK5
+K6DATA=$(BINDIR)/ACTION.CK6 $(BINDIR)/AUDINFOE.CK6 $(BINDIR)/AUDIODCT.CK6 $(BINDIR)/AUDIOHHD.CK6 $(BINDIR)/EGADICT.CK6 $(BINDIR)/EGAHEAD.CK6 $(BINDIR)/GFXINFOE.CK6 $(BINDIR)/MAPHEAD.CK6 $(BINDIR)/TILEINFO.CK6
 
-ifeq ($(PLATFORM), WINDOWS)
+ifeq ($(PLATFORM),WINDOWS)
 	EXE_EXT=.exe
 endif
 
-BUILDASCPP=0
-BINPREFIX=i686-w64-mingw32-
+BINPREFIX=$(TOOLSET)-
 
 ifeq ($(BUILDASCPP), 1)
 	CXX=$(BINPREFIX)g++
@@ -35,58 +71,100 @@ else
 	CXX=$(BINPREFIX)gcc
 endif
 
-INTCXXFLAGS=
+ifeq ($(USE_LOCAL_SDL2), 1)
+	SDL_DIR=../SDL2-$(SDL2_VERSION)
+endif
+
+INTCXXFLAGS=-O3
 
 ifeq ($(BUILDASCPP), 0)
 	INTCXXFLAGS+= -std=c99
 endif
 
-OUTBIN=../bin-win32/omnispeak$(EXE_EXT)
+OUTBIN=$(BINDIR)/omnispeak$(EXE_EXT)
 
+LDFLAGS=
 LIBS=
-WITH_SDL2=1
+IDOBJECTS += id_in_sdl.o id_sd_sdl.o
+
 ifeq ($(WITH_SDL2), 1)
 	ifeq ($(PLATFORM), WINDOWS)
 		LIBS+= -lopengl32
 	else
 		LIBS+= -lGL
 	endif
-	IDOBJECTS+= id_vl_sdl2gl.o 
-	SDLCONFIGBIN=~/mingw-builds/SDL2-2.0.2/i686-w64-mingw32/bin/sdl2-config #sdl2-config #/local/cross-tools/x86_64-w64-mingw32/bin/sdl2-config
+	IDOBJECTS+= id_vl_sdl2gl.o
+	ifeq ($(USE_LOCAL_SDL2), 1)
+		SDL_CONFIG=$(SDL_DIR)/$(TOOLSET)/bin/sdl2-config --prefix=$(SDL_DIR)/$(TOOLSET)
+	else
+		SDL_CONFIG=~/mingw-builds/SDL2-$(SDL2_VERSION)/$(TOOLSET)/bin/sdl2-config
+	endif
 else
 	IDOBJECTS+= id_vl_sdl12.o
-	SDLCONFIGBIN=sdl-config
+	SDL_CONFIG=sdl-config
 endif
+
+ifeq ($(STATIC), 1)
+	LDFLAGS += -static
+endif
+
+SDL_CFLAGS = `$(SDL_CONFIG) --cflags` -DWITH_SDL
+ifeq ($(STATIC), 1)
+	SDL_LIBS = `$(SDL_CONFIG) --static-libs`
+else
+	SDL_LIBS = `$(SDL_CONFIG) --libs`
+endif
+
 
 OBJ := $(IDOBJECTS:%=../obj/%)
 OBJ += $(CKOBJECTS:%=../obj/%)
 OBJ += $(OPLOBJECTS:%=../obj/%)
 DEPS := $(OBJ:%.o=%.d)
 
-#SDL_CONFIG=/home/david/builds/SDL-1.2.15/libs-32/bin/$(SDLCONFIGBIN)
-#SDL_CONFIG=/home/david/builds/libs/bin/$(SDLCONFIGBIN)
-SDL_CONFIG=$(SDLCONFIGBIN)
+.PHONY: all clean binfiles batfiles keen4data keen5data keen6data
 
-.PHONY: all clean
+all: $(OUTBIN) binfiles batfiles
 
-all: $(OUTBIN) binfiles
+$(BINDIR):
+	mkdir -p $(BINDIR)
 
 clean:
-	rm -f $(OUTBIN) $(OBJ) ../obj/windowsres.res $(DEPS)
+	rm -f $(OUTBIN) $(OBJ) ../obj/windowsres.res $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA)
 
-binfiles: ../data/keen5/ACTION.CK5
-	cp -f ../data/keen5/ACTION.CK5 ../bin/ACTION.CK5
+$(BINDIR)/%.CK4: ../data/keen4/%.CK4
+	cp -f $< $@ 
 
-../obj/%.o: %.c
+$(BINDIR)/%.CK5: ../data/keen5/%.CK5
+	cp -f $< $@ 
+
+$(BINDIR)/%.CK6: ../data/$(KEEN6VER)/%.CK6
+	cp -f $< $@
+
+keen4data: $(BINDIR) $(K4DATA)
+keen5data: $(BINDIR) $(K5DATA)
+keen6data: $(BINDIR) $(K6DATA)
+binfiles: keen4data keen5data keen6data
+
+batfiles: $(BINDIR)/_keen4.cmd $(BINDIR)/_keen5.cmd $(BINDIR)/_keen6.cmd
+$(BINDIR)/_keen4.cmd:
+	echo -n "start omnispeak.exe /EPISODE 4 /NOWAIT" >$@
+$(BINDIR)/_keen5.cmd:
+	echo -n "start omnispeak.exe /EPISODE 5 /NOWAIT" >$@
+$(BINDIR)/_keen6.cmd:
+	echo -n "start omnispeak.exe /EPISODE 6 /NOWAIT" >$@
+
+../obj/%.o: %.c $(SDL_DIR)
 	@mkdir -p $(dir $@)
-	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g `$(SDL_CONFIG) --cflags` -mno-ms-bitfields -c -MMD -o $@ $<
+	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g $(SDL_CFLAGS) -mno-ms-bitfields -c -MMD -o $@ $<
 
 ../obj/windowsres.res: windowsres.rc
 	mkdir -p $(dir $@)
 	$(BINPREFIX)windres $< -O coff -o $@
 
-$(OUTBIN): $(OBJ) ../obj/windowsres.res
-	@mkdir -p $(dir $@)
-	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -o $(OUTBIN) $(OBJ) ../obj/windowsres.res `$(SDL_CONFIG) --libs` -lm $(LIBS)
+$(OUTBIN): $(SDL_DIR) $(BINDIR) $(OBJ) ../obj/windowsres.res
+	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $(OUTBIN) $(OBJ) ../obj/windowsres.res $(SDL_LIBS) -lm $(LIBS)
 
+$(SDL_DIR):
+	wget -O- http://libsdl.org/release/SDL2-devel-$(SDL2_VERSION)-mingw.tar.gz | tar xz -C ..
+	
 -include $(DEPS)
