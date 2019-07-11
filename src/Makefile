@@ -151,9 +151,9 @@ endif
 
 # set CXX to C or C++ compiler
 ifeq ($(BUILDASCPP), 1)
-	CXX ?= $(BINPREFIX)g++
+	CXX = $(BINPREFIX)g++
 else
-	CXX ?= $(BINPREFIX)gcc
+	CXX = $(BINPREFIX)gcc
 	CXXFLAGS += -std=c99
 endif
 
