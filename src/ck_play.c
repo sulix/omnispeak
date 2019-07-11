@@ -158,15 +158,15 @@ void CK_BeginDemoRecord()
 	uint16_t saveX = US_GetPrintX();
 	uint16_t saveY = US_GetPrintY();
 	char str[4];
-	
+
 	if (US_LineInput(saveX, saveY, str, NULL, true, 2, 0))
 	{
 		int level;
 		sscanf(str, "%d", &level);
-		
+
 		ck_gameState.currentLevel = level;
 		ck_gameState.levelState = LS_AboutToRecordDemo;
-		
+
 		IN_DemoStartRecording(0x1000);
 	}
 }
@@ -177,18 +177,17 @@ void CK_EndDemoRecord()
 	// VW_SyncPages();
 	IN_DemoStopPlaying();
 	US_CenterWindow(22, 3);
-	
+
 	US_SetPrintY(US_GetPrintY() + 6);
-	
+
 	US_Print("  Save as demo #(0-9):");
-	
+
 	VL_Present();
-	
-	
+
 	uint16_t saveX = US_GetPrintX();
 	uint16_t saveY = US_GetPrintY();
 	char str[4];
-	
+
 	if (US_LineInput(saveX, saveY, str, NULL, true, 2, 0))
 	{
 		if (str[0] >= '0' && str[0] <= '9')
@@ -2049,7 +2048,7 @@ void CK_NormalCamera(CK_object *obj)
 
 // Play a level.
 
-int CK_PlayLoop()
+void CK_PlayLoop()
 {
 	StartMusic(ck_gameState.currentLevel);
 	ck_pogoTimer = 0;

@@ -70,6 +70,6 @@ void CK_ShowStatusWindow(void);
 
 // Playing
 void CK_PlayDemo(int demoChunk);
-int CK_PlayLoop();
+void CK_PlayLoop();
 
 #endif //!CK_PLAY_H
