@@ -242,6 +242,16 @@ extern IN_ControlType in_controlType;
 extern bool in_Paused;
 extern bool in_disableJoysticks;
 
+typedef enum IN_JoyConfItem
+{
+	IN_joy_jump     = 0,
+	IN_joy_pogo     = 1,
+	IN_joy_fire     = 2,
+	IN_joy_deadzone = 3,
+	IN_joy_min_ = IN_joy_jump,
+	IN_joy_max_ = IN_joy_deadzone
+} IN_JoyConfItem;
+
 void IN_PumpEvents();
 void IN_WaitKey();
 const char *IN_GetScanName(IN_ScanCode scan);
@@ -271,6 +281,10 @@ void IN_ReadControls(int player, IN_ControlFrame *controls);
 void IN_WaitButton();
 int IN_CheckAck();
 bool IN_UserInput(int tics, bool arg4);
+int IN_GetJoyConf(IN_JoyConfItem item);
+void IN_SetJoyConf(IN_JoyConfItem item, int value);
+bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn);
+const char* IN_GetJoyName(int joystick);
 
 // Called by the backend.
 bool INL_StartJoy(int joystick);
@@ -289,6 +303,8 @@ typedef struct IN_Backend
 	bool (*joyPresent)(int joystick);
 	void (*joyGetAbs)(int joystick, int *x, int *y);
 	uint16_t (*joyGetButtons)(int joystick);
+	void (*joySetDeadzone)(int percent);
+	const char* (*joyGetName)(int joystick);
 } IN_Backend;
 
 IN_Backend *IN_Impl_GetBackend();

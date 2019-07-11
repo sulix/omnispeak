@@ -119,6 +119,10 @@ IN_Backend *in_backend = 0;
 
 IN_KeyMapping in_kbdControls;
 
+/* In Omnispeak, which doesn't support the classic Gravis Gamepad anyway,
+ * we misuse in_gamepadButtons for storing the joystick configuration
+ * (three buttons and dead zone); this way we get persistence "for free",
+ * as the old gamepadButtons configuration is stored in the CONFIG.CK? files */
 int16_t in_gamepadButtons[4];
 
 IN_ScanCode *key_controls[] = {
@@ -480,8 +484,10 @@ void IN_ReadCursor(IN_Cursor *cursor)
 			cursor->yMotion = IN_motion_Down;
 
 		uint16_t buttons = IN_GetJoyButtonsDB(joy);
-		cursor->button0 = buttons & 1;
-		cursor->button1 = buttons & 2;
+		/* TODO: maybe ignore button mappings in the menu and
+		 *       map _all_ buttons to button0? */
+		cursor->button0 = IN_GetJoyButtonFromMask(buttons, IN_joy_jump);
+		cursor->button1 = IN_GetJoyButtonFromMask(buttons, IN_joy_fire);
 	}
 }
 
@@ -573,8 +579,9 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 				controls->yDirection = IN_motion_Down;
 
 			uint16_t buttons = IN_GetJoyButtonsDB(joy);
-			controls->jump = buttons & 1;
-			controls->pogo = buttons & 2;
+			controls->jump = IN_GetJoyButtonFromMask(buttons, IN_joy_jump);
+			controls->pogo = IN_GetJoyButtonFromMask(buttons, IN_joy_pogo);
+			controls->button2 = IN_GetJoyButtonFromMask(buttons, IN_joy_fire);
 		}
 
 		controls->dir = in_dirTable[3 * (controls->yDirection + 1) + controls->xDirection + 1];
@@ -686,4 +693,30 @@ bool IN_UserInput(int tics, bool waitPress)
 	} while (SD_GetTimeCount() - lasttime < tics);
 
 	return false;
+}
+
+int IN_GetJoyConf(IN_JoyConfItem item)
+{
+	return ((item >= IN_joy_min_) && (item <= IN_joy_max_))
+		? in_gamepadButtons[(int) item] : 0;
+}
+
+void IN_SetJoyConf(IN_JoyConfItem item, int value)
+{
+	if ((item >= IN_joy_min_) && (item <= IN_joy_max_))
+		in_gamepadButtons[(int) item] = (int16_t) value;
+	if ((item == IN_joy_deadzone) && (in_backend->joySetDeadzone))
+		in_backend->joySetDeadzone(value);
+}
+
+bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn)
+{
+	int btn_id = in_gamepadButtons[(int) btn];
+	return (btn_id < 0) ? 0 : ((mask >> btn_id) & 1);
+}
+
+const char* IN_GetJoyName(int joystick)
+{
+	return (in_backend->joyPresent(joystick) && in_backend->joyGetName)
+	     ? in_backend->joyGetName(joystick) : NULL;
 }

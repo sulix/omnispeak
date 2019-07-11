@@ -45,6 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void USL_DrawCardItemIcon(US_CardItem *item);
 void CK_US_SetKeyBinding(US_CardItem *item, int which_control);
+void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control);
 #include "ck_us_2.c"
 
 // Card stack can have at most 7 cards

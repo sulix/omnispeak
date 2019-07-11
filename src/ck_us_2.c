@@ -28,6 +28,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_cross.h"
 #include "ck_play.h"
 
+#define US_MAX_JOYSTICK_NAME_LENGTH 28
+
+#define US_MAX_JOYSTICKS 2
+
 #define EXTRA_GRAPHICS_OPTIONS
 
 bool CK_US_ScoreBoxMenuProc(US_CardMsg msg, US_CardItem *item)
@@ -116,6 +120,7 @@ bool CK_US_KeyboardMenuProc(US_CardMsg msg, US_CardItem *item);
 bool CK_US_Joystick1MenuProc(US_CardMsg msg, US_CardItem *item);
 bool CK_US_Joystick2MenuProc(US_CardMsg msg, US_CardItem *item);
 bool CK_US_GamepadMenuProc(US_CardMsg msg, US_CardItem *item);
+bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item);
 bool CK_US_ConfigureMenuProc(US_CardMsg msg, US_CardItem *item);
 bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item);
 
@@ -478,6 +483,16 @@ US_Card ck_us_joystick1Menu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick1Me
 US_Card ck_us_joystick2Menu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0};
 US_Card ck_us_gamepadMenu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0};
 
+// Joystick Config Menu
+US_CardItem ck_us_joyconfMenuItems[] = {
+	{US_ITEM_Normal, 0, IN_SC_J, "JUMP", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_P, "POGO", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_F, "FIRE", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_D, "DEAD ZONE", US_Comm_None, 0, 0, 0},
+	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
+
+US_Card ck_us_joyconfMenu = {0, 0, &PIC_BUTTONSCARD, 0, ck_us_joyconfMenuItems, &CK_US_JoyConfMenuProc, 0, 0, 0};
+
 // Configure Menu
 US_CardItem ck_us_configureMenuItems[] = {
 	{US_ITEM_Submenu, 0, IN_SC_S, "SOUND", US_Comm_None, &ck_us_soundMenu, 0, 0},
@@ -487,6 +502,7 @@ US_CardItem ck_us_configureMenuItems[] = {
 	{US_ITEM_Submenu, 0, IN_SC_One, "USE JOYSTICK #1", US_Comm_None, &ck_us_joystick1Menu, 0, 0},
 	{US_ITEM_Submenu, 0, IN_SC_Two, "USE JOYSTICK #2", US_Comm_None, &ck_us_joystick2Menu, 0, 0},
 	//{ US_ITEM_Submenu, 0, IN_SC_G, "", US_Comm_None, &ck_us_gamepadMenu, 0, 0 },
+	{US_ITEM_Submenu, 0, IN_SC_J, "JOYSTICK CONFIGURATION", US_Comm_None, &ck_us_joyconfMenu, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
 US_Card ck_us_configureMenu = {0, 0, &PIC_CONFIGURECARD, 0, ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0};
@@ -683,6 +699,174 @@ bool CK_US_Joystick2MenuProc(US_CardMsg msg, US_CardItem *item)
 bool CK_US_GamepadMenuProc(US_CardMsg msg, US_CardItem *item)
 {
 	return false;
+}
+
+bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	IN_JoyConfItem which_control;
+	int value;
+	char str[8], *spos;
+	int print_x, print_y;
+	static const int8_t deadzone_values[] = {
+		0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, -1
+	};
+
+	which_control = (IN_JoyConfItem) (item - ck_us_joyconfMenuItems);
+	value = IN_GetJoyConf(which_control);
+
+	switch (msg)
+	{
+	case US_MSG_DrawItem:
+
+		// Draw the item Icon and the key's name
+		VH_Bar(75, item->y, 159, 8, 8);
+		USL_DrawCardItemIcon(item);
+
+		US_SetPrintColour((item->state & US_IS_Selected) ? 2 : 10);
+		print_x = item->x + 8;
+		print_y = item->y + 1;
+		VH_DrawPropString(item->caption, print_x, print_y, 1, US_GetPrintColour());
+
+		// Draw the outer green bo
+		VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8);
+		VH_Bar(item->x + 91, item->y + 1, 38, 6, 8);
+
+		// construct the value string
+		spos = str;
+		if ((which_control != IN_joy_deadzone) && (value < 0))
+		{
+			*spos++ = 'N';
+			*spos++ = 'o';
+			*spos++ = 'n';
+			*spos++ = 'e';
+		}
+		else
+		{
+			if (which_control != IN_joy_deadzone)
+			{
+				*spos++ = 'B';
+				*spos++ = 't';
+				*spos++ = 'n';
+				*spos++ = ' ';
+			}
+			if (value >= 10)
+				*spos++ = '0' + (value / 10);
+			*spos++ = '0' + (value % 10);
+			if (which_control == IN_joy_deadzone)
+				*spos++ = '%';
+		}
+		*spos++ = '\0';
+
+		print_x = item->x + 96;
+		print_y = item->y + 1;
+		VH_DrawPropString(str, print_x, print_y, 1, US_GetPrintColour());
+		return true;
+
+	case US_MSG_ItemEntered:
+		if (which_control == IN_joy_deadzone)
+		{
+			int i;
+			for (i = 0;  (deadzone_values[i] >= 0) && (deadzone_values[i] <= value);  i++);
+			value = deadzone_values[(deadzone_values[i] < 0) ? 0 : i];
+			IN_SetJoyConf(which_control, value);
+		}
+		else
+			CK_US_SetJoyBinding(item, which_control);
+
+		US_DrawCards();
+		return true;
+	}
+
+	return false;
+}
+
+void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control)
+{
+	bool cursor = false;
+	bool unassign = false;
+	uint32_t lasttime = 0;
+	uint16_t button_mask = 0;
+	IN_ScanCode last_scan = IN_SC_None;
+
+	US_SetPrintColour(2);
+	IN_ClearKeysDown();
+
+	/* Prompt the user to press a button */
+	while (1)
+	{
+		IN_PumpEvents();
+		
+		/* Flicker the cursor */
+		if (SD_GetTimeCount() >= lasttime)
+		{
+			/* time_count */
+			cursor = !cursor;
+
+			/* Draw the rectangle */
+			VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8);
+			VH_Bar(item->x + 91, item->y + 1, 38, 6, 8);
+
+			/* Draw the cursor */
+			if (cursor)
+				VH_DrawTile8(item->x + 106, item->y, 100);
+
+			//VW_UpdateScreen();
+			lasttime = SD_GetTimeCount() + 35; /* time_count */
+			VL_Present();
+		}
+
+		/* any key cancels the selection */
+		last_scan = IN_GetLastScan();
+		if (last_scan != 0)
+		{
+			break;
+		}
+
+	        /* poll joysticks */
+		for (int i = 0; i < US_MAX_JOYSTICKS; i++)
+		{
+			if (IN_JoyPresent(i))
+			{
+				button_mask = IN_GetJoyButtonsDB(i);
+				if (button_mask)
+					break;
+			}
+		}
+		if (button_mask != 0)
+			break;
+		VL_Present();
+	}
+
+	/* assign the joystick button */
+	if (last_scan == IN_SC_Backspace)
+		IN_SetJoyConf(which_control, -1);  /* Backspace = unassign */
+	else if (button_mask)
+	{
+		int bit = 0;
+		while ((button_mask & 1) == 0)
+		{
+			bit++;
+			button_mask >>= 1;
+		}
+		IN_SetJoyConf(which_control, bit);
+	}
+
+	/* wait until all joystick buttons have been released */
+	while (1)
+	{
+		IN_PumpEvents();
+		button_mask = 0;
+		for (int i = 0; i < US_MAX_JOYSTICKS; i++)
+		{
+			if (IN_JoyPresent(i))
+				button_mask |= IN_GetJoyButtonsDB(i);
+		}
+		if (button_mask == 0)
+			break;
+		VL_Present();
+	}
+
+	IN_ClearKeysDown();
 }
 
 bool CK_US_ConfigureMenuProc(US_CardMsg msg, US_CardItem *item)
@@ -972,6 +1156,32 @@ bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item)
 	return 1;
 }
 
+void CK_US_SetJoystickName(US_CardItem *item, int joystick)
+{
+	static char str[US_MAX_JOYSTICKS][US_MAX_JOYSTICK_NAME_LENGTH + 1];
+	char *pos = str[joystick];
+	const char* name = IN_GetJoyName(joystick);
+	if (name)
+	{
+		strcpy(pos, "USE ");
+		pos += 4;
+		if ((strlen(name) + 4) > US_MAX_JOYSTICK_NAME_LENGTH)
+		{
+			int n = US_MAX_JOYSTICK_NAME_LENGTH - 7;
+			memcpy(pos, name, n);
+			pos += n;
+			strcpy(pos, "...");
+		}
+		else
+		{
+			strcpy(pos, name);
+		}
+	}
+	else
+		sprintf(pos, "USE JOYSTICK #%d", joystick + 1);
+	item->caption = str[joystick];
+}
+
 void CK_US_UpdateOptionsMenus(void)
 {
 
@@ -994,10 +1204,16 @@ void CK_US_UpdateOptionsMenus(void)
 		ck_us_configureMenuItems[4].state &= ~US_IS_Disabled;
 	else
 		ck_us_configureMenuItems[4].state |= US_IS_Disabled;
+	CK_US_SetJoystickName(&ck_us_configureMenuItems[4], 0);
 	if (IN_JoyPresent(1))
 		ck_us_configureMenuItems[5].state &= ~US_IS_Disabled;
 	else
 		ck_us_configureMenuItems[5].state |= US_IS_Disabled;
+	CK_US_SetJoystickName(&ck_us_configureMenuItems[5], 1);
+	if (IN_JoyPresent(0) || IN_JoyPresent(1))
+		ck_us_configureMenuItems[6].state &= ~US_IS_Disabled;
+	else
+		ck_us_configureMenuItems[6].state |= US_IS_Disabled;
 
 		/* Set up the gamepad menu item */
 #if 0
