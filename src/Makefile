@@ -16,120 +16,307 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-KEEN6VER=keen6e15
+define HELP
 
-IDOBJECTS=ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id_us_2.o id_us_textscreen.o id_vh.o id_vl.o id_str.o
-CKOBJECTS=ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck4_map.o ck5_map.o ck6_map.o ck4_obj1.o ck4_obj2.o ck4_obj3.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck6_obj1.o ck6_obj2.o ck6_obj3.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck4_misc.o ck5_misc.o ck6_misc.o ck_main.o ck_text.o ck_cross.o icon.o
-OPLOBJECTS=opl/dbopl.o
+This Makefile supports the following options:
 
-K4DATA=../bin/ACTION.CK4 ../bin/AUDINFOE.CK4 ../bin/AUDIODCT.CK4 ../bin/AUDIOHHD.CK4 ../bin/EGADICT.CK4 ../bin/EGAHEAD.CK4 ../bin/GFXINFOE.CK4 ../bin/MAPHEAD.CK4 ../bin/TILEINFO.CK4
-K5DATA=../bin/ACTION.CK5 ../bin/AUDINFOE.CK5 ../bin/AUDIODCT.CK5 ../bin/AUDIOHHD.CK5 ../bin/EGADICT.CK5 ../bin/EGAHEAD.CK5 ../bin/GFXINFOE.CK5 ../bin/MAPHEAD.CK5 ../bin/TILEINFO.CK5
-K6DATA=../bin/ACTION.CK6 ../bin/AUDINFOE.CK6 ../bin/AUDIODCT.CK6 ../bin/AUDIOHHD.CK6 ../bin/EGADICT.CK6 ../bin/EGAHEAD.CK6 ../bin/GFXINFOE.CK6 ../bin/MAPHEAD.CK6 ../bin/TILEINFO.CK6
+  PLATFORM      the platform to build for
+                  (unset) = native build for Linux or similar Unix-like OS
+                  win32   = MinGW cross-build for 32-bit Windows
+                  win64   = MinGW cross-build for 64-bit Windows
+                  dos     = DJGPP cross-build for DOS (with DOS Extender)
 
-BUILDASCPP=1
-BINPREFIX=
-PLATFORM=
+  RENDERER      the type of video output API (not available for PLATFORM=dos)
+		  sdl1    = SDL 1.2 (deprecated; no win64 support)
+		  sdl2    = SDL 2.0 + SDL_Renderer
+		  sdl2gl  = SDL 2.0 + OpenGL 2.0 (default)
+		  sdl2vk  = SDL 2.0 + Vulkan
+		  null    = dummy renderer
 
-ifeq ($(PLATFORM), WINDOWS)
-	EXE_EXT=.exe
+  STATIC        whether to build a static executable (0/1)
+                  - defaults to 1 for Windows platforms, 0 otherwise
+
+  DEBUG 	whether to include debug information (0/1; default: off)
+
+  BUILDASCPP    whether to build as C++ code (0/1)
+                  - defaults to 1 for Linux/Unix, 0 otherwise
+
+  LOCAL_SDL     whether to download and use a local copy of the SDL
+                development headers (0/1; only available for
+                PLATFORM=win32/64, and set as default there)
+
+  KEEN6VER      version of Commander Keen Episode 6 to copy data for
+                  - keen6e14 or keen6e15 (default)
+
+  SDL1_VERSION  version of SDL 1.x to download and use (if LOCAL_SDL=1)
+  SDL2_VERSION  version of SDL 2.x to download and use (if LOCAL_SDL=1)
+
+  CXX		explicit path of the compiler
+  CXXFLAGS      additional options for the compiler
+  LDFLAGS       additional options for the linker
+  SYSFLAGS      additional options for both the compiler and the linker
+  LIBS		additional libraries to link
+
+endef
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+# platform selection
+
+DEFAULT_STATIC = 0
+DEFAULT_RENDERER = sdl2gl
+DEFAULT_BUILDASCPP = 0
+DEFAULT_LOCAL_SDL = 0
+BINDIR =
+LIBGL = -lGL
+LIBVULKAN = -lvulkan
+
+ifeq ($(PLATFORM),)
+	BINDIR  = ../bin
+	DEFAULT_BUILDASCPP = 1
 endif
 
-ifeq ($(PLATFORM), DOS)
-	EXE_EXT=.exe
-	BINPREFIX=/usr/local/djgpp/bin/i586-pc-msdosdjgpp-
+ifneq (,$(findstring win,$(PLATFORM)))
+	# common Windows stuff
+	EXE_EXT = .exe
+	DEFAULT_STATIC = 1
+	DEFAULT_LOCAL_SDL = 1
+	LIBGL = -lopengl32
+endif
+ifeq ($(PLATFORM), win32)
+	BINDIR  = ../bin-win32
+	TOOLSET = i686-w64-mingw32
+endif
+ifeq ($(PLATFORM), win64)
+	BINDIR  = ../bin-win64
+	TOOLSET = x86_64-w64-mingw32
 endif
 
+ifeq ($(PLATFORM), dos)
+	EXE_EXT = .exe
+	BINDIR  = ../bin-dos
+	TOOLSET = i586-pc-msdosdjgpp
+	TOOLDIR = /usr/local/djgpp/bin
+	DEFAULT_RENDERER = dos
+	DEFAULT_BUILDASCPP = 1
+endif
+
+ifeq ($(BINDIR),)
+	DUMMY := $(error No valid platform selected)
+endif
+
+# handle some special cases
+ifeq ($(PLATFORM)-$(RENDERER),win32-sdl1)
+	DEFAULT_STATIC = 0
+endif
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+# set configuration variables (with user overrides) and derived variables
+
+RENDERER ?= $(DEFAULT_RENDERER)
+BUILDASCPP ?= $(DEFAULT_BUILDASCPP)
+STATIC ?= $(DEFAULT_STATIC)
+DEBUG ?= 0
+LOCAL_SDL ?= $(DEFAULT_LOCAL_SDL)
+KEEN6VER ?= keen6e15
+SDL1_VERSION ?= 1.2.15
+SDL2_VERSION ?= 2.0.9
+SYSFLAGS ?=
+CXXFLAGS ?=
+LDFLAGS ?=
+LIBS ?=
+
+# mandatory source files
+IDOBJECTS = ck_quit.o id_mm.o id_ca.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id_us_2.o id_us_textscreen.o id_vh.o id_vl.o id_str.o
+CKOBJECTS = ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck4_map.o ck5_map.o ck6_map.o ck4_obj1.o ck4_obj2.o ck4_obj3.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck6_obj1.o ck6_obj2.o ck6_obj3.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck4_misc.o ck5_misc.o ck6_misc.o ck_main.o ck_text.o ck_cross.o icon.o
+OPLOBJECTS = opl/dbopl.o
+
+# data files
+K4DATA = $(BINDIR)/ACTION.CK4 $(BINDIR)/AUDINFOE.CK4 $(BINDIR)/AUDIODCT.CK4 $(BINDIR)/AUDIOHHD.CK4 $(BINDIR)/EGADICT.CK4 $(BINDIR)/EGAHEAD.CK4 $(BINDIR)/GFXINFOE.CK4 $(BINDIR)/MAPHEAD.CK4 $(BINDIR)/TILEINFO.CK4
+K5DATA = $(BINDIR)/ACTION.CK5 $(BINDIR)/AUDINFOE.CK5 $(BINDIR)/AUDIODCT.CK5 $(BINDIR)/AUDIOHHD.CK5 $(BINDIR)/EGADICT.CK5 $(BINDIR)/EGAHEAD.CK5 $(BINDIR)/GFXINFOE.CK5 $(BINDIR)/MAPHEAD.CK5 $(BINDIR)/TILEINFO.CK5
+K6DATA = $(BINDIR)/ACTION.CK6 $(BINDIR)/AUDINFOE.CK6 $(BINDIR)/AUDIODCT.CK6 $(BINDIR)/AUDIOHHD.CK6 $(BINDIR)/EGADICT.CK6 $(BINDIR)/EGAHEAD.CK6 $(BINDIR)/GFXINFOE.CK6 $(BINDIR)/MAPHEAD.CK6 $(BINDIR)/TILEINFO.CK6
+
+# output binary file
+OUTBIN = $(BINDIR)/omnispeak$(EXE_EXT)
+
+# set BINPREFIX
+ifneq ($(TOOLSET),)
+	ifeq ($(TOOLDIR),)
+		BINPREFIX = $(TOOLSET)-
+	else
+		BINPREFIX = $(TOOLDIR)/$(TOOLSET)-
+	endif
+endif
+
+# set CXX to C or C++ compiler
 ifeq ($(BUILDASCPP), 1)
-	CXX=$(BINPREFIX)g++
+	CXX ?= $(BINPREFIX)g++
 else
-	CXX=$(BINPREFIX)gcc
+	CXX ?= $(BINPREFIX)gcc
+	CXXFLAGS += -std=c99
 endif
 
-INTCXXFLAGS=
-
-ifeq ($(BUILDASCPP), 0)
-	INTCXXFLAGS+= -std=c99
-endif
-
-WITH_DUMPER=0
-ifeq ($(WITH_DUMPER), 1)
-	INTCXXFLAGS += -DCK_ENABLE_PLAYLOOP_DUMPER
-endif
-
-OUTBIN=../bin/omnispeak$(EXE_EXT)
-
-LIBS=
-WITH_SDL12=0
-WITH_SDL2=1
-WITH_OPENGL=0
-WITH_VULKAN=0
-ifeq ($(WITH_SDL2), 1)
-	ifeq ($(WITH_VULKAN), 1)
-		LIBS+= -lvulkan -lX11 -lX11-xcb
-		IDOBJECTS+= id_vl_sdl2vk.o 
-	else
-		ifeq ($(WITH_OPENGL), 1)
-			IDOBJECTS+= id_vl_sdl2gl.o 
-		else
-			IDOBJECTS+= id_vl_sdl2.o 
-		endif
-	endif
-	IDOBJECTS+= id_sd_sdl.o id_in_sdl.o
-	SDLCONFIGBIN=sdl2-config #/local/cross-tools/x86_64-w64-mingw32/bin/sdl2-config
-	INTCXXFLAGS+= -DWITH_SDL `$(SDLCONFIGBIN) --cflags`
-	LIBS+= `$(SDLCONFIGBIN) --libs`
+# set flags for debug info
+ifeq ($(DEBUG), 1)
+	CXXFLAGS += -g -Og
+	LDFLAGS += -g
 else
-	ifeq ($(WITH_SDL12), 1)
-		IDOBJECTS+= id_vl_sdl12.o id_sd_sdl.o id_in_sdl.o
-		SDLCONFIGBIN=sdl-config
-		INTCXXFLAGS+= -DWITH_SDL `$(SDLCONFIGBIN) --cflags`
-		LIBS+= `$(SDLCONFIGBIN) --libs`
+	CXXFLAGS += -O2
+endif	
+
+# set linker flags for static linking
+ifeq ($(STATIC), 1)
+	LDFLAGS += -static
+	SDL_LIB_QUERY = --static-libs
+else
+	SDL_LIB_QUERY = --libs
+endif
+
+# set parameters that depend on the SDL version (1/2)
+ifeq ($(RENDERER), sdl1)
+	SDL_CONFIG_BIN = sdl-config
+	SDL_VERSION = $(SDL1_VERSION)
+	SDL_URL = http://libsdl.org/release/SDL-devel-$(SDL_VERSION)-mingw32.tar.gz
+	SDL_LOCAL_PREFIX = SDL-$(SDL_VERSION)
+else
+	SDL_CONFIG_BIN = sdl2-config
+	SDL_VERSION = $(SDL2_VERSION)
+	SDL_URL = http://libsdl.org/release/SDL2-devel-$(SDL_VERSION)-mingw.tar.gz
+	SDL_LOCAL_PREFIX = SDL2-$(SDL_VERSION)/$(TOOLSET)
+endif
+
+# set SDL specific parameters
+ifneq (,$(findstring sdl,$(RENDERER)))
+	ifeq ($(LOCAL_SDL),1)
+		SDL_DIR = ../$(SDL_LOCAL_PREFIX)
+		SDL_CONFIG = $(SDL_DIR)/bin/$(SDL_CONFIG_BIN) --prefix=$(SDL_DIR)
 	else
-		ifeq ($(PLATFORM), DOS)
-			IDOBJECTS+= id_vl_dos.o id_sd_dos.o id_in_dos.o
-		else
-			IDOBJECTS+= id_vl_null.o id_sd_null.o id_in_null.o
-		endif
+		SDL_CONFIG = $(SDL_CONFIG_BIN)
+	endif
+	SDL_CFLAGS = `$(SDL_CONFIG) --cflags` -DWITH_SDL
+	SDL_LIBS = `$(SDL_CONFIG) $(SDL_LIB_QUERY)`
+endif
+
+# set Windows-specific parameters
+ifneq (,$(findstring win,$(PLATFORM)))
+	BATFILES = $(BINDIR)/_keen4.cmd $(BINDIR)/_keen5.cmd $(BINDIR)/_keen6.cmd
+	RES = ../obj/windowsres.res
+endif
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+# renderer-specific input file and library selection
+
+ifeq ($(RENDERER), sdl1)
+	RENDER_OBJS = id_vl_sdl12.o id_sd_sdl.o id_in_sdl.o
+endif
+
+ifeq ($(RENDERER), sdl2)
+	RENDER_OBJS = id_vl_sdl2.o id_sd_sdl.o id_in_sdl.o
+endif
+
+ifeq ($(RENDERER), sdl2gl)
+	RENDER_OBJS = id_vl_sdl2gl.o id_sd_sdl.o id_in_sdl.o
+	LIBS += $(LIBGL)
+endif
+
+ifeq ($(RENDERER), sdl2vk)
+	RENDER_OBJS = id_vl_sdl2vk.o id_sd_sdl.o id_in_sdl.o
+	LIBS += $(LIBVULKAN)
+	ifeq ($(PLATFORM),)
+		LIBS += -lX11 -lX11-xcb
 	endif
 endif
+
+ifeq ($(RENDERER), dos)
+	RENDER_OBJS = id_vl_dos.o id_sd_dos.o id_in_dos.o
+endif
+
+ifeq ($(RENDERER), null)
+	RENDER_OBJS = id_vl_null.o id_sd_null.o id_in_null.o
+endif
+
+IDOBJECTS += $(RENDER_OBJS)
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 OBJ := $(IDOBJECTS:%=../obj/%)
 OBJ += $(CKOBJECTS:%=../obj/%)
 OBJ += $(OPLOBJECTS:%=../obj/%)
 DEPS := $(OBJ:%.o=%.d)
 
-#SDL_CONFIG=/home/david/builds/SDL-1.2.15/libs-32/bin/$(SDLCONFIGBIN)
-#SDL_CONFIG=/home/david/builds/libs/bin/$(SDLCONFIGBIN)
-SDL_CONFIG=$(SDLCONFIGBIN)
+all: $(OUTBIN) binfiles batfiles
 
-.PHONY: all clean keen4data keen5data keen6data binfiles
+help:
+	$(info $(HELP))
+	@true  # suppress "nothing to be done" message
 
-all: $(OUTBIN) binfiles
+dumpconfig:
+	@echo PLATFORM = $(PLATFORM)
+	@echo RENDERER = $(RENDERER)
+	@echo STATIC = $(STATIC)
+	@echo DEBUG = $(DEBUG)
+	@echo BUILDASCPP = $(BUILDASCPP)
+	@echo LOCAL_SDL = $(LOCAL_SDL)
+	@echo KEEN6VER = $(KEEN6VER)
+	@echo SDL_VERSION = $(SDL_VERSION)
+	@echo
+	@echo CXX = $(CXX)
+	@echo SYSFLAGS = $(SYSFLAGS)
+	@echo CXXFLAGS = $(CXXFLAGS)
+	@echo LDFLAGS = $(LDFLAGS)
+	@echo LIBS = $(LIBS)
+	@echo
+	@echo RENDER_OBJS = $(RENDER_OBJS)
+	@echo SDL_URL = $(SDL_URL)
+	@echo SDL_DIR = $(SDL_DIR)
+	@echo SDL_CONFIG = $(SDL_CONFIG)
+	@echo SDL_CFLAGS = $(SDL_CFLAGS)
+	@echo SDL_LIBS = $(SDL_LIBS)
 
-clean:
-	rm -f $(OUTBIN) $(OBJ) $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA)
+$(BINDIR):
+	mkdir -p $(BINDIR)
 
-../bin/%.CK4: ../data/keen4/%.CK4
+../obj/%.o: %.c $(SDL_DIR)
+	@mkdir -p $(dir $@)
+	$(CXX) $(SYSFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -mno-ms-bitfields -c -MMD -o $@ $<
+
+../obj/windowsres.res: windowsres.rc
+	mkdir -p $(dir $@)
+	$(BINPREFIX)windres $< -O coff -o $@
+
+$(OUTBIN): $(BINDIR) $(SDL_DIR) $(OBJ) $(RES)
+	$(CXX) $(SYSFLAGS) $(LDFLAGS) -o $(OUTBIN) $(OBJ) $(RES) $(SDL_LIBS) -lm $(LIBS)
+
+# rules to copy data files
+binfiles: keen4data keen5data keen6data
+keen4data: $(BINDIR) $(K4DATA)
+keen5data: $(BINDIR) $(K5DATA)
+keen6data: $(BINDIR) $(K6DATA)
+$(BINDIR)/%.CK4: ../data/keen4/%.CK4
 	cp -f $< $@ 
-
-../bin/%.CK5: ../data/keen5/%.CK5
+$(BINDIR)/%.CK5: ../data/keen5/%.CK5
 	cp -f $< $@ 
-
-../bin/%.CK6: ../data/$(KEEN6VER)/%.CK6
+$(BINDIR)/%.CK6: ../data/$(KEEN6VER)/%.CK6
 	cp -f $< $@
 
-keen4data: $(K4DATA)
-keen5data: $(K5DATA)
-keen6data: $(K6DATA)
-	
-binfiles: keen4data keen5data keen6data
+# generate Windows batch files to quickly start a specific episode
+batfiles: $(BATFILES)
+$(BINDIR)/_keen4.cmd:
+	echo -n "start omnispeak.exe /EPISODE 4 /NOWAIT" >$@
+$(BINDIR)/_keen5.cmd:
+	echo -n "start omnispeak.exe /EPISODE 5 /NOWAIT" >$@
+$(BINDIR)/_keen6.cmd:
+	echo -n "start omnispeak.exe /EPISODE 6 /NOWAIT" >$@
 
-../obj/%.o: %.c
-	@mkdir -p $(dir $@)
-	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -mno-ms-bitfields -c -MMD -o $@ $<
+# auto-download of SDL
+$(SDL_DIR):
+	wget -O- $(SDL_URL) | tar xz -C ..
 
-$(OUTBIN): $(OBJ)
-	@mkdir -p $(dir $@)
-	$(CXX) $(INTCXXFLAGS) $(CXXFLAGS) -g -o $(OUTBIN) $(OBJ) -lm $(LIBS)
+clean:
+	rm -f $(OUTBIN) $(OBJ) ../obj/windowsres.res $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA) $(BATFILES)
 
 -include $(DEPS)
+
+.PHONY: all help dumpconfig binfiles batfiles keen4data keen5data keen6data clean
