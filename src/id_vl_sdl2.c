@@ -28,7 +28,7 @@ static void VL_SDL2_SetVideoMode(int mode)
 		// and VGA line doubling.
 		vl_sdl2_window = SDL_CreateWindow(VL_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			VL_DEFAULT_WINDOW_WIDTH, VL_DEFAULT_WINDOW_HEIGHT,
-			SDL_WINDOW_RESIZABLE | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+			SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 
 		SDL_SetWindowMinimumSize(vl_sdl2_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER / VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER / VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 
@@ -282,7 +282,7 @@ static void VL_SDL2_ScrollSurface(void *surface, int x, int y)
 static void VL_SDL2_ResizeWindow()
 {
 	int realWinH, realWinW, curW, curH;
-	SDL_GetWindowSize(vl_sdl2_window, &realWinW, &realWinH);
+	SDL_GetRendererOutputSize(vl_sdl2_renderer, &realWinW, &realWinH);
 	VL_CalculateRenderRegions(realWinW, realWinH);
 
 	if (vl_sdl2_scaledTarget)

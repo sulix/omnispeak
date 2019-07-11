@@ -225,7 +225,7 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 		// and VGA line doubling.
 		vl_sdl2gl_window = SDL_CreateWindow(VL_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			VL_SDL2GL_DEFAULT_WINDOW_WIDTH, VL_SDL2GL_DEFAULT_WINDOW_HEIGHT,
-			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+			SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 		vl_sdl2gl_context = SDL_GL_CreateContext(vl_sdl2gl_window);
 		vl_sdl2gl_screenWidth = VL_EGAVGA_GFX_WIDTH;
 		vl_sdl2gl_screenHeight = VL_EGAVGA_GFX_HEIGHT;
@@ -520,7 +520,7 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 	SDL_Rect wholeWinRect;
 	SDL_Rect borderedWinRect;
 	// Get the real window size
-	SDL_GetWindowSize(vl_sdl2gl_window, &realWinW, &realWinH);
+	SDL_GL_GetDrawableSize(vl_sdl2gl_window, &realWinW, &realWinH);
 
 	VL_CalculateRenderRegions(realWinW, realWinH);
 
