@@ -1,6 +1,5 @@
 SDL2-2.*
 SDL-1.*
 ._SDL-1.*
-bin
-bin-*
-obj
+bin*
+obj*

@@ -30,7 +30,7 @@ This Makefile supports the following options:
 		  sdl1    = SDL 1.2 (deprecated; no win64 support)
 		  sdl2    = SDL 2.0 + SDL_Renderer
 		  sdl2gl  = SDL 2.0 + OpenGL 2.0 (default)
-		  sdl2vk  = SDL 2.0 + Vulkan
+		  sdl2vk  = SDL 2.0 + Vulkan (experimental)
 		  null    = dummy renderer
 
   STATIC        whether to build a static executable (0/1)
@@ -70,9 +70,10 @@ DEFAULT_LOCAL_SDL = 0
 BINDIR =
 LIBGL = -lGL
 LIBVULKAN = -lvulkan
+OUTDIR_SUFFIX := INVALID
 
 ifeq ($(PLATFORM),)
-	BINDIR  = ../bin
+	OUTDIR_SUFFIX :=
 	DEFAULT_BUILDASCPP = 1
 endif
 
@@ -84,26 +85,29 @@ ifneq (,$(findstring win,$(PLATFORM)))
 	LIBGL = -lopengl32
 endif
 ifeq ($(PLATFORM), win32)
-	BINDIR  = ../bin-win32
+	OUTDIR_SUFFIX := -win32
 	TOOLSET = i686-w64-mingw32
 endif
 ifeq ($(PLATFORM), win64)
-	BINDIR  = ../bin-win64
+	OUTDIR_SUFFIX := -win64
 	TOOLSET = x86_64-w64-mingw32
 endif
 
 ifeq ($(PLATFORM), dos)
 	EXE_EXT = .exe
-	BINDIR  = ../bin-dos
+	OUTDIR_SUFFIX := -dos
 	TOOLSET = i586-pc-msdosdjgpp
 	TOOLDIR = /usr/local/djgpp/bin
 	DEFAULT_RENDERER = dos
 	DEFAULT_BUILDASCPP = 1
 endif
 
-ifeq ($(BINDIR),)
+ifeq ($(OUTDIR_SUFFIX),INVALID)
 	DUMMY := $(error No valid platform selected)
 endif
+
+BINDIR = ../bin$(OUTDIR_SUFFIX)
+OBJDIR = ../obj$(OUTDIR_SUFFIX)
 
 # handle some special cases
 ifeq ($(PLATFORM)-$(RENDERER),win32-sdl1)
@@ -201,7 +205,7 @@ endif
 # set Windows-specific parameters
 ifneq (,$(findstring win,$(PLATFORM)))
 	BATFILES = $(BINDIR)/_keen4.cmd $(BINDIR)/_keen5.cmd $(BINDIR)/_keen6.cmd
-	RES = ../obj/windowsres.res
+	RES = $(OBJDIR)/windowsres.res
 endif
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -241,9 +245,9 @@ IDOBJECTS += $(RENDER_OBJS)
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-OBJ := $(IDOBJECTS:%=../obj/%)
-OBJ += $(CKOBJECTS:%=../obj/%)
-OBJ += $(OPLOBJECTS:%=../obj/%)
+OBJ := $(IDOBJECTS:%=$(OBJDIR)/%)
+OBJ += $(CKOBJECTS:%=$(OBJDIR)/%)
+OBJ += $(OPLOBJECTS:%=$(OBJDIR)/%)
 DEPS := $(OBJ:%.o=%.d)
 
 all: $(OUTBIN) binfiles batfiles
@@ -268,6 +272,8 @@ dumpconfig:
 	@echo LDFLAGS = $(LDFLAGS)
 	@echo LIBS = $(LIBS)
 	@echo
+	@echo BINDIR = $(BINDIR)
+	@echo OBJDIR = $(OBJDIR)
 	@echo RENDER_OBJS = $(RENDER_OBJS)
 	@echo SDL_URL = $(SDL_URL)
 	@echo SDL_DIR = $(SDL_DIR)
@@ -278,11 +284,11 @@ dumpconfig:
 $(BINDIR):
 	mkdir -p $(BINDIR)
 
-../obj/%.o: %.c $(SDL_DIR)
+$(OBJDIR)/%.o: %.c $(SDL_DIR)
 	@mkdir -p $(dir $@)
 	$(CXX) $(SYSFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -mno-ms-bitfields -c -MMD -o $@ $<
 
-../obj/windowsres.res: windowsres.rc
+$(OBJDIR)/windowsres.res: windowsres.rc
 	mkdir -p $(dir $@)
 	$(BINPREFIX)windres $< -O coff -o $@
 
@@ -315,8 +321,16 @@ $(SDL_DIR):
 	wget -O- $(SDL_URL) | tar xz -C ..
 
 clean:
-	rm -f $(OUTBIN) $(OBJ) ../obj/windowsres.res $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA) $(BATFILES)
+	rm -f $(OUTBIN) $(OBJ) $(OBJDIR)/windowsres.res $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA) $(BATFILES)
+
+RMDIR_ERRMSG = Note: Some of the 'bin' directories still contain user data. They have not been removed.
+export RMDIR_ERRMSG
+distclean:
+	rm -rf ../obj*
+	rm -f ../bin*/omnispeak ../bin*/omnispeak.exe ../bin-win*/_keen?.cmd
+	rm -f ../bin*/ACTION.CK? ../bin*/AUDINFOE.CK? ../bin*/AUDIODCT.CK? ../bin*/AUDIOHHD.CK? ../bin*/EGADICT.CK? ../bin*/EGAHEAD.CK? ../bin*/GFXINFOE.CK? ../bin*/MAPHEAD.CK? ../bin*/TILEINFO.CK?
+	rmdir ../bin* || echo $$RMDIR_ERRMSG
 
 -include $(DEPS)
 
-.PHONY: all help dumpconfig binfiles batfiles keen4data keen5data keen6data clean
+.PHONY: all help dumpconfig binfiles batfiles keen4data keen5data keen6data clean distclean
