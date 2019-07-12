@@ -137,9 +137,10 @@ CKOBJECTS = ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck4_map.o ck5_map.o 
 OPLOBJECTS = opl/dbopl.o
 
 # data files
-K4DATA = $(BINDIR)/ACTION.CK4 $(BINDIR)/AUDINFOE.CK4 $(BINDIR)/AUDIODCT.CK4 $(BINDIR)/AUDIOHHD.CK4 $(BINDIR)/EGADICT.CK4 $(BINDIR)/EGAHEAD.CK4 $(BINDIR)/GFXINFOE.CK4 $(BINDIR)/MAPHEAD.CK4 $(BINDIR)/TILEINFO.CK4
-K5DATA = $(BINDIR)/ACTION.CK5 $(BINDIR)/AUDINFOE.CK5 $(BINDIR)/AUDIODCT.CK5 $(BINDIR)/AUDIOHHD.CK5 $(BINDIR)/EGADICT.CK5 $(BINDIR)/EGAHEAD.CK5 $(BINDIR)/GFXINFOE.CK5 $(BINDIR)/MAPHEAD.CK5 $(BINDIR)/TILEINFO.CK5
-K6DATA = $(BINDIR)/ACTION.CK6 $(BINDIR)/AUDINFOE.CK6 $(BINDIR)/AUDIODCT.CK6 $(BINDIR)/AUDIOHHD.CK6 $(BINDIR)/EGADICT.CK6 $(BINDIR)/EGAHEAD.CK6 $(BINDIR)/GFXINFOE.CK6 $(BINDIR)/MAPHEAD.CK6 $(BINDIR)/TILEINFO.CK6
+DATAFILES = ACTION AUDINFOE AUDIODCT AUDIOHHD EGADICT EGAHEAD GFXINFOE MAPHEAD TILEINFO
+K4DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK4)
+K5DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK5)
+K6DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK6)
 
 # output binary file
 OUTBIN = $(BINDIR)/omnispeak$(EXE_EXT)
@@ -327,8 +328,8 @@ RMDIR_ERRMSG = Note: Some of the 'bin' directories still contain user data. They
 export RMDIR_ERRMSG
 distclean:
 	rm -rf ../obj*
-	rm -f ../bin*/omnispeak ../bin*/omnispeak.exe ../bin-win*/_keen?.cmd
-	rm -f ../bin*/ACTION.CK? ../bin*/AUDINFOE.CK? ../bin*/AUDIODCT.CK? ../bin*/AUDIOHHD.CK? ../bin*/EGADICT.CK? ../bin*/EGAHEAD.CK? ../bin*/GFXINFOE.CK? ../bin*/MAPHEAD.CK? ../bin*/TILEINFO.CK?
+	rm -f ../bin*/omnispeak ../bin-*/omnispeak.exe ../bin-win*/_keen?.cmd
+	rm -f $(foreach f, $(DATAFILES), ../bin*/$(f).CK?)
 	rmdir ../bin* || echo $$RMDIR_ERRMSG
 
 -include $(DEPS)
