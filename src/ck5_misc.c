@@ -51,6 +51,7 @@ CK_EpisodeDef ck5_episode = {
 	/* .printXOffset = */ 0x9B9F,
 	/* .animTilesOffset = */ 0xD4DC,
 	/* .animTileSize = */ 4,
+	/* .hasCreatureQuestion = */ false,
 };
 
 // Contains some keen-5 specific functions.

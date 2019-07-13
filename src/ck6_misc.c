@@ -54,6 +54,7 @@ CK_EpisodeDef ck6v14e_episode = {
 	/* .printXOffset = */ 0xA6C5,
 	/* .animTilesOffset = */ 0xDF78,
 	/* .animTileSize = */ 10,
+	/* .hasCreatureQuestion = */ true,
 };
 
 CK_EpisodeDef ck6v15e_episode = {
@@ -79,6 +80,7 @@ CK_EpisodeDef ck6v15e_episode = {
 	/* .printXOffset = */ 0xE81A,
 	/* .animTilesOffset = */ 0xD62E,
 	/* .animTileSize = */ 10,
+	/* .hasCreatureQuestion = */ true,
 };
 
 int16_t CK6_ItemSpriteChunks[] = {

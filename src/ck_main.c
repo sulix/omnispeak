@@ -652,6 +652,7 @@ int main(int argc, char *argv[])
 	bool isFullScreen = false;
 	bool isAspectCorrected = true;
 	bool hasBorder = true;
+	bool overrideCopyProtection = false;
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 	const char *dumperFilename = NULL;
 #endif
@@ -700,6 +701,10 @@ int main(int argc, char *argv[])
 		{
 			in_disableJoysticks = true;
 		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/NOCOPY"))
+		{
+			overrideCopyProtection = true;
+		}
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 		else if (!CK_Cross_strcasecmp(argv[i], "/DUMPFILE"))
 		{
@@ -726,6 +731,9 @@ int main(int argc, char *argv[])
 	VL_SetParams(isFullScreen, isAspectCorrected, hasBorder);
 
 	ck_currentEpisode->defineConstants();
+
+	if (overrideCopyProtection)
+		ck_currentEpisode->hasCreatureQuestion = false;
 
 	CK_InitGame();
 

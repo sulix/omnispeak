@@ -54,6 +54,7 @@ CK_EpisodeDef ck4_episode = {
 	/* .printXOffset = */ 0xA537,
 	/* .animTilesOffset = */ 0xDDAE,
 	/* .animTileSize = */ 4,
+	/* .hasCreatureQuestion = */ false,
 };
 
 // Contains some keen-4 specific functions.

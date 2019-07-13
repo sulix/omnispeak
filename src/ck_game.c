@@ -833,10 +833,11 @@ void CK_TryAgainMenu()
 
 extern CK_Difficulty ck_startingDifficulty;
 
+bool ck_hasCreatureQuestion = false;
 bool CK6_CreatureQuestion();
 void CK_GameLoop()
 {
-	if (ck_currentEpisode->ep == EP_CK6)
+	if (ck_currentEpisode->hasCreatureQuestion)
 	{
 		// if !demoParm
 		if (!CK6_CreatureQuestion())
