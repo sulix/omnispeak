@@ -976,8 +976,8 @@ void VL_CalculateRenderRegions(int realW, int realH)
 		vl_fullRgn_y = 0;
 	}
 
-	vl_integerWidth = CK_Cross_max((vl_fullRgn_w / VL_EGAVGA_GFX_WIDTH) * VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_WIDTH);
-	vl_integerHeight = CK_Cross_max((vl_fullRgn_h / VL_EGAVGA_GFX_HEIGHT) * VL_EGAVGA_GFX_HEIGHT, VL_EGAVGA_GFX_HEIGHT);
+	vl_integerWidth = CK_Cross_max((vl_fullRgn_w / VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER) * VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER);
+	vl_integerHeight = CK_Cross_max((vl_fullRgn_h / VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER) * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER);
 
 	vl_renderRgn_x =
 		vl_integerWidth * VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH /
