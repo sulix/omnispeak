@@ -566,8 +566,10 @@ void CAL_SetupGrFile()
 
 	// Read chunk type info from GFEINFO?
 	FILE *gfxinfoe = fopen(CAL_AdjustExtension("GFXINFOE.EXT"), "rb");
-	fread(&ca_gfxInfoE, 1, sizeof(ca_gfxinfo), gfxinfoe);
+	size_t gfxinfoeLen = fread(&ca_gfxInfoE, 1, sizeof(ca_gfxinfo), gfxinfoe);
 	fclose(gfxinfoe);
+	if (gfxinfoeLen != sizeof(ca_gfxinfo))
+		Quit("Couldn't read GFXINFOE!");
 #ifdef CK_CROSS_IS_BIGENDIAN
 	uint16_t *uptr = (uint16_t *)&ca_gfxInfoE;
 	for (size_t loopVar = 0; loopVar < sizeof(ca_gfxInfoE) / 2; loopVar++, uptr++)
@@ -867,8 +869,10 @@ void CAL_SetupAudioFile(void)
 {
 	// Read audio chunk type info from AUDINFOE
 	FILE *audinfoe = fopen(CAL_AdjustExtension("AUDINFOE.EXT"), "rb");
-	fread(&ca_audInfoE, 1, sizeof(ca_audinfo), audinfoe);
+	size_t audinfoeLen = fread(&ca_audInfoE, 1, sizeof(ca_audinfo), audinfoe);
 	fclose(audinfoe);
+	if (audinfoeLen != sizeof(ca_audinfo))
+		Quit("Couldn't read AUDINFOE!");
 #ifdef CK_CROSS_IS_BIGENDIAN
 	uint16_t *uptr = (uint16_t *)&ca_audInfoE;
 	for (size_t loopVar = 0; loopVar < sizeof(ca_audInfoE) / 2; loopVar++, uptr++)
@@ -927,7 +931,9 @@ void CA_CacheMap(int mapIndex)
 
 		fseek(ca_GameMaps, headerOffset, SEEK_SET);
 
-		fread(CA_MapHeaders[mapIndex], 1, sizeof(CA_MapHeader), ca_GameMaps);
+		size_t mapHeaderSize = fread(CA_MapHeaders[mapIndex], 1, sizeof(CA_MapHeader), ca_GameMaps);
+		if (mapHeaderSize != sizeof(CA_MapHeader))
+			Quit("Couldn't read map header from GAMEMAPS!");
 #ifdef CK_CROSS_IS_BIGENDIAN
 		for (int plane = 0; plane < CA_NUMMAPPLANES; ++plane)
 		{
@@ -1022,7 +1028,8 @@ void CA_Startup(void)
 #if SDL_VERSION_ATLEAST(2, 0, 1)
 	if (!CAL_AdjustExtension(checkFile))
 	{
-		chdir(SDL_GetBasePath());
+		if (chdir(SDL_GetBasePath()))
+			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Couldn't change directory to \"%s\"\n", SDL_GetBasePath());
 	}
 #endif
 #endif
@@ -1088,7 +1095,9 @@ void CA_CacheAudioChunk(int16_t chunk)
 
 	if (compressed <= BUFFERSIZE)
 	{
-		fread(buffer, compressed, 1, ca_audiohandle);
+		size_t readSize = fread(buffer, compressed, 1, ca_audiohandle);
+		if (readSize != 1)
+			Quit("Couldn't read compressed audio chunk!");
 		source = buffer;
 	}
 	else
@@ -1100,8 +1109,10 @@ void CA_CacheAudioChunk(int16_t chunk)
 			return;
 #endif
 		MM_SetLock(&bigbuffer, true);
-		fread(bigbuffer, compressed, 1, ca_audiohandle);
+		size_t readSize = fread(bigbuffer, compressed, 1, ca_audiohandle);
 		source = bigbuffer;
+		if (readSize != 1)
+			Quit("Couldn't read compressed audio chunk!");
 	}
 
 	expanded = CAL_ReadLong(source);
