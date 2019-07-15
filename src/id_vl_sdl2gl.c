@@ -605,7 +605,7 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
 
 	id_glViewport(vl_fullRgn_x, realWinH - vl_fullRgn_y - vl_fullRgn_h, vl_fullRgn_w, vl_fullRgn_h);
 	// Use EXT_framebuffer_blit if available, otherwise draw a quad.
-	if (0 && SDL_GL_ExtensionSupported("GL_EXT_framebuffer_blit"))
+	if (SDL_GL_ExtensionSupported("GL_EXT_framebuffer_blit"))
 	{
 		id_glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
 		id_glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, vl_sdl2gl_framebufferObject);
