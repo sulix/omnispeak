@@ -351,6 +351,8 @@ static VkDescriptorSet vl_sdl2vk_samplerDescriptorSet;
 static int vl_sdl2vk_integerWidth;
 static int vl_sdl2vk_integerHeight;
 
+static bool vl_sdl2vk_flushSwapchain;
+
 // Here is how the dimensions of the window are currently picked:
 // 1. The emulated 320x200 sub-window is first zoomed
 // by a factor of 3 (for each dimension) to 960x600.
@@ -476,7 +478,7 @@ static void VL_SDL2VK_CreateVulkanInstance()
 	vl_sdl2vk_instanceCreateInfo.pNext = 0;
 	vl_sdl2vk_instanceCreateInfo.flags = 0;
 	vl_sdl2vk_instanceCreateInfo.pApplicationInfo = &vl_sdl2vk_applicationInfo;
-	vl_sdl2vk_instanceCreateInfo.enabledLayerCount = 3;
+	vl_sdl2vk_instanceCreateInfo.enabledLayerCount = 0;
 	vl_sdl2vk_instanceCreateInfo.ppEnabledLayerNames = desiredDebugLayers;
 	vl_sdl2vk_instanceCreateInfo.enabledExtensionCount = totalRequiredInstExtCount;
 	vl_sdl2vk_instanceCreateInfo.ppEnabledExtensionNames = totalRequiredInstanceExtensions;
@@ -656,6 +658,24 @@ static void VL_SDL2VK_SetupSwapchain(int width, int height)
 
 	vl_sdl2vk_swapchainSize = surfaceCapabilities.currentExtent;
 
+	// On Wayland, the currentExtent is never set, so take it from the given w/h
+	if ((vl_sdl2vk_swapchainSize.width == -1 || vl_sdl2vk_swapchainSize.height == -1))
+	{
+		vl_sdl2vk_swapchainSize.width = width;
+		vl_sdl2vk_swapchainSize.height = height;
+	}
+
+	// Clamp the swapchainSize to make sure it's within surfaceCapabilities
+	vl_sdl2vk_swapchainSize.width = CK_Cross_min(CK_Cross_max(vl_sdl2vk_swapchainSize.width, surfaceCapabilities.minImageExtent.width), surfaceCapabilities.maxImageExtent.width);
+	vl_sdl2vk_swapchainSize.height = CK_Cross_min(CK_Cross_max(vl_sdl2vk_swapchainSize.height, surfaceCapabilities.minImageExtent.height), surfaceCapabilities.maxImageExtent.height);
+
+	// We calculate the render regions here, as on X11,
+	// SDL_Vulkan_GetDrawableSize() is not always valid, so we can end up
+	// trying to blit to a fullRgn that exceeds the surface size.
+	// See, for example: https://bugzilla.libsdl.org/show_bug.cgi?id=4671
+	// By using the actual swapchain size here, it should always be correct
+	VL_CalculateRenderRegions(vl_sdl2vk_swapchainSize.width, vl_sdl2vk_swapchainSize.height);
+
 	int desiredFormat = 0;
 	for (int i = 0; i < surfaceFormatCount; ++i)
 	{
@@ -671,7 +691,7 @@ static void VL_SDL2VK_SetupSwapchain(int width, int height)
 	swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	swapchainCreateInfo.pNext = 0;
 	swapchainCreateInfo.surface = vl_sdl2vk_windowSurface;
-	swapchainCreateInfo.minImageCount = 2;
+	swapchainCreateInfo.minImageCount = surfaceCapabilities.minImageCount;
 	swapchainCreateInfo.imageFormat = vl_sdl2vk_swapchainFormat;
 	swapchainCreateInfo.imageColorSpace = surfaceFormats[desiredFormat].colorSpace;
 	swapchainCreateInfo.imageExtent = vl_sdl2vk_swapchainSize;
@@ -1293,6 +1313,17 @@ static void VL_SDL2VK_PopulateCommandBuffer(int i, VkRect2D fullRgn, VkRect2D re
 
 	vkCmdEndRenderPass(vl_sdl2vk_commandBuffers[i]);
 
+	VkImageSubresourceRange dstSubresourceRange = {};
+	dstSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	dstSubresourceRange.baseMipLevel = 0;
+	dstSubresourceRange.levelCount = 1;
+	dstSubresourceRange.baseArrayLayer = 0;
+	dstSubresourceRange.layerCount = 1;
+
+	vkCmdClearColorImage(vl_sdl2vk_commandBuffers[i], vl_sdl2vk_swapchainImages[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		&clearColour.color,
+		1, &dstSubresourceRange);
+
 	VL_SDL2VK_ImageLayoutBarrier(vl_sdl2vk_commandBuffers[i], vl_sdl2vk_integerImage, vl_sdl2vk_swapchainFormat,
 		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_READ_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
@@ -1376,7 +1407,7 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 		// and VGA line doubling.
 		vl_sdl2vk_window = SDL_CreateWindow(VL_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			VL_SDL2VK_DEFAULT_WINDOW_WIDTH, VL_SDL2VK_DEFAULT_WINDOW_HEIGHT,
-			SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+			SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 		vl_sdl2vk_screenWidth = VL_EGAVGA_GFX_WIDTH;
 		vl_sdl2vk_screenHeight = VL_EGAVGA_GFX_HEIGHT;
 
@@ -1559,9 +1590,9 @@ static void *VL_SDL2VK_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		samplerInfo.magFilter = VK_FILTER_NEAREST;
 		samplerInfo.minFilter = VK_FILTER_NEAREST;
-		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 		samplerInfo.anisotropyEnable = VK_FALSE;
 		samplerInfo.maxAnisotropy = 1.0f;
 		samplerInfo.unnormalizedCoordinates = VK_TRUE;
@@ -1871,13 +1902,13 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 
 	int newW, newH;
 	SDL_Vulkan_GetDrawableSize(vl_sdl2vk_window, &newW, &newH);
-	VL_CalculateRenderRegions(newW, newH);
-	if (vl_sdl2vk_swapchainSize.width != newW || vl_sdl2vk_swapchainSize.height != newH)
+	if (vl_sdl2vk_flushSwapchain || vl_sdl2vk_swapchainSize.width != newW || vl_sdl2vk_swapchainSize.height != newH)
 	{
 		VL_SDL2VK_DestroySwapchain();
 		VL_SDL2VK_SetupSwapchain(newW, newH);
 		VL_SDL2VK_CreateFramebuffers(vl_integerWidth, vl_integerHeight);
 		VL_SDL2VK_CreatePipeline();
+		vl_sdl2vk_flushSwapchain = false;
 	}
 
 	result = vkAcquireNextImageKHR(vl_sdl2vk_device, vl_sdl2vk_swapchain, UINT64_MAX, vl_sdl2vk_imageAvailableSemaphore, VK_NULL_HANDLE, &framebufferIndex);
@@ -1898,8 +1929,8 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
 
 	VL_SDL2VK_BindTexture(surface);
 
-	VkRect2D fullRgn = {{vl_fullRgn_x, vl_fullRgn_y}, {vl_fullRgn_w, vl_fullRgn_h}};
-	VkRect2D renderRgn = {{vl_renderRgn_x, vl_renderRgn_y}, {vl_renderRgn_w, vl_renderRgn_h}};
+	VkRect2D fullRgn = {{vl_fullRgn_x, vl_fullRgn_y}, {(uint32_t)vl_fullRgn_w, (uint32_t)vl_fullRgn_h}};
+	VkRect2D renderRgn = {{vl_renderRgn_x, vl_renderRgn_y}, {(uint32_t)vl_renderRgn_w, (uint32_t)vl_renderRgn_h}};
 	VkClearColorValue borderColour = {{(float)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][0] / 255,
 		(float)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][1] / 255,
 		(float)VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][2] / 255,
@@ -1964,6 +1995,7 @@ static int VL_SDL2VK_GetNumBuffers(void *surface)
 void VL_SDL2VK_FlushParams()
 {
 	SDL_SetWindowFullscreen(vl_sdl2vk_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	vl_sdl2vk_flushSwapchain = true;
 }
 
 static void VL_SDL2VK_WaitVBLs(int vbls)
