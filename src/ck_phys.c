@@ -553,8 +553,7 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 		break;
 
 	default:
-		break;
-
+		// Fallthrough, as if no episode is set, all obclasses are bad.
 	badobjclass:
 		Quit("FullClipToWalls: Bad obclass");
 	}
