@@ -514,7 +514,7 @@ static void VL_SDL2GL_ScrollSurface(void *surface, int x, int y)
 	VL_SDL2GL_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
 }
 
-static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY)
+static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
 {
 	int realWinW, realWinH;
 	SDL_Rect wholeWinRect;

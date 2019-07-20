@@ -289,7 +289,7 @@ static void VL_SDL12_ScrollSurface(void *surface, int x, int y)
 	VL_SDL12_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
 }
 
-static void VL_SDL12_Present(void *surface, int scrlX, int scrlY)
+static void VL_SDL12_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
 {
 	// TODO: Verify this is a VL_SurfaceUsage_FrontBuffer
 	SDL_Surface *surf = (SDL_Surface *)surface;

@@ -30,8 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sys/movedata.h>
 #include <sys/nearptr.h>
 
-static int vl_null_screenWidth;
-static int vl_null_screenHeight;
+static int vl_dos_screenWidth;
+static int vl_dos_screenHeight;
 
 #define EGA_ATR_INDEX 0x3C0
 #define EGA_ATR_MODE 0x10
@@ -55,21 +55,34 @@ typedef struct VL_DOS_Surface
 	int activePage;
 } VL_DOS_Surface;
 
+static int vl_dos_palSegment;
+static int vl_dos_palSelector;
+
 static void VL_DOS_SetVideoMode(int mode)
 {
 	if (mode == 0xD)
 	{
-		vl_null_screenWidth = VL_EGAVGA_GFX_WIDTH;
-		vl_null_screenHeight = VL_EGAVGA_GFX_HEIGHT;
+		vl_dos_screenWidth = VL_EGAVGA_GFX_WIDTH;
+		vl_dos_screenHeight = VL_EGAVGA_GFX_HEIGHT;
 		__dpmi_regs r;
 		r.x.ax = 0x0D;
 		__dpmi_int(0x10, &r);
+
+		// We need to allocate some memory for our palette, which needs
+		// to be accessible from the BIOS. Because the DOS allocation
+		// functions take the memory size in paragraphs (16-byte chunks),
+		// and we need 17 bytes (16 colours + the border colour), we
+		// allocate two paragraphs.
+		vl_dos_palSegment = __dpmi_allocate_dos_memory(2, &vl_dos_palSelector);
 	}
 	else
 	{
 		__dpmi_regs r;
 		r.x.ax = 0x03;
 		__dpmi_int(0x10, &r);
+
+		// Free our palette memory.
+		__dpmi_free_dos_memory(vl_dos_palSelector);
 	}
 }
 
@@ -149,19 +162,29 @@ static void VL_DOS_GetSurfaceDimensions(void *surface, int *w, int *h)
 
 static void VL_DOS_RefreshPaletteAndBorderColor(void *screen)
 {
+	// This is not really the right way to access this memory: we're given
+	// a selector intended for accessing it from protected mode. But this
+	// works (at least in DosBox).
+	intptr_t dospalmem = vl_dos_palSegment * 16;
+	uint8_t *dospal = (uint8_t *)(__djgpp_conventional_base + dospalmem);
+
 	for (int i = 0; i < 16; i++)
 	{
-		outportb(0x3C8, i);
-
-		outportb(0x3C9, VL_EGARGBColorTable[vl_emuegavgaadapter.palette[i]][0]); // red
-		outportb(0x3C9, VL_EGARGBColorTable[vl_emuegavgaadapter.palette[i]][1]); // green
-		outportb(0x3C9, VL_EGARGBColorTable[vl_emuegavgaadapter.palette[i]][2]); // blue
+		// We need to convert back from an EGA index (IRGB), to a
+		// six-bit DAC value (xIxRGB) where the intensity value is
+		// stored in the green-intensity bit.
+		uint8_t val = vl_emuegavgaadapter.palette[i];
+		uint8_t realval = val & 7 | ((val & 8) << 1);
+		dospal[i] = realval;
 	}
+	dospal[16] = vl_border_color & 7 | ((vl_border_color & 8) << 1);
 
+	// Use int 10h, AX=1002h to set the palette.
+	// http://www.ctyme.com/intr/rb-0116.htm
 	__dpmi_regs r;
-	r.x.ax = 0x1001;
-	r.h.bh = 0x00;
-	r.h.bh = vl_emuegavgaadapter.bordercolor;
+	r.x.ax = 0x1002;
+	r.x.es = vl_dos_palSegment;
+	r.x.dx = 0;
 	__dpmi_int(0x10, &r);
 }
 
@@ -169,7 +192,7 @@ static int VL_DOS_SurfacePGet(void *surface, int x, int y)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
 	int pixel_index_byte = (y * surf->w + x) / 8;
-	int pixel_index_bit = (y * surf->w + x) % 8;
+	int pixel_index_bit = 7 - ((y * surf->w + x) % 8);
 	uint8_t val = 0;
 	for (int plane = 0; plane < 4; ++plane)
 	{
@@ -232,6 +255,8 @@ static void VL_DOS_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int h,
 	int x_high_byte = x_end_bit / 8;
 	for (int plane = 0; plane < 4; ++plane)
 	{
+		if (!(mapmask & (1 << plane)))
+			continue;
 		uint8_t *plane_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane);
 		for (int _y = y; _y < y + h; ++_y)
 		{
@@ -396,6 +421,8 @@ static void VL_DOS_UnmaskedToSurface_PM(void *src, void *dst_surface, int x, int
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
+		if (!(mapmask & (1 << plane)))
+			continue;
 		for (int _y = initial_y; _y < final_h; ++_y)
 		{
 			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * plane) + (_y * (w / 8)) + initial_x / 8;
@@ -479,19 +506,24 @@ static void VL_DOS_BitToSurface(void *src, void *dst_surface, int x, int y, int 
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		if (!(colour & (1 << plane)))
-			continue;
-		uint8_t prev_byte = 0;
+		//if (!(colour & (1 << plane)))
+		//	continue;
 		for (int _y = 0; _y < h; ++_y)
 		{
 			uint8_t *src_ptr = (uint8_t *)src + (_y * ((w + 7) / 8));
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
 			size_t copy_len = (w + 7) / 8;
+			uint8_t prev_byte = 0;
 			for (int i = 0; i < copy_len; ++i)
 			{
 				uint8_t src_byte = (prev_byte << (8 - dst_bit_x_offset)) | (src_ptr[i] >> dst_bit_x_offset);
 				prev_byte = src_ptr[i];
 				dst_ptr[i] = src_byte;
+			}
+			if (dst_bit_x_offset)
+			{
+				uint8_t src_byte = (prev_byte << (8 - dst_bit_x_offset));
+				dst_ptr[copy_len] = src_byte;
 			}
 		}
 	}
@@ -501,19 +533,31 @@ static void VL_DOS_BitToSurface_PM(void *src, void *dst_surface, int x, int y, i
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)dst_surface;
 	int dst_byte_x_offset = x / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
+	int dst_bit_x_offset = x & 7;
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		if (!(colour & (1 << plane)))
-			continue;
+		//if (!(colour & (1 << plane)))
+		//	continue;
 		if (!(mapmask & (1 << plane)))
 			continue;
 		for (int _y = 0; _y < h; ++_y)
 		{
-			uint8_t *src_ptr = (uint8_t *)src + (_y * (w / 8));
+			uint8_t *src_ptr = (uint8_t *)src + (_y * ((w + 7) / 8));
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
-			size_t copy_len = w / 8;
-			memcpy(dst_ptr, src_ptr, copy_len);
+			size_t copy_len = (w + 7) / 8;
+			uint8_t prev_byte = 0;
+			for (int i = 0; i < copy_len; ++i)
+			{
+				uint8_t src_byte = (prev_byte << (8 - dst_bit_x_offset)) | (src_ptr[i] >> dst_bit_x_offset);
+				prev_byte = src_ptr[i];
+				dst_ptr[i] = src_byte;
+			}
+			if (dst_bit_x_offset)
+			{
+				uint8_t src_byte = (prev_byte << (8 - dst_bit_x_offset));
+				dst_ptr[copy_len] = src_byte;
+			}
 		}
 	}
 }
@@ -617,7 +661,7 @@ static void VL_DOS_ScrollSurface(void *surface, int x, int y)
 	}
 }
 
-static void VL_DOS_Present(void *surface, int scrlX, int scrlY)
+static void VL_DOS_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
 
@@ -656,7 +700,9 @@ static void VL_DOS_Present(void *surface, int scrlX, int scrlY)
 
 	if (were_interrupts_enabled)
 		enable();
-	surf->activePage ^= 1;
+
+	if (!singleBuffered)
+		surf->activePage ^= 1;
 }
 
 int VL_DOS_GetActiveBufferId(void *surface)

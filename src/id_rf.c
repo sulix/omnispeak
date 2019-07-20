@@ -1422,5 +1422,8 @@ void RF_Refresh()
 	if (rf_drawFunc)
 		rf_drawFunc();
 
+	VL_SwapOnNextPresent();
+	VL_Present();
+
 	RFL_CalcTics();
 }

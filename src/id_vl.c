@@ -1023,8 +1023,16 @@ int VL_GetNumBuffers()
 	return vl_currentBackend->getNumBuffers(vl_emuegavgaadapter.screen);
 }
 
+static bool vl_swapOnNextPresent = false;
+
+void VL_SwapOnNextPresent()
+{
+	vl_swapOnNextPresent = true;
+}
+
 void VL_Present()
 {
 	vl_lastFrameTime = SD_GetTimeCount();
-	vl_currentBackend->present(vl_emuegavgaadapter.screen, vl_scrollXpixels, vl_scrollYpixels);
+	vl_currentBackend->present(vl_emuegavgaadapter.screen, vl_scrollXpixels, vl_scrollYpixels, !vl_swapOnNextPresent);
+	vl_swapOnNextPresent = false;
 }

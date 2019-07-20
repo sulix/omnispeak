@@ -1895,7 +1895,7 @@ static void VL_SDL2VK_ScrollSurface(void *surface, int x, int y)
 	VL_SDL2VK_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
 }
 
-static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY)
+static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
 {
 	VkResult result = VK_SUCCESS;
 	uint32_t framebufferIndex;

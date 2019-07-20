@@ -2235,7 +2235,6 @@ void CK_PlayLoop()
 			SD_SetLastTimeCount(SD_GetTimeCount());
 		}
 		// TODO: Extra VBLs come here
-		VL_Present();
 		// If we've finished playing back our demo, or the player presses a key,
 		// exit the playloop.
 		if (IN_DemoGetMode() == IN_Demo_Playback)

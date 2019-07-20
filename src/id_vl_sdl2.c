@@ -303,7 +303,7 @@ static void VL_SDL2_ResizeWindow()
 	vl_sdl2_scaledTarget = SDL_CreateTexture(vl_sdl2_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, vl_integerWidth, vl_integerHeight);
 }
 
-static void VL_SDL2_Present(void *surface, int scrlX, int scrlY)
+static void VL_SDL2_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
 {
 	// TODO: Verify this is a VL_SurfaceUsage_FrontBuffer
 	VL_SDL2_ResizeWindow();

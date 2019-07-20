@@ -118,7 +118,7 @@ uint16_t IN_DOS_JoyGetButtons(int joystick)
 	return (button0) | (button1 << 1);
 }
 
-IN_Backend in_null_backend = {
+IN_Backend in_dos_backend = {
 	.startup = IN_DOS_Startup,
 	.shutdown = 0,
 	.pumpEvents = IN_DOS_PumpEvents,
@@ -132,5 +132,5 @@ IN_Backend in_null_backend = {
 
 IN_Backend *IN_Impl_GetBackend()
 {
-	return &in_null_backend;
+	return &in_dos_backend;
 }

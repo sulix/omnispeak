@@ -106,7 +106,7 @@ typedef struct VL_Backend
 	void (*bitBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*bitInvBlitToSurface)(void *src, void *dst_surface, int x, int y, int w, int h, int colour);
 	void (*scrollSurface)(void *surface, int x, int y);
-	void (*present)(void *surface, int scrollXpx, int scrollYpx);
+	void (*present)(void *surface, int scrollXpx, int scrollYpx, bool singleBuffered);
 	int (*getActiveBufferId)(void *surface);
 	int (*getNumBuffers)(void *surface);
 	void (*flushParams)();
@@ -155,6 +155,7 @@ void VL_ClearScreen(int colour);
 void VL_SetMapMask(int mapmask);
 int VL_GetActiveBuffer();
 int VL_GetNumBuffers();
+void VL_SwapOnNextPresent();
 void VL_Present();
 
 VL_Backend *VL_Impl_GetBackend(void);
