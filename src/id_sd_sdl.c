@@ -69,7 +69,7 @@ static uint32_t SD_ALOut_SamplesStart = 0, SD_ALOut_SamplesEnd = 0;
 // Used for the timer fallback.
 static volatile int SD_SDL_timerDivisor = 1;
 static volatile bool SD_SDL_useTimerFallback = false;
-static uint64_t SD_LastPITTickTime;
+static uint64_t SD_SDL_nextTickAt = 0;
 static SDL_Thread *SD_SDL_t0Thread = 0;
 
 /* NEVER call this from the SDL callback!!! (Or you want a deadlock?) */
@@ -260,14 +260,13 @@ int SD_SDL_t0InterruptThread(void *param)
 #else
 		uint64_t currPitTicks = (uint64_t)(SDL_GetTicks()) * PC_PIT_RATE / 1000;
 #endif
-		uint32_t ticks = (currPitTicks - SD_LastPITTickTime) / SD_SDL_timerDivisor;
 
-		if (ticks)
+		if (currPitTicks >= SD_SDL_nextTickAt)
 		{
 			SDL_LockAudio();
 			SDL_t0Service();
 			SDL_UnlockAudio();
-			SD_LastPITTickTime = currPitTicks;
+			SD_SDL_nextTickAt += SD_SDL_timerDivisor;
 		}
 	}
 	return 0;
@@ -328,6 +327,11 @@ void SD_SDL_Startup(void)
 		{
 			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Preparation of emulated OPL chip has failed\n");
 		}
+
+		// Make sure we have all of these variables initialised to
+		// sendible values before we start the audio callback, or we can
+		// end up deadlocking, as the callback can run forever.
+		SD_SDL_SetTimer0(8514);
 		SDL_PauseAudio(0);
 	}
 	// Start the timer fallback if needed.
@@ -339,7 +343,7 @@ void SD_SDL_Startup(void)
 		uint64_t currPitTicks = (uint64_t)(SDL_GetTicks()) * PC_PIT_RATE / 1000;
 		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Using SDL sound timer fallback with SDL 1.2: precision issues may make the game run at the wrong speed.\n");
 #endif
-		SD_LastPITTickTime = currPitTicks;
+		SD_SDL_nextTickAt = currPitTicks;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 		SD_SDL_t0Thread = SDL_CreateThread(SD_SDL_t0InterruptThread, "ID_SD: t0 interrupt thread.", NULL);
 #else
