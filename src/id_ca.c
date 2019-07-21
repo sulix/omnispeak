@@ -97,7 +97,10 @@ size_t CA_GetFileSize(char *filename)
 	if (!GetFileAttributesEx(filename, GetFileExInfoStandard, &fileStat))
 		return 0;
 
-	return fileStat.nFileSizeLow + (fileStat.nFileSizeHigh << 32);
+	// NOTE: size_t is 32-bit on win32 (and none of Keen's files should be big),
+	// so we just use the low 32-bits of the filesize here. This stops the
+	// annoying compiler warning we'd otherwise get.
+	return fileStat.nFileSizeLow;
 }
 
 bool CAL_AdjustFilenameCase(char *filename)
