@@ -164,7 +164,7 @@ endif
 
 # set flags for debug info
 ifeq ($(DEBUG), 1)
-	CXXFLAGS += -g -Og
+	CXXFLAGS += -g -O0
 	LDFLAGS += -g
 else
 	CXXFLAGS += -O2
