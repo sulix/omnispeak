@@ -198,6 +198,64 @@ void USL_LoadSaveMessage(const char *s1, const char *s2);
 void USL_SetMenuFooter(void);
 int USL_ConfirmComm(US_CardCommand command);
 
+static bool US_LoadMain(int i)
+{
+	int n, error = 0;
+	FILE *fp;
+	const char *fname;
+	US_Savefile *e;
+
+	e = &us_savefiles[i];
+	fname = US_GetSavefileName(i);
+	fp = fopen(fname, "rb");
+	if (fp != NULL)
+	{
+		// Omnispeak - reading US_Savefile fields one-by-one
+		// for cross-platform support
+		uint8_t padding; // One byte of struct padding
+		if ((fread(e->id, sizeof(e->id), 1, fp) == 1) &&
+			(CK_Cross_freadInt16LE(&e->printXOffset, 1, fp) == 1) &&
+			(CK_Cross_freadBoolFrom16LE(&e->used, 1, fp) == 1) &&
+			(fread(e->name, sizeof(e->name), 1, fp) == 1) &&
+			(fread(&padding, sizeof(padding), 1, fp) == 1))
+		//if ( read( handle, e, sizeof ( SAVEFILE_ENTRY ) ) != sizeof ( SAVEFILE_ENTRY ) )
+		{
+			if (p_load_game && !(*p_load_game)(fp))
+			{
+				load_game_error = 1;
+				USL_HandleError(error = errno);
+			}
+		}
+		else
+		{
+			USL_HandleError(error = errno);
+		}
+		fclose(fp);
+	}
+	else
+	{
+		USL_HandleError(error = errno);
+	}
+
+	if (error)
+	{
+		return false;
+	}
+	else
+	{
+		ck_startingSavedGame = 1;
+		e->used = 1;
+		in_Paused = 1;
+		in_PausedMessage = "GAME LOADED";
+		return true;
+	}
+}
+
+bool US_QuickLoad(void)
+{
+	return US_LoadMain(US_MAX_NUM_OF_SAVED_GAMES - 1);
+}
+
 void load_savegame_item(US_CardItem *item)
 {
 	int i;
@@ -209,50 +267,13 @@ void load_savegame_item(US_CardItem *item)
 	if (USL_ConfirmComm(US_Comm_LoadGame))
 	{
 		i = item - ck_us_loadSaveMenuItems;
-		e = &us_savefiles[i];
 		USL_LoadSaveMessage("Loading", us_savefiles[i].name);
-
-		file = US_GetSavefileName(i);
-		if ((fp = fopen(file, "rb")) != NULL)
-		{
-			// Omnispeak - reading US_Savefile fields one-by-one
-			// for cross-platform support
-			uint8_t padding; // One byte of struct padding
-			if ((fread(e->id, sizeof(e->id), 1, fp) == 1) &&
-				(CK_Cross_freadInt16LE(&e->printXOffset, 1, fp) == 1) &&
-				(CK_Cross_freadBoolFrom16LE(&e->used, 1, fp) == 1) &&
-				(fread(e->name, sizeof(e->name), 1, fp) == 1) &&
-				(fread(&padding, sizeof(padding), 1, fp) == 1))
-			//if ( read( handle, e, sizeof ( SAVEFILE_ENTRY ) ) != sizeof ( SAVEFILE_ENTRY ) )
-			{
-				if (p_load_game && !(*p_load_game)(fp))
-					USL_HandleError(error = errno);
-			}
-			else
-			{
-				USL_HandleError(error = errno);
-			}
-			fclose(fp);
-		}
-		else
-		{
-			USL_HandleError(error = errno);
-		}
-
-		if (error)
+		if (!US_LoadMain(i))
 		{ /* is this condition right? */
 			load_game_error = 1;
 			us_currentCommand = US_Comm_None; /* ? last command ? */
 			command_confirmed = 0;		  /* ? command success state ? */
 		}
-		else
-		{
-			ck_startingSavedGame = 1;
-		}
-		e->used = 1;
-
-		if (ck_startingSavedGame)
-			in_Paused = 1;
 		US_DrawCards();
 	}
 }
@@ -311,6 +332,68 @@ bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 extern int game_unsaved;
 extern const char *footer_str[3];
 
+static bool US_SaveMain(int i)
+{
+	int n, error = 0;
+	FILE *fp;
+	const char *fname;
+	US_Savefile *e;
+
+	e = &us_savefiles[i];
+	fname = US_GetSavefileName(i);
+	fp = fopen(fname, "wb");
+	if (fp != NULL)
+	{
+		// Omnispeak - writing US_Savefile fields one-by-one
+		// for cross-platform support
+		uint8_t padding = 0; // One byte of struct padding
+		if ((fwrite(e->id, sizeof(e->id), 1, fp) == 1) &&
+			(CK_Cross_fwriteInt16LE(&e->printXOffset, 1, fp) == 1) &&
+			(CK_Cross_fwriteBoolTo16LE(&e->used, 1, fp) == 1) &&
+			(fwrite(e->name, sizeof(e->name), 1, fp) == 1) &&
+			(fwrite(&padding, sizeof(padding), 1, fp) == 1))
+		//if ( write( handle, e, sizeof ( SAVEFILE_ENTRY ) ) == sizeof ( SAVEFILE_ENTRY ) )
+		{
+			if (p_save_game && !(n = (*p_save_game)(fp)))
+				USL_HandleError(error = errno);
+		}
+		else
+		{
+			error = (errno == 2) ? 8 : errno;
+			USL_HandleError(error);
+		}
+		fclose(fp);
+	}
+	else
+	{
+		error = (errno == 2) ? 8 : errno;
+		USL_HandleError(error);
+	}
+
+	/* Delete the file if an error occurred */
+	if (error)
+	{
+		remove(fname);
+		e->used = 0;
+		return false;
+	}
+	else
+	{
+		game_unsaved = 0;
+		return true;
+	}
+}
+
+bool US_QuickSave(void)
+{
+	US_Savefile *e;
+	e = &us_savefiles[US_MAX_NUM_OF_SAVED_GAMES - 1];
+	e->printXOffset = ck_currentEpisode->printXOffset;
+	strcpy(e->name, "QuickSave");
+	e->used = 1;
+	return US_SaveMain(US_MAX_NUM_OF_SAVED_GAMES - 1);
+}
+
 void save_savegame_item(US_CardItem *item)
 {
 	int i, n;
@@ -341,53 +424,8 @@ void save_savegame_item(US_CardItem *item)
 	if (n != 0)
 	{
 		USL_LoadSaveMessage("Saving", e->name);
-
-		/* Save the file */
-		fname = US_GetSavefileName(i);
-		error = 0;
-		fp = fopen(fname, "wb");
-		if (fp != NULL)
-		{
-			// Omnispeak - writing US_Savefile fields one-by-one
-			// for cross-platform support
-			uint8_t padding = 0; // One byte of struct padding
-			if ((fwrite(e->id, sizeof(e->id), 1, fp) == 1) &&
-				(CK_Cross_fwriteInt16LE(&e->printXOffset, 1, fp) == 1) &&
-				(CK_Cross_fwriteBoolTo16LE(&e->used, 1, fp) == 1) &&
-				(fwrite(e->name, sizeof(e->name), 1, fp) == 1) &&
-				(fwrite(&padding, sizeof(padding), 1, fp) == 1))
-			//if ( write( handle, e, sizeof ( SAVEFILE_ENTRY ) ) == sizeof ( SAVEFILE_ENTRY ) )
-			{
-				if (p_save_game && !(n = (*p_save_game)(fp)))
-					USL_HandleError(error = errno);
-			}
-			else
-			{
-				error = (errno == 2) ? 8 : errno;
-				USL_HandleError(error);
-			}
-			fclose(fp);
-		}
-		else
-		{
-			error = (errno == 2) ? 8 : errno;
-			USL_HandleError(error);
-		}
-
-		/* Delete the file if an error occurred */
-		if (error)
-		{
-			remove(fname);
-			n = 0;
-		}
+		US_SaveMain(i);
 	}
-
-	if (e->used == 0)
-		e->used = n;
-
-	if (n)
-		game_unsaved = 0;
-
 	USL_SetMenuFooter();
 }
 

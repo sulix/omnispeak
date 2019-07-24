@@ -105,6 +105,7 @@ static char in_ASCIINames[] = // Unshifted ASCII for scan codes
 };
 
 bool in_Paused;
+const char* in_PausedMessage = "PAUSED";
 IN_ControlType in_controlType = IN_ctrl_Keyboard1;
 bool in_keyStates[256];
 IN_ScanCode in_lastKeyScanned = IN_SC_None;

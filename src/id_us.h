@@ -174,6 +174,9 @@ typedef struct US_Card
 void US_DrawCards();
 void US_RunCards();
 
+bool US_QuickSave();
+bool US_QuickLoad();
+
 // Related
 int USL_CtlDialog(const char *s1, const char *s2, const char *s3);
 

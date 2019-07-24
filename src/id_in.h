@@ -240,6 +240,7 @@ extern IN_DemoMode in_demoState;
 extern IN_ControlType in_controlType;
 
 extern bool in_Paused;
+extern const char* in_PausedMessage;
 extern bool in_disableJoysticks;
 
 typedef enum IN_JoyConfItem

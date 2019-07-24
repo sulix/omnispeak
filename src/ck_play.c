@@ -1066,12 +1066,13 @@ void CK_CheckKeys()
 	{
 		SD_MusicOff();
 		// VW_SyncPages();
-		US_CenterWindow(8, 3);
-		US_PrintCentered("PAUSED");
+		US_CenterWindow(strlen(in_PausedMessage) + 2, 3);
+		US_PrintCentered(in_PausedMessage);
 		VL_Present(); // VW_UpdateScreen();
 		IN_WaitButton();
 		RF_ForceRefresh();
 		in_Paused = false;
+		in_PausedMessage = "PAUSED";
 		SD_MusicOn();
 	}
 
@@ -1092,7 +1093,7 @@ void CK_CheckKeys()
 	if (!ck_demoParm)
 	{
 		// Go back to wristwatch
-		if ((IN_GetLastScan() >= IN_SC_F2 && IN_GetLastScan() <= IN_SC_F7) || IN_GetLastScan() == IN_SC_Escape)
+		if ((IN_GetLastScan() >= IN_SC_F2 && IN_GetLastScan() <= IN_SC_F7 && IN_GetLastScan() != IN_SC_F5) || IN_GetLastScan() == IN_SC_Escape)
 		{
 
 			// VW_SyncPages();
@@ -1133,9 +1134,35 @@ void CK_CheckKeys()
 			SD_SetLastTimeCount(SD_GetTimeCount());
 		}
 
-		// Do Boss Key
+		// Quicksave
+		if (IN_GetLastScan() == IN_SC_F5)
+		{
+			if (US_QuickSave())
+			{
+				in_Paused = true;
+				in_PausedMessage = "GAME SAVED";
+			}
+		}
+
+		// Quickload
 		if (IN_GetLastScan() == IN_SC_F9)
 		{
+			if (US_QuickLoad())
+			{
+				StopMusic();
+				// Force scorebox redraw if it's enabled
+				if (ck_scoreBoxEnabled)
+				{
+					ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
+				}
+				ck_gameState.levelState = 6;
+				StartMusic(ck_gameState.currentLevel);
+			}
+			if (load_game_error)
+			{
+				load_game_error = 0;
+				ck_gameState.levelState = 8;
+			}
 		}
 	}
 
