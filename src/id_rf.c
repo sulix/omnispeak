@@ -642,35 +642,23 @@ void RF_NewMap(void)
 
 void RF_RenderTile16(int x, int y, int tile)
 {
-	//TODO: We should be able to remove this at some point, as it should have already been cached by
-	// CacheMarks. Last time I tried that, I recall it failing, but it's something we should investigate
-	// at some point.
-	if (!ca_graphChunks[ca_gfxInfoE.offTiles16 + tile])
-	{
-		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Tried to render a Tile16 which was not cached. tile = %d, chunk = %d.\n", tile, ca_gfxInfoE.offTiles16 + tile);
-		CA_CacheGrChunk(ca_gfxInfoE.offTiles16 + tile);
-	}
+	void *src = CA_GetGrChunk(ca_gfxInfoE.offTiles16, tile, "Tile16", false);
 
 	// Some levels, notably Keen 6's "Guard Post 3" use empty background tiles (i.e. tiles with offset
 	// FFFFFF in EGAHEAD). CA_CacheGrChunk() leaves these as NULL pointers. As we'd otherwise crash,
 	// we just skip rendering these (though the possibility is there to use hardcoded null pointer data
 	// as with F10+Y). At least in this case, the tile is hidden anyway, so it doesn't matter.
-	if (!ca_graphChunks[ca_gfxInfoE.offTiles16 + tile])
+	if (!src)
 		return;
 
-	VL_UnmaskedToSurface(ca_graphChunks[ca_gfxInfoE.offTiles16 + tile], rf_tileBuffer, x * 16, y * 16, 16, 16);
+	VL_UnmaskedToSurface(src, rf_tileBuffer, x * 16, y * 16, 16, 16);
 }
 
 void RF_RenderTile16m(int x, int y, int tile)
 {
 	if (!tile)
 		return;
-	if (!ca_graphChunks[ca_gfxInfoE.offTiles16m + tile])
-	{
-		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Tried to render a Tile16m which was not cached. tile = %d, chunk = %d.\n", tile, ca_gfxInfoE.offTiles16m + tile);
-		CA_CacheGrChunk(ca_gfxInfoE.offTiles16m + tile);
-	}
-	VL_MaskedBlitToSurface(ca_graphChunks[ca_gfxInfoE.offTiles16m + tile], rf_tileBuffer, x * 16, y * 16, 16, 16);
+	VL_MaskedBlitToSurface(CA_GetGrChunk(ca_gfxInfoE.offTiles16m, tile, "Tile16m", true), rf_tileBuffer, x * 16, y * 16, 16, 16);
 }
 
 void RF_ForceRefresh(void)
@@ -816,8 +804,8 @@ void RFL_RenderForeTiles()
 				continue;
 			if (!(TI_ForeMisc(tile) & 0x80))
 				continue;
-			VL_MaskedBlitToScreen(ca_graphChunks[ca_gfxInfoE.offTiles16m + tile], (stx - scrollXtile) * 16,
-				(sty - scrollYtile) * 16, 16, 16);
+			VL_MaskedBlitToScreen(CA_GetGrChunk(ca_gfxInfoE.offTiles16m, tile, "Tile16m", true),
+				(stx - scrollXtile) * 16, (sty - scrollYtile) * 16, 16, 16);
 		}
 	}
 }
@@ -1273,13 +1261,7 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 
 	int sprite_number = chunk - ca_gfxInfoE.offSprites;
 
-	if (!ca_graphChunks[chunk])
-	{
-		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Trying to place an uncached sprite (chunk = %d, sprite = %d)\n", chunk, sprite_number);
-		CA_CacheGrChunk(chunk);
-	}
-	void *sprite_data = ca_graphChunks[chunk];
-	if (!sprite_data)
+	if (!CA_GetGrChunk(ca_gfxInfoE.offSprites, sprite_number, "Sprite", false))
 		Quit("RF_AddSpriteDraw: Placed an uncached sprite");
 
 	sde->chunk = chunk;

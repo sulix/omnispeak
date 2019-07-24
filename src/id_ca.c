@@ -617,6 +617,25 @@ void CAL_ExpandGrChunk(int chunk, void *source)
 	CAL_HuffExpand(source, ca_graphChunks[chunk], length, ca_gr_huffdict);
 }
 
+
+mm_ptr_t CA_GetGrChunk(int base, int index, const char* chunkType, bool required)
+{
+	mm_ptr_t result;
+	int chunk = base + index;
+	if ((chunk < 0) || (chunk >= CA_MAX_GRAPH_CHUNKS))
+		Quit("tried to render a graphics chunk with invalid ID");
+	result = ca_graphChunks[chunk];
+	if (!result)
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "tried to render a %s which was not cached (index = %d, chunk = %d)\n", chunkType, index, chunk);
+		CA_CacheGrChunk(chunk);
+		result = ca_graphChunks[chunk];
+		if (!result && required)
+			Quit("tried to render an uncached graphics chunk");
+	}
+	return result;
+}
+
 void CA_CacheGrChunk(int chunk)
 {
 	CA_MarkGrChunk(chunk);

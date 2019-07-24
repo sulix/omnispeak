@@ -1213,7 +1213,7 @@ void CK_GalExplodeUpdateCoords(int offset)
 	// Blank the video buffer
 	VH_Bar(0, 0, 320, 200, 0);
 
-	CK5_GalExplode *info = (CK5_GalExplode *)ca_graphChunks[4925];
+	CK5_GalExplode *info = (CK5_GalExplode *)CA_GetGrChunk(4925, 0, "GalExplodeInfo", true);
 
 	// Update the star positions
 	// Each pixel is 0x80 x 0x80 "distance units"

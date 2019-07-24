@@ -64,19 +64,19 @@ void VH_Bar(int x, int y, int w, int h, int colour)
 
 void VH_DrawTile8(int x, int y, int tile)
 {
-	char *ptr = (char *)(ca_graphChunks[ca_gfxInfoE.offTiles8]) + (tile * 32);
+	char *ptr = (char *)CA_GetGrChunk(ca_gfxInfoE.offTiles8, 0, "Tile8", true) + (tile * 32);
 	VL_UnmaskedToScreen(ptr, x, y, 8, 8);
 }
 
 void VH_DrawTile8M(int x, int y, int tile)
 {
-	char *ptr = (char *)(ca_graphChunks[ca_gfxInfoE.offTiles8m]) + (tile * 40);
+	char *ptr = (char *)CA_GetGrChunk(ca_gfxInfoE.offTiles8m, 0, "Tile8m", true) + (tile * 40);
 	VL_MaskedBlitToScreen(ptr, x, y, 8, 8);
 }
 
 void VH_DrawTile16(int x, int y, int tile)
 {
-	VL_UnmaskedToScreen(ca_graphChunks[ca_gfxInfoE.offTiles16 + tile], x, y, 16, 16);
+	VL_UnmaskedToScreen(CA_GetGrChunk(ca_gfxInfoE.offTiles16, tile, "Tile16", true), x, y, 16, 16);
 }
 
 void VH_DrawTile16M(int x, int y, int tile)
@@ -92,7 +92,7 @@ void VH_DrawBitmap(int x, int y, int chunk)
 
 	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(bitmapNumber);
 
-	VL_UnmaskedToScreen(ca_graphChunks[chunk], x, y, dimensions->width * 8, dimensions->height);
+	VL_UnmaskedToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dimensions->width * 8, dimensions->height);
 }
 
 void VH_DrawMaskedBitmap(int x, int y, int chunk)
@@ -101,7 +101,7 @@ void VH_DrawMaskedBitmap(int x, int y, int chunk)
 
 	VH_BitmapTableEntry *dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
 
-	VL_MaskedBlitToScreen(ca_graphChunks[chunk], x, y, dim->width * 8, dim->height);
+	VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "MaskedBitmap", true), x, y, dim->width * 8, dim->height);
 }
 
 void VH_DrawSprite(int x, int y, int chunk)
@@ -112,7 +112,7 @@ void VH_DrawSprite(int x, int y, int chunk)
 
 	int shiftMask = ~((8 / spr->shifts) - 1) & ~1;
 
-	VL_MaskedBlitToScreen(ca_graphChunks[chunk], (x + (spr->originX >> 4)) & shiftMask, y + (spr->originY >> 4), spr->width * 8, spr->height);
+	VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "Sprite", true), (x + (spr->originX >> 4)) & shiftMask, y + (spr->originY >> 4), spr->width * 8, spr->height);
 }
 
 void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
@@ -123,12 +123,12 @@ void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
 
 	int shiftMask = ~(4 - spr->shifts) & ~1;
 
-	VL_1bppInvBlitToScreen(((uint8_t *)ca_graphChunks[chunk]), (x + (spr->originX >> 4)) & shiftMask, y + (spr->originY >> 4), spr->width * 8, spr->height, colour);
+	VL_1bppInvBlitToScreen(((uint8_t *)CA_GetGrChunk(chunk, 0, "SpriteMask", true)), (x + (spr->originX >> 4)) & shiftMask, y + (spr->originY >> 4), spr->width * 8, spr->height, colour);
 }
 
 void VH_DrawPropChar(int x, int y, int chunk, unsigned char c, int colour)
 {
-	VH_Font *fnt = (VH_Font *)ca_graphChunks[chunk + 3];
+	VH_Font *fnt = (VH_Font *)CA_GetGrChunk(chunk, 3, "Font", true);
 
 	uint8_t *chardata = (uint8_t *)fnt + fnt->location[c];
 
@@ -147,14 +147,14 @@ void VH_MeasureString(const char *string, uint16_t *width, uint16_t *height, VH_
 
 void VH_MeasurePropString(const char *string, uint16_t *width, uint16_t *height, int16_t chunk)
 {
-	VH_MeasureString(string, width, height, (VH_Font *)(ca_graphChunks[chunk + 3]));
+	VH_MeasureString(string, width, height, (VH_Font *)CA_GetGrChunk(chunk, 3, "Font", true));
 }
 
 // TODO: More arguments passed than in the original code?
 void VH_DrawPropString(const char *string, int x, int y, int chunk, int colour)
 {
 	int w = 0;
-	VH_Font *font = (VH_Font *)ca_graphChunks[chunk + 3];
+	VH_Font *font = (VH_Font *)CA_GetGrChunk(chunk, 3, "Font", true);
 	for (w = 0; *string; *string++)
 	{
 		// FIXME: Bad cast to unsigned char, even if it seems to make sense
@@ -208,7 +208,7 @@ void VHB_DrawBitmap(int x, int y, int chunk)
 	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(bitmapNumber);
 
 	if (VH_MarkUpdateBlock(x, y, dimensions->width * 8, dimensions->height))
-		VL_UnmaskedToScreen(ca_graphChunks[chunk], x, y, dimensions->width * 8, dimensions->height);
+		VL_UnmaskedToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dimensions->width * 8, dimensions->height);
 }
 
 void VHB_DrawMaskedBitmap(int x, int y, int chunk)
@@ -220,7 +220,7 @@ void VHB_DrawMaskedBitmap(int x, int y, int chunk)
 	VH_BitmapTableEntry *dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
 
 	if (VH_MarkUpdateBlock(x, y, dim->width * 8, dim->height))
-		VL_MaskedBlitToScreen(ca_graphChunks[chunk], x, y, dim->width * 8, dim->height);
+		VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dim->width * 8, dim->height);
 }
 
 void VHB_Plot(int x, int y, int colour)

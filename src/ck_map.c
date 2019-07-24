@@ -95,7 +95,7 @@ void CK_DemoSign(CK_object *demo)
  */
 void CK_ScoreBoxDrawTile8(int tilenum, uint8_t *dest, int destWidth, int planeSize)
 {
-	uint8_t *src = (uint8_t *)ca_graphChunks[ca_gfxInfoE.offTiles8] + 32 * tilenum;
+	uint8_t *src = (uint8_t *) CA_GetGrChunk(ca_gfxInfoE.offTiles8, 0, "ScoreBox", true) + 32 * tilenum;
 
 	// Copy the tile to the target bitmap
 	for (int plane = 0; plane < 4; plane++, dest += planeSize)
@@ -139,7 +139,7 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 
 		// Start drawing the tiles after the mask plane,
 		// and four rows from the top
-		dest = (uint8_t *)ca_graphChunks[SPR_SCOREBOX];
+		dest = (uint8_t *) CA_GetGrChunk(SPR_SCOREBOX, 0, "ScoreBox", true);
 		dest += (planeSize = box->width * box->height);
 		dest += box->width * 4 + 1;
 
@@ -174,7 +174,7 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 
 		// Start drawing the tiles after the mask plane,
 		// and 12 rows from the top
-		dest = (uint8_t *)ca_graphChunks[SPR_SCOREBOX];
+		dest = (uint8_t *) CA_GetGrChunk(SPR_SCOREBOX, 0, "ScoreBox", true);
 		dest += (planeSize = box->width * box->height);
 		dest += box->width * 20 + 8;
 
