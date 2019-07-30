@@ -128,9 +128,12 @@ int16_t in_gamepadButtons[4];
 
 IN_ScanCode *key_controls[] = {
 	&in_kbdControls.jump, &in_kbdControls.pogo, &in_kbdControls.fire,
+	&in_kbdControls.status, &in_kbdControls.quickSave, &in_kbdControls.quickLoad,
 	&in_kbdControls.upLeft, &in_kbdControls.up, &in_kbdControls.upRight,
 	&in_kbdControls.right, &in_kbdControls.downRight, &in_kbdControls.down,
 	&in_kbdControls.downLeft, &in_kbdControls.left};
+const int key_button_controls = 6;
+const int key_direction_controls = 8;
 
 static bool CapsLock;
 
@@ -210,6 +213,9 @@ static void INL_SetupKbdControls()
 	in_kbdControls.jump = IN_SC_Control;
 	in_kbdControls.pogo = IN_SC_Alt;
 	in_kbdControls.fire = IN_SC_Space;
+	in_kbdControls.status = IN_SC_Enter;
+	in_kbdControls.quickSave = IN_SC_F5;
+	in_kbdControls.quickLoad = IN_SC_F9;
 	in_kbdControls.up = IN_SC_UpArrow;
 	in_kbdControls.down = IN_SC_DownArrow;
 	in_kbdControls.left = IN_SC_LeftArrow;
@@ -241,7 +247,10 @@ const char *IN_GetScanName(IN_ScanCode scan)
 		ps++;
 		p++;
 	}
-	return char_key_strings[scan];
+	if (scan < (int)(sizeof(char_key_strings) / sizeof(char_key_strings[0])))
+		return char_key_strings[scan];
+	else
+		return "?";
 }
 
 void IN_WaitKey()

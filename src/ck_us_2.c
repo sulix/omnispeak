@@ -504,6 +504,9 @@ US_CardItem ck_us_buttonsMenuItems[] = {
 	{US_ITEM_Normal, 0, IN_SC_J, "JUMP", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_P, "POGO", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_F, "FIRE", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_I, "STATUS", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_S, "QUICKSAVE", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_L, "QUICKLOAD", US_Comm_None, 0, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
 US_Card ck_us_buttonsMenu = {0, 0, &PIC_BUTTONSCARD, 0, ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
@@ -566,6 +569,8 @@ US_Card ck_us_mainMenu = {32, 4, &PIC_MENUCARD, 0, ck_us_mainMenuItems, 0, 0, 0,
 
 extern US_Card *us_currentCard;
 extern IN_ScanCode *key_controls[];
+extern const int key_button_controls;
+extern const int key_direction_controls;
 
 bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 {
@@ -573,7 +578,7 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 	int result = 0;
 	int print_x, print_y;
 
-	which_control = (us_currentCard == &ck_us_movementMenu) ? (item - ck_us_movementMenuItems) + 3 : (item - ck_us_buttonsMenuItems);
+	which_control = (us_currentCard == &ck_us_movementMenu) ? (item - ck_us_movementMenuItems) + key_button_controls : (item - ck_us_buttonsMenuItems);
 
 	switch (msg)
 	{
@@ -678,7 +683,7 @@ void CK_US_SetKeyBinding(US_CardItem *item, int which_control)
 		i = 0;
 
 		/* Make sure the key they chose is not already used */
-		for (i = 0; i < 11; i++)
+		for (i = 0; i < key_button_controls + key_direction_controls; i++)
 		{
 			/* Don't check the one we're setting */
 			if (i != which_control)
