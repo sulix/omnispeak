@@ -1,0 +1,109 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558 
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build (Release)",
+			"group": {
+				"kind": "build"
+			},
+			"type": "process",
+			"windows": {
+				"command": "bash",
+				"args": [
+					"-c",
+					"make PLATFORM=win64 -j4"
+				]
+			},
+			"linux": {
+				"command": "make",
+				"args": [
+					"-j4"
+				]
+			},
+			"options": {
+				"cwd": "${workspaceRoot}/src"
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${workspaceRoot}/src"
+				]
+			}
+		},
+		{
+			"label": "Build (Debug)",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"type": "process",
+			"windows": {
+				"command": "bash",
+				"args": [
+					"-c",
+					"make PLATFORM=win64 DEBUG=1 -j4"
+				]
+			},
+			"linux": {
+				"command": "make",
+				"args": [
+					"DEBUG=1",
+					"-j4"
+				]
+			},
+			"options": {
+				"cwd": "${workspaceRoot}/src"
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${workspaceRoot}/src"
+				]
+			}
+		},
+		{
+			"label": "Clean",
+			"group": {
+				"kind": "build"
+			},
+			"type": "process",
+			"windows": {
+				"command": "bash",
+				"args": [
+					"-c",
+					"make PLATFORM=win64 clean"
+				]
+			},
+			"linux": {
+				"command": "make",
+				"args": [
+					"clean"
+				]
+			},
+			"options": {
+				"cwd": "${workspaceRoot}/src"
+			},
+			"problemMatcher": [],
+		},
+		{
+			"label": "Distribution-Clean",
+			"group": {
+				"kind": "build"
+			},
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"-c",
+				"make distclean"
+			],
+			"options": {
+				"cwd": "${workspaceRoot}/src"
+			}
+			"problemMatcher": [],
+		}
+	],
+}
