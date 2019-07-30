@@ -166,6 +166,11 @@ endif
 ifeq ($(DEBUG), 1)
 	CXXFLAGS += -g -O0
 	LDFLAGS += -g
+	ifneq (,$(findstring win,$(PLATFORM)))
+		LIBS += -mconsole
+		# note: deliberately put into LIBS instead of LDFLAGS
+		# because SDL_LIBS usually contains -mwindows
+	endif
 else
 	CXXFLAGS += -O2
 endif	
