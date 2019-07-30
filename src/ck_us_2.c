@@ -423,6 +423,7 @@ void save_savegame_item(US_CardItem *item)
 	/* If the input was not canceled */
 	if (n != 0)
 	{
+		e->used = 1;
 		USL_LoadSaveMessage("Saving", e->name);
 		US_SaveMain(i);
 	}
