@@ -77,10 +77,10 @@ static int16_t us_backColour = 0;
 #define US_WINDOW_MAX_Y 200
 
 bool (*p_save_game)(FILE *handle);
-bool (*p_load_game)(FILE *handle);
+bool (*p_load_game)(FILE *handle, bool fromMenu);
 void (*p_exit_menu)(void);
 
-void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FILE *), bool (*savegamefunc)(FILE *), void (*exitmenufunc)(void))
+void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FILE *, bool), bool (*savegamefunc)(FILE *), void (*exitmenufunc)(void))
 {
 	p_load_game = loadgamefunc;
 	p_save_game = savegamefunc;

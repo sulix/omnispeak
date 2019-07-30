@@ -182,10 +182,10 @@ int USL_CtlDialog(const char *s1, const char *s2, const char *s3);
 
 // A few function pointers
 extern bool (*p_save_game)(FILE *handle);
-extern bool (*p_load_game)(FILE *handle);
+extern bool (*p_load_game)(FILE *handle, bool fromMenu);
 extern void (*p_exit_menu)(void);
 
-void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FILE *), bool (*savegamefunc)(FILE *), void (*exitmenufunc)(void));
+void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FILE *, bool), bool (*savegamefunc)(FILE *), void (*exitmenufunc)(void));
 
 // Savefiles
 

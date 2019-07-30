@@ -198,7 +198,7 @@ void USL_LoadSaveMessage(const char *s1, const char *s2);
 void USL_SetMenuFooter(void);
 int USL_ConfirmComm(US_CardCommand command);
 
-static bool US_LoadMain(int i)
+static bool US_LoadMain(int i, bool fromMenu)
 {
 	int n, error = 0;
 	FILE *fp;
@@ -220,7 +220,7 @@ static bool US_LoadMain(int i)
 			(fread(&padding, sizeof(padding), 1, fp) == 1))
 		//if ( read( handle, e, sizeof ( SAVEFILE_ENTRY ) ) != sizeof ( SAVEFILE_ENTRY ) )
 		{
-			if (p_load_game && !(*p_load_game)(fp))
+			if (p_load_game && !(*p_load_game)(fp, fromMenu))
 			{
 				load_game_error = 1;
 				USL_HandleError(error = errno);
@@ -253,7 +253,7 @@ static bool US_LoadMain(int i)
 
 bool US_QuickLoad(void)
 {
-	return US_LoadMain(US_MAX_NUM_OF_SAVED_GAMES - 1);
+	return US_LoadMain(US_MAX_NUM_OF_SAVED_GAMES - 1, false);
 }
 
 void load_savegame_item(US_CardItem *item)
@@ -268,7 +268,7 @@ void load_savegame_item(US_CardItem *item)
 	{
 		i = item - ck_us_loadSaveMenuItems;
 		USL_LoadSaveMessage("Loading", us_savefiles[i].name);
-		if (!US_LoadMain(i))
+		if (!US_LoadMain(i, true))
 		{ /* is this condition right? */
 			load_game_error = 1;
 			us_currentCommand = US_Comm_None; /* ? last command ? */

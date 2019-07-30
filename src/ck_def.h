@@ -451,7 +451,7 @@ void CK_DoHighScores();
 
 /* ck_game.c */
 bool CK_SaveGame(FILE *fp);
-bool CK_LoadGame(FILE *fp);
+bool CK_LoadGame(FILE *fp, bool fromMenu);
 
 /* ck_keen.c */
 extern soundnames *ck_itemSounds;

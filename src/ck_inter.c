@@ -1487,7 +1487,7 @@ void CK_PlayDemoFile(const char *demoName)
 
 	IN_DemoStartPlaying(demoBuf, demoLen);
 
-	CK_LoadLevel(true);
+	CK_LoadLevel(true, false);
 
 	CK_PlayLoop();
 
@@ -1515,7 +1515,7 @@ void CK_PlayDemo(int demoNumber)
 
 	IN_DemoStartPlaying(demoBuf, demoLen);
 
-	CK_LoadLevel(true);
+	CK_LoadLevel(true, false);
 
 	if (ck_inHighScores)
 		CK_OverlayHighScores();
@@ -1660,7 +1660,7 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 	{
 		ck_inHighScores = true;
 		ck_gameState.currentLevel = ck_currentEpisode->highScoreLevel;
-		CK_LoadLevel(true);
+		CK_LoadLevel(true, false);
 		CK_OverlayHighScores();
 		if (ck_currentEpisode->ep == EP_CK5)
 			US_SetPrintColour(12);

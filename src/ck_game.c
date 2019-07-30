@@ -358,7 +358,7 @@ bool CK_SaveGame(FILE *fp)
 	return true;
 }
 
-bool CK_LoadGame(FILE *fp)
+bool CK_LoadGame(FILE *fp, bool fromMenu)
 {
 	int i;
 	uint16_t cmplen, bufsize;
@@ -372,24 +372,33 @@ bool CK_LoadGame(FILE *fp)
 	if (ck_currentEpisode->ep == EP_CK5)
 		prevFuses = ck_gameState.ep.ck5.fusesRemaining;
 
-	ca_levelbit >>= 1;
-	ca_levelnum--;
-	CK_LoadLevel(false);
-	// TODO - REIMPLEMENT
-	/*
-	if (mmerror)
+	if (fromMenu)
 	{
-		mmerror = false;
-		US_CenterWindow(20, 8);
-		US_SetPrintY(20);
-		US_Print("Not enough memory\nto load game!");
-		VL_Present(); //VW_UpdateScreen();
-		IN_Ack();
-		return false;
+		// loading from menu -> load the level into the cache stack
+		// entry *below* the menu
+		ca_levelbit >>= 1;
+		ca_levelnum--;
+		CK_LoadLevel(false, false);
+		/* TODO -- reimplement
+		if (mmerror)
+		{
+			mmerror = false;
+			US_CenterWindow(20, 8);
+			US_SetPrintY(20);
+			US_Print("Not enough memory\nto load game!");
+			VL_Present(); //VW_UpdateScreen();
+			IN_Ack();
+			return false;
+		}
+		*/
+		ca_levelbit <<= 1;
+		ca_levelnum++;
 	}
-*/
-	ca_levelbit <<= 1;
-	ca_levelnum++;
+	else
+	{
+		// quickloading -> replace the currently cached level
+		CK_LoadLevel(true, true);
+	}
 
 	bufsize = CA_GetMapWidth() * CA_GetMapHeight() * 2;
 	// MM_BombOnError(true) // TODO
@@ -569,7 +578,7 @@ void CK_BeginFadeDrawing(void)
 const char **ck_levelEntryTexts;
 const char **ck_levelNames;
 
-void CK_LoadLevel(bool doCache)
+void CK_LoadLevel(bool doCache, bool silent)
 {
 	if (IN_DemoGetMode() != IN_Demo_Off)
 	{
@@ -603,7 +612,7 @@ void CK_LoadLevel(bool doCache)
 	// Cache Marked graphics and draw loading box
 	if (doCache)
 	{
-		if (ck_inHighScores)
+		if (ck_inHighScores || silent)
 		{
 			CA_CacheMarks(NULL);
 		}
@@ -623,7 +632,7 @@ void CK_LoadLevel(bool doCache)
 	}
 
 	// CA_CacheMarks(0);
-	if (doCache)
+	if (doCache && !silent)
 		CK_BeginFadeDrawing();
 }
 
@@ -856,7 +865,7 @@ void CK_GameLoop()
 			ck_gameState.difficulty = ck_startingDifficulty;
 			ck_startingDifficulty = D_NotPlaying;
 		loadLevel:
-			CK_LoadLevel(true);
+			CK_LoadLevel(true, false);
 
 			//TODO: If this didn't succeed, return to level 0.
 		}
