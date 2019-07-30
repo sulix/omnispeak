@@ -856,7 +856,8 @@ void SD_StartMusic(MusicGroup *music)
 		alTimeCount = 0;
 		if (sd_backend)
 			sd_backend->unlock();
-		SD_MusicOn();
+		if (!in_Paused)
+			SD_MusicOn();
 	}
 }
 
