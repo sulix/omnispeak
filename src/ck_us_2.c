@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vl.h"
 #include "ck_cross.h"
 #include "ck_play.h"
+#include "ck_def.h"
 
 #define US_MAX_JOYSTICK_NAME_LENGTH 28
 
