@@ -736,7 +736,7 @@ void CK_FinishCacheBox()
 {
 }
 
-void CK_TryAgainMenu()
+bool CK_TryAgainMenu()
 {
 	uint16_t w, h;
 	int y1, y2, sel;
@@ -816,7 +816,7 @@ void CK_TryAgainMenu()
 			{
 				ck_gameState.currentLevel = 0;
 				IN_ClearKeysDown();
-				return;
+				return false;
 			}
 
 			IN_ReadControls(0, &ck_inputFrame);
@@ -825,7 +825,7 @@ void CK_TryAgainMenu()
 				/* If they want to go back to the Map, set the current level to zero */
 				if (sel != 0)
 					ck_gameState.currentLevel = 0;
-				return;
+				return false;
 			}
 
 			if (ck_inputFrame.yDirection == -1 || IN_GetLastScan() == IN_SC_UpArrow)
@@ -835,6 +835,13 @@ void CK_TryAgainMenu()
 			else if (ck_inputFrame.yDirection == 1 || IN_GetLastScan() == IN_SC_DownArrow)
 			{
 				sel = 1;
+			}
+
+			if (IN_GetLastScan() == in_kbdControls.quickLoad)
+			{
+				// quickload, but fall back to map screen on failure
+				ck_gameState.currentLevel = 0;
+				return US_QuickLoad();
 			}
 		} /* while */
 	}
@@ -889,7 +896,8 @@ void CK_GameLoop()
 		switch (ck_gameState.levelState)
 		{
 		case LS_Died: //1
-			CK_TryAgainMenu();
+			if (CK_TryAgainMenu())
+				goto replayLevel;
 			//ck_gameState.currentLevel = ck_nextMapNumber;
 			break;
 
