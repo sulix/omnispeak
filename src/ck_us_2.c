@@ -115,6 +115,17 @@ bool CK_US_BorderMenuProc(US_CardMsg msg, US_CardItem *item)
 
 #endif
 
+bool CK_US_JoyMotionModeMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	if (msg != US_MSG_CardEntered)
+		return false;
+
+	in_joyAdvancedMotion = !in_joyAdvancedMotion;
+	USL_CtlDialog((in_joyAdvancedMotion ? "Motion mode set to modern" : "Motion mode set to classic"), "Press any key", NULL);
+	CK_US_UpdateOptionsMenus();
+	return true;
+}
+
 bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item);
 bool CK_US_KeyboardMenuProc(US_CardMsg msg, US_CardItem *item);
 bool CK_US_Joystick1MenuProc(US_CardMsg msg, US_CardItem *item);
@@ -430,6 +441,7 @@ US_Card ck_us_fullscreenMenu = {0, 0, 0, 0, 0, &CK_US_FullscreenMenuProc, 0, 0, 
 US_Card ck_us_aspectCorrectMenu = {0, 0, 0, 0, 0, &CK_US_AspectCorrectMenuProc, 0, 0, 0};
 US_Card ck_us_borderMenu = {0, 0, 0, 0, 0, &CK_US_BorderMenuProc, 0, 0, 0};
 #endif
+US_Card ck_us_joyMotionModeMenu = {0, 0, 0, 0, 0, &CK_US_JoyMotionModeMenuProc, 0, 0, 0};
 
 // Options menu
 US_CardItem ck_us_optionsMenuItems[] = {
@@ -489,6 +501,7 @@ US_CardItem ck_us_joyconfMenuItems[] = {
 	{US_ITEM_Normal, 0, IN_SC_P, "POGO", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_F, "FIRE", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_D, "DEAD ZONE", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_M, "", US_Comm_None, &ck_us_joyMotionModeMenu, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
 US_Card ck_us_joyconfMenu = {0, 0, &PIC_BUTTONSCARD, 0, ck_us_joyconfMenuItems, &CK_US_JoyConfMenuProc, 0, 0, 0};
@@ -710,6 +723,9 @@ bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 	static const int8_t deadzone_values[] = {
 		0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, -1
 	};
+
+	if (item == &ck_us_joyconfMenuItems[4])
+		return false;  // no special handling for the motion mode option
 
 	which_control = (IN_JoyConfItem) (item - ck_us_joyconfMenuItems);
 	value = IN_GetJoyConf(which_control);
@@ -1194,6 +1210,7 @@ void CK_US_UpdateOptionsMenus(void)
 	ck_us_optionsMenuItems[5].caption = vl_isAspectCorrected ? "CORRECT ASPECT RATIO (ON)" : "CORRECT ASPECT RATIO (OFF)";
 	ck_us_optionsMenuItems[6].caption = vl_hasOverscanBorder ? "OVERSCAN BORDER (ON)" : "OVERSCAN BORDER (OFF)";
 #endif
+	ck_us_joyconfMenuItems[4].caption = in_joyAdvancedMotion ? "MOTION MODE (MODERN)" : "MOTION MODE (CLASSIC)";
 
 	// Disable Two button firing selection if required
 	ck_us_buttonsMenuItems[2].state &= ~US_IS_Disabled;
