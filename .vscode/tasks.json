@@ -5,9 +5,7 @@
 	"tasks": [
 		{
 			"label": "Build (Release)",
-			"group": {
-				"kind": "build"
-			},
+			"group": "build",
 			"type": "process",
 			"windows": {
 				"command": "bash",
@@ -67,9 +65,7 @@
 		},
 		{
 			"label": "Clean",
-			"group": {
-				"kind": "build"
-			},
+			"group": "build",
 			"type": "process",
 			"windows": {
 				"command": "bash",
@@ -91,9 +87,7 @@
 		},
 		{
 			"label": "Distribution-Clean",
-			"group": {
-				"kind": "build"
-			},
+			"group": "build",
 			"type": "process",
 			"command": "bash",
 			"args": [
@@ -102,7 +96,7 @@
 			],
 			"options": {
 				"cwd": "${workspaceRoot}/src"
-			}
+			},
 			"problemMatcher": [],
 		}
 	],
