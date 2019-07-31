@@ -139,6 +139,20 @@ static IN_Direction in_dirTable[] = // Quick lookup for total direction
 		IN_dir_West, IN_dir_None, IN_dir_East,
 		IN_dir_SouthWest, IN_dir_South, IN_dir_SouthEast};
 
+bool in_joyAdvancedMotion = true;
+static int in_joyCachedDeadzone = 0;
+static int in_joyScaledDeadzone = 0;
+
+// the "diagonal slope" selects the sensitivity of the joystick
+// regarding diagonal directions
+//#define IN_JOYSTICK_DIAGONAL_SLOPE   0,1    // only diagonals (not a good idea!)
+  #define IN_JOYSTICK_DIAGONAL_SLOPE   1,3    // slight preference for diagonals
+//#define IN_JOYSTICK_DIAGONAL_SLOPE  29,70   // diagonals have same sensitivity as main directions
+//#define IN_JOYSTICK_DIAGONAL_SLOPE   1,2    // slight preference for main directions
+//#define IN_JOYSTICK_DIAGONAL_SLOPE   1,1    // no diagonals at all (not a good idea!)
+static const int in_joystickDiagonalSlope[2] = { IN_JOYSTICK_DIAGONAL_SLOPE };
+
+
 void IN_HandleKeyUp(IN_ScanCode sc, bool special)
 {
 	//Use F11 to toggle fullscreen.
@@ -461,6 +475,88 @@ void IN_SetControlType(int player, IN_ControlType type)
 	in_controlType = type;
 }
 
+void In_GetJoyMotion(int joystick, IN_Motion *p_x, IN_Motion *p_y)
+{
+	int valX, valY, resX, resY, signX, signY;
+
+	// update the pre-computed deadzone threshold
+	if (in_gamepadButtons[(int)IN_joy_deadzone] != in_joyCachedDeadzone)
+	{
+		in_joyCachedDeadzone = in_gamepadButtons[(int)IN_joy_deadzone];
+		in_joyScaledDeadzone = (in_backend->joyAxisMax - in_backend->joyAxisMin) * in_joyCachedDeadzone / 200;
+		in_joyScaledDeadzone *= in_joyScaledDeadzone;
+	}
+
+	// get raw data from joystick and re-center it
+	IN_GetJoyAbs(joystick, &valX, &valY);
+	valX -= (in_backend->joyAxisMin + in_backend->joyAxisMax) / 2;
+	valY -= (in_backend->joyAxisMin + in_backend->joyAxisMax) / 2;
+
+	// Now "quantize" the raw joystick position into one of the nine
+	// discrete positions we need in the game (center / neutral, four main
+	// directions, four diagonals).
+	if (in_joyAdvancedMotion)
+	{
+		// "Advanced" (or "modern") quantization: Apply a circular
+		// "deadzone" at the center. The remaining coordinates are
+		// split into eight radial segments, whereby the size of the
+		// segments for the main directions versus the diagonals can be
+		// tuned using the slope parameters at the beginning of this
+		// file. (This could easily be turned into an option later on.)
+
+		// extract the quadrant and map values into the upper-right quadrant
+		signX = valX >> 31;
+		signY = valY >> 31;
+		valX = abs(valX);
+		valY = abs(valY);
+
+		// check against the deadzone first
+		if ((valX * valX + valY * valY) <= in_joyScaledDeadzone)
+		{
+			resX = resY = 0;
+		}
+		else
+		{
+			// not in deadzone -> classify into main horizontal,
+			// main vertical or diagonal directions
+			resX = (valY * in_joystickDiagonalSlope[0] > valX * in_joystickDiagonalSlope[1]) ? 0 : 1;
+			resY = (valX * in_joystickDiagonalSlope[0] > valY * in_joystickDiagonalSlope[1]) ? 0 : 1;
+		}
+
+		// flip the result back into the proper quadrant
+		resX = (resX ^ signX) - signX;
+		resY = (resY ^ signY) - signY;
+	}
+	else
+	{
+		// "Simple" (or "classic") quantization: Apply the deadzone
+		// separately for each component and map every non-dead
+		// value to its direction
+		resX = ((valX * valX) <= in_joyScaledDeadzone) ? 0 : valX;
+		resY = ((valY * valY) <= in_joyScaledDeadzone) ? 0 : valY;
+	}
+
+	// finally, map the values to the IN_Motion constants
+	if (p_x)
+	{
+		if (resX < 0)
+			*p_x = IN_motion_Left;
+		else if (resX > 0)
+			*p_x = IN_motion_Right;
+		else
+			*p_x = IN_motion_None;
+	}
+	if (p_y)
+	{
+		if (resY < 0)
+			*p_y = IN_motion_Up;
+		else if (resY > 0)
+			*p_y = IN_motion_Down;
+		else
+			*p_y = IN_motion_None;
+	}
+}
+
 void IN_ReadCursor(IN_Cursor *cursor)
 {
 	cursor->button0 = false;
@@ -470,18 +566,7 @@ void IN_ReadCursor(IN_Cursor *cursor)
 	if (in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2)
 	{
 		int joy = in_controlType - IN_ctrl_Joystick1;
-		int rawX, rawY;
-		IN_GetJoyAbs(joy, &rawX, &rawY);
-		cursor->xMotion = IN_motion_None;
-		if (rawX < 0)
-			cursor->xMotion = IN_motion_Left;
-		else if (rawX > 0)
-			cursor->xMotion = IN_motion_Right;
-		cursor->yMotion = IN_motion_None;
-		if (rawY < 0)
-			cursor->yMotion = IN_motion_Up;
-		else if (rawY > 0)
-			cursor->yMotion = IN_motion_Down;
+		In_GetJoyMotion(joy, &cursor->xMotion, &cursor->yMotion);
 
 		uint16_t buttons = IN_GetJoyButtonsDB(joy);
 		/* TODO: maybe ignore button mappings in the menu and
@@ -565,18 +650,7 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 		else if (in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2)
 		{
 			int joy = in_controlType - IN_ctrl_Joystick1;
-			int rawX, rawY;
-			IN_GetJoyAbs(joy, &rawX, &rawY);
-			controls->xDirection = IN_motion_None;
-			if (rawX < 0)
-				controls->xDirection = IN_motion_Left;
-			else if (rawX > 0)
-				controls->xDirection = IN_motion_Right;
-			controls->yDirection = IN_motion_None;
-			if (rawY < 0)
-				controls->yDirection = IN_motion_Up;
-			else if (rawY > 0)
-				controls->yDirection = IN_motion_Down;
+			In_GetJoyMotion(joy, &controls->xDirection, &controls->yDirection);
 
 			uint16_t buttons = IN_GetJoyButtonsDB(joy);
 			controls->jump = IN_GetJoyButtonFromMask(buttons, IN_joy_jump);
@@ -705,8 +779,6 @@ void IN_SetJoyConf(IN_JoyConfItem item, int value)
 {
 	if ((item >= IN_joy_min_) && (item <= IN_joy_max_))
 		in_gamepadButtons[(int) item] = (int16_t) value;
-	if ((item == IN_joy_deadzone) && (in_backend->joySetDeadzone))
-		in_backend->joySetDeadzone(value);
 }
 
 bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn)

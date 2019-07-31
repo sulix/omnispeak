@@ -29,16 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 SDL_Joystick *in_joysticks[IN_MAX_JOYSTICKS];
 bool in_joystickPresent[IN_MAX_JOYSTICKS];
-static int in_joystickDeadzone = 8689 * 8689;
-
-// the "diagonal slope" selects the sensitivity of the joystick
-// regarding diagonal directions
-//#define IN_JOYSTICK_DIAGONAL_SLOPE   0,1    // only diagonals (not a good idea!)
-  #define IN_JOYSTICK_DIAGONAL_SLOPE   1,3    // slight preference for diagonals
-//#define IN_JOYSTICK_DIAGONAL_SLOPE  29,70   // diagonals have same sensitivity as main directions
-//#define IN_JOYSTICK_DIAGONAL_SLOPE   1,2    // slight preference for main directions
-//#define IN_JOYSTICK_DIAGONAL_SLOPE   1,1    // no diagonals at all (not a good idea!)
-static const int32_t in_joystickDiagonalSlope[2] = { IN_JOYSTICK_DIAGONAL_SLOPE };
 
 // SDLKey -> IN_SC
 #define INL_MapKey(sdl, in_sc) \
@@ -428,46 +418,10 @@ bool IN_SDL_JoyPresent(int joystick)
 
 void IN_SDL_JoyGetAbs(int joystick, int *x, int *y)
 {
-	int32_t valX, valY, resX, resY, signX, signY;
-
-	// "Quantize" the raw joystick position into one of the nine discrete
-	// positions we need in the game (center / neutral, four main directions,
-	// four diagonals). For the center, a circular "deadzone" is applied.
-	// The remaining coordinates are split into eight radial segments,
-	// whereby the size of the segments for the main directions versus the
-	// diagonals can be tuned using the slope parameters at the beginning
-	// of this file. (This could easily be turned into an option later on.)
-
-	// get raw data from joystick
-	valX = SDL_JoystickGetAxis(in_joysticks[joystick], 0);
-	valY = SDL_JoystickGetAxis(in_joysticks[joystick], 1);
-
-	// extract the quadrant and map values into the upper-right quadrant
-	signX = valX >> 31;
-	signY = valY >> 31;
-	valX = abs(valX);
-	valY = abs(valY);
-
-	// check against the deadzone first
-	if ((valX * valX + valY * valY) < in_joystickDeadzone)
-	{
-		resX = resY = 0;
-	}
-	else
-	{
-		// not in deadzone -> classify into main horizontal,
-		// main vertical or diagonal directions
-		resX = (valY * in_joystickDiagonalSlope[0] > valX * in_joystickDiagonalSlope[1]) ? 0 : 32767;
-		resY = (valX * in_joystickDiagonalSlope[0] > valY * in_joystickDiagonalSlope[1]) ? 0 : 32767;
-		if (resX && resY)
-			resX = resY = 23169;  // keep diagonal coordinates on unit circle
-	}
-
-	// flip the result back into the proper quadrant
 	if (x)
-		*x = (resX ^ signX) - signX;
+		*x = SDL_JoystickGetAxis(in_joysticks[joystick], 0);
 	if (y)
-		*y = (resY ^ signY) - signY;
+		*y = SDL_JoystickGetAxis(in_joysticks[joystick], 1);
 }
 
 uint16_t IN_SDL_JoyGetButtons(int joystick)
@@ -481,15 +435,6 @@ uint16_t IN_SDL_JoyGetButtons(int joystick)
 		mask |= SDL_JoystickGetButton(in_joysticks[joystick], i) << i;
 	}
 	return mask;
-}
-
-void IN_SDL_JoySetDeadzone(int percent)
-{
-	if ((percent >= 0) && (percent <= 100))
-	{
-		in_joystickDeadzone = (32768 * percent + 50) / 100;
-		in_joystickDeadzone *= in_joystickDeadzone;
-	}
 }
 
 const char* IN_SDL_JoyGetName(int joystick)
@@ -511,8 +456,9 @@ IN_Backend in_sdl_backend = {
 	.joyPresent = IN_SDL_JoyPresent,
 	.joyGetAbs = IN_SDL_JoyGetAbs,
 	.joyGetButtons = IN_SDL_JoyGetButtons,
-	.joySetDeadzone = IN_SDL_JoySetDeadzone,
 	.joyGetName = IN_SDL_JoyGetName,
+	.joyAxisMin = -32768,
+	.joyAxisMax =  32767,
 };
 
 IN_Backend *IN_Impl_GetBackend()
