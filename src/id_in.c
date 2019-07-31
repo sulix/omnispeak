@@ -126,14 +126,14 @@ IN_KeyMapping in_kbdControls;
  * as the old gamepadButtons configuration is stored in the CONFIG.CK? files */
 int16_t in_gamepadButtons[4];
 
-IN_ScanCode *key_controls[] = {
+IN_ScanCode *in_key_controls[] = {
 	&in_kbdControls.jump, &in_kbdControls.pogo, &in_kbdControls.fire,
 	&in_kbdControls.status, &in_kbdControls.quickSave, &in_kbdControls.quickLoad,
 	&in_kbdControls.upLeft, &in_kbdControls.up, &in_kbdControls.upRight,
 	&in_kbdControls.right, &in_kbdControls.downRight, &in_kbdControls.down,
 	&in_kbdControls.downLeft, &in_kbdControls.left};
-const int key_button_controls = 6;
-const int key_direction_controls = 8;
+const int in_key_button_controls = 6;
+const int in_key_direction_controls = 8;
 
 static bool CapsLock;
 

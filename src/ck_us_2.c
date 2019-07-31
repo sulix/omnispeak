@@ -568,9 +568,6 @@ US_CardItem ck_us_mainMenuItems[] = {
 US_Card ck_us_mainMenu = {32, 4, &PIC_MENUCARD, 0, ck_us_mainMenuItems, 0, 0, 0, 0};
 
 extern US_Card *us_currentCard;
-extern IN_ScanCode *key_controls[];
-extern const int key_button_controls;
-extern const int key_direction_controls;
 
 bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 {
@@ -578,7 +575,7 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 	int result = 0;
 	int print_x, print_y;
 
-	which_control = (us_currentCard == &ck_us_movementMenu) ? (item - ck_us_movementMenuItems) + key_button_controls : (item - ck_us_buttonsMenuItems);
+	which_control = (us_currentCard == &ck_us_movementMenu) ? (item - ck_us_movementMenuItems) + in_key_button_controls : (item - ck_us_buttonsMenuItems);
 
 	switch (msg)
 	{
@@ -603,7 +600,7 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 
 		print_x = item->x + 96;
 		print_y = item->y + 1;
-		VH_DrawPropString(IN_GetScanName(*key_controls[which_control]), print_x, print_y, 1, US_GetPrintColour());
+		VH_DrawPropString(IN_GetScanName(*in_key_controls[which_control]), print_x, print_y, 1, US_GetPrintColour());
 		result = 1;
 		break;
 
@@ -683,12 +680,12 @@ void CK_US_SetKeyBinding(US_CardItem *item, int which_control)
 		i = 0;
 
 		/* Make sure the key they chose is not already used */
-		for (i = 0; i < key_button_controls + key_direction_controls; i++)
+		for (i = 0; i < in_key_button_controls + in_key_direction_controls; i++)
 		{
 			/* Don't check the one we're setting */
 			if (i != which_control)
 			{
-				if (*(key_controls[i]) == k)
+				if (*(in_key_controls[i]) == k)
 				{
 					used = 1;
 					break;
@@ -699,7 +696,7 @@ void CK_US_SetKeyBinding(US_CardItem *item, int which_control)
 		if (used)
 			USL_CtlDialog("Key already used", "Press any key", NULL);
 		else
-			*(key_controls[which_control]) = k;
+			*(in_key_controls[which_control]) = k;
 	}
 
 	IN_ClearKeysDown();

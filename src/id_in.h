@@ -212,6 +212,10 @@ typedef struct IN_KeyMapping
 
 extern IN_KeyMapping in_kbdControls;
 
+extern IN_ScanCode *in_key_controls[];
+extern const int in_key_button_controls;
+extern const int in_key_direction_controls;
+
 extern int16_t in_gamepadButtons[4];
 
 typedef enum IN_ControlType
