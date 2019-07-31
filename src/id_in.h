@@ -197,9 +197,9 @@ typedef struct IN_KeyMapping
 	IN_ScanCode jump;
 	IN_ScanCode pogo;
 	IN_ScanCode fire;
-	IN_ScanCode status;
-	IN_ScanCode quickSave;
-	IN_ScanCode quickLoad;
+	IN_ScanCode status;	// not saved in CONFIG.CKx
+	IN_ScanCode quickSave;	// not saved in CONFIG.CKx
+	IN_ScanCode quickLoad;	// not saved in CONFIG.CKx
 	IN_ScanCode upLeft;
 	IN_ScanCode up;
 	IN_ScanCode upRight;
