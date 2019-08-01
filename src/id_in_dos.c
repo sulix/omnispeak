@@ -128,6 +128,8 @@ IN_Backend in_dos_backend = {
 	.joyPresent = IN_DOS_JoyPresent,
 	.joyGetAbs = IN_DOS_JoyGetAbs,
 	.joyGetButtons = IN_DOS_JoyGetButtons,
+	.joyAxisMin = -1000,
+	.joyAxisMax =  1000,
 };
 
 IN_Backend *IN_Impl_GetBackend()

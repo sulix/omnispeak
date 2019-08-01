@@ -249,6 +249,7 @@ extern IN_ControlType in_controlType;
 extern bool in_Paused;
 extern const char* in_PausedMessage;
 extern bool in_disableJoysticks;
+extern bool in_joyAdvancedMotion;
 
 typedef enum IN_JoyConfItem
 {
@@ -311,8 +312,11 @@ typedef struct IN_Backend
 	bool (*joyPresent)(int joystick);
 	void (*joyGetAbs)(int joystick, int *x, int *y);
 	uint16_t (*joyGetButtons)(int joystick);
-	void (*joySetDeadzone)(int percent);
 	const char* (*joyGetName)(int joystick);
+
+	// minimum and maximum values returned by joyGetAbs();
+	// requirement: 0 < (joyAxisMax - joyAxisMin) <= 92681
+	int joyAxisMin, joyAxisMax;
 } IN_Backend;
 
 IN_Backend *IN_Impl_GetBackend();

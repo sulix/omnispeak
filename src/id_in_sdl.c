@@ -29,7 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 SDL_Joystick *in_joysticks[IN_MAX_JOYSTICKS];
 bool in_joystickPresent[IN_MAX_JOYSTICKS];
-static int in_joystickDeadzone = 8689;
 
 // SDLKey -> IN_SC
 #define INL_MapKey(sdl, in_sc) \
@@ -417,17 +416,12 @@ bool IN_SDL_JoyPresent(int joystick)
 	return in_joystickPresent[joystick];
 }
 
-static int IN_ApplyDeadZone(int value)
-{
-	return (abs(value) <= in_joystickDeadzone) ? 0 : value;
-}
-
 void IN_SDL_JoyGetAbs(int joystick, int *x, int *y)
 {
 	if (x)
-		*x = IN_ApplyDeadZone(SDL_JoystickGetAxis(in_joysticks[joystick], 0));
+		*x = SDL_JoystickGetAxis(in_joysticks[joystick], 0);
 	if (y)
-		*y = IN_ApplyDeadZone(SDL_JoystickGetAxis(in_joysticks[joystick], 1));
+		*y = SDL_JoystickGetAxis(in_joysticks[joystick], 1);
 }
 
 uint16_t IN_SDL_JoyGetButtons(int joystick)
@@ -441,12 +435,6 @@ uint16_t IN_SDL_JoyGetButtons(int joystick)
 		mask |= SDL_JoystickGetButton(in_joysticks[joystick], i) << i;
 	}
 	return mask;
-}
-
-void IN_SDL_JoySetDeadzone(int percent)
-{
-	if ((percent >= 0) && (percent <= 100))
-		in_joystickDeadzone = (32768 * percent + 50) / 100;
 }
 
 const char* IN_SDL_JoyGetName(int joystick)
@@ -468,8 +456,9 @@ IN_Backend in_sdl_backend = {
 	.joyPresent = IN_SDL_JoyPresent,
 	.joyGetAbs = IN_SDL_JoyGetAbs,
 	.joyGetButtons = IN_SDL_JoyGetButtons,
-	.joySetDeadzone = IN_SDL_JoySetDeadzone,
 	.joyGetName = IN_SDL_JoyGetName,
+	.joyAxisMin = -32768,
+	.joyAxisMax =  32767,
 };
 
 IN_Backend *IN_Impl_GetBackend()
