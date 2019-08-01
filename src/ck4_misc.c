@@ -598,7 +598,7 @@ void CK4_ScanInfoLayer()
 
 	// Reset the lumps (contiguous lists of chunks for sprites) required by
 	// the level.
-	memset(ck4_lumpsNeeded, sizeof(ck4_lumpsNeeded), 0);
+	memset(ck4_lumpsNeeded, 0, sizeof(ck4_lumpsNeeded));
 
 	//TODO: Work out where to store current map number, etc.
 	int mapW = CA_MapHeaders[ca_mapOn]->width;
