@@ -845,6 +845,7 @@ bool CK_TryAgainMenu()
 			}
 		} /* while */
 	}
+	return false;
 }
 
 extern CK_Difficulty ck_startingDifficulty;
