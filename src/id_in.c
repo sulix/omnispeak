@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vl.h"
 #include "ck_cross.h"
 
+#include <stdlib.h> /* For abs() */
 #include <string.h>
 
 char nonchar_keys[] = {

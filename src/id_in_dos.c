@@ -118,6 +118,11 @@ uint16_t IN_DOS_JoyGetButtons(int joystick)
 	return (button0) | (button1 << 1);
 }
 
+const char* IN_DOS_JoyGetName(int joystick)
+{
+	return NULL;
+}
+
 IN_Backend in_dos_backend = {
 	.startup = IN_DOS_Startup,
 	.shutdown = 0,
@@ -128,6 +133,7 @@ IN_Backend in_dos_backend = {
 	.joyPresent = IN_DOS_JoyPresent,
 	.joyGetAbs = IN_DOS_JoyGetAbs,
 	.joyGetButtons = IN_DOS_JoyGetButtons,
+	.joyGetName = IN_DOS_JoyGetName,
 	.joyAxisMin = -1000,
 	.joyAxisMax =  1000,
 };
