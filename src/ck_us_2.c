@@ -21,19 +21,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include <time.h>
 
+#include "ck_config.h"
+
 #include "id_in.h"
 #include "id_sd.h"
 #include "id_us.h"
 #include "id_vl.h"
 #include "ck_cross.h"
-#include "ck_play.h"
 #include "ck_def.h"
+#include "ck_play.h"
 
 #define US_MAX_JOYSTICK_NAME_LENGTH 28
 
 #define US_MAX_JOYSTICKS 2
-
-#define EXTRA_GRAPHICS_OPTIONS
 
 bool CK_US_ScoreBoxMenuProc(US_CardMsg msg, US_CardItem *item)
 {
@@ -116,6 +116,8 @@ bool CK_US_BorderMenuProc(US_CardMsg msg, US_CardItem *item)
 
 #endif
 
+#ifdef EXTRA_JOYSTICK_OPTIONS
+
 bool CK_US_JoyMotionModeMenuProc(US_CardMsg msg, US_CardItem *item)
 {
 	if (msg != US_MSG_CardEntered)
@@ -126,6 +128,8 @@ bool CK_US_JoyMotionModeMenuProc(US_CardMsg msg, US_CardItem *item)
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
+
+#endif
 
 bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item);
 bool CK_US_KeyboardMenuProc(US_CardMsg msg, US_CardItem *item);
@@ -396,6 +400,8 @@ static bool US_SaveMain(int i)
 	}
 }
 
+#ifdef QUICKSAVE_ENABLED
+
 bool US_QuickSave(void)
 {
 	US_Savefile *e;
@@ -405,6 +411,8 @@ bool US_QuickSave(void)
 	e->used = 1;
 	return US_SaveMain(US_MAX_NUM_OF_SAVED_GAMES - 1);
 }
+
+#endif
 
 void save_savegame_item(US_CardItem *item)
 {
@@ -481,8 +489,9 @@ US_Card ck_us_fullscreenMenu = {0, 0, 0, 0, 0, &CK_US_FullscreenMenuProc, 0, 0, 
 US_Card ck_us_aspectCorrectMenu = {0, 0, 0, 0, 0, &CK_US_AspectCorrectMenuProc, 0, 0, 0};
 US_Card ck_us_borderMenu = {0, 0, 0, 0, 0, &CK_US_BorderMenuProc, 0, 0, 0};
 #endif
+#ifdef EXTRA_JOYSTICK_OPTIONS
 US_Card ck_us_joyMotionModeMenu = {0, 0, 0, 0, 0, &CK_US_JoyMotionModeMenuProc, 0, 0, 0};
-
+#endif
 // Options menu
 US_CardItem ck_us_optionsMenuItems[] = {
 	{US_ITEM_Submenu, 0, IN_SC_S, "", US_Comm_None, &ck_us_scoreBoxMenu, 0, 0},
@@ -517,9 +526,13 @@ US_CardItem ck_us_buttonsMenuItems[] = {
 	{US_ITEM_Normal, 0, IN_SC_J, "JUMP", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_P, "POGO", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_F, "FIRE", US_Comm_None, 0, 0, 0},
+#ifdef EXTRA_KEYBOARD_OPTIONS
 	{US_ITEM_Normal, 0, IN_SC_I, "STATUS", US_Comm_None, 0, 0, 0},
+#endif
+#ifdef QUICKSAVE_ENABLED
 	{US_ITEM_Normal, 0, IN_SC_S, "QUICKSAVE", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_L, "QUICKLOAD", US_Comm_None, 0, 0, 0},
+#endif
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
 US_Card ck_us_buttonsMenu = {0, 0, &PIC_BUTTONSCARD, 0, ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
@@ -538,6 +551,7 @@ US_Card ck_us_joystick1Menu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick1Me
 US_Card ck_us_joystick2Menu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0};
 US_Card ck_us_gamepadMenu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0};
 
+#ifdef EXTRA_JOYSTICK_OPTIONS
 // Joystick Config Menu
 US_CardItem ck_us_joyconfMenuItems[] = {
 	{US_ITEM_Normal, 0, IN_SC_J, "JUMP", US_Comm_None, 0, 0, 0},
@@ -548,6 +562,7 @@ US_CardItem ck_us_joyconfMenuItems[] = {
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
 US_Card ck_us_joyconfMenu = {0, 0, &PIC_BUTTONSCARD, 0, ck_us_joyconfMenuItems, &CK_US_JoyConfMenuProc, 0, 0, 0};
+#endif
 
 // Configure Menu
 US_CardItem ck_us_configureMenuItems[] = {
@@ -557,8 +572,10 @@ US_CardItem ck_us_configureMenuItems[] = {
 	{US_ITEM_Submenu, US_IS_Gap, IN_SC_K, "KEYBOARD", US_Comm_None, &ck_us_keyboardMenu, 0, 0},
 	{US_ITEM_Submenu, 0, IN_SC_One, "USE JOYSTICK #1", US_Comm_None, &ck_us_joystick1Menu, 0, 0},
 	{US_ITEM_Submenu, 0, IN_SC_Two, "USE JOYSTICK #2", US_Comm_None, &ck_us_joystick2Menu, 0, 0},
-	//{ US_ITEM_Submenu, 0, IN_SC_G, "", US_Comm_None, &ck_us_gamepadMenu, 0, 0 },
+//{ US_ITEM_Submenu, 0, IN_SC_G, "", US_Comm_None, &ck_us_gamepadMenu, 0, 0 },
+#ifdef EXTRA_JOYSTICK_OPTIONS
 	{US_ITEM_Submenu, 0, IN_SC_J, "JOYSTICK CONFIGURATION", US_Comm_None, &ck_us_joyconfMenu, 0, 0},
+#endif
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
 US_Card ck_us_configureMenu = {0, 0, &PIC_CONFIGURECARD, 0, ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0};
@@ -756,6 +773,7 @@ bool CK_US_GamepadMenuProc(US_CardMsg msg, US_CardItem *item)
 	return false;
 }
 
+#ifdef EXTRA_JOYSTICK_OPTIONS
 bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 {
 	IN_JoyConfItem which_control;
@@ -763,13 +781,12 @@ bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 	char str[8], *spos;
 	int print_x, print_y;
 	static const int8_t deadzone_values[] = {
-		0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, -1
-	};
+		0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, -1};
 
 	if (item == &ck_us_joyconfMenuItems[4])
-		return false;  // no special handling for the motion mode option
+		return false; // no special handling for the motion mode option
 
-	which_control = (IN_JoyConfItem) (item - ck_us_joyconfMenuItems);
+	which_control = (IN_JoyConfItem)(item - ck_us_joyconfMenuItems);
 	value = IN_GetJoyConf(which_control);
 
 	switch (msg)
@@ -824,7 +841,8 @@ bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 		if (which_control == IN_joy_deadzone)
 		{
 			int i;
-			for (i = 0;  (deadzone_values[i] >= 0) && (deadzone_values[i] <= value);  i++);
+			for (i = 0; (deadzone_values[i] >= 0) && (deadzone_values[i] <= value); i++)
+				;
 			value = deadzone_values[(deadzone_values[i] < 0) ? 0 : i];
 			IN_SetJoyConf(which_control, value);
 		}
@@ -853,7 +871,7 @@ void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control)
 	while (1)
 	{
 		IN_PumpEvents();
-		
+
 		/* Flicker the cursor */
 		if (SD_GetTimeCount() >= lasttime)
 		{
@@ -880,7 +898,7 @@ void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control)
 			break;
 		}
 
-	        /* poll joysticks */
+		/* poll joysticks */
 		for (int i = 0; i < US_MAX_JOYSTICKS; i++)
 		{
 			if (IN_JoyPresent(i))
@@ -897,7 +915,7 @@ void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control)
 
 	/* assign the joystick button */
 	if (last_scan == IN_SC_Backspace)
-		IN_SetJoyConf(which_control, -1);  /* Backspace = unassign */
+		IN_SetJoyConf(which_control, -1); /* Backspace = unassign */
 	else if (button_mask)
 	{
 		int bit = 0;
@@ -926,6 +944,7 @@ void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control)
 
 	IN_ClearKeysDown();
 }
+#endif
 
 bool CK_US_ConfigureMenuProc(US_CardMsg msg, US_CardItem *item)
 {
@@ -1214,11 +1233,12 @@ bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item)
 	return 1;
 }
 
+#ifdef EXTRA_JOYSTICK_OPTIONS
 void CK_US_SetJoystickName(US_CardItem *item, int joystick)
 {
 	static char str[US_MAX_JOYSTICKS][US_MAX_JOYSTICK_NAME_LENGTH + 1];
 	char *pos = str[joystick];
-	const char* name = IN_GetJoyName(joystick);
+	const char *name = IN_GetJoyName(joystick);
 	if (name)
 	{
 		strcpy(pos, "USE ");
@@ -1239,7 +1259,7 @@ void CK_US_SetJoystickName(US_CardItem *item, int joystick)
 		sprintf(pos, "USE JOYSTICK #%d", joystick + 1);
 	item->caption = str[joystick];
 }
-
+#endif
 void CK_US_UpdateOptionsMenus(void)
 {
 
@@ -1252,7 +1272,9 @@ void CK_US_UpdateOptionsMenus(void)
 	ck_us_optionsMenuItems[5].caption = vl_isAspectCorrected ? "CORRECT ASPECT RATIO (ON)" : "CORRECT ASPECT RATIO (OFF)";
 	ck_us_optionsMenuItems[6].caption = vl_hasOverscanBorder ? "OVERSCAN BORDER (ON)" : "OVERSCAN BORDER (OFF)";
 #endif
+#ifdef EXTRA_JOYSTICK_OPTIONS
 	ck_us_joyconfMenuItems[4].caption = in_joyAdvancedMotion ? "MOTION MODE (MODERN)" : "MOTION MODE (CLASSIC)";
+#endif
 
 	// Disable Two button firing selection if required
 	ck_us_buttonsMenuItems[2].state &= ~US_IS_Disabled;
@@ -1263,16 +1285,18 @@ void CK_US_UpdateOptionsMenus(void)
 		ck_us_configureMenuItems[4].state &= ~US_IS_Disabled;
 	else
 		ck_us_configureMenuItems[4].state |= US_IS_Disabled;
-	CK_US_SetJoystickName(&ck_us_configureMenuItems[4], 0);
 	if (IN_JoyPresent(1))
 		ck_us_configureMenuItems[5].state &= ~US_IS_Disabled;
 	else
 		ck_us_configureMenuItems[5].state |= US_IS_Disabled;
+#ifdef EXTRA_JOYSTICK_OPTIONS
+	CK_US_SetJoystickName(&ck_us_configureMenuItems[4], 0);
 	CK_US_SetJoystickName(&ck_us_configureMenuItems[5], 1);
 	if (IN_JoyPresent(0) || IN_JoyPresent(1))
 		ck_us_configureMenuItems[6].state &= ~US_IS_Disabled;
 	else
 		ck_us_configureMenuItems[6].state |= US_IS_Disabled;
+#endif
 
 		/* Set up the gamepad menu item */
 #if 0

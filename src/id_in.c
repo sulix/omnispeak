@@ -106,7 +106,7 @@ static char in_ASCIINames[] = // Unshifted ASCII for scan codes
 };
 
 bool in_Paused;
-const char* in_PausedMessage = "PAUSED";
+const char *in_PausedMessage = "PAUSED";
 IN_ControlType in_controlType = IN_ctrl_Keyboard1;
 bool in_keyStates[256];
 IN_ScanCode in_lastKeyScanned = IN_SC_None;
@@ -129,11 +129,23 @@ int16_t in_gamepadButtons[4];
 
 IN_ScanCode *in_key_controls[] = {
 	&in_kbdControls.jump, &in_kbdControls.pogo, &in_kbdControls.fire,
-	&in_kbdControls.status, &in_kbdControls.quickSave, &in_kbdControls.quickLoad,
+#ifdef EXTRA_KEYBOARD_OPTIONS
+	&in_kbdControls.status,
+#endif
+#ifdef QUICKSAVE_ENABLED
+	&in_kbdControls.quickSave, &in_kbdControls.quickLoad,
+#endif
 	&in_kbdControls.upLeft, &in_kbdControls.up, &in_kbdControls.upRight,
 	&in_kbdControls.right, &in_kbdControls.downRight, &in_kbdControls.down,
 	&in_kbdControls.downLeft, &in_kbdControls.left};
-const int in_key_button_controls = 6;
+const int in_key_button_controls = 3 +
+#ifdef EXTRA_KEYBOARD_OPTIONS
+	1 +
+#endif
+#ifdef QUICKSAVE_ENABLED
+	2 +
+#endif
+	0;
 const int in_key_direction_controls = 8;
 
 static bool CapsLock;
@@ -151,12 +163,11 @@ static int in_joyScaledDeadzone = 0;
 // the "diagonal slope" selects the sensitivity of the joystick
 // regarding diagonal directions
 //#define IN_JOYSTICK_DIAGONAL_SLOPE   0,1    // only diagonals (not a good idea!)
-  #define IN_JOYSTICK_DIAGONAL_SLOPE   1,3    // slight preference for diagonals
+#define IN_JOYSTICK_DIAGONAL_SLOPE 1, 3 // slight preference for diagonals
 //#define IN_JOYSTICK_DIAGONAL_SLOPE  29,70   // diagonals have same sensitivity as main directions
 //#define IN_JOYSTICK_DIAGONAL_SLOPE   1,2    // slight preference for main directions
 //#define IN_JOYSTICK_DIAGONAL_SLOPE   1,1    // no diagonals at all (not a good idea!)
-static const int in_joystickDiagonalSlope[2] = { IN_JOYSTICK_DIAGONAL_SLOPE };
-
+static const int in_joystickDiagonalSlope[2] = {IN_JOYSTICK_DIAGONAL_SLOPE};
 
 void IN_HandleKeyUp(IN_ScanCode sc, bool special)
 {
@@ -228,9 +239,13 @@ static void INL_SetupKbdControls()
 	in_kbdControls.jump = IN_SC_Control;
 	in_kbdControls.pogo = IN_SC_Alt;
 	in_kbdControls.fire = IN_SC_Space;
+#ifdef EXTRA_KEYBOARD_OPTIONS
 	in_kbdControls.status = IN_SC_Enter;
+#endif
+#ifdef QUICKSAVE_ENABLED
 	in_kbdControls.quickSave = IN_SC_F5;
 	in_kbdControls.quickLoad = IN_SC_F9;
+#endif
 	in_kbdControls.up = IN_SC_UpArrow;
 	in_kbdControls.down = IN_SC_DownArrow;
 	in_kbdControls.left = IN_SC_LeftArrow;
@@ -375,18 +390,17 @@ bool IN_DemoStartRecording(int bufferSize)
 {
 	if (!bufferSize)
 		return false;
-	MM_GetPtr((mm_ptr_t*)&in_demoBuf, bufferSize);
-	
+	MM_GetPtr((mm_ptr_t *)&in_demoBuf, bufferSize);
+
 	in_demoState = IN_Demo_Record;
 	in_demoBytes = bufferSize & ~1;
 	in_demoPtr = 0;
-	
+
 	in_demoBuf[0] = 0;
 	in_demoBuf[1] = 0;
-	
+
 	return true;
 }
-	
 
 void IN_DemoStartPlaying(uint8_t *data, int len)
 {
@@ -400,7 +414,7 @@ void IN_DemoStopPlaying()
 {
 	if (in_demoState == IN_Demo_Record && in_demoPtr != 0)
 		in_demoPtr += 2;
-	
+
 	in_demoState = IN_Demo_Off;
 }
 
@@ -419,7 +433,7 @@ IN_DemoMode IN_DemoGetMode()
 void IN_DemoFreeBuffer()
 {
 	if (in_demoBuf)
-		MM_FreePtr((mm_ptr_t*) &in_demoBuf);
+		MM_FreePtr((mm_ptr_t *)&in_demoBuf);
 }
 
 void IN_DemoSaveToFile(const char *fileName, uint16_t mapNumber)
@@ -428,9 +442,9 @@ void IN_DemoSaveToFile(const char *fileName, uint16_t mapNumber)
 	FILE *demoFile = fopen(fileName, "wb");
 	CK_Cross_fwriteInt16LE(&mapNumber, 1, demoFile);
 	CK_Cross_fwriteInt16LE(&demoSize, 1, demoFile);
-	
+
 	fwrite(in_demoBuf, in_demoPtr, 1, demoFile);
-	
+
 	fclose(demoFile);
 }
 
@@ -506,6 +520,7 @@ void In_GetJoyMotion(int joystick, IN_Motion *p_x, IN_Motion *p_y)
 	// Now "quantize" the raw joystick position into one of the nine
 	// discrete positions we need in the game (center / neutral, four main
 	// directions, four diagonals).
+#ifdef EXTRA_JOYSTICK_OPTIONS
 	if (in_joyAdvancedMotion)
 	{
 		// "Advanced" (or "modern") quantization: Apply a circular
@@ -539,6 +554,7 @@ void In_GetJoyMotion(int joystick, IN_Motion *p_x, IN_Motion *p_y)
 		resY = (resY ^ signY) - signY;
 	}
 	else
+#endif
 	{
 		// "Simple" (or "classic") quantization: Apply the deadzone
 		// separately for each component and map every non-dead
@@ -679,9 +695,9 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 		ctrlByte |= (controls->xDirection + 1) << 2;
 		ctrlByte |= (controls->jump) << 4;
 		ctrlByte |= (controls->pogo) << 5;
-		
+
 		// If the controls haven't changed…
-		if ((in_demoBuf[in_demoPtr+1] == ctrlByte) &&
+		if ((in_demoBuf[in_demoPtr + 1] == ctrlByte) &&
 			// and we have room left…
 			(in_demoBuf[in_demoPtr] < 254) &&
 			// and it isn't the first frame
@@ -693,18 +709,18 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 		else
 		{
 			// We have new input, record it.
-			
-			// Use the first slot if it is empty. 
+
+			// Use the first slot if it is empty.
 			if (in_demoPtr || in_demoBuf[in_demoPtr])
 				in_demoPtr += 2;
-			
+
 			if (in_demoPtr >= in_demoBytes)
 				Quit("Demo buffer overflow");
-			
+
 			// One frame…
 			in_demoBuf[in_demoPtr] = 1;
 			// with these controls:
-			in_demoBuf[in_demoPtr+1] = ctrlByte;
+			in_demoBuf[in_demoPtr + 1] = ctrlByte;
 		}
 	}
 }
@@ -783,23 +799,25 @@ bool IN_UserInput(int tics, bool waitPress)
 int IN_GetJoyConf(IN_JoyConfItem item)
 {
 	return ((item >= IN_joy_min_) && (item <= IN_joy_max_))
-		? in_gamepadButtons[(int) item] : 0;
+		? in_gamepadButtons[(int)item]
+		: 0;
 }
 
 void IN_SetJoyConf(IN_JoyConfItem item, int value)
 {
 	if ((item >= IN_joy_min_) && (item <= IN_joy_max_))
-		in_gamepadButtons[(int) item] = (int16_t) value;
+		in_gamepadButtons[(int)item] = (int16_t)value;
 }
 
 bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn)
 {
-	int btn_id = in_gamepadButtons[(int) btn];
+	int btn_id = in_gamepadButtons[(int)btn];
 	return (btn_id < 0) ? 0 : ((mask >> btn_id) & 1);
 }
 
-const char* IN_GetJoyName(int joystick)
+const char *IN_GetJoyName(int joystick)
 {
 	return (in_backend->joyPresent(joystick) && in_backend->joyGetName)
-	     ? in_backend->joyGetName(joystick) : NULL;
+		? in_backend->joyGetName(joystick)
+		: NULL;
 }

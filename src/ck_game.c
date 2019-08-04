@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_vl.h"
 #include "ck_act.h"
+#include "ck_config.h"
 #include "ck_cross.h"
 #include "ck_def.h"
 #include "ck_game.h"
@@ -837,12 +838,14 @@ bool CK_TryAgainMenu()
 				sel = 1;
 			}
 
+#ifdef QUICKSAVE_ENABLED
 			if (IN_GetLastScan() == in_kbdControls.quickLoad)
 			{
 				// quickload, but fall back to map screen on failure
 				ck_gameState.currentLevel = 0;
 				return US_QuickLoad();
 			}
+#endif
 		} /* while */
 	}
 	return false;

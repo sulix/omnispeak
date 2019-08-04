@@ -37,6 +37,8 @@ This Makefile supports the following options:
                   - defaults to 1 for Windows platforms, 0 otherwise
 
   DEBUG 	whether to include debug information (0/1; default: off)
+  
+  VANILLA	whether to disable omnispeak-only features (0/1; default: off)
 
   BUILDASCPP    whether to build as C++ code (0/1)
                   - defaults to 1 for Linux/Unix, 0 otherwise
@@ -155,16 +157,18 @@ ifneq ($(TOOLSET),)
 endif
 
 # set CXX to C or C++ compiler
-ifeq ($(BUILDASCPP), 1)
-	CXX = $(BINPREFIX)g++
-else
-	CXX = $(BINPREFIX)gcc
-	CXXFLAGS += -std=c99
+ifndef CXX
+	ifeq ($(BUILDASCPP), 1)
+		CXX = $(BINPREFIX)g++
+	else
+		CXX = $(BINPREFIX)gcc
+		CXXFLAGS += -std=c99
+	endif
 endif
 
 # set flags for debug info
 ifeq ($(DEBUG), 1)
-	CXXFLAGS += -g -O0
+	CXXFLAGS += -g -O0 -DCK_DEBUG
 	LDFLAGS += -g
 	ifneq (,$(findstring win,$(PLATFORM)))
 		LIBS += -mconsole
@@ -174,6 +178,11 @@ ifeq ($(DEBUG), 1)
 else
 	CXXFLAGS += -O2
 endif	
+
+# set vanilla mode
+ifeq ($(VANILLA), 1)
+	CXXFLAGS += -DCK_VANILLA
+endif
 
 # set linker flags for static linking
 ifeq ($(STATIC), 1)
@@ -266,6 +275,7 @@ dumpconfig:
 	@echo PLATFORM = $(PLATFORM)
 	@echo RENDERER = $(RENDERER)
 	@echo STATIC = $(STATIC)
+	@echo VANILLA = $(VANILLA)
 	@echo DEBUG = $(DEBUG)
 	@echo BUILDASCPP = $(BUILDASCPP)
 	@echo LOCAL_SDL = $(LOCAL_SDL)

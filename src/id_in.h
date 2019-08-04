@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "ck_config.h"
+
 // This is how it's done in Wolf3D, even if it's bad practice in modern C++ code
 typedef uint8_t IN_ScanCode;
 
@@ -197,9 +199,13 @@ typedef struct IN_KeyMapping
 	IN_ScanCode jump;
 	IN_ScanCode pogo;
 	IN_ScanCode fire;
-	IN_ScanCode status;	// not saved in CONFIG.CKx
-	IN_ScanCode quickSave;	// not saved in CONFIG.CKx
-	IN_ScanCode quickLoad;	// not saved in CONFIG.CKx
+#ifdef EXTRA_KEYBOARD_OPTIONS
+	IN_ScanCode status; // not saved in CONFIG.CKx
+#endif
+#ifdef QUICKSAVE_ENABLED
+	IN_ScanCode quickSave; // not saved in CONFIG.CKx
+	IN_ScanCode quickLoad; // not saved in CONFIG.CKx
+#endif
 	IN_ScanCode upLeft;
 	IN_ScanCode up;
 	IN_ScanCode upRight;
@@ -247,15 +253,15 @@ extern IN_DemoMode in_demoState;
 extern IN_ControlType in_controlType;
 
 extern bool in_Paused;
-extern const char* in_PausedMessage;
+extern const char *in_PausedMessage;
 extern bool in_disableJoysticks;
 extern bool in_joyAdvancedMotion;
 
 typedef enum IN_JoyConfItem
 {
-	IN_joy_jump     = 0,
-	IN_joy_pogo     = 1,
-	IN_joy_fire     = 2,
+	IN_joy_jump = 0,
+	IN_joy_pogo = 1,
+	IN_joy_fire = 2,
 	IN_joy_deadzone = 3,
 	IN_joy_min_ = IN_joy_jump,
 	IN_joy_max_ = IN_joy_deadzone
@@ -293,7 +299,7 @@ bool IN_UserInput(int tics, bool arg4);
 int IN_GetJoyConf(IN_JoyConfItem item);
 void IN_SetJoyConf(IN_JoyConfItem item, int value);
 bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn);
-const char* IN_GetJoyName(int joystick);
+const char *IN_GetJoyName(int joystick);
 
 // Called by the backend.
 bool INL_StartJoy(int joystick);
@@ -312,7 +318,7 @@ typedef struct IN_Backend
 	bool (*joyPresent)(int joystick);
 	void (*joyGetAbs)(int joystick, int *x, int *y);
 	uint16_t (*joyGetButtons)(int joystick);
-	const char* (*joyGetName)(int joystick);
+	const char *(*joyGetName)(int joystick);
 
 	// minimum and maximum values returned by joyGetAbs();
 	// requirement: 0 < (joyAxisMax - joyAxisMin) <= 92681

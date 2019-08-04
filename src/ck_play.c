@@ -1051,11 +1051,16 @@ void CK_CheckKeys()
 	// TODO: Also check for a gamepad button when relevant
 
 	if (vl_screenFaded)
+	{
 		return;
+	}
 
 	// Drop down status
-	// TODO: why does this use IN_GetKeyState() instead of IN_GetLastScan()?
+#ifdef EXTRA_KEYBOARD_OPTIONS
 	if (IN_GetKeyState(in_kbdControls.status))
+#else
+	if (IN_GetKeyState(IN_SC_Enter))
+#endif
 	{
 		CK_ShowStatusWindow();
 		RF_ForceRefresh(); // Reanimate the tiles
@@ -1094,6 +1099,7 @@ void CK_CheckKeys()
 	if (!ck_demoParm)
 	{
 
+#ifdef QUICKSAVE_ENABLED
 		// Quicksave
 		if (IN_GetLastScan() == in_kbdControls.quickSave)
 		{
@@ -1124,11 +1130,15 @@ void CK_CheckKeys()
 				ck_gameState.levelState = 8;
 			}
 		}
-		
+		// clang-format off
+		else
+#endif
+
 		// Go back to wristwatch
-		else if ((IN_GetLastScan() >= IN_SC_F2 && IN_GetLastScan() <= IN_SC_F7) || IN_GetLastScan() == IN_SC_Escape)
+		if ((IN_GetLastScan() >= IN_SC_F2 && IN_GetLastScan() <= IN_SC_F7) || IN_GetLastScan() == IN_SC_Escape)
 		{
 
+			// clang-format on
 			// VW_SyncPages();
 			StopMusic();
 			US_RunCards();

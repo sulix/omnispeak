@@ -33,9 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdio.h>
 #include <string.h>
 
-// Proper dirty-rectangle drawing is not working yet. Disable it for now.
-#define ALWAYS_REDRAW
-
 // Maximum number of pages we can write to.
 #define RF_MAX_BUFFERS 2
 
