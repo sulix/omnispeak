@@ -514,7 +514,7 @@ void CK6_BipshipFly(CK_object *obj)
 	int y = obj->clipRects.tileY1;
 	uint16_t *tile = CA_TilePtrAtPos(startx, y, 1);
 
-	for (y; y <= obj->clipRects.tileY2; y++, tile += CA_GetMapWidth())
+	for (; y <= obj->clipRects.tileY2; y++, tile += CA_GetMapWidth())
 	{
 		if (TI_ForeLeft(*tile) || TI_ForeRight(*tile))
 		{

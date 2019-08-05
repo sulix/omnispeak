@@ -1517,6 +1517,10 @@ void CK_DrawStatusWindow(void)
 			VH_DrawTile8(144, 96, 6);
 		else
 			VH_DrawTile8(144, 96, 5);
+		break;
+	
+	default:
+		Quit("No episode set!");
 	}
 
 	// Difficulty
@@ -1534,15 +1538,17 @@ void CK_DrawStatusWindow(void)
 
 	switch (ck_gameState.difficulty)
 	{
-	case 1:
+	case D_Easy:
 		US_CPrint("Easy");
 		break;
-	case 2:
+	case D_Normal:
 		US_CPrint("Normal");
 		break;
-	case 3:
+	case D_Hard:
 		US_CPrint("Hard");
 		break;
+	default:
+		Quit("No difficulty set!");
 	}
 
 	// Key gems
@@ -1587,6 +1593,9 @@ void CK_DrawStatusWindow(void)
 	case EP_CK6:
 		US_Print("VIVAS");
 		break;
+	default:
+		Quit("No episode set!");
+		break;
 	}
 	VH_Bar(224, 127, 16, 10, 0);
 	CK_DrawLongRight(224, 128, 2, 41, ck_gameState.numCentilife);
@@ -1617,6 +1626,8 @@ void CK_DrawStatusWindow(void)
 				VH_DrawTile8(120 + 8 * (x + addX), 140 + 8 * y, 72 + y * 10 + x);
 
 		break;
+	default:
+		Quit("No episode set!");
 	}
 
 	US_SetPrintColour(oldcolor);
@@ -2239,7 +2250,7 @@ void CK_PlayLoop()
 		}
 
 		// Follow the player with the camera.
-		if (ca_mapOn == 0 || ck_currentEpisode->ep == EP_CK4 && ca_mapOn == 17)
+		if (ca_mapOn == 0 || (ck_currentEpisode->ep == EP_CK4 && ca_mapOn == 17))
 			CK_MapCamera(ck_keenObj);
 		else
 			CK_NormalCamera(ck_keenObj);

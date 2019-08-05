@@ -123,7 +123,7 @@ void US_PrintB8000Text(const uint8_t *textscreen, int numChars)
 		else if (unich < 0x800)
 			printf("%c%c", (unich >> 6) | 0xC0, (unich & 0x3F) | 0x80);
 		else if (unich < 0x10000)
-			printf("%c%c%c", (unich >> 12) | 0xE0, (unich >> 6) & 0x3F | 0x80, (unich & 0x3F) | 0x80);
+			printf("%c%c%c", (unich >> 12) | 0xE0, ((unich >> 6) & 0x3F) | 0x80, (unich & 0x3F) | 0x80);
 		else
 			printf("HELP!");
 

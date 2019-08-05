@@ -137,8 +137,8 @@ void CK5_MapKeenElevator(CK_object *keen)
 	if (keen->posX != keen->user2)
 	{
 		ck_nextX = keen->xDirection * 12 * SD_GetSpriteSync();
-		if (keen->xDirection == IN_motion_Right && ck_nextX + keen->posX > keen->user2 ||
-			keen->xDirection == IN_motion_Left && ck_nextX + keen->posX < keen->user2)
+		if ((keen->xDirection == IN_motion_Right && ck_nextX + keen->posX > keen->user2) ||
+			(keen->xDirection == IN_motion_Left && ck_nextX + keen->posX < keen->user2))
 		{
 			ck_nextX = keen->user2 - keen->posX;
 		}

@@ -434,6 +434,9 @@ int USL_ConfirmComm(US_CardCommand command)
 		if (game_in_progress && game_unsaved)
 			ask_user = 1;
 		break;
+
+	default:
+		break;
 	}
 
 	result = ask_user ? USL_CtlDialog(s1, s2, s3) : 1;
@@ -667,6 +670,8 @@ void US_SelectCurrentItem()
 	case US_ITEM_Submenu:
 		USL_DownLevel(item->subMenu);
 		break;
+	default:
+		break;
 	}
 }
 
@@ -893,6 +898,8 @@ void USL_EnterCurrentItem()
 		return;
 	case US_ITEM_Submenu:
 		USL_PushCard(item->subMenu);
+		break;
+	default:
 		break;
 	}
 }

@@ -155,7 +155,7 @@ void VH_DrawPropString(const char *string, int x, int y, int chunk, int colour)
 {
 	int w = 0;
 	VH_Font *font = (VH_Font *)CA_GetGrChunk(chunk, 3, "Font", true);
-	for (w = 0; *string; *string++)
+	for (w = 0; *string; string++)
 	{
 		// FIXME: Bad cast to unsigned char, even if it seems to make sense
 		VH_DrawPropChar(x + w, y, chunk, (unsigned)(*string), colour);

@@ -98,8 +98,8 @@ void CK4_WormmouthCol(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_Player)
 	{
-		if (a->xDirection == IN_motion_Right && a->posX <= b->posX ||
-			a->xDirection == IN_motion_Left && a->posX >= b->posX)
+		if ((a->xDirection == IN_motion_Right && a->posX <= b->posX) ||
+			(a->xDirection == IN_motion_Left && a->posX >= b->posX))
 		{
 			CK_KillKeen();
 			return;
@@ -227,8 +227,8 @@ void CK4_BerkeloidMove(CK_object *obj)
 
 		if (dy >= -0x100 && dy <= 0x100)
 		{
-			if (obj->xDirection == IN_motion_Right && dx > 0 ||
-				obj->xDirection == IN_motion_Left && dx < 0)
+			if ((obj->xDirection == IN_motion_Right && dx > 0) ||
+				(obj->xDirection == IN_motion_Left && dx < 0))
 			{
 				obj->currentAction = CK_GetActionByName("CK4_ACT_BerkeloidThrow0");
 				SD_PlaySound(SOUND_BERKELOIDTHROW);
@@ -558,8 +558,8 @@ void CK4_LickMove(CK_object *obj)
 
 	if (dy >= -0x100 && dy <= 0x100)
 	{
-		if (obj->xDirection == IN_motion_Right && dx > -0x20 && dx < 0x180 ||
-			obj->xDirection == IN_motion_Left && dx < 0x20 && dx > -0x200)
+		if ((obj->xDirection == IN_motion_Right && dx > -0x20 && dx < 0x180) ||
+			(obj->xDirection == IN_motion_Left && dx < 0x20 && dx > -0x200))
 		{
 			SD_PlaySound(SOUND_LICKFLAME);
 			CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_LickFlame0"));
@@ -592,8 +592,8 @@ void CK4_LickCol(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_Player)
 	{
-		if (a->xDirection == IN_motion_Right && ck_keenObj->posX > a->posX ||
-			a->xDirection == IN_motion_Left && ck_keenObj->posX < a->posX)
+		if ((a->xDirection == IN_motion_Right && ck_keenObj->posX > a->posX) ||
+			(a->xDirection == IN_motion_Left && ck_keenObj->posX < a->posX))
 		{
 			CK_KillKeen();
 			return;

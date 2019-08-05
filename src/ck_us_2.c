@@ -340,6 +340,9 @@ bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 		load_savegame_item(item);
 		result = 1;
 		break;
+
+	default:
+		break;
 	}
 
 	return result;
@@ -641,6 +644,9 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 		US_DrawCards();
 		result = 1;
 		break;
+
+	default:
+		break;
 	}
 
 	return result;
@@ -851,6 +857,9 @@ bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 
 		US_DrawCards();
 		return true;
+
+	default:
+		break;
 	}
 
 	return false;
@@ -1069,7 +1078,7 @@ void USL_PlayPaddleWar(void)
 			if (ball_visible && (comp_move_counter++ % 3) != 0)
 			{
 				ball_x = ball_real_x / 4;
-				if (ball_x & 1 == 0)
+				if ((ball_x & 1) == 0)
 					ball_x += US_RndT() & 1;
 
 				// Move computer paddle to the ball

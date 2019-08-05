@@ -643,7 +643,7 @@ static void VL_SDL2VK_SetupSwapchain(int width, int height)
 	if (result != VK_SUCCESS)
 		Quit("Couldn't get window surface capabilities");
 
-	if (surfaceCapabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT == 0)
+	if ((surfaceCapabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT) == 0)
 		Quit("Vulkan swapchain does not support VK_IMAGE_USAGE_TRANSFER_DST_BIT");
 
 	uint32_t surfaceFormatCount;
@@ -1982,13 +1982,13 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY, bool singleBu
 
 static int VL_SDL2VK_GetActiveBufferId(void *surface)
 {
-	(void *)surface;
+	(void)surface;
 	return 0;
 }
 
 static int VL_SDL2VK_GetNumBuffers(void *surface)
 {
-	(void *)surface;
+	(void)surface;
 	return 1;
 }
 

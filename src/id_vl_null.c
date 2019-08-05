@@ -191,13 +191,13 @@ static void VL_NULL_BitInvBlitToSurface(void *src, void *dst_surface, int x, int
 
 static int VL_NULL_GetActiveBufferId(void *surface)
 {
-	(void *)surface;
+	(void)surface;
 	return 0;
 }
 
 static int VL_NULL_GetNumBuffers(void *surface)
 {
-	(void *)surface;
+	(void)surface;
 	return 1;
 }
 
@@ -229,7 +229,7 @@ static void VL_NULL_ScrollSurface(void *surface, int x, int y)
 	VL_NULL_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
 }
 
-static void VL_NULL_Present(void *surface, int scrlX, int scrlY)
+static void VL_NULL_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
 {
 }
 

@@ -73,7 +73,7 @@ void CK4_SmirkySearch(CK_object *obj)
 		for (int x = obj->clipRects.tileX1; x < obj->clipRects.tileX2 + 1; x++)
 		{
 			int mf = TI_ForeMisc(CA_TileAtPos(x, y, 1)) & 0x7F;
-			if (mf == MF_Centilife || mf >= MF_Points100 && mf <= MF_Stunner)
+			if (mf == MF_Centilife || (mf >= MF_Points100 && mf <= MF_Stunner))
 			{
 				obj->velX = 0;
 				obj->velY = -48;
@@ -165,7 +165,7 @@ void CK4_SmirkyCheckTiles(CK_object *obj)
 		for (int x = obj->clipRects.tileX1; x <= obj->clipRects.tileX2; x++)
 		{
 			int mf = TI_ForeMisc(CA_TileAtPos(x, y, 1)) & 0x7F;
-			if (mf == MF_Centilife || mf >= MF_Points100 && mf <= MF_Stunner)
+			if (mf == MF_Centilife || (mf >= MF_Points100 && mf <= MF_Stunner))
 			{
 				static uint16_t emptyTile = 0; // actually this is the same address in memory as the
 				// lifewater drop emptytile... suggesting that it's a global var

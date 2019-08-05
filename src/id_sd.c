@@ -99,7 +99,7 @@ int32_t sqHackTime;
 /******************************************************************
 Timing subsection.
 Originally SDL_t0Service is responsible for incrementing TimeCount.
-/*****************************************************************/
+*****************************************************************/
 
 // PRIVATE variables (in this source port)
 static uint32_t TimeCount = 0;    // Kind of same as Wolf3D's TimeCount from ID_SD.C
@@ -493,6 +493,8 @@ void SDL_t0Service(void)
 		{
 			switch (SoundMode)
 			{
+			case sdm_Off:
+				break;
 			case sdm_PC:
 				SDL_PCService();
 				break;
@@ -511,6 +513,8 @@ void SDL_t0Service(void)
 		}
 		switch (SoundMode)
 		{
+		case sdm_Off:
+			break;
 		case sdm_PC:
 			SDL_PCService();
 			break;
@@ -525,6 +529,8 @@ void SDL_ShutDevice(void)
 {
 	switch (SoundMode)
 	{
+	case sdm_Off:
+		break;
 	case sdm_PC:
 		SDL_ShutPC();
 		break;
@@ -691,6 +697,9 @@ void SD_Default(bool gotit, SDMode sd, SMMode sm)
 	{
 		switch (sd)
 		{
+		case sdm_Off:
+		case sdm_PC:
+			break;
 		case sdm_AdLib:
 			gotsd = AdLibPresent;
 			break;
@@ -710,7 +719,9 @@ void SD_Default(bool gotit, SDMode sd, SMMode sm)
 	{
 		switch (sm)
 		{
-		case sdm_AdLib:
+		case smm_Off:
+			break;
+		case smm_AdLib:
 			gotsm = AdLibPresent;
 			break;
 		}

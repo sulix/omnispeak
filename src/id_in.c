@@ -301,9 +301,6 @@ void IN_WaitForButtonPress()
 		{
 			in_keyStates[in_lastKeyScanned] = 0;
 
-			if (in_lastKeyScanned == in_lastKeyScanned)
-				in_lastKeyScanned = 0;
-
 			in_lastKeyScanned = 0;
 			return;
 		}

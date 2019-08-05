@@ -116,6 +116,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		else if (b->type == CT4_CouncilMember)
 		{
 			if (a->topTI)
+			{
 				if (ca_mapOn == 14) // Janitor level
 				{
 					CK4_ShowJanitorMessage();
@@ -127,6 +128,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 					SD_PlaySound(SOUND_COUNCILSAVE);
 					ck_gameState.levelState = LS_CouncilRescued;
 				}
+			}
 		}
 		else if (b->type == CT4_Bounder)
 		{

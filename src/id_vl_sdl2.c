@@ -335,13 +335,13 @@ static void VL_SDL2_Present(void *surface, int scrlX, int scrlY, bool singleBuff
 
 static int VL_SDL2_GetActiveBufferId(void *surface)
 {
-	(void *)surface;
+	(void)surface;
 	return 0;
 }
 
 static int VL_SDL2_GetNumBuffers(void *surface)
 {
-	(void *)surface;
+	(void)surface;
 	return 1;
 }
 

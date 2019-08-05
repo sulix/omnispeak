@@ -301,13 +301,13 @@ static void VL_SDL12_Present(void *surface, int scrlX, int scrlY, bool singleBuf
 
 static int VL_SDL12_GetActiveBufferId(void *surface)
 {
-	(void *)surface;
+	(void)surface;
 	return 0;
 }
 
 static int VL_SDL12_GetNumBuffers(void *surface)
 {
-	(void *)surface;
+	(void)surface;
 	return 1;
 }
 
