@@ -43,6 +43,8 @@ This Makefile supports the following options:
   BUILDASCPP    whether to build as C++ code (0/1)
                   - defaults to 1 for Linux/Unix, 0 otherwise
 
+  CLANG         whether to use GCC (0; default) or Clang (1) compilers
+
   LOCAL_SDL     whether to download and use a local copy of the SDL
                 development headers (0/1; only available for
                 PLATFORM=win32/64, and set as default there)
@@ -53,7 +55,7 @@ This Makefile supports the following options:
   SDL1_VERSION  version of SDL 1.x to download and use (if LOCAL_SDL=1)
   SDL2_VERSION  version of SDL 2.x to download and use (if LOCAL_SDL=1)
 
-  CXX		explicit path of the compiler
+  COMPILER	explicit path of the compiler (overrides CLANG option)
   CXXFLAGS      additional options for the compiler
   LDFLAGS       additional options for the linker
   SYSFLAGS      additional options for both the compiler and the linker
@@ -124,11 +126,13 @@ RENDERER ?= $(DEFAULT_RENDERER)
 BUILDASCPP ?= $(DEFAULT_BUILDASCPP)
 STATIC ?= $(DEFAULT_STATIC)
 DEBUG ?= 0
+VANILLA ?= 0
 LOCAL_SDL ?= $(DEFAULT_LOCAL_SDL)
 KEEN6VER ?= keen6e15
 SDL1_VERSION ?= 1.2.15
 SDL2_VERSION ?= 2.0.10
 SYSFLAGS ?=
+CXX ?=
 CXXFLAGS ?=
 LDFLAGS ?=
 LIBS ?=
@@ -156,14 +160,31 @@ ifneq ($(TOOLSET),)
 	endif
 endif
 
-# set CXX to C or C++ compiler
-ifndef CXX
+# pick GCC or Clang
+ifeq ($(CLANG), 1)
+	CXX = clang++
+	CC = clang
 	ifeq ($(BUILDASCPP), 1)
-		CXX = $(BINPREFIX)g++
-	else
-		CXX = $(BINPREFIX)gcc
-		CXXFLAGS += -std=c99
+		# suppress "treating C input as C++ [...] is deprecated" warning
+		CXXFLAGS += -Wno-deprecated
 	endif
+else
+	CXX = g++
+	CC = gcc
+endif
+
+# set C or C++ compiler
+ifneq ($(COMPILER),)
+	CXX := $(COMPILER)
+else
+	ifeq ($(BUILDASCPP), 1)
+		CXX := $(BINPREFIX)$(CXX)
+	else
+		CXX := $(BINPREFIX)$(CC)
+	endif
+endif
+ifneq ($(BUILDASCPP), 1)
+	CXXFLAGS += -std=c99
 endif
 
 # set flags for debug info
@@ -282,6 +303,7 @@ dumpconfig:
 	@echo KEEN6VER = $(KEEN6VER)
 	@echo SDL_VERSION = $(SDL_VERSION)
 	@echo
+	@echo BINPREFIX = $(BINPREFIX)
 	@echo CXX = $(CXX)
 	@echo SYSFLAGS = $(SYSFLAGS)
 	@echo CXXFLAGS = $(CXXFLAGS)
