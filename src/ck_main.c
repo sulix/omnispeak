@@ -759,6 +759,7 @@ int main(int argc, char *argv[])
 	if (ck_dumperFile)
 		fclose(ck_dumperFile);
 #endif
+	return 0;
 }
 
 #endif // CK_RUN_ACTION_VALIDATOR

@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <stdlib.h>
+#include <string.h>
 #include "id_us.h"
 #include "id_vl.h"
 #include "id_vl_private.h"
