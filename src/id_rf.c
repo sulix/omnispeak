@@ -141,7 +141,7 @@ RF_OnscreenAnimTile *rf_firstOnscreenAnimTile, *rf_freeOnscreenAnimTile;
 
 // Block dirty state
 #define RF_BUFFER_SIZE (RF_BUFFER_WIDTH_TILES * RF_BUFFER_HEIGHT_TILES)
-uint8_t rf_dirtyBlocks[RF_MAX_BUFFERS * RF_BUFFER_SIZE];
+uint8_t rf_dirtyBlocks[RF_MAX_BUFFERS][RF_BUFFER_SIZE];
 
 // An offset added to the dirty block buffer to account for scrolling.
 int rf_dirtyBufferOffset = 0;
@@ -162,9 +162,9 @@ void RFL_MarkBlockDirty(int x, int y, int val, int page)
 		if (rf_dirtyBufferOffset < 0)
 			rf_dirtyBufferOffset += RF_BUFFER_SIZE;
 		size_t offset = ((y * RF_BUFFER_WIDTH_TILES + x) +
-					(page * RF_BUFFER_SIZE) + rf_dirtyBufferOffset) %
-			(RF_MAX_BUFFERS * RF_BUFFER_SIZE);
-		rf_dirtyBlocks[offset] = val;
+					rf_dirtyBufferOffset) %
+			(RF_BUFFER_SIZE);
+		rf_dirtyBlocks[page][offset] = val;
 	}
 }
 
@@ -178,9 +178,8 @@ uint8_t RFL_IsBlockDirty(int x, int y, int page)
 	if (rf_dirtyBufferOffset < 0)
 		rf_dirtyBufferOffset += RF_BUFFER_SIZE;
 	size_t offset = ((y * RF_BUFFER_WIDTH_TILES + x) +
-				(page * RF_BUFFER_SIZE) + rf_dirtyBufferOffset) %
-		(RF_MAX_BUFFERS * RF_BUFFER_SIZE);
-	return rf_dirtyBlocks[offset];
+				rf_dirtyBufferOffset) % (RF_BUFFER_SIZE);
+	return rf_dirtyBlocks[page][offset];
 }
 
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical)
@@ -794,7 +793,7 @@ void RFL_RenderForeTiles()
 			int bufferX = stx - scrollXtile;
 			int bufferY = sty - scrollYtile;
 #ifndef ALWAYS_REDRAW
-			if (!RFL_IsBlockDirty(bufferX, bufferY, -1))
+			if (RFL_IsBlockDirty(bufferX, bufferY, -1) != 3)
 				continue;
 #endif
 			if (!tile)
@@ -1104,32 +1103,30 @@ void RF_SmoothScroll(int scrollXdelta, int scrollYdelta)
 	}
 }
 
-void RF_PlaceEraser(int pxX, int pxY, int pxW, int pxH)
+void RF_PlaceEraser(int pxX, int pxY, int pxW, int pxH, int page)
 {
 #ifndef ALWAYS_REDRAW
-	for (int page = 0; page < VL_GetNumBuffers(); ++page)
-	{
-		int arrayBase = RF_MAX_SPRITETABLEENTRIES * page;
-		if (rf_freeSpriteEraserIndex[page] == RF_MAX_SPRITETABLEENTRIES)
-			Quit("Too many sprite erasers.");
-		int newIndex = rf_freeSpriteEraserIndex[page] + arrayBase;
-		rf_spriteErasers[newIndex].pxX = pxX;
-		rf_spriteErasers[newIndex].pxY = pxY;
-		rf_spriteErasers[newIndex].pxW = pxW;
-		rf_spriteErasers[newIndex].pxH = pxH;
-		rf_freeSpriteEraserIndex[page]++;
-	}
+	int arrayBase = RF_MAX_SPRITETABLEENTRIES * page;
+	if (rf_freeSpriteEraserIndex[page] == RF_MAX_SPRITETABLEENTRIES)
+		Quit("Too many sprite erasers.");
+	int newIndex = rf_freeSpriteEraserIndex[page] + arrayBase;
+	rf_spriteErasers[newIndex].pxX = pxX;
+	rf_spriteErasers[newIndex].pxY = pxY;
+	rf_spriteErasers[newIndex].pxW = pxW;
+	rf_spriteErasers[newIndex].pxH = pxH;
+	rf_freeSpriteEraserIndex[page]++;
 #endif
 }
 
 void RF_EraseRegion(int pxX, int pxY, int pxW, int pxH)
 {
-	int pixelX = pxX - RF_UnitToTile(rf_scrollXUnit) * 16;
-	int pixelY = pxY - RF_UnitToTile(rf_scrollYUnit) * 16;
-	int tileX1 = MAX(RF_PixelToTile(pixelX), 0);
-	int tileY1 = MAX(RF_PixelToTile(pixelY), 0);
-	int tileX2 = MIN(RF_PixelToTile(pixelX + pxW), RF_BUFFER_WIDTH_TILES - 1);
-	int tileY2 = MIN(RF_PixelToTile(pixelY + pxH), RF_BUFFER_HEIGHT_TILES - 1);
+	for (int page = 0; page < VL_GetNumBuffers(); ++page)
+		RF_PlaceEraser(pxX, pxY, pxW, pxH, page);
+}
+
+int RF_GetLastPage(int page)
+{
+	return (VL_GetActiveBuffer() - page + VL_GetNumBuffers()) % VL_GetNumBuffers();
 }
 
 void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
@@ -1153,7 +1150,13 @@ void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
 #endif
 	int old_sprite_number = (*drawEntry)->chunk - ca_gfxInfoE.offSprites;
 	VH_SpriteTableEntry *oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
-	RF_PlaceEraser((*drawEntry)->x + RF_UnitToPixel(oldSprite->originX), (*drawEntry)->y + RF_UnitToPixel(oldSprite->originY), (*drawEntry)->sw, (*drawEntry)->sh);
+	int shiftMask = ~((8 / oldSprite->shifts) - 1) & ~1;
+	if ((*drawEntry)->updateCount < VL_GetNumBuffers())
+	{
+		if (!(*drawEntry)->updateCount)
+			RF_PlaceEraser(((*drawEntry)->x + RF_UnitToPixel(oldSprite->originX)) & shiftMask, (*drawEntry)->y + RF_UnitToPixel(oldSprite->originY), (*drawEntry)->sw, (*drawEntry)->sh, RF_GetLastPage(0));
+		RF_PlaceEraser(((*drawEntry)->x + RF_UnitToPixel(oldSprite->originX)) & shiftMask, (*drawEntry)->y + RF_UnitToPixel(oldSprite->originY), (*drawEntry)->sw, (*drawEntry)->sh, RF_GetLastPage(1));
+	}
 
 	if ((*drawEntry)->next)
 		(*drawEntry)->next->prevNextPtr = (*drawEntry)->prevNextPtr;
@@ -1172,23 +1175,45 @@ void RFL_ProcessSpriteErasers()
 	{
 		rf_spriteErasers[i].pxX -= RF_UnitToTile(rf_scrollXUnit) * 16;
 		rf_spriteErasers[i].pxY -= RF_UnitToTile(rf_scrollYUnit) * 16;
-		int x = MAX(rf_spriteErasers[i].pxX - 8, 0);
-		int y = MAX(rf_spriteErasers[i].pxY - 8, 0);
-		int x2 = MIN(rf_spriteErasers[i].pxX + rf_spriteErasers[i].pxW + 8, RF_BUFFER_WIDTH_PIXELS - 1);
-		int y2 = MIN(rf_spriteErasers[i].pxY + rf_spriteErasers[i].pxH + 8, RF_BUFFER_HEIGHT_PIXELS - 1);
+
+		if (rf_spriteErasers[i].pxX < 0)
+		{
+			rf_spriteErasers[i].pxW += rf_spriteErasers[i].pxX;
+			rf_spriteErasers[i].pxX = 0;
+		}
+		if (rf_spriteErasers[i].pxY < 0)
+		{
+			rf_spriteErasers[i].pxH += rf_spriteErasers[i].pxY;
+			rf_spriteErasers[i].pxY = 0;
+		}
+		int x2 = rf_spriteErasers[i].pxX + rf_spriteErasers[i].pxW;
+		int y2 = rf_spriteErasers[i].pxY + rf_spriteErasers[i].pxH;
+		if (x2 > RF_BUFFER_WIDTH_PIXELS)
+		{
+			rf_spriteErasers[i].pxW = RF_BUFFER_WIDTH_PIXELS - rf_spriteErasers[i].pxX;
+			x2 = rf_spriteErasers[i].pxX + rf_spriteErasers[i].pxW;
+		}
+		if (y2 > RF_BUFFER_HEIGHT_PIXELS)
+		{
+			rf_spriteErasers[i].pxH = RF_BUFFER_HEIGHT_PIXELS - rf_spriteErasers[i].pxY;
+			y2 = rf_spriteErasers[i].pxY + rf_spriteErasers[i].pxH;
+		}
 
 		// Only process if on-screen.
-		if (x2 < x || y2 < y)
+		if (rf_spriteErasers[i].pxW < 1 || rf_spriteErasers[i].pxH < 1)
 			continue;
 
-		VL_SurfaceToScreen(rf_tileBuffer, x, y, x, y, x2 - x + 1, y2 - y);
+		VL_SurfaceToScreen(rf_tileBuffer,
+				rf_spriteErasers[i].pxX, rf_spriteErasers[i].pxY,
+				rf_spriteErasers[i].pxX, rf_spriteErasers[i].pxY,
+				rf_spriteErasers[i].pxW, rf_spriteErasers[i].pxH);
 
 		// Mark the affected tiles dirty with '2', to force sprites to
 		// redraw.
-		int tileX1 = RF_PixelToTile(x);
-		int tileY1 = RF_PixelToTile(y);
-		int tileX2 = RF_PixelToTile(x2);
-		int tileY2 = RF_PixelToTile(y2);
+		int tileX1 = RF_PixelToTile(rf_spriteErasers[i].pxX);
+		int tileY1 = RF_PixelToTile(rf_spriteErasers[i].pxY);
+		int tileX2 = RF_PixelToTile(rf_spriteErasers[i].pxX + rf_spriteErasers[i].pxW - 1);
+		int tileY2 = RF_PixelToTile(rf_spriteErasers[i].pxY + rf_spriteErasers[i].pxH - 1);
 		for (int ty = tileY1; ty <= tileY2; ++ty)
 		{
 			for (int tx = tileX1; tx <= tileX2; ++tx)
@@ -1217,7 +1242,14 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	{
 		int old_sprite_number = sde->chunk - ca_gfxInfoE.offSprites;
 		VH_SpriteTableEntry *oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
-		RF_PlaceEraser(sde->x + RF_UnitToPixel(oldSprite->originX), sde->y + RF_UnitToPixel(oldSprite->originY), sde->sw, sde->sh);
+		int shiftMask = ~((8 / oldSprite->shifts) - 1) & ~1;
+		
+		if (sde->updateCount < VL_GetNumBuffers())
+		{
+			if (!sde->updateCount)
+				RF_PlaceEraser((sde->x + RF_UnitToPixel(oldSprite->originX)) & shiftMask, sde->y + RF_UnitToPixel(oldSprite->originY), sde->sw, sde->sh, RF_GetLastPage(0));
+			RF_PlaceEraser((sde->x + RF_UnitToPixel(oldSprite->originX)) & shiftMask, sde->y + RF_UnitToPixel(oldSprite->originY), sde->sw, sde->sh, RF_GetLastPage(1));
+		}
 
 		//TODO: Support changing zLayers properly.
 		if (zLayer == sde->zLayer)
@@ -1330,7 +1362,7 @@ void RFL_DrawSpriteList()
 				{
 					for (int x = tileX1; x <= tileX2; ++x)
 					{
-						if (RFL_IsBlockDirty(x, y, -1))
+						if (RFL_IsBlockDirty(x, y, VL_GetActiveBuffer()))
 						{
 							sde->updateCount = 1;
 							goto drawSprite;

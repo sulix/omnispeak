@@ -8,6 +8,8 @@
 #include "id_vl_private.h"
 #include "ck_cross.h"
 
+#define VL_SDL2GL_NUM_BUFFERS 1
+
 // OpenGL 1.0 and 1.1 Function Pointers:
 typedef const GLubyte *(APIENTRYP PFN_ID_GLGETSTRING)(GLenum name);
 PFN_ID_GLGETSTRING id_glGetString = 0;
@@ -186,8 +188,11 @@ typedef struct VL_SDL2GL_Surface
 {
 	VL_SurfaceUsage use;
 	GLuint textureHandle;
+	GLuint textureHandles[VL_SDL2GL_NUM_BUFFERS];
 	int w, h;
+	int activePage;
 	void *data;
+	void *dataPages[VL_SDL2GL_NUM_BUFFERS];
 } VL_SDL2GL_Surface;
 
 const char *pxprog = "#version 110\n"
@@ -302,6 +307,16 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 	}
 }
 
+static void VL_SDL2GL_SetSurfacePage(VL_SDL2GL_Surface *surf, int page)
+{
+	if (surf->use != VL_SurfaceUsage_FrontBuffer)
+		Quit("Tried to set page for a single buffered surface!");
+	
+	surf->activePage = page;
+	surf->data = surf->dataPages[page];
+	surf->textureHandle = surf->textureHandles[page];
+}
+
 static void VL_SDL2GL_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
 static void *VL_SDL2GL_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 {
@@ -309,30 +324,50 @@ static void *VL_SDL2GL_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 	surf->w = w;
 	surf->h = h;
 	surf->textureHandle = 0;
+	surf->use = usage;
+	
 	if (usage == VL_SurfaceUsage_FrontBuffer)
 	{
-		id_glGenTextures(1, &(surf->textureHandle));
-		id_glBindTexture(GL_TEXTURE_2D, surf->textureHandle);
-		id_glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, surf->w, surf->h, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
+		surf->data = malloc(w * h * VL_SDL2GL_NUM_BUFFERS); // 8-bit pal for now
+		id_glGenTextures(VL_SDL2GL_NUM_BUFFERS, surf->textureHandles);
+		for (int i = 0; i < VL_SDL2GL_NUM_BUFFERS; ++i) {
+			id_glBindTexture(GL_TEXTURE_2D, surf->textureHandles[i]);
+			id_glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, surf->w, surf->h, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
+			surf->dataPages[i] = (void*)((uintptr_t)surf->data + i * w * h);
+		}
+		
+		VL_SDL2GL_SetSurfacePage(surf, 0);
 	}
-	surf->data = malloc(w * h); // 8-bit pal for now
+	else
+	{
+		surf->data = malloc(w * h); // 8-bit pal for now
+	}
 	return surf;
 }
 
 static void VL_SDL2GL_DestroySurface(void *surface)
 {
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)surface;
-	if (surf->textureHandle)
-		id_glDeleteTextures(1, &(surf->textureHandle));
-	if (surf->data)
-		free(surf->data);
+	if (surf->use == VL_SurfaceUsage_FrontBuffer)
+	{
+		id_glDeleteTextures(VL_SDL2GL_NUM_BUFFERS, surf->textureHandles);
+		free(surf->dataPages[0]);
+	}
+	else
+	{
+		if (surf->data)
+			free(surf->data);
+	}
 	free(surf);
 }
 
 static long VL_SDL2GL_GetSurfaceMemUse(void *surface)
 {
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)surface;
-	return surf->w * surf->h;
+	if (surf->use == VL_SurfaceUsage_FrontBuffer)
+		return surf->w * surf->h * VL_SDL2GL_NUM_BUFFERS;
+	else
+		return surf->w * surf->h;
 }
 
 static void VL_SDL2GL_GetSurfaceDimensions(void *surface, int *w, int *h)
@@ -512,7 +547,19 @@ static void VL_SDL2GL_ScrollSurface(void *surface, int x, int y)
 		dy = -y;
 		sy = 0;
 	}
-	VL_SDL2GL_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
+	
+	int oldPage = surf->activePage;
+	if (surf->use == VL_SurfaceUsage_FrontBuffer)
+	{
+		for (int i = 0; i < VL_SDL2GL_NUM_BUFFERS; ++i)
+		{
+			VL_SDL2GL_SetSurfacePage(surf, i);
+			VL_SDL2GL_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
+		}
+		VL_SDL2GL_SetSurfacePage(surf, oldPage);
+	}
+	else
+		VL_SDL2GL_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
 }
 
 static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
@@ -628,19 +675,21 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY, bool singleBu
 		id_glDrawArrays(GL_QUADS, 0, 4);
 	}
 
+	if (!singleBuffered && surf->use == VL_SurfaceUsage_FrontBuffer)
+		VL_SDL2GL_SetSurfacePage(surf, (surf->activePage + 1) % VL_SDL2GL_NUM_BUFFERS);
 	SDL_GL_SwapWindow(vl_sdl2gl_window);
 }
 
 static int VL_SDL2GL_GetActiveBufferId(void *surface)
 {
-	(void)surface;
-	return 0;
+	VL_SDL2GL_Surface *srf = (VL_SDL2GL_Surface*)surface;
+	return srf->activePage;
 }
 
 static int VL_SDL2GL_GetNumBuffers(void *surface)
 {
 	(void)surface;
-	return 1;
+	return VL_SDL2GL_NUM_BUFFERS;
 }
 
 void VL_SDL2GL_FlushParams()
