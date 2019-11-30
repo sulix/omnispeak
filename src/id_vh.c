@@ -169,32 +169,36 @@ void VH_DrawPropString(const char *string, int x, int y, int chunk, int colour)
 
 void VHB_DrawTile8(int x, int y, int tile)
 {
-	x += VL_GetScrollX();
+	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
+	
 	if (VH_MarkUpdateBlock(x, y, x + 7, y + 7))
 		VH_DrawTile8(x, y, tile);
 }
 
 void VHB_DrawTile8M(int x, int y, int tile)
 {
-	x += VL_GetScrollX();
+	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
+	
 	if (VH_MarkUpdateBlock(x, y, x + 7, y + 7))
 		VH_DrawTile8M(x, y, tile);
 }
 
 void VHB_DrawTile16(int x, int y, int tile)
 {
-	x += VL_GetScrollX();
+	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
+	
 	if (VH_MarkUpdateBlock(x, y, x + 15, y + 15))
 		VH_DrawTile8(x, y, tile);
 }
 
 void VHB_DrawTile16M(int x, int y, int tile)
 {
-	x += VL_GetScrollX();
+	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
+	
 	if (VH_MarkUpdateBlock(x, y, x + 15, y + 15))
 		VH_DrawTile8M(x, y, tile);
 }
@@ -202,7 +206,7 @@ void VHB_DrawTile16M(int x, int y, int tile)
 void VHB_DrawBitmap(int x, int y, int chunk)
 {
 	int bitmapNumber = chunk - ca_gfxInfoE.offBitmaps;
-	x += VL_GetScrollX();
+	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
 
 	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(bitmapNumber);
@@ -214,7 +218,7 @@ void VHB_DrawBitmap(int x, int y, int chunk)
 void VHB_DrawMaskedBitmap(int x, int y, int chunk)
 {
 	int bitmapNumber = chunk - ca_gfxInfoE.offMasked;
-	x += VL_GetScrollX();
+	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
 
 	VH_BitmapTableEntry *dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
@@ -223,9 +227,31 @@ void VHB_DrawMaskedBitmap(int x, int y, int chunk)
 		VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dim->width * 8, dim->height);
 }
 
+void VHB_DrawSprite(int x, int y, int chunk)
+{
+	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
+	x += VL_GetScrollX() & 8;
+	y += VL_GetScrollY();
+
+	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
+
+	int shiftMask = ~((8 / spr->shifts) - 1) & ~1;
+
+	int realX = x + RF_UnitToPixel(spr->originX) & shiftMask;
+	int realY = y + RF_UnitToPixel(spr->originY);
+	
+	if (VH_MarkUpdateBlock(realX, realY, spr->width * 8, spr->height))
+	{
+		VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "Sprite", true),
+				realX, realY,
+				spr->width * 8, spr->height);
+	}
+}
+
+
 void VHB_Plot(int x, int y, int colour)
 {
-	x += VL_GetScrollX();
+	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
 	if (VH_MarkUpdateBlock(x, y, 1, 1))
 		VL_ScreenRect(x, y, 1, 1, colour);
@@ -233,8 +259,8 @@ void VHB_Plot(int x, int y, int colour)
 
 void VHB_HLine(int x1, int x2, int y, int colour)
 {
-	x1 += VL_GetScrollX();
-	x2 += VL_GetScrollX();
+	x1 += VL_GetScrollX() & 8;
+	x2 += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
 	if (VH_MarkUpdateBlock(x1, y, x2 - x1 + 1, 1))
 		VL_ScreenRect(x1, y, x2 - x1 + 1, 1, colour);
@@ -242,7 +268,7 @@ void VHB_HLine(int x1, int x2, int y, int colour)
 
 void VHB_VLine(int y1, int y2, int x, int colour)
 {
-	x += VL_GetScrollX();
+	x += VL_GetScrollX() & 8;
 	y1 += VL_GetScrollY();
 	y2 += VL_GetScrollY();
 	if (VH_MarkUpdateBlock(x, y1, 1, y2 - y1 + 1))
@@ -251,7 +277,7 @@ void VHB_VLine(int y1, int y2, int x, int colour)
 
 void VHB_Bar(int x, int y, int w, int h, int colour)
 {
-	x += VL_GetScrollX();
+	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
 	if (VH_MarkUpdateBlock(x, y, w, h))
 		VL_ScreenRect(x, y, w, h, colour);
@@ -260,7 +286,7 @@ void VHB_Bar(int x, int y, int w, int h, int colour)
 void VHB_DrawPropString(const char *string, int x, int y, int chunk, int colour)
 {
 	uint16_t w, h;
-	x += VL_GetScrollX();
+	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
 	// Keen Dreams just marks from (x,y) to the bottom-right of the buffer.
 	// Wolf3D+ mark based on the width of the string, and to the bottom of the screen.

@@ -23,8 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
-#define STATUS_W 192
-#define STATUS_H 152
+// Status window constants
+#define STATUS_W 192	// Width in pixels
+#define STATUS_H 152	// Height in pixels
+#define STATUS_X 64	// X-coord in pixels (without scroll adjustment)
+#define STATUS_Y 16	// Y-coord in pixels when fully down
+#define STATUS_BOTTOM (STATUS_H + STATUS_Y)	// Bottom of status window
 
 struct CK_object;
 
@@ -65,6 +69,7 @@ void CK_MapCamera(struct CK_object *keen);
 void CK_NormalCamera(struct CK_object *obj);
 
 // Status Window
+extern void *ck_backupSurface;
 extern void *ck_statusSurface;
 void CK_ShowStatusWindow(void);
 

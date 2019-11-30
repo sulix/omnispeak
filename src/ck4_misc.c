@@ -973,7 +973,7 @@ void CK4_ShowPrincessMessage(void)
 
 	// VW_SyncPages();
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x72);
+	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x72);
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
@@ -996,7 +996,7 @@ void CK4_ShowPrincessMessage(void)
 	IN_ClearKeysDown();
 	IN_WaitButton();
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 
@@ -1013,7 +1013,7 @@ void CK4_ShowPrincessMessage(void)
 	IN_ClearKeysDown();
 	IN_WaitButton();
 
-	VH_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x70);
+	VHB_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x70);
 	VL_Present(); // VW_UpdateScreen();
 	// VW_WaitVBL(30);
 
@@ -1038,7 +1038,7 @@ void CK4_ShowJanitorMessage(void)
 	StartMusic(0xFFFF);
 
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
+	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
@@ -1052,7 +1052,7 @@ void CK4_ShowJanitorMessage(void)
 	IN_WaitButton();
 
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
+	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
@@ -1065,7 +1065,7 @@ void CK4_ShowJanitorMessage(void)
 	IN_WaitButton();
 
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint("This had better\n"
@@ -1076,7 +1076,7 @@ void CK4_ShowJanitorMessage(void)
 	IN_WaitButton();
 
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
+	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
@@ -1088,8 +1088,8 @@ void CK4_ShowJanitorMessage(void)
 	IN_WaitButton();
 
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x28, US_GetWindowY() + 0x18, 0x71);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x28, US_GetWindowY() + 0x18, 0x71);
 	VL_Present(); // VW_UpdateScreen();
 	// VW_WaitVBL(30);
 	IN_ClearKeysDown();
@@ -1106,7 +1106,7 @@ void CK4_ShowCantSwimMessage(void)
 	CA_UpLevel();
 	CA_CacheGrChunk(0x6F);
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_CPrint("I can't swim!");
@@ -1125,7 +1125,7 @@ void CK4_ShowWetsuitMessage(void)
 	CA_MarkGrChunk(0x70);
 	CA_CacheMarks(0);
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint("Cool!  I can breathe\n"
@@ -1135,7 +1135,7 @@ void CK4_ShowWetsuitMessage(void)
 	IN_ClearKeysDown();
 	IN_WaitButton();
 
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), 0x70);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), 0x70);
 	VL_Present(); // VW_UpdateScreen();
 	// VL_WaitVBL(30);
 	IN_ClearKeysDown();
@@ -1186,7 +1186,7 @@ void CK4_ShowCouncilMessage(void)
 	// VW_SyncPages();
 
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 110);
+	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 110);
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
@@ -1214,7 +1214,7 @@ void CK4_ShowCouncilMessage(void)
 	IN_ClearKeysDown();
 	IN_WaitButton();
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 111);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 111);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint(ck4_councilMessages[ck_gameState.ep.ck4.membersRescued]);
@@ -1222,7 +1222,7 @@ void CK4_ShowCouncilMessage(void)
 	// VW_WaitVBL(30);
 	IN_ClearKeysDown();
 	IN_WaitButton();
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), 112);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), 112);
 	VL_Present(); // VW_UpdateScreen();
 	// VW_WaitVBL(30);
 	IN_WaitButton();

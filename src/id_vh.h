@@ -71,6 +71,7 @@ void VHB_DrawTile16(int x, int y, int tile);
 void VHB_DrawTile16M(int x, int y, int tile);
 void VHB_DrawBitmap(int x, int y, int chunk);
 void VHB_DrawMaskedBitmap(int x, int y, int chunk);
+void VHB_DrawSprite(int x, int y, int chunk);
 void VHB_Plot(int x, int y, int colour);
 void VHB_HLine(int x1, int x2, int y, int colour);
 void VHB_VLine(int y1, int y2, int x, int colour);

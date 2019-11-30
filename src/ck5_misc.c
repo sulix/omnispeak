@@ -1343,7 +1343,7 @@ void CK5_FuseMessage()
 	// Draw Keen Talking
 	US_CenterWindow(0x1A, 8);
 	US_SetWindowW(US_GetWindowW() - 0x30);
-	VH_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x5A);
+	VHB_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x5A);
 	US_SetPrintY(US_GetPrintY() + 0xC);
 
 	if (ck_gameState.currentLevel == 0xD)

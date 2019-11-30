@@ -109,7 +109,7 @@ void TimedPicCommand(void)
 	//while ( timeCount+=VL_GetTics(1) < help_delay )
 	//;
 	VL_DelayTics(help_delay);
-	VH_DrawBitmap(help_x & 0xFFF8, help_y, help_pic);
+	VHB_DrawBitmap(help_x & 0xFFF8, help_y, help_pic);
 }
 
 void HandleCommand(void)
@@ -126,7 +126,7 @@ void HandleCommand(void)
 		help_x = ParseNumber();
 		w = ParseNumber();
 		h = ParseNumber();
-		VH_Bar(help_x, help_y, w, h, 4);
+		VHB_Bar(help_x, help_y, w, h, 4);
 		RipToEOL();
 		break;
 
@@ -176,7 +176,7 @@ void HandleCommand(void)
 	case 'G':
 		/* Draw the picture */
 		ParsePicCommand();
-		VH_DrawBitmap(help_x & ~7, help_y, help_pic);
+		VHB_DrawBitmap(help_x & ~7, help_y, help_pic);
 		bmpinfo = VH_GetBitmapTableEntry(help_pic - ca_gfxInfoE.offBitmaps);
 		w = bmpinfo->width * 8;
 		h = bmpinfo->height;
@@ -285,7 +285,7 @@ void HandleWord(void)
 
 	/* Display the word */
 	maxx = US_GetPrintX() + w;
-	VH_DrawPropString(buf, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
+	VHB_DrawPropString(buf, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
 	US_SetPrintX(maxx);
 
 	/* Handle spaces between this word and the next */
@@ -309,16 +309,16 @@ void PageLayout(int show_status)
 	VL_SetScrollCoords(0, 0);
 
 	/* Fill the background and draw the border */
-	VH_Bar(0, 0, 320, 200, 4);
+	VHB_Bar(0, 0, 320, 200, 4);
 	if (ck_currentEpisode->ep != EP_CK6)
 	{
-		VH_DrawBitmap(0, 0, PIC_BORDERTOP);     /* Top border */
-		VH_DrawBitmap(0, 8, PIC_BORDERLEFT);    /* Left border */
-		VH_DrawBitmap(312, 8, PIC_BORDERRIGHT); /* Right border */
+		VHB_DrawBitmap(0, 0, PIC_BORDERTOP);     /* Top border */
+		VHB_DrawBitmap(0, 8, PIC_BORDERLEFT);    /* Left border */
+		VHB_DrawBitmap(312, 8, PIC_BORDERRIGHT); /* Right border */
 		if (show_status)
-			VH_DrawBitmap(8, 176, PIC_BORDERBOTTOMSTATUS); /* Bottom status bar */
+			VHB_DrawBitmap(8, 176, PIC_BORDERBOTTOMSTATUS); /* Bottom status bar */
 		else
-			VH_DrawBitmap(8, 192, PIC_BORDERBOTTOM); /* Bottom border */
+			VHB_DrawBitmap(8, 192, PIC_BORDERBOTTOM); /* Bottom border */
 	}
 
 	/* Set the lines' start and end positions so the text stays within the border */
@@ -377,7 +377,7 @@ void PageLayout(int show_status)
 		US_SetPrintColour(8);
 		US_SetPrintY(186);
 		US_SetPrintX(218);
-		VH_DrawPropString(buf, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
+		VHB_DrawPropString(buf, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
 	}
 
 	/* Restore the original print color */
@@ -467,7 +467,7 @@ int ShowHelp(void)
 	//CONTROLLER_STATUS cstatus;
 
 	/* Erase the screen */
-	VH_Bar(0, 0, 320, 200, 4);
+	VHB_Bar(0, 0, 320, 200, 4);
 
 	/* Cache graphics */
 	CA_CacheGrChunk(PIC_HELPMENU);     /* Help menu pic */
@@ -478,11 +478,11 @@ int ShowHelp(void)
 	CA_CacheGrChunk(PIC_BORDERBOTTOM); /* Bottom border */
 
 	/* Draw the border and the main menu pic */
-	VH_DrawBitmap(0, 0, PIC_BORDERTOP);      /* Top border */
-	VH_DrawBitmap(0, 8, PIC_BORDERLEFT);     /* Left border */
-	VH_DrawBitmap(312, 8, PIC_BORDERRIGHT);  /* Right border */
-	VH_DrawBitmap(8, 192, PIC_BORDERBOTTOM); /* Bottom border */
-	VH_DrawBitmap(96, 8, PIC_HELPMENU);      /* Menu picture */
+	VHB_DrawBitmap(0, 0, PIC_BORDERTOP);      /* Top border */
+	VHB_DrawBitmap(0, 8, PIC_BORDERLEFT);     /* Left border */
+	VHB_DrawBitmap(312, 8, PIC_BORDERRIGHT);  /* Right border */
+	VHB_DrawBitmap(8, 192, PIC_BORDERBOTTOM); /* Bottom border */
+	VHB_DrawBitmap(96, 8, PIC_HELPMENU);      /* Menu picture */
 
 	ymove = 0;
 	IN_ClearKeysDown();
@@ -497,12 +497,12 @@ int ShowHelp(void)
 			help_topic = 4;
 
 		/* Draw the pointer */
-		VH_DrawBitmap(48, 48 + help_topic * 24, PIC_HELPPOINTER);
+		VHB_DrawBitmap(48, 48 + help_topic * 24, PIC_HELPPOINTER);
 		VL_SetScrollCoords(0, 0);
 		VL_Present(); //update_screen();
 
 		/* Erase the pointer */
-		VH_Bar(48, 48 + help_topic * 24, 39, 24, 4);
+		VHB_Bar(48, 48 + help_topic * 24, 39, 24, 4);
 
 		/* Check for input */
 		IN_ReadControls(0, &cinfo);
@@ -568,6 +568,7 @@ AZ:
 	sub_409();
 	uncache_all_graphics();
 #endif
+	VL_SetScrollCoords(0, 0);
 	VL_ClearScreen(4);
 #if 0
 	sub_472();
@@ -713,14 +714,14 @@ void help_endgame(void)
 		while (!advancePage)
 		{
 			/* Draw the dim arrow and wait a short time */
-			VH_DrawBitmap(0x12A & ~3, 0xB8, PIC_ARROWDIM);
+			VHB_DrawBitmap(0x12A & ~3, 0xB8, PIC_ARROWDIM);
 			if (IN_UserInput(70, false))
 			{
 				advancePage = true;
 				break;
 			}
 			/* Draw the bright arrow and wait a short time */
-			VH_DrawBitmap(0x12A & ~3, 0xB8, PIC_ARROWBRIGHT);
+			VHB_DrawBitmap(0x12A & ~3, 0xB8, PIC_ARROWBRIGHT);
 			if (IN_UserInput(70, false))
 			{
 				advancePage = true;

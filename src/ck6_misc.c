@@ -1187,7 +1187,7 @@ void CK6_ShowGetSandwich()
 	CA_CacheGrChunk(0x23);
 
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint("This is the second\n"
@@ -1210,7 +1210,7 @@ void CK6_ShowGetRope()
 	CA_CacheGrChunk(0x23);
 
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint("Wow! A rope and\n"
@@ -1233,7 +1233,7 @@ void CK6_ShowGetPasscard()
 	CA_CacheGrChunk(0x23);
 
 	US_CenterWindow(26, 8);
-	VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 4);
 	US_CPrint("What's this? Cool!\n"

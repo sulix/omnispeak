@@ -24,8 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Always-enabled config options
 // =================================
 
-// Proper dirty-rectangle drawing is not working yet. Disable it for now.
-#define ALWAYS_REDRAW
+// We now support dirty-rectangle drawing, so there's no need to always
+// redraw the whole screen on each frame. You can enable this, though, if you
+// prefer (e.g., to have something to compare the dirty-rectangle drawing
+// against.)
+// (NOTE: You'll need to enable this on double-buffered backends for accuracy
+// at the moment, as VL_SyncPages() isn't implemented. The performance hit on
+// DOS isn't really worth it, though.)
+//#define ALWAYS_REDRAW
 
 // =================================
 // Options for DEBUG builds only.

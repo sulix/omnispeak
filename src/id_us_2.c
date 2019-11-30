@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  * NOTE: The original Keen game used a callback to handle string printing
  * and measurement, presumably so that printing routines could be swapped
- * on the fly.  Here, we are just calling VH_DrawPropString and VH_MeasurePropString
+ * on the fly.  Here, we are just calling VHB_DrawPropString and VH_MeasurePropString
  * directly.
  */
 
@@ -147,7 +147,7 @@ void USL_DrawCardItemIcon(US_CardItem *item)
 		}
 	}
 
-	VH_DrawTile8(item->x, item->y, gfxChunk);
+	VHB_DrawTile8(item->x, item->y, gfxChunk);
 }
 
 void USL_DrawCardItem(US_CardItem *item)
@@ -157,7 +157,7 @@ void USL_DrawCardItem(US_CardItem *item)
 		return;
 
 	// Gray out the area underneath the text
-	VH_Bar(75, item->y, 159, 8, 8);
+	VHB_Bar(75, item->y, 159, 8, 8);
 
 	USL_DrawCardItemIcon(item);
 
@@ -166,7 +166,7 @@ void USL_DrawCardItem(US_CardItem *item)
 	else
 		US_SetPrintColour(2);
 
-	VH_DrawPropString(item->caption, item->x + 8, item->y + 1, 1, US_GetPrintColour());
+	VHB_DrawPropString(item->caption, item->x + 8, item->y + 1, 1, US_GetPrintColour());
 
 	US_SetPrintColour(15);
 }
@@ -180,19 +180,19 @@ void USL_DrawMenuFooter(void)
 	US_SetPrintColour(10);
 
 	/* "Arrows move" */
-	VH_DrawPropString(footer_str[2], 78, 135, 1, US_GetPrintColour());
+	VHB_DrawPropString(footer_str[2], 78, 135, 1, US_GetPrintColour());
 
 	/* "Enter selects" */
 	VH_MeasurePropString(footer_str[1], &w, &h, 1);
-	VH_DrawPropString(footer_str[1], 230 - w, 135, 1, US_GetPrintColour());
+	VHB_DrawPropString(footer_str[1], 230 - w, 135, 1, US_GetPrintColour());
 
 	/* "Esc to quit/back out" */
 	VH_MeasurePropString(footer_str[0], &w, &h, 1);
-	VH_DrawPropString(footer_str[0], 74 + ((160 - w) / 2), 135 + h + 1, 1, US_GetPrintColour());
+	VHB_DrawPropString(footer_str[0], 74 + ((160 - w) / 2), 135 + h + 1, 1, US_GetPrintColour());
 
 	US_SetPrintColour(0);
 
-	VH_HLine(77, 231, 133, 10);
+	VHB_HLine(77, 231, 133, 10);
 }
 
 void USL_DrawCard()
@@ -204,8 +204,8 @@ void USL_DrawCard()
 	// Draw the header (if any))
 	if (us_currentCard->gfxChunk)
 	{
-		VH_HLine(77, 231, 55, 10);
-		VH_DrawBitmap(80, 48, *us_currentCard->gfxChunk);
+		VHB_HLine(77, 231, 55, 10);
+		VHB_DrawBitmap(80, 48, *us_currentCard->gfxChunk);
 	}
 
 	// Draw the Footer
@@ -244,7 +244,7 @@ void US_DrawCards()
 	// Draw the watch screen and the active card
 	if (us_currentCard->items || us_currentCard->gfxChunk)
 	{
-		VH_DrawBitmap(0, 0, PIC_WRISTWATCH);
+		VHB_DrawBitmap(0, 0, PIC_WRISTWATCH);
 		USL_DrawCard();
 	}
 
@@ -254,20 +254,20 @@ void US_DrawCards()
 
 void USL_DialogSetup(uint16_t w, uint16_t h, uint16_t *x, uint16_t *y)
 {
-	VH_DrawMaskedBitmap(74, 48, MPIC_WRISTWATCHSCREEN);
+	VHB_DrawMaskedBitmap(74, 48, MPIC_WRISTWATCHSCREEN);
 
 	/* Calculate the position */
 	*x = 74 + (160 - w) / 2;
 	*y = 48 + (102 - h) / 2;
 
 	/* Fill the background */
-	VH_Bar(*x, *y, w + 1, h + 1, 8);
+	VHB_Bar(*x, *y, w + 1, h + 1, 8);
 
 	/* Draw the border */
-	VH_HLine(*x - 1, *x + w + 1, *y - 1, 10);
-	VH_HLine(*x - 1, *x + w + 1, *y + h + 1, 10);
-	VH_VLine(*y - 1, *y + h + 1, *x - 1, 10);
-	VH_VLine(*y - 1, *y + h + 1, *x + w + 1, 10);
+	VHB_HLine(*x - 1, *x + w + 1, *y - 1, 10);
+	VHB_HLine(*x - 1, *x + w + 1, *y + h + 1, 10);
+	VHB_VLine(*y - 1, *y + h + 1, *x - 1, 10);
+	VHB_VLine(*y - 1, *y + h + 1, *x + w + 1, 10);
 }
 
 void USL_LoadSaveMessage(const char *s1, const char *s2)
@@ -290,11 +290,11 @@ void USL_LoadSaveMessage(const char *s1, const char *s2)
 
 	print_y = y + 2;
 	print_x = x + (window_w - w1) / 2;
-	VH_DrawPropString(s1, print_x, print_y, 1, US_GetPrintColour());
+	VHB_DrawPropString(s1, print_x, print_y, 1, US_GetPrintColour());
 
 	print_y += h;
 	print_x = x + (window_w - w2) / 2;
-	VH_DrawPropString(buf, print_x, print_y, 1, US_GetPrintColour());
+	VHB_DrawPropString(buf, print_x, print_y, 1, US_GetPrintColour());
 
 	// VW_UpdateScreen();
 	VL_Present();
@@ -328,23 +328,23 @@ int USL_CtlDialog(const char *s1, const char *s2, const char *s3)
 	US_SetPrintColour(2);
 	print_x = x + (window_w - w1) / 2;
 	print_y = y + sh + 1;
-	VH_DrawPropString(s1, print_x, print_y, 1, US_GetPrintColour());
+	VHB_DrawPropString(s1, print_x, print_y, 1, US_GetPrintColour());
 
 	print_y += (sh * 2) - 1;
-	VH_HLine(x + 3, x + window_w - 3, print_y, 10);
+	VHB_HLine(x + 3, x + window_w - 3, print_y, 10);
 
 	/* Print the OK prompt */
 	print_y += 2;
 	US_SetPrintColour(10);
 	print_x = x + (window_w - w2) / 2;
-	VH_DrawPropString(s2, print_x, print_y, 1, US_GetPrintColour());
+	VHB_DrawPropString(s2, print_x, print_y, 1, US_GetPrintColour());
 
 	/* Print the third string ( if any ) */
 	print_y += sh;
 	if (s3)
 	{
 		print_x = x + (window_w - w3) / 2;
-		VH_DrawPropString(s3, print_x, print_y, 1, US_GetPrintColour());
+		VHB_DrawPropString(s3, print_x, print_y, 1, US_GetPrintColour());
 	}
 
 	// VW_UpdateScreen();

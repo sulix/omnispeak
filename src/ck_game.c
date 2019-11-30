@@ -685,7 +685,7 @@ void CK_BeginCacheBox(const char *title, int numChunks)
 	US_CenterWindow(26, 8);
 
 	if (ca_graphChunks[PIC_COUNTDOWN5])
-		VH_DrawBitmap(US_GetWindowX(), US_GetWindowY(), PIC_COUNTDOWN5);
+		VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), PIC_COUNTDOWN5);
 	else
 		ck_cacheCountdownNum = 5;
 
@@ -708,7 +708,7 @@ void CK_BeginCacheBox(const char *title, int numChunks)
 		if (ca_graphChunks[PIC_COUNTDOWN0])
 		{
 
-			VH_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN0);
+			VHB_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN0);
 		}
 
 		VL_Present();
@@ -724,7 +724,7 @@ void CK_UpdateCacheBox()
 
 		ck_cacheBoxChunkCounter = ck_cacheBoxChunksPerPic;
 		if (ca_graphChunks[PIC_COUNTDOWN4 + ck_cacheCountdownNum])
-			VH_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN4 + ck_cacheCountdownNum);
+			VHB_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN4 + ck_cacheCountdownNum);
 		VL_Present();
 		// Because loading is VERY fast on omnispeak, add artificial delay
 		VL_DelayTics(10);
@@ -792,25 +792,25 @@ bool CK_TryAgainMenu()
 				clr = 1;
 
 			/* And draw the selection box */
-			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y, clr);
-			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 1, clr);
-			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 12, clr);
-			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 13, clr);
-			VH_VLine(y + 1, y + 11, US_GetWindowX() + 4, clr);
-			VH_VLine(y + 1, y + 11, US_GetWindowX() + 5, clr);
-			VH_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 4, clr);
-			VH_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 5, clr);
+			VHB_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y, clr);
+			VHB_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 1, clr);
+			VHB_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 12, clr);
+			VHB_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 13, clr);
+			VHB_VLine(y + 1, y + 11, US_GetWindowX() + 4, clr);
+			VHB_VLine(y + 1, y + 11, US_GetWindowX() + 5, clr);
+			VHB_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 4, clr);
+			VHB_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 5, clr);
 			VL_Present();
 
 			/* Erase the box for next time */
-			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y, 15);
-			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 1, 15);
-			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 12, 15);
-			VH_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 13, 15);
-			VH_VLine(y + 1, y + 11, US_GetWindowX() + 4, 15);
-			VH_VLine(y + 1, y + 11, US_GetWindowX() + 5, 15);
-			VH_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 4, 15);
-			VH_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 5, 15);
+			VHB_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y, 15);
+			VHB_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 1, 15);
+			VHB_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 12, 15);
+			VHB_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y + 13, 15);
+			VHB_VLine(y + 1, y + 11, US_GetWindowX() + 4, 15);
+			VHB_VLine(y + 1, y + 11, US_GetWindowX() + 5, 15);
+			VHB_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 4, 15);
+			VHB_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 5, 15);
 
 			/* If they press Esc, they want to go back to the Map */
 			if (IN_GetLastScan() == IN_SC_Escape)

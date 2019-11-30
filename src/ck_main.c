@@ -263,6 +263,7 @@ void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h)
 void CK_ShutdownID(void)
 {
 	//TODO: Some managers don't have shutdown implemented yet
+	VL_DestroySurface(ck_backupSurface);
 	VL_DestroySurface(ck_statusSurface);
 	US_Shutdown();
 	SD_Shutdown();
@@ -351,7 +352,8 @@ void CK_InitGame()
 	VL_Present();
 
 	// Create a surface for the dropdown menu
-	ck_statusSurface = VL_CreateSurface(STATUS_W + 64, STATUS_H + 16);
+	ck_statusSurface = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, STATUS_H + 16 + 16);
+	ck_backupSurface = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS);
 }
 
 /*

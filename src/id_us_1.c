@@ -114,7 +114,7 @@ void US_Print(const char *str)
 		// TODO: Should us_printFont and us_printColour
 		// be passed as arguments or not?
 		VH_MeasurePropString(strbuf, &w, &h, us_printFont);
-		VH_DrawPropString(strbuf, us_printX, us_printY, us_printFont, us_printColour);
+		VHB_DrawPropString(strbuf, us_printX, us_printY, us_printFont, us_printColour);
 
 		if (ch)
 		{
@@ -149,7 +149,7 @@ void USL_PrintInCenter(const char *str, uint16_t x1, uint16_t y1, uint16_t x2, u
 	rh = y2 - y1;
 	px = x1 + (rw - w) / 2;
 	py = y1 + (rh - h) / 2;
-	VH_DrawPropString(str, px, py, us_printFont, us_printColour);
+	VHB_DrawPropString(str, px, py, us_printFont, us_printColour);
 }
 
 void US_PrintCentered(const char *str)
@@ -165,7 +165,7 @@ void US_CPrintLine(const char *str)
 	if (w <= us_windowW)
 	{
 		int x = us_windowX + ((us_windowW - w) / 2);
-		VH_DrawPropString(str, x, us_printY, us_printFont, us_printColour);
+		VHB_DrawPropString(str, x, us_printY, us_printFont, us_printColour);
 		us_printY += h;
 	}
 	else
@@ -249,7 +249,7 @@ void US_CPrintF(const char *str, ...)
 
 void US_ClearWindow()
 {
-	VL_ScreenRect(us_windowX, us_windowY, us_windowW, us_windowH, 15);
+	VHB_Bar(us_windowX, us_windowY, us_windowW, us_windowH, 15);
 	us_printX = us_windowX;
 	us_printY = us_windowY;
 }
@@ -273,21 +273,21 @@ void US_DrawWindow(int x, int y, int w, int h)
 
 	US_ClearWindow();
 
-	VH_DrawTile8M(borderX, borderY, 0);			//Top Left Corner
-	VH_DrawTile8M(borderX, borderY + borderH, 6);		//Bottom Left Corner
-	VH_DrawTile8M(borderX + borderW, borderY, 2);		//Top Right Corner
-	VH_DrawTile8M(borderX + borderW, borderY + borderH, 8); //Bottom Right Corner
+	VHB_DrawTile8M(borderX, borderY, 0);			//Top Left Corner
+	VHB_DrawTile8M(borderX, borderY + borderH, 6);		//Bottom Left Corner
+	VHB_DrawTile8M(borderX + borderW, borderY, 2);		//Top Right Corner
+	VHB_DrawTile8M(borderX + borderW, borderY + borderH, 8); //Bottom Right Corner
 	// Draw Horizontal sides
 	for (int i = borderX + 8; i <= borderX + borderW - 8; i += 8)
 	{
-		VH_DrawTile8M(i, borderY, 1);		//Top row
-		VH_DrawTile8M(i, borderY + borderH, 7); //Bottom Row
+		VHB_DrawTile8M(i, borderY, 1);		//Top row
+		VHB_DrawTile8M(i, borderY + borderH, 7); //Bottom Row
 	}
 	//Draw Vertical sides
 	for (int i = borderY + 8; i <= borderY + borderH - 8; i += 8)
 	{
-		VH_DrawTile8M(borderX, i, 3);		//Left col
-		VH_DrawTile8M(borderX + borderW, i, 5); //Right col
+		VHB_DrawTile8M(borderX, i, 3);		//Left col
+		VHB_DrawTile8M(borderX + borderW, i, 5); //Right col
 	}
 }
 
@@ -343,7 +343,7 @@ static void USL_XORICursor(uint16_t x, uint16_t y, char *s, uint16_t cursor)
 	US_SetPrintX(x + w - 1);
 	US_SetPrintY(y);
 
-	VH_DrawPropString(cursorStr, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
+	VHB_DrawPropString(cursorStr, US_GetPrintX(), US_GetPrintY(), US_GetPrintFont(), US_GetPrintColour());
 #if 0
 
 	if (status^=true)
@@ -501,7 +501,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 			 */
 			//temp = us_printColour;
 			//us_printColour = us_backColour;
-			VH_DrawPropString(olds, x, y, us_printFont, us_printColour);
+			VHB_DrawPropString(olds, x, y, us_printFont, us_printColour);
 			//us_printColour = temp;
 			strcpy(olds, s);
 
@@ -509,7 +509,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 			px = x;
 			py = y;
 			 */
-			VH_DrawPropString(s, x, y, us_printFont, us_printColour);
+			VHB_DrawPropString(s, x, y, us_printFont, us_printColour);
 
 			redraw = false;
 		}
@@ -542,7 +542,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 		px = x;
 		py = y;
 		*/
-		VH_DrawPropString(olds, x, y, us_printFont, us_printColour);
+		VHB_DrawPropString(olds, x, y, us_printFont, us_printColour);
 	}
 
 	//VW_UpdateScreen();
