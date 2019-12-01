@@ -1484,7 +1484,7 @@ void CK_DrawStatusWindow(void)
 		VHB_Bar(79, 95, 66, 10, 0);
 		for (int i = 0; i < ck_gameState.ep.ck4.membersRescued; i++)
 		{
-			VH_DrawTile8(80 + 8 * i, 96, 40);
+			VHB_DrawTile8(80 + 8 * i, 96, 40);
 		}
 		break;
 
@@ -1495,7 +1495,7 @@ void CK_DrawStatusWindow(void)
 
 		VHB_Bar(135, 90, 10, 10, 0);
 		if (ck_gameState.ep.ck5.securityCard)
-			VH_DrawTile8(136, 91, 40);
+			VHB_DrawTile8(136, 91, 40);
 		break;
 
 	case EP_CK6:
