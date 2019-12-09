@@ -78,12 +78,15 @@ extern ca_gfxinfo ca_gfxInfoE;
 
 extern mm_ptr_t ca_graphChunks[CA_MAX_GRAPH_CHUNKS];
 
-mm_ptr_t CA_GetGrChunk(int base, int index, const char* chunkType, bool required);
+mm_ptr_t CA_GetGrChunk(int base, int index, const char *chunkType, bool required);
 void CA_CacheGrChunk(int chunk);
 void CA_ClearMarks(void);
 void CA_SetGrPurge(void);
 void CA_MarkGrChunk(int chunk);
 void CA_LockGrChunk(int chunk);
+
+// For the score box.
+void CAL_ShiftSprite(uint8_t *srcImage, uint8_t *dstImage, int width, int height, int pxShift);
 
 void CA_CacheMarks(const char *msg);
 void CA_UpLevel(void);

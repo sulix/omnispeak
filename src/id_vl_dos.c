@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_vl.h"
 #include "id_vl_private.h"
+#include "ck_cross.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -46,6 +47,8 @@ static int vl_dos_screenHeight;
 #define EGA_CRTC_OFFSET 0x13
 #define EGA_CRTC_START_ADDR_HIGH 0x0C
 #define EGA_CRTC_START_ADDR_LOW 0x0D
+
+#define VL_DOS_MAXSPRSHIFTS 4
 
 typedef struct VL_DOS_Surface
 {
@@ -288,7 +291,7 @@ static void VL_DOS_SurfaceToSurface(void *src_surface, void *dst_surface, int x,
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)src_surface;
 	VL_DOS_Surface *dest = (VL_DOS_Surface *)dst_surface;
-	int dst_byte_x_offset = x / 8;  // We automatically round coordinates to multiples of 8 (byte boundaries)
+	int dst_byte_x_offset = x / 8;	// We automatically round coordinates to multiples of 8 (byte boundaries)
 	int src_byte_x_offset = sx / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
@@ -309,7 +312,7 @@ static void VL_DOS_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, in
 	bool directionX = sx > x;
 	bool directionY = sy > y;
 
-	int dst_byte_x_offset = x / 8;  // We automatically round coordinates to multiples of 8 (byte boundaries)
+	int dst_byte_x_offset = x / 8;	// We automatically round coordinates to multiples of 8 (byte boundaries)
 	int src_byte_x_offset = sx / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
 
 	int pitch = srf->w / 8;
@@ -417,7 +420,7 @@ static void VL_DOS_UnmaskedToSurface_PM(void *src, void *dst_surface, int x, int
 	int initial_x = x, initial_y = y, final_w = w, final_h = h;
 	VL_Clip(&final_w, &final_h, &initial_x, &initial_y, surf->w, surf->h);
 	int src_plane_size = (w / 8) * h;
-	int dst_byte_x_offset = initial_x / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
+	int dst_byte_x_offset = x / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
@@ -436,16 +439,18 @@ static void VL_DOS_UnmaskedToSurface_PM(void *src, void *dst_surface, int x, int
 static void VL_DOS_MaskedToSurface(void *src, void *dst_surface, int x, int y, int w, int h)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)dst_surface;
+	int initial_x = x, initial_y = y, final_w = w, final_h = h;
+	VL_Clip(&final_w, &final_h, &initial_x, &initial_y, surf->w, surf->h);
 	int src_plane_size = (w / 8) * h;
 	int dst_byte_x_offset = x / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		for (int _y = 0; _y < h; ++_y)
+		for (int _y = initial_y; _y < final_h; ++_y)
 		{
 			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * (plane + 1)) + (_y * (w / 8));
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
-			size_t copy_len = w / 8;
+			size_t copy_len = (final_w + 7) / 8;
 			memcpy(dst_ptr, src_ptr, copy_len);
 		}
 	}
@@ -454,45 +459,23 @@ static void VL_DOS_MaskedToSurface(void *src, void *dst_surface, int x, int y, i
 static void VL_DOS_MaskedBlitToSurface(void *src, void *dst_surface, int x, int y, int w, int h)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)dst_surface;
-	int initial_x = x, initial_y = y, final_w = w, final_h = h;
-	VL_Clip(&final_w, &final_h, &initial_x, &initial_y, surf->w, surf->h);
+	int initial_x = x / 8, initial_y = y, final_w = w / 8, final_h = h;
+	VL_Clip(&final_w, &final_h, &initial_x, &initial_y, surf->w / 8, surf->h);
 	int src_plane_size = (w / 8) * h;
-	int dst_byte_x_offset = (x + initial_x) / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
-	int dst_bit_x_offset = (x + initial_x) & 7;
-	int src_bit_x_offset = (initial_x)&7;
-	if (final_w == 0)
-		return;
+	int dst_byte_x_offset = CK_Cross_max(0, x / 8); // We automatically round coordinates to multiples of 8 (byte boundaries)
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
 		for (int _y = initial_y; _y < final_h; ++_y)
 		{
-			uint8_t *mask_ptr = (uint8_t *)src + (_y * w / 8);
-			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * (plane + 1)) + (_y * (w / 8));
+			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * (plane + 1)) + (_y * (w / 8)) + (initial_x);
+			uint8_t *mask_ptr = (uint8_t *)src + (_y * (w / 8)) + (initial_x);
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
-			size_t copy_len = final_w / 8;
-			uint8_t prev_byte = 0;
-			uint8_t prev_mask = 0xFF;
-			for (int x_byte = (initial_x / 8); x_byte < copy_len; ++x_byte)
+			size_t copy_len = (final_w);
+			for (int _x = 0; _x < copy_len; ++_x)
 			{
-				uint8_t src_byte = (prev_byte << (8 - dst_bit_x_offset)) | (src_ptr[x_byte] >> dst_bit_x_offset);
-				uint8_t src_mask = (prev_mask << (8 - dst_bit_x_offset)) | (mask_ptr[x_byte] >> dst_bit_x_offset);
-				uint8_t b = dst_ptr[x_byte];
-				b &= src_mask;
-				b |= src_byte;
-				dst_ptr[x_byte] = b;
-				prev_byte = src_ptr[x_byte];
-				prev_mask = mask_ptr[x_byte];
-			}
-			// Handle the one byte left over.
-			if (dst_bit_x_offset)
-			{
-				uint8_t src_byte = (prev_byte << (8 - dst_bit_x_offset));
-				uint8_t src_mask = (prev_mask << (8 - dst_bit_x_offset)) | (0xFF >> dst_bit_x_offset);
-				uint8_t b = dst_ptr[copy_len];
-				b &= src_mask;
-				b |= src_byte;
-				dst_ptr[copy_len] = b;
+				*dst_ptr &= *(mask_ptr++);
+				*(dst_ptr++) |= *(src_ptr++);
 			}
 		}
 	}
@@ -639,7 +622,7 @@ static void VL_DOS_ScrollSurface(void *surface, int x, int y)
 	int hOffset = (y) ? -16 : 0;
 	if (surf->use == VL_SurfaceUsage_FrontBuffer)
 	{
-		size_t bytesToShift = (x / 8) + y * (surf->w / 8);
+		ssize_t bytesToShift = (x / 8) + y * (surf->w / 8);
 		uint8_t *oldData = (uint8_t *)surf->data;
 		uint8_t *newData = oldData + bytesToShift;
 		if (newData < (uint8_t *)(__djgpp_conventional_base + 0xA0000) || newData + (surf->w / 4 * surf->h) > (uint8_t *)(__djgpp_conventional_base + 0xAFFFF))

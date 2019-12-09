@@ -95,7 +95,7 @@ void CK_DemoSign(CK_object *demo)
  */
 void CK_ScoreBoxDrawTile8(int tilenum, uint8_t *dest, int destWidth, int planeSize)
 {
-	uint8_t *src = (uint8_t *) CA_GetGrChunk(ca_gfxInfoE.offTiles8, 0, "ScoreBox", true) + 32 * tilenum;
+	uint8_t *src = (uint8_t *)CA_GetGrChunk(ca_gfxInfoE.offTiles8, 0, "ScoreBox", true) + 32 * tilenum;
 
 	// Copy the tile to the target bitmap
 	for (int plane = 0; plane < 4; plane++, dest += planeSize)
@@ -128,6 +128,10 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 	if (!ck_scoreBoxEnabled)
 		return;
 
+	VH_SpriteTableEntry *box = VH_GetSpriteTableEntry(SPR_SCOREBOX - ca_gfxInfoE.offSprites);
+
+	VH_ShiftedSprite *spr = (VH_ShiftedSprite *)CA_GetGrChunk(SPR_SCOREBOX, 0, "ScoreBox", true);
+
 	// Draw the score if it's changed
 	if ((scorebox->user1 != (ck_gameState.keenScore >> 16)) || (scorebox->user2 != (ck_gameState.keenScore & 0xFFFF)))
 	{
@@ -135,12 +139,10 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		char buf[16];
 		uint8_t *dest;
 
-		VH_SpriteTableEntry *box = VH_GetSpriteTableEntry(SPR_SCOREBOX - ca_gfxInfoE.offSprites);
-
 		// Start drawing the tiles after the mask plane,
 		// and four rows from the top
-		dest = (uint8_t *) CA_GetGrChunk(SPR_SCOREBOX, 0, "ScoreBox", true);
-		dest += (planeSize = box->width * box->height);
+		dest = spr->data;
+		dest += (planeSize = spr->sprShiftByteWidths[0] * box->height);
 		dest += box->width * 4 + 1;
 
 		sprintf(buf, "%d", (int)ck_gameState.keenScore);
@@ -170,11 +172,9 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		char buf[16];
 		uint8_t *dest;
 
-		VH_SpriteTableEntry *box = VH_GetSpriteTableEntry(SPR_SCOREBOX - ca_gfxInfoE.offSprites);
-
 		// Start drawing the tiles after the mask plane,
 		// and 12 rows from the top
-		dest = (uint8_t *) CA_GetGrChunk(SPR_SCOREBOX, 0, "ScoreBox", true);
+		dest = spr->data;
 		dest += (planeSize = box->width * box->height);
 		dest += box->width * 20 + 8;
 
@@ -198,6 +198,7 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		}
 
 		scorebox->user3 = ck_gameState.numShots;
+
 		updated = true;
 	}
 
@@ -208,11 +209,9 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		char buf[16];
 		uint8_t *dest;
 
-		VH_SpriteTableEntry *box = VH_GetSpriteTableEntry(SPR_SCOREBOX - ca_gfxInfoE.offSprites);
-
 		// Start drawing the tiles after the mask plane,
 		// and 12 rows from the top
-		dest = (uint8_t *)ca_graphChunks[SPR_SCOREBOX];
+		dest = spr->data;
 		dest += (planeSize = box->width * box->height);
 		dest += box->width * 20 + 3;
 
@@ -248,7 +247,12 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 	}
 
 	if (updated)
+	{
+		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[1]], box->width, box->height, 2);
+		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[2]], box->width, box->height, 4);
+		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[3]], box->width, box->height, 6);
 		RF_AddSpriteDraw(&scorebox->sde, scorebox->posX + 0x40, scorebox->posY + 0x40, SPR_SCOREBOX, false, 3);
+	}
 }
 
 // =========================================================================

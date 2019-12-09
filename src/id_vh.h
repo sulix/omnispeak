@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ID_VH_H
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 typedef struct VH_BitmapTableEntry
@@ -46,6 +47,15 @@ typedef struct VH_Font
 
 VH_BitmapTableEntry *VH_GetBitmapTableEntry(int bitmapNumber);
 VH_SpriteTableEntry *VH_GetSpriteTableEntry(int spriteNumber);
+
+#define VH_MAXSPRSHIFTS 4
+
+typedef struct VH_ShiftedSprite
+{
+	size_t sprShiftOffset[VH_MAXSPRSHIFTS];
+	int sprShiftByteWidths[VH_MAXSPRSHIFTS];
+	uint8_t data[];
+} VH_ShiftedSprite;
 
 void VH_Plot(int x, int y, int colour);
 void VH_HLine(int x1, int x2, int y, int colour);

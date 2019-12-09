@@ -546,6 +546,109 @@ void CA_LockGrChunk(int chunk)
 	MM_SetLock(&ca_graphChunks[chunk], true);
 }
 
+void CAL_ShiftSprite(uint8_t *srcImage, uint8_t *dstImage, int width, int height, int pxShift)
+{
+	// For the mask plane, we want to fill with 0xFF, so that unused bits are masked out.
+	uint8_t *dstPtr = dstImage;
+	uint8_t *srcPtr = srcImage;
+	for (int y = 0; y < height; ++y)
+	{
+		*dstPtr = 0xFF;
+		for (int x = 0; x < width; ++x)
+		{
+			//uint16_t val = ~(((uint16_t)(~(*srcPtr++))) << pxShift);
+			uint16_t raw_val = ~(*srcPtr++) << 8;
+			uint16_t val = ~((raw_val) >> pxShift);
+			*dstPtr &= val >> 8;
+			*(++dstPtr) = val & 0xFF;
+		}
+		dstPtr++;
+	}
+
+	// For the data planes, we want to fill with 0.
+	// Note that we can shift all four planes as though it were one very tall plane.
+	for (int y = 0; y < height * 4; ++y)
+	{
+		*dstPtr = 0;
+		for (int x = 0; x < width; ++x)
+		{
+			uint16_t raw_val = (*srcPtr++) << 8;
+			uint16_t val = (raw_val) >> pxShift;
+			*dstPtr |= val >> 8;
+			*(++dstPtr) = val & 0xFF;
+		}
+		dstPtr++;
+	}
+}
+
+void CAL_CacheSprite(int chunkNumber, uint8_t *compressed)
+{
+	int spriteNumber = chunkNumber - ca_gfxInfoE.offSprites;
+
+	VH_SpriteTableEntry *sprite = VH_GetSpriteTableEntry(spriteNumber);
+
+	// The size of one plane of the unshifted sprite.
+	size_t smallPlane = sprite->width * sprite->height;
+	// The size of one plane of a shifted sprite (+ 1 byte/row)
+	size_t bigPlane = (sprite->width + 1) * sprite->height;
+
+	size_t fullSize = (smallPlane + (sprite->shifts - 1) * bigPlane) * 5;
+
+	MM_GetPtr(&ca_graphChunks[chunkNumber], sizeof(VH_ShiftedSprite) + fullSize);
+	VH_ShiftedSprite *shifted = (VH_ShiftedSprite *)ca_graphChunks[chunkNumber];
+
+	size_t shiftOffsets[5];
+
+	shiftOffsets[0] = 0;
+	shiftOffsets[1] = smallPlane * 5;
+	shiftOffsets[2] = shiftOffsets[1] + bigPlane * 5;
+	shiftOffsets[3] = shiftOffsets[2] + bigPlane * 5;
+	shiftOffsets[4] = shiftOffsets[3] + bigPlane * 5;
+
+	CAL_HuffExpand(compressed, shifted->data, smallPlane * 5, ca_gr_huffdict);
+
+	switch (sprite->shifts)
+	{
+	case 1:
+		for (int i = 0; i < 4; ++i)
+		{
+			shifted->sprShiftByteWidths[i] = sprite->width;
+			shifted->sprShiftOffset[i] = shiftOffsets[0];
+		}
+		break;
+	case 2:
+		for (int i = 0; i < 2; ++i)
+		{
+			shifted->sprShiftByteWidths[i] = sprite->width;
+			shifted->sprShiftOffset[i] = shiftOffsets[0];
+		}
+		for (int i = 2; i < 4; ++i)
+		{
+			shifted->sprShiftByteWidths[i] = sprite->width + 1;
+			shifted->sprShiftOffset[i] = shiftOffsets[1];
+		}
+		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[1]], sprite->width, sprite->height, 4);
+		break;
+	case 4:
+		shifted->sprShiftByteWidths[0] = sprite->width;
+		shifted->sprShiftByteWidths[1] = sprite->width + 1;
+		shifted->sprShiftByteWidths[2] = sprite->width + 1;
+		shifted->sprShiftByteWidths[3] = sprite->width + 1;
+
+		shifted->sprShiftOffset[0] = shiftOffsets[0];
+		shifted->sprShiftOffset[1] = shiftOffsets[1];
+		shifted->sprShiftOffset[2] = shiftOffsets[2];
+		shifted->sprShiftOffset[3] = shiftOffsets[3];
+
+		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[1]], sprite->width, sprite->height, 2);
+		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[2]], sprite->width, sprite->height, 4);
+		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[3]], sprite->width, sprite->height, 6);
+		break;
+	default:
+		Quit("CAL_CacheSprite: Bad shifts number!");
+	}
+}
+
 void CAL_SetupGrFile()
 {
 	//TODO: Setup cfg mechanism for filenames, chunk data.
@@ -613,12 +716,18 @@ void CAL_ExpandGrChunk(int chunk, void *source)
 		source = (uint8_t *)source + 4;
 	}
 
-	MM_GetPtr(&ca_graphChunks[chunk], length);
-	CAL_HuffExpand(source, ca_graphChunks[chunk], length, ca_gr_huffdict);
+	if (chunk >= ca_gfxInfoE.offSprites && chunk < ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites)
+	{
+		CAL_CacheSprite(chunk, (uint8_t *)source);
+	}
+	else
+	{
+		MM_GetPtr(&ca_graphChunks[chunk], length);
+		CAL_HuffExpand(source, ca_graphChunks[chunk], length, ca_gr_huffdict);
+	}
 }
 
-
-mm_ptr_t CA_GetGrChunk(int base, int index, const char* chunkType, bool required)
+mm_ptr_t CA_GetGrChunk(int base, int index, const char *chunkType, bool required)
 {
 	mm_ptr_t result;
 	int chunk = base + index;

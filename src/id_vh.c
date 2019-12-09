@@ -110,9 +110,15 @@ void VH_DrawSprite(int x, int y, int chunk)
 
 	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
 
-	int shiftMask = ~((8 / spr->shifts) - 1) & ~1;
+	VH_ShiftedSprite *shifted = (VH_ShiftedSprite *)CA_GetGrChunk(chunk, 0, "Sprite", true);
 
-	VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "Sprite", true), (x + (spr->originX >> 4)) & shiftMask, y + (spr->originY >> 4), spr->width * 8, spr->height);
+	int shift = (x & 7) / 2;
+
+	uint8_t *data = &shifted->data[shifted->sprShiftOffset[shift]];
+
+	int width = shifted->sprShiftByteWidths[shift] * 8;
+
+	VL_MaskedBlitToScreen(data, x + (spr->originX >> 4) & ~7, y + (spr->originY >> 4), width, spr->height);
 }
 
 void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
@@ -171,7 +177,7 @@ void VHB_DrawTile8(int x, int y, int tile)
 {
 	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
-	
+
 	if (VH_MarkUpdateBlock(x, y, x + 7, y + 7))
 		VH_DrawTile8(x, y, tile);
 }
@@ -180,7 +186,7 @@ void VHB_DrawTile8M(int x, int y, int tile)
 {
 	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
-	
+
 	if (VH_MarkUpdateBlock(x, y, x + 7, y + 7))
 		VH_DrawTile8M(x, y, tile);
 }
@@ -189,7 +195,7 @@ void VHB_DrawTile16(int x, int y, int tile)
 {
 	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
-	
+
 	if (VH_MarkUpdateBlock(x, y, x + 15, y + 15))
 		VH_DrawTile8(x, y, tile);
 }
@@ -198,7 +204,7 @@ void VHB_DrawTile16M(int x, int y, int tile)
 {
 	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
-	
+
 	if (VH_MarkUpdateBlock(x, y, x + 15, y + 15))
 		VH_DrawTile8M(x, y, tile);
 }
@@ -235,19 +241,24 @@ void VHB_DrawSprite(int x, int y, int chunk)
 
 	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
 
-	int shiftMask = ~((8 / spr->shifts) - 1) & ~1;
+	VH_ShiftedSprite *shifted = (VH_ShiftedSprite *)CA_GetGrChunk(chunk, 0, "Sprite", true);
 
-	int realX = x + RF_UnitToPixel(spr->originX) & shiftMask;
+	int shift = (x & 7) / 2;
+
+	uint8_t *data = &shifted->data[shifted->sprShiftOffset[shift]];
+
+	int width = shifted->sprShiftByteWidths[shift] * 8;
+
+	int realX = x + RF_UnitToPixel(spr->originX) & ~7;
 	int realY = y + RF_UnitToPixel(spr->originY);
-	
+
 	if (VH_MarkUpdateBlock(realX, realY, spr->width * 8, spr->height))
 	{
-		VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "Sprite", true),
-				realX, realY,
-				spr->width * 8, spr->height);
+		VL_MaskedBlitToScreen(data,
+			realX, realY,
+			width, spr->height);
 	}
 }
-
 
 void VHB_Plot(int x, int y, int colour)
 {
