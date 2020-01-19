@@ -1361,7 +1361,7 @@ void CK5_FuseMessage()
 	IN_WaitButton();
 
 	// Draw the Keen Thumbs Up Pic
-	VH_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x5B);
+	VHB_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x5B);
 	VL_Present();
 	// VW_WaitVBL(30);
 	IN_ClearKeysDown();
