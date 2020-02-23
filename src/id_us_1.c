@@ -80,6 +80,15 @@ bool (*p_save_game)(FILE *handle);
 bool (*p_load_game)(FILE *handle, bool fromMenu);
 void (*p_exit_menu)(void);
 
+US_MeasureStringFunc USL_MeasureString = VH_MeasurePropString;
+US_DrawStringFunc USL_DrawString = VHB_DrawPropString;
+
+void US_SetPrintRoutines(US_MeasureStringFunc measure, US_DrawStringFunc draw)
+{
+	USL_MeasureString = (measure) ? measure : VH_MeasurePropString;
+	USL_DrawString = (draw) ? draw : VHB_DrawPropString;
+}
+
 void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FILE *, bool), bool (*savegamefunc)(FILE *), void (*exitmenufunc)(void))
 {
 	p_load_game = loadgamefunc;
@@ -113,8 +122,8 @@ void US_Print(const char *str)
 		uint16_t w, h;
 		// TODO: Should us_printFont and us_printColour
 		// be passed as arguments or not?
-		VH_MeasurePropString(strbuf, &w, &h, us_printFont);
-		VHB_DrawPropString(strbuf, us_printX, us_printY, us_printFont, us_printColour);
+		USL_MeasureString(strbuf, &w, &h, us_printFont);
+		USL_DrawString(strbuf, us_printX, us_printY, us_printFont, us_printColour);
 
 		if (ch)
 		{
@@ -161,11 +170,11 @@ void US_CPrintLine(const char *str)
 {
 	uint16_t w, h;
 	CA_CacheGrChunk(3); // TODO: What is this function call doing here?
-	VH_MeasurePropString(str, &w, &h, us_printFont);
+	USL_MeasureString(str, &w, &h, us_printFont);
 	if (w <= us_windowW)
 	{
 		int x = us_windowX + ((us_windowW - w) / 2);
-		VHB_DrawPropString(str, x, us_printY, us_printFont, us_printColour);
+		USL_DrawString(str, x, us_printY, us_printFont, us_printColour);
 		us_printY += h;
 	}
 	else

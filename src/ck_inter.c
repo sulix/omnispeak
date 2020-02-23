@@ -1303,6 +1303,14 @@ void CK_DrawSWText()
 	void *oldScreen = VL_SetScreen(ck_starWarsTextSurface);
 	VL_ClearScreen(0);
 
+	// Because we need to draw more than a screen-height's worth of text, we
+	// can't naïvely use US_CPrint(), as that uses the buffered drawing by
+	// default, which only has a screen-sized buffer. The original game
+	// works around this by changing the buffer offset, but this seems
+	// simpler, particularly since we don't allow similar things with our
+	// graphics surfaces.
+	US_SetPrintRoutines(NULL, VH_DrawPropString);
+
 	while (*storyTextIndex)
 	{
 		char *lineIndex = currentTextLine;
@@ -1333,6 +1341,7 @@ void CK_DrawSWText()
 	// Save off the total height of the scroller.
 	ck_starWarsTotalHeight = US_GetPrintY();
 	US_SetPrintY(0);
+	US_SetPrintRoutines(NULL, NULL);
 
 	// Restore the screen.
 	VL_SetScreen(oldScreen);

@@ -187,6 +187,11 @@ extern void (*p_exit_menu)(void);
 
 void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FILE *, bool), bool (*savegamefunc)(FILE *), void (*exitmenufunc)(void));
 
+
+typedef void (*US_MeasureStringFunc)(const char *string, uint16_t *width, uint16_t *height, int16_t chunk);
+typedef void (*US_DrawStringFunc)(const char *string, int x, int y, int chunk, int colour);
+
+void US_SetPrintRoutines(US_MeasureStringFunc measure, US_DrawStringFunc draw);
 // Savefiles
 
 #define US_MAX_SAVEDGAMENAME_LEN 32
