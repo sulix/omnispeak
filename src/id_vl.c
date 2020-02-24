@@ -180,8 +180,8 @@ void VL_Clip(int *src_w, int *src_h, int *dst_x, int *dst_y, int dst_w, int dst_
 	int finalW = CK_Cross_min(CK_Cross_max(dst_w - (*dst_x), 0), CK_Cross_min(*src_w, *dst_x + *src_w));
 	int finalH = CK_Cross_min(CK_Cross_max(dst_h - (*dst_y), 0), CK_Cross_min(*src_h, *dst_y + *src_h));
 
-	*src_w = finalW;
-	*src_h = finalH;
+	*src_w = CK_Cross_max(finalW, 0);
+	*src_h = CK_Cross_max(finalH, 0);
 	*dst_x = initialX;
 	*dst_y = initialY;
 }
