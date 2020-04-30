@@ -286,7 +286,6 @@ OBJ += $(CKOBJECTS:%=$(OBJDIR)/%)
 OBJ += $(OPLOBJECTS:%=$(OBJDIR)/%)
 DEPS := $(OBJ:%.o=%.d)
 
-
 all: $(OUTBIN) binfiles batfiles
 
 help:
