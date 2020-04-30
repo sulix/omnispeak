@@ -286,11 +286,6 @@ OBJ += $(CKOBJECTS:%=$(OBJDIR)/%)
 OBJ += $(OPLOBJECTS:%=$(OBJDIR)/%)
 DEPS := $(OBJ:%.o=%.d)
 
-UNAME_P := $(shell uname -p)
-ifneq ($(filter %86,$(UNAME_P)),)
-	ARCH_FLAGS := -mno-ms-bitfields
-endif
-
 
 all: $(OUTBIN) binfiles batfiles
 
@@ -330,7 +325,7 @@ $(BINDIR):
 
 $(OBJDIR)/%.o: %.c $(SDL_DIR)
 	@mkdir -p $(dir $@)
-	$(CXX) $(SYSFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) $(ARCH_FLAGS) -c -MMD -o $@ $<
+	$(CXX) $(SYSFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -MMD -o $@ $<
 
 $(OBJDIR)/windowsres.res: windowsres.rc
 	mkdir -p $(dir $@)
