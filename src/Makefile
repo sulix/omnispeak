@@ -324,7 +324,7 @@ $(BINDIR):
 
 $(OBJDIR)/%.o: %.c $(SDL_DIR)
 	@mkdir -p $(dir $@)
-	$(CXX) $(SYSFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -mno-ms-bitfields -c -MMD -o $@ $<
+	$(CXX) $(SYSFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -MMD -o $@ $<
 
 $(OBJDIR)/windowsres.res: windowsres.rc
 	mkdir -p $(dir $@)
