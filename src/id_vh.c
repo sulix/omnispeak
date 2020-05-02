@@ -127,9 +127,15 @@ void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
 
 	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
 
-	int shiftMask = ~(4 - spr->shifts) & ~1;
+	VH_ShiftedSprite *shifted = (VH_ShiftedSprite *)CA_GetGrChunk(chunk, 0, "Sprite", true);
 
-	VL_1bppInvBlitToScreen(((uint8_t *)CA_GetGrChunk(chunk, 0, "SpriteMask", true)), (x + (spr->originX >> 4)) & shiftMask, y + (spr->originY >> 4), spr->width * 8, spr->height, colour);
+	int shift = (x & 7) / 2;
+
+	uint8_t *data = &shifted->data[shifted->sprShiftOffset[shift]];
+
+	int width = shifted->sprShiftByteWidths[shift] * 8;
+
+	VL_1bppInvBlitToScreen(data, x + (spr->originX >> 4) & ~7, y + (spr->originY >> 4), width, spr->height, colour);
 }
 
 void VH_DrawPropChar(int x, int y, int chunk, unsigned char c, int colour)
