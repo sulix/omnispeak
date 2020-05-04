@@ -606,7 +606,27 @@ static void VL_DOS_BitBlitToSurface(void *src, void *dst_surface, int x, int y, 
 static void VL_DOS_BitInvBlitToSurface(void *src, void *dst_surface, int x, int y, int w, int h, int colour)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)dst_surface;
-	VL_1bppInvBlitClipToPAL8(src, surf->data, x, y, surf->w, w, h, surf->w, surf->h, colour);
+	int dst_byte_x_offset = x / 8;
+	int dst_bit_x_offset = x & 7;
+	VL_DOS_SetEGAWriteMode(0);
+	for (int plane = 0; plane < 4; plane++)
+	{
+		if (!(colour & (1 << plane)))
+			continue;
+		uint8_t prev_byte = 0;
+		for (int _y = 0; _y < h; ++_y)
+		{
+			uint8_t *src_ptr = (uint8_t *)src + (_y * ((w + 7) / 8));
+			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
+			size_t copy_len = (w + 7) / 8;
+			for (int i = 0; i < copy_len; ++i)
+			{
+				uint8_t src_byte = (prev_byte << (8 - dst_bit_x_offset)) | (src_ptr[i] >> dst_bit_x_offset);
+				prev_byte = src_ptr[i];
+				dst_ptr[i] |= ~src_byte;
+			}
+		}
+	}
 }
 
 static void VL_DOS_ScrollSurface(void *surface, int x, int y)
