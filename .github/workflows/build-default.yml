@@ -1,0 +1,45 @@
+name: "CI: Build (Default)"
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Dependencies
+      run: |
+        sudo apt update
+        sudo apt install libsdl2-dev mingw-w64
+        wget https://github.com/andrewwutw/build-djgpp/releases/download/v2.9/djgpp-linux64-gcc550.tar.bz2
+        sudo tar xf djgpp-linux64-gcc550.tar.bz2 -C /usr/local
+    - name: Build (Linux)
+      working-directory: ./src
+      run: |
+        make
+    - name: Build (Windows)
+      working-directory: ./src
+      run: |
+        make PLATFORM=win32
+        make PLATFORM=win64
+    - name: Build (MS-DOS)
+      working-directory: ./src
+      run: |
+        make PLATFORM=dos
+    - name: Upload (Linux)
+      uses: actions/upload-artifact@v2
+      with:
+        name: Linux Build
+        path: bin/
+    - name: Upload (Windows)
+      uses: actions/upload-artifact@v2
+      with:
+        name: Windows Build
+        path: bin-win*/
+    - name: Upload (MS-DOS)
+      uses: actions/upload-artifact@v2
+      with:
+        name: MS-DOS Build
+        path: bin-dos/
