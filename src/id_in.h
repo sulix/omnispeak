@@ -262,9 +262,11 @@ typedef enum IN_JoyConfItem
 	IN_joy_jump = 0,
 	IN_joy_pogo = 1,
 	IN_joy_fire = 2,
-	IN_joy_deadzone = 3,
-	IN_joy_min_ = IN_joy_jump,
-	IN_joy_max_ = IN_joy_deadzone
+	IN_joy_menu = 3,
+	IN_joy_deadzone = 4,	// not saved in CONFIG.CKx
+	IN_joy_modern = 5,	// not saved in CONFIG.CKx
+	IN_joy_button_min_ = IN_joy_jump,
+	IN_joy_button_max_ = IN_joy_menu,
 } IN_JoyConfItem;
 
 void IN_PumpEvents();

@@ -98,6 +98,9 @@ bool ck_gamePadEnabled;
 // Pogo timer for two-button firing
 int ck_pogoTimer;
 
+// current frame's input state
+IN_ControlFrame ck_inputFrame;
+
 // A bunch of global variables from other modules that should be
 // handled better, but are just defined here for now
 
@@ -1135,10 +1138,15 @@ void CK_CheckKeys()
 #endif
 
 		// Go back to wristwatch
-		if ((IN_GetLastScan() >= IN_SC_F2 && IN_GetLastScan() <= IN_SC_F7) || IN_GetLastScan() == IN_SC_Escape)
+		if ((IN_GetLastScan() >= IN_SC_F2 && IN_GetLastScan() <= IN_SC_F7)
+		    || IN_GetLastScan() == IN_SC_Escape
+		    || ck_inputFrame.button3)
 		{
-
 			// clang-format on
+
+			// don't re-enter menu immediately
+			ck_inputFrame.button3 = false;
+
 			// VW_SyncPages();
 			StopMusic();
 			US_RunCards();
@@ -1204,8 +1212,6 @@ void CK_CheckKeys()
 		Quit(NULL);
 	}
 }
-
-IN_ControlFrame ck_inputFrame;
 
 void CK_HandleInput()
 {

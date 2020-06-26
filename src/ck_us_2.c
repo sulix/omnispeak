@@ -560,8 +560,9 @@ US_CardItem ck_us_joyconfMenuItems[] = {
 	{US_ITEM_Normal, 0, IN_SC_J, "JUMP", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_P, "POGO", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_F, "FIRE", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_M, "MENU", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_D, "DEAD ZONE", US_Comm_None, 0, 0, 0},
-	{US_ITEM_Submenu, 0, IN_SC_M, "", US_Comm_None, &ck_us_joyMotionModeMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_J, "", US_Comm_None, &ck_us_joyMotionModeMenu, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
 US_Card ck_us_joyconfMenu = {0, 0, &PIC_BUTTONSCARD, 0, ck_us_joyconfMenuItems, &CK_US_JoyConfMenuProc, 0, 0, 0};
@@ -789,7 +790,7 @@ bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 	static const int8_t deadzone_values[] = {
 		0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, -1};
 
-	if (item == &ck_us_joyconfMenuItems[4])
+	if (item == &ck_us_joyconfMenuItems[(int)IN_joy_modern])
 		return false; // no special handling for the motion mode option
 
 	which_control = (IN_JoyConfItem)(item - ck_us_joyconfMenuItems);
@@ -1282,7 +1283,7 @@ void CK_US_UpdateOptionsMenus(void)
 	ck_us_optionsMenuItems[6].caption = vl_hasOverscanBorder ? "OVERSCAN BORDER (ON)" : "OVERSCAN BORDER (OFF)";
 #endif
 #ifdef EXTRA_JOYSTICK_OPTIONS
-	ck_us_joyconfMenuItems[4].caption = in_joyAdvancedMotion ? "MOTION MODE (MODERN)" : "MOTION MODE (CLASSIC)";
+	ck_us_joyconfMenuItems[(int)IN_joy_modern].caption = in_joyAdvancedMotion ? "MOTION MODE (MODERN)" : "MOTION MODE (CLASSIC)";
 #endif
 
 	// Disable Two button firing selection if required
