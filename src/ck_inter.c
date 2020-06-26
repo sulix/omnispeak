@@ -324,6 +324,9 @@ void AnimateTerminator(void)
 	int cmdrLeftEdgeFromScreenLeft;
 	int delaytime;
 
+	bool joyButtonPressedNow = false;
+	bool joyButtonPressedPrev = false;
+
 	// At the end of the terminator scrolling, left edge of the commander graphic is
 	// this many pixels from the Left/Right edge of the Visible screen
 	// (i.e., a negative value means an offset to the left)
@@ -467,6 +470,11 @@ void AnimateTerminator(void)
 
 		// Stop drawing if key pressed
 		if (IN_CheckAck() /*IN_IsUserInput()*/ && IN_GetLastScan() == IN_SC_F1)
+			IN_SetLastScan(IN_SC_Space);
+
+		joyButtonPressedPrev = joyButtonPressedNow;
+		joyButtonPressedNow = (IN_JoyPresent(0) && IN_GetJoyButtonsDB(0)) || (IN_JoyPresent(1) && IN_GetJoyButtonsDB(1));
+		if (joyButtonPressedPrev && !joyButtonPressedNow)
 			IN_SetLastScan(IN_SC_Space);
 
 		if (IN_GetLastScan())
