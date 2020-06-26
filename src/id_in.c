@@ -596,7 +596,7 @@ void IN_ReadCursor(IN_Cursor *cursor)
 		/* TODO: maybe ignore button mappings in the menu and
 		 *       map _all_ buttons to button0? */
 		cursor->button0 = IN_GetJoyButtonFromMask(buttons, IN_joy_jump);
-		cursor->button1 = IN_GetJoyButtonFromMask(buttons, IN_joy_fire);
+		cursor->button1 = IN_GetJoyButtonFromMask(buttons, IN_joy_pogo);
 	}
 }
 
