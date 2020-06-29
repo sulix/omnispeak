@@ -1014,6 +1014,7 @@ void US_RunCards()
 			IN_Cursor cursor;
 			IN_ReadCursor(&cursor);
 
+#ifndef CK_VANILLA
 			if (cursor.yMotion != prev_controller_motion)
 			{
 				// when pushing the controller,
@@ -1021,6 +1022,7 @@ void US_RunCards()
 				controller_dy = cursor.yMotion * 40;
 			}
 			else
+#endif
 			{
 				controller_dy += cursor.yMotion;
 			}

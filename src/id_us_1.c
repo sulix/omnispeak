@@ -380,8 +380,10 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 		cursorvis, cursormoved,
 		done, result;
 	IN_ScanCode sc;
+#ifndef CK_VANILLA
 	IN_Cursor joystate;
 	IN_ScanCode joykey = IN_SC_None;
+#endif
 	char c,
 		s[128], olds[128];
 	uint16_t i,
@@ -419,6 +421,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 		c = IN_GetLastASCII();
 		IN_SetLastASCII(IN_KP_None);
 
+#ifndef CK_VANILLA
 		IN_ReadCursor(&joystate);
 		if (joystate.button0)
 			joykey = IN_SC_Enter;
@@ -426,6 +429,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 			joykey = IN_SC_Escape;
 		if (!joystate.button0 && !joystate.button1 && (sc == IN_SC_None))
 			sc = joykey;
+#endif
 
 		switch (sc)
 		{

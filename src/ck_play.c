@@ -1140,11 +1140,15 @@ void CK_CheckKeys()
 		// Go back to wristwatch
 		if ((IN_GetLastScan() >= IN_SC_F2 && IN_GetLastScan() <= IN_SC_F7)
 		    || IN_GetLastScan() == IN_SC_Escape
-		    || ck_inputFrame.button3)
+#ifndef CK_VANILLA
+		    || ck_inputFrame.button3
+#endif
+		)
 		{
 			// clang-format on
 
-			// don't re-enter menu immediately
+			// don't re-enter menu immediately if we came here
+			// via joystick button
 			ck_inputFrame.button3 = false;
 
 			// VW_SyncPages();
