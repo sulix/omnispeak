@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 SDL_Joystick *in_joysticks[IN_MAX_JOYSTICKS];
 bool in_joystickPresent[IN_MAX_JOYSTICKS];
+bool in_joystickHasHat[IN_MAX_JOYSTICKS];
 
 // SDLKey -> IN_SC
 #define INL_MapKey(sdl, in_sc) \
@@ -401,6 +402,10 @@ bool IN_SDL_StartJoy(int joystick)
 
 	in_joystickPresent[joystick_id] = true;
 
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	in_joystickHasHat[joystick_id] = (SDL_JoystickNumHats(in_joysticks[joystick_id]) > 0);
+#endif
+
 	return true;
 }
 
@@ -418,10 +423,28 @@ bool IN_SDL_JoyPresent(int joystick)
 
 void IN_SDL_JoyGetAbs(int joystick, int *x, int *y)
 {
+	int value_x = SDL_JoystickGetAxis(in_joysticks[joystick], 0);
+	int value_y = SDL_JoystickGetAxis(in_joysticks[joystick], 1);
+#if !defined(CK_VANILLA) && SDL_VERSION_ATLEAST(2, 0, 0)
+	static const int HAT = 32000;
+	if (in_joystickHasHat[joystick]) {
+		switch (SDL_JoystickGetHat(in_joysticks[joystick], 0)) {
+			case SDL_HAT_LEFTUP:     value_x = -HAT;  value_y = -HAT;  break;
+			case SDL_HAT_UP:                          value_y = -HAT;  break;
+			case SDL_HAT_RIGHTUP:    value_x = +HAT;  value_y = -HAT;  break;
+			case SDL_HAT_LEFT:       value_x = -HAT;                   break;
+			case SDL_HAT_RIGHT:      value_x = +HAT;                   break;
+			case SDL_HAT_LEFTDOWN:   value_x = -HAT;  value_y = +HAT;  break;
+			case SDL_HAT_DOWN:                        value_y = +HAT;  break;
+			case SDL_HAT_RIGHTDOWN:  value_x = +HAT;  value_y = +HAT;  break;
+			default:                                                   break;
+		}
+	}
+#endif
 	if (x)
-		*x = SDL_JoystickGetAxis(in_joysticks[joystick], 0);
+		*x = value_x;
 	if (y)
-		*y = SDL_JoystickGetAxis(in_joysticks[joystick], 1);
+		*y = value_y;
 }
 
 uint16_t IN_SDL_JoyGetButtons(int joystick)

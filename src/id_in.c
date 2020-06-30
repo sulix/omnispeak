@@ -121,10 +121,10 @@ IN_Backend *in_backend = 0;
 
 IN_KeyMapping in_kbdControls;
 
-/* In Omnispeak, which doesn't support the classic Gravis Gamepad anyway,
- * we misuse in_gamepadButtons for storing the joystick configuration
- * (three buttons and dead zone); this way we get persistence "for free",
- * as the old gamepadButtons configuration is stored in the CONFIG.CK? files */
+// In Omnispeak, which doesn't support the classic Gravis Gamepad anyway,
+// we misuse in_gamepadButtons to store more buttons (fire and menu);
+// this way we get persistence "for free", as the old gamepadButtons
+// configuration is stored in the CONFIG.CK? files
 int16_t in_gamepadButtons[4];
 
 IN_ScanCode *in_key_controls[] = {
@@ -157,6 +157,7 @@ static IN_Direction in_dirTable[] = // Quick lookup for total direction
 		IN_dir_SouthWest, IN_dir_South, IN_dir_SouthEast};
 
 bool in_joyAdvancedMotion = true;
+int16_t in_joyDeadzonePercent = 30;
 static int in_joyCachedDeadzone = 0;
 static int in_joyScaledDeadzone = 0;
 
@@ -502,9 +503,9 @@ void In_GetJoyMotion(int joystick, IN_Motion *p_x, IN_Motion *p_y)
 	int valX, valY, resX, resY, signX, signY;
 
 	// update the pre-computed deadzone threshold
-	if (in_gamepadButtons[(int)IN_joy_deadzone] != in_joyCachedDeadzone)
+	if (in_joyDeadzonePercent != in_joyCachedDeadzone)
 	{
-		in_joyCachedDeadzone = in_gamepadButtons[(int)IN_joy_deadzone];
+		in_joyCachedDeadzone = in_joyDeadzonePercent;
 		in_joyScaledDeadzone = (in_backend->joyAxisMax - in_backend->joyAxisMin) * in_joyCachedDeadzone / 200;
 		in_joyScaledDeadzone *= in_joyScaledDeadzone;
 	}
@@ -596,7 +597,7 @@ void IN_ReadCursor(IN_Cursor *cursor)
 		/* TODO: maybe ignore button mappings in the menu and
 		 *       map _all_ buttons to button0? */
 		cursor->button0 = IN_GetJoyButtonFromMask(buttons, IN_joy_jump);
-		cursor->button1 = IN_GetJoyButtonFromMask(buttons, IN_joy_fire);
+		cursor->button1 = IN_GetJoyButtonFromMask(buttons, IN_joy_pogo);
 	}
 }
 
@@ -607,6 +608,7 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	controls->jump = false;
 	controls->pogo = false;
 	controls->button2 = false;
+	controls->button3 = false;
 
 	if (in_demoState == IN_Demo_Playback)
 	{
@@ -680,6 +682,7 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 			controls->jump = IN_GetJoyButtonFromMask(buttons, IN_joy_jump);
 			controls->pogo = IN_GetJoyButtonFromMask(buttons, IN_joy_pogo);
 			controls->button2 = IN_GetJoyButtonFromMask(buttons, IN_joy_fire);
+			controls->button3 = IN_GetJoyButtonFromMask(buttons, IN_joy_menu);
 		}
 
 		controls->dir = in_dirTable[3 * (controls->yDirection + 1) + controls->xDirection + 1];
@@ -795,15 +798,33 @@ bool IN_UserInput(int tics, bool waitPress)
 
 int IN_GetJoyConf(IN_JoyConfItem item)
 {
-	return ((item >= IN_joy_min_) && (item <= IN_joy_max_))
-		? in_gamepadButtons[(int)item]
-		: 0;
+	switch (item)
+	{
+		case IN_joy_deadzone:
+			return in_joyDeadzonePercent;
+		case IN_joy_modern:
+			return in_joyAdvancedMotion ? 1 : 0;
+		default:
+			return ((item >= IN_joy_button_min_) && (item <= IN_joy_button_max_))
+				? in_gamepadButtons[(int)item]
+				: 0;
+	}
 }
 
 void IN_SetJoyConf(IN_JoyConfItem item, int value)
 {
-	if ((item >= IN_joy_min_) && (item <= IN_joy_max_))
-		in_gamepadButtons[(int)item] = (int16_t)value;
+	switch (item)
+	{
+		case IN_joy_deadzone:
+			in_joyDeadzonePercent = (int16_t)value;
+			break;
+		case IN_joy_modern:
+			in_joyAdvancedMotion = (value != 0);
+			break;
+		default:
+			if ((item >= IN_joy_button_min_) && (item <= IN_joy_button_max_))
+				in_gamepadButtons[(int)item] = (int16_t)value;
+	}
 }
 
 bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn)

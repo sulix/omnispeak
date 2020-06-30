@@ -51,6 +51,9 @@ void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control);
 // Card stack can have at most 7 cards
 #define US_MAX_CARDSTACK 7
 
+// Menu motion repeat rate when using a controller (lower value = faster)
+#define US_MENU_MOTION_SPEED 40
+
 extern CK_Difficulty ck_startingDifficulty;
 int game_unsaved, game_in_progress, quit_to_dos, load_game_error;
 
@@ -907,6 +910,7 @@ void USL_EnterCurrentItem()
 void US_RunCards()
 {
 	int16_t controller_dy;
+	int16_t prev_controller_motion;
 	uint32_t cursor_time;
 	US_CardItem *item;
 	//ControlInfo status;
@@ -923,6 +927,7 @@ void US_RunCards()
 	US_DrawCards();
 
 	controller_dy = 0;
+	prev_controller_motion = 0;
 	command_confirmed = 0;
 	cursor = 1;
 	action_taken = true;
@@ -1009,7 +1014,19 @@ void US_RunCards()
 			IN_Cursor cursor;
 			IN_ReadCursor(&cursor);
 
-			controller_dy += cursor.yMotion;
+#ifndef CK_VANILLA
+			if (cursor.yMotion != prev_controller_motion)
+			{
+				// when pushing the controller,
+				// move one menu item immediately
+				controller_dy = cursor.yMotion * 40;
+			}
+			else
+#endif
+			{
+				controller_dy += cursor.yMotion;
+			}
+			prev_controller_motion = cursor.yMotion;
 
 			if (cursor.button0)
 			{
@@ -1033,15 +1050,15 @@ void US_RunCards()
 				USL_UpLevel();
 				action_taken = true;
 			}
-			else if (controller_dy < -40)
+			else if (controller_dy < -US_MENU_MOTION_SPEED)
 			{
-				controller_dy += 40;
+				controller_dy += US_MENU_MOTION_SPEED;
 				US_SelectPrevItem();
 				action_taken = true;
 			}
-			else if (controller_dy > 40)
+			else if (controller_dy > US_MENU_MOTION_SPEED)
 			{
-				controller_dy -= 40;
+				controller_dy -= US_MENU_MOTION_SPEED;
 				US_SelectNextItem();
 				action_taken = true;
 			}

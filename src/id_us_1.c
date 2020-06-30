@@ -380,6 +380,10 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 		cursorvis, cursormoved,
 		done, result;
 	IN_ScanCode sc;
+#ifndef CK_VANILLA
+	IN_Cursor joystate;
+	IN_ScanCode joykey = IN_SC_None;
+#endif
 	char c,
 		s[128], olds[128];
 	uint16_t i,
@@ -416,6 +420,16 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 		IN_SetLastScan(IN_SC_None);
 		c = IN_GetLastASCII();
 		IN_SetLastASCII(IN_KP_None);
+
+#ifndef CK_VANILLA
+		IN_ReadCursor(&joystate);
+		if (joystate.button0)
+			joykey = IN_SC_Enter;
+		if (joystate.button1)
+			joykey = IN_SC_Escape;
+		if (!joystate.button0 && !joystate.button1 && (sc == IN_SC_None))
+			sc = joykey;
+#endif
 
 		switch (sc)
 		{
@@ -728,7 +742,7 @@ void US_LoadConfig(void)
 		in_gamepadButtons[0] = 0;
 		in_gamepadButtons[1] = 1;
 		in_gamepadButtons[2] = -1;
-		in_gamepadButtons[3] = 30;
+		in_gamepadButtons[3] = -1;
 		//ck_highScoresDirty = 1; // Unused?
 	}
 	SD_Default(configFileLoaded && (hadAdlib == AdLibPresent), sd, sm);
