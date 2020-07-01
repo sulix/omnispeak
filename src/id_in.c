@@ -594,10 +594,13 @@ void IN_ReadCursor(IN_Cursor *cursor)
 		In_GetJoyMotion(joy, &cursor->xMotion, &cursor->yMotion);
 
 		uint16_t buttons = IN_GetJoyButtonsDB(joy);
-		/* TODO: maybe ignore button mappings in the menu and
-		 *       map _all_ buttons to button0? */
+#ifdef EXTRA_JOYSTICK_OPTIONS
 		cursor->button0 = IN_GetJoyButtonFromMask(buttons, IN_joy_jump);
 		cursor->button1 = IN_GetJoyButtonFromMask(buttons, IN_joy_pogo);
+#else
+		cursor->button0 = buttons & 1;
+		cursor->button1 = (buttons >> 1) & 1;
+#endif
 	}
 }
 
@@ -679,10 +682,17 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 			In_GetJoyMotion(joy, &controls->xDirection, &controls->yDirection);
 
 			uint16_t buttons = IN_GetJoyButtonsDB(joy);
+#ifdef EXTRA_JOYSTICK_OPTIONS
 			controls->jump = IN_GetJoyButtonFromMask(buttons, IN_joy_jump);
 			controls->pogo = IN_GetJoyButtonFromMask(buttons, IN_joy_pogo);
 			controls->button2 = IN_GetJoyButtonFromMask(buttons, IN_joy_fire);
 			controls->button3 = IN_GetJoyButtonFromMask(buttons, IN_joy_menu);
+#else
+			controls->jump = buttons & 1;
+			controls->pogo = (buttons >> 1) & 1;
+			controls->button2 = 0;
+			controls->button3 = 0;
+#endif
 		}
 
 		controls->dir = in_dirTable[3 * (controls->yDirection + 1) + controls->xDirection + 1];
