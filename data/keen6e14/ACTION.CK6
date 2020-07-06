@@ -1,6 +1,8 @@
 #
-# Action database for Keen 6 (v1.5)
+# Action database for Keen 6 (v1.4)
 #
+
+%include "STRINGS.CK6"
 
 %action CK_ACT_NULL 0x0780 0 0 Frame 0 0 0 0 0 NULL NULL NULL NULL
 %action CK_ACT_objBadState 0x079E 0 0 Frame 0 0 0 0 0 CK_ObjBadstate CK_ObjBadstate CK_ObjBadstate NULL

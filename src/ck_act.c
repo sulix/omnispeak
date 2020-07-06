@@ -149,7 +149,7 @@ const char *CK_VAR_GetStringByNameAndIndex(const char *name, int index)
 {
 	char fullName[256];
 	sprintf(fullName, "%s%d", name, index);
-	return CK_VAR_GetString(fullName, fullName);
+	return CK_VAR_GetString(fullName, name);
 }
 
 intptr_t CK_VAR_GetInt(const char *name, intptr_t def)
@@ -369,7 +369,7 @@ bool CK_VAR_ParseVar(STR_ParserState *ps)
 
 	if (varType == VAR_EOF)
 	{
-		MM_ArenaReset(ps->tempArena);
+		//MM_ArenaReset(ps->tempArena);
 		return false;
 	}
 
@@ -394,7 +394,7 @@ bool CK_VAR_ParseVar(STR_ParserState *ps)
 		Quit("Unsupported var type.");
 	}
 
-	MM_ArenaReset(ps->tempArena);
+	//MM_ArenaReset(ps->tempArena);
 	return true;
 }
 
@@ -408,7 +408,7 @@ void CK_VAR_LoadVars(const char *filename)
 	parserstate.linecount = 0;
 	parserstate.haveBufferedToken = false;
 
-	parserstate.tempArena = MM_ArenaCreate(4096);
+	parserstate.tempArena = MM_ArenaCreate(65536);
 
 	while (CK_VAR_ParseVar(&parserstate))
 		numVarsParsed++;

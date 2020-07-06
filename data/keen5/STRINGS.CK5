@@ -1,0 +1,182 @@
+#
+# Strings for Keen 5 (v1.4)
+#
+
+# Common strings
+
+
+%string ck_str_gameOver "Game Over!"
+
+# Loading box for demos
+%string ck_str_demo "DEMO"
+
+%string ck_str_tryAgainIntro "You didn't make it past"
+%string ck_str_tryAgainTryAgain "Try Again"
+
+
+#ck_play.c
+
+%string ck_str_itemCheat "Cheat Option!\n\nYou just got all\nthe keys, 99 shots,\nand an extra keen!"
+
+%string ck_str_godModeOn "God Mode ON"
+%string ck_str_godModeOff "God Mode OFF"
+
+%string ck_str_freeItems "Free Items!"
+
+%string ck_str_jumpCheatOn "\nJump cheat ON"
+%string ck_str_jumpCheatOff "\nJump cheat OFF"
+
+%string ck_str_noClippingOn "No clipping ON"
+%string ck_str_noClippingOff "No clipping OFF"
+
+%string ck_str_slowMotionOn "Slow motion ON"
+%string ck_str_slowMotionOff "Slow motion OFF"
+
+#TODO: Warp and some other debug cheats
+
+%string ck_str_debugKeysActive "Debug keys active"
+
+
+%string ck_str_paused "PAUSED"
+
+#NOTE: QuickSave feature
+%string ck_str_gameQuickSaved "GAME SAVED"
+
+# Status window
+%string ck_str_statusLocation "LOCATION"
+%string ck_str_statusScore "SCORE"
+%string ck_str_statusExtra "EXTRA"
+%string ck_str_statusLevel "LEVEL" # Difficulty level
+%string ck_str_statusEasy "Easy"
+%string ck_str_statusNormal "Normal"
+%string ck_str_statusHard "Hard"
+%string ck_str_statusKeys "KEYS"
+%string ck_str_statusAmmo "AMMO"
+%string ck_str_statusLives "KEENS"
+
+# Keen 5
+
+%string ck5_str_korath3 "Keen steps out\nonto Korath III"
+%string ck_str_exitToMap "Exit to Armageddon"
+
+%string ck_str_statusCentilives "VITALIN"
+%string ck5_str_statusKeycard "KEYCARD"
+
+
+
+%string ck_str_levelName0 "Omegamatic"
+%string ck_str_levelName1 "Ion Ventilation System"
+%string ck_str_levelName2 "Security Center"
+%string ck_str_levelName3 "Defense Tunnel Vlook"
+%string ck_str_levelName4 "Energy Flow Systems"
+%string ck_str_levelName5 "Defense Tunnel Burrh"
+%string ck_str_levelName6 "Regulation\nControl Center"
+%string ck_str_levelName7 "Defense Tunnel Sorra"
+%string ck_str_levelName8 "Neutrino\nBurst Injector"
+%string ck_str_levelName9 "Defense Tunnel Teln"
+%string ck_str_levelName10 "Brownian\nMotion Inducer"
+%string ck_str_levelName11 "Gravitational\nDamping Hub"
+%string ck_str_levelName12 "Quantum\nExplosion Dynamo"
+%string ck_str_levelName13 "Korath III Base"
+%string ck_str_levelName14 "BWBMegarocket"
+%string ck_str_levelName15 "High Scores"
+
+%string ck_str_levelEntryText0	"Keen purposefully\n"
+				"wanders about the\n"
+				"Omegamatic"
+
+%string ck_str_levelEntryText1	"Keen investigates the\n"
+				"Ion Ventilation System"
+
+%string ck_str_levelEntryText2	"Keen struts through\n"
+				"the Security Center"
+
+%string ck_str_levelEntryText3	"Keen invades\n"
+				"Defense Tunnel Vlook"
+
+%string ck_str_levelEntryText4	"Keen engages\n"
+				"Energy Flow Systems"
+
+%string ck_str_levelEntryText5	"Keen barrels into\n"
+				"Defense Tunnel Burrh"
+
+%string ck_str_levelEntryText6	"Keen goes nuts in\n"
+				"the Regulation\n"
+				"Control Center"
+
+%string ck_str_levelEntryText7	"Keen regrets entering\n"
+				"Defense Tunnel Sorra"
+
+%string ck_str_levelEntryText8	"Keen blows through\n"
+				"the Neutrino\n"
+				"Burst Injector"
+
+%string ck_str_levelEntryText9	"Keen trots through\n"
+				"Defense Tunnel Teln"
+
+%string ck_str_levelEntryText10	"Keen breaks into\n"
+				"the Brownian\n"
+				"Motion Inducer"
+
+%string ck_str_levelEntryText11	"Keen hurries through\n"
+				"the Gravitational\n"
+				"Damping Hub"
+
+%string ck_str_levelEntryText12	"Keen explodes into\n"
+				"the Quantum\n"
+				"Explosion Dynamo"
+
+%string ck_str_levelEntryText13	"Keen faces danger\n"
+				"in the secret\n"
+				"Korath III Base"
+
+%string ck_str_levelEntryText14	"Keen will not be\n"
+				"in the BWBMegarocket",
+
+%string ck_str_levelEntryText15	"Keen unexplainedly\n"
+				"find himself by\n"
+				"theHigh Scores"
+
+%string ck_str_storyText
+	"Episode Five\n"
+	"\n"
+	"The Armageddon Machine\n"
+	"\n"
+	"After learning the\n"
+	"location of the secret\n"
+	"Shikadi base, Keen\n"
+	"jumped in the trusty\n"
+	"Bean-with-Bacon\n"
+	"Megarocket and blasted\n"
+	"across interstellar\n"
+	"space.\n"
+	"\n"
+	"Seventy-five furious\n"
+	"games of Paddle War\n"
+	"later, Keen dropped\n"
+	"out of lightspeed near\n"
+	" the Korath system.\n"
+	"\n"
+	"He flew toward the\n"
+	"planet, keeping it\n"
+	"between him and the\n"
+	"base.\n"
+	"\n"
+	"Pulling up underside\n"
+	"and docking at the\n"
+	"Ion Ventilation System,\n"
+	"Keen must destroy the\n"
+	"Shikadi Armageddon\n"
+	"Machine before it\n"
+	"explodes and destroys\n"
+	"the Milky Way!  He\n"
+	"steps into the dark\n"
+	"ventilation duct and\n"
+	"begins his most\n"
+	"dangerous adventure\n"
+	"yet...\n"
+
+# Fuse messages
+
+%string ck5_str_fuseDestroyed "One of the four\nmachines protecting the\nmain elevator shaft--\ntoast!\n"
+%string ck5_str_fuseDestroyedKorath "I wonder what that\nfuse was for....\n"
