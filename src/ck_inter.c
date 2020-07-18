@@ -1587,6 +1587,8 @@ void CK_OverlayHighScores()
 
 	void *screen = VL_SetScreen(rf_tileBuffer);
 
+	US_SetPrintRoutines(NULL, VH_DrawPropString);
+
 	if (ck_currentEpisode->ep == EP_CK5)
 		US_SetPrintColour(12);
 
@@ -1626,6 +1628,7 @@ void CK_OverlayHighScores()
 		US_Print(buf);
 	}
 
+	US_SetPrintRoutines(NULL, NULL);
 	US_SetPrintColour(15);
 
 	// restore the backbuffer
