@@ -25,6 +25,7 @@ This Makefile supports the following options:
                   win32   = MinGW cross-build for 32-bit Windows
                   win64   = MinGW cross-build for 64-bit Windows
                   dos     = DJGPP cross-build for DOS (with DOS Extender)
+                  rg350   = OpenDingux cross-build for RetroGame 350
 
   RENDERER      the type of video output API (not available for PLATFORM=dos)
 		  sdl1    = SDL 1.2 (deprecated; no win64 support)
@@ -74,6 +75,7 @@ DEFAULT_LOCAL_SDL = 0
 BINDIR =
 LIBGL = -lGL
 LIBVULKAN = -lvulkan
+SDL_CONFIG_PREFIX =
 OUTDIR_SUFFIX := INVALID
 
 ifeq ($(PLATFORM),)
@@ -104,6 +106,16 @@ ifeq ($(PLATFORM), dos)
 	TOOLDIR = /usr/local/djgpp/bin
 	DEFAULT_RENDERER = dos
 	DEFAULT_BUILDASCPP = 1
+endif
+
+ifeq ($(PLATFORM), rg350)
+        BUILDROOT_DIR = ../buildroot-rg350
+        OUTDIR_SUFFIX := -rg350
+        TOOLSET = mipsel-gcw0-linux-uclibc
+        TOOLDIR = ${BUILDROOT_DIR}/output/host/usr/bin
+        DEFAULT_RENDERER = sdl2
+        SDL_CONFIG_PREFIX = ${BUILDROOT_DIR}/output/host/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/
+        DEFAULT_BUILDASCPP = 1
 endif
 
 ifeq ($(OUTDIR_SUFFIX),INVALID)
@@ -215,12 +227,12 @@ endif
 
 # set parameters that depend on the SDL version (1/2)
 ifeq ($(RENDERER), sdl1)
-	SDL_CONFIG_BIN = sdl-config
+	SDL_CONFIG_BIN = $(SDL_CONFIG_PREFIX)sdl-config
 	SDL_VERSION = $(SDL1_VERSION)
 	SDL_URL = http://libsdl.org/release/SDL-devel-$(SDL_VERSION)-mingw32.tar.gz
 	SDL_LOCAL_PREFIX = SDL-$(SDL_VERSION)
 else
-	SDL_CONFIG_BIN = sdl2-config
+	SDL_CONFIG_BIN = $(SDL_CONFIG_PREFIX)sdl2-config
 	SDL_VERSION = $(SDL2_VERSION)
 	SDL_URL = http://libsdl.org/release/SDL2-devel-$(SDL_VERSION)-mingw.tar.gz
 	SDL_LOCAL_PREFIX = SDL2-$(SDL_VERSION)/$(TOOLSET)
@@ -242,6 +254,11 @@ endif
 ifneq (,$(findstring win,$(PLATFORM)))
 	BATFILES = $(BINDIR)/_keen4.cmd $(BINDIR)/_keen5.cmd $(BINDIR)/_keen6.cmd
 	RES = $(OBJDIR)/windowsres.res
+endif
+
+# set RG350-specific parameters
+ifeq ($(PLATFORM), rg350)
+        RG350_SHELLFILES = $(BINDIR)/keen4.sh $(BINDIR)/keen5.sh $(BINDIR)/keen6.sh
 endif
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -286,7 +303,7 @@ OBJ += $(CKOBJECTS:%=$(OBJDIR)/%)
 OBJ += $(OPLOBJECTS:%=$(OBJDIR)/%)
 DEPS := $(OBJ:%.o=%.d)
 
-all: $(OUTBIN) binfiles batfiles
+all: $(OUTBIN) binfiles batfiles rg350_shellfiles
 
 help:
 	$(info $(HELP))
@@ -354,12 +371,21 @@ $(BINDIR)/_keen5.cmd:
 $(BINDIR)/_keen6.cmd:
 	echo -n "start omnispeak.exe /EPISODE 6 /NOWAIT" >$@
 
+# generate shell scripts for RG350 to start specific episodes
+rg350_shellfiles: $(RG350_SHELLFILES)
+$(BINDIR)/keen4.sh:
+	echo -n "env SDL_RENDER_DRIVER=software ./omnispeak /EPISODE 4 /FULLSCREEN /NOBORDER" >$@
+$(BINDIR)/keen5.sh:
+	echo -n "env SDL_RENDER_DRIVER=software ./omnispeak /EPISODE 5 /FULLSCREEN /NOBORDER" >$@
+$(BINDIR)/keen6.sh:
+	echo -n "env SDL_RENDER_DRIVER=software ./omnispeak /EPISODE 6 /FULLSCREEN /NOBORDER /NOCOPY" >$@
+
 # auto-download of SDL
 $(SDL_DIR):
 	wget -O- $(SDL_URL) | tar xz -C ..
 
 clean:
-	rm -f $(OUTBIN) $(OBJ) $(OBJDIR)/windowsres.res $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA) $(BATFILES)
+	rm -f $(OUTBIN) $(OBJ) $(OBJDIR)/windowsres.res $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA) $(BATFILES) $(RG350_SHELLFILES)
 
 RMDIR_ERRMSG = Note: Some of the 'bin' directories still contain user data. They have not been removed.
 export RMDIR_ERRMSG
@@ -371,4 +397,4 @@ distclean:
 
 -include $(DEPS)
 
-.PHONY: all help dumpconfig binfiles batfiles keen4data keen5data keen6data clean distclean
+.PHONY: all help dumpconfig binfiles batfiles rg350_shellfiles keen4data keen5data keen6data clean distclean

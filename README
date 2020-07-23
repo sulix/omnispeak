@@ -71,6 +71,9 @@ the files from the 'data' directories.
 Cross-compilation for 32-bit and 64-bit Windows targets using MinGW32-Win64
 is also supported.
 
+Cross-compilation for the RG350 is supported using BuildRoot. Configure it
+before building by running the prebuild-rg350.sh script in the tools folder.
+
 To see a full list of build options, just run `make help`.
 
 
