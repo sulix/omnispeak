@@ -33,8 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 #define VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH (vl_hasOverscanBorder ? 8 : 0)
 #define VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH (vl_hasOverscanBorder ? 8 : 0)
-#define VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT (vl_hasOverscanBorder ? 7 : 0)
-#define VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT (vl_hasOverscanBorder ? 7 : 0)
+#define VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT (vl_hasOverscanBorder ? (vl_isIntegerScaled ? 8 : 7) : 0)
+#define VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT (vl_hasOverscanBorder ? (vl_isIntegerScaled ? 8 : 7) : 0)
 #define VL_VGA_GFX_WIDTH_SCALEFACTOR 1
 #define VL_VGA_GFX_HEIGHT_SCALEFACTOR 2
 /* If 320x200 is desired, then the bars should be
@@ -59,7 +59,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // There are a few more tricks in use to handle the overscan border
 // and VGA line doubling.
 #define VL_DEFAULT_WINDOW_WIDTH (VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER * 3 / VL_VGA_GFX_WIDTH_SCALEFACTOR)
-#define VL_DEFAULT_WINDOW_HEIGHT (6 * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER * 3 / (5 * VL_VGA_GFX_HEIGHT_SCALEFACTOR))
+#define VL_DEFAULT_WINDOW_HEIGHT (6 * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER * 3 / ((vl_isIntegerScaled ? 6 : 5) * VL_VGA_GFX_HEIGHT_SCALEFACTOR))
 
 #define VL_WINDOW_TITLE "Omnispeak"
 
@@ -79,6 +79,7 @@ extern VL_EGAVGAAdapter vl_emuegavgaadapter;
 
 extern bool vl_isFullScreen;
 extern bool vl_isAspectCorrected;
+extern bool vl_isIntegerScaled;
 extern bool vl_hasOverscanBorder;
 
 // The full on-screen region, including overscan border.

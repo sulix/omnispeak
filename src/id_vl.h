@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 extern bool vl_screenFaded;
 extern bool vl_isFullScreen;
 extern bool vl_isAspectCorrected;
+extern bool vl_isIntegerScaled;
 extern bool vl_hasOverscanBorder;
 
 // EGA signal palettes (the 17th entry of each row is the overscan border color)
@@ -116,10 +117,11 @@ typedef struct VL_Backend
 void VL_InitScreen(void);
 void VL_Shutdown();
 void VL_ResizeScreen(int w, int h);
-void VL_SetParams(bool isFullScreen, bool isAspectCorrected, bool hasOverscan);
+void VL_SetParams(bool isFullScreen, bool isAspectCorrected, bool hasOverscan, bool isIntegerScaled);
 void VL_ToggleFullscreen();
 void VL_ToggleAspect();
 void VL_ToggleBorder();
+void VL_ToggleInteger();
 void *VL_CreateSurface(int w, int h);
 void VL_DestroySurface(void *surf);
 void *VL_SetScreen(void *surf);

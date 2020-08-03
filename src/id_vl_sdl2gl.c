@@ -206,17 +206,6 @@ const char *pxprog = "#version 110\n"
 
 void VL_SDL2GL_SetIcon(SDL_Window *wnd);
 
-// Here is how the dimensions of the window are currently picked:
-// 1. The emulated 320x200 sub-window is first zoomed
-// by a factor of 3 (for each dimension) to 960x600.
-// 2. The height is then multiplied by 1.2, so the internal contents
-// (without the borders) have the aspect ratio of 4:3.
-//
-// There are a few more tricks in use to handle the overscan border
-// and VGA line doubling.
-#define VL_SDL2GL_DEFAULT_WINDOW_WIDTH (VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER * 3 / VL_VGA_GFX_WIDTH_SCALEFACTOR)
-#define VL_SDL2GL_DEFAULT_WINDOW_HEIGHT (6 * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER * 3 / (5 * VL_VGA_GFX_HEIGHT_SCALEFACTOR))
-
 static void VL_SDL2GL_SetVideoMode(int mode)
 {
 	if (mode == 0xD)
@@ -230,7 +219,7 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 		// There are a few more tricks in use to handle the overscan border
 		// and VGA line doubling.
 		vl_sdl2gl_window = SDL_CreateWindow(VL_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-			VL_SDL2GL_DEFAULT_WINDOW_WIDTH, VL_SDL2GL_DEFAULT_WINDOW_HEIGHT,
+			VL_DEFAULT_WINDOW_WIDTH, VL_DEFAULT_WINDOW_HEIGHT,
 			SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 		vl_sdl2gl_context = SDL_GL_CreateContext(vl_sdl2gl_window);
 		vl_sdl2gl_screenWidth = VL_EGAVGA_GFX_WIDTH;

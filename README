@@ -47,6 +47,8 @@ You can provide Omnispeak the following command-line arguments:
 		- Starts the game with aspect-ratio correction off.
 	/NOBORDER
 		- Starts the game with EGA overscan border emulation off.
+	/INTEGER
+		- Starts the game with integer scaling enabled.
 	/NOJOYS
 		- Disables Joystick detection.
 	/DEMOFILE <filename>

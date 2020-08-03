@@ -654,6 +654,7 @@ int main(int argc, char *argv[])
 	bool isFullScreen = false;
 	bool isAspectCorrected = true;
 	bool hasBorder = true;
+	bool isIntegerScaled = false;
 	bool overrideCopyProtection = false;
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 	const char *dumperFilename = NULL;
@@ -699,6 +700,10 @@ int main(int argc, char *argv[])
 		{
 			hasBorder = false;
 		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/INTEGER"))
+		{
+			isIntegerScaled = true;
+		}
 		else if (!CK_Cross_strcasecmp(argv[i], "/NOJOYS"))
 		{
 			in_disableJoysticks = true;
@@ -730,7 +735,7 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-	VL_SetParams(isFullScreen, isAspectCorrected, hasBorder);
+	VL_SetParams(isFullScreen, isAspectCorrected, hasBorder, isIntegerScaled);
 
 	ck_currentEpisode->defineConstants();
 

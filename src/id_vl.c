@@ -728,31 +728,39 @@ void VL_ResizeScreen(int w, int h)
 
 bool vl_isFullScreen;
 bool vl_isAspectCorrected;
+bool vl_isIntegerScaled;
 bool vl_hasOverscanBorder;
 
-void VL_SetParams(bool isFullScreen, bool isAspectCorrected, bool hasOverscan)
+void VL_SetParams(bool isFullScreen, bool isAspectCorrected, bool hasOverscan, bool isIntegerScaled)
 {
 	vl_isFullScreen = isFullScreen;
 	vl_isAspectCorrected = isAspectCorrected;
 	vl_hasOverscanBorder = hasOverscan;
+	vl_isIntegerScaled = isIntegerScaled;
 	if (vl_currentBackend)
 		vl_currentBackend->flushParams();
 }
 
 void VL_ToggleFullscreen()
 {
-	VL_SetParams(!vl_isFullScreen, vl_isAspectCorrected, vl_hasOverscanBorder);
+	VL_SetParams(!vl_isFullScreen, vl_isAspectCorrected, vl_hasOverscanBorder, vl_isIntegerScaled);
 }
 
 void VL_ToggleAspect()
 {
-	VL_SetParams(vl_isFullScreen, !vl_isAspectCorrected, vl_hasOverscanBorder);
+	VL_SetParams(vl_isFullScreen, !vl_isAspectCorrected, vl_hasOverscanBorder, vl_isIntegerScaled);
 }
 
 void VL_ToggleBorder()
 {
-	VL_SetParams(vl_isFullScreen, vl_isAspectCorrected, !vl_hasOverscanBorder);
+	VL_SetParams(vl_isFullScreen, vl_isAspectCorrected, !vl_hasOverscanBorder, vl_isIntegerScaled);
 }
+
+void VL_ToggleInteger()
+{
+	VL_SetParams(vl_isFullScreen, vl_isAspectCorrected, vl_hasOverscanBorder, !vl_isIntegerScaled);
+}
+
 
 void *VL_CreateSurface(int w, int h)
 {
@@ -976,8 +984,21 @@ void VL_CalculateRenderRegions(int realW, int realH)
 		vl_fullRgn_y = 0;
 	}
 
-	vl_integerWidth = CK_Cross_max((vl_fullRgn_w / VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER) * VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER);
-	vl_integerHeight = CK_Cross_max((vl_fullRgn_h / VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER) * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER);
+
+	if (vl_isIntegerScaled)
+	{
+		vl_fullRgn_w = CK_Cross_max((vl_fullRgn_w / VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER) * VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER);
+		vl_fullRgn_h = CK_Cross_max((vl_fullRgn_h / VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER) * VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER, VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER);
+		vl_fullRgn_x = (realW - vl_fullRgn_w)/2;
+		vl_fullRgn_y = (realH - vl_fullRgn_h)/2;
+		vl_integerWidth = vl_fullRgn_w; 
+		vl_integerHeight = vl_fullRgn_h;
+	}
+	else
+	{
+		vl_integerWidth = CK_Cross_max((vl_fullRgn_w / VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER) * VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER);
+		vl_integerHeight = CK_Cross_max((vl_fullRgn_h / VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER) * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER);
+	}
 
 	vl_renderRgn_x =
 		vl_integerWidth * VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH /
