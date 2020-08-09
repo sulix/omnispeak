@@ -63,7 +63,11 @@ static void VL_SDL2_SetVideoMode(int mode)
 
 		//VL_SDL2GL_SetIcon(vl_sdl2_window);
 
+#ifdef VL_SDL2_REQUEST_SOFTWARE
+		vl_sdl2_renderer = SDL_CreateRenderer(vl_sdl2_window, -1, SDL_RENDERER_SOFTWARE);
+#else
 		vl_sdl2_renderer = SDL_CreateRenderer(vl_sdl2_window, -1, 0);
+#endif
 
 		SDL_RendererInfo info;
 		SDL_GetRendererInfo(vl_sdl2_renderer, &info);

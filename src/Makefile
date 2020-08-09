@@ -29,6 +29,7 @@ This Makefile supports the following options:
   RENDERER      the type of video output API (not available for PLATFORM=dos)
 		  sdl1    = SDL 1.2 (deprecated; no win64 support)
 		  sdl2    = SDL 2.0 + SDL_Renderer
+		  sdl2sw  = SDL 2.0 + Software SDL_Renderer
 		  sdl2gl  = SDL 2.0 + OpenGL 2.0 (default)
 		  sdl2vk  = SDL 2.0 + Vulkan (experimental)
 		  null    = dummy renderer
@@ -254,6 +255,11 @@ endif
 
 ifeq ($(RENDERER), sdl2)
 	RENDER_OBJS = id_vl_sdl2.o id_sd_sdl.o id_in_sdl.o
+endif
+
+ifeq ($(RENDERER), sdl2sw)
+	RENDER_OBJS = id_vl_sdl2.o id_sd_sdl.o id_in_sdl.o
+	CXXFLAGS += -DVL_SDL2_REQUEST_SOFTWARE
 endif
 
 ifeq ($(RENDERER), sdl2gl)
