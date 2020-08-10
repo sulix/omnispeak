@@ -51,6 +51,12 @@ You can provide Omnispeak the following command-line arguments:
 		- Starts the game with integer scaling enabled.
 	/NOJOYS
 		- Disables Joystick detection.
+	/NOCOPY
+		- Bypasses the "Creature Question" screen in Keen 6.
+	/NOAUDIOSYNC
+		- When using SDL-based sound backends, use the system clock
+		  rather than the audio clock.
+		  (Works around issues with some SDL audio backends under wine)
 	/DEMOFILE <filename>
 		- Plays the demo recorded with Keen's F10+D cheat in filename.
 
