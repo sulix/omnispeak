@@ -83,6 +83,8 @@ the files from the 'data' directories.
 Cross-compilation for 32-bit and 64-bit Windows targets using MinGW32-Win64
 is also supported.
 
+Cross-compilation for GCW Zero possible using the [GCW Zero toolchain](http://www.gcw-zero.com/develop).
+
 To see a full list of build options, just run `make help`.
 
 
