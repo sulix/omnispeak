@@ -20,6 +20,7 @@
 #define CK_CROSS_IS_LITTLEENDIAN
 #elif defined(__BIG_ENDIAN__) || (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
 #define CK_CROSS_IS_BIGENDIAN
+#else
 #error "cl_cross.h - Couldn't determine platform endianness!"
 #endif
 #endif
