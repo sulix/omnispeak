@@ -115,10 +115,6 @@ void SD_OPL2_PCSpkOn(bool on, int freq)
 	// No-op.
 }
 
-void SDL_PCService(void);
-void SDL_ALSoundService(void);
-void SDL_ALService(void);
-
 void SD_OPL2_Startup(void)
 {
 	wiringPiSetup();

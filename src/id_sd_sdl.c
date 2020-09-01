@@ -39,6 +39,8 @@
 #include "id_us.h"
 #include "ck_cross.h"
 
+#include "opl/dbopl.h"
+
 #define PC_PIT_RATE 1193182
 #define SD_SFX_PART_RATE 140
 /* In the original exe, upon setting a rate of 140Hz or 560Hz for some
@@ -279,10 +281,6 @@ void SD_SDL_PCSpkOn(bool on, int freq)
 	SD_SDL_BeepHalfCycleCounter = 0;
 	SD_SDL_BeepHalfCycleCounterUpperBound = SD_SDL_AudioSpec.freq * freq;
 }
-
-void SDL_PCService(void);
-void SDL_ALSoundService(void);
-void SDL_ALService(void);
 
 void SD_SDL_Startup(void)
 {

@@ -58,10 +58,6 @@ void SD_NULL_PCSpkOn(bool on, int freq)
 {
 }
 
-void SDL_PCService(void);
-void SDL_ALSoundService(void);
-void SDL_ALService(void);
-
 void SD_NULL_Startup(void)
 {
 
