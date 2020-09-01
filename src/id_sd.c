@@ -28,11 +28,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_cross.h"
 
 // Global variables accessed from other modules
-// TODO: Rename these, update elsewhere, use accessor fns.
-bool AdLibPresent;
-SDMode SoundMode;
-SMMode MusicMode;
-bool quiet_sfx;
+bool sd_haveAdlib;
+SD_SoundMode sd_soundMode;
+ID_MusicMode sd_musicMode;
+bool sd_quietAdlibSfx;
 
 // Internal globals
 static bool sd_started = false;
@@ -108,7 +107,7 @@ static void SD_SetIntsPerSecond(int16_t tickrate)
 
 static void SD_SetTimerSpeed(void)
 {
-	int16_t scaleFactor = (MusicMode == smm_AdLib) ? 4 : 1;
+	int16_t scaleFactor = (sd_musicMode == smm_AdLib) ? 4 : 1;
 	SD_SetIntsPerSecond(SD_SFX_PART_RATE * scaleFactor);
 	sd_scaledPITTimerDivisor *= (2 * scaleFactor);
 }
@@ -285,7 +284,7 @@ static void SD_AL_SetAdlibSfxInstrument(SD_AdlibInstrument *inst)
 	sd_backend->alOut(c + SD_ADLIB_REG_CHAR, inst->cChar);
 
 	cScale = inst->cScale;
-	if (quiet_sfx)
+	if (sd_quietAdlibSfx)
 	{
 		cScale = 0x3F - cScale;
 		/* TODO: All shifts should be arithmetic/signed
@@ -394,11 +393,11 @@ int sd_music_trackSize;
 // Is music currently playing?
 bool sd_musicStarted;
 
-typedef struct MusicGroup
+typedef struct SD_MusicTrack
 {
 	uint16_t length;
 	uint8_t data[0];
-} __attribute__((__packed__)) MusicGroup;
+} __attribute__((__packed__)) SD_MusicTrack;
 
 // Reset the Adlib card
 static void SD_AL_Reset()
@@ -442,7 +441,7 @@ static void SD_AL_MusicService()
 }
 
 // Set the current SoundMode (Off/PC/AdLib)
-bool SD_SetSoundMode(SDMode mode)
+bool SD_SetSoundMode(SD_SoundMode mode)
 {
 	bool soundAvailable = false;
 	int16_t sfxChunkOffset;
@@ -457,7 +456,7 @@ bool SD_SetSoundMode(SDMode mode)
 		soundAvailable = true;
 		break;
 	case sdm_AdLib:
-		if (!AdLibPresent)
+		if (!sd_haveAdlib)
 		{
 			break;
 		}
@@ -467,10 +466,10 @@ bool SD_SetSoundMode(SDMode mode)
 	default:
 		soundAvailable = false;
 	}
-	if (soundAvailable && (mode != SoundMode))
+	if (soundAvailable && (mode != sd_soundMode))
 	{
 		//SD_StopDevice();
-		SoundMode = mode;
+		      sd_soundMode = mode;
 		sd_sfxChunkArray = CA_audio + sfxChunkOffset;
 		//SD_StartDevice();
 		if (sd_backend)
@@ -483,7 +482,7 @@ bool SD_SetSoundMode(SDMode mode)
 }
 
 // Set the current MusicMode (Off/AdLib)
-bool SD_SetMusicMode(SMMode mode)
+bool SD_SetMusicMode(ID_MusicMode mode)
 {
 	bool musicAvailable = false;
 	SD_MusicOff();
@@ -498,26 +497,44 @@ bool SD_SetMusicMode(SMMode mode)
 		musicAvailable = true;
 		break;
 	case smm_AdLib:
-		if (AdLibPresent)
+		if (sd_haveAdlib)
 			musicAvailable = true;
 		break;
 	}
 	if (musicAvailable)
-		MusicMode = mode;
+		      sd_musicMode = mode;
 	SD_SetTimerSpeed();
 	return musicAvailable;
 }
 
 // Get the current SoundMode
-SDMode SD_GetSoundMode()
+SD_SoundMode SD_GetSoundMode()
 {
-	return SoundMode;
+	return sd_soundMode;
 }
 
 // Get the current MusicMode
-SMMode SD_GetMusicMode()
+ID_MusicMode SD_GetMusicMode()
 {
-	return MusicMode;
+	return sd_musicMode;
+}
+
+// Enable or disable quiet Adlib sound effects
+void SD_SetQuietSfx(bool value)
+{
+	   sd_quietAdlibSfx = value;
+}
+
+// Query if quiet adlib sound effects are enabled.
+bool SD_GetQuietSfx()
+{
+	return sd_quietAdlibSfx;
+}
+
+// Check to see if an Adlib card (i.e., Adlib backend) is present.
+bool SD_IsAdlibPresent()
+{
+	return true;
 }
 
 // Start the Sound Manager
@@ -532,7 +549,7 @@ void SD_Startup()
 		sd_backend->startup();
 
 	// TODO: Support /NOAL switch
-	AdLibPresent = true;
+	   sd_haveAdlib = true;
 
 	SD_SetTimeCount(0);
 
@@ -543,7 +560,7 @@ void SD_Startup()
 }
 
 // Set default Sound/Music modes
-void SD_Default(bool gotit, SDMode sd, SMMode sm)
+void SD_Default(bool gotit, SD_SoundMode sd, ID_MusicMode sm)
 {
 	// If not specified, Adlib is default.
 	if (!gotit)
@@ -553,16 +570,16 @@ void SD_Default(bool gotit, SDMode sd, SMMode sm)
 	}
 
 	// If Adlib not available, no music, PC Speaker
-	if (!AdLibPresent)
+	if (!sd_haveAdlib)
 	{
 		sd = (sd == sdm_AdLib) ? sdm_PC : sd;
 		sm = smm_Off;
 	}
 
 	// Update if required
-	if (sd != SoundMode)
+	if (sd != sd_soundMode)
 		SD_SetSoundMode(sd);
-	if (sm != MusicMode)
+	if (sm != sd_musicMode)
 		SD_SetMusicMode(sm);
 }
 
@@ -589,7 +606,7 @@ void SD_PlaySound(soundnames sound)
 {
 	uint32_t length;
 	uint16_t priority;
-	if (SoundMode == sdm_Off)
+	if (sd_soundMode == sdm_Off)
 		return;
 	if (!sd_sfxChunkArray[sound])
 		Quit("SD_PlaySound() - Uncached sound");
@@ -601,7 +618,7 @@ void SD_PlaySound(soundnames sound)
 	{
 		return;
 	}
-	switch (SoundMode)
+	switch (sd_soundMode)
 	{
 	case sdm_Off:
 		break;
@@ -627,7 +644,7 @@ uint16_t SD_SoundPlaying(void)
 // Stop the currently playing sound effect
 void SD_StopSound(void)
 {
-	switch (SoundMode)
+	switch (sd_soundMode)
 	{
 	case sdm_Off:
 		break;
@@ -667,7 +684,7 @@ void SD_MusicOff(void)
 		return;
 	sd_backend->lock();
 	sd_musicStarted = false;
-	if (MusicMode == smm_AdLib)
+	if (sd_musicMode == smm_AdLib)
 	{
 		// Reset the OPL2
 		sd_backend->alOut(SD_ADLIB_REG_EFFECTS, 0);
@@ -679,10 +696,10 @@ void SD_MusicOff(void)
 }
 
 // Start a specific music track.
-void SD_StartMusic(MusicGroup *music)
+void SD_StartMusic(SD_MusicTrack *music)
 {
 	SD_MusicOff();
-	if (MusicMode == smm_AdLib)
+	if (sd_musicMode == smm_AdLib)
 	{
 		if (!sd_backend)
 			return;
@@ -715,7 +732,7 @@ bool SD_MusicPlaying()
 void SDL_t0Service(void)
 {
 	static uint16_t count = 1;
-	if (MusicMode == smm_AdLib)
+	if (sd_musicMode == smm_AdLib)
 	{
 		SD_AL_MusicService();
 		++count;
@@ -725,7 +742,7 @@ void SDL_t0Service(void)
 		}
 		if (!(count & 3))
 		{
-			switch (SoundMode)
+			switch (sd_soundMode)
 			{
 			case sdm_Off:
 				break;
@@ -745,7 +762,7 @@ void SDL_t0Service(void)
 		{
 			sd_timeCount++;
 		}
-		switch (SoundMode)
+		switch (sd_soundMode)
 		{
 		case sdm_Off:
 			break;

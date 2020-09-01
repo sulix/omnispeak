@@ -26,34 +26,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 typedef int16_t soundnames;
 typedef int16_t musicnames;
 
-typedef struct MusicGroup MusicGroup;
+typedef struct SD_MusicTrack SD_MusicTrack;
 
 typedef enum
 {
 	sdm_Off,
 	sdm_PC,
 	sdm_AdLib,
-} SDMode;
+} SD_SoundMode;
 
 typedef enum
 {
 	smm_Off,
 	smm_AdLib
-} SMMode;
+} ID_MusicMode;
 
-// Global variables accessed from other modules
-// TODO: Rename these, update elsewhere, use accessor fns.
-extern bool AdLibPresent;
-extern SDMode SoundMode;
-extern SMMode MusicMode;
-extern bool quiet_sfx;
-
-bool SD_SetSoundMode(SDMode mode);
-bool SD_SetMusicMode(SMMode mode);
-SDMode SD_GetSoundMode();
-SMMode SD_GetMusicMode();
+bool SD_SetSoundMode(SD_SoundMode mode);
+bool SD_SetMusicMode(ID_MusicMode mode);
+SD_SoundMode SD_GetSoundMode();
+ID_MusicMode SD_GetMusicMode();
+void SD_SetQuietSfx(bool value);
+bool SD_GetQuietSfx();
+bool SD_IsAdlibPresent();
 void SD_Startup(void);
-void SD_Default(bool gotit, SDMode sd, SMMode sm);
+void SD_Default(bool gotit, SD_SoundMode sd, ID_MusicMode sm);
 void SD_Shutdown(void);
 void SD_PlaySound(soundnames sound);
 uint16_t SD_SoundPlaying(void);
@@ -61,7 +57,7 @@ void SD_StopSound(void);
 void SD_WaitSoundDone(void);
 void SD_MusicOn(void);
 void SD_MusicOff(void);
-void SD_StartMusic(MusicGroup *music);
+void SD_StartMusic(SD_MusicTrack *music);
 void SD_FadeOutMusic(void);
 bool SD_MusicPlaying(void); // Actually return false for all time
 

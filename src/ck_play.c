@@ -1332,7 +1332,7 @@ void StartMusic(int16_t level)
 	else
 		song = ck_levelMusic[level];
 
-	if ((song == -1) || (MusicMode != smm_AdLib))
+	if ((song == -1) || (SD_GetMusicMode() != smm_AdLib))
 		return;
 	MM_BombOnError(false);
 	CA_CacheAudioChunk(ca_audInfoE.startMusic + song);
@@ -1359,7 +1359,7 @@ void StartMusic(int16_t level)
 			VW_FadeToBlack();
 	}
 #endif
-	SD_StartMusic((MusicGroup *)CA_audio[ca_audInfoE.startMusic + song]);
+	SD_StartMusic((SD_MusicTrack *)CA_audio[ca_audInfoE.startMusic + song]);
 }
 
 //===========================================================================
