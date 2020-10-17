@@ -168,6 +168,7 @@ static void VL_SDL2_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int h
 	colour &= mapmask;
 
 	SDL_Surface *surf = (SDL_Surface *)dst_surface;
+	SDL_LockSurface(surf);
 	for (int py = y; py < y + h; py++)
 		for (int px = x; px < x + w; px++)
 		{
@@ -175,6 +176,7 @@ static void VL_SDL2_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int h
 			*p &= ~mapmask;
 			*p |= colour;
 		}
+	SDL_UnlockSurface(surf);
 }
 
 static void VL_SDL2_SurfaceToSurface(void *src_surface, void *dst_surface, int x, int y, int sx, int sy, int sw, int sh)
@@ -184,15 +186,16 @@ static void VL_SDL2_SurfaceToSurface(void *src_surface, void *dst_surface, int x
 	SDL_Surface *surf = (SDL_Surface *)src_surface;
 	SDL_Surface *dest = (SDL_Surface *)dst_surface;
 
+	SDL_LockSurface(surf);
+	SDL_LockSurface(dest);
+
 	for (int _y = sy; _y < sy + sh; ++_y)
 	{
 		memcpy(((uint8_t *)dest->pixels) + (_y - sy + y) * dest->w + x, ((uint8_t *)surf->pixels) + _y * surf->w + sx, sw);
 	}
-#if 0
-	SDL_Rect srcr = {sx,sy,sw,sh};
-	SDL_Rect dstr = {x,y,sw,sh};
-	SDL_BlitSurface(surf,&srcr, dest, &dstr);
-#endif
+
+	SDL_UnlockSurface(dest);
+	SDL_UnlockSurface(surf);
 }
 
 static void VL_SDL2_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, int sw, int sh)
@@ -331,7 +334,9 @@ static void VL_SDL2_Present(void *surface, int scrlX, int scrlY, bool singleBuff
 	SDL_Rect fullRect = {(Sint16)vl_fullRgn_x, (Sint16)vl_fullRgn_y, vl_fullRgn_w, vl_fullRgn_h};
 
 	SDL_BlitSurface(surf, &srcr, vl_sdl2_stagingSurface, 0);
+	SDL_LockSurface(vl_sdl2_stagingSurface);
 	SDL_UpdateTexture(vl_sdl2_texture, 0, vl_sdl2_stagingSurface->pixels, vl_sdl2_stagingSurface->pitch);
+	SDL_UnlockSurface(vl_sdl2_stagingSurface);
 	if (vl_sdl2_scaledTarget)
 	{
 		SDL_SetRenderTarget(vl_sdl2_renderer, vl_sdl2_scaledTarget);
