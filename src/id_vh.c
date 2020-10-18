@@ -42,6 +42,17 @@ VH_SpriteTableEntry *VH_GetSpriteTableEntry(int spriteNumber)
 	return &spriteTable[spriteNumber];
 }
 
+VH_ShiftedSprite *VH_GetShiftedSprite(int chunk)
+{
+	VH_ShiftedSprite *shifted = (VH_ShiftedSprite *)CA_GetGrChunk(chunk, 0, "Sprite", true);
+	return shifted;
+}
+
+int VH_GetShiftedSpriteWidth(VH_ShiftedSprite *shifted, int shift)
+{
+	return shifted->sprShiftByteWidths[shift] * 8;
+}
+
 void VH_Plot(int x, int y, int colour)
 {
 	VL_ScreenRect(x, y, 1, 1, colour);
@@ -110,7 +121,7 @@ void VH_DrawSprite(int x, int y, int chunk)
 
 	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
 
-	VH_ShiftedSprite *shifted = (VH_ShiftedSprite *)CA_GetGrChunk(chunk, 0, "Sprite", true);
+	VH_ShiftedSprite *shifted = VH_GetShiftedSprite(chunk);
 
 	int shift = (x & 7) / 2;
 
@@ -118,7 +129,7 @@ void VH_DrawSprite(int x, int y, int chunk)
 
 	int width = shifted->sprShiftByteWidths[shift] * 8;
 
-	VL_MaskedBlitToScreen(data, x + (spr->originX >> 4) & ~7, y + (spr->originY >> 4), width, spr->height);
+	VL_MaskedBlitToScreen(data, x & ~7, y, width, spr->height);
 }
 
 void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
@@ -127,7 +138,7 @@ void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
 
 	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
 
-	VH_ShiftedSprite *shifted = (VH_ShiftedSprite *)CA_GetGrChunk(chunk, 0, "Sprite", true);
+	VH_ShiftedSprite *shifted = VH_GetShiftedSprite(chunk);
 
 	int shift = (x & 7) / 2;
 
@@ -135,7 +146,37 @@ void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
 
 	int width = shifted->sprShiftByteWidths[shift] * 8;
 
-	VL_1bppInvBlitToScreen(data, x + (spr->originX >> 4) & ~7, y + (spr->originY >> 4), width, spr->height, colour);
+	VL_1bppInvBlitToScreen(data, x & ~7, y, width, spr->height, colour);
+}
+
+void VH_DrawShiftedSprite(int x, int y, int chunk, int shift)
+{
+	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
+
+	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
+
+	VH_ShiftedSprite *shifted = VH_GetShiftedSprite(chunk);
+
+	uint8_t *data = &shifted->data[shifted->sprShiftOffset[shift]];
+
+	int width = shifted->sprShiftByteWidths[shift] * 8;
+
+	VL_MaskedBlitToScreen(data, x, y, width, spr->height);
+}
+
+void VH_DrawShiftedSpriteMask(int x, int y, int chunk, int shift, int colour)
+{
+	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
+
+	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
+
+	VH_ShiftedSprite *shifted = VH_GetShiftedSprite(chunk);
+
+	uint8_t *data = &shifted->data[shifted->sprShiftOffset[shift]];
+
+	int width = shifted->sprShiftByteWidths[shift] * 8;
+
+	VL_1bppInvBlitToScreen(data, x, y, width, spr->height, colour);
 }
 
 void VH_DrawPropChar(int x, int y, int chunk, unsigned char c, int colour)

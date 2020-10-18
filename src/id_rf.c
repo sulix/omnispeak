@@ -1154,8 +1154,8 @@ void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
 	if ((*drawEntry)->updateCount < VL_GetNumBuffers())
 	{
 		if (!(*drawEntry)->updateCount)
-			RF_PlaceEraser(((*drawEntry)->x + RF_UnitToPixel(oldSprite->originX)) & shiftMask, (*drawEntry)->y + RF_UnitToPixel(oldSprite->originY), (*drawEntry)->sw, (*drawEntry)->sh, RF_GetLastPage(0));
-		RF_PlaceEraser(((*drawEntry)->x + RF_UnitToPixel(oldSprite->originX)) & shiftMask, (*drawEntry)->y + RF_UnitToPixel(oldSprite->originY), (*drawEntry)->sw, (*drawEntry)->sh, RF_GetLastPage(1));
+			RF_PlaceEraser((*drawEntry)->x, (*drawEntry)->y, (*drawEntry)->sw, (*drawEntry)->sh, RF_GetLastPage(0));
+		RF_PlaceEraser((*drawEntry)->x, (*drawEntry)->y, (*drawEntry)->sw, (*drawEntry)->sh, RF_GetLastPage(1));
 	}
 
 	if ((*drawEntry)->next)
@@ -1247,8 +1247,8 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 		if (sde->updateCount < VL_GetNumBuffers())
 		{
 			if (!sde->updateCount)
-				RF_PlaceEraser((sde->x + RF_UnitToPixel(oldSprite->originX)) & shiftMask, sde->y + RF_UnitToPixel(oldSprite->originY), sde->sw, sde->sh, RF_GetLastPage(0));
-			RF_PlaceEraser((sde->x + RF_UnitToPixel(oldSprite->originX)) & shiftMask, sde->y + RF_UnitToPixel(oldSprite->originY), sde->sw, sde->sh, RF_GetLastPage(1));
+				RF_PlaceEraser(sde->x, sde->y, sde->sw, sde->sh, RF_GetLastPage(0));
+			RF_PlaceEraser(sde->x, sde->y, sde->sw, sde->sh, RF_GetLastPage(1));
 		}
 
 		//TODO: Support changing zLayers properly.
@@ -1293,14 +1293,21 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	if (!CA_GetGrChunk(ca_gfxInfoE.offSprites, sprite_number, "Sprite", false))
 		Quit("RF_AddSpriteDraw: Placed an uncached sprite");
 
+	VH_ShiftedSprite *shifted = VH_GetShiftedSprite(chunk);
+
+	int unshiftedX = RF_UnitToPixel(unitX + VH_GetSpriteTableEntry(sprite_number)->originX);
+	int shift = (unshiftedX&7) / 2;
+
 	sde->chunk = chunk;
 	sde->zLayer = zLayer;
-	sde->x = RF_UnitToPixel(unitX);
-	sde->y = RF_UnitToPixel(unitY);
-	sde->sw = VH_GetSpriteTableEntry(sprite_number)->width * 8;
+	sde->x = unshiftedX & ~7;
+	sde->y = RF_UnitToPixel(unitY + VH_GetSpriteTableEntry(sprite_number)->originY);
+	sde->sw = VH_GetShiftedSpriteWidth(shifted, shift);
 	sde->sh = VH_GetSpriteTableEntry(sprite_number)->height;
 	sde->maskOnly = allWhite;
 	sde->updateCount = VL_GetNumBuffers();
+
+	sde->shift = shift;
 
 	*drawEntry = sde;
 }
@@ -1376,11 +1383,11 @@ void RFL_DrawSpriteList()
 			{
 				if (sde->maskOnly)
 				{
-					VH_DrawSpriteMask(pixelX, pixelY, sde->chunk, 15);
+					VH_DrawShiftedSpriteMask(pixelX, pixelY, sde->chunk, sde->shift, 15);
 				}
 				else
 				{
-					VH_DrawSprite(pixelX, pixelY, sde->chunk);
+					VH_DrawShiftedSprite(pixelX, pixelY, sde->chunk, sde->shift);
 				}
 				for (int y = tileY1; y <= tileY2; ++y)
 				{

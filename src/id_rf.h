@@ -33,6 +33,7 @@ typedef struct RF_SpriteDrawEntry
 	int sw, sh;
 	bool maskOnly;
 	int updateCount;
+	int shift;
 	struct RF_SpriteDrawEntry **prevNextPtr; // Pointer to the previous entry's 'next' pointer.
 	struct RF_SpriteDrawEntry *next;
 } RF_SpriteDrawEntry;

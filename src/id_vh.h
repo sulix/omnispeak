@@ -57,6 +57,9 @@ typedef struct VH_ShiftedSprite
 	uint8_t data[];
 } VH_ShiftedSprite;
 
+VH_ShiftedSprite *VH_GetShiftedSprite(int chunk);
+int VH_GetShiftedSpriteWidth(VH_ShiftedSprite *shifted, int shift);
+
 void VH_Plot(int x, int y, int colour);
 void VH_HLine(int x1, int x2, int y, int colour);
 void VH_VLine(int y1, int y2, int x, int colour);
@@ -69,6 +72,8 @@ void VH_DrawBitmap(int x, int y, int chunk);
 void VH_DrawMaskedBitmap(int x, int y, int chunk);
 void VH_DrawSprite(int x, int y, int chunk);
 void VH_DrawSpriteMask(int x, int y, int chunk, int colour);
+void VH_DrawShiftedSprite(int x, int y, int chunk, int shift);
+void VH_DrawShiftedSpriteMask(int x, int y, int chunk, int shift, int colour);
 void VH_DrawPropChar(int x, int y, int chunk, unsigned char c, int colour);
 void VH_MeasurePropString(const char *string, uint16_t *width, uint16_t *height, int16_t chunk);
 void VH_DrawPropString(const char *string, int x, int y, int chunk, int colour);
