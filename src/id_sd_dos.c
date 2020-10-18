@@ -57,8 +57,16 @@ void SD_DOS_alOut(uint8_t reg, uint8_t val)
 	int wereIntsEnabled = disable();
 
 	outportb(SD_ADLIB_REG_PORT, reg);
-	// TODO: Delay (TimerDelay10)
+
+	// Delay 6 'in's to give the OPL2 some processing time.
+	for (int timer = 6; timer; --timer)
+		(void)inportb(SD_ADLIB_REG_PORT);
+
 	outportb(SD_ADLIB_DATA_PORT, val);
+
+	// And wait a lot more after sending the data.
+	for (int timer = 35; timer; --timer)
+		(void)inportb(SD_ADLIB_REG_PORT);
 
 	if (wereIntsEnabled)
 		enable();
