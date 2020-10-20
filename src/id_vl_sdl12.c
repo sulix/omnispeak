@@ -172,18 +172,49 @@ static void VL_SDL12_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, 
 	bool directionX = sx > x;
 	bool directionY = sy > y;
 
+
 	if (directionY)
 	{
 		for (int yi = 0; yi < sh; ++yi)
 		{
-			memmove((uint8_t *)srf->pixels + ((yi + y) * srf->pitch + x), (uint8_t *)srf->pixels + ((sy + yi) * srf->pitch + sx), sw);
+			uint8_t *px1 = (uint8_t*)srf->pixels + ((yi + y) * srf->pitch + x);
+			uint8_t *px2 = (uint8_t*)srf->pixels + ((yi + sy) * srf->pitch + sx);
+			if (directionX)
+			{
+				for (int xi = 0; xi < sw; ++xi)
+				{
+					px1[xi] = px2[xi];
+				}
+			}
+			else
+			{
+				for (int xi = sw - 1; xi >= 0; --xi)
+				{
+					px1[xi] = px2[xi];
+				}
+			}
 		}
 	}
 	else
 	{
 		for (int yi = sh - 1; yi >= 0; --yi)
 		{
-			memmove((uint8_t *)srf->pixels + ((yi + y) * srf->pitch + x), (uint8_t *)srf->pixels + ((sy + yi) * srf->pitch + sx), sw);
+			uint8_t *px1 = (uint8_t*)srf->pixels + ((yi + y) * srf->pitch + x);
+			uint8_t *px2 = (uint8_t*)srf->pixels + ((yi + sy) * srf->pitch + sx);
+			if (directionX)
+			{
+				for (int xi = 0; xi < sw; ++xi)
+				{
+					px1[xi] = px2[xi];
+				}
+			}
+			else
+			{
+				for (int xi = sw - 1; xi >= 0; --xi)
+				{
+					px1[xi] = px2[xi];
+				}
+			}
 		}
 	}
 
