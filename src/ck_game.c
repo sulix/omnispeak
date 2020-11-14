@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string.h>
 
 #include "id_ca.h"
+#include "id_fs.h"
 #include "id_rf.h"
 #include "id_us.h"
 #include "id_vl.h"
@@ -105,53 +106,53 @@ bool CK_SaveObject(FILE *fp, CK_object *o)
 #endif
 	// clang-format off
 	// Now writing
-	return ((CK_Cross_fwriteInt16LE(&o->type, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&activeInt, 1, fp) == 1)
-	        && (CK_Cross_fwriteBoolTo16LE(&o->visible, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&clippedInt, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->timeUntillThink, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->posX, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->posY, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->xDirection, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->yDirection, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->deltaPosX, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->deltaPosY, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->velX, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->velY, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->actionTimer, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&statedosoffset, 1, fp) == 1) // BACKWARD COMPATIBILITY
-	        && (CK_Cross_fwriteInt16LE(&o->gfxChunk, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->zLayer, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->clipRects.unitX1, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->clipRects.unitY1, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->clipRects.unitX2, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->clipRects.unitY2, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->clipRects.unitXmid, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->clipRects.tileX1, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->clipRects.tileY1, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->clipRects.tileX2, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->clipRects.tileY2, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->clipRects.tileXmid, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->topTI, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->rightTI, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->bottomTI, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->leftTI, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->user1, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->user2, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->user3, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&o->user4, 1, fp) == 1)
+	return ((FS_WriteInt16LE(&o->type, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&activeInt, 1, fp) == 1)
+	        && (FS_WriteBoolTo16LE(&o->visible, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&clippedInt, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->timeUntillThink, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->posX, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->posY, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->xDirection, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->yDirection, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->deltaPosX, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->deltaPosY, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->velX, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->velY, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->actionTimer, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&statedosoffset, 1, fp) == 1) // BACKWARD COMPATIBILITY
+	        && (FS_WriteInt16LE(&o->gfxChunk, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->zLayer, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->clipRects.unitX1, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->clipRects.unitY1, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->clipRects.unitX2, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->clipRects.unitY2, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->clipRects.unitXmid, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->clipRects.tileX1, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->clipRects.tileY1, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->clipRects.tileX2, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->clipRects.tileY2, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->clipRects.tileXmid, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->topTI, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->rightTI, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->bottomTI, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->leftTI, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->user1, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->user2, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->user3, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&o->user4, 1, fp) == 1)
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
-	        && (CK_Cross_fwriteInt16LE(&sde, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&next, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&prev, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&sde, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&next, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&prev, 1, fp) == 1)
 #else
 	        // No need to write sde, prev pointers as-is,
 	        // these are ignored on loading. So write dummy value.
 	        // Furthermore, all we need to know about next on loading is
 	        // if it's zero or not.
-	        && (CK_Cross_fwriteInt16LE(&dummy, 1, fp) == 1) // sde
-	        && (CK_Cross_fwriteInt16LE(&isnext, 1, fp) == 1) // next
-	        && (CK_Cross_fwriteInt16LE(&dummy, 1, fp) == 1) // prev
+	        && (FS_WriteInt16LE(&dummy, 1, fp) == 1) // sde
+	        && (FS_WriteInt16LE(&isnext, 1, fp) == 1) // next
+	        && (FS_WriteInt16LE(&dummy, 1, fp) == 1) // prev
 #endif
 	);
 	// clang-format on
@@ -168,48 +169,48 @@ static bool CK_LoadObject(FILE *fp, CK_object *o)
 	int16_t isnext;
 	// Now reading
 	// clang-format off
-	if ((CK_Cross_freadInt16LE(&o->type, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&activeInt, 1, fp) != 1)
-	    || (CK_Cross_freadBoolFrom16LE(&o->visible, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&clippedInt, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->timeUntillThink, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->posX, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->posY, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->xDirection, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->yDirection, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->deltaPosX, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->deltaPosY, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->velX, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->velY, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->actionTimer, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&statedosoffset, 1, fp) != 1) // BACKWARD COMPATIBILITY
-	    || (CK_Cross_freadInt16LE(&o->gfxChunk, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->zLayer, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->clipRects.unitX1, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->clipRects.unitY1, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->clipRects.unitX2, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->clipRects.unitY2, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->clipRects.unitXmid, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->clipRects.tileX1, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->clipRects.tileY1, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->clipRects.tileX2, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->clipRects.tileY2, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->clipRects.tileXmid, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->topTI, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->rightTI, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->bottomTI, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->leftTI, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->user1, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->user2, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->user3, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&o->user4, 1, fp) != 1)
+	if ((FS_ReadInt16LE(&o->type, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&activeInt, 1, fp) != 1)
+	    || (FS_ReadBoolFrom16LE(&o->visible, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&clippedInt, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->timeUntillThink, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->posX, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->posY, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->xDirection, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->yDirection, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->deltaPosX, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->deltaPosY, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->velX, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->velY, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->actionTimer, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&statedosoffset, 1, fp) != 1) // BACKWARD COMPATIBILITY
+	    || (FS_ReadInt16LE(&o->gfxChunk, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->zLayer, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->clipRects.unitX1, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->clipRects.unitY1, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->clipRects.unitX2, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->clipRects.unitY2, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->clipRects.unitXmid, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->clipRects.tileX1, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->clipRects.tileY1, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->clipRects.tileX2, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->clipRects.tileY2, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->clipRects.tileXmid, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->topTI, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->rightTI, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->bottomTI, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->leftTI, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->user1, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->user2, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->user3, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&o->user4, 1, fp) != 1)
 	    // No need to read sde, prev pointers as-is,
 	    // these are ignored on loading. So read dummy value.
 	    // Furthermore, all we need to know about next on loading is
 	    // if it's zero or not.
-	    || (CK_Cross_freadInt16LE(&dummy, 1, fp) != 1) // sde
-	    || (CK_Cross_freadInt16LE(&isnext, 1, fp) != 1) // next
-	    || (CK_Cross_freadInt16LE(&dummy, 1, fp) != 1) // prev
+	    || (FS_ReadInt16LE(&dummy, 1, fp) != 1) // sde
+	    || (FS_ReadInt16LE(&isnext, 1, fp) != 1) // next
+	    || (FS_ReadInt16LE(&dummy, 1, fp) != 1) // prev
 	)
 		return false;
 	// clang-format on
@@ -230,34 +231,34 @@ bool CK_SaveGameState(FILE *fp, CK_GameState *state)
 	uint16_t platformObjOffset = CK_ConvertObjPointerTo16BitOffset(ck_keenState.platform);
 
 	// clang-format off
-	return ((CK_Cross_fwriteInt16LE(&state->mapPosX, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&state->mapPosY, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(state->levelsDone, sizeof(state->levelsDone)/2, fp) == sizeof(state->levelsDone)/2)
-	        && (CK_Cross_fwriteInt32LE(&state->keenScore, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt32LE(&state->nextKeenAt, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&state->numShots, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&state->numCentilife, 1, fp) == 1)
+	return ((FS_WriteInt16LE(&state->mapPosX, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&state->mapPosY, 1, fp) == 1)
+	        && (FS_WriteInt16LE(state->levelsDone, sizeof(state->levelsDone)/2, fp) == sizeof(state->levelsDone)/2)
+	        && (FS_WriteInt32LE(&state->keenScore, 1, fp) == 1)
+	        && (FS_WriteInt32LE(&state->nextKeenAt, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&state->numShots, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&state->numCentilife, 1, fp) == 1)
 	        && (((ck_currentEpisode->ep == EP_CK4)
-	            && (CK_Cross_fwriteInt16LE(&state->ep.ck4.wetsuit, 1, fp) == 1)
-	            && (CK_Cross_fwriteInt16LE(&state->ep.ck4.membersRescued, 1, fp) == 1)
+	            && (FS_WriteInt16LE(&state->ep.ck4.wetsuit, 1, fp) == 1)
+	            && (FS_WriteInt16LE(&state->ep.ck4.membersRescued, 1, fp) == 1)
 	         )
 	         || ((ck_currentEpisode->ep == EP_CK5)
-	            && (CK_Cross_fwriteInt16LE(&state->ep.ck5.securityCard, 1, fp) == 1)
-	            && (CK_Cross_fwriteInt16LE(&state->ep.ck5.word_4729C, 1, fp) == 1)
-	            && (CK_Cross_fwriteInt16LE(&state->ep.ck5.fusesRemaining, 1, fp) == 1)
+	            && (FS_WriteInt16LE(&state->ep.ck5.securityCard, 1, fp) == 1)
+	            && (FS_WriteInt16LE(&state->ep.ck5.word_4729C, 1, fp) == 1)
+	            && (FS_WriteInt16LE(&state->ep.ck5.fusesRemaining, 1, fp) == 1)
 	         )
 	         || ((ck_currentEpisode->ep == EP_CK6)
-	            && (CK_Cross_fwriteInt16LE(&state->ep.ck6.sandwich, 1, fp) == 1)
-	            && (CK_Cross_fwriteInt16LE(&state->ep.ck6.rope, 1, fp) == 1)
-	            && (CK_Cross_fwriteInt16LE(&state->ep.ck6.passcard, 1, fp) == 1)
-	            && (CK_Cross_fwriteInt16LE(&state->ep.ck6.inRocket, 1, fp) == 1)
+	            && (FS_WriteInt16LE(&state->ep.ck6.sandwich, 1, fp) == 1)
+	            && (FS_WriteInt16LE(&state->ep.ck6.rope, 1, fp) == 1)
+	            && (FS_WriteInt16LE(&state->ep.ck6.passcard, 1, fp) == 1)
+	            && (FS_WriteInt16LE(&state->ep.ck6.inRocket, 1, fp) == 1)
 	         )
 	        )
-	        && (CK_Cross_fwriteInt16LE(state->keyGems, sizeof(state->keyGems)/2, fp) == sizeof(state->keyGems)/2)
-	        && (CK_Cross_fwriteInt16LE(&state->currentLevel, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&state->numLives, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&difficultyInt, 1, fp) == 1)
-	        && (CK_Cross_fwriteInt16LE(&platformObjOffset, 1, fp) == 1) // BACKWARDS COMPATIBILITY
+	        && (FS_WriteInt16LE(state->keyGems, sizeof(state->keyGems)/2, fp) == sizeof(state->keyGems)/2)
+	        && (FS_WriteInt16LE(&state->currentLevel, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&state->numLives, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&difficultyInt, 1, fp) == 1)
+	        && (FS_WriteInt16LE(&platformObjOffset, 1, fp) == 1) // BACKWARDS COMPATIBILITY
 	);
 	// clang-format on
 }
@@ -267,39 +268,39 @@ static bool CK_LoadGameState(FILE *fp, CK_GameState *state)
 	int16_t difficultyInt; // Convert num
 	uint16_t platformObjOffset;
 	// clang-format off
-	if ((CK_Cross_freadInt16LE(&state->mapPosX, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&state->mapPosY, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(state->levelsDone, sizeof(state->levelsDone)/2, fp) != sizeof(state->levelsDone)/2)
-	    || (CK_Cross_freadInt32LE(&state->keenScore, 1, fp) != 1)
-	    || (CK_Cross_freadInt32LE(&state->nextKeenAt, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&state->numShots, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&state->numCentilife, 1, fp) != 1)
+	if ((FS_ReadInt16LE(&state->mapPosX, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&state->mapPosY, 1, fp) != 1)
+	    || (FS_ReadInt16LE(state->levelsDone, sizeof(state->levelsDone)/2, fp) != sizeof(state->levelsDone)/2)
+	    || (FS_ReadInt32LE(&state->keenScore, 1, fp) != 1)
+	    || (FS_ReadInt32LE(&state->nextKeenAt, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&state->numShots, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&state->numCentilife, 1, fp) != 1)
 	    || ((ck_currentEpisode->ep == EP_CK4) &&
 	       (
-	        (CK_Cross_freadInt16LE(&state->ep.ck4.wetsuit, 1, fp) != 1)
-	        || (CK_Cross_freadInt16LE(&state->ep.ck4.membersRescued, 1, fp) != 1)
+	        (FS_ReadInt16LE(&state->ep.ck4.wetsuit, 1, fp) != 1)
+	        || (FS_ReadInt16LE(&state->ep.ck4.membersRescued, 1, fp) != 1)
 	     )
 	    )
 	    || ((ck_currentEpisode->ep == EP_CK5) &&
 	       (
-	        (CK_Cross_freadInt16LE(&state->ep.ck5.securityCard, 1, fp) != 1)
-	        || (CK_Cross_freadInt16LE(&state->ep.ck5.word_4729C, 1, fp) != 1)
-	        || (CK_Cross_freadInt16LE(&state->ep.ck5.fusesRemaining, 1, fp) != 1)
+	        (FS_ReadInt16LE(&state->ep.ck5.securityCard, 1, fp) != 1)
+	        || (FS_ReadInt16LE(&state->ep.ck5.word_4729C, 1, fp) != 1)
+	        || (FS_ReadInt16LE(&state->ep.ck5.fusesRemaining, 1, fp) != 1)
 	     )
 	    )
 	    || ((ck_currentEpisode->ep == EP_CK6) &&
 	       (
-	        (CK_Cross_freadInt16LE(&state->ep.ck6.sandwich, 1, fp) != 1)
-	        || (CK_Cross_freadInt16LE(&state->ep.ck6.rope, 1, fp) != 1)
-	        || (CK_Cross_freadInt16LE(&state->ep.ck6.passcard, 1, fp) != 1)
-	        || (CK_Cross_freadInt16LE(&state->ep.ck6.inRocket, 1, fp) != 1)
+	        (FS_ReadInt16LE(&state->ep.ck6.sandwich, 1, fp) != 1)
+	        || (FS_ReadInt16LE(&state->ep.ck6.rope, 1, fp) != 1)
+	        || (FS_ReadInt16LE(&state->ep.ck6.passcard, 1, fp) != 1)
+	        || (FS_ReadInt16LE(&state->ep.ck6.inRocket, 1, fp) != 1)
 	     )
 	    )
-	    || (CK_Cross_freadInt16LE(state->keyGems, sizeof(state->keyGems)/2, fp) != sizeof(state->keyGems)/2)
-	    || (CK_Cross_freadInt16LE(&state->currentLevel, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&state->numLives, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&difficultyInt, 1, fp) != 1)
-	    || (CK_Cross_freadInt16LE(&platformObjOffset, 1, fp) != 1) // BACKWARDS COMPATIBILITY
+	    || (FS_ReadInt16LE(state->keyGems, sizeof(state->keyGems)/2, fp) != sizeof(state->keyGems)/2)
+	    || (FS_ReadInt16LE(&state->currentLevel, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&state->numLives, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&difficultyInt, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&platformObjOffset, 1, fp) != 1) // BACKWARDS COMPATIBILITY
 	)
 		return false;
 	// clang-format on
@@ -335,7 +336,7 @@ bool CK_SaveGame(FILE *fp)
 		/* Write the size of the compressed level */
 		*((uint16_t *)buf) = cmplen;
 		cmplen /= 2;
-		if (CK_Cross_fwriteInt16LE(buf, cmplen + 1, fp) != cmplen + 1)
+		if (FS_WriteInt16LE(buf, cmplen + 1, fp) != cmplen + 1)
 		{
 			/* Free the buffer and return failure */
 			MM_FreePtr((mm_ptr_t *)&buf);
@@ -421,13 +422,13 @@ bool CK_LoadGame(FILE *fp, bool fromMenu)
 	/* Decompress and load the level */
 	for (i = 0; i < 3; i++)
 	{
-		if (CK_Cross_freadInt16LE(&cmplen, 1, fp) != 1)
+		if (FS_ReadInt16LE(&cmplen, 1, fp) != 1)
 		{
 			MM_FreePtr((mm_ptr_t *)&buf);
 			return false;
 		}
 		cmplen /= 2;
-		if (CK_Cross_freadInt16LE(buf, cmplen, fp) != cmplen)
+		if (FS_ReadInt16LE(buf, cmplen, fp) != cmplen)
 		{
 			MM_FreePtr((mm_ptr_t *)&buf);
 			return false;

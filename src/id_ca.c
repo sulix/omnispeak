@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // NOTE: At the moment this is not endian-independent.
 
 #include "id_ca.h"
+#include "id_fs.h"
 #include "id_us.h"
 #include "id_vh.h"
 #include "ck_cross.h"
@@ -37,14 +38,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SDL.h"
 #endif
 
+#define CA_THREEBYTEHEADERS
+
 // For chdir
 #ifdef _MSC_VER
 #include <direct.h>
 #else
 #include <unistd.h>
 #endif
-
-#define CA_THREEBYTEHEADERS
 
 #ifndef _WIN32
 #include <dirent.h>
@@ -161,112 +162,28 @@ void (*ca_beginCacheBox)(const char *title, int numcache);
 void (*ca_updateCacheBox)(void);
 void (*ca_finishCacheBox)(void);
 
-// Does a file exist (with filename case correction)
-bool CA_IsFilePresent(const char *filename)
-{
-	static char newname[16];
-	strcpy(newname, filename);
-	if (!CAL_AdjustFilenameCase(newname))
-	{
-		return false;
-	}
-	return true;
-}
-
-// Adjusts the extension on a filename to match the current episode.
-// This function is NOT thread safe, and the string returned is only
-// valid until the NEXT invocation of this function.
-char *CAL_AdjustExtension(const char *filename)
-{
-	static char newname[16];
-	strcpy(newname, filename);
-	size_t fnamelen = strlen(filename);
-	newname[fnamelen - 3] = ck_currentEpisode->ext[0];
-	newname[fnamelen - 2] = ck_currentEpisode->ext[1];
-	newname[fnamelen - 1] = ck_currentEpisode->ext[2];
-	if (!CAL_AdjustFilenameCase(newname))
-	{
-		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Couldn't find file \"%s\" in the current directory.\n", newname);
-	}
-	return newname;
-}
-
 bool CA_FarWrite(int handle, uint8_t *source, int length)
 {
 	// TODO: Implement
 	return false;
 }
 
-// CA_ReadFile reads a whole file into the preallocated memory buffer at 'offset'
-// NOTE that this function is deprecated: use CA_SafeReadFile instead.
-//
-bool CA_ReadFile(const char *filename, void *offset)
-{
-	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
-
-	//Find the length of the file.
-	fseek(f, 0, SEEK_END);
-	int length = ftell(f);
-	fseek(f, 0, SEEK_SET);
-
-	int totalRead = fread(offset, length, 1, f);
-
-	fclose(f);
-
-	return (length == totalRead);
-}
-
-// Reads a file into a buffer of length bufLength
-bool CA_SafeReadFile(const char *filename, void *offset, int bufLength)
-{
-	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
-
-	//Find length of the file.
-	fseek(f, 0, SEEK_END);
-	int length = ftell(f);
-	fseek(f, 0, SEEK_SET);
-
-	int amountToRead = (length > bufLength) ? bufLength : length;
-
-	int totalRead = fread(offset, amountToRead, 1, f);
-
-	fclose(f);
-
-	return (totalRead == amountToRead);
-}
-
-bool CA_WriteFile(const char *filename, void *offset, int bufLength)
-{
-	FILE *f = fopen(CAL_AdjustExtension(filename), "wb");
-
-	if (!f)
-		return false;
-
-	int amountWritten = fwrite(offset, bufLength, 1, f);
-
-	fclose(f);
-
-	return (amountWritten == bufLength);
-}
-
 bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 {
-	FILE *f = fopen(CAL_AdjustExtension(filename), "rb");
+	FS_File f = FS_OpenOmniFile(FS_AdjustExtension(filename));
 
 	if (!f)
 		return false;
 
 	//Get length of file
-	fseek(f, 0, SEEK_END);
-	int length = ftell(f);
-	fseek(f, 0, SEEK_SET);
+	int length = FS_GetFileSize(f);
 
 	MM_GetPtr(ptr, length);
 
 	if (memsize)
 		*memsize = length;
 
-	int amountRead = fread(*ptr, 1, length, f);
+	int amountRead = FS_Read(*ptr, 1, length, f);
 
 	fclose(f);
 
@@ -468,7 +385,7 @@ void CAL_RLEWExpand(void *src, void *dest, int expLength, uint16_t rletag)
 
 static ca_huffnode *ca_gr_huffdict;
 
-static FILE *ca_graphHandle; //File Pointer for ?GAGRAPH file.
+static FS_File ca_graphHandle; //File Pointer for ?GAGRAPH file.
 void *ca_graphStarts;
 
 // Size of the ?GAHEAD file (i.e. number of chunks * 3)
@@ -671,10 +588,10 @@ void CAL_SetupGrFile()
 	CA_LoadFile("EGAHEAD.EXT", &ca_graphStarts, &ca_graphHeadSize);
 
 	// Read chunk type info from GFEINFO?
-	FILE *gfxinfoe = fopen(CAL_AdjustExtension("GFXINFOE.EXT"), "rb");
-	size_t gfxinfoeLen = fread(&ca_gfxInfoE, 1, sizeof(ca_gfxinfo), gfxinfoe);
-	fclose(gfxinfoe);
-	if (gfxinfoeLen != sizeof(ca_gfxinfo))
+	FS_File gfxinfoe = FS_OpenOmniFile(FS_AdjustExtension("GFXINFOE.EXT"));
+	size_t gfxinfoeLen = FS_Read(&ca_gfxInfoE, sizeof(ca_gfxinfo), 1, gfxinfoe);
+	FS_CloseFile(gfxinfoe);
+	if (gfxinfoeLen != 1)
 		Quit("Couldn't read GFXINFOE!");
 #ifdef CK_CROSS_IS_BIGENDIAN
 	uint16_t *uptr = (uint16_t *)&ca_gfxInfoE;
@@ -683,12 +600,11 @@ void CAL_SetupGrFile()
 #endif
 
 	//Load the graphics --- we will keep the file open for the duration of the game.
-	ca_graphHandle = fopen(CAL_AdjustExtension("EGAGRAPH.EXT"), "rb");
+	ca_graphHandle = FS_OpenKeenFile(FS_AdjustExtension("EGAGRAPH.EXT"));
 
 	// Find the size of the file. Some mods do not have the last entry in the ?GAHEAD,
 	// so we compute it like so.
-	fseek(ca_graphHandle, 0, SEEK_END);
-	ca_graphFileSize = ftell(ca_graphHandle);
+	ca_graphFileSize = FS_GetFileSize(ca_graphHandle);
 
 	// Read in the graphics headers (from TED's GFXINFOE)
 	// For some reason, keen decompresses these differently, not
@@ -762,14 +678,14 @@ void CA_CacheGrChunk(int chunk)
 	if (CAL_GetGrChunkStart(chunk) == -1)
 		return;
 
-	fseek(ca_graphHandle, CAL_GetGrChunkStart(chunk), SEEK_SET);
+	FS_SeekTo(ca_graphHandle, CAL_GetGrChunkStart(chunk));
 
 	mm_ptr_t compdata;
 	MM_GetPtr(&compdata, compressedLength);
 	int read = 0; // fread(compdata,1,compressedLength, ca_graphHandle);
 	do
 	{
-		int curRead = fread(((uint8_t *)compdata) + read, 1, compressedLength - read, ca_graphHandle);
+		int curRead = FS_Read(((uint8_t *)compdata) + read, 1, compressedLength - read, ca_graphHandle);
 		if (curRead < 0)
 		{
 			Quit("Error reading compressed graphics chunk.");
@@ -958,7 +874,7 @@ typedef struct CA_MapHead
 
 CA_MapHead *ca_MapHead;
 
-FILE *ca_GameMaps;
+FS_File ca_GameMaps;
 
 CA_MapHeader *CA_MapHeaders[CA_NUMMAPS];
 
@@ -976,7 +892,7 @@ void CAL_SetupMapFile(void)
 		ca_MapHead->headerOffsets[i] = CK_Cross_SwapLE32(ca_MapHead->headerOffsets[i]);
 	}
 #endif
-	ca_GameMaps = fopen(CAL_AdjustExtension("GAMEMAPS.EXT"), "rb");
+	ca_GameMaps = FS_OpenKeenFile(FS_AdjustExtension("GAMEMAPS.EXT"));
 	// Try reading TILEINFO.EXT first, otherwise use data from MAPHEAD.EXT
 	ti_tileInfo = NULL;
 	if (!CA_LoadFile("TILEINFO.EXT", (void **)(&ti_tileInfo), 0))
@@ -999,10 +915,10 @@ int32_t *ca_audiostarts;
 void CAL_SetupAudioFile(void)
 {
 	// Read audio chunk type info from AUDINFOE
-	FILE *audinfoe = fopen(CAL_AdjustExtension("AUDINFOE.EXT"), "rb");
-	size_t audinfoeLen = fread(&ca_audInfoE, 1, sizeof(ca_audinfo), audinfoe);
-	fclose(audinfoe);
-	if (audinfoeLen != sizeof(ca_audinfo))
+	FS_File audinfoe = FS_OpenOmniFile(FS_AdjustExtension("AUDINFOE.EXT"));
+	size_t audinfoeLen = FS_Read(&ca_audInfoE, sizeof(ca_audinfo), 1, audinfoe);
+	FS_CloseFile(audinfoe);
+	if (audinfoeLen != 1)
 		Quit("Couldn't read AUDINFOE!");
 #ifdef CK_CROSS_IS_BIGENDIAN
 	uint16_t *uptr = (uint16_t *)&ca_audInfoE;
@@ -1028,7 +944,7 @@ void CAL_SetupAudioFile(void)
 	CA_LoadFile("AUDIOHHD.EXT", (void **)(&ca_audiostarts), 0);
 
 	//Load the sound data --- we will keep the file open for the duration of the game.
-	ca_audiohandle = fopen(CAL_AdjustExtension("AUDIO.EXT"), "rb");
+	ca_audiohandle = FS_OpenKeenFile(FS_AdjustExtension("AUDIO.EXT"));
 	if (!ca_audiohandle)
 	{
 		Quit("Can't open AUDIO.CK5!");
@@ -1060,10 +976,10 @@ void CA_CacheMap(int mapIndex)
 
 		MM_GetPtr((void **)(&CA_MapHeaders[mapIndex]), sizeof(CA_MapHeader));
 
-		fseek(ca_GameMaps, headerOffset, SEEK_SET);
+		FS_SeekTo(ca_GameMaps, headerOffset);
 
-		size_t mapHeaderSize = fread(CA_MapHeaders[mapIndex], 1, sizeof(CA_MapHeader), ca_GameMaps);
-		if (mapHeaderSize != sizeof(CA_MapHeader))
+		size_t mapHeaderSize = FS_Read(CA_MapHeaders[mapIndex], sizeof(CA_MapHeader), 1, ca_GameMaps);
+		if (mapHeaderSize != 1)
 			Quit("Couldn't read map header from GAMEMAPS!");
 #ifdef CK_CROSS_IS_BIGENDIAN
 		for (int plane = 0; plane < CA_NUMMAPPLANES; ++plane)
@@ -1091,7 +1007,7 @@ void CA_CacheMap(int mapIndex)
 
 		MM_GetPtr((void **)&CA_mapPlanes[plane], planeSize);
 
-		fseek(ca_GameMaps, planeOffset, SEEK_SET);
+		FS_SeekTo(ca_GameMaps, planeOffset);
 
 		uint16_t *compBuffer;
 		MM_GetPtr((void **)(&compBuffer), planeCompLength);
@@ -1100,7 +1016,7 @@ void CA_CacheMap(int mapIndex)
 		int read = 0;
 		do
 		{
-			int curRead = fread(((uint8_t *)compBuffer) + read, 1, planeCompLength - read, ca_GameMaps);
+			int curRead = FS_Read(((uint8_t *)compBuffer) + read, 1, planeCompLength - read, ca_GameMaps);
 			if (curRead < 0)
 			{
 				Quit("Error reading compressed map plane.");
@@ -1124,29 +1040,6 @@ void CA_CacheMap(int mapIndex)
 	}
 }
 
-void CA_AssertFileExists(char *filename)
-{
-	if (!CAL_AdjustFilenameCase(filename))
-	{
-		char message[128];
-#ifdef _MSC_VER
-		// MSVC++ does not have snprintf, but does have _snprintf which does not null-terminate.
-		// Here it shouldn't be a problem (Keen filenames are 8.3, so won't overflow the buffer), but it's
-		// better safe than sorry.
-		_snprintf(message, 127, "Could not find %s. Please copy it into the Omnispeak directory.", filename);
-		message[127] = '\0';
-#else
-		snprintf(message, 128, "Could not find %s. Please copy it into the Omnispeak directory.", filename);
-#endif
-#ifdef WITH_SDL
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Omnispeak", message, NULL);
-#endif
-#endif
-		Quit(message);
-	}
-}
-
 // CA_Startup opens the core CA datafiles
 void CA_Startup(void)
 {
@@ -1154,24 +1047,6 @@ void CA_Startup(void)
 
 	// If the file isn't in the current directory, it might be in the directory the game binary is in.
 	char checkFile[] = "EGAGRAPH.EXT";
-
-#ifdef WITH_SDL
-#if SDL_VERSION_ATLEAST(2, 0, 1)
-	if (!CAL_AdjustExtension(checkFile))
-	{
-		if (chdir(SDL_GetBasePath()))
-			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Couldn't change directory to \"%s\"\n", SDL_GetBasePath());
-	}
-#endif
-#endif
-	// Check EGAGRAPH
-	CA_AssertFileExists(CAL_AdjustExtension(checkFile));
-
-	char audioCheckFile[] = "AUDIO.EXT";
-	CA_AssertFileExists(CAL_AdjustExtension(audioCheckFile));
-
-	char gameMapsCheckFile[] = "GAMEMAPS.EXT";
-	CA_AssertFileExists(CAL_AdjustExtension(gameMapsCheckFile));
 
 	// Load the ?GAGRAPH.EXT file!
 	CAL_SetupGrFile();
@@ -1196,11 +1071,11 @@ void CA_Startup(void)
 void CA_Shutdown(void)
 {
 	if (ca_GameMaps)
-		fclose(ca_GameMaps);
+		FS_CloseFile(ca_GameMaps);
 	if (ca_graphHandle)
-		fclose(ca_graphHandle);
+		FS_CloseFile(ca_graphHandle);
 	if (ca_audiohandle)
-		fclose(ca_audiohandle);
+		FS_CloseFile(ca_audiohandle);
 }
 
 uint8_t *CA_audio[CA_MAX_AUDIO_CHUNKS];
@@ -1222,12 +1097,12 @@ void CA_CacheAudioChunk(int16_t chunk)
 	pos = CK_Cross_SwapLE32(ca_audiostarts[chunk]);
 	compressed = CK_Cross_SwapLE32(ca_audiostarts[chunk + 1]) - pos; //+1 is not in keen...
 
-	fseek(ca_audiohandle, pos, SEEK_SET);
+	FS_SeekTo(ca_audiohandle, pos);
 
 	if (compressed <= BUFFERSIZE)
 	{
-		size_t readSize = fread(buffer, compressed, 1, ca_audiohandle);
-		if (readSize != 1)
+		size_t readSize = FS_Read(buffer, 1, compressed, ca_audiohandle);
+		if (readSize != compressed)
 			Quit("Couldn't read compressed audio chunk!");
 		source = buffer;
 	}
@@ -1240,9 +1115,9 @@ void CA_CacheAudioChunk(int16_t chunk)
 			return;
 #endif
 		MM_SetLock(&bigbuffer, true);
-		size_t readSize = fread(bigbuffer, compressed, 1, ca_audiohandle);
+		size_t readSize = FS_Read(bigbuffer, 1, compressed, ca_audiohandle);
 		source = bigbuffer;
-		if (readSize != 1)
+		if (readSize != compressed)
 			Quit("Couldn't read compressed audio chunk!");
 	}
 

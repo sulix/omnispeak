@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_sd.h"
 #include "id_us.h"
 #include "id_vl.h"
+#include "id_fs.h"
 #include "ck_cross.h"
 
 #include <stdlib.h> /* For abs() */
@@ -437,13 +438,13 @@ void IN_DemoFreeBuffer()
 void IN_DemoSaveToFile(const char *fileName, uint16_t mapNumber)
 {
 	uint16_t demoSize = in_demoPtr;
-	FILE *demoFile = fopen(fileName, "wb");
-	CK_Cross_fwriteInt16LE(&mapNumber, 1, demoFile);
-	CK_Cross_fwriteInt16LE(&demoSize, 1, demoFile);
+	FS_File demoFile = FS_CreateUserFile(fileName);
+	FS_WriteInt16LE(&mapNumber, 1, demoFile);
+	FS_WriteInt16LE(&demoSize, 1, demoFile);
 
-	fwrite(in_demoBuf, in_demoPtr, 1, demoFile);
+	FS_Write(in_demoBuf, in_demoPtr, 1, demoFile);
 
-	fclose(demoFile);
+	FS_CloseFile(demoFile);
 }
 
 void IN_ClearKeysDown()

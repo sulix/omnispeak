@@ -56,31 +56,6 @@ int CK_Cross_toupper(int c);
 // A bit less standard, but still done assuming English locale
 int CK_Cross_strcasecmp(const char *s1, const char *s2);
 
-// Used for reading buffers of a specific type, assuming Little-Endian
-// byte order in the file's data itself. It gets converted to native order.
-size_t CK_Cross_freadInt8LE(void *ptr, size_t count, FILE *stream);
-size_t CK_Cross_freadInt16LE(void *ptr, size_t count, FILE *stream);
-size_t CK_Cross_freadInt32LE(void *ptr, size_t count, FILE *stream);
-// Used for writing buffers of a specific type, converting
-// native byte order to Little-Endian order within the file.
-size_t CK_Cross_fwriteInt8LE(const void *ptr, size_t count, FILE *stream);
-size_t CK_Cross_fwriteInt16LE(const void *ptr, size_t count, FILE *stream);
-size_t CK_Cross_fwriteInt32LE(const void *ptr, size_t count, FILE *stream);
-// Similar methods for reading/writing bools from/to int16_t
-// (0 as false, 1 as true and any nonzero as true for reading.)
-// TODO: Maybe int16_t's should be used internally? (Same as vanilla Keen.)
-size_t CK_Cross_freadBoolFrom16LE(void *ptr, size_t count, FILE *stream);
-size_t CK_Cross_fwriteBoolTo16LE(const void *ptr, size_t count, FILE *stream);
-
-#if 0
-// Similar functions for enum <-> 8-bit conversions, given as a template
-// (Declarations only; Implementations should be done in ck_cross.c)
-#define CK_CROSS_DECLARE_FP_READWRITE_8LE_FUNCS(ourSampleEnum)                                  \
-	size_t CK_Cross_fread_##ourSampleEnum##_From8LE(void *ptr, size_t count, FILE *stream); \
-	size_t CK_Cross_fwrite_##ourSampleEnum##_To8LE(const void *ptr, size_t count, FILE *stream);
-// End of template
-#endif
-
 // The C standard library doesn't have an implementation of min/max, which is sad.
 #define CK_Cross_max(x, y) ((x) < (y) ? (y) : (x))
 #define CK_Cross_min(x, y) ((x) > (y) ? (y) : (x))

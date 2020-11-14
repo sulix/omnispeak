@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ck_config.h"
 
+#include "id_fs.h"
 #include "id_in.h"
 #include "id_sd.h"
 #include "id_us.h"
@@ -228,23 +229,23 @@ int USL_ConfirmComm(US_CardCommand command);
 static bool US_LoadMain(int i, bool fromMenu)
 {
 	int n, error = 0;
-	FILE *fp;
+	FS_File fp;
 	const char *fname;
 	US_Savefile *e;
 
 	e = &us_savefiles[i];
 	fname = US_GetSavefileName(i);
-	fp = fopen(fname, "rb");
+	fp = FS_OpenUserFile(fname);
 	if (fp != NULL)
 	{
 		// Omnispeak - reading US_Savefile fields one-by-one
 		// for cross-platform support
 		uint8_t padding; // One byte of struct padding
-		if ((fread(e->id, sizeof(e->id), 1, fp) == 1) &&
-			(CK_Cross_freadInt16LE(&e->printXOffset, 1, fp) == 1) &&
-			(CK_Cross_freadBoolFrom16LE(&e->used, 1, fp) == 1) &&
-			(fread(e->name, sizeof(e->name), 1, fp) == 1) &&
-			(fread(&padding, sizeof(padding), 1, fp) == 1))
+		if ((FS_Read(e->id, sizeof(e->id), 1, fp) == 1) &&
+			(FS_ReadInt16LE(&e->printXOffset, 1, fp) == 1) &&
+			(FS_ReadBoolFrom16LE(&e->used, 1, fp) == 1) &&
+			(FS_Read(e->name, sizeof(e->name), 1, fp) == 1) &&
+			(FS_Read(&padding, sizeof(padding), 1, fp) == 1))
 		//if ( read( handle, e, sizeof ( SAVEFILE_ENTRY ) ) != sizeof ( SAVEFILE_ENTRY ) )
 		{
 			if (p_load_game && !(*p_load_game)(fp, fromMenu))
@@ -257,7 +258,7 @@ static bool US_LoadMain(int i, bool fromMenu)
 		{
 			USL_HandleError(error = errno);
 		}
-		fclose(fp);
+		FS_CloseFile(fp);
 	}
 	else
 	{
@@ -371,17 +372,17 @@ static bool US_SaveMain(int i)
 
 	e = &us_savefiles[i];
 	fname = US_GetSavefileName(i);
-	fp = fopen(fname, "wb");
+	fp = FS_CreateUserFile(fname);
 	if (fp != NULL)
 	{
 		// Omnispeak - writing US_Savefile fields one-by-one
 		// for cross-platform support
 		uint8_t padding = 0; // One byte of struct padding
-		if ((fwrite(e->id, sizeof(e->id), 1, fp) == 1) &&
-			(CK_Cross_fwriteInt16LE(&e->printXOffset, 1, fp) == 1) &&
-			(CK_Cross_fwriteBoolTo16LE(&e->used, 1, fp) == 1) &&
-			(fwrite(e->name, sizeof(e->name), 1, fp) == 1) &&
-			(fwrite(&padding, sizeof(padding), 1, fp) == 1))
+		if ((FS_Write(e->id, sizeof(e->id), 1, fp) == 1) &&
+			(FS_WriteInt16LE(&e->printXOffset, 1, fp) == 1) &&
+			(FS_WriteBoolTo16LE(&e->used, 1, fp) == 1) &&
+			(FS_Write(e->name, sizeof(e->name), 1, fp) == 1) &&
+			(FS_Write(&padding, sizeof(padding), 1, fp) == 1))
 		//if ( write( handle, e, sizeof ( SAVEFILE_ENTRY ) ) == sizeof ( SAVEFILE_ENTRY ) )
 		{
 			if (p_save_game && !(n = (*p_save_game)(fp)))
@@ -392,7 +393,7 @@ static bool US_SaveMain(int i)
 			error = (errno == 2) ? 8 : errno;
 			USL_HandleError(error);
 		}
-		fclose(fp);
+		FS_CloseFile(fp);
 	}
 	else
 	{

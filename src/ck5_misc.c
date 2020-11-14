@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdio.h>
 #include "id_ca.h"
+#include "id_fs.h"
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_vl.h"
@@ -60,33 +61,33 @@ CK_EpisodeDef ck5_episode = {
 bool CK5_IsPresent()
 {
 	// User-provided files
-	if (!CA_IsFilePresent("EGAGRAPH.CK5"))
+	if (!FS_IsKeenFilePresent("EGAGRAPH.CK5"))
 		return false;
-	if (!CA_IsFilePresent("GAMEMAPS.CK5"))
+	if (!FS_IsKeenFilePresent("GAMEMAPS.CK5"))
 		return false;
-	if (!CA_IsFilePresent("AUDIO.CK5"))
+	if (!FS_IsKeenFilePresent("AUDIO.CK5"))
 		return false;
 
 	// Omnispeak-provided files
-	if (!CA_IsFilePresent("EGAHEAD.CK5"))
+	if (!FS_IsOmniFilePresent("EGAHEAD.CK5"))
 		return false;
-	if (!CA_IsFilePresent("EGADICT.CK5"))
+	if (!FS_IsOmniFilePresent("EGADICT.CK5"))
 		return false;
-	if (!CA_IsFilePresent("GFXINFOE.CK5"))
+	if (!FS_IsOmniFilePresent("GFXINFOE.CK5"))
 		return false;
-	if (!CA_IsFilePresent("MAPHEAD.CK5"))
+	if (!FS_IsOmniFilePresent("MAPHEAD.CK5"))
 		return false;
 	// Map header file may include the tile info
-	//if (!CA_IsFilePresent("TILEINFO.CK5"))
+	//if (!FS_IsOmniFilePresent("TILEINFO.CK5"))
 	//	return false;
-	if (!CA_IsFilePresent("AUDIODCT.CK5"))
+	if (!FS_IsOmniFilePresent("AUDIODCT.CK5"))
 		return false;
-	if (!CA_IsFilePresent("AUDIOHHD.CK5"))
+	if (!FS_IsOmniFilePresent("AUDIOHHD.CK5"))
 		return false;
-	if (!CA_IsFilePresent("AUDINFOE.CK5"))
+	if (!FS_IsOmniFilePresent("AUDINFOE.CK5"))
 		return false;
 
-	if (!CA_IsFilePresent("ACTION.CK5"))
+	if (!FS_IsOmniFilePresent("ACTION.CK5"))
 		return false;
 
 	// We clearly have all of the required files.

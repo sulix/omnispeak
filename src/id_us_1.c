@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #include "id_ca.h"
+#include "id_fs.h"
 #include "id_us.h"
 #include "id_vh.h"
 #include "id_vl.h"
@@ -669,13 +670,13 @@ void US_LoadConfig(void)
 	SMMode sm;
 	bool hadAdlib = false; // Originally this is not set to 0 directly
 	char fileExt[4];
-	const char *fileName = CAL_AdjustExtension("CONFIG.EXT");
+	const char *fileName = FS_AdjustExtension("CONFIG.EXT");
 	bool configFileLoaded;
-	FILE *f = fopen(fileName, "rb");
+	FS_File f = FS_OpenUserFile(fileName);
 	if (f)
 	{
-		CK_Cross_freadInt8LE(fileExt, sizeof(fileExt), f);
-		CK_Cross_freadInt16LE(&configRev, 1, f);
+		FS_ReadInt8LE(fileExt, sizeof(fileExt), f);
+		FS_ReadInt16LE(&configRev, 1, f);
 		// FIXME: Dangerous function call comes here (to strcmp)
 		// (but true to the original and effectively safe)
 		if (strcmp(fileExt, ck_currentEpisode->ext) || (configRev != 4))
@@ -690,44 +691,44 @@ void US_LoadConfig(void)
 		// High scores table (an array of structs)
 		for (int i = 0; i < 8; i++)
 		{
-			CK_Cross_freadInt8LE(ck_highScores[i].name, sizeof(ck_highScores[i].name), f);
-			CK_Cross_freadInt32LE(&ck_highScores[i].score, 1, f);
-			CK_Cross_freadInt16LE(&ck_highScores[i].arg4, 1, f);
+			FS_ReadInt8LE(ck_highScores[i].name, sizeof(ck_highScores[i].name), f);
+			FS_ReadInt32LE(&ck_highScores[i].score, 1, f);
+			FS_ReadInt16LE(&ck_highScores[i].arg4, 1, f);
 		}
 
-		if (CK_Cross_freadInt16LE(&intVal, 1, f))
+		if (FS_ReadInt16LE(&intVal, 1, f))
 			sd = (SDMode)intVal;
-		if (CK_Cross_freadInt16LE(&intVal, 1, f))
+		if (FS_ReadInt16LE(&intVal, 1, f))
 			sm = (SMMode)intVal;
 
-		CK_Cross_freadInt16LE(&inputDevice, 1, f);
+		FS_ReadInt16LE(&inputDevice, 1, f);
 
 		// Read most of in_kbdControls one-by-one (it's a struct):
 		// - No fire key for now.
-		CK_Cross_freadInt8LE(&in_kbdControls.jump, 1, f);
-		CK_Cross_freadInt8LE(&in_kbdControls.pogo, 1, f);
-		CK_Cross_freadInt8LE(&in_kbdControls.upLeft, 1, f);
-		CK_Cross_freadInt8LE(&in_kbdControls.up, 1, f);
-		CK_Cross_freadInt8LE(&in_kbdControls.upRight, 1, f);
-		CK_Cross_freadInt8LE(&in_kbdControls.left, 1, f);
-		CK_Cross_freadInt8LE(&in_kbdControls.right, 1, f);
-		CK_Cross_freadInt8LE(&in_kbdControls.downLeft, 1, f);
-		CK_Cross_freadInt8LE(&in_kbdControls.down, 1, f);
-		CK_Cross_freadInt8LE(&in_kbdControls.downRight, 1, f);
+		FS_ReadInt8LE(&in_kbdControls.jump, 1, f);
+		FS_ReadInt8LE(&in_kbdControls.pogo, 1, f);
+		FS_ReadInt8LE(&in_kbdControls.upLeft, 1, f);
+		FS_ReadInt8LE(&in_kbdControls.up, 1, f);
+		FS_ReadInt8LE(&in_kbdControls.upRight, 1, f);
+		FS_ReadInt8LE(&in_kbdControls.left, 1, f);
+		FS_ReadInt8LE(&in_kbdControls.right, 1, f);
+		FS_ReadInt8LE(&in_kbdControls.downLeft, 1, f);
+		FS_ReadInt8LE(&in_kbdControls.down, 1, f);
+		FS_ReadInt8LE(&in_kbdControls.downRight, 1, f);
 
-		CK_Cross_freadBoolFrom16LE(&ck_scoreBoxEnabled, 1, f);
-		CK_Cross_freadBoolFrom16LE(&ck_svgaCompatibility, 1, f);
-		CK_Cross_freadBoolFrom16LE(&quiet_sfx, 1, f);
-		CK_Cross_freadBoolFrom16LE(&hadAdlib, 1, f);
-		CK_Cross_freadBoolFrom16LE(&ck_fixJerkyMotion, 1, f);
-		CK_Cross_freadBoolFrom16LE(&ck_twoButtonFiring, 1, f);
+		FS_ReadBoolFrom16LE(&ck_scoreBoxEnabled, 1, f);
+		FS_ReadBoolFrom16LE(&ck_svgaCompatibility, 1, f);
+		FS_ReadBoolFrom16LE(&quiet_sfx, 1, f);
+		FS_ReadBoolFrom16LE(&hadAdlib, 1, f);
+		FS_ReadBoolFrom16LE(&ck_fixJerkyMotion, 1, f);
+		FS_ReadBoolFrom16LE(&ck_twoButtonFiring, 1, f);
 
 		// Now the fire key comes
-		CK_Cross_freadInt8LE(&in_kbdControls.fire, 1, f);
+		FS_ReadInt8LE(&in_kbdControls.fire, 1, f);
 
-		CK_Cross_freadBoolFrom16LE(&ck_gamePadEnabled, 1, f);
-		CK_Cross_freadInt16LE(in_gamepadButtons, 4, f);
-		fclose(f);
+		FS_ReadBoolFrom16LE(&ck_gamePadEnabled, 1, f);
+		FS_ReadInt16LE(in_gamepadButtons, 4, f);
+		FS_CloseFile(f);
 		//ck_highScoresDirty = 0; // Unused?
 		configFileLoaded = true;
 	}
@@ -751,59 +752,59 @@ void US_LoadConfig(void)
 
 void US_SaveConfig(void)
 {
-	const char *fileName = CAL_AdjustExtension("CONFIG.EXT");
+	const char *fileName = FS_AdjustExtension("CONFIG.EXT");
 	int16_t intVal;
-	FILE *f = fopen(fileName, "wb");
+	FS_File f = FS_CreateUserFile(fileName);
 	if (!f)
 		return;
 
-	CK_Cross_fwriteInt8LE((ck_currentEpisode->ext), 4, f); // Config file extension
+	FS_WriteInt8LE((ck_currentEpisode->ext), 4, f); // Config file extension
 	intVal = 4;
-	CK_Cross_fwriteInt16LE(&intVal, 1, f); // Config file revision
+	FS_WriteInt16LE(&intVal, 1, f); // Config file revision
 
 	// High scores table (an array of structs)
 	for (int i = 0; i < 8; i++)
 	{
-		CK_Cross_fwriteInt8LE(ck_highScores[i].name, sizeof(ck_highScores[i].name), f);
-		CK_Cross_fwriteInt32LE(&ck_highScores[i].score, 1, f);
-		CK_Cross_fwriteInt16LE(&ck_highScores[i].arg4, 1, f);
+		FS_WriteInt8LE(ck_highScores[i].name, sizeof(ck_highScores[i].name), f);
+		FS_WriteInt32LE(&ck_highScores[i].score, 1, f);
+		FS_WriteInt16LE(&ck_highScores[i].arg4, 1, f);
 	}
 
 	intVal = (int16_t)SoundMode;
-	CK_Cross_fwriteInt16LE(&intVal, 1, f);
+	FS_WriteInt16LE(&intVal, 1, f);
 	intVal = (int16_t)MusicMode;
-	CK_Cross_fwriteInt16LE(&intVal, 1, f);
+	FS_WriteInt16LE(&intVal, 1, f);
 
 	// FIXME: Currently it is unused
 	intVal = (int16_t)in_controlType;
-	CK_Cross_fwriteInt16LE(&intVal, 1, f); // Input device
+	FS_WriteInt16LE(&intVal, 1, f); // Input device
 
 	// Write most of in_kbdControls one-by-one (it's a struct):
 	// - No fire key for now.
-	CK_Cross_fwriteInt8LE(&in_kbdControls.jump, 1, f);
-	CK_Cross_fwriteInt8LE(&in_kbdControls.pogo, 1, f);
-	CK_Cross_fwriteInt8LE(&in_kbdControls.upLeft, 1, f);
-	CK_Cross_fwriteInt8LE(&in_kbdControls.up, 1, f);
-	CK_Cross_fwriteInt8LE(&in_kbdControls.upRight, 1, f);
-	CK_Cross_fwriteInt8LE(&in_kbdControls.left, 1, f);
-	CK_Cross_fwriteInt8LE(&in_kbdControls.right, 1, f);
-	CK_Cross_fwriteInt8LE(&in_kbdControls.downLeft, 1, f);
-	CK_Cross_fwriteInt8LE(&in_kbdControls.down, 1, f);
-	CK_Cross_fwriteInt8LE(&in_kbdControls.downRight, 1, f);
+	FS_WriteInt8LE(&in_kbdControls.jump, 1, f);
+	FS_WriteInt8LE(&in_kbdControls.pogo, 1, f);
+	FS_WriteInt8LE(&in_kbdControls.upLeft, 1, f);
+	FS_WriteInt8LE(&in_kbdControls.up, 1, f);
+	FS_WriteInt8LE(&in_kbdControls.upRight, 1, f);
+	FS_WriteInt8LE(&in_kbdControls.left, 1, f);
+	FS_WriteInt8LE(&in_kbdControls.right, 1, f);
+	FS_WriteInt8LE(&in_kbdControls.downLeft, 1, f);
+	FS_WriteInt8LE(&in_kbdControls.down, 1, f);
+	FS_WriteInt8LE(&in_kbdControls.downRight, 1, f);
 
-	CK_Cross_fwriteBoolTo16LE(&ck_scoreBoxEnabled, 1, f);
-	CK_Cross_fwriteBoolTo16LE(&ck_svgaCompatibility, 1, f);
-	CK_Cross_fwriteBoolTo16LE(&quiet_sfx, 1, f);
-	CK_Cross_fwriteBoolTo16LE(&AdLibPresent, 1, f);
-	CK_Cross_fwriteBoolTo16LE(&ck_fixJerkyMotion, 1, f);
-	CK_Cross_fwriteBoolTo16LE(&ck_twoButtonFiring, 1, f);
+	FS_WriteBoolTo16LE(&ck_scoreBoxEnabled, 1, f);
+	FS_WriteBoolTo16LE(&ck_svgaCompatibility, 1, f);
+	FS_WriteBoolTo16LE(&quiet_sfx, 1, f);
+	FS_WriteBoolTo16LE(&AdLibPresent, 1, f);
+	FS_WriteBoolTo16LE(&ck_fixJerkyMotion, 1, f);
+	FS_WriteBoolTo16LE(&ck_twoButtonFiring, 1, f);
 
 	// Now the fire key comes (again using template)
-	CK_Cross_fwriteInt8LE(&in_kbdControls.fire, 1, f);
+	FS_WriteInt8LE(&in_kbdControls.fire, 1, f);
 
-	CK_Cross_fwriteBoolTo16LE(&ck_gamePadEnabled, 1, f);
-	CK_Cross_fwriteInt16LE(in_gamepadButtons, 4, f);
-	fclose(f);
+	FS_WriteBoolTo16LE(&ck_gamePadEnabled, 1, f);
+	FS_WriteInt16LE(in_gamepadButtons, 4, f);
+	FS_CloseFile(f);
 }
 
 //
@@ -816,17 +817,17 @@ US_Savefile us_savefiles[US_MAX_NUM_OF_SAVED_GAMES];
 
 /* Returns the name of the saved game with the given index (0-based) */
 /* Note that this uses its own internal, temporary static buffer,    */
-/* as well as a similar internal buffer used by CAL_AdjustExtension. */
+/* as well as a similar internal buffer used by FS_AdjustExtension. */
 const char *US_GetSavefileName(int index)
 {
 	us_savefile[7] = (char)(index + '0'); /* 'x' in "SAVEGAMx.CK5" */
-	return CAL_AdjustExtension(us_savefile);
+	return FS_AdjustExtension(us_savefile);
 }
 
 void US_GetSavefiles(void)
 {
 	int valid;
-	FILE *handle;
+	FS_File handle;
 	const char *filename;
 	int i;
 	US_Savefile *psfe = us_savefiles;
@@ -836,7 +837,7 @@ void US_GetSavefiles(void)
 		filename = US_GetSavefileName(i);
 		valid = 0;
 		// handle = open( filename, O_RDONLY | O_BINARY );
-		handle = fopen(filename, "rb");
+		handle = FS_OpenUserFile(filename);
 
 		if (handle)
 		{
@@ -844,16 +845,16 @@ void US_GetSavefiles(void)
 			// for cross-platform support
 			uint8_t padding; // One byte of struct padding
 			if ((fread(psfe->id, sizeof(psfe->id), 1, handle) == 1) &&
-				(CK_Cross_freadInt16LE(&psfe->printXOffset, 1, handle) == 1) &&
-				(CK_Cross_freadBoolFrom16LE(&psfe->used, 1, handle) == 1) &&
-				(fread(psfe->name, sizeof(psfe->name), 1, handle) == 1) &&
-				(fread(&padding, sizeof(padding), 1, handle) == 1))
+				(FS_ReadInt16LE(&psfe->printXOffset, 1, handle) == 1) &&
+				(FS_ReadBoolFrom16LE(&psfe->used, 1, handle) == 1) &&
+				(FS_Read(psfe->name, sizeof(psfe->name), 1, handle) == 1) &&
+				(FS_Read(&padding, sizeof(padding), 1, handle) == 1))
 				//if( fread( psfe, sizeof( US_Savefile ), 1, handle) == 1 )
 				if (strcmp(psfe->id, ck_currentEpisode->ext) == 0) /* AZ:46AA */
 					if (psfe->printXOffset == ck_currentEpisode->printXOffset)
 						valid = 1;
 
-			fclose(handle);
+			FS_CloseFile(handle);
 		}
 
 		if (!valid)

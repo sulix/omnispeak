@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //#inclucd "id_heads.h"
 #include "ck_play.h"
 #include "id_ca.h"
+#include "id_fs.h"
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_sd.h"
@@ -196,7 +197,7 @@ void CK_EndDemoRecord()
 		if (str[0] >= '0' && str[0] <= '9')
 		{
 			demoFileName[4] = str[0];
-			char *fixedFileName = CAL_AdjustExtension(demoFileName);
+			char *fixedFileName = FS_AdjustExtension(demoFileName);
 			IN_DemoSaveToFile(fixedFileName, ck_gameState.currentLevel);
 		}
 		IN_DemoFreeBuffer();

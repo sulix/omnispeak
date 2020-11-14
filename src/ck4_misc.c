@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdio.h>
 #include "id_ca.h"
+#include "id_fs.h"
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_vh.h"
@@ -73,33 +74,33 @@ void CK4_SetupFunctions()
 bool CK4_IsPresent()
 {
 	// User-provided files
-	if (!CA_IsFilePresent("EGAGRAPH.CK4"))
+	if (!FS_IsKeenFilePresent("EGAGRAPH.CK4"))
 		return false;
-	if (!CA_IsFilePresent("GAMEMAPS.CK4"))
+	if (!FS_IsKeenFilePresent("GAMEMAPS.CK4"))
 		return false;
-	if (!CA_IsFilePresent("AUDIO.CK4"))
+	if (!FS_IsKeenFilePresent("AUDIO.CK4"))
 		return false;
 
 	// Omnispeak-provided files
-	if (!CA_IsFilePresent("EGAHEAD.CK4"))
+	if (!FS_IsOmniFilePresent("EGAHEAD.CK4"))
 		return false;
-	if (!CA_IsFilePresent("EGADICT.CK4"))
+	if (!FS_IsOmniFilePresent("EGADICT.CK4"))
 		return false;
-	if (!CA_IsFilePresent("GFXINFOE.CK4"))
+	if (!FS_IsOmniFilePresent("GFXINFOE.CK4"))
 		return false;
-	if (!CA_IsFilePresent("MAPHEAD.CK4"))
+	if (!FS_IsOmniFilePresent("MAPHEAD.CK4"))
 		return false;
 	// Map header file may include the tile info
-	//if (!CA_IsFilePresent("TILEINFO.CK4"))
+	//if (!FS_IsOmniFilePresent("TILEINFO.CK4"))
 	//	return false;
-	if (!CA_IsFilePresent("AUDIODCT.CK4"))
+	if (!FS_IsOmniFilePresent("AUDIODCT.CK4"))
 		return false;
-	if (!CA_IsFilePresent("AUDIOHHD.CK4"))
+	if (!FS_IsOmniFilePresent("AUDIOHHD.CK4"))
 		return false;
-	if (!CA_IsFilePresent("AUDINFOE.CK4"))
+	if (!FS_IsOmniFilePresent("AUDINFOE.CK4"))
 		return false;
 
-	if (!CA_IsFilePresent("ACTION.CK4"))
+	if (!FS_IsOmniFilePresent("ACTION.CK4"))
 		return false;
 
 	// We clearly have all of the required files.

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdio.h>
 #include "id_ca.h"
+#include "id_fs.h"
 #include "id_in.h"
 #include "id_rf.h"
 #include "id_vl.h"
@@ -110,41 +111,41 @@ void CK6_SetupFunctions()
 bool CK6_IsPresent()
 {
 	// User-provided files
-	if (!CA_IsFilePresent("EGAGRAPH.CK6"))
+	if (!FS_IsKeenFilePresent("EGAGRAPH.CK6"))
 		return false;
-	if (!CA_IsFilePresent("GAMEMAPS.CK6"))
+	if (!FS_IsKeenFilePresent("GAMEMAPS.CK6"))
 		return false;
-	if (!CA_IsFilePresent("AUDIO.CK6"))
+	if (!FS_IsKeenFilePresent("AUDIO.CK6"))
 		return false;
 
-	char egaGraphName[] = "EGAGRAPH.CK6";
-	CAL_AdjustFilenameCase(egaGraphName);
-	size_t egaGraphSize = CA_GetFileSize(egaGraphName);
+	FS_File egaGraph = FS_OpenKeenFile("EGAGRAPH.CK6");
+	size_t egaGraphSize = FS_GetFileSize(egaGraph);
+	FS_CloseFile(egaGraph);
 	if (egaGraphSize == 464662)
 		ck6_episode = &ck6v15e_episode;
 	else
 		ck6_episode = &ck6v14e_episode;
 
 	// Omnispeak-provided files
-	if (!CA_IsFilePresent("EGAHEAD.CK6"))
+	if (!FS_IsOmniFilePresent("EGAHEAD.CK6"))
 		return false;
-	if (!CA_IsFilePresent("EGADICT.CK6"))
+	if (!FS_IsOmniFilePresent("EGADICT.CK6"))
 		return false;
-	if (!CA_IsFilePresent("GFXINFOE.CK6"))
+	if (!FS_IsOmniFilePresent("GFXINFOE.CK6"))
 		return false;
-	if (!CA_IsFilePresent("MAPHEAD.CK6"))
+	if (!FS_IsOmniFilePresent("MAPHEAD.CK6"))
 		return false;
 	// Map header file may include the tile info
-	//if (!CA_IsFilePresent("TILEINFO.CK6"))
+	//if (!FS_IsOmniFilePresent("TILEINFO.CK6"))
 	//	return false;
-	if (!CA_IsFilePresent("AUDIODCT.CK6"))
+	if (!FS_IsOmniFilePresent("AUDIODCT.CK6"))
 		return false;
-	if (!CA_IsFilePresent("AUDIOHHD.CK6"))
+	if (!FS_IsOmniFilePresent("AUDIOHHD.CK6"))
 		return false;
-	if (!CA_IsFilePresent("AUDINFOE.CK6"))
+	if (!FS_IsOmniFilePresent("AUDINFOE.CK6"))
 		return false;
 
-	if (!CA_IsFilePresent("ACTION.CK6"))
+	if (!FS_IsOmniFilePresent("ACTION.CK6"))
 		return false;
 
 	// We clearly have all of the required files.

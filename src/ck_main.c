@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #include "id_ca.h"
+#include "id_fs.h"
 #include "id_in.h"
 #include "id_mm.h"
 #include "id_rf.h"
@@ -638,6 +639,10 @@ int main(int argc, char *argv[])
 	us_argc = argc;
 	us_argv = (const char **)argv;
 
+	// We need to start the filesystem code before we look
+	// for any files.
+	FS_Startup();
+
 	// Default to the first episode with all files present.
 	// If no episodes are found, we default to Keen 4, in order
 	// to show the file not found messages.
@@ -719,6 +724,11 @@ int main(int argc, char *argv[])
 				dumperFilename = argv[++i]; // Yes, we increment i twice
 		}
 #endif
+	}
+
+	if (!ck_currentEpisode->isPresent())
+	{
+		Quit("Couldn't find game data files!");
 	}
 
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
