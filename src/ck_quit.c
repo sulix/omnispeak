@@ -45,9 +45,13 @@ void Quit(const char *msg)
 	}
 	else
 	{
-		//__asm__("int $3");
 		CK_Cross_puts(msg);
 		CK_ShutdownID();
+#ifdef WITH_SDL
+#if SDL_VERSION_ATLEAST(1, 3, 0)
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Omnispeak", msg, NULL);
+#endif
+#endif
 		exit(-1);
 	}
 }
