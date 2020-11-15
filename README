@@ -41,6 +41,10 @@ To run the game, simply switch to the directory with the data files, and run:
 You can provide Omnispeak the following command-line arguments:
 	/EPISODE <4,5,6,6v14,6v15>
 		- Runs the given episode/version of Commander Keen
+	/GAMEPATH <directory>
+		- Sets the path to the game data files.
+	/USERPATH <directory>
+		- Sets the path to the savegame and config files.
 	/FULLSCREEN
 		- Starts the game in fullscreen mode
 	/FILLED
