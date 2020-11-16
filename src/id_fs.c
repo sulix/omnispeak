@@ -64,7 +64,14 @@ void FS_CloseFile(FS_File file)
 FS_File FSL_OpenFileInDirCaseInsensitive(const char *dirPath, const char *fileName, bool forWrite)
 {
 	int dirFd = open(dirPath, O_RDONLY | O_DIRECTORY);
+	if (dirFd == -1)
+		return 0;
 	DIR *currentDirPtr = fdopendir(dirFd);
+	if (!currentDirPtr)
+	{
+		close(dirFd);
+		return 0;
+	}
 
 	// Search the current directory for matching names.
 	for (struct dirent *dirEntry = readdir(currentDirPtr); dirEntry; dirEntry = readdir(currentDirPtr))
@@ -75,26 +82,31 @@ FS_File FSL_OpenFileInDirCaseInsensitive(const char *dirPath, const char *fileNa
 			if (forWrite)
 			{
 				int fd = openat(dirFd, dirEntry->d_name, O_WRONLY | O_TRUNC);
-				close(dirFd);
+				closedir(currentDirPtr);
 				return fdopen(fd, "wb");
 			}
 			else
 			{
 				int fd = openat(dirFd, dirEntry->d_name, O_RDONLY);
-				close(dirFd);
+				closedir(currentDirPtr);
 				return fdopen(fd, "rb");
 			}
 		}
 	}
+	closedir(currentDirPtr);
 	return 0;
 }
 
 FS_File FSL_CreateFileInDir(const char *dirPath, const char *fileName)
 {
 	int dirFd = open(dirPath, O_PATH | O_DIRECTORY);
+	if (dirFd == -1)
+		return 0;
 
 	int fd = openat(dirFd, fileName, O_CREAT | O_WRONLY, 0664);
 	close(dirFd);
+	if (fd == -1)
+		return 0;
 	return fdopen(fd, "wb");
 }
 
@@ -104,7 +116,6 @@ size_t FS_GetFileSize(FS_File file)
 	if (fstat(fileno(file), &fileStat))
 		return 0;
 
-	printf("FS_GetFileSize(%p): fileno = %d, size = %d\n", file, fileno(file), fileStat.st_size);
 	return fileStat.st_size;
 }
 
@@ -152,6 +163,8 @@ size_t FS_GetFileSize(FS_File file)
 FS_File FSL_OpenFileInDirCaseInsensitive(const char *dirPath, const char *fileName, bool forWrite)
 {
 	DIR *currentDirPtr = opendir(dirPath);
+	if (!currentDirPtr)
+		return 0;
 
 	// Search the current directory for matching names.
 	for (struct dirent *dirEntry = readdir(currentDirPtr); dirEntry; dirEntry = readdir(currentDirPtr))
@@ -169,9 +182,11 @@ FS_File FSL_OpenFileInDirCaseInsensitive(const char *dirPath, const char *fileNa
 				f = fopen(fullFileName, "rb");
 
 			free(fullFileName);
+			closedir(currentDirPtr);
 			return f;
 		}
 	}
+	closedir(currentDirPtr);
 	return 0;
 }
 
@@ -306,9 +321,13 @@ void FS_Startup()
 		{
 		case 0:
 			fs_keenPath = us_argv[++i];
+			if (i >= us_argc)
+				Quit("/GAMEPATH requires an argument!");
 			break;
 		case 1:
 			fs_userPath = us_argv[++i];
+			if (i >= us_argc)
+				Quit("/USERPATH requires an argument!");
 			break;
 		}
 	}
