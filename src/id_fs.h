@@ -25,9 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 typedef FILE *FS_File;
 
+bool FS_IsFileValid(FS_File file);
+
 size_t FS_GetFileSize(FS_File file);
 size_t FS_Read(void *ptr, size_t size, size_t nmemb, FS_File file);
-size_t FS_Write(void *ptr, size_t size, size_t nmemb, FS_File file);
+size_t FS_Write(const void *ptr, size_t size, size_t nmemb, FS_File file);
 size_t FS_SeekTo(FS_File file, size_t offset);
 void FS_CloseFile(FS_File file);
 
@@ -55,16 +57,16 @@ void FS_Startup();
 
 // Used for reading buffers of a specific type, assuming Little-Endian
 // byte order in the file's data itself. It gets converted to native order.
-size_t FS_ReadInt8LE(void *ptr, size_t count, FILE *stream);
-size_t FS_ReadInt16LE(void *ptr, size_t count, FILE *stream);
-size_t FS_ReadInt32LE(void *ptr, size_t count, FILE *stream);
+size_t FS_ReadInt8LE(void *ptr, size_t count, FS_File stream);
+size_t FS_ReadInt16LE(void *ptr, size_t count, FS_File stream);
+size_t FS_ReadInt32LE(void *ptr, size_t count, FS_File stream);
 // Used for writing buffers of a specific type, converting
 // native byte order to Little-Endian order within the file.
-size_t FS_WriteInt8LE(const void *ptr, size_t count, FILE *stream);
-size_t FS_WriteInt16LE(const void *ptr, size_t count, FILE *stream);
-size_t FS_WriteInt32LE(const void *ptr, size_t count, FILE *stream);
+size_t FS_WriteInt8LE(const void *ptr, size_t count, FS_File stream);
+size_t FS_WriteInt16LE(const void *ptr, size_t count, FS_File stream);
+size_t FS_WriteInt32LE(const void *ptr, size_t count, FS_File stream);
 // Similar methods for reading/writing bools from/to int16_t
 // (0 as false, 1 as true and any nonzero as true for reading.)
 // TODO: Maybe int16_t's should be used internally? (Same as vanilla Keen.)
-size_t FS_ReadBoolFrom16LE(void *ptr, size_t count, FILE *stream);
-size_t FS_WriteBoolTo16LE(const void *ptr, size_t count, FILE *stream);
+size_t FS_ReadBoolFrom16LE(void *ptr, size_t count, FS_File stream);
+size_t FS_WriteBoolTo16LE(const void *ptr, size_t count, FS_File stream);

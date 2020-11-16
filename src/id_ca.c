@@ -172,7 +172,7 @@ bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 {
 	FS_File f = FS_OpenOmniFile(FS_AdjustExtension(filename));
 
-	if (!f)
+	if (!FS_IsFileValid(f))
 		return false;
 
 	//Get length of file
@@ -589,6 +589,8 @@ void CAL_SetupGrFile()
 
 	// Read chunk type info from GFEINFO?
 	FS_File gfxinfoe = FS_OpenOmniFile(FS_AdjustExtension("GFXINFOE.EXT"));
+	if (!FS_IsFileValid(gfxinfoe))
+		Quit("Couldn't load GFXINFOE!");
 	size_t gfxinfoeLen = FS_Read(&ca_gfxInfoE, sizeof(ca_gfxinfo), 1, gfxinfoe);
 	FS_CloseFile(gfxinfoe);
 	if (gfxinfoeLen != 1)

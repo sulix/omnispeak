@@ -439,6 +439,8 @@ void IN_DemoSaveToFile(const char *fileName, uint16_t mapNumber)
 {
 	uint16_t demoSize = in_demoPtr;
 	FS_File demoFile = FS_CreateUserFile(fileName);
+	if (!demoFile)
+		Quit("Couldn't open demo file for writing!");
 	FS_WriteInt16LE(&mapNumber, 1, demoFile);
 	FS_WriteInt16LE(&demoSize, 1, demoFile);
 

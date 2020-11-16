@@ -32,12 +32,20 @@ const char *fs_keenPath;
 const char *fs_omniPath;
 const char *fs_userPath;
 
+// NOTE: This will need to go into the per-platform bits below if we ever want
+// to use something other than a pointer on some platforms (e.g., a faw file
+// descriptor, a windows HANDLE, etc).
+bool FS_IsFileValid(FS_File file)
+{
+	return (file != 0);
+}
+
 size_t FS_Read(void *ptr, size_t size, size_t nmemb, FS_File file)
 {
 	return fread(ptr, size, nmemb, file);
 }
 
-size_t FS_Write(void *ptr, size_t size, size_t nmemb, FS_File file)
+size_t FS_Write(const void *ptr, size_t size, size_t nmemb, FS_File file)
 {
 	return fwrite(ptr, size, nmemb, file);
 }
@@ -222,7 +230,7 @@ FS_File FS_OpenOmniFile(const char *fileName)
 	// Keen drictory first, in case we're dealing with a game which has
 	// them (e.g., a mod)
 	FS_File file = FSL_OpenFileInDirCaseInsensitive(fs_keenPath, fileName, false);
-	if (file)
+	if (FS_IsFileValid(file))
 		return file;
 	return FSL_OpenFileInDirCaseInsensitive(fs_omniPath, fileName, false);
 }
@@ -236,7 +244,7 @@ FS_File FS_CreateUserFile(const char *fileName)
 {
 	FS_File file = FSL_OpenFileInDirCaseInsensitive(fs_userPath, fileName, true);
 
-	if (!file)
+	if (!FS_IsFileValid(file))
 		file = FSL_CreateFileInDir(fs_userPath, fileName);
 
 	return file;
@@ -246,7 +254,7 @@ FS_File FS_CreateUserFile(const char *fileName)
 bool FS_IsKeenFilePresent(const char *filename)
 {
 	FS_File file = FS_OpenKeenFile(filename);
-	if (!file)
+	if (!FS_IsFileValid(file))
 		return false;
 	FS_CloseFile(file);
 	return true;
@@ -256,7 +264,7 @@ bool FS_IsKeenFilePresent(const char *filename)
 bool FS_IsOmniFilePresent(const char *filename)
 {
 	FS_File file = FS_OpenOmniFile(filename);
-	if (!file)
+	if (!FS_IsFileValid(file))
 		return false;
 	FS_CloseFile(file);
 	return true;
@@ -281,7 +289,7 @@ char *FS_AdjustExtension(const char *filename)
 bool FS_IsUserFilePresent(const char *filename)
 {
 	FS_File file = FS_OpenUserFile(filename);
-	if (!file)
+	if (!FS_IsFileValid(file))
 		return false;
 	FS_CloseFile(file);
 	return true;
@@ -333,14 +341,14 @@ void FS_Startup()
 	}
 }
 
-size_t FS_ReadInt8LE(void *ptr, size_t count, FILE *stream)
+size_t FS_ReadInt8LE(void *ptr, size_t count, FS_File stream)
 {
-	return fread(ptr, 1, count, stream);
+	return FS_Read(ptr, 1, count, stream);
 }
 
-size_t FS_ReadInt16LE(void *ptr, size_t count, FILE *stream)
+size_t FS_ReadInt16LE(void *ptr, size_t count, FS_File stream)
 {
-	count = fread(ptr, 2, count, stream);
+	count = FS_Read(ptr, 2, count, stream);
 #ifdef CK_CROSS_IS_BIGENDIAN
 	uint16_t *uptr = (uint16_t *)ptr;
 	for (size_t loopVar = 0; loopVar < count; loopVar++, uptr++)
@@ -349,9 +357,9 @@ size_t FS_ReadInt16LE(void *ptr, size_t count, FILE *stream)
 	return count;
 }
 
-size_t FS_ReadInt32LE(void *ptr, size_t count, FILE *stream)
+size_t FS_ReadInt32LE(void *ptr, size_t count, FS_File stream)
 {
-	count = fread(ptr, 4, count, stream);
+	count = FS_Read(ptr, 4, count, stream);
 #ifdef CK_CROSS_IS_BIGENDIAN
 	uint32_t *uptr = (uint32_t *)ptr;
 	for (size_t loopVar = 0; loopVar < count; loopVar++, uptr++)
@@ -360,15 +368,15 @@ size_t FS_ReadInt32LE(void *ptr, size_t count, FILE *stream)
 	return count;
 }
 
-size_t FS_WriteInt8LE(const void *ptr, size_t count, FILE *stream)
+size_t FS_WriteInt8LE(const void *ptr, size_t count, FS_File stream)
 {
-	return fwrite(ptr, 1, count, stream);
+	return FS_Write(ptr, 1, count, stream);
 }
 
-size_t FS_WriteInt16LE(const void *ptr, size_t count, FILE *stream)
+size_t FS_WriteInt16LE(const void *ptr, size_t count, FS_File stream)
 {
 #ifndef CK_CROSS_IS_BIGENDIAN
-	return fwrite(ptr, 2, count, stream);
+	return FS_Write(ptr, 2, count, stream);
 #else
 	uint16_t val;
 	size_t actualCount = 0;
@@ -376,16 +384,16 @@ size_t FS_WriteInt16LE(const void *ptr, size_t count, FILE *stream)
 	for (size_t loopVar = 0; loopVar < count; loopVar++, uptr++)
 	{
 		val = CK_Cross_Swap16(*uptr);
-		actualCount += fwrite(&val, 2, 1, stream);
+		actualCount += FS_Write(&val, 2, 1, stream);
 	}
 	return actualCount;
 #endif
 }
 
-size_t FS_WriteInt32LE(const void *ptr, size_t count, FILE *stream)
+size_t FS_WriteInt32LE(const void *ptr, size_t count, FS_File stream)
 {
 #ifndef CK_CROSS_IS_BIGENDIAN
-	return fwrite(ptr, 4, count, stream);
+	return FS_Write(ptr, 4, count, stream);
 #else
 	uint32_t val;
 	size_t actualCount = 0;
@@ -393,20 +401,20 @@ size_t FS_WriteInt32LE(const void *ptr, size_t count, FILE *stream)
 	for (size_t loopVar = 0; loopVar < count; loopVar++, uptr++)
 	{
 		val = CK_Cross_Swap32(*uptr);
-		actualCount += fwrite(&val, 4, 1, stream);
+		actualCount += FS_Write(&val, 4, 1, stream);
 	}
 	return actualCount;
 #endif
 }
 
-size_t FS_ReadBoolFrom16LE(void *ptr, size_t count, FILE *stream)
+size_t FS_ReadBoolFrom16LE(void *ptr, size_t count, FS_File stream)
 {
 	uint16_t val;
 	size_t actualCount = 0;
 	bool *currBoolPtr = (bool *)ptr; // No lvalue compilation error
 	for (size_t loopVar = 0; loopVar < count; loopVar++, currBoolPtr++)
 	{
-		if (fread(&val, 2, 1, stream)) // Should be either 0 or 1
+		if (FS_Read(&val, 2, 1, stream)) // Should be either 0 or 1
 		{
 			*currBoolPtr = (val); // NOTE: No need to byte-swap
 			actualCount++;
@@ -415,7 +423,7 @@ size_t FS_ReadBoolFrom16LE(void *ptr, size_t count, FILE *stream)
 	return actualCount;
 }
 
-size_t FS_WriteBoolTo16LE(const void *ptr, size_t count, FILE *stream)
+size_t FS_WriteBoolTo16LE(const void *ptr, size_t count, FS_File stream)
 {
 	uint16_t val;
 	size_t actualCount = 0;
@@ -423,7 +431,7 @@ size_t FS_WriteBoolTo16LE(const void *ptr, size_t count, FILE *stream)
 	for (size_t loopVar = 0; loopVar < count; loopVar++, currBoolPtr++)
 	{
 		val = CK_Cross_SwapLE16((*currBoolPtr) ? 1 : 0);
-		actualCount += fwrite(&val, 2, 1, stream);
+		actualCount += FS_Write(&val, 2, 1, stream);
 	}
 	return actualCount;
 }

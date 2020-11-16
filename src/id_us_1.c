@@ -673,7 +673,7 @@ void US_LoadConfig(void)
 	const char *fileName = FS_AdjustExtension("CONFIG.EXT");
 	bool configFileLoaded;
 	FS_File f = FS_OpenUserFile(fileName);
-	if (f)
+	if (FS_IsFileValid(f))
 	{
 		FS_ReadInt8LE(fileExt, sizeof(fileExt), f);
 		FS_ReadInt16LE(&configRev, 1, f);
@@ -681,11 +681,11 @@ void US_LoadConfig(void)
 		// (but true to the original and effectively safe)
 		if (strcmp(fileExt, ck_currentEpisode->ext) || (configRev != 4))
 		{
-			fclose(f);
+			FS_CloseFile(f);
 			f = NULL;
 		}
 	}
-	if (f)
+	if (FS_IsFileValid(f))
 	{
 		int16_t intVal;
 		// High scores table (an array of structs)
@@ -755,7 +755,7 @@ void US_SaveConfig(void)
 	const char *fileName = FS_AdjustExtension("CONFIG.EXT");
 	int16_t intVal;
 	FS_File f = FS_CreateUserFile(fileName);
-	if (!f)
+	if (!FS_IsFileValid(f))
 		return;
 
 	FS_WriteInt8LE((ck_currentEpisode->ext), 4, f); // Config file extension
@@ -839,7 +839,7 @@ void US_GetSavefiles(void)
 		// handle = open( filename, O_RDONLY | O_BINARY );
 		handle = FS_OpenUserFile(filename);
 
-		if (handle)
+		if (FS_IsFileValid(handle))
 		{
 			// Omnispeak - reading US_Savefile fields one-by-one
 			// for cross-platform support

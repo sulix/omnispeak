@@ -236,7 +236,7 @@ static bool US_LoadMain(int i, bool fromMenu)
 	e = &us_savefiles[i];
 	fname = US_GetSavefileName(i);
 	fp = FS_OpenUserFile(fname);
-	if (fp != NULL)
+	if (FS_IsFileValid(fp))
 	{
 		// Omnispeak - reading US_Savefile fields one-by-one
 		// for cross-platform support
