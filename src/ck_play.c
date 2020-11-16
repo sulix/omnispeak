@@ -1735,8 +1735,6 @@ void CK_ScrollStatusWindow(void)
 		VH_DrawMaskedBitmap(40 + scrX, ck_statusWindowYPx - STATUS_BOTTOM + scrY,
 				MPIC_STATUSLEFT);
 	}
-
-	VL_Present(); //VW_UpdateScreen();
 }
 
 extern void RFL_SetupOnscreenAnimList();
