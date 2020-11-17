@@ -243,6 +243,9 @@ endif
 ifneq (,$(findstring win,$(PLATFORM)))
 	BATFILES = $(BINDIR)/_keen4.cmd $(BINDIR)/_keen5.cmd $(BINDIR)/_keen6.cmd
 	RES = $(OBJDIR)/windowsres.res
+	# MS Bitfields has a bug with packed structures on some GCC versions:
+	# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52991
+	CXXFLAGS += -mno-ms-bitfields
 endif
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
