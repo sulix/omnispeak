@@ -129,7 +129,7 @@ void CK_PhysUpdateY(CK_object *obj, int16_t deltaUnitY)
 void CK_PhysKeenClipDown(CK_object *obj)
 {
 	// Amount we're moving in each direction.
-	int16_t deltaX, deltaY;
+	int16_t deltaX;
 	// The part of the slope we care about (in px)
 	int16_t midTileXOffset;
 	// The top of the tile at Keen's feet.
@@ -187,7 +187,7 @@ void CK_PhysKeenClipDown(CK_object *obj)
 
 void CK_PhysKeenClipUp(CK_object *obj)
 {
-	int16_t deltaX, deltaY;
+	int16_t deltaY;
 	int16_t midTileXOffset;
 	int16_t bottomTI;
 	bool spaceBelow;
@@ -528,6 +528,10 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 			// Scubakeen
 			delX = 0x280;
 			delY = 0x180;
+		}
+		else
+		{
+			goto badobjclass;
 		}
 		break;
 	case EP_CK5:
