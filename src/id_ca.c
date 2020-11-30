@@ -162,12 +162,6 @@ void (*ca_beginCacheBox)(const char *title, int numcache);
 void (*ca_updateCacheBox)(void);
 void (*ca_finishCacheBox)(void);
 
-bool CA_FarWrite(int handle, uint8_t *source, int length)
-{
-	// TODO: Implement
-	return false;
-}
-
 bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 {
 	FS_File f = FS_OpenOmniFile(FS_AdjustExtension(filename));

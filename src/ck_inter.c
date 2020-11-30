@@ -171,7 +171,7 @@ void CK_FizzleFade(void);
 int AdvanceTerminatorCredit(int elapsedTime)
 {
 
-	int bx, picchunk;
+	int picchunk;
 	VH_BitmapTableEntry *bmp;
 
 	switch (ck_termCreditStage)
@@ -446,10 +446,6 @@ void AnimateTerminator(void)
 			if (row & 1)
 			{
 				rowptr += ck_introCommanderWidth;
-			}
-			else
-			{
-				rowptr = rowptr;
 			}
 		}
 

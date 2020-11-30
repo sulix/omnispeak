@@ -666,8 +666,8 @@ int us_argc;
 void US_LoadConfig(void)
 {
 	int16_t inputDevice, configRev;
-	SDMode sd;
-	SMMode sm;
+	SDMode sd = sdm_Off;
+	SMMode sm = smm_Off;
 	bool hadAdlib = false; // Originally this is not set to 0 directly
 	char fileExt[4];
 	const char *fileName = FS_AdjustExtension("CONFIG.EXT");
