@@ -173,6 +173,16 @@ void VL_FadeFromBlack(void)
 	vl_screenFaded = false;
 }
 
+/*
+ * VL_Clip:
+ * This is a somewhat nasty function which clips an input rect to an output.
+ * As input, it takes:
+ *  - src_{w,h} as the "source" rectange, to be clipped to the "dest" dst_{x,y,w,h}
+ * It then outputs:
+ *  - A new src_{w,h} (called final{W,H}), which is the final width, height of the src
+ *  - A new dst_{x,y}, which is the offset _in source coordinates_ of the top left of
+ *    the final source rect.
+ */
 void VL_Clip(int *src_w, int *src_h, int *dst_x, int *dst_y, int dst_w, int dst_h)
 {
 	int initialX = CK_Cross_max(-(*dst_x), 0);

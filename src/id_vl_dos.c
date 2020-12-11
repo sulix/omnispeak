@@ -404,7 +404,7 @@ static void VL_DOS_UnmaskedToSurface(void *src, void *dst_surface, int x, int y,
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		for (int _y = initial_y; _y < final_h; ++_y)
+		for (int _y = initial_y; _y < initial_y + final_h; ++_y)
 		{
 			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * plane) + (_y * (w / 8)) + initial_x / 8;
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
@@ -426,7 +426,7 @@ static void VL_DOS_UnmaskedToSurface_PM(void *src, void *dst_surface, int x, int
 	{
 		if (!(mapmask & (1 << plane)))
 			continue;
-		for (int _y = initial_y; _y < final_h; ++_y)
+		for (int _y = initial_y; _y < initial_y + final_h; ++_y)
 		{
 			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * plane) + (_y * (w / 8)) + initial_x / 8;
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
@@ -446,7 +446,7 @@ static void VL_DOS_MaskedToSurface(void *src, void *dst_surface, int x, int y, i
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		for (int _y = initial_y; _y < final_h; ++_y)
+		for (int _y = initial_y; _y < initial_y + final_h; ++_y)
 		{
 			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * (plane + 1)) + (_y * (w / 8));
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
@@ -466,7 +466,7 @@ static void VL_DOS_MaskedBlitToSurface(void *src, void *dst_surface, int x, int 
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		for (int _y = initial_y; _y < final_h; ++_y)
+		for (int _y = initial_y; _y < initial_y + final_h; ++_y)
 		{
 			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * (plane + 1)) + (_y * (w / 8)) + (initial_x);
 			uint8_t *mask_ptr = (uint8_t *)src + (_y * (w / 8)) + (initial_x);
