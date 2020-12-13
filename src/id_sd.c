@@ -27,6 +27,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "ck_cross.h"
 
+#ifdef SD_OPL2_WITH_ALSA
+SD_Backend *SD_Impl_GetBackend_ALSAOPL2();
+#endif
+
 // Global variables accessed from other modules
 bool sd_haveAdlib;
 SD_SoundMode sd_soundMode;
@@ -219,22 +223,6 @@ static void SD_PC_SoundService(void)
 }
 
 // ======== Adlib ========
-
-//	Register addresses
-// Operator stuff
-#define SD_ADLIB_REG_CHAR 0x20
-#define SD_ADLIB_REG_VOLUME 0x40
-#define SD_ADLIB_REG_ATTACK 0x60
-#define SD_ADLIB_REG_SUSPEND 0x80
-#define SD_ADLIB_REG_WAVE 0xe0
-// Channel stuff
-#define SD_ADLIB_REG_NOTE_LO 0xa0
-#define SD_ADLIB_REG_NOTE_HI 0xb0
-#define SD_ADLIB_REG_CONNECTION 0xc0
-// Global stuff
-#define SD_ADLIB_REG_EFFECTS 0xbd
-
-#define SD_ADLIB_NUM_CHANNELS 10
 
 typedef struct
 {
@@ -469,7 +457,7 @@ bool SD_SetSoundMode(SD_SoundMode mode)
 	if (soundAvailable && (mode != sd_soundMode))
 	{
 		//SD_StopDevice();
-		      sd_soundMode = mode;
+		sd_soundMode = mode;
 		sd_sfxChunkArray = CA_audio + sfxChunkOffset;
 		//SD_StartDevice();
 		if (sd_backend)
@@ -502,7 +490,7 @@ bool SD_SetMusicMode(ID_MusicMode mode)
 		break;
 	}
 	if (musicAvailable)
-		      sd_musicMode = mode;
+		sd_musicMode = mode;
 	SD_SetTimerSpeed();
 	return musicAvailable;
 }
@@ -522,7 +510,7 @@ ID_MusicMode SD_GetMusicMode()
 // Enable or disable quiet Adlib sound effects
 void SD_SetQuietSfx(bool value)
 {
-	   sd_quietAdlibSfx = value;
+	sd_quietAdlibSfx = value;
 }
 
 // Query if quiet adlib sound effects are enabled.
@@ -544,12 +532,19 @@ void SD_Startup()
 		return;
 
 	sd_backend = SD_Impl_GetBackend();
+	for (int i = 0; i < us_argc; ++i)
+	{
+#ifdef SD_OPL2_WITH_ALSA
+		if (!CK_Cross_strcasecmp(us_argv[i], "/ALSAOPL2"))
+			sd_backend = SD_Impl_GetBackend_ALSAOPL2();
+#endif
+	}
 
 	if (sd_backend)
 		sd_backend->startup();
 
 	// TODO: Support /NOAL switch
-	   sd_haveAdlib = true;
+	sd_haveAdlib = true;
 
 	SD_SetTimeCount(0);
 

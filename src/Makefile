@@ -34,6 +34,8 @@ This Makefile supports the following options:
 		  sdl2vk  = SDL 2.0 + Vulkan (experimental)
 		  null    = dummy renderer
 
+  WITH_ALSA     whether to include ALSA support for real OPL2 hardware (Linux only)
+  
   STATIC        whether to build a static executable (0/1)
                   - defaults to 1 for Windows platforms, 0 otherwise
 
@@ -75,6 +77,7 @@ DEFAULT_LOCAL_SDL = 0
 BINDIR =
 LIBGL = -lGL
 LIBVULKAN = -lvulkan
+LIBASOUND = -lasound
 OUTDIR_SUFFIX := INVALID
 
 ifeq ($(PLATFORM),)
@@ -284,6 +287,12 @@ ifeq ($(RENDERER), null)
 endif
 
 IDOBJECTS += $(RENDER_OBJS)
+
+ifeq ($(WITH_ALSA), 1)
+	IDOBJECTS += id_sd_opl2alsa.o
+	CXXFLAGS += -DSD_OPL2_WITH_ALSA
+	LIBS += $(LIBASOUND)
+endif
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

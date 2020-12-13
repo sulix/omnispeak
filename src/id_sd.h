@@ -61,6 +61,25 @@ void SD_StartMusic(SD_MusicTrack *music);
 void SD_FadeOutMusic(void);
 bool SD_MusicPlaying(void); // Actually return false for all time
 
+/* Adlib Register Definitions */
+//	Register addresses
+// Operator stuff
+#define SD_ADLIB_REG_CHAR 0x20
+#define SD_ADLIB_REG_VOLUME 0x40
+#define SD_ADLIB_REG_ATTACK 0x60
+#define SD_ADLIB_REG_SUSPEND 0x80
+#define SD_ADLIB_REG_WAVE 0xe0
+// Channel stuff
+#define SD_ADLIB_REG_NOTE_LO 0xa0
+#define SD_ADLIB_REG_NOTE_HI 0xb0
+#define SD_ADLIB_REG_CONNECTION 0xc0
+// Global stuff
+#define SD_ADLIB_REG_EFFECTS 0xbd
+
+#define SD_ADLIB_NUM_CHANNELS 10
+
+
+
 typedef struct SD_Backend
 {
 	void (*startup)();
