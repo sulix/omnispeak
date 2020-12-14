@@ -30,6 +30,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef SD_OPL2_WITH_ALSA
 SD_Backend *SD_Impl_GetBackend_ALSAOPL2();
 #endif
+#ifdef SD_OPL2_WITH_IEEE1284
+SD_Backend *SD_Impl_GetBackend_OPL2LPT();
+#endif
 
 // Global variables accessed from other modules
 bool sd_haveAdlib;
@@ -537,6 +540,10 @@ void SD_Startup()
 #ifdef SD_OPL2_WITH_ALSA
 		if (!CK_Cross_strcasecmp(us_argv[i], "/ALSAOPL2"))
 			sd_backend = SD_Impl_GetBackend_ALSAOPL2();
+#endif
+#ifdef SD_OPL2_WITH_IEEE1284
+		if (!CK_Cross_strcasecmp(us_argv[i], "/OPL2LPT"))
+			sd_backend = SD_Impl_GetBackend_OPL2LPT();
 #endif
 	}
 
