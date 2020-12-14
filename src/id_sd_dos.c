@@ -103,10 +103,6 @@ void SD_DOS_PCSpkOn(bool on, int freq)
 	}
 }
 
-void SDL_PCService(void);
-void SDL_ALSoundService(void);
-void SDL_ALService(void);
-
 _go32_dpmi_seginfo sd_dos_oldISR, sd_dos_newISR;
 
 void SD_DOS_Startup(void)

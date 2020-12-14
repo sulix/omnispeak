@@ -666,8 +666,9 @@ int us_argc;
 void US_LoadConfig(void)
 {
 	int16_t inputDevice, configRev;
-	SDMode sd = sdm_Off;
-	SMMode sm = smm_Off;
+	SD_SoundMode sd;
+	ID_MusicMode sm;
+	bool hadQuietSfx = false;
 	bool hadAdlib = false; // Originally this is not set to 0 directly
 	char fileExt[4];
 	const char *fileName = FS_AdjustExtension("CONFIG.EXT");
@@ -697,9 +698,9 @@ void US_LoadConfig(void)
 		}
 
 		if (FS_ReadInt16LE(&intVal, 1, f))
-			sd = (SDMode)intVal;
+			sd = (SD_SoundMode)intVal;
 		if (FS_ReadInt16LE(&intVal, 1, f))
-			sm = (SMMode)intVal;
+			sm = (ID_MusicMode)intVal;
 
 		FS_ReadInt16LE(&inputDevice, 1, f);
 
@@ -718,7 +719,7 @@ void US_LoadConfig(void)
 
 		FS_ReadBoolFrom16LE(&ck_scoreBoxEnabled, 1, f);
 		FS_ReadBoolFrom16LE(&ck_svgaCompatibility, 1, f);
-		FS_ReadBoolFrom16LE(&quiet_sfx, 1, f);
+		FS_ReadBoolFrom16LE(&hadQuietSfx, 1, f);
 		FS_ReadBoolFrom16LE(&hadAdlib, 1, f);
 		FS_ReadBoolFrom16LE(&ck_fixJerkyMotion, 1, f);
 		FS_ReadBoolFrom16LE(&ck_twoButtonFiring, 1, f);
@@ -746,7 +747,8 @@ void US_LoadConfig(void)
 		in_gamepadButtons[3] = -1;
 		//ck_highScoresDirty = 1; // Unused?
 	}
-	SD_Default(configFileLoaded && (hadAdlib == AdLibPresent), sd, sm);
+	SD_SetQuietSfx(hadQuietSfx);
+	SD_Default(configFileLoaded && (hadAdlib == SD_IsAdlibPresent()), sd, sm);
 	IN_Default(configFileLoaded, inputDevice);
 }
 
@@ -770,9 +772,9 @@ void US_SaveConfig(void)
 		FS_WriteInt16LE(&ck_highScores[i].arg4, 1, f);
 	}
 
-	intVal = (int16_t)SoundMode;
+	intVal = (int16_t)SD_GetSoundMode();
 	FS_WriteInt16LE(&intVal, 1, f);
-	intVal = (int16_t)MusicMode;
+	intVal = (int16_t)SD_GetMusicMode();
 	FS_WriteInt16LE(&intVal, 1, f);
 
 	// FIXME: Currently it is unused
@@ -794,8 +796,11 @@ void US_SaveConfig(void)
 
 	FS_WriteBoolTo16LE(&ck_scoreBoxEnabled, 1, f);
 	FS_WriteBoolTo16LE(&ck_svgaCompatibility, 1, f);
-	FS_WriteBoolTo16LE(&quiet_sfx, 1, f);
-	FS_WriteBoolTo16LE(&AdLibPresent, 1, f);
+
+	bool quietSfx = SD_GetQuietSfx();
+	bool adlibPresent = SD_IsAdlibPresent();
+	FS_WriteBoolTo16LE(&quietSfx, 1, f);
+	FS_WriteBoolTo16LE(&adlibPresent, 1, f);
 	FS_WriteBoolTo16LE(&ck_fixJerkyMotion, 1, f);
 	FS_WriteBoolTo16LE(&ck_twoButtonFiring, 1, f);
 

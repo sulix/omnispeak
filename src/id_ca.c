@@ -146,7 +146,7 @@ uint32_t CAL_ReadULong(void *offset)
 }
 
 //Begin locals
-SDMode oldsoundmode;
+SD_SoundMode oldsoundmode;
 
 ca_audinfo ca_audInfoE;
 
@@ -1130,24 +1130,6 @@ void CA_CacheAudioChunk(int16_t chunk)
 	//done:
 	if (compressed > BUFFERSIZE)
 		MM_FreePtr(&bigbuffer);
-
-#ifdef CK_CROSS_IS_BIGENDIAN
-	if (chunk < ca_audInfoE.startMusic) // Sound effects
-	{
-		SoundCommon *sndCommonPtr = (SoundCommon *)CA_audio[chunk];
-		sndCommonPtr->length = CK_Cross_SwapLE32(sndCommonPtr->length);
-		sndCommonPtr->priority = CK_Cross_SwapLE16(sndCommonPtr->priority);
-	}
-	else // Music chunk
-	{
-		// TODO fixme is this ok?
-		MusicGroup *musicPtr = (MusicGroup *)CA_audio[chunk];
-		musicPtr->length = CK_Cross_SwapLE16(musicPtr->length);
-		// Swap the delays only
-		for (int bytesLeft = musicPtr->length, *musicData = 1 + musicPtr->values; bytesLeft >= 4; bytesLeft -= 4, musicData += 2)
-			*musicData = CK_Cross_SwapLE16(*musicData);
-	}
-#endif
 }
 
 void CA_LoadAllSounds(void)
@@ -1176,9 +1158,9 @@ void CA_LoadAllSounds(void)
 			}
 		}
 	}
-	if (SoundMode != sdm_Off)
+	if (SD_GetSoundMode() != sdm_Off)
 	{
-		switch (SoundMode)
+		switch (SD_GetSoundMode())
 		{
 		case sdm_PC:
 			offset = ca_audInfoE.startPCSounds; // STARTPCSOUNDS;

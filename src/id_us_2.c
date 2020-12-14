@@ -685,15 +685,15 @@ void USL_UpdateCards(void)
 	int i;
 
 	/* SFX and Music menus */
-	i = SoundMode;
+	i = SD_GetSoundMode();
 
-	if ((i == sdm_AdLib) && quiet_sfx)
+	if ((i == sdm_AdLib) && SD_GetQuietSfx())
 		i++;
 
 	USL_CheckCardItem(&ck_us_soundMenu, i, 0);
-	USL_CheckCardItem(&ck_us_musicMenu, MusicMode, 0);
+	USL_CheckCardItem(&ck_us_musicMenu, SD_GetMusicMode(), 0);
 
-	if (!AdLibPresent)
+	if (!SD_IsAdlibPresent())
 	{
 		/* Disable adlib & sb menu items */
 		ck_us_soundMenuItems[2].state |= US_IS_Disabled;
@@ -822,18 +822,18 @@ void USL_SetSoundAndMusic()
 	// Quiet AdLib sound effects
 	if (i == 3)
 	{
-		quiet_sfx = true;
+		SD_SetQuietSfx(true);
 		i--;
 	}
 	else
 	{
-		quiet_sfx = false;
+		SD_SetQuietSfx(false);
 	}
-	if (i != (int)SoundMode)
-		SD_SetSoundMode((SDMode)i);
+	if (i != (int)SD_GetSoundMode())
+		SD_SetSoundMode((SD_SoundMode)i);
 	i = USL_GetCheckedItem(&ck_us_musicMenu);
-	if (i != (int)MusicMode)
-		SD_SetMusicMode((SMMode)i);
+	if (i != (int)SD_GetMusicMode())
+		SD_SetMusicMode((ID_MusicMode)i);
 }
 
 void USL_EndCards()
