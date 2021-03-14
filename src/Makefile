@@ -125,6 +125,8 @@ ifeq ($(PLATFORM), gcw0)
         DEFAULT_RENDERER = sdl2sw
         SDL_CONFIG_PREFIX = $(GCW0_TOOLCHAIN_DIR)/usr/$(TOOLSET)/sysroot/usr/bin/
         DEFAULT_BUILDASCPP = 1
+        # HACK: gcw0 misel architecture doesn't define O_PATH
+        CXXFLAGS += -DO_PATH=010000000
 endif
 
 ifeq ($(OUTDIR_SUFFIX),INVALID)
