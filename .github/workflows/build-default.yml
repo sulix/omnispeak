@@ -13,8 +13,8 @@ jobs:
       run: |
         sudo apt update
         sudo apt install libsdl2-dev mingw-w64
-        wget https://github.com/andrewwutw/build-djgpp/releases/download/v2.9/djgpp-linux64-gcc550.tar.bz2
-        sudo tar xf djgpp-linux64-gcc550.tar.bz2 -C /usr/local
+        wget https://github.com/andrewwutw/build-djgpp/releases/download/v3.1/djgpp-linux64-gcc1020.tar.bz2
+        sudo tar xf djgpp-linux64-gcc1020.tar.bz2 -C /usr/local
         sudo mkdir -p /opt
         wget http://www.gcw-zero.com/files/opendingux-gcw0-toolchain.2014-08-20.tar.bz2
         sudo tar xf opendingux-gcw0-toolchain.2014-08-20.tar.bz2 -C /opt
