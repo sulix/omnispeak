@@ -60,4 +60,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define QUICKSAVE_ENABLED
 #endif
 
+// =================================
+// Filesystem (ID_FS) options. 
+// =================================
+
+// Default paths for Omni / Keen / User files.
+// (See the id_fs.h documentation for more info.)
+#ifndef FS_DEFAULT_KEEN_PATH
+#define FS_DEFAULT_KEEN_PATH "."
+#endif
+#ifndef FS_DEFAULT_OMNI_PATH
+#define FS_DEFAULT_OMNI_PATH FS_DEFAULT_KEEN_PATH
+#endif
+#ifndef FS_DEFAULT_USER_PATH
+#define FS_DEFAULT_USER_PATH "."
+#endif
+
+// Look for Omnispeak-specific files in the Keen directory first
+#ifndef FS_NO_PREFER_KEEN_PATH
+#define FS_PREFER_KEEN_PATH
+#endif
+
+// If the Omni path isn't valid, fall back to the directory
+// containing the executable. SDL 2.0.1 or higher required.
+#if !defined(FS_NO_OMNI_EXEDIR_FALLBACK) && defined(WITH_SDL)
+#define FS_OMNI_EXEDIR_FALLBACK
+#endif
+
+// Enable this to prefer XDG paths for the user directory to the "DEFAULT"
+// path above. This is disabled by default, in which case XDG paths are
+// used as a fallback. SDL 2.0.1 is required.
+//#define FS_USER_PATH_PREFER_XDG
+
+// Fallback to the XDG paths if the current user path is not writable.
+#ifdef WITH_SDL
+#define FS_USER_XDG_FALLBACK
+#endif
+
+#define FS_XDG_ORGANISATION "Commander Keen"
+#define FS_XDG_APPLICATION "Omnispeak"
+
 #endif //CK_CONFIG_H

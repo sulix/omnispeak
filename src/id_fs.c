@@ -118,6 +118,11 @@ FS_File FSL_CreateFileInDir(const char *dirPath, const char *fileName)
 	return fdopen(fd, "wb");
 }
 
+bool FSL_IsDirWritable(const char *dirPath)
+{
+	return (access(dirPath, W_OK | X_OK) == 0);
+}
+
 size_t FS_GetFileSize(FS_File file)
 {
 	struct stat fileStat;
@@ -152,6 +157,22 @@ FS_File FSL_CreateFileInDir(const char *dirPath, const char *fileName)
 	return fopen(fullFileName, "wbx");
 }
 
+bool FSL_IsDirWritable(const char *dirPath)
+{
+	// TODO: This is horrible. We probably should handle this by checking
+	// security contexts or whatnot.
+	char fullFileName[MAX_PATH];
+	sprintf(fullFileName, "%s\\TestFile", dirPath);
+	FILE *testFile = fopen(fullFileName, "wbx");
+	if (testFile)
+	{
+		fclose(testFile);
+		DeleteFile(fullFileName);
+		return true;
+	}
+	return false;
+}
+
 size_t FS_GetFileSize(FS_File file)
 {
 	HANDLE fHandle = (HANDLE)_get_osfhandle(_fileno(file));
@@ -167,6 +188,7 @@ size_t FS_GetFileSize(FS_File file)
 #include <dirent.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 FS_File FSL_OpenFileInDirCaseInsensitive(const char *dirPath, const char *fileName, bool forWrite)
 {
@@ -208,6 +230,12 @@ FS_File FSL_CreateFileInDir(const char *dirPath, const char *fileName)
 	return f;
 }
 
+bool FSL_IsDirWritable(const char *dirPath)
+{
+	// TODO: Check this works on DOS with (e.g.) write protected floppies.
+	return (access(dirPath, W_OK | X_OK) == 0);
+}
+
 size_t FS_GetFileSize(FS_File file)
 {
 	long int oldPos = ftell(file);
@@ -226,12 +254,14 @@ FS_File FS_OpenKeenFile(const char *fileName)
 
 FS_File FS_OpenOmniFile(const char *fileName)
 {
+#ifdef FS_PREFER_KEEN_PATH
 	// We should look for Omnispeak files (headers, actions, etc) in the
 	// Keen drictory first, in case we're dealing with a game which has
 	// them (e.g., a mod)
 	FS_File file = FSL_OpenFileInDirCaseInsensitive(fs_keenPath, fileName, false);
 	if (FS_IsFileValid(file))
 		return file;
+#endif
 	return FSL_OpenFileInDirCaseInsensitive(fs_omniPath, fileName, false);
 }
 
@@ -302,22 +332,61 @@ bool FSL_IsGoodOmniPath(const char *ext)
 	return true;
 }
 
+bool FSL_IsGoodUserPath()
+{
+	return FSL_IsDirWritable(fs_userPath);
+}
+
 static const char *fs_parmStrings[] = {"GAMEPATH", "USERPATH", NULL};
 
 void FS_Startup()
 {
 	// For now, all of the paths will be the current directory.
 
-	fs_keenPath = ".";
-	fs_omniPath = ".";
-	fs_userPath = ".";
+	fs_keenPath = FS_DEFAULT_KEEN_PATH;
+	fs_omniPath = FS_DEFAULT_OMNI_PATH;
+	fs_userPath = FS_DEFAULT_USER_PATH;
 
+#ifdef FS_USER_PATH_PREFER_XDG
 #ifdef WITH_SDL
 #if SDL_VERSION_ATLEAST(2, 0, 1)
-	if (!FSL_IsGoodOmniPath(fs_omniPath))
+	fs_userPath = SDL_GetPrefPath(FS_XDG_ORGANISATION, FS_XDG_APPLICATION);
+	if (!fs_userPath || !FSL_IsGoodUserPath())
+		fs_userPath = FS_DEFAULT_USER_PATH;
+#else
+#warning Tried to enable FS_USER_PATH_PREFER_XDG but SDL version is too old.
+#endif
+#else
+#warning FS_USER_PATH_PREFER_XDG requires an SDL2-based backend.
+#endif
+#endif
+
+#ifdef FS_OMNI_EXEDIR_FALLBACK
+#ifdef WITH_SDL
+#if SDL_VERSION_ATLEAST(2, 0, 1)
+	if (!FSL_IsGoodOmniPath(ck_currentEpisode->ext))
 	{
 		fs_omniPath = SDL_GetBasePath();
 	}
+#else
+#warning Tried to enable FS_OMNI_EXEDIR_FALLBACK but SDL version is too old.
+#endif
+#else
+#warning FS_OMNI_EXEDIR_FALLBACK requires an SDL2-based backend.
+#endif
+#endif
+
+
+#ifdef FS_USER_XDG_FALLBACK
+#ifdef WITH_SDL
+#if SDL_VERSION_ATLEAST(2, 0, 1)
+	if (!FSL_IsGoodUserPath())
+		fs_userPath = SDL_GetPrefPath(FS_XDG_ORGANISATION, FS_XDG_APPLICATION);
+#else
+#warning Tried to enable FS_USER_XDG_FALLBACK but SDL version is too old.
+#endif
+#else
+#warning FS_USER_XDG_FALLBACK requires an SDL2-based backend.
 #endif
 #endif
 
@@ -338,6 +407,13 @@ void FS_Startup()
 				Quit("/USERPATH requires an argument!");
 			break;
 		}
+	}
+
+	// Check if the paths are good, and warn if not.
+	if (!FSL_IsGoodUserPath())
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Cannot write to user path \"%s\": savegames et al will not work.\n", fs_userPath);
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Use the /USERPATH option to set a different path.\n");
 	}
 }
 

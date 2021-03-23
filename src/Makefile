@@ -60,6 +60,21 @@ This Makefile supports the following options:
   KEEN6VER      version of Commander Keen Episode 6 to copy data for
                   - keen6e14 or keen6e15 (default)
 
+  KEENPATH	set the default path to the Commander Keen data files
+  		  - defaults to '.' -- the current directory
+		  - can be overridden at runtime with /KEENPATH
+
+  USERPATH	set the default path for user savegames
+  		  - defaults to '.' -- the current directory
+		  - can be overridden at runtime with /USERPATH
+
+  XDGUSERPATH	prefer XDG user paths to the default path above (0/1; default: off)
+  		  - these are typically ~/.local/share/Commander Keen/Omnispeak/*
+		  - requires SDL >= 2.0.1 (SDL_GetPrefPath())
+		  - uses a similar per-user path on other platforms
+		  - this path is used as a fallback even if this setting is off
+		    (see: FS_USER_XDG_FALLBACK in ck_config.h)
+
   SDL1_VERSION  version of SDL 1.x to download and use (if LOCAL_SDL=1)
   SDL2_VERSION  version of SDL 2.x to download and use (if LOCAL_SDL=1)
 
@@ -152,6 +167,7 @@ DEBUG ?= 0
 VANILLA ?= 0
 LOCAL_SDL ?= $(DEFAULT_LOCAL_SDL)
 KEEN6VER ?= keen6e15
+XDGUSERPATH ?= 0
 SDL1_VERSION ?= 1.2.15
 SDL2_VERSION ?= 2.0.14
 SYSFLAGS ?=
@@ -328,6 +344,18 @@ ifeq ($(WITH_IEEE1284), 1)
 	LIBS += $(LIBIEEE1284)
 endif
 
+ifneq ($(KEENPATH),)
+	CXXFLAGS += -DFS_DEFAULT_KEEN_PATH=\"$(KEENPATH)\"
+endif
+
+ifneq ($(USERPATH),)
+	CXXFLAGS += -DFS_DEFAULT_USER_PATH=\"$(USERPATH)\"
+endif
+
+ifeq ($(XDGUSERPATH),1)
+	CXXFLAGS += -DFS_USER_PATH_PREFER_XDG=1
+endif
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 OBJ := $(IDOBJECTS:%=$(OBJDIR)/%)
@@ -350,6 +378,9 @@ dumpconfig:
 	@echo BUILDASCPP = $(BUILDASCPP)
 	@echo LOCAL_SDL = $(LOCAL_SDL)
 	@echo KEEN6VER = $(KEEN6VER)
+	@echo KEENPATH = $(KEENPATH)
+	@echo USERPATH = $(USERPATH)
+	@echo XDGUSERPATH = $(XDGUSERPATH)
 	@echo SDL_VERSION = $(SDL_VERSION)
 	@echo
 	@echo BINPREFIX = $(BINPREFIX)

@@ -85,6 +85,13 @@ is also supported.
 
 Cross-compilation for GCW Zero possible using the [GCW Zero toolchain](http://www.gcw-zero.com/develop).
 
+Packagers should note that it's possible to change the default GAME and USER
+paths with the make GAMEPATH= and make USERPATH= options. Similarly, savegames
+can be stored in the $XDG_DATA_HOME directory with the make XDGUSERPATH=1 option.
+Additional options can be found in the ``src/ck_config.h`` file.
+For example, you could build with:
+	make GAMEPATH=/usr/share/omnispeak XDGUSERPATH=1
+
 To see a full list of build options, just run `make help`.
 
 
