@@ -85,6 +85,11 @@ is also supported.
 
 Cross-compilation for GCW Zero possible using the [GCW Zero toolchain](http://www.gcw-zero.com/develop).
 
+On Linux, real OPL2 compatible soundcards can be used in place of the Adlib
+emulation by building with either the WITH_ALSA=1 option (for most soundcards),
+or the WITH_IEEE1284=1 option (for the OPL2LPT). These require libasound and libieee1284
+respectively, and must be enabled at runtime with a command-line option.
+
 Packagers should note that it's possible to change the default GAME and USER
 paths with the make GAMEPATH= and make USERPATH= options. Similarly, savegames
 can be stored in the $XDG_DATA_HOME directory with the make XDGUSERPATH=1 option.
