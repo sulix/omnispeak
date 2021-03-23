@@ -90,12 +90,12 @@ emulation by building with either the WITH_ALSA=1 option (for most soundcards),
 or the WITH_IEEE1284=1 option (for the OPL2LPT). These require libasound and libieee1284
 respectively, and must be enabled at runtime with a command-line option.
 
-Packagers should note that it's possible to change the default GAME and USER
-paths with the make GAMEPATH= and make USERPATH= options. Similarly, savegames
+Packagers should note that it's possible to change the default KEEN and USER
+paths with the make KEENPATH= and make USERPATH= options. Similarly, savegames
 can be stored in the $XDG_DATA_HOME directory with the make XDGUSERPATH=1 option.
 Additional options can be found in the ``src/ck_config.h`` file.
 For example, you could build with:
-	make GAMEPATH=/usr/share/omnispeak XDGUSERPATH=1
+	make KEENPATH=/usr/share/omnispeak XDGUSERPATH=1
 
 To see a full list of build options, just run `make help`.
 
