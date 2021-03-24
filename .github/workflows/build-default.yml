@@ -15,6 +15,9 @@ jobs:
         sudo apt install libsdl2-dev mingw-w64
         wget https://github.com/andrewwutw/build-djgpp/releases/download/v3.1/djgpp-linux64-gcc1020.tar.bz2
         sudo tar xf djgpp-linux64-gcc1020.tar.bz2 -C /usr/local
+        wget -nc http://www.delorie.com/pub/djgpp/current/v2misc/csdpmi7b.zip
+        mkdir csdpmi7b
+        unzip csdpmi7b.zip -d csdpmi7b/
         sudo mkdir -p /opt
         wget http://www.gcw-zero.com/files/opendingux-gcw0-toolchain.2014-08-20.tar.bz2
         sudo tar xf opendingux-gcw0-toolchain.2014-08-20.tar.bz2 -C /opt
@@ -31,6 +34,7 @@ jobs:
       working-directory: ./src
       run: |
         make PLATFORM=dos
+        cp ../csdpmi7b/bin/CWSDPMI.EXE ../bin-dos
     - name: Build (GCW Zero)
       working-directory: ./src
       run: |
