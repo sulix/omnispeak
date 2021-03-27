@@ -40,6 +40,7 @@
 #include "ck_cross.h"
 
 #include "opl/dbopl.h"
+#include "opl/nuked_opl3.h"
 
 #define PC_PIT_RATE 1193182
 #define SD_SFX_PART_RATE 140
@@ -90,63 +91,102 @@ void SD_SDL_SetTimer0(int16_t int_8_divisor)
 OPL emulation, powered by dbopl from DOSBox and using bits of code from Wolf4SDL
 *******************************************************************************/
 
+typedef enum SD_OPLEmulator
+{
+	SD_OPL_EMULATOR_NONE,
+	SD_OPL_EMULATOR_DBOPL,
+	SD_OPL_EMULATOR_NUKED
+} SD_OPLEmulator;
+
+static SD_OPLEmulator sd_oplEmulator;
+
 Chip oplChip;
+opl3_chip nuked_oplChip;
 
 static inline bool YM3812Init(int numChips, int clock, int rate)
 {
-	DBOPL_InitTables();
-	Chip__Chip(&oplChip);
-	Chip__Setup(&oplChip, rate);
+	if (sd_oplEmulator == SD_OPL_EMULATOR_DBOPL)
+	{
+		DBOPL_InitTables();
+		Chip__Chip(&oplChip);
+		Chip__Setup(&oplChip, rate);
+	}
+	else if (sd_oplEmulator == SD_OPL_EMULATOR_NUKED)
+	{
+		OPL3_Reset(&nuked_oplChip, rate);
+	}
 	return false;
 }
 
 static inline void YM3812Write(Chip *which, Bit32u reg, Bit8u val)
 {
-	Chip__WriteReg(which, reg, val);
+	if (sd_oplEmulator == SD_OPL_EMULATOR_DBOPL)
+		Chip__WriteReg(which, reg, val);
+	else if (sd_oplEmulator == SD_OPL_EMULATOR_NUKED)
+		OPL3_WriteReg(&nuked_oplChip, reg, val); 
 }
 
 static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 {
-	Bit32s buffer[512 * 2];
-	int i;
-
-	// length is at maximum samplesPerMusicTick = param_samplerate / 700
-	// so 512 is sufficient for a sample rate of 358.4 kHz (default 44.1 kHz)
-	if (length > 512)
-		length = 512;
-#if 0
-	if(which->opl3Active)
+	if (sd_oplEmulator == SD_OPL_EMULATOR_DBOPL)
 	{
-		Chip__GenerateBlock3(which, length, buffer);
+		Bit32s buffer[512 * 2];
+		int i;
 
-		// GenerateBlock3 generates a number of "length" 32-bit stereo samples
-		// so we need to convert them to 16-bit mono samples
-		for(i = 0; i < length; i++)
+		// length is at maximum samplesPerMusicTick = param_samplerate / 700
+		// so 512 is sufficient for a sample rate of 358.4 kHz (default 44.1 kHz)
+		if (length > 512)
+			length = 512;
+#if 0
+		if(which->opl3Active)
 		{
-			// Scale volume and pick one channel
-			Bit32s sample = 2*buffer[2*i];
-			if(sample > 16383) sample = 16383;
-			else if(sample < -16384) sample = -16384;
-			stream[i] = sample;
+			Chip__GenerateBlock3(which, length, buffer);
+
+			// GenerateBlock3 generates a number of "length" 32-bit stereo samples
+			// so we need to convert them to 16-bit mono samples
+			for(i = 0; i < length; i++)
+			{
+				// Scale volume and pick one channel
+				Bit32s sample = 2*buffer[2*i];
+				if(sample > 16383) sample = 16383;
+				else if(sample < -16384) sample = -16384;
+				stream[i] = sample;
+			}
+		}
+		else
+#endif
+		{
+			Chip__GenerateBlock2(which, length, buffer);
+
+			// GenerateBlock2 generates a number of "length" 32-bit mono samples
+			// so we only need to convert them to 16-bit mono samples
+			for (i = 0; i < length; i++)
+			{
+				// Scale volume
+				Bit32s sample = 2 * buffer[i];
+				if (sample > 16383)
+					sample = 16383;
+				else if (sample < -16384)
+					sample = -16384;
+				stream[i] = (int16_t)sample;
+			}
 		}
 	}
-	else
-#endif
+	else if (sd_oplEmulator == SD_OPL_EMULATOR_NUKED)
 	{
-		Chip__GenerateBlock2(which, length, buffer);
+		// Nuked OPL3 always generates stereo, but Omnispeak only
+		// supports mono streams. 
+		int16_t buffer[512 * 2];
+		int i;
 
-		// GenerateBlock2 generates a number of "length" 32-bit mono samples
-		// so we only need to convert them to 16-bit mono samples
+		if (length > 512)
+			length = 512;
+
+
+		OPL3_GenerateStream(&nuked_oplChip, buffer, length);
+
 		for (i = 0; i < length; i++)
-		{
-			// Scale volume
-			Bit32s sample = 2 * buffer[i];
-			if (sample > 16383)
-				sample = 16383;
-			else if (sample < -16384)
-				sample = -16384;
-			stream[i] = (int16_t)sample;
-		}
+			stream[i] = buffer[i*2] + buffer[i*2+1];
 	}
 }
 
@@ -284,10 +324,13 @@ void SD_SDL_PCSpkOn(bool on, int freq)
 
 void SD_SDL_Startup(void)
 {
+	sd_oplEmulator = SD_OPL_EMULATOR_DBOPL;
 	for (int i = 0; i < us_argc; ++i)
 	{
 		if (!CK_Cross_strcasecmp(us_argv[i], "/NOAUDIOSYNC"))
 			SD_SDL_useTimerFallback = true;
+		if (!CK_Cross_strcasecmp(us_argv[i], "/NUKEDOPL3"))
+			sd_oplEmulator = SD_OPL_EMULATOR_NUKED;
 	}
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 	{

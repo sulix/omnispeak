@@ -6,5 +6,9 @@ KeyJ
 
 Includes the DOSBox OPL2/3 Emulator:
 	Copyright (C) 2002-2010  The DOSBox Team
-	https://www.dosbox.com/	
+	https://www.dosbox.com/
 
+Includes the Nuked OPL3 Emulator:
+	Copyright (C) 2013-2020 Nuke.YKT
+	https://github.com/nukeykt/Nuked-OPL3
+	See src/opl/NUKEDOPL3-LICENSE
