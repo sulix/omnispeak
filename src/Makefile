@@ -29,7 +29,7 @@ This Makefile supports the following options:
 
   RENDERER      the type of video output API (not available for PLATFORM=dos)
 		  sdl1    = SDL 1.2 (deprecated; no win64 support)
-		  sdl2    = SDL 2.0 + SDL_Renderer
+		  sdl2    = SDL 2.0 + SDL_Renderer (Windows default)
 		  sdl2sw  = SDL 2.0 + Software SDL_Renderer
 		  sdl2gl  = SDL 2.0 + OpenGL 2.0 (default)
 		  sdl2vk  = SDL 2.0 + Vulkan (experimental)
@@ -112,6 +112,7 @@ ifneq (,$(findstring win,$(PLATFORM)))
 	EXE_EXT = .exe
 	DEFAULT_STATIC = 1
 	DEFAULT_LOCAL_SDL = 1
+	DEFAULT_RENDERER = sdl2
 	LIBGL = -lopengl32
 endif
 ifeq ($(PLATFORM), win32)
