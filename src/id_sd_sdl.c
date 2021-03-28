@@ -179,14 +179,32 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 		int16_t buffer[512 * 2];
 		int i;
 
-		if (length > 512)
-			length = 512;
+		while (length)
+		{
+			// The length should really never be 512 samples,
+			// (see above for the DBOPL driver), but nevertheless
+			// we handle the case. (Maybe someone's running at an
+			// absurd sample rate.)
+			int chunkLen = CK_Cross_min(length, 512);
 
 
-		OPL3_GenerateStream(&nuked_oplChip, buffer, length);
+			OPL3_GenerateStream(&nuked_oplChip, buffer, chunkLen);
 
-		for (i = 0; i < length; i++)
-			stream[i] = buffer[i*2] + buffer[i*2+1];
+			for (i = 0; i < chunkLen; i++)
+			{
+				// Add L + R to get a mono sample
+				int32_t sample = buffer[i*2] + buffer[i*2+1];
+				// We store it temporarily in a 32-bit value,
+				// then clamp the result to 16-bit. This will
+				// sound bad, but better than integer overflow.
+				if (sample > 16383)
+					sample = 16383;
+				else if (sample < -16384)
+					sample = -16384;
+				stream[i] = (int16_t)sample;
+			}
+			length -= chunkLen;
+		}
 	}
 }
 
