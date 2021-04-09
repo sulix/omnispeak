@@ -17,6 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#ifndef ID_FS_H
+#define ID_FS_H
+
 // This is the "Filesystem Manager", which handles all file I/O, and determines
 // which paths are used for which data files.
 
@@ -70,3 +73,5 @@ size_t FS_WriteInt32LE(const void *ptr, size_t count, FS_File stream);
 // TODO: Maybe int16_t's should be used internally? (Same as vanilla Keen.)
 size_t FS_ReadBoolFrom16LE(void *ptr, size_t count, FS_File stream);
 size_t FS_WriteBoolTo16LE(const void *ptr, size_t count, FS_File stream);
+
+#endif
