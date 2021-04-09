@@ -231,6 +231,11 @@ int STR_GetInteger(STR_ParserState *ps)
 bool STR_ExpectToken(STR_ParserState *ps, const char *str)
 {
 	STR_Token tok = STR_GetToken(ps);
+
+	// An EOF is never what we expect.
+	if (tok.tokenType == STR_TOK_EOF)
+		return false;
+
 	bool result = !strncmp(tok.valuePtr, str, tok.valueLength);
 	//TODO: ValuePtr may not be NULL-terminated in the future.
 	if (!result)
