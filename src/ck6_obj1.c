@@ -67,7 +67,7 @@ void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 		SD_PlaySound(SOUND_GRABBITER);
 
 		US_CenterWindow(26, 8);
-		VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 5);
 		US_CPrint("Oh no!\n"
@@ -90,7 +90,7 @@ void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 		ck_gameState.ep.ck6.sandwich++;
 		CA_CacheGrChunk(0x23);
 		US_CenterWindow(26, 8);
-		VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 2);
 		US_CPrint("The Grabbiter grabs\n"
@@ -138,7 +138,7 @@ void CK6_RocketCol(CK_object *a, CK_object *b)
 		CA_CacheGrChunk(0x23);
 
 		US_CenterWindow(26, 8);
-		VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 5);
 		US_CPrint("The door makes a loud\n"
@@ -378,7 +378,7 @@ void CK6_MapCliffCol(CK_object *a, CK_object *b)
 			CA_CacheGrChunk(0x23);
 
 			US_CenterWindow(26, 8);
-			VH_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+			VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 			US_SetWindowW(US_GetWindowW() - 0x30);
 			US_SetPrintY(US_GetPrintY() + 15);
 			US_CPrint("What a tall cliff!\n"
