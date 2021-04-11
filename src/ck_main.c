@@ -273,6 +273,8 @@ void CK_ShutdownID(void)
 	//VH
 	VL_Shutdown();
 	CA_Shutdown();
+
+	CFG_Shutdown();
 	MM_Shutdown();
 
 #ifdef WITH_SDL
@@ -286,11 +288,6 @@ void CK_ShutdownID(void)
 
 void CK_InitGame()
 {
-	// Can't do much without memory!
-	MM_Startup();
-
-	//TODO: Get filenames/etc from config/episode
-
 	// Load the core datafiles
 	CA_Startup();
 	// Setup saved games handling
@@ -643,6 +640,12 @@ int main(int argc, char *argv[])
 	// for any files.
 	FS_Startup();
 
+	// Can't do much without memory!
+	MM_Startup();
+
+	// Load the config file. We do this before parsing command-line args.
+	CFG_Startup();
+
 	// Default to the first episode with all files present.
 	// If no episodes are found, we default to Keen 4, in order
 	// to show the file not found messages.
@@ -656,11 +659,11 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	bool isFullScreen = false;
-	bool isAspectCorrected = true;
-	bool hasBorder = true;
-	bool isIntegerScaled = false;
-	bool overrideCopyProtection = false;
+	bool isFullScreen = CFG_GetConfigInt("fullscreen", 0);
+	bool isAspectCorrected = CFG_GetConfigInt("aspect", 1);
+	bool hasBorder = CFG_GetConfigInt("border", 1);
+	bool isIntegerScaled = CFG_GetConfigInt("integer", 0);
+	bool overrideCopyProtection = CFG_GetConfigInt("ck6_noCreatureQuestion", 0);
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 	const char *dumperFilename = NULL;
 #endif

@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "id_cfg.h"
 #include "id_sd.h"
 #include "id_us.h"
 #include "ck_cross.h"
@@ -342,7 +343,19 @@ void SD_SDL_PCSpkOn(bool on, int freq)
 
 void SD_SDL_Startup(void)
 {
-	sd_oplEmulator = SD_OPL_EMULATOR_DBOPL;
+	const char *oplEmuString = CFG_GetConfigString("oplEmulator", "dbopl");
+	if (!CK_Cross_strcasecmp(oplEmuString, "nukedopl3"))
+		sd_oplEmulator = SD_OPL_EMULATOR_NUKED;
+	else if (!CK_Cross_strcasecmp(oplEmuString, "dbopl"))
+		sd_oplEmulator = SD_OPL_EMULATOR_DBOPL;
+	else
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Unknown OPL emulator \"%s\". Valid values are \"dbopl\" and \"nukedopl3\".\n", oplEmuString);
+		sd_oplEmulator = SD_OPL_EMULATOR_DBOPL;
+	}
+
+	SD_SDL_useTimerFallback = CFG_GetConfigInt("sd_sdl_noAudioSync", 0);
+
 	for (int i = 0; i < us_argc; ++i)
 	{
 		if (!CK_Cross_strcasecmp(us_argv[i], "/NOAUDIOSYNC"))

@@ -23,8 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // This is the "Filesystem Manager", which handles all file I/O, and determines
 // which paths are used for which data files.
 
-#include <stdio.h>
+#include "id_mm.h"
+
 #include <stdbool.h>
+#include <stdio.h>
 
 typedef FILE *FS_File;
 
@@ -73,5 +75,11 @@ size_t FS_WriteInt32LE(const void *ptr, size_t count, FS_File stream);
 // TODO: Maybe int16_t's should be used internally? (Same as vanilla Keen.)
 size_t FS_ReadBoolFrom16LE(void *ptr, size_t count, FS_File stream);
 size_t FS_WriteBoolTo16LE(const void *ptr, size_t count, FS_File stream);
+
+// fprintf() wrapper.
+int FS_PrintF(FS_File stream, const char *fmt, ...);
+
+// Load an entire file into memory.
+bool FS_LoadUserFile(const char *filename, mm_ptr_t *ptr, int *memsize);
 
 #endif

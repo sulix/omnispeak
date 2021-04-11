@@ -44,8 +44,7 @@ void *STR_LookupEntryWithDefault(STR_Table *tabl, const char *str, void *def);
 void *STR_LookupEntry(STR_Table *tabl, const char *str);
 bool STR_AddEntry(STR_Table *tabl, const char *str, void *value);
 
-
-
+void *STR_GetNextEntry(STR_Table *tabl, size_t *index);
 
 #define ID_STR_MAX_TOKEN_LENGTH 64
 
@@ -62,6 +61,12 @@ typedef struct STR_Token
 	STR_TokenType tokenType;
 	const char *valuePtr;
 	int valueLength;
+
+	// These are the first byte index in the input of the token, and the
+	// last byte index, respectively. These are used for saving modified
+	// files out.
+	int firstIndex;
+	int lastIndex;
 } STR_Token;
 
 typedef struct STR_ParserState

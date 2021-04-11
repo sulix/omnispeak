@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+#include "id_cfg.h"
 #include "id_sd.h"
 #include "id_us.h"
 #include "ck_cross.h"
@@ -245,7 +246,7 @@ static void setupStructs()
 
 void SD_ALSAOPL2_Startup(void)
 {
-	const char *alsaDev = "hw:0,0";
+	const char *alsaDev = CFG_GetConfigString("sd_alsa_device", "hw:0,0");
 	for (int i = 0; i < us_argc; ++i)
 	{
 		if (!CK_Cross_strcasecmp(us_argv[i], "/ALSADEV"))

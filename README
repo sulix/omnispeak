@@ -59,11 +59,33 @@ You can provide Omnispeak the following command-line arguments:
 		- Bypasses the "Creature Question" screen in Keen 6.
 	/NOAUDIOSYNC
 		- When using SDL-based sound backends, use the system clock
-		  rather than the audio clock.
+		  rather than the audio clock. Available as the
+		  'sd_sdl_noAudioSync' config option.
 		  (Works around issues with some SDL audio backends under wine)
 	/DEMOFILE <filename>
 		- Plays the demo recorded with Keen's F10+D cheat in filename.
 
+== CONFIGURATION ==
+
+Omnispeak can read settings from the 'OMNISPK.CFG' file in the "user path".
+This is a simple key/value file which looks something like this:
+
+--8<--
+# Graphics settings
+fullscreen = 1
+border = 1
+integer = 0
+
+# The OPL emulator used by the SDL audio backend
+# Valid values: "dbopl" (DOSBox), "nukedopl3" (NukedOPL3)
+oplEmulator = "dbopl"
+--8<--
+
+Modifying settings from the ComputerWrist interface will update this config
+file with the new settings.
+
+Note that this file is not episode-specific. The settings are shared between
+all episodes.
 
 == COMPILING ==
 
@@ -88,7 +110,10 @@ Cross-compilation for GCW Zero possible using the [GCW Zero toolchain](http://ww
 On Linux, real OPL2 compatible soundcards can be used in place of the Adlib
 emulation by building with either the WITH_ALSA=1 option (for most soundcards),
 or the WITH_IEEE1284=1 option (for the OPL2LPT). These require libasound and libieee1284
-respectively, and must be enabled at runtime with a command-line option.
+respectively, and must be enabled at runtime by setting the "sd_backend" option
+to "alsa" or "opl2lpt". (The ALSA device can be configured with the
+"sd_alsa_device" option, and the parallel port for the OPL2LPT can be set with
+"sd_opl2lpt_port".)
 
 Packagers should note that it's possible to change the default KEEN and USER
 paths with the make KEENPATH= and make USERPATH= options. Similarly, savegames
@@ -105,7 +130,4 @@ To see a full list of build options, just run `make help`.
 - Modding support is not implemented.
 - Mouse support is not implemented.
 - Some debug cheats are not supported.
-- New settings ("Fullscreen", "Aspect Ratio", "Overscan border") are not saved.
-- The game always redraws everything every frame.
 - Some chunks are not cached properly at load time (doors, especially)
-- No fallbacks for systems without GLSL and non-power-of-two texture support.

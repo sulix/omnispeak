@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string.h>
 
 #include "id_ca.h"
+#include "id_cfg.h"
 #include "id_sd.h"
 #include "id_us.h"
 #include "ck_cross.h"
@@ -535,6 +536,17 @@ void SD_Startup()
 		return;
 
 	sd_backend = SD_Impl_GetBackend();
+
+	const char *backendName = CFG_GetConfigString("sd_backend", "default");
+#ifdef SD_OPL2_WITH_ALSA
+	if (!CK_Cross_strcasecmp(backendName, "alsa"))
+		sd_backend = SD_Impl_GetBackend_ALSAOPL2();
+#endif
+#ifdef SD_OPL2_WITH_IEEE1284
+	if (!CK_Cross_strcasecmp(backendName, "opl2lpt"))
+		sd_backend = SD_Impl_GetBackend_OPL2LPT();
+#endif
+
 	for (int i = 0; i < us_argc; ++i)
 	{
 #ifdef SD_OPL2_WITH_ALSA

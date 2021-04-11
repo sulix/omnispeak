@@ -1,6 +1,6 @@
 /*
 Omnispeak: A Commander Keen Reimplementation
-Copyright (C) 2012 David Gow <david@ingeniumdigital.com>
+Copyright (C) 2021 Omnispeak Authors
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -15,19 +15,36 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ */
 
-#ifndef ID_HEADS_H
-#define ID_HEADS_H
+#ifndef ID_CFG_H
+#define ID_CFG_H
 
-// Header file to include all of the ID-engine
+#include <ctype.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "id_ca.h"
-#include "id_cfg.h"
-#include "id_in.h"
-#include "id_mm.h"
-#include "id_ti.h"
-#include "id_us.h"
-#include "id_vh.h"
+typedef struct CFG_Variable
+{
+	const char *name;
+	const char *str_value;
+	int int_value;
+	bool saved;
+} CFG_Variable;
 
-#endif //ID_HEADS_H
+void CFG_LoadConfig(const char *filename);
+void CFG_SaveConfig(const char *filename);
+
+bool CFG_ConfigExists(const char *name);
+int CFG_GetConfigInt(const char *name, int defValue);
+const char *CFG_GetConfigString(const char *name, const char *defValue);
+
+void CFG_SetConfigInt(const char *name, int value);
+void CFG_SetConfigString(const char *name, const char *value);
+
+void CFG_Startup();
+void CFG_Shutdown();
+
+#endif
