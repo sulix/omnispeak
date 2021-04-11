@@ -59,7 +59,8 @@ You can provide Omnispeak the following command-line arguments:
 		- Bypasses the "Creature Question" screen in Keen 6.
 	/NOAUDIOSYNC
 		- When using SDL-based sound backends, use the system clock
-		  rather than the audio clock.
+		  rather than the audio clock. Available as the
+		  'sd_sdl_noAudioSync' config option.
 		  (Works around issues with some SDL audio backends under wine)
 	/DEMOFILE <filename>
 		- Plays the demo recorded with Keen's F10+D cheat in filename.
@@ -70,9 +71,14 @@ Omnispeak can read settings from the 'OMNISPK.CFG' file in the "user path".
 This is a simple key/value file which looks something like this:
 
 --8<--
+# Graphics settings
 fullscreen = 1
 border = 1
 integer = 0
+
+# The OPL emulator used by the SDL audio backend
+# Valid values: "dbopl" (DOSBox), "nukedopl3" (NukedOPL3)
+oplEmulator = "dbopl"
 --8<--
 
 Modifying settings from the ComputerWrist interface will update this config
