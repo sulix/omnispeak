@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 #include <unistd.h>
 
+#include "id_cfg.h"
 #include "id_sd.h"
 #include "id_us.h"
 #include "ck_cross.h"
@@ -151,6 +152,8 @@ void SD_OPL2LPT_PCSpkOn(bool on, int freq)
 void SD_OPL2LPT_Startup(void)
 {
 #ifdef SD_OPL2_WITH_IEEE1284
+	const char *portName = CFG_GetConfigString("sd_opl2lpt_port", "");
+
 	struct parport_list allPorts = {};
 
 	if (ieee1284_find_ports(&allPorts, 0) != E1284_OK)
@@ -159,6 +162,10 @@ void SD_OPL2LPT_Startup(void)
 	for (int i = 0; i < allPorts.portc; ++i)
 	{
 		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Found parallel port \"%s\"\n", allPorts.portv[i]->name);
+
+		// If this isn't the port we're looking for, look at the next one.
+		if (portName[0] && strcmp(portName, allPorts.portv[i]->name))
+			continue;
 		int caps = CAP1284_RAW;
 		sd_parport = allPorts.portv[i];
 		if (ieee1284_open(sd_parport, F1284_EXCL, &caps) != E1284_OK)

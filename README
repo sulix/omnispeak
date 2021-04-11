@@ -110,7 +110,10 @@ Cross-compilation for GCW Zero possible using the [GCW Zero toolchain](http://ww
 On Linux, real OPL2 compatible soundcards can be used in place of the Adlib
 emulation by building with either the WITH_ALSA=1 option (for most soundcards),
 or the WITH_IEEE1284=1 option (for the OPL2LPT). These require libasound and libieee1284
-respectively, and must be enabled at runtime with a command-line option.
+respectively, and must be enabled at runtime by setting the "sd_backend" option
+to "alsa" or "opl2lpt". (The ALSA device can be configured with the
+"sd_alsa_device" option, and the parallel port for the OPL2LPT can be set with
+"sd_opl2lpt_port".)
 
 Packagers should note that it's possible to change the default KEEN and USER
 paths with the make KEENPATH= and make USERPATH= options. Similarly, savegames
