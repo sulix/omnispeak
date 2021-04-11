@@ -64,6 +64,22 @@ You can provide Omnispeak the following command-line arguments:
 	/DEMOFILE <filename>
 		- Plays the demo recorded with Keen's F10+D cheat in filename.
 
+== CONFIGURATION ==
+
+Omnispeak can read settings from the 'OMNISPK.CFG' file in the "user path".
+This is a simple key/value file which looks something like this:
+
+--8<--
+fullscreen = 1
+border = 1
+integer = 0
+--8<--
+
+Modifying settings from the ComputerWrist interface will update this config
+file with the new settings.
+
+Note that this file is not episode-specific. The settings are shared between
+all episodes.
 
 == COMPILING ==
 
@@ -105,7 +121,4 @@ To see a full list of build options, just run `make help`.
 - Modding support is not implemented.
 - Mouse support is not implemented.
 - Some debug cheats are not supported.
-- New settings ("Fullscreen", "Aspect Ratio", "Overscan border") are not saved.
-- The game always redraws everything every frame.
 - Some chunks are not cached properly at load time (doors, especially)
-- No fallbacks for systems without GLSL and non-power-of-two texture support.
