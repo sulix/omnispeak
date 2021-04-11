@@ -522,9 +522,9 @@ int FS_PrintF(FS_File stream, const char *fmt, ...)
 	return ret;
 }
 
-bool FS_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
+bool FS_LoadUserFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 {
-	FS_File f = FS_OpenOmniFile(filename);
+	FS_File f = FS_OpenUserFile(filename);
 
 	if (!FS_IsFileValid(f))
 	{

@@ -106,7 +106,7 @@ void CFG_LoadConfig(const char *filename)
 	int numVarsParsed = 0;
 	STR_ParserState parserstate;
 
-	FS_LoadFile(filename, (mm_ptr_t *)(&parserstate.data), &(parserstate.datasize));
+	FS_LoadUserFile(filename, (mm_ptr_t *)(&parserstate.data), &(parserstate.datasize));
 	if (!parserstate.data)
 		return;
 
@@ -233,7 +233,7 @@ void CFG_SaveConfig(const char *filename)
 	// Load the old save file.
 	STR_ParserState parserstate;
 
-	FS_LoadFile(filename, (mm_ptr_t *)(&parserstate.data), &(parserstate.datasize));
+	FS_LoadUserFile(filename, (mm_ptr_t *)(&parserstate.data), &(parserstate.datasize));
 	FS_File outputHandle = FS_CreateUserFile(filename);
 	if (parserstate.data)
 	{

@@ -80,6 +80,6 @@ size_t FS_WriteBoolTo16LE(const void *ptr, size_t count, FS_File stream);
 int FS_PrintF(FS_File stream, const char *fmt, ...);
 
 // Load an entire file into memory.
-bool FS_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize);
+bool FS_LoadUserFile(const char *filename, mm_ptr_t *ptr, int *memsize);
 
 #endif
