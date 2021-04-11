@@ -121,7 +121,7 @@ bool CK_US_IntegerMenuProc(US_CardMsg msg, US_CardItem *item)
 		return false;
 
 	VL_ToggleInteger();
-	USL_CtlDialog((vl_hasOverscanBorder ? "Integer scaling now on" : "Integer scaling now off"), "Press any key", NULL);
+	USL_CtlDialog((vl_isIntegerScaled ? "Integer scaling now on" : "Integer scaling now off"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
 }
