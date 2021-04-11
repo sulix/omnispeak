@@ -180,7 +180,7 @@ LDFLAGS ?=
 LIBS ?=
 
 # mandatory source files
-IDOBJECTS = ck_quit.o id_mm.o id_fs.o id_ca.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id_us_2.o id_us_textscreen.o id_vh.o id_vl.o id_str.o
+IDOBJECTS = ck_quit.o id_mm.o id_fs.o id_ca.o id_cfg.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id_us_2.o id_us_textscreen.o id_vh.o id_vl.o id_str.o
 CKOBJECTS = ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck4_map.o ck5_map.o ck6_map.o ck4_obj1.o ck4_obj2.o ck4_obj3.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck6_obj1.o ck6_obj2.o ck6_obj3.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck4_misc.o ck5_misc.o ck6_misc.o ck_main.o ck_text.o ck_cross.o icon.o
 OPLOBJECTS = opl/dbopl.o opl/nuked_opl3.o
 

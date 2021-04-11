@@ -92,6 +92,25 @@ bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
 	return false;
 }
 
+// Iterate through the entires in the hashtable. "index" will be updated afterwards.
+void *STR_GetNextEntry(STR_Table *tabl, size_t *index)
+{
+	for (size_t i = *index;; i++)
+	{
+		if (i >= tabl->size)
+		{
+			// We're done.
+			*index = 0;
+			return (void *)0;
+		}
+		if (tabl->arr[i].str != 0)
+		{
+			*index = i + 1;
+			return (tabl->arr[i].ptr);
+		}
+	}
+}
+
 static char STR_PeekCharacter(STR_ParserState *ps)
 {
 	if (ps->dataindex >= ps->datasize)
@@ -142,6 +161,7 @@ STR_Token STR_GetToken(STR_ParserState *ps)
 	STR_SkipWhitespace(ps);
 	STR_Token tok;
 	tok.tokenType = STR_TOK_EOF;
+	tok.firstIndex = ps->dataindex;
 	if (STR_PeekCharacter(ps) && STR_PeekCharacter(ps) == '"')
 	{
 		// This is a string.
@@ -173,6 +193,7 @@ STR_Token STR_GetToken(STR_ParserState *ps)
 		while (STR_PeekCharacter(ps) && !isspace(STR_PeekCharacter(ps)))
 			tokenbuf[i++] = STR_GetCharacter(ps);
 	}
+	tok.lastIndex = ps->dataindex;
 	tokenbuf[i] = '\0';
 
 	// Copy the token into the temp Arena

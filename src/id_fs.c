@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -26,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_ep.h"
 
 #include "id_fs.h"
+#include "id_mm.h"
 #include "id_us.h"
 
 const char *fs_keenPath;
@@ -314,7 +316,6 @@ char *FS_AdjustExtension(const char *filename)
 	return newname;
 }
 
-
 // Does a file exist (and is it readable)
 bool FS_IsUserFilePresent(const char *filename)
 {
@@ -375,7 +376,6 @@ void FS_Startup()
 #warning FS_OMNI_EXEDIR_FALLBACK requires an SDL2-based backend.
 #endif
 #endif
-
 
 #ifdef FS_USER_XDG_FALLBACK
 #ifdef WITH_SDL
@@ -510,4 +510,42 @@ size_t FS_WriteBoolTo16LE(const void *ptr, size_t count, FS_File stream)
 		actualCount += FS_Write(&val, 2, 1, stream);
 	}
 	return actualCount;
+}
+
+int FS_PrintF(FS_File stream, const char *fmt, ...)
+{
+	va_list args;
+
+	va_start(args, fmt);
+	int ret = vfprintf(stream, fmt, args);
+	va_end(args);
+	return ret;
+}
+
+bool FS_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
+{
+	FS_File f = FS_OpenOmniFile(filename);
+
+	if (!FS_IsFileValid(f))
+	{
+		*ptr = 0;
+		*memsize = 0;
+		return false;
+	}
+
+	//Get length of file
+	int length = FS_GetFileSize(f);
+
+	MM_GetPtr(ptr, length);
+
+	if (memsize)
+		*memsize = length;
+
+	int amountRead = FS_Read(*ptr, 1, length, f);
+
+	fclose(f);
+
+	if (amountRead != length)
+		return false;
+	return true;
 }
