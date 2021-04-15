@@ -55,6 +55,7 @@ typedef struct VL_DOS_Surface
 	VL_SurfaceUsage use;
 	int w, h;
 	void *data;
+	void *data2;
 	int activePage;
 } VL_DOS_Surface;
 
@@ -90,7 +91,7 @@ static void VL_DOS_SetVideoMode(int mode)
 }
 
 void *vl_dos_realScreen = 0;
-intptr_t vl_dos_vmemAlloc = 0xA1000;
+intptr_t vl_dos_vmemAlloc = 0xA0000;
 // TODO: Correct, detect, and allow configuration of this.
 intptr_t vl_dos_maxvmemPtr = 0xB0000;
 
@@ -101,7 +102,7 @@ static void VL_DOS_SetEGAWriteMode(int write_mode)
 
 static uint8_t *VL_DOS_GetSurfacePlanePointer(VL_DOS_Surface *surf, int plane)
 {
-	uint8_t *base_ptr = (uint8_t *)surf->data;
+	uint8_t *base_ptr = (uint8_t *)(surf->activePage ? surf->data2 : surf->data);
 	size_t plane_length = surf->h * (surf->w / 8);
 	if (surf->use == VL_SurfaceUsage_FrontBuffer)
 	{
@@ -110,11 +111,15 @@ static uint8_t *VL_DOS_GetSurfacePlanePointer(VL_DOS_Surface *surf, int plane)
 		outportw(EGA_SC_INDEX, plane_val | EGA_SC_MAP_MASK);
 		outportw(EGA_GC_INDEX, (plane << 8) | EGA_GC_READMAP);
 		// Add the plane length to switch to the active page.
-		return base_ptr + plane_length * surf->activePage;
+		return base_ptr;
 	}
 	else
 		return base_ptr + plane_length * plane;
 }
+
+// The screen will scroll a maximum of 16 pixels (1 tile) each frame
+#define VL_DOS_MAX_SCROLL_HORZ 16
+#define VL_DOS_MAX_SCROLL_VERT 16
 
 static void VL_DOS_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
 static void *VL_DOS_CreateSurface(int w, int h, VL_SurfaceUsage usage)
@@ -128,7 +133,16 @@ static void *VL_DOS_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 	{
 		if (__djgpp_nearptr_enable())
 		{
+			// Since we scroll each page independently, we need a
+			// "gap" between pages so that one page scrolling
+			// doesn't overwrite another.
+			// The original keen code does this too, though only in
+			// the vertical direction (its screen buffers are much
+			// wider than ours, though, being 64 bytes (512 px)
+			// wide, of which only 21 tiles for the 'viewport'.
+			size_t bufferSize = (w + VL_DOS_MAX_SCROLL_HORZ) / 8 * (h + VL_DOS_MAX_SCROLL_VERT);
 			surf->data = (void *)(__djgpp_conventional_base + vl_dos_vmemAlloc);
+			surf->data2 = (void *)(__djgpp_conventional_base + vl_dos_vmemAlloc + bufferSize);
 		}
 		else
 		{
@@ -322,7 +336,7 @@ static void VL_DOS_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, in
 		//int page = srf->activePage;
 		for (int page = 0; page < 2; ++page)
 		{
-			uint8_t *plane_ptr = (uint8_t *)srf->data + page * (srf->w / 8) * (srf->h);
+			uint8_t *plane_ptr = (uint8_t *)(srf->activePage ? srf->data2 : srf->data);
 			// Enable all planes.
 			outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
 			VL_DOS_SetEGAWriteMode(1);
@@ -643,20 +657,29 @@ static void VL_DOS_ScrollSurface(void *surface, int x, int y)
 	if (surf->use == VL_SurfaceUsage_FrontBuffer)
 	{
 		ssize_t bytesToShift = (x / 8) + y * (surf->w / 8);
-		uint8_t *oldData = (uint8_t *)surf->data;
-		uint8_t *newData = oldData + bytesToShift;
-		if (newData < (uint8_t *)(__djgpp_conventional_base + 0xA0000) || newData + (surf->w / 4 * surf->h) > (uint8_t *)(__djgpp_conventional_base + 0xAFFFF))
+		size_t surfaceSize = surf->w / 8 * surf->h;
+		for (int page = 0; page < 2; ++page)
 		{
-			// We've shifted outside of valid video memory.
-			oldData = (uint8_t *)(__djgpp_conventional_base + 0xA8000);
-			outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
-			VL_DOS_SetEGAWriteMode(1);
-			for (int i = 0; i < surf->w * surf->h / 4; ++i)
-				oldData[i] = ((uint8_t *)surf->data)[i];
-			newData = oldData + bytesToShift;
+			uint8_t *oldData = (uint8_t *)(page ? surf->data2 : surf->data);
+			uint8_t *newData = oldData + bytesToShift;
+			if (newData < (uint8_t *)(__djgpp_conventional_base + 0xA0000) || newData + surfaceSize > (uint8_t *)(__djgpp_conventional_base + 0xAFFFF))
+			{
+				// We've shifted outside of valid video memory.
+				if (bytesToShift < 0)
+					newData = (uint8_t *)(__djgpp_conventional_base + 0xB0000 - surfaceSize * 2);
+				else
+					newData = (uint8_t *)(__djgpp_conventional_base + 0xA0000 + surfaceSize * 2);
+				outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
+				VL_DOS_SetEGAWriteMode(1);
+				for (int i = 0; i < surfaceSize; ++i)
+					newData[i] = oldData[i];
+				newData += bytesToShift;
+			}
+			if (page == 0)
+				surf->data = newData;
+			else
+				surf->data2 = newData;
 		}
-
-		surf->data = newData;
 	}
 	else
 	{
@@ -679,8 +702,8 @@ static void VL_DOS_Present(void *surface, int scrlX, int scrlY, bool singleBuffe
 	outportw(EGA_CRTC_INDEX, val);
 
 	// Set the offset for scanout
-	uint16_t surface_vmem_offset = (uint16_t)(((uintptr_t)surf->data - (__djgpp_conventional_base + 0xA0000)) & 0xFFFF);
-	uint16_t byte_offset = surface_vmem_offset + ((scrlY * surf->w + scrlX) >> 3) + surf->activePage * (surf->w * surf->h) / 8;
+	uint16_t surface_vmem_offset = (uint16_t)(((uintptr_t)(surf->activePage ? surf->data2 : surf->data) - (__djgpp_conventional_base + 0xA0000)) & 0xFFFF);
+	uint16_t byte_offset = surface_vmem_offset + ((scrlY * surf->w + scrlX) >> 3);
 	uint16_t crtc_start_low = ((byte_offset & 0xFF) << 8) | EGA_CRTC_START_ADDR_LOW;
 	uint16_t crtc_start_high = (byte_offset & 0xFF00) | EGA_CRTC_START_ADDR_HIGH;
 	// NOTE: According to the original game, some XT EGA cards don't like word OUTs to
