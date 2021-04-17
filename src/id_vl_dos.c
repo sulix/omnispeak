@@ -150,7 +150,7 @@ static void *VL_DOS_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 		}
 	}
 	else
-		surf->data = malloc(w * h); // 8-bit pal for now
+		surf->data = malloc(w * h / 2);
 	return surf;
 }
 
