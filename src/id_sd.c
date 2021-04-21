@@ -129,18 +129,18 @@ static void SD_SoundFinished()
 	sd_currentSfxPriority = 0;
 }
 
-typedef struct
+typedef CK_PACKED_STRUCT(SD_SoundEffectCommon
 {
 	uint32_t length;
 	uint16_t priority;
-} __attribute__((__packed__)) SD_SoundEffectCommon;
+}) SD_SoundEffectCommon;
 
 // ======= PC Speaker ========
-typedef struct
+typedef CK_PACKED_STRUCT(SD_PCSound
 {
 	SD_SoundEffectCommon common;
 	uint8_t data[1];
-} __attribute__((__packed__)) SD_PCSound;
+}) SD_PCSound;
 
 // Pointer to the current PC Speaker SFX data.
 volatile uint8_t *sd_pc_currentSfxData;
@@ -228,7 +228,7 @@ static void SD_PC_SoundService(void)
 
 // ======== Adlib ========
 
-typedef struct
+typedef CK_PACKED_STRUCT(SD_AdlibInstrument
 {
 	uint8_t mChar, cChar;
 	uint8_t mScale, cScale;
@@ -241,15 +241,15 @@ typedef struct
 	uint8_t voice;
 	uint8_t mode;
 	uint8_t unused[3];
-} __attribute__((__packed__)) SD_AdlibInstrument;
+}) SD_AdlibInstrument;
 
-typedef struct
+typedef CK_PACKED_STRUCT(SD_AdlibSound
 {
 	SD_SoundEffectCommon common;
 	SD_AdlibInstrument inst;
 	uint8_t block;
 	uint8_t data[0];
-} __attribute__((__packed__)) SD_AdlibSound;
+}) SD_AdlibSound;
 
 // Pointer to the Adlib SFX data for currently playing effect
 volatile uint8_t *sd_al_currentSfxData;
@@ -385,11 +385,11 @@ int sd_music_trackSize;
 // Is music currently playing?
 bool sd_musicStarted;
 
-typedef struct SD_MusicTrack
+typedef CK_PACKED_STRUCT(SD_MusicTrack
 {
 	uint16_t length;
 	uint8_t data[0];
-} __attribute__((__packed__)) SD_MusicTrack;
+}) SD_MusicTrack;
 
 // Reset the Adlib card
 static void SD_AL_Reset()

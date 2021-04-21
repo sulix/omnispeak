@@ -862,11 +862,11 @@ void CA_DownLevel(void)
 }
 
 // Map loading fns
-typedef struct CA_MapHead
+typedef CK_PACKED_STRUCT(CA_MapHead
 {
 	uint16_t rleTag;
 	uint32_t headerOffsets[CA_NUMMAPS];
-} __attribute__((__packed__)) CA_MapHead;
+}) CA_MapHead;
 
 CA_MapHead *ca_MapHead;
 

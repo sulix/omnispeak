@@ -22,6 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdbool.h>
 #include <stdio.h>
+
+#include "ck_cross.h"
+
 #include "id_in.h"
 
 /* This keeps clang's static analyzer quiet. */
@@ -197,13 +200,13 @@ void US_SetPrintRoutines(US_MeasureStringFunc measure, US_DrawStringFunc draw);
 #define US_MAX_SAVEDGAMENAME_LEN 32
 #define US_MAX_NUM_OF_SAVED_GAMES 6
 
-typedef struct US_Savefile
+typedef CK_PACKED_STRUCT(US_Savefile
 {
 	char id[4];
 	uint16_t printXOffset;
 	bool used;
 	char name[US_MAX_SAVEDGAMENAME_LEN + 1];
-} __attribute__((packed)) US_Savefile;
+}) US_Savefile;
 
 extern US_Savefile us_savefiles[US_MAX_NUM_OF_SAVED_GAMES];
 

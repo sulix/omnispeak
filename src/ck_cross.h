@@ -37,6 +37,23 @@
 #define CK_Cross_SwapLE32(x) CK_Cross_Swap32(x)
 #endif
 
+// We rely on the exact memory layout of some structures, which is not
+// standardised between compilers. This macro 'packs' a structure, and
+// should be implemented on all compilers we support.
+// Use it by wrapping the struct definition in the macro, e.g.:
+// 	typedef struct a { uint16_t a; uint32_t b; } a;
+// should become:
+// 	typedef CK_PACKED_STRUCT(a { uint16_t; uint32_t b; }) a;
+// This slightly weird syntax is required to make this work with some
+// compilers' weird pragmas/attributes for structure packing.
+#if defined(__GNUC__)
+#define CK_PACKED_STRUCT(...) struct __VA_ARGS__ __attribute__((packed))
+#elif defined(_MSC_VER)
+#define CK_PACKED_STRUCT(...) __pragma(pack(push,1)) struct __VA_ARGS__ __pragma(pack(pop))
+#else
+#error Unknown compiler, no packed struct support
+#endif
+
 typedef enum CK_Log_Message_Class_T
 {
 	CK_LOG_MSG_NORMAL,

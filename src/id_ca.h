@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "ck_cross.h"
+
 #include "id_mm.h"
 #include "id_sd.h"
 // -- Common --
@@ -95,14 +97,14 @@ void CA_DownLevel(void);
 #define CA_NUMMAPPLANES 3
 #define CA_NUMMAPS 100
 
-typedef struct CA_MapHeader
+typedef CK_PACKED_STRUCT(CA_MapHeader
 {
 	uint32_t planeOffsets[CA_NUMMAPPLANES];
 	uint16_t planeLengths[CA_NUMMAPPLANES];
 	uint16_t width, height;
 	char name[16];
 	char signature[4];
-} __attribute__((__packed__)) CA_MapHeader;
+}) CA_MapHeader;
 
 extern CA_MapHeader *CA_MapHeaders[CA_NUMMAPS];
 

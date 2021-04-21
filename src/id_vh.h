@@ -24,26 +24,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct VH_BitmapTableEntry
+#include "ck_cross.h"
+
+typedef CK_PACKED_STRUCT(VH_BitmapTableEntry
 {
 	uint16_t width;
 	uint16_t height;
-} __attribute((__packed__)) VH_BitmapTableEntry;
+}) VH_BitmapTableEntry;
 
-typedef struct VH_SpriteTableEntry
+typedef CK_PACKED_STRUCT(VH_SpriteTableEntry
 {
 	uint16_t width, height;
 	int16_t originX, originY;
 	int16_t xl, yl, xh, yh;
 	uint16_t shifts;
-} __attribute((__packed__)) VH_SpriteTableEntry;
+}) VH_SpriteTableEntry;
 
-typedef struct VH_Font
+typedef CK_PACKED_STRUCT(VH_Font
 {
 	uint16_t height;
 	uint16_t location[256];
 	uint8_t width[256];
-} __attribute((__packed__)) VH_Font;
+}) VH_Font;
 
 VH_BitmapTableEntry *VH_GetBitmapTableEntry(int bitmapNumber);
 VH_SpriteTableEntry *VH_GetSpriteTableEntry(int spriteNumber);
