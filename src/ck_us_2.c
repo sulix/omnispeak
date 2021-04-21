@@ -36,6 +36,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define US_MAX_JOYSTICKS 2
 
+void CK_US_SetKeyBinding(US_CardItem *item, int which_control);
+void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control);
+
 bool CK_US_ScoreBoxMenuProc(US_CardMsg msg, US_CardItem *item)
 {
 	if (msg != US_MSG_CardEntered)
