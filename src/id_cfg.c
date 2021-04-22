@@ -224,7 +224,7 @@ void CFG_SaveConfig(const char *filename)
 	// Mark all variables unsaved.
 	size_t currentVarIndex = 0;
 	CFG_Variable *currentVar;
-	while (currentVar = (CFG_Variable *)STR_GetNextEntry(cfg_configEntries, &currentVarIndex))
+	while ((currentVar = (CFG_Variable *)STR_GetNextEntry(cfg_configEntries, &currentVarIndex)))
 	{
 		currentVar->saved = false;
 	}
@@ -255,7 +255,7 @@ void CFG_SaveConfig(const char *filename)
 
 	// Now, loop over the remaining variables and write them out.
 	currentVarIndex = 0;
-	while (currentVar = (CFG_Variable *)STR_GetNextEntry(cfg_configEntries, &currentVarIndex))
+	while ((currentVar = (CFG_Variable *)STR_GetNextEntry(cfg_configEntries, &currentVarIndex)))
 	{
 		if (currentVar->saved)
 			continue;
