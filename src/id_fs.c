@@ -64,7 +64,7 @@ void FS_CloseFile(FS_File file)
 	fclose(file);
 }
 
-#ifdef __linux__
+#if defined(__linux__) && !defined(__STRICT_ANSI__)
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/stat.h>
