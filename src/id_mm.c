@@ -143,7 +143,7 @@ void MM_GetPtr(mm_ptr_t *ptr, unsigned long size)
 	do
 	{
 		blk->ptr = malloc(size);
-		if (!blk->ptr)
+		if (size && !blk->ptr)
 		{
 			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "MM_GetPtr: Failed to alloc block (%d bytes) with system malloc. Trying to free some space.\n", size);
 			if (mm_numpurgeable)
@@ -151,7 +151,7 @@ void MM_GetPtr(mm_ptr_t *ptr, unsigned long size)
 			else
 				Quit("MM_GetPtr: Out of Memory!");
 		}
-	} while (!blk->ptr);
+	} while (size && !blk->ptr);
 
 	//Setup the block details (unlocked, non-purgable)
 	blk->length = size;
