@@ -235,6 +235,13 @@ void CFG_SaveConfig(const char *filename)
 
 	FS_LoadUserFile(filename, (mm_ptr_t *)(&parserstate.data), &(parserstate.datasize));
 	FS_File outputHandle = FS_CreateUserFile(filename);
+	if (!outputHandle)
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Unable to save config to \"%s\"\n", filename);
+		if (parserstate.data)
+			MM_FreePtr((mm_ptr_t *)&parserstate.data);
+		return;
+	}
 	if (parserstate.data)
 	{
 		parserstate.dataindex = 0;
