@@ -231,72 +231,77 @@ void CK_SpriteTest()
 	int var8 = US_GetPrintY();
 	int chunk = ca_gfxInfoE.offSprites;
 	int shifts = 0;
+	int selectedChunk = 0;
+	int oldShifts = 0;
 
-	// max min chunks
-redraw:
-	if (chunk >= ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites)
-	{
-		chunk = ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites - 1;
-	}
-	else if (chunk < ca_gfxInfoE.offSprites)
-	{
-		chunk = ca_gfxInfoE.offSprites;
-	}
-
-	VH_SpriteTableEntry *ste = VH_GetSpriteTableEntry(chunk - ca_gfxInfoE.offSprites);
-	mm_ptr_t chunk_ptr = ca_graphChunks[chunk];
-
-	VHB_Bar(startpx, startpy, 0x28, var8 - startpy, 0xF);
-	US_SetPrintX(startpx);
-	US_SetPrintY(startpy);
-
-	US_PrintF("%d\n", chunk);
-	US_SetPrintX(startpx);
-	US_PrintF("%d\n", ste->width);
-	US_SetPrintX(startpx);
-	US_PrintF("%d\n", ste->height);
-	US_SetPrintX(startpx);
-	US_PrintF("%d\n", ste->originX);
-	US_SetPrintX(startpx);
-	US_PrintF("%d\n", ste->originY);
-	US_SetPrintX(startpx);
-	US_PrintF("%d\n", ste->xl);
-	US_SetPrintX(startpx);
-	US_PrintF("%d\n", ste->yl);
-	US_SetPrintX(startpx);
-	US_PrintF("%d\n", ste->xh);
-	US_SetPrintX(startpx);
-	US_PrintF("%d\n", ste->yh);
-	US_SetPrintX(startpx);
-	US_PrintF("%d\n", ste->shifts);
-	US_SetPrintX(startpx);
-
-	if (chunk_ptr)
-	{
-		// Omnispeak: don't store preshifted sprites
-		// DOS: memused = (h*w) + (shifts-1) * (h*(w+1))
-		// all of this is precomputed and stored in "spritetype" struct on sprite cache in DOS
-		// so the DOS game here would read this information out of the spritetype struct
-		US_PrintF("%d=", ste->width * ste->height * 5);
-	}
-	else
-	{
-		US_PrintF("-----");
-	}
-
-	int selectedChunk = chunk;
 	do
 	{
-
-		VHB_Bar(startpx_2, startpy, 0x6E, var8 - startpy, 0xF);
-		if (chunk_ptr)
+		// max min chunks
+		if (selectedChunk != chunk || oldShifts != shifts)
 		{
-			US_SetPrintX(startpx_2);
-			US_SetPrintY(startpy);
-			US_PrintF("Shift:%d\n", shifts);
-			VHB_DrawSprite(startpx_2 + shifts * 2 + 0x10, US_GetPrintY(), chunk);
-		}
+			if (chunk >= ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites)
+			{
+				chunk = ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites - 1;
+			}
+			else if (chunk < ca_gfxInfoE.offSprites)
+			{
+				chunk = ca_gfxInfoE.offSprites;
+			}
 
+			VH_SpriteTableEntry *ste = VH_GetSpriteTableEntry(chunk - ca_gfxInfoE.offSprites);
+			mm_ptr_t chunk_ptr = ca_graphChunks[chunk];
+
+			VHB_Bar(startpx, startpy, 0x28, var8 - startpy, 0xF);
+			US_SetPrintX(startpx);
+			US_SetPrintY(startpy);
+
+			US_PrintF("%d\n", chunk);
+			US_SetPrintX(startpx);
+			US_PrintF("%d\n", ste->width);
+			US_SetPrintX(startpx);
+			US_PrintF("%d\n", ste->height);
+			US_SetPrintX(startpx);
+			US_PrintF("%d\n", ste->originX);
+			US_SetPrintX(startpx);
+			US_PrintF("%d\n", ste->originY);
+			US_SetPrintX(startpx);
+			US_PrintF("%d\n", ste->xl);
+			US_SetPrintX(startpx);
+			US_PrintF("%d\n", ste->yl);
+			US_SetPrintX(startpx);
+			US_PrintF("%d\n", ste->xh);
+			US_SetPrintX(startpx);
+			US_PrintF("%d\n", ste->yh);
+			US_SetPrintX(startpx);
+			US_PrintF("%d\n", ste->shifts);
+			US_SetPrintX(startpx);
+
+			if (chunk_ptr)
+			{
+				// Omnispeak: don't store preshifted sprites
+				// DOS: memused = (h*w) + (shifts-1) * (h*(w+1))
+				// all of this is precomputed and stored in "spritetype" struct on sprite cache in DOS
+				// so the DOS game here would read this information out of the spritetype struct
+				US_PrintF("%d=", ste->width * ste->height * 5);
+			}
+			else
+			{
+				US_PrintF("-----");
+			}
+
+
+			VHB_Bar(startpx_2, startpy, 0x6E, var8 - startpy, 0xF);
+			if (chunk_ptr)
+			{
+				US_SetPrintX(startpx_2);
+				US_SetPrintY(startpy);
+				US_PrintF("Shift:%d\n", shifts);
+				VHB_DrawSprite(startpx_2 + shifts * 2 + 0x10, US_GetPrintY(), chunk);
+			}
+			oldShifts = shifts;
+			selectedChunk = chunk;
+
+		}
 		VL_Present();
 
 		IN_WaitKey();
@@ -336,8 +341,6 @@ redraw:
 			break;
 		}
 
-		if (chunk != selectedChunk)
-			goto redraw;
 	} while (1);
 }
 
