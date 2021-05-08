@@ -50,6 +50,8 @@
 #define CK_PACKED_STRUCT(...) struct __VA_ARGS__ __attribute__((packed))
 #elif defined(_MSC_VER)
 #define CK_PACKED_STRUCT(...) __pragma(pack(push,1)) struct __VA_ARGS__ __pragma(pack(pop))
+#elif defined(__WATCOMC__)
+#define CK_PACKED_STRUCT(...) _Packed struct __VA_ARGS__
 #else
 #error Unknown compiler, no packed struct support
 #endif
