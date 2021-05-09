@@ -1,0 +1,44 @@
+name: "CI: Build (Win32/MSVC)"
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Dependencies
+      run: |
+        curl "https://libsdl.org/release/SDL2-devel-2.0.14-VC.zip" -o contrib/SDL2-VC.zip
+        7z x contrib/SDL2-VC.zip -ocontrib/
+        copy contrib/sdl2-config-vc.cmake contrib/SDL2-2.0.14/sdl2-config.cmake
+
+    - name: Build (Windows/MSVC/Debug/x64)
+      shell: cmd
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DSDL2_DIR="contrib/SDL2-2.0.14"
+        cmake --build . --config Debug
+        copy ..\contrib\SDL2-2.0.14\lib\x64\SDL2.dll Debug
+
+    - name: Build (Windows/MSVC/RelWithDebInfo/x64)
+      shell: cmd
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DSDL2_DIR="contrib/SDL2-2.0.14"
+        cmake --build . --config RelWithDebInfo
+        copy ..\contrib\SDL2-2.0.14\lib\x64\SDL2.dll RelWithDebInfo
+    - name: Upload (Windows/MSVC/Debug/x64)
+      uses: actions/upload-artifact@v2
+      with:
+        name: Windows Build (MSVC-x64-Debug)
+        path: build/Debug
+    - name: Upload (Windows/MSVC/RelWithDebInfo/x64)
+      uses: actions/upload-artifact@v2
+      with:
+        name: Windows Build (MSVC-x64-RelWithDebInfo)
+        path: build/Debug
