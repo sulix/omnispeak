@@ -269,6 +269,24 @@ if (CMAKE_C_COMPILER_ID STREQUAL "OpenWatcom")
 	add_definitions(-ei -aa -za99)
 endif()
 
+# In Microsoft compilers, the C Runtime is dynamically linked by default.
+# Since Microsoft's C Runtime is distributed with a separate "redistributable"
+# package, and is compiler-version-specific, we'd either need to package the
+# redist installer (and get people to install it, except on versions prior to
+# 2005), or hope the user already has it from another app, before the binary
+# can run. This is even worse for Debug builds, as very few end users will
+# have the seprate debug CRT installed. Therefore, statically link the rutime.
+if (MSVC)
+	# There is a better way of doing this, but it only works on very new
+	# CMake versions.
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_DEBUG} /MT")
+	set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_DEBUG} /MT")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_DEBUG} /MT")
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_DEBUG} /MT")
+endif()
+
 add_executable(omnispeak
 	${OMNISPEAK_ID_SRCS}
 	${OMNISPEAK_CK_SRCS}
