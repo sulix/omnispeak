@@ -226,7 +226,9 @@ else
 	endif
 endif
 ifneq ($(BUILDASCPP), 1)
-	CXXFLAGS += -std=c99
+	# We can't use -std=c99 here because opendir() and friends aren't
+	# available when __STRICT_ANSI__ is defined on djgpp.
+	CXXFLAGS += -std=gnu99
 endif
 
 # set flags for debug info
