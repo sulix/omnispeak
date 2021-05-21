@@ -106,8 +106,6 @@ void TimedPicCommand(void)
 	// (long) TimeCount = 0;
 	// SD_SetTimeCount(0);
 
-	//while ( timeCount+=VL_GetTics(1) < help_delay )
-	//;
 	VL_DelayTics(help_delay);
 	VHB_DrawBitmap(help_x & 0xFFF8, help_y, help_pic);
 }
@@ -553,31 +551,14 @@ int ShowHelp(void)
 
 void HelpScreens(void)
 {
-	int16_t local1, local2, oldfont, page_changed, n;
+	int16_t oldfont, page_changed, n;
 
 	/* Save the variables */
 	oldfont = US_GetPrintFont();
-	// local1 = AZ : A7B2;
-	// local2 = AZ : A7B4;
 
 	/* Init stuff */
-#if 0
-AZ:
-	A550 = 0;
-	outportw( 0x3C4, 0x0F02 ); /* Set map mask register */
-	sub_409();
-	uncache_all_graphics();
-#endif
 	VL_SetScrollCoords(0, 0);
 	VL_ClearScreen(4);
-#if 0
-	sub_472();
-AZ:
-	A7B4 = 0;
-AZ:
-	A7B2 = 0x8000;
-	sub_679( AZ : A7B2, 0 );
-#endif
 	US_SetPrintFont(0);
 
 	if (ck_currentEpisode->ep == EP_CK5)
@@ -594,10 +575,6 @@ AZ:
 			/* Clean up and return */
 			// CA_DownLevel();
 			IN_ClearKeysDown();
-			/*
-			AZ: A7B4 = local2;
-			AZ: A7B2 = local1;
-			 */
 			US_SetPrintFont(oldfont);
 			VL_ClearScreen(4);
 			// RF_Reset();
@@ -622,17 +599,10 @@ AZ:
 				page_changed = 0;
 				PageLayout(1);
 
-				/*
-				sub_679( AZ : A7B4, 0 );
-				local4 = AZ : A7B2;
-				AZ: A7B2 = AZ : A7B4;
-				AZ: A7B4 = local4;
-				 */
 				VL_Present();
 			}
 
 			/* Wait for the user to press a key */
-			// last_scan = 0;
 			IN_ClearKeysDown();
 			while (IN_GetLastScan() == IN_SC_None)
 				IN_PumpEvents();
@@ -670,7 +640,6 @@ AZ:
 void help_endgame(void)
 {
 	char *ptext;
-	int i;
 
 	/* Set up */
 	VL_ClearScreen(4);
