@@ -72,7 +72,6 @@ static int16_t us_printY;
 
 static int16_t us_printFont = 0;
 static int8_t us_printColour = 15;
-static int16_t us_backColour = 0;
 
 #define US_WINDOW_MAX_X 320
 #define US_WINDOW_MAX_Y 200

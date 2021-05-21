@@ -249,14 +249,14 @@ int AdvanceTerminatorCredit(int elapsedTime)
 
 void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 {
-	int pelpan, picX, numrows, var10;
+	int pelpan, picX;
 
 	// Vars are static because BP is used during ASM draw routine
 	static int rowsToDraw;
 
 	static int oldY2 = 0;
 
-	int creditY1, varA, creditY2, var12, picStartOffset;
+	int creditY1, creditY2, picStartOffset;
 
 	pelpan = xpixel & 7;
 	picX = (xpixel) + (160 - ck_currentTermPicWidth * 4);
@@ -835,7 +835,6 @@ void CK_FizzleFade()
 {
 	int i;
 
-	uint8_t bitmasks[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 	uint16_t columns1[320];
 	uint16_t rows1[200];
 
@@ -1637,7 +1636,6 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 {
 	// Omnispeak
 	int topMargin = ck_currentEpisode->highScoreTopMargin;
-	int rightMargin = ck_currentEpisode->highScoreRightMargin;
 	int leftMargin = ck_currentEpisode->highScoreLeftMargin;
 
 	int entry, entryRank;

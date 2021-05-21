@@ -324,13 +324,9 @@ void CK_SpawnMapKeen(int tileX, int tileY)
 
 void CK_ScanForLevelEntry(CK_object *obj)
 {
-
-	int tx, ty;
-	int tileY_0 = obj->clipRects.tileY1;
-
-	for (ty = obj->clipRects.tileY1; ty <= obj->clipRects.tileY2; ty++)
+	for (int ty = obj->clipRects.tileY1; ty <= obj->clipRects.tileY2; ty++)
 	{
-		for (tx = obj->clipRects.tileX1; tx <= obj->clipRects.tileX2; tx++)
+		for (int tx = obj->clipRects.tileX1; tx <= obj->clipRects.tileX2; tx++)
 		{
 			int infotile = CA_TileAtPos(tx, ty, 2);
 			if (infotile > 0xC000 && infotile <= 0xC012)

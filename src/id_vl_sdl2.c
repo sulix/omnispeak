@@ -11,10 +11,7 @@ static SDL_Texture *vl_sdl2_texture;
 static SDL_Palette *vl_sdl2_palette;
 static SDL_Surface *vl_sdl2_stagingSurface;
 static SDL_Texture *vl_sdl2_scaledTarget;
-static SDL_Rect vl_sdl2_screenBorderedRect;
-static SDL_Rect vl_sdl2_screenWholeRect;
 static bool vl_sdl2_bilinearSupport = true;
-static int vl_sdl2_desktopWidth = -1, vl_sdl2_desktopHeight = -1;
 
 static void VL_SDL2_ResizeWindow()
 {
@@ -202,7 +199,6 @@ static void VL_SDL2_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, i
 {
 	SDL_Surface *srf = (SDL_Surface *)surface;
 	SDL_LockSurface(srf);
-	bool directionX = sx > x;
 	bool directionY = sy > y;
 
 	if (directionY)
@@ -329,7 +325,6 @@ static void VL_SDL2_Present(void *surface, int scrlX, int scrlY, bool singleBuff
 	VL_SDL2_ResizeWindow();
 	SDL_Surface *surf = (SDL_Surface *)surface;
 	SDL_Rect srcr = {(Sint16)scrlX, (Sint16)scrlY, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT};
-	SDL_Rect integerRect = {(Sint16)vl_renderRgn_x, (Sint16)vl_renderRgn_y, vl_integerWidth, vl_integerHeight};
 	SDL_Rect renderRect = {(Sint16)vl_renderRgn_x, (Sint16)vl_renderRgn_y, vl_renderRgn_w, vl_renderRgn_h};
 	SDL_Rect fullRect = {(Sint16)vl_fullRgn_x, (Sint16)vl_fullRgn_y, vl_fullRgn_w, vl_fullRgn_h};
 

@@ -309,7 +309,7 @@ char *MM_ArenaStrDup(ID_MM_Arena *arena, const char *str)
 {
 	size_t len = strlen(str) + 1;
 	char *newStr = (char *)MM_ArenaAlloc(arena, len);
-	strcpy(newStr, str);
+	memcpy(newStr, str, len);
 	newStr[len - 1] = '\0';
 	return newStr;
 }

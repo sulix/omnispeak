@@ -438,7 +438,6 @@ static void VL_SDL2GL_SurfaceToSurface(void *src_surface, void *dst_surface, int
 static void VL_SDL2GL_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, int sw, int sh)
 {
 	VL_SDL2GL_Surface *srf = (VL_SDL2GL_Surface *)surface;
-	bool directionX = sx > x;
 	bool directionY = sy > y;
 
 	if (directionY)
@@ -554,8 +553,6 @@ static void VL_SDL2GL_ScrollSurface(void *surface, int x, int y)
 static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
 {
 	int realWinW, realWinH;
-	SDL_Rect wholeWinRect;
-	SDL_Rect borderedWinRect;
 	// Get the real window size
 	SDL_GL_GetDrawableSize(vl_sdl2gl_window, &realWinW, &realWinH);
 

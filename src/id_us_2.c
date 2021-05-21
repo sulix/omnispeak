@@ -912,7 +912,6 @@ void US_RunCards()
 	int16_t controller_dy;
 	int16_t prev_controller_motion;
 	uint32_t cursor_time;
-	US_CardItem *item;
 	//ControlInfo status;
 	bool action_taken;
 

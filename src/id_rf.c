@@ -1148,9 +1148,6 @@ void RF_RemoveSpriteDraw(RF_SpriteDrawEntry **drawEntry)
 		(*drawEntry)->prev->next = (*drawEntry)->next;
 
 #endif
-	int old_sprite_number = (*drawEntry)->chunk - ca_gfxInfoE.offSprites;
-	VH_SpriteTableEntry *oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
-	int shiftMask = ~((8 / oldSprite->shifts) - 1) & ~1;
 	if ((*drawEntry)->updateCount < VL_GetNumBuffers())
 	{
 		if (!(*drawEntry)->updateCount)
@@ -1240,10 +1237,6 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 
 	if (sde)
 	{
-		int old_sprite_number = sde->chunk - ca_gfxInfoE.offSprites;
-		VH_SpriteTableEntry *oldSprite = VH_GetSpriteTableEntry(old_sprite_number);
-		int shiftMask = ~((8 / oldSprite->shifts) - 1) & ~1;
-		
 		if (sde->updateCount < VL_GetNumBuffers())
 		{
 			if (!sde->updateCount)

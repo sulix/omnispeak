@@ -70,8 +70,6 @@ static volatile uint16_t sd_SpriteSync = 0;
 // PIT timer divisor, scaled (bt 8 if music is on, 2 otherwise).
 // NOT initialized to 0 since this can lead to division by zero on startup.
 static int16_t sd_scaledPITTimerDivisor = 1;
-// A few variables used for timing measurements (PC_PIT_RATE units per second)
-static uint64_t sd_lastPITTickTime;
 
 uint32_t SD_GetTimeCount()
 {
@@ -193,7 +191,6 @@ void SD_PC_StopSound(void)
 static void SD_PC_SoundService(void)
 {
 	uint8_t currentFrequency;
-	uint16_t t;
 
 	if (sd_pc_currentSfxData)
 	{
@@ -538,6 +535,7 @@ void SD_Startup()
 	sd_backend = SD_Impl_GetBackend();
 
 	const char *backendName = CFG_GetConfigString("sd_backend", "default");
+	(void)(backendName); //Silence unused varible warning when no ALSA/IEE1284
 #ifdef SD_OPL2_WITH_ALSA
 	if (!CK_Cross_strcasecmp(backendName, "alsa"))
 		sd_backend = SD_Impl_GetBackend_ALSAOPL2();

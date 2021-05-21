@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Hash a string using an xor variant of the djb2 hash
 static unsigned int STR_HashString(const char *str)
 {
-	int slen = strlen(str);
+	size_t slen = strlen(str);
 	unsigned int hash = 0;
 	for (int i = 0; i < slen; ++i)
 	{

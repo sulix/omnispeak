@@ -1039,18 +1039,8 @@ void CA_CacheMap(int mapIndex)
 // CA_Startup opens the core CA datafiles
 void CA_Startup(void)
 {
-	// Check for the existence of EGAGRAPH for the Keen Day preview.
-
-	// If the file isn't in the current directory, it might be in the directory the game binary is in.
-	char checkFile[] = "EGAGRAPH.EXT";
-
 	// Load the ?GAGRAPH.EXT file!
 	CAL_SetupGrFile();
-
-	// Load some other chunks needed by the game
-	// (Moved to CK_InitGame())
-	// CA_CacheGrChunk(88);	//Title Screen
-	// CA_CacheGrChunk(3);	// Main font
 
 	// Setup the map file
 	CAL_SetupMapFile();

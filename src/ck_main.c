@@ -362,7 +362,6 @@ void CK_InitGame()
  */
 
 extern CK_Difficulty ck_startingDifficulty;
-static int ck_startingLevel = 0;
 
 void CK_DemoLoop()
 {

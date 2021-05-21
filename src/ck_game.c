@@ -365,7 +365,7 @@ bool CK_LoadGame(FILE *fp, bool fromMenu)
 	int i;
 	uint16_t cmplen, bufsize;
 	int16_t prevFuses;
-	CK_object *obj, *objprev, *objnext, *moreObj;
+	CK_object *objprev, *objnext, *moreObj;
 	uint8_t *buf;
 
 	if (!CK_LoadGameState(fp, &ck_gameState))
@@ -645,14 +645,13 @@ static int ck_cacheCountdownNum, ck_cacheBoxChunksPerPic, ck_cacheBoxChunkCounte
 
 void CK_BeginCacheBox(const char *title, int numChunks)
 {
-	int totalfree;
 	uint16_t w, h;
 
 	// Vanilla keen checks if > 2kb free here
 	// If not, it doesn't cache all of the keen counting down graphics
 	// But not necessary for omnispeak
 #if 0
-	if ((totalfree = MM_TotalFree()) > 2048)
+	if (MM_TotalFree()) > 2048)
 	{
 		ck_cacheCountdownNum = 0;
 	}

@@ -236,7 +236,7 @@ int USL_ConfirmComm(US_CardCommand command);
 
 static bool US_LoadMain(int i, bool fromMenu)
 {
-	int n, error = 0;
+	int error = 0;
 	FS_File fp;
 	const char *fname;
 	US_Savefile *e;
@@ -254,7 +254,6 @@ static bool US_LoadMain(int i, bool fromMenu)
 			(FS_ReadBoolFrom16LE(&e->used, 1, fp) == 1) &&
 			(FS_Read(e->name, sizeof(e->name), 1, fp) == 1) &&
 			(FS_Read(&padding, sizeof(padding), 1, fp) == 1))
-		//if ( read( handle, e, sizeof ( SAVEFILE_ENTRY ) ) != sizeof ( SAVEFILE_ENTRY ) )
 		{
 			if (p_load_game && !(*p_load_game)(fp, fromMenu))
 			{
@@ -294,15 +293,9 @@ bool US_QuickLoad(void)
 
 void load_savegame_item(US_CardItem *item)
 {
-	int i;
-	US_Savefile *e;
-	const char *file;
-	FILE *fp;
-	int error = 0;
-
 	if (USL_ConfirmComm(US_Comm_LoadGame))
 	{
-		i = item - ck_us_loadSaveMenuItems;
+		int i = item - ck_us_loadSaveMenuItems;
 		USL_LoadSaveMessage("Loading", us_savefiles[i].name);
 		if (!US_LoadMain(i, true))
 		{ /* is this condition right? */
@@ -440,10 +433,7 @@ bool US_QuickSave(void)
 void save_savegame_item(US_CardItem *item)
 {
 	int i, n;
-	FILE *fp;
 	US_Savefile *e;
-	const char *fname;
-	int error;
 
 	footer_str[2] = "Type name";
 	footer_str[1] = "Enter accepts";
@@ -891,7 +881,6 @@ bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control)
 {
 	bool cursor = false;
-	bool unassign = false;
 	uint32_t lasttime = 0;
 	uint16_t button_mask = 0;
 	IN_ScanCode last_scan = IN_SC_None;

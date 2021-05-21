@@ -948,11 +948,6 @@ void CK4_ScanInfoLayer()
 			obj->active = OBJ_INACTIVE;
 	}
 
-	if (ck_gameState.currentLevel == 0)
-	{
-		int keenYTilePos = ck_keenObj->posY >> 8;
-	}
-
 	for (int i = 0; i < MAXLUMPS; i++)
 		if (ck4_lumpsNeeded[i])
 			for (int j = ck4_lumpStarts[i]; j <= ck4_lumpEnds[i]; j++)
