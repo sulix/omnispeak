@@ -224,7 +224,7 @@ void CFG_SaveConfig(const char *filename)
 	// Mark all variables unsaved.
 	size_t currentVarIndex = 0;
 	CFG_Variable *currentVar;
-	while (currentVar = (CFG_Variable *)STR_GetNextEntry(cfg_configEntries, &currentVarIndex))
+	while ((currentVar = (CFG_Variable *)STR_GetNextEntry(cfg_configEntries, &currentVarIndex)))
 	{
 		currentVar->saved = false;
 	}
@@ -235,6 +235,13 @@ void CFG_SaveConfig(const char *filename)
 
 	FS_LoadUserFile(filename, (mm_ptr_t *)(&parserstate.data), &(parserstate.datasize));
 	FS_File outputHandle = FS_CreateUserFile(filename);
+	if (!outputHandle)
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Unable to save config to \"%s\"\n", filename);
+		if (parserstate.data)
+			MM_FreePtr((mm_ptr_t *)&parserstate.data);
+		return;
+	}
 	if (parserstate.data)
 	{
 		parserstate.dataindex = 0;
@@ -255,7 +262,7 @@ void CFG_SaveConfig(const char *filename)
 
 	// Now, loop over the remaining variables and write them out.
 	currentVarIndex = 0;
-	while (currentVar = (CFG_Variable *)STR_GetNextEntry(cfg_configEntries, &currentVarIndex))
+	while ((currentVar = (CFG_Variable *)STR_GetNextEntry(cfg_configEntries, &currentVarIndex)))
 	{
 		if (currentVar->saved)
 			continue;

@@ -17,6 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+// If we want to use the "linux" backend here, we need to define _GNU_SOURCE
+// before any system headers are pulled in, so that O_PATH is defined.
+#if defined(__linux__) && !defined(__STRICT_ANSI__)
+#define _GNU_SOURCE
+#endif
+
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -64,7 +70,7 @@ void FS_CloseFile(FS_File file)
 	fclose(file);
 }
 
-#ifdef __linux__
+#if defined(__linux__) && !defined(__STRICT_ANSI__)
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/stat.h>

@@ -83,9 +83,9 @@ int SD_ALSAOPL2_t0InterruptThread(void *param)
 }
 
 snd_hwdep_t *sd_alsa_oplHwDep;
-snd_dm_fm_voice sd_alsa_oplOperators[32];
-snd_dm_fm_note sd_alsa_oplChannels[16];
-snd_dm_fm_params sd_alsa_oplParams;
+struct snd_dm_fm_voice sd_alsa_oplOperators[32];
+struct snd_dm_fm_note sd_alsa_oplChannels[16];
+struct snd_dm_fm_params sd_alsa_oplParams;
 
 const int regToOper[0x20] =
 	{0, 1, 2, 3, 4, 5, -1, -1, 6, 7, 8, 9, 10, 11, -1, -1,

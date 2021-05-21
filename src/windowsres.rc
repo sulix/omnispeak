@@ -9,13 +9,13 @@ BEGIN
     BLOCK "080904E4"
     BEGIN
       VALUE "CompanyName", "Omnispeak Developers"
-      VALUE "FileDescription", "The Armageddon Machine"
-      VALUE "FileVersion", "0.5"
+      VALUE "FileDescription", "A Commander Keen Reimplementation"
+      VALUE "FileVersion", "1.0"
       VALUE "InternalName", "omnispeak"
-      VALUE "LegalCopyright", "(C) 2012-2014 Omnispeak Developers. Commander Keen is (C) id Software"
-      VALUE "OriginalFilename", "keen5e.exe"
-      VALUE "ProductName", "Omnispeak: Commander Keen 5"
-      VALUE "ProductVersion", "0.5"
+      VALUE "LegalCopyright", "(C) 2012-2021 Omnispeak Developers. Commander Keen is (C) id Software."
+      VALUE "OriginalFilename", "omnispeak.exe"
+      VALUE "ProductName", "Omnispeak"
+      VALUE "ProductVersion", "1.0"
     END
   END
 
