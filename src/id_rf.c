@@ -670,22 +670,9 @@ void RF_ForceRefresh(void)
  */
 void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, int height)
 {
-
 	int tx, ty;
-	uint16_t *src_bgtile_ptr, *src_fgtile_ptr, *src_infotile_ptr;
-	uint16_t *dst_bgtile_ptr, *dst_fgtile_ptr, *dst_infotile_ptr;
-	intptr_t src_offset, dst_offset, offset_delta, new_row_offset;
 
 	RFL_RemoveAnimRect(destx, desty, width, height);
-
-	//
-	src_offset = srcy * rf_mapWidthTiles + srcx;
-	dst_offset = desty * rf_mapWidthTiles + desty;
-	src_bgtile_ptr = CA_mapPlanes[0] + src_offset;
-	src_fgtile_ptr = CA_mapPlanes[1] + src_offset;
-	src_infotile_ptr = CA_mapPlanes[2] + src_offset;
-	offset_delta = dst_offset - src_offset;
-	new_row_offset = rf_mapWidthTiles - width;
 
 	for (ty = 0; ty < height; ty++)
 	{
@@ -694,20 +681,20 @@ void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, in
 			bool different;
 			int screenX, screenY;
 
-			src_bgtile_ptr = &CA_mapPlanes[0][(srcy + ty) * rf_mapWidthTiles + (srcx + tx)];
-			src_fgtile_ptr = &CA_mapPlanes[1][(srcy + ty) * rf_mapWidthTiles + (srcx + tx)];
-			src_infotile_ptr = &CA_mapPlanes[2][(srcy + ty) * rf_mapWidthTiles + (srcx + tx)];
-			dst_bgtile_ptr = &CA_mapPlanes[0][(desty + ty) * rf_mapWidthTiles + (destx + tx)];
-			dst_fgtile_ptr = &CA_mapPlanes[1][(desty + ty) * rf_mapWidthTiles + (destx + tx)];
-			dst_infotile_ptr = &CA_mapPlanes[2][(desty + ty) * rf_mapWidthTiles + (destx + tx)];
+			uint16_t src_bgtile = CA_TileAtPos(srcx + tx, srcy + ty, 0);
+			uint16_t src_fgtile = CA_TileAtPos(srcx + tx, srcy + ty, 1);
+			uint16_t src_infotile = CA_TileAtPos(srcx + tx, srcy + ty, 2);
+			uint16_t dst_bgtile = CA_TileAtPos(destx + tx, desty + ty, 0);
+			uint16_t dst_fgtile = CA_TileAtPos(destx + tx, desty + ty, 1);
+			uint16_t dst_infotile = CA_TileAtPos(destx + tx, desty + ty, 2);
 
 			// Check if there is a different tile being copied
-			if (*dst_bgtile_ptr != *src_bgtile_ptr || *dst_fgtile_ptr != *src_fgtile_ptr ||
-				*dst_infotile_ptr != *src_infotile_ptr)
+			if (dst_bgtile != src_bgtile || dst_fgtile != src_fgtile ||
+				dst_infotile != src_infotile)
 			{
-				*dst_bgtile_ptr = *src_bgtile_ptr;
-				*dst_fgtile_ptr = *src_fgtile_ptr;
-				*dst_infotile_ptr = *src_infotile_ptr;
+				CA_SetTileAtPos(destx + tx, desty + ty, 0, src_bgtile);
+				CA_SetTileAtPos(destx + tx, desty + ty, 1, src_fgtile);
+				CA_SetTileAtPos(destx + tx, desty + ty, 2, src_infotile);
 				different = true;
 			}
 			else
@@ -724,21 +711,13 @@ void RF_ReplaceTileBlock(int srcx, int srcy, int destx, int desty, int width, in
 				if (different)
 				{
 					RFL_MarkBlockDirty(screenX, screenY, 1, -1);
-					RF_RenderTile16(screenX, screenY, *dst_bgtile_ptr);
-					RF_RenderTile16m(screenX, screenY, *dst_fgtile_ptr);
+					RF_RenderTile16(screenX, screenY, src_bgtile);
+					RF_RenderTile16m(screenX, screenY, src_fgtile);
 				}
 				// And check it for animations.
 				RFL_CheckForAnimTile(destx + tx, desty + ty);
 			}
-
-			src_bgtile_ptr++;
-			src_fgtile_ptr++;
-			src_infotile_ptr++;
 		}
-
-		src_bgtile_ptr += new_row_offset;
-		src_fgtile_ptr += new_row_offset;
-		src_infotile_ptr += new_row_offset;
 	}
 }
 
