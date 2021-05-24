@@ -191,10 +191,10 @@ static void VL_DOS_RefreshPaletteAndBorderColor(void *screen)
 		// six-bit DAC value (xIxRGB) where the intensity value is
 		// stored in the green-intensity bit.
 		uint8_t val = vl_emuegavgaadapter.palette[i];
-		uint8_t realval = val & 7 | ((val & 8) << 1);
+		uint8_t realval = (val & 7) | ((val & 8) << 1);
 		dospal[i] = realval;
 	}
-	dospal[16] = vl_border_color & 7 | ((vl_border_color & 8) << 1);
+	dospal[16] = (vl_border_color & 7) | ((vl_border_color & 8) << 1);
 
 	// Use int 10h, AX=1002h to set the palette.
 	// http://www.ctyme.com/intr/rb-0116.htm

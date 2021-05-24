@@ -296,7 +296,7 @@ void VHB_DrawSprite(int x, int y, int chunk)
 
 	int width = shifted->sprShiftByteWidths[shift] * 8;
 
-	int realX = x + RF_UnitToPixel(spr->originX) & ~7;
+	int realX = (x + RF_UnitToPixel(spr->originX)) & ~7;
 	int realY = y + RF_UnitToPixel(spr->originY);
 
 	if (VH_MarkUpdateBlock(realX, realY, spr->width * 8, spr->height))
