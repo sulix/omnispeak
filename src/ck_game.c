@@ -727,8 +727,9 @@ void CK_UpdateCacheBox()
 			VHB_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN4 + ck_cacheCountdownNum);
 		VL_Present();
 		// Because loading is VERY fast on omnispeak, add artificial delay
-		VL_DelayTics(10);
-	AZ:
+		int loadingDelay = CFG_GetConfigInt("loadingDelay", 10);
+		if (loadingDelay)
+			VL_DelayTics(loadingDelay);
 		ck_cacheCountdownNum++;
 	}
 }
