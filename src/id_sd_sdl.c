@@ -354,7 +354,7 @@ void SD_SDL_Startup(void)
 		sd_oplEmulator = SD_OPL_EMULATOR_DBOPL;
 	}
 
-	SD_SDL_useTimerFallback = CFG_GetConfigInt("sd_sdl_noAudioSync", 0);
+	SD_SDL_useTimerFallback = CFG_GetConfigBool("sd_sdl_noAudioSync", false);
 
 	for (int i = 0; i < us_argc; ++i)
 	{

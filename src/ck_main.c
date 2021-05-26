@@ -658,11 +658,11 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	bool isFullScreen = CFG_GetConfigInt("fullscreen", 0);
-	bool isAspectCorrected = CFG_GetConfigInt("aspect", 1);
-	bool hasBorder = CFG_GetConfigInt("border", 1);
-	bool isIntegerScaled = CFG_GetConfigInt("integer", 0);
-	bool overrideCopyProtection = CFG_GetConfigInt("ck6_noCreatureQuestion", 0);
+	bool isFullScreen = CFG_GetConfigBool("fullscreen", false);
+	bool isAspectCorrected = CFG_GetConfigBool("aspect", true);
+	bool hasBorder = CFG_GetConfigBool("border", true);
+	bool isIntegerScaled = CFG_GetConfigBool("integer", false);
+	bool overrideCopyProtection = CFG_GetConfigBool("ck6_noCreatureQuestion", false);
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 	const char *dumperFilename = NULL;
 #endif

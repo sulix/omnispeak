@@ -72,9 +72,9 @@ This is a simple key/value file which looks something like this:
 
 --8<--
 # Graphics settings
-fullscreen = 1
-border = 1
-integer = 0
+fullscreen = true
+border = true
+integer = false
 
 # The OPL emulator used by the SDL audio backend
 # Valid values: "dbopl" (DOSBox), "nukedopl3" (NukedOPL3)

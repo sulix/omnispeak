@@ -92,7 +92,7 @@ bool CK_US_FullscreenMenuProc(US_CardMsg msg, US_CardItem *item)
 
 	VL_ToggleFullscreen();
 	// Save the config option.
-	CFG_SetConfigInt("fullscreen", vl_isFullScreen);
+	CFG_SetConfigBool("fullscreen", vl_isFullScreen);
 	USL_CtlDialog((vl_isFullScreen ? "Fullscreen mode enabled" : "Windowed mode enabled"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
@@ -104,7 +104,7 @@ bool CK_US_AspectCorrectMenuProc(US_CardMsg msg, US_CardItem *item)
 		return false;
 
 	VL_ToggleAspect();
-	CFG_SetConfigInt("aspect", vl_isAspectCorrected);
+	CFG_SetConfigBool("aspect", vl_isAspectCorrected);
 	USL_CtlDialog((vl_isAspectCorrected ? "Aspect ratio correction now on" : "Aspect ratio correction now off"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
@@ -116,7 +116,7 @@ bool CK_US_BorderMenuProc(US_CardMsg msg, US_CardItem *item)
 		return false;
 
 	VL_ToggleBorder();
-	CFG_SetConfigInt("border", vl_hasOverscanBorder);
+	CFG_SetConfigBool("border", vl_hasOverscanBorder);
 	USL_CtlDialog((vl_hasOverscanBorder ? "Overscan border now on" : "Overscan border now off"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
@@ -128,7 +128,7 @@ bool CK_US_IntegerMenuProc(US_CardMsg msg, US_CardItem *item)
 		return false;
 
 	VL_ToggleInteger();
-	CFG_SetConfigInt("integer", vl_isIntegerScaled);
+	CFG_SetConfigBool("integer", vl_isIntegerScaled);
 	USL_CtlDialog((vl_isIntegerScaled ? "Integer scaling now on" : "Integer scaling now off"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
