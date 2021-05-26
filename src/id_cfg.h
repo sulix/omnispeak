@@ -31,6 +31,7 @@ typedef struct CFG_Variable
 	const char *name;
 	const char *str_value;
 	int int_value;
+	bool is_boolean;
 	bool saved;
 } CFG_Variable;
 
@@ -40,9 +41,11 @@ void CFG_SaveConfig(const char *filename);
 bool CFG_ConfigExists(const char *name);
 int CFG_GetConfigInt(const char *name, int defValue);
 const char *CFG_GetConfigString(const char *name, const char *defValue);
+bool CFG_GetConfigBool(const char *name, bool defValue);
 
 void CFG_SetConfigInt(const char *name, int value);
 void CFG_SetConfigString(const char *name, const char *value);
+void CFG_SetConfigBool(const char *name, bool value);
 
 void CFG_Startup();
 void CFG_Shutdown();

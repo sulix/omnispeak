@@ -47,6 +47,11 @@ const char *CFG_GetConfigString(const char *name, const char *defValue)
 	return var->str_value;
 }
 
+bool CFG_GetConfigBool(const char *name, bool defValue)
+{
+	return CFG_GetConfigInt(name, defValue ? 1 : 0);
+}
+
 // Gets or creates a config variable. When created, the name is StrDup'ed into the
 // config arena.
 static CFG_Variable *CFG_GetOrCreateVariable(const char *name)
@@ -72,6 +77,7 @@ void CFG_SetConfigInt(const char *name, int value)
 	CFG_Variable *var = CFG_GetOrCreateVariable(name);
 	var->str_value = 0;
 	var->int_value = value;
+	var->is_boolean = false;
 }
 
 void CFG_SetConfigString(const char *name, const char *value)
@@ -82,6 +88,15 @@ void CFG_SetConfigString(const char *name, const char *value)
 	if (!var->str_value || strcmp(value, var->str_value))
 		var->str_value = MM_ArenaStrDup(cfg_configArena, value);
 	var->int_value = 0;
+}
+
+void CFG_SetConfigBool(const char *name, bool value)
+{
+	CFG_Variable *var = CFG_GetOrCreateVariable(name);
+
+	var->str_value = 0;
+	var->int_value = value ? 1 : 0;
+	var->is_boolean = true;
 }
 
 static bool CFG_ParseConfigLine(STR_ParserState *state)
@@ -96,6 +111,18 @@ static bool CFG_ParseConfigLine(STR_ParserState *state)
 		return false;
 	else if (value.tokenType == STR_TOK_String)
 		CFG_SetConfigString(name, STR_GetString(state));
+	else if (!CK_Cross_strcasecmp(value.valuePtr, "false"))
+	{
+		CFG_SetConfigBool(name, false);
+		// Eat the token.
+		STR_GetToken(state);
+	}
+	else if (!CK_Cross_strcasecmp(value.valuePtr, "true"))
+	{
+		CFG_SetConfigBool(name, true);
+		// Eat the token.
+		STR_GetToken(state);
+	}
 	else
 		CFG_SetConfigInt(name, STR_GetInteger(state));
 	return true;
@@ -196,8 +223,11 @@ static bool CFG_SaveConfigLine(FS_File outputHandle, STR_ParserState *state)
 		}
 		else
 		{
-			// Otherwise, write it out in decimal.
-			FS_PrintF(outputHandle, "%d", var->int_value);
+			// Otherwise, if it's a bool, write it out as a bool, else use decimal
+			if (var->is_boolean)
+				FS_PrintF(outputHandle, "%s", var->int_value ? "true" : "false");
+			else
+				FS_PrintF(outputHandle, "%d", var->int_value);
 		}
 		var->saved = true;
 	}
@@ -269,6 +299,8 @@ void CFG_SaveConfig(const char *filename)
 
 		if (currentVar->str_value)
 			FS_PrintF(outputHandle, "%s = \"%s\"\n", currentVar->name, currentVar->str_value);
+		else if (currentVar->is_boolean)
+			FS_PrintF(outputHandle, "%s = %s\n", currentVar->name, currentVar->int_value ? "true" : "false");
 		else
 			FS_PrintF(outputHandle, "%s = %d\n", currentVar->name, currentVar->int_value);
 	}
