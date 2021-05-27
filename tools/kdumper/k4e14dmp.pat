@@ -1,6 +1,6 @@
 %ext ck4
 
-%ver 1.4
+%version 1.4
 
 %patch $8F09 $EA $12A617BFRL # Jump to CAL_DialogUpdate
 

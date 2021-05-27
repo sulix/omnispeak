@@ -1,6 +1,6 @@
 %ext ck6
 
-%ver 1.4
+%version 1.4
 
 %patch $8CE3 $EA $125A17B0RL # Jump to CAL_DialogUpdate
 
