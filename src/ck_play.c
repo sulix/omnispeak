@@ -2204,7 +2204,7 @@ void CK_PlayLoop()
 			bool CK_SaveGameState(FILE * fp, CK_GameState * state);
 
 			uint32_t timecountToDump = SD_GetTimeCount();
-			CK_Cross_fwriteInt32LE(&timecountToDump, 1, ck_dumperFile);
+			FS_WriteInt32LE(&timecountToDump, 1, ck_dumperFile);
 			CK_SaveGameState(ck_dumperFile, &ck_gameState);
 			for (CK_object *currentObj = &ck_objArray[0]; currentObj != &ck_objArray[CK_MAX_OBJECTS]; ++currentObj)
 				CK_SaveObject(ck_dumperFile, currentObj);
