@@ -41,6 +41,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ID_MM_DEBUGARENA
 // Warn on out-of-bounds access to tileinfo.
 #define CK_WARN_ON_TILEINFO_OOB
+// Support the /DUMPFILE option for the playloop dumper
+#define CK_ENABLE_PLAYLOOP_DUMPER
 #endif
 
 // =================================
