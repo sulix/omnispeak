@@ -1,3 +1,4 @@
+#include "id_sd.h"
 #include "id_us.h"
 #include "id_vl.h"
 #include "id_vl_private.h"
@@ -231,6 +232,7 @@ static void VL_NULL_ScrollSurface(void *surface, int x, int y)
 
 static void VL_NULL_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
 {
+	SD_SetTimeCount(SD_GetTimeCount() + 1);
 }
 
 void VL_NULL_FlushParams()
@@ -239,6 +241,7 @@ void VL_NULL_FlushParams()
 
 void VL_NULL_WaitVBLs(int vbls)
 {
+	SD_SetTimeCount(SD_GetTimeCount() + CK_Cross_max(vbls,1));
 }
 
 // Unfortunately, we can't take advantage of designated initializers in C++.

@@ -923,9 +923,7 @@ void VL_DelayTics(int tics)
 
 void VL_Yield()
 {
-#ifdef WITH_SDL
-	SDL_Delay(1);
-#endif
+	vl_currentBackend->waitVBLs(0);
 }
 
 static int vl_scrollXpixels;

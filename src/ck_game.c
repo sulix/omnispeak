@@ -777,7 +777,6 @@ bool CK_TryAgainMenu()
 		sel = 0;
 		while (1)
 		{
-			VL_Yield();
 			IN_PumpEvents();
 
 			/* Decide which selection to draw */
