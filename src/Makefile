@@ -420,6 +420,12 @@ $(OBJDIR)/windowsres.res: windowsres.rc
 $(OUTBIN): $(BINDIR) $(SDL_DIR) $(OBJ) $(RES)
 	$(CXX) $(SYSFLAGS) $(LDFLAGS) -o $(OUTBIN) $(OBJ) $(RES) $(SDL_LIBS) -lm $(LIBS)
 
+$(BINDIR)/dumpprinter: ../tools/dumpprinter/dumpprinter.c
+	$(CXX) -o $@ $<
+
+# Phony rule to put the dump printer in the right directory
+dumpprinter: $(BINDIR)/dumpprinter
+
 # rules to copy data files
 binfiles: keen4data keen5data keen6data
 keen4data: $(BINDIR) $(K4DATA)
@@ -455,16 +461,16 @@ $(SDL_DIR):
 	wget -O- $(SDL_URL) | tar xz -C ..
 
 clean:
-	rm -f $(OUTBIN) $(OBJ) $(OBJDIR)/windowsres.res $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA) $(BATFILES) $(SHELLFILES)
+	rm -f $(OUTBIN) $(OUTBIN)/dumpprinter $(OBJ) $(OBJDIR)/windowsres.res $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA) $(BATFILES) $(SHELLFILES)
 
 RMDIR_ERRMSG = Note: Some of the 'bin' directories still contain user data. They have not been removed.
 export RMDIR_ERRMSG
 distclean:
 	rm -rf ../obj*
-	rm -f ../bin*/omnispeak ../bin-*/omnispeak.exe ../bin-win*/_keen?.cmd
+	rm -f ../bin*/omnispeak ../bin-*/omnispeak.exe ../bin-win*/_keen?.cmd ../bin*/dumpprinter
 	rm -f $(foreach f, $(DATAFILES), ../bin*/$(f).CK?)
 	rmdir ../bin* || echo $$RMDIR_ERRMSG
 
 -include $(DEPS)
 
-.PHONY: all help dumpconfig binfiles batfiles shellfiles keen4data keen5data keen6data clean distclean
+.PHONY: all help dumpconfig binfiles batfiles shellfiles keen4data keen5data keen6data clean distclean dumpprinter
