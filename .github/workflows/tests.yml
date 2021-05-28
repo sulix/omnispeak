@@ -1,0 +1,29 @@
+name: "CI: Demo Dump Tests"
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build (Linux)
+      working-directory: ./src
+      run: |
+        make RENDERER=null DEBUG=1
+        make dumpprinter
+    - name: Get Datafiles
+      working-directory: ./bin
+      run: |
+        wget https://davidgow.net/keen/4keen14.zip
+        unzip 4keen14.zip AUDIO.CK4 Gamemaps.ck4 Egagraph.ck4
+    - name: Run Tests
+      working-directory: ./bin
+      run: |
+        ../tests/testdump.sh 0
+        ../tests/testdump.sh 1
+        ../tests/testdump.sh 2
+        ../tests/testdump.sh 3
+        ../tests/testdump.sh 4
