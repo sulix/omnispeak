@@ -145,6 +145,7 @@ void CK4_SpawnMushroom(int tileX, int tileY)
 	obj->posX = RF_TileToUnit(tileX);
 	obj->posY = RF_TileToUnit((tileY)) - 0xF1;
 	obj->xDirection = IN_motion_Right;
+	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Mushroom0"));
 }
 
