@@ -766,6 +766,15 @@ int main(int argc, char *argv[])
 			CK_PlayDemoFile(argv[i + 1]);
 			Quit(0);
 		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/PLAYDEMO"))
+		{
+			// A bit of stuff from the usual demo loop
+			ck_gameState.levelState = 0;
+
+			CK_PlayDemo(atoi(argv[i + 1]));
+			Quit(0);
+		}
+
 	}
 
 	if (us_noWait || us_tedLevel)
