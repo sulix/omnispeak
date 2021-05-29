@@ -315,7 +315,7 @@ void CK4_MimrockBounceDraw(CK_object *obj)
 		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_Mimrock0"));
 	}
 
-	if (obj->leftTI || obj->topTI)
+	if (obj->leftTI || obj->rightTI)
 		obj->velX = 0;
 
 	if (obj->topTI)
