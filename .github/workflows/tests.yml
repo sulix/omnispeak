@@ -3,7 +3,7 @@ name: "CI: Demo Dump Tests"
 on: [push, pull_request]
 
 jobs:
-  build:
+  demodumptest:
 
     runs-on: ubuntu-latest
 
@@ -22,8 +22,8 @@ jobs:
     - name: Run Tests
       working-directory: ./bin
       run: |
-        ../tests/testdump.sh 0
-        ../tests/testdump.sh 1
-        ../tests/testdump.sh 2
-        ../tests/testdump.sh 3
-        ../tests/testdump.sh 4
+        ../tests/testdump.sh 0 4
+        ../tests/testdump.sh 1 4
+        ../tests/testdump.sh 2 4
+        ../tests/testdump.sh 3 4
+        ../tests/testdump.sh 4 4

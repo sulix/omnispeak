@@ -1,6 +1,6 @@
 #!/bin/sh
 
-EPISODE=4
+EPISODE=$2
 OMNIDUMP=`mktemp`
 KEENDUMP="../tests/demo${1}.dump${EPISODE}"
 
