@@ -608,7 +608,16 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 	obj->deltaPosX += (obj->posX - oldUnitX);
 	obj->deltaPosY += (obj->posY - oldUnitY);
 
-	CK_ResetClipRects(obj);
+	/* We explicitly don't call ResetClipRects() here, as the tile rects should not be updated. */
+	int spriteNumber = obj->gfxChunk - ca_gfxInfoE.offSprites;
+	VH_SpriteTableEntry *ste = VH_GetSpriteTableEntry(spriteNumber);
+
+	obj->clipRects.unitX1 = obj->posX + ste->xl;
+	obj->clipRects.unitX2 = obj->posX + ste->xh;
+	obj->clipRects.unitY1 = obj->posY + ste->yl;
+	obj->clipRects.unitY2 = obj->posY + ste->yh;
+
+	obj->clipRects.unitXmid = (obj->clipRects.unitX2 - obj->clipRects.unitX1) / 2 + obj->clipRects.unitX1;
 }
 
 void CK_PhysUpdateSimpleObj(CK_object *obj)
