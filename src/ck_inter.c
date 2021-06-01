@@ -937,8 +937,10 @@ void CK_FizzleFade()
 #endif
 
 				// Now the SDL version...
-				VL_SurfaceToScreen(titleBuffer, x, y, x, y, 1, 1);
-				// VL_SurfaceToScreen(titleBuffer, 0, 0, 0, 0, 320, 200);
+				// We use VL_ScreenRect here instead of VL_SurfaceToScreen() because
+				// the EGA backend requires VL_SurfaceToScreen()'s x coordinate be divisble by 8.
+				int pixelValue = VL_SurfacePGet(titleBuffer, x, y);
+				VL_ScreenRect(x, y, 1, 1, pixelValue);
 			}
 		}
 
