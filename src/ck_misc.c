@@ -529,6 +529,9 @@ void CK_ShrapnelTileCol(CK_object *obj)
 			// the object has moved (even if it is now invalid.
 			obj->currentAction = 0;
 			obj->visible = true;
+			// These are more bizarre, but needed for the K5 High Scores shelley bits.
+			obj->deltaPosX = obj->deltaPosY = 0;
+			obj->actionTimer = 3;
 			RF_RemoveSpriteDraw(&obj->sde);
 			CK_RemoveObj(obj);
 		}
