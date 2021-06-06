@@ -149,7 +149,8 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 				CK_SetAction2(a, CK_GetActionByName("CK6_ACT_keenStunned0"));
 			}
 
-			goto impossibleBullet;
+			if (CFG_GetConfigBool("impossibleBullet", true))
+				goto impossibleBullet;
 			// The legendary bug!  For some reason, the control flows to check if
 			// keen is riding a platform he contacts his own stunner bullet.
 		}
