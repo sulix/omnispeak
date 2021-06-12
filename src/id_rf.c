@@ -36,9 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Maximum number of pages we can write to.
 #define RF_MAX_BUFFERS 2
 
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-
 // The refresh manager (ID_RF) is the core of the game's smooth-scrolling
 // engine. It renders tiles to an offscreen bufferand then blits from
 // there to a screen buffer, which then has the sprites overlayed.
@@ -1323,10 +1320,10 @@ void RFL_DrawSpriteList()
 		{
 			int pixelX = sde->x - RF_UnitToTile(rf_scrollXUnit) * 16;
 			int pixelY = sde->y - RF_UnitToTile(rf_scrollYUnit) * 16;
-			int tileX1 = MAX(RF_PixelToTile(pixelX), 0);
-			int tileY1 = MAX(RF_PixelToTile(pixelY), 0);
-			int tileX2 = MIN(RF_PixelToTile(pixelX + sde->sw), RF_BUFFER_WIDTH_TILES - 1);
-			int tileY2 = MIN(RF_PixelToTile(pixelY + sde->sh), RF_BUFFER_HEIGHT_TILES - 1);
+			int tileX1 = CK_Cross_max(RF_PixelToTile(pixelX), 0);
+			int tileY1 = CK_Cross_max(RF_PixelToTile(pixelY), 0);
+			int tileX2 = CK_Cross_min(RF_PixelToTile(pixelX + sde->sw), RF_BUFFER_WIDTH_TILES - 1);
+			int tileY2 = CK_Cross_min(RF_PixelToTile(pixelY + sde->sh), RF_BUFFER_HEIGHT_TILES - 1);
 
 			// Check the sprite is in-bounds.
 			if (tileX2 < tileX1 || tileY2 < tileY1)
