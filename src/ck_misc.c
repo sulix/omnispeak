@@ -410,7 +410,7 @@ void CK_ShrapnelTileCol(CK_object *obj)
 	if (obj->velY < 0)
 		obj->velY = 0;
 
-	absvelX = ABS(obj->velX);
+	absvelX = CK_Cross_abs(obj->velX);
 	velY = obj->velY;
 
 	if (absvelX > velY)

@@ -29,10 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 extern int ck_ticsThisFrame;
 
-#ifndef ABS
-#define ABS(x) ((x) > 0 ? (x) : (-(x)))
-#endif
-
 // Shikadi Mine Funcs
 int CK5_Walk(CK_object *obj, CK_Controldir dir);
 
@@ -190,7 +186,7 @@ void CK5_SeekKeen(CK_object *obj)
 	if (deltaY < 0)
 		closestAxis = CD_north;
 
-	if (ABS(deltaY) > ABS(deltaX))
+	if (CK_Cross_abs(deltaY) > CK_Cross_abs(deltaX))
 	{
 		int s = farthestAxis;
 		farthestAxis = closestAxis;

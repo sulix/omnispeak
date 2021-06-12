@@ -567,7 +567,7 @@ void CK4_LickMove(CK_object *obj)
 		}
 	}
 
-	if (ABS(dx) > 0x300)
+	if (CK_Cross_abs(dx) > 0x300)
 	{
 		obj->velX = obj->xDirection * 32;
 		obj->velY = -32;

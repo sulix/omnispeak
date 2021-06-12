@@ -48,8 +48,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define CK_MAX_OBJECTS 100
 
-#define ABS(x) ((x) > 0 ? (x) : (-x))
-
 struct CK_object;
 
 struct RF_SpriteDrawEntry;

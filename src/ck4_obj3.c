@@ -221,9 +221,9 @@ void CK4_SpawnMimrock(int tileX, int tileY)
 
 void CK4_MimrockWait(CK_object *obj)
 {
-	if (ABS((int16_t)(obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2)) <= 0x500)
+	if (CK_Cross_abs((int16_t)(obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2)) <= 0x500)
 	{
-		if (ABS((int16_t)(obj->posX - ck_keenObj->posX)) > 0x300)
+		if (CK_Cross_abs((int16_t)(obj->posX - ck_keenObj->posX)) > 0x300)
 		{
 			if (ck_keenObj->posX < obj->posX)
 			{
@@ -247,10 +247,10 @@ void CK4_MimrockWait(CK_object *obj)
 
 void CK4_MimrockCheckJump(CK_object *obj)
 {
-	if ((ABS((int16_t)(obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2)) <= 0x500) &&
+	if ((CK_Cross_abs((int16_t)(obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2)) <= 0x500) &&
 		(obj->xDirection == ck_keenObj->xDirection))
 	{
-		if (ABS((int16_t)(obj->posX - ck_keenObj->posX)) < 0x400)
+		if (CK_Cross_abs((int16_t)(obj->posX - ck_keenObj->posX)) < 0x400)
 		{
 			obj->velX = obj->xDirection * 20;
 			obj->velY = -40;
