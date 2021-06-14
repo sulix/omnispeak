@@ -53,8 +53,8 @@ struct _opl3_slot {
     int16_t fbmod;
     int16_t *mod;
     int16_t prout;
-    int16_t eg_rout;
-    int16_t eg_out;
+    uint16_t eg_rout;
+    uint16_t eg_out;
     uint8_t eg_inc;
     uint8_t eg_gen;
     uint8_t eg_rate;
