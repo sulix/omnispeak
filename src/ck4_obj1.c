@@ -208,7 +208,7 @@ void CK4_SpawnEgg(int tileX, int tileY)
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Egg0"));
 }
 
-void CK4_HatchEgg(CK_object *obj)
+void CK4_BirdRecover(CK_object *obj)
 {
 	obj->type = CT4_Bird;
 }
@@ -239,6 +239,7 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 
 		// Spawn bird
 		CK_object *bird = CK_GetNewObj(true);
+		bird->type = CT4_Bird;
 		bird->active = OBJ_ACTIVE;
 		bird->posX = a->posX;
 		bird->posY = a->posY - 0x80;
@@ -572,7 +573,7 @@ void CK4_Obj1_SetupFunctions()
 	CK_ACT_AddColFunction("CK4_MushroomCol", &CK4_MushroomCol);
 	CK_ACT_AddFunction("CK4_MushroomDraw", &CK4_MushroomDraw);
 
-	CK_ACT_AddFunction("CK4_HatchEgg", &CK4_HatchEgg);
+	CK_ACT_AddFunction("CK4_BirdRecover", &CK4_BirdRecover);
 	CK_ACT_AddColFunction("CK4_EggCol", &CK4_EggCol);
 	CK_ACT_AddFunction("CK4_BirdWalk", &CK4_BirdWalk);
 	CK_ACT_AddFunction("CK4_BirdFly", &CK4_BirdFly);
