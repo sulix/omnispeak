@@ -293,7 +293,7 @@ void CK4_BirdWalk(CK_object *obj)
 
 void CK4_BirdFly(CK_object *obj)
 {
-	if (obj->user1)
+	if (obj->user1 == 0)
 		obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 
 	CK_PhysAccelHorz2(obj, obj->xDirection, 16);
