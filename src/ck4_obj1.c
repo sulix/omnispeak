@@ -273,7 +273,7 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 		shell->posY = a->posY;
 		shell->velX = 0;
 		shell->velY = -56;
-		CK_SetAction(shell, CK_GetActionByName("CK4_ACT_EggshellBitB0"));
+		CK_SetAction(shell, CK_GetActionByName("CK4_ACT_EggshellBitC0"));
 	}
 }
 
