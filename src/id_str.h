@@ -46,7 +46,7 @@ bool STR_AddEntry(STR_Table *tabl, const char *str, void *value);
 
 void *STR_GetNextEntry(STR_Table *tabl, size_t *index);
 
-#define ID_STR_MAX_TOKEN_LENGTH 64
+#define ID_STR_MAX_TOKEN_LENGTH 1024
 
 typedef enum STR_TokenType
 {

@@ -160,130 +160,6 @@ uint8_t ck6_starWarsPalette[] = {
 uint8_t ck6_terminator_palette1[] = {0, 0x05, 0x05, 0x15, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x13, 0};
 uint8_t ck6_terminator_palette2[] = {0, 0x05, 0x05, 0x15, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x05, 0};
 
-const char *ck6_storyText =
-	"Episode Six\n"
-	"\n"
-	"Aliens Ate My\n"
-	"Baby Sitter!\n"
-	"\n"
-	"While out in his\n"
-	"backyard clubhouse,\n"
-	"Billy's baby sitter\n"
-	"Molly calls him for\n"
-	"dinner. He continues\n"
-	"working on his new\n"
-	"wrist computer.\n"
-	"\n"
-	"Suddenly, there is a\n"
-	"loud noise outside.\n"
-	"\n"
-	"Rushing out, Keen finds\n"
-	"his baby sitter gone\n"
-	"and a note on a patch\n"
-	"of scorched grass.  The\n"
-	"Bloogs of Fribbulus Xax\n"
-	"are going to make a\n"
-	"meal out of Molly!\n"
-	"\n"
-	"You've got to rescue\n"
-	"her, because your\n"
-	"parents will never\n"
-	"believe you when you\n"
-	"tell them...\n"
-	"\n"
-	"\"Aliens Ate My\n"
-	"Baby Sitter!\"\n";
-
-// ck_game.c
-const char *ck6_levelEntryTexts[] = {
-	"Keen attacks\n"
-	"Fribbulus Xax",
-
-	"Keen hops across\n"
-	"Bloogwaters\n"
-	"Crossing",
-
-	"Keen fights his way\n"
-	"through Guard Post One",
-
-	"Keen crosses into the\n"
-	"First Dome of Darkness",
-
-	"Keen dares to enter the\n"
-	"Second Dome of Darkness",
-
-	"Keen foolishly enters\n"
-	"the Bloogdome",
-
-	"Keen makes his way\n"
-	"into Bloogton\n"
-	"Manufacturing",
-
-	"Keen ascends\n"
-	"Bloogton Tower",
-
-	"Keen hungrily enters\n"
-	"Bloogfoods, Inc.",
-
-	"Keen smashes through\n"
-	"Guard Post Two",
-
-	"Keen seeks thrills\n"
-	"in Bloogville",
-
-	"Keen rockets into the\n"
-	"Bloog Aeronautics and\n"
-	"Space Administration",
-
-	"Keen boldly assaults\n"
-	"Guard Post Three",
-
-	"Keen whoops it up in\n"
-	"the Bloogbae\n"
-	"Recreational District",
-
-	"Keen purposefully struts\n"
-	"into the Bloogbase\n"
-	"Management District",
-
-	"Keen bravely enters the\n"
-	"Bloog Control Center,\n"
-	"looking for Molly",
-
-	"Keen warily enters\n"
-	"Blooglab Space\n"
-	"Station",
-
-	"Keen returns to the\n"
-	"Bean-with-Bacon\n"
-	"Megarocket",
-
-	"Keen is in the High\n"
-	"Score screen. Call Id!",
-};
-
-const char *ck6_levelNames[] = {
-	"Fribbulus Xax",
-	"Bloogwaters\nCrossing",
-	"Guard Post One",
-	"First Dome\nof Darkness",
-	"Second Dome\nof Darkness",
-	"The Bloogdome",
-	"Bloogton Mfg.,\nIncorporated",
-	"Bloogton Tower",
-	"Bloogfoods, Inc.",
-	"Guard Post Two",
-	"Bloogville",
-	"BASA",
-	"Guard Post Three",
-	"Bloogbase Rec\nDistrict",
-	"Bloogbase Mgmt.\nDistrict",
-	"Bloog Control Center",
-	"Blooglab",
-	"Bean-with-Bacon\nMegarocket",
-	"High Scores",
-};
-
 // ck_keen.c
 
 soundnames ck6_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9};
@@ -468,17 +344,10 @@ void CK6_DefineConstants(void)
 	SOUND_SPHEREFULCEILING = 59;
 	LASTSOUND = 60;
 
-	STR_EXIT_TO_MAP = "Exit to Fribbulus Xax";
-
 	// ck_inter.c
 	ck_starWarsPalette = ck6_starWarsPalette;
 	ck_terminator_palette1 = ck6_terminator_palette1;
 	ck_terminator_palette2 = ck6_terminator_palette2;
-	ck_storyText = ck6_storyText;
-
-	// ck_game.c
-	ck_levelEntryTexts = ck6_levelEntryTexts;
-	ck_levelNames = ck6_levelNames;
 
 	// ck_keen.c
 	ck_itemSounds = ck6_itemSounds;
@@ -1191,9 +1060,7 @@ void CK6_ShowGetSandwich()
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
-	US_CPrint("This is the second\n"
-		  "biggest sandwich\n"
-		  "I ever saw!\n");
+	US_CPrint(CK_VAR_GetStr("ck6_str_getSandwich"));
 	VL_Present();
 
 	VL_DelayTics(30); // VW_WaitVBL(30);
@@ -1214,9 +1081,7 @@ void CK6_ShowGetRope()
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
-	US_CPrint("Wow! A rope and\n"
-		  "grappling hook!\n"
-		  "They look useful!\n");
+	US_CPrint(CK_VAR_GetStr("ck6_str_getRope"));
 	VL_Present();
 
 	VL_DelayTics(30); // VW_WaitVBL(30);
@@ -1237,11 +1102,7 @@ void CK6_ShowGetPasscard()
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 4);
-	US_CPrint("What's this? Cool!\n"
-		  "A passcard for\n"
-		  "the Bloogstar Rocket!\n"
-		  "(It can fly though\n"
-		  "their force field.)");
+	US_CPrint(CK_VAR_GetStr("ck6_str_getPasscard"));
 	VL_Present();
 
 	VL_DelayTics(30); // VW_WaitVBL(30);

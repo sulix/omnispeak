@@ -70,11 +70,7 @@ void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 5);
-		US_CPrint("Oh no!\n"
-			  "It's a slavering\n"
-			  "Grabbiter! He says,\n"
-			  "\"Get me lunch and\n"
-			  "I'll tell ya a secret!\"");
+		US_CPrint(CK_VAR_GetStr("ck6_str_grabbiterHungry"));
 		VL_Present();
 		VL_DelayTics(30); // VW_WaitVBL(30);
 		IN_ClearKeysDown();
@@ -93,12 +89,7 @@ void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 2);
-		US_CPrint("The Grabbiter grabs\n"
-			  "the gigantic sandwich,\n"
-			  "downs it in one bite,\n"
-			  "and says,\"Here's your\n"
-			  "secret. Big meals\n"
-			  "make me sleepy!\n");
+		US_CPrint(CK_VAR_GetStr("ck6_str_grabbiterFed"));
 		VL_Present();
 		VL_DelayTics(30); // VW_WaitVBL(30);
 		IN_ClearKeysDown();
@@ -141,11 +132,7 @@ void CK6_RocketCol(CK_object *a, CK_object *b)
 		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 5);
-		US_CPrint("The door makes a loud\n"
-			  "blooping noise.\n"
-			  "It says,\n"
-			  "\"Passcard required\n"
-			  "for entry.\"");
+		US_CPrint(CK_VAR_GetStr("ck6_str_rocketNoPasscard"));
 		VL_Present();
 		SD_PlaySound(SOUND_NEEDKEYCARD);
 		VL_DelayTics(30); // VW_WaitVBL(30);
@@ -381,9 +368,7 @@ void CK6_MapCliffCol(CK_object *a, CK_object *b)
 			VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
 			US_SetWindowW(US_GetWindowW() - 0x30);
 			US_SetPrintY(US_GetPrintY() + 15);
-			US_CPrint("What a tall cliff!\n"
-				  "Wish I had a rope\n"
-				  "and grappling hook.\n");
+			US_CPrint(CK_VAR_GetStr("ck6_str_cliffNoRope"));
 			VL_Present();
 			SD_PlaySound(SOUND_NEEDKEYCARD);
 			VL_DelayTics(30); // VW_WaitVBL(30);

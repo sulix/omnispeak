@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_def.h"
 #include "ck_game.h"
 #include "ck_play.h"
+#include "ck_act.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -1280,7 +1281,7 @@ void CK_TranslateString(const char *input, char *output)
 void CK_DrawSWText()
 {
 	char currentTextLine[81];
-	const char *storyTextIndex = ck_storyText;
+	const char *storyTextIndex = CK_VAR_GetStr("ck_str_storyText");
 
 	// We want to render to a 336px wide texture.
 	US_SetWindowX(0);
@@ -1319,7 +1320,8 @@ void CK_DrawSWText()
 		{
 			ch = *storyTextIndex;
 			*lineIndex = ch;
-			storyTextIndex++;
+			if (ch)
+				storyTextIndex++;
 			lineIndex++;
 		} while (ch && ch != '\n');
 		// ...and null-terminate it.

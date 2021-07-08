@@ -80,7 +80,7 @@ void CK_GameOver()
 {
 	// VW_FixRefreshBuffer(); // Omnispeak TODO - This was originally called
 	US_CenterWindow(16, 3);
-	US_PrintCentered("Game Over!");
+	US_PrintCentered(CK_VAR_GetStr("ck_str_gameOver"));
 	VL_Present(); // VW_UpdateScreen();
 	IN_ClearKeysDown();
 	IN_UserInput(4 * 70, false);
@@ -577,9 +577,6 @@ void CK_BeginFadeDrawing(void)
 	RF_SetDrawFunc(&CK_UpdateFadeDrawing);
 }
 
-const char **ck_levelEntryTexts;
-const char **ck_levelNames;
-
 void CK_LoadLevel(bool doCache, bool silent)
 {
 	if (IN_DemoGetMode() != IN_Demo_Off)
@@ -620,16 +617,16 @@ void CK_LoadLevel(bool doCache, bool silent)
 		}
 		else if (IN_DemoGetMode() != IN_Demo_Off)
 		{
-			CA_CacheMarks("DEMO");
+			CA_CacheMarks(CK_VAR_GetStr("ck_str_demo"));
 		}
 		else if (ck_currentEpisode->ep == EP_CK5 && ca_mapOn == 0 && ck_keenObj->clipRects.tileY1 > 100)
 		{
 			/* Stepping on to korath*/
-			CA_CacheMarks("Keen steps out\nonto Korath III");
+			CA_CacheMarks(CK_VAR_GetStr("ck5_str_korath3"));
 		}
 		else
 		{
-			CA_CacheMarks(ck_levelEntryTexts[ca_mapOn]);
+			CA_CacheMarks(CK_VAR_GetStringByNameAndIndex("ck_str_levelEntryText", ca_mapOn));
 		}
 	}
 
@@ -747,7 +744,7 @@ bool CK_TryAgainMenu()
 	char buf[80];
 
 	/* Copy and measure the level name */
-	strcpy(buf, ck_levelNames[ca_mapOn]);
+	strcpy(buf, CK_VAR_GetStringByNameAndIndex("ck_str_levelName", ca_mapOn));
 	CK_MeasureMultiline(buf, &w, &h);
 
 	/* Take away all gems */
@@ -759,7 +756,7 @@ bool CK_TryAgainMenu()
 		//VW_SyncPages();
 		US_CenterWindow(20, 8);
 		US_SetPrintY(US_GetPrintY() + 3);
-		US_CPrint("You didn't make it past");
+		US_CPrint(CK_VAR_GetStr("ck_str_tryAgainIntro"));
 		y1 = US_GetPrintY() + 22;
 
 		/* Center the level name vertically */
@@ -768,10 +765,10 @@ bool CK_TryAgainMenu()
 		US_CPrint(buf);
 
 		US_SetPrintY(y1 + 2);
-		US_CPrint("Try Again");
+		US_CPrint(CK_VAR_GetStr("ck_str_tryAgainTryAgain"));
 		US_SetPrintY(US_GetPrintY() + 4);
 		y2 = US_GetPrintY() - 2;
-		US_CPrint(STR_EXIT_TO_MAP);
+		US_CPrint(CK_VAR_GetStr("ck_str_exitToMap"));
 
 		IN_ClearKeysDown();
 		sel = 0;

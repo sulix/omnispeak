@@ -115,124 +115,6 @@ uint8_t ck4_starWarsPalette[] = {
 uint8_t ck4_terminator_palette1[] = {0, 0x18, 0x18, 0x07, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x13, 0};
 uint8_t ck4_terminator_palette2[] = {0, 0x18, 0x18, 0x07, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x18, 0};
 
-const char *ck4_storyText =
-	"Episode Four\n"
-	"\n"
-	"Secret of the Oracle\n"
-	"\n"
-	"After delivering a\n"
-	"crippling blow to the\n"
-	"plans of Mortimer\n"
-	"McMire and receiving\n"
-	"the praise of the\n"
-	"Vorticon race,\n"
-	"Commander Keen\n"
-	"returned to his home in\n"
-	"the suburbs.\n"
-	"\n"
-	"Here he was forced to\n"
-	"go to bed at an early\n"
-	"hour, and to eat mashed\n"
-	"potatoes.\n"
-	"\n"
-	"Months later, Billy\n"
-	"tinkered around with\n"
-	"his latest invention,\n"
-	"the Photachyon\n"
-	"Transceiver, or faster-\n"
-	"than-light radio. After\n"
-	"picking up a lot of bad\n"
-	"alien sitcoms, he\n"
-	"stumbled upon a strange\n"
-	"message of terrible\n"
-	"importance....\n";
-
-// ck_game.c
-const char *ck4_levelEntryTexts[] = {
-	"Keen enters the\n"
-	"Shadowlands\n",
-
-	"Keen makes a run for\n"
-	"the Border Village",
-
-	"Keen slips into\n"
-	"Slug Village",
-
-	"Keen plummets into\n"
-	"the The Perilous Pit",
-
-	"Keen plods down into\n"
-	"the Cave of the\n"
-	"Descendents",
-
-	"Keen shivers along\n"
-	"the Chasm of Chills",
-
-	"Keen reflects upon\n"
-	"entering Crystalus",
-
-	"Keen stumbles upon\n"
-	"Hillville",
-
-	"Keen grits his teeth\n"
-	"and enters Sand Yego",
-
-	"Keen disappears into\n"
-	"Miragia",
-
-	"Keen crawls into\n"
-	"Lifewater Oasis",
-
-	"Keen backs into the\n"
-	"Pyramid of the Moons",
-
-	"Keen move silently in\n"
-	"the Pyramid of Shadows",
-
-	"Keen reverently enters\n"
-	"the Pyramid of the\n"
-	"Gnosticene Ancients",
-
-	"Keen hesitantly crosses\n"
-	"into the Pyramid of the\n"
-	"Forbidden",
-
-	"Keen mucks along the\n"
-	"Isle of Tar",
-
-	"Keen blazes across the\n"
-	"Isle of Fire",
-
-	"Keen hopefully enters\n"
-	"the Well of Wishes",
-
-	"Keen launches into the\n"
-	"Bean-with-Bacon\n"
-	"Megarocket",
-};
-
-const char *ck4_levelNames[] = {
-	"Shadowlands",
-	"Border Village",
-	"Slug Village",
-	"The Perilous Pit",
-	"Cave of the Descendents",
-	"Chasm of Chills",
-	"Crystalus",
-	"Hilville",
-	"Sand Yego",
-	"Miragia",
-	"Lifewater Oasis",
-	"Pyramid of the Moons",
-	"Pyramid of Shadows",
-	"Pyramid of the\nGnosticene Ancients",
-	"Pyramid of the Forbidden",
-	"Isle of Tar",
-	"Isle of Fire",
-	"Well of Wishes",
-	"Bean-with-Bacon\nMegarocket",
-};
-
 // ck_keen.c
 
 soundnames ck4_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9, 55};
@@ -397,17 +279,10 @@ void CK4_DefineConstants(void)
 	SOUND_KEENSCORE = 51;
 	LASTSOUND = 52;
 
-	STR_EXIT_TO_MAP = "Exit to Shadowlands";
-
 	// ck_inter.c
 	ck_starWarsPalette = ck4_starWarsPalette;
 	ck_terminator_palette1 = ck4_terminator_palette1;
 	ck_terminator_palette2 = ck4_terminator_palette2;
-	ck_storyText = ck4_storyText;
-
-	// ck_game.c
-	ck_levelEntryTexts = ck4_levelEntryTexts;
-	ck_levelNames = ck4_levelNames;
 
 	// ck_keen.c
 	ck_itemSounds = ck4_itemSounds;
@@ -973,18 +848,12 @@ void CK4_ShowPrincessMessage(void)
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
-	US_CPrint("Princess Lindsey says:\n");
+	US_CPrint(CK_VAR_GetStr("ck4_str_lindsaySays"));
 
 	if (ca_mapOn == 7)
-		US_CPrint("There's gear to help\n"
-			  "you swim in Three-Tooth\n"
-			  "Lake. It is hidden in\n"
-			  "Miragia.\n");
+		US_CPrint(CK_VAR_GetStr("ck4_str_lindsayMessage1"));
 	else
-		US_CPrint("The way to the Pyramid\n"
-			  "of the Forbidden lines\n"
-			  "under the Pyramid of\n"
-			  "Moons.\n");
+		US_CPrint(CK_VAR_GetStr("ck4_str_lindsayMessage2"));
 
 	VL_Present(); // VW_UpdateScreen();
 	SD_PlaySound(SOUND_FOOTAPPEAR);
@@ -997,11 +866,9 @@ void CK4_ShowPrincessMessage(void)
 	US_SetPrintY(US_GetPrintY() + 12);
 
 	if (ca_mapOn == 7)
-		US_CPrint("Thanks, your Highness!");
+		US_CPrint(CK_VAR_GetStr("ck4_str_lindsayThanks1"));
 	else
-		US_CPrint("Thanks for the\n"
-			  "mysterious clue,\n"
-			  "Princess!\n");
+		US_CPrint(CK_VAR_GetStr("ck4_str_lindsayThanks2"));
 
 	VL_Present(); // VW_UpdateScreen();
 	/// VW_WaitVBL(30);
@@ -1038,10 +905,7 @@ void CK4_ShowJanitorMessage(void)
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
-	US_CPrint("Thanks for going to all\n"
-		  "that trouble, but I'm\n"
-		  "just the janitor for the\n"
-		  "High Council.");
+	US_CPrint(CK_VAR_GetStr("ck4_str_janitor1"));
 	VL_Present(); // VW_UpdateScreen();
 	// VW_WaitVBL(60);
 	IN_ClearKeysDown();
@@ -1052,9 +916,7 @@ void CK4_ShowJanitorMessage(void)
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
-	US_CPrint("I tried to tell the\n"
-		  "Shikadi that but they\n"
-		  "just wouldn't listen...");
+	US_CPrint(CK_VAR_GetStr("ck4_str_janitor2"));
 	VL_Present(); // VW_UpdateScreen();
 	// VW_WaitVBL(60);
 	IN_ClearKeysDown();
@@ -1064,8 +926,7 @@ void CK4_ShowJanitorMessage(void)
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
-	US_CPrint("This had better\n"
-		  "be a joke.");
+	US_CPrint(CK_VAR_GetStr("ck4_str_janitor3"));
 	VL_Present(); // VW_UpdateScreen();
 	// VW_WaitVBL(60);
 	IN_ClearKeysDown();
@@ -1076,8 +937,7 @@ void CK4_ShowJanitorMessage(void)
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
-	US_CPrint("Sorry.  You aren't\n"
-		  "mad, are you?");
+	US_CPrint(CK_VAR_GetStr("ck4_str_janitor4"));
 	VL_Present(); // VW_UpdateScreen();
 	// VW_WaitVBL(60);
 	IN_ClearKeysDown();
@@ -1105,7 +965,7 @@ void CK4_ShowCantSwimMessage(void)
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 6);
-	US_CPrint("I can't swim!");
+	US_CPrint(CK_VAR_GetStr("ck4_str_cantSwim"));
 	VL_Present(); // VW_UpdateScreen();
 	// VL_WaitVBL(30);
 	IN_ClearKeysDown();
@@ -1124,8 +984,7 @@ void CK4_ShowWetsuitMessage(void)
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
-	US_CPrint("Cool!  I can breathe\n"
-		  "under water now!");
+	US_CPrint(CK_VAR_GetStr("ck4_str_gotWetsuit"));
 	VL_Present(); // VW_UpdateScreen();
 	// VL_WaitVBL(30);
 	IN_ClearKeysDown();
@@ -1139,34 +998,6 @@ void CK4_ShowWetsuitMessage(void)
 
 	CA_DownLevel();
 }
-
-const char *ck4_councilMessages[] = {
-	"No sweat, oh guardian\n"
-	"of wisdom!",
-
-	"Sounds like a plan,\n"
-	"bearded one!",
-
-	"No problemo.",
-
-	"Great.  You known, you\n"
-	"look a lot like the\n"
-	"last guy I rescued...",
-
-	"Good idea, Gramps.",
-
-	"May the road rise\n"
-	"to meet your feet,\n"
-	"Mr. Member.",
-
-	"Wise plan of action,\n"
-	"your ancientness.",
-
-	"You're the last one,\n"
-	"fella. Let's both\n"
-	"get back to the\n"
-	"Oracle chamber!",
-};
 
 void CK4_ShowCouncilMessage(void)
 {
@@ -1190,19 +1021,11 @@ void CK4_ShowCouncilMessage(void)
 	if (ca_mapOn == 17)
 	{
 		// Underwater level
-		US_CPrint("Ggoh thig you sogh mg\n"
-			  "fgor regscuing mgge!\n"
-			  "I'gll regur tgo the\n"
-			  "Goracle chagber\n"
-			  "igmediatggely. Blub.");
+		US_CPrint(CK_VAR_GetStr("ck4_str_councilThanks2"));
 	}
 	else
 	{
-		US_CPrint("Oh thank you so much\n"
-			  "for rescuing me!\n"
-			  "I'll return to the\n"
-			  "Oracle chamber\n"
-			  "immediately.");
+		US_CPrint(CK_VAR_GetStr("ck4_str_councilThanks"));
 	}
 
 	VL_Present();
@@ -1213,7 +1036,7 @@ void CK4_ShowCouncilMessage(void)
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 111);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
-	US_CPrint(ck4_councilMessages[ck_gameState.ep.ck4.membersRescued]);
+	US_CPrint(CK_VAR_GetStringByNameAndIndex("ck4_str_councilMessage",ck_gameState.ep.ck4.membersRescued));
 	VL_Present(); // VW_UpdateScreen();
 	// VW_WaitVBL(30);
 	IN_ClearKeysDown();

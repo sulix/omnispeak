@@ -32,6 +32,7 @@ CK_ACT_Function CK_ACT_GetFunction(const char *fnName);
 CK_ACT_ColFunction CK_ACT_GetColFunction(const char *fnName);
 void CK_VAR_Startup();
 const char *CK_VAR_GetString(const char *name, const char *def);
+#define CK_VAR_GetStr(s) CK_VAR_GetString(s, s)
 const char *CK_VAR_GetStringByNameAndIndex(const char *name, int index);
 intptr_t CK_VAR_GetInt(const char *name, intptr_t def);
 CK_action *CK_GetActionByName(const char *name);

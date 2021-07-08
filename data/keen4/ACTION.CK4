@@ -2,6 +2,8 @@
 # Action database for Keen 4 (Apogee v1.4)
 #
 
+%include "STRINGS.CK4"
+
 #ck_phys.c
 %action CK_ACT_NULL 0x089C 0 0 Frame 0 0 0 0 0 NULL NULL NULL NULL
 

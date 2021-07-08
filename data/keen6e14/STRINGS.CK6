@@ -1,0 +1,234 @@
+#
+# Strings for Keen 6 (v1.4)
+#
+
+# Common strings
+
+
+%string ck_str_gameOver "Game Over!"
+
+# Loading box for demos
+%string ck_str_demo "DEMO"
+
+%string ck_str_tryAgainIntro "You didn't make it past"
+%string ck_str_tryAgainTryAgain "Try Again"
+
+
+#ck_play.c
+
+%string ck_str_itemCheat "Cheat Option!\n\nYou just got all\nthe keys, 99 shots,\nand an extra keen!"
+
+%string ck_str_godModeOn "God Mode ON"
+%string ck_str_godModeOff "God Mode OFF"
+
+%string ck_str_freeItems "Free Items!"
+
+%string ck_str_jumpCheatOn "\nJump cheat ON"
+%string ck_str_jumpCheatOff "\nJump cheat OFF"
+
+%string ck_str_noClippingOn "No clipping ON"
+%string ck_str_noClippingOff "No clipping OFF"
+
+%string ck_str_slowMotionOn "Slow motion ON"
+%string ck_str_slowMotionOff "Slow motion OFF"
+
+#TODO: Warp and some other debug cheats
+
+%string ck_str_debugKeysActive "Debug keys active"
+
+
+%string ck_str_paused "PAUSED"
+
+#NOTE: QuickSave feature
+%string ck_str_gameQuickSaved "GAME SAVED"
+
+# Status window
+%string ck_str_statusLocation "LOCATION"
+%string ck_str_statusScore "SCORE"
+%string ck_str_statusExtra "EXTRA"
+%string ck_str_statusLevel "LEVEL" # Difficulty level
+%string ck_str_statusEasy "Easy"
+%string ck_str_statusNormal "Normal"
+%string ck_str_statusHard "Hard"
+%string ck_str_statusKeys "KEYS"
+%string ck_str_statusAmmo "AMMO"
+%string ck_str_statusLives "KEENS"
+
+# Keen 6
+
+
+%string ck_str_exitToMap "Exit to Fribbulus Xax"
+
+%string ck6_str_statusItems "ITEMS"
+%string ck_str_statusCentilives "VIVAS"
+
+
+
+%string ck_str_levelName0 "Fribbulus Xax"
+%string ck_str_levelName1 "Bloogwaters\nCrossing"
+%string ck_str_levelName2 "Guard Post One"
+%string ck_str_levelName3 "First Dome\nof Darkness"
+%string ck_str_levelName4 "Second Dome\nof Darkness"
+%string ck_str_levelName5 "The Bloogdome"
+%string ck_str_levelName6 "Bloogton Mfg.,\nIncorporated"
+%string ck_str_levelName7 "Bloogton Tower"
+%string ck_str_levelName8 "Bloogfoods, Inc."
+%string ck_str_levelName9 "Guard Post Two"
+%string ck_str_levelName10 "Bloogville"
+%string ck_str_levelName11 "BASA"
+%string ck_str_levelName12 "Guard Post Three"
+%string ck_str_levelName13 "Bloogbase Rec\nDistrict"
+%string ck_str_levelName14 "Bloogbase Mgmt.\nDistrict"
+%string ck_str_levelName15 "Bloog Control Center"
+%string ck_str_levelName16 "Blooglab"
+%string ck_str_levelName17 "Bean-with-Bacon\nMegarocket"
+%string ck_str_levelName18 "High Scores"
+
+
+%string ck_str_levelEntryText0	"Keen attacks\n"
+				"Fribbulus Xax"
+
+%string ck_str_levelEntryText1	"Keen hops across\n"
+				"Bloogwaters\n"
+				"Crossing"
+
+%string ck_str_levelEntryText2	"Keen fights his way\n"
+				"through Guard Post One"
+
+%string ck_str_levelEntryText3	"Keen crosses into the\n"
+				"First Dome of Darkness"
+
+%string ck_str_levelEntryText4	"Keen dares to enter the\n"
+				"Second Dome of Darkness"
+
+%string ck_str_levelEntryText5	"Keen foolishly enters\n"
+				"the Bloogdome"
+
+%string ck_str_levelEntryText6	"Keen makes his way\n"
+				"into Bloogton\n"
+				"Manufacturing"
+
+%string ck_str_levelEntryText7	"Keen ascends\n"
+				"Bloogton Tower"
+
+%string ck_str_levelEntryText8	"Keen hungrily enters\n"
+				"Bloogfoods, Inc."
+
+%string ck_str_levelEntryText9	"Keen smashes through\n"
+				"Guard Post Two"
+
+%string ck_str_levelEntryText10	"Keen seeks thrills\n"
+				"in Bloogville"
+
+%string ck_str_levelEntryText11	"Keen rockets into the\n"
+				"Bloog Aeronautics and\n"
+				"Space Administration"
+
+%string ck_str_levelEntryText12	"Keen boldly assaults\n"
+				"Guard Post Three"
+
+%string ck_str_levelEntryText13	"Keen whoops it up in\n"
+				"the Bloogbae\n"
+				"Recreational District"
+
+%string ck_str_levelEntryText14	"Keen purposefully struts\n"
+				"into the Bloogbase\n"
+				"Management District"
+
+%string ck_str_levelEntryText15	"Keen bravely enters the\n"
+				"Bloog Control Center,\n"
+				"looking for Molly"
+
+%string ck_str_levelEntryText16	"Keen warily enters\n"
+				"Blooglab Space\n"
+				"Station"
+
+%string ck_str_levelEntryText17	"Keen returns to the\n"
+				"Bean-with-Bacon\n"
+				"Megarocket"
+
+%string ck_str_levelEntryText18	"Keen is in the High\n"
+				"Score screen. Call Id!"
+
+
+%string ck_str_storyText
+	"Episode Six\n"
+	"\n"
+	"Aliens Ate My\n"
+	"Baby Sitter!\n"
+	"\n"
+	"While out in his\n"
+	"backyard clubhouse,\n"
+	"Billy's baby sitter\n"
+	"Molly calls him for\n"
+	"dinner. He continues\n"
+	"working on his new\n"
+	"wrist computer.\n"
+	"\n"
+	"Suddenly, there is a\n"
+	"loud noise outside.\n"
+	"\n"
+	"Rushing out, Keen finds\n"
+	"his baby sitter gone\n"
+	"and a note on a patch\n"
+	"of scorched grass.  The\n"
+	"Bloogs of Fribbulus Xax\n"
+	"are going to make a\n"
+	"meal out of Molly!\n"
+	"\n"
+	"You've got to rescue\n"
+	"her, because your\n"
+	"parents will never\n"
+	"believe you when you\n"
+	"tell them...\n"
+	"\n"
+	"\"Aliens Ate My\n"
+	"Baby Sitter!\"\n"
+
+
+# Story items
+
+%string ck6_str_getSandwich 
+	"This is the second\n"
+	 "biggest sandwich\n"
+	 "I ever saw!\n"
+
+%string ck6_str_getRope
+	"Wow! A rope and\n"
+	"grappling hook!\n"
+	"They look useful!\n"
+
+%string ck6_str_getPasscard
+	"What's this? Cool!\n"
+	"A passcard for\n"
+	"the Bloogstar Rocket!\n"
+	"(It can fly though\n"
+	"their force field.)"
+
+# ck6_obj1.c
+%string ck6_str_grabbiterHungry
+	"Oh no!\n"
+	"It's a slavering\n"
+	"Grabbiter! He says,\n"
+	"\"Get me lunch and\n"
+	"I'll tell ya a secret!\""
+
+%string ck6_str_grabbiterFed
+	"The Grabbiter grabs\n"
+	"the gigantic sandwich,\n"
+	"downs it in one bite,\n"
+	"and says,\"Here's your\n"
+	"secret. Big meals\n"
+	"make me sleepy!\n"
+
+%string ck6_str_rocketNoPasscard
+	"The door makes a loud\n"
+	"blooping noise.\n"
+	"It says,\n"
+	"\"Passcard required\n"
+	"for entry.\""
+
+%string ck6_str_cliffNoRope
+	"What a tall cliff!\n"
+	"Wish I had a rope\n"
+	"and grappling hook.\n"

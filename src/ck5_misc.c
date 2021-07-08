@@ -252,122 +252,7 @@ uint8_t ck5_starWarsPalette[] = {
 uint8_t ck5_terminator_palette1[] = {0, 4, 4, 0x1c, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x13, 0};
 uint8_t ck5_terminator_palette2[] = {0, 4, 4, 0x1c, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 4, 0};
 
-const char *ck5_storyText =
-	"Episode Five\n"
-	"\n"
-	"The Armageddon Machine\n"
-	"\n"
-	"After learning the\n"
-	"location of the secret\n"
-	"Shikadi base, Keen\n"
-	"jumped in the trusty\n"
-	"Bean-with-Bacon\n"
-	"Megarocket and blasted\n"
-	"across interstellar\n"
-	"space.\n"
-	"\n"
-	"Seventy-five furious\n"
-	"games of Paddle War\n"
-	"later, Keen dropped\n"
-	"out of lightspeed near\n"
-	" the Korath system.\n"
-	"\n"
-	"He flew toward the\n"
-	"planet, keeping it\n"
-	"between him and the\n"
-	"base.\n"
-	"\n"
-	"Pulling up underside\n"
-	"and docking at the\n"
-	"Ion Ventilation System,\n"
-	"Keen must destroy the\n"
-	"Shikadi Armageddon\n"
-	"Machine before it\n"
-	"explodes and destroys\n"
-	"the Milky Way!  He\n"
-	"steps into the dark\n"
-	"ventilation duct and\n"
-	"begins his most\n"
-	"dangerous adventure\n"
-	"yet...\n";
 
-// ck_game.c
-const char *ck5_levelEntryTexts[] = {
-	"Keen purposefully\n"
-	"wanders about the\n"
-	"Omegamatic",
-
-	"Keen investigates the\n"
-	"Ion Ventilation System",
-
-	"Keen struts through\n"
-	"the Security Center",
-
-	"Keen invades\n"
-	"Defense Tunnel Vlook",
-
-	"Keen engages\n"
-	"Energy Flow Systems",
-
-	"Keen barrels into\n"
-	"Defense Tunnel Burrh",
-
-	"Keen goes nuts in\n"
-	"the Regulation\n"
-	"Control Center",
-
-	"Keen regrets entering\n"
-	"Defense Tunnel Sorra",
-
-	"Keen blows through\n"
-	"the Neutrino\n"
-	"Burst Injector",
-
-	"Keen trots through\n"
-	"Defense Tunnel Teln",
-
-	"Keen breaks into\n"
-	"the Brownian\n"
-	"Motion Inducer",
-
-	"Keen hurries through\n"
-	"the Gravitational\n"
-	"Damping Hub",
-
-	"Keen explodes into\n"
-	"the Quantum\n"
-	"Explosion Dynamo",
-
-	"Keen faces danger\n"
-	"in the secret\n"
-	"Korath III Base",
-
-	"Keen will not be\n"
-	"in the BWBMegarocket",
-
-	"Keen unexplainedly\n"
-	"find himself by\n"
-	"theHigh Scores",
-};
-
-const char *ck5_levelNames[] = {
-	"Omegamatic",
-	"Ion Ventilation System",
-	"Security Center",
-	"Defense Tunnel Vlook",
-	"Energy Flow Systems",
-	"Defense Tunnel Burrh",
-	"Regulation\nControl Center",
-	"Defense Tunnel Sorra",
-	"Neutrino\nBurst Injector",
-	"Defense Tunnel Teln",
-	"Brownian\nMotion Inducer",
-	"Gravitational\nDamping Hub",
-	"Quantum\nExplosion Dynamo",
-	"Korath III Base",
-	"BWBMegarocket",
-	"High Scores",
-};
 
 // ck_keen.c
 
@@ -567,17 +452,10 @@ void CK5_DefineConstants(void)
 	BRINGEROFWAR_MUS = 13;
 	LASTMUSTRACK = 14;
 
-	STR_EXIT_TO_MAP = "Exit to Armageddon";
-
 	// ck_inter.c
 	ck_starWarsPalette = ck5_starWarsPalette;
 	ck_terminator_palette1 = ck5_terminator_palette1;
 	ck_terminator_palette2 = ck5_terminator_palette2;
-	ck_storyText = ck5_storyText;
-
-	// ck_game.c
-	ck_levelEntryTexts = ck5_levelEntryTexts;
-	ck_levelNames = ck5_levelNames;
 
 	// ck_keen.c
 	ck_itemSounds = ck5_itemSounds;
@@ -1348,9 +1226,9 @@ void CK5_FuseMessage()
 	US_SetPrintY(US_GetPrintY() + 0xC);
 
 	if (ck_gameState.currentLevel == 0xD)
-		US_CPrint("I wonder what that\nfuse was for....\n");
+		US_CPrint(CK_VAR_GetStr("ck5_str_fuseDestroyedKorath"));
 	else
-		US_CPrint("One of the four\nmachines protecting the\nmain elevator shaft--\ntoast!\n");
+		US_CPrint(CK_VAR_GetStr("ck5_str_fuseDestroyed"));
 
 	// VW_UpdateScreen();
 	VL_Present();

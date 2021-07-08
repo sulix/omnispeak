@@ -359,7 +359,7 @@ void CK_ItemCheat()
 
 	US_CenterWindow(20, 7);
 	// TODO: PrintY+=2;
-	US_CPrint("Cheat Option!\n\nYou just got all\nthe keys, 99 shots,\nand an extra keen!");
+	US_CPrint(CK_VAR_GetStr("ck_str_itemCheat"));
 	VL_Present();
 	IN_WaitButton();
 	//RF_Reset();
@@ -901,9 +901,9 @@ bool CK_DebugKeys()
 		US_CenterWindow(12, 2);
 
 		if (ck_godMode)
-			US_PrintCentered("God Mode OFF");
+			US_PrintCentered(CK_VAR_GetStr("ck_str_godModeOff"));
 		else
-			US_PrintCentered("God Mode ON");
+			US_PrintCentered(CK_VAR_GetStr("ck_str_godModeOn"));
 
 		VL_Present();
 		IN_WaitButton();
@@ -916,7 +916,7 @@ bool CK_DebugKeys()
 	{
 		// VW_SyncPages();
 		US_CenterWindow(12, 3);
-		US_PrintCentered("Free Items!");
+		US_PrintCentered(CK_VAR_GetStr("ck_str_freeItems"));
 
 		for (int i = 0; i < 4; i++)
 			ck_gameState.keyGems[i]++;
@@ -942,9 +942,9 @@ bool CK_DebugKeys()
 		US_CenterWindow(18, 3);
 
 		if (ck_gameState.jumpCheat)
-			US_PrintCentered("\nJump cheat ON");
+			US_PrintCentered(CK_VAR_GetStr("ck_str_jumpCheatOn"));
 		else
-			US_PrintCentered("\nJump cheat OFF");
+			US_PrintCentered(CK_VAR_GetStr("ck_str_jumpCheatOff"));
 
 		VL_Present();
 		IN_WaitButton();
@@ -962,12 +962,12 @@ bool CK_DebugKeys()
 		US_CenterWindow(18, 3);
 		if (ck_keenObj->clipped)
 		{
-			US_PrintCentered("No clipping ON");
+			US_PrintCentered(CK_VAR_GetStr("ck_str_noClippingOn"));
 			ck_keenObj->clipped = CLIP_not;
 		}
 		else
 		{
-			US_PrintCentered("No clipping OFF");
+			US_PrintCentered(CK_VAR_GetStr("ck_str_noClippingOff"));
 			ck_keenObj->clipped = CLIP_normal;
 		}
 		VL_Present();
@@ -984,9 +984,9 @@ bool CK_DebugKeys()
 		US_CenterWindow(18, 3);
 
 		if (ck_slowMotionEnabled)
-			US_PrintCentered("Slow motion ON");
+			US_PrintCentered(CK_VAR_GetStr("ck_str_slowMotionOn"));
 		else
-			US_PrintCentered("Slow motion OFF");
+			US_PrintCentered(CK_VAR_GetStr("ck_str_slowMotionOff"));
 		VL_Present();
 		IN_WaitButton();
 		return true;
@@ -1085,7 +1085,7 @@ void CK_CheckKeys()
 		IN_WaitButton();
 		RF_ForceRefresh();
 		in_Paused = false;
-		in_PausedMessage = "PAUSED";
+		in_PausedMessage = CK_VAR_GetStr("ck_str_paused");
 		SD_MusicOn();
 	}
 
@@ -1113,7 +1113,7 @@ void CK_CheckKeys()
 			if (US_QuickSave())
 			{
 				in_Paused = true;
-				in_PausedMessage = "GAME SAVED";
+				in_PausedMessage = CK_VAR_GetStr("ck_str_gameQuickSaved");
 			}
 		}
 
@@ -1386,7 +1386,6 @@ void CK_DrawStatusWindow(void);
 void CK_ScrollStatusWindow(void);
 void CK_ShowStatusWindow(void);
 
-// extern const char **ck_levelNames;
 int ck_statusWindowYPx;
 bool ck_statusDown;
 unsigned statusWindowOfs; // screen buffer
@@ -1461,9 +1460,9 @@ void CK_DrawStatusWindow(void)
 	US_SetWindowX(80);
 	US_SetWindowW(160);
 	US_SetPrintColour(15);
-	US_CPrint("LOCATION");
+	US_CPrint(CK_VAR_GetStr("ck_str_statusLocation"));
 	VHB_Bar(79, 38, 162, 20, 15);
-	strcpy(str, ck_levelNames[ca_mapOn]);
+	strcpy(str, CK_VAR_GetStringByNameAndIndex("ck_str_levelName", ca_mapOn));
 	CK_MeasureMultiline(str, &strW, &strH);
 	US_SetPrintY((20 - strH) / 2 + 40 - 2);
 	US_CPrint(str);
@@ -1473,7 +1472,7 @@ void CK_DrawStatusWindow(void)
 	US_SetWindowX(80);
 	US_SetWindowW(64);
 	US_SetPrintColour(15);
-	US_CPrint("SCORE");
+	US_CPrint(CK_VAR_GetStr("ck_str_statusScore"));
 
 	VHB_Bar(79, 71, 66, 10, 0);
 	CK_DrawLongRight(80, 72, 8, 41, ck_gameState.keenScore);
@@ -1482,7 +1481,7 @@ void CK_DrawStatusWindow(void)
 	US_SetPrintY(61);
 	US_SetWindowX(176);
 	US_SetWindowW(64);
-	US_CPrint("EXTRA");
+	US_CPrint(CK_VAR_GetStr("ck_str_statusExtra"));
 	VHB_Bar(175, 71, 66, 10, 0);
 	CK_DrawLongRight(176, 72, 8, 41, ck_gameState.nextKeenAt);
 
@@ -1493,7 +1492,7 @@ void CK_DrawStatusWindow(void)
 		US_SetPrintY(85);
 		US_SetWindowX(80);
 		US_SetWindowW(64);
-		US_CPrint("RESCUED");
+		US_CPrint(CK_VAR_GetStr("ck4_str_statusRescued"));
 
 		VHB_Bar(79, 95, 66, 10, 0);
 		for (int i = 0; i < ck_gameState.ep.ck4.membersRescued; i++)
@@ -1505,7 +1504,7 @@ void CK_DrawStatusWindow(void)
 	case EP_CK5:
 		US_SetPrintY(91);
 		US_SetPrintX(80);
-		US_Print("KEYCARD");
+		US_Print(CK_VAR_GetStr("ck5_str_statusKeycard"));
 
 		VHB_Bar(135, 90, 10, 10, 0);
 		if (ck_gameState.ep.ck5.securityCard)
@@ -1515,7 +1514,7 @@ void CK_DrawStatusWindow(void)
 	case EP_CK6:
 		US_SetPrintX(80);
 		US_SetPrintY(96);
-		US_Print("ITEMS");
+		US_Print(CK_VAR_GetStr("ck6_str_statusItems"));
 		VHB_Bar(127, 95, 26, 10, 0);
 
 		if (ck_gameState.ep.ck6.sandwich == 1)
@@ -1543,7 +1542,7 @@ void CK_DrawStatusWindow(void)
 	US_SetWindowX(176);
 	US_SetWindowW(64);
 	US_SetPrintColour(15);
-	US_CPrint("LEVEL");
+	US_CPrint(CK_VAR_GetStr("ck_str_statusLevel"));
 	VHB_Bar(175, 95, 66, 10, 15);
 
 	US_SetPrintY(96);
@@ -1554,13 +1553,13 @@ void CK_DrawStatusWindow(void)
 	switch (ck_gameState.difficulty)
 	{
 	case D_Easy:
-		US_CPrint("Easy");
+		US_CPrint(CK_VAR_GetStr("ck_str_statusEasy"));
 		break;
 	case D_Normal:
-		US_CPrint("Normal");
+		US_CPrint(CK_VAR_GetStr("ck_str_statusNormal"));
 		break;
 	case D_Hard:
-		US_CPrint("Hard");
+		US_CPrint(CK_VAR_GetStr("ck_str_statusHard"));
 		break;
 	default:
 		Quit("No difficulty set!");
@@ -1570,7 +1569,7 @@ void CK_DrawStatusWindow(void)
 	US_SetPrintX(80);
 	US_SetPrintY(112);
 	US_SetPrintColour(15);
-	US_Print("KEYS");
+	US_Print(CK_VAR_GetStr("ck_str_statusKeys"));
 
 	VHB_Bar(119, 111, 34, 10, 0);
 
@@ -1583,35 +1582,21 @@ void CK_DrawStatusWindow(void)
 	// AMMO
 	US_SetPrintX(176);
 	US_SetPrintY(112);
-	US_Print("AMMO");
+	US_Print(CK_VAR_GetStr("ck_str_statusAmmo"));
 	VHB_Bar(215, 111, 26, 10, 0);
 	CK_DrawLongRight(216, 112, 3, 41, ck_gameState.numShots);
 
 	// Lives
 	US_SetPrintX(80);
 	US_SetPrintY(128);
-	US_Print("KEENS");
+	US_Print(CK_VAR_GetStr("ck_str_statusLives"));
 	VHB_Bar(127, 127, 18, 10, 0);
 	CK_DrawLongRight(128, 128, 2, 41, ck_gameState.numLives);
 
 	// Lifeups
 	US_SetPrintX(176);
 	US_SetPrintY(128);
-	switch (ck_currentEpisode->ep)
-	{
-	case EP_CK4:
-		US_Print("DROPS");
-		break;
-	case EP_CK5:
-		US_Print("VITALIN");
-		break;
-	case EP_CK6:
-		US_Print("VIVAS");
-		break;
-	default:
-		Quit("No episode set!");
-		break;
-	}
+	US_Print(CK_VAR_GetStr("ck_str_statusCentilives"));
 	VHB_Bar(224, 127, 16, 10, 0);
 	CK_DrawLongRight(224, 128, 2, 41, ck_gameState.numCentilife);
 
@@ -1629,7 +1614,7 @@ void CK_DrawStatusWindow(void)
 		US_SetWindowX(80);
 		US_SetWindowW(64);
 		US_SetPrintColour(15);
-		US_CPrint(ck_gameState.ep.ck4.wetsuit ? "Wetsuit" : "???");
+		US_CPrint(ck_gameState.ep.ck4.wetsuit ? CK_VAR_GetStr("ck4_str_statusWetsuit") : CK_VAR_GetStr("ck4_str_statusNoWetsuit"));
 
 		addX = 5;
 
@@ -1757,7 +1742,7 @@ void CK_ShowStatusWindow(void)
 	{
 		US_CenterWindow(20, 2);
 		US_SetPrintY(US_GetPrintY() + 2);
-		US_Print("Debug keys active");
+		US_Print(CK_VAR_GetStr("ck_str_debugKeysActive"));
 		VL_Present(); //VW_UpdateScreen();
 		IN_WaitButton();
 		ck_debugActive = true;
