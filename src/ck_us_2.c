@@ -802,7 +802,7 @@ bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 	static const int8_t deadzone_values[] = {
 		0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, -1};
 
-	if (item == &ck_us_joyconfMenuItems[(int)IN_joy_modern])
+	if (!item || item == &ck_us_joyconfMenuItems[(int)IN_joy_modern])
 		return false; // no special handling for the motion mode option
 
 	which_control = (IN_JoyConfItem)(item - ck_us_joyconfMenuItems);
