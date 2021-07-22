@@ -1064,9 +1064,9 @@ void CK_CheckKeys()
 
 	// Drop down status
 #ifdef EXTRA_KEYBOARD_OPTIONS
-	if (IN_GetKeyState(in_kbdControls.status))
+	if (IN_GetKeyState(in_kbdControls.status) || IN_IsJoyButtonDown(IN_joy_status))
 #else
-	if (IN_GetKeyState(IN_SC_Enter))
+	if (IN_GetKeyState(IN_SC_Enter) || IN_IsJoyButtonDown(IN_joy_status))
 #endif
 	{
 		CK_ShowStatusWindow();
@@ -1108,7 +1108,7 @@ void CK_CheckKeys()
 
 #ifdef QUICKSAVE_ENABLED
 		// Quicksave
-		if (IN_GetLastScan() == in_kbdControls.quickSave)
+		if (IN_GetLastScan() == in_kbdControls.quickSave || IN_IsJoyButtonDown(IN_joy_quicksave))
 		{
 			if (US_QuickSave())
 			{
@@ -1118,7 +1118,7 @@ void CK_CheckKeys()
 		}
 
 		// Quickload
-		else if (IN_GetLastScan() == in_kbdControls.quickLoad)
+		else if (IN_GetLastScan() == in_kbdControls.quickLoad || IN_IsJoyButtonDown(IN_joy_quickload))
 		{
 			if (US_QuickLoad())
 			{
