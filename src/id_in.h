@@ -259,12 +259,17 @@ extern bool in_joyAdvancedMotion;
 
 typedef enum IN_JoyConfItem
 {
-	IN_joy_jump = 0,
-	IN_joy_pogo = 1,
-	IN_joy_fire = 2,
-	IN_joy_menu = 3,
-	IN_joy_deadzone = 4,
-	IN_joy_modern = 5
+	IN_joy_jump,
+	IN_joy_pogo,
+	IN_joy_fire,
+	IN_joy_menu,
+	IN_joy_status,
+#ifdef QUICKSAVE_ENABLED
+	IN_joy_quickload,
+	IN_joy_quicksave,
+#endif
+	IN_joy_deadzone,
+	IN_joy_modern
 } IN_JoyConfItem;
 
 void IN_PumpEvents();
@@ -299,6 +304,7 @@ bool IN_UserInput(int tics, bool arg4);
 int IN_GetJoyConf(IN_JoyConfItem item);
 void IN_SetJoyConf(IN_JoyConfItem item, int value);
 bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn);
+bool IN_IsJoyButtonDown(IN_JoyConfItem btn);
 const char *IN_GetJoyName(int joystick);
 
 // Called by the backend.

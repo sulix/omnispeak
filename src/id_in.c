@@ -816,6 +816,9 @@ const char *IN_JoyConfNames[] = {
 	"in_joy_pogo",
 	"in_joy_fire",
 	"in_joy_menu",
+	"in_joy_status",
+	"in_joy_quickload",
+	"in_joy_quicksave",
 	"in_joy_deadzone",
 	"in_joy_modern"
 };
@@ -834,6 +837,14 @@ bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn)
 {
 	int btn_id = IN_GetJoyConf(btn);
 	return (btn_id < 0) ? 0 : ((mask >> btn_id) & 1);
+}
+
+bool IN_IsJoyButtonDown(IN_JoyConfItem btn)
+{
+	int joy = in_controlType - IN_ctrl_Joystick1;
+	if (joy < 0 || joy >= IN_MAX_JOYSTICKS) return false;
+	uint16_t mask = IN_GetJoyButtonsDB(joy);
+	return IN_GetJoyButtonFromMask(mask, btn);
 }
 
 const char *IN_GetJoyName(int joystick)
