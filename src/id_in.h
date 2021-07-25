@@ -233,6 +233,8 @@ typedef enum IN_ControlType
 	IN_ctrl_Mouse
 } IN_ControlType;
 
+extern const char *IN_ControlType_Strings[];
+
 typedef struct IN_ControlFrame
 {
 	bool jump, pogo, button2, button3;

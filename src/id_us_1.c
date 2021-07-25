@@ -748,10 +748,7 @@ void US_LoadConfig(void)
 	}
 	SD_SetQuietSfx(hadQuietSfx);
 	SD_Default(configFileLoaded && (hadAdlib == SD_IsAdlibPresent()), sd, sm);
-	if (CFG_GetConfigInt("in_controlType", -1) != -1)
-		IN_Default(true, CFG_GetConfigInt("in_controlType", -1));
-	else
-		IN_Default(configFileLoaded, inputDevice);
+	IN_Default(configFileLoaded, inputDevice);
 }
 
 void US_SaveConfig(void)
@@ -779,11 +776,6 @@ void US_SaveConfig(void)
 	intVal = (int16_t)SD_GetMusicMode();
 	FS_WriteInt16LE(&intVal, 1, f);
 
-	// FIXME: Currently it is unused
-	if (CFG_GetConfigInt("in_controlType", -1) != -1)
-	{
-		CFG_SetConfigInt("in_controlType", in_controlType);
-	}
 	intVal = (int16_t)in_controlType;
 	FS_WriteInt16LE(&intVal, 1, f); // Input device
 

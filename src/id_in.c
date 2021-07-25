@@ -121,6 +121,14 @@ IN_Backend *in_backend = 0;
 
 #define IN_MAX_JOYSTICKS 2
 
+const char *IN_ControlType_Strings[] = {
+	"Keyboard1",
+	"Keyboard2",
+	"Joystick1",
+	"Joystick2",
+	"Mouse"
+};
+
 IN_KeyMapping in_kbdControls;
 
 // In Omnispeak, which doesn't support the classic Gravis Gamepad anyway,
@@ -500,6 +508,12 @@ uint16_t IN_GetJoyButtonsDB(int joystick)
 void IN_SetControlType(int player, IN_ControlType type)
 {
 	in_controlType = type;
+	
+	// Save the control type if we need to
+	if (CFG_GetConfigEnum("in_controlType", IN_ControlType_Strings, -1) != -1)
+	{
+		CFG_SetConfigEnum("in_controlType", IN_ControlType_Strings, in_controlType);
+	}
 }
 
 void In_GetJoyMotion(int joystick, IN_Motion *p_x, IN_Motion *p_y)
