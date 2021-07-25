@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include "id_cfg.h"
 #include "id_in.h"
 #include "id_mm.h"
 #include "id_sd.h"
@@ -119,6 +120,14 @@ void INL_StopJoy(int joystick);
 IN_Backend *in_backend = 0;
 
 #define IN_MAX_JOYSTICKS 2
+
+const char *IN_ControlType_Strings[] = {
+	"Keyboard1",
+	"Keyboard2",
+	"Joystick1",
+	"Joystick2",
+	"Mouse"
+};
 
 IN_KeyMapping in_kbdControls;
 
@@ -499,6 +508,12 @@ uint16_t IN_GetJoyButtonsDB(int joystick)
 void IN_SetControlType(int player, IN_ControlType type)
 {
 	in_controlType = type;
+	
+	// Save the control type if we need to
+	if (CFG_GetConfigEnum("in_controlType", IN_ControlType_Strings, -1) != -1)
+	{
+		CFG_SetConfigEnum("in_controlType", IN_ControlType_Strings, in_controlType);
+	}
 }
 
 void In_GetJoyMotion(int joystick, IN_Motion *p_x, IN_Motion *p_y)
@@ -809,41 +824,41 @@ bool IN_UserInput(int tics, bool waitPress)
 	return false;
 }
 
+// Must be in-sync with IN_JoyConfItem
+const char *IN_JoyConfNames[] = {
+	"in_joy_jump",
+	"in_joy_pogo",
+	"in_joy_fire",
+	"in_joy_menu",
+	"in_joy_status",
+	"in_joy_quickload",
+	"in_joy_quicksave",
+	"in_joy_deadzone",
+	"in_joy_modern"
+};
+
 int IN_GetJoyConf(IN_JoyConfItem item)
 {
-	switch (item)
-	{
-		case IN_joy_deadzone:
-			return in_joyDeadzonePercent;
-		case IN_joy_modern:
-			return in_joyAdvancedMotion ? 1 : 0;
-		default:
-			return ((item >= IN_joy_button_min_) && (item <= IN_joy_button_max_))
-				? in_gamepadButtons[(int)item]
-				: 0;
-	}
+	return CFG_GetConfigInt(IN_JoyConfNames[item], item);
 }
 
 void IN_SetJoyConf(IN_JoyConfItem item, int value)
 {
-	switch (item)
-	{
-		case IN_joy_deadzone:
-			in_joyDeadzonePercent = (int16_t)value;
-			break;
-		case IN_joy_modern:
-			in_joyAdvancedMotion = (value != 0);
-			break;
-		default:
-			if ((item >= IN_joy_button_min_) && (item <= IN_joy_button_max_))
-				in_gamepadButtons[(int)item] = (int16_t)value;
-	}
+	CFG_SetConfigInt(IN_JoyConfNames[item], value);
 }
 
 bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn)
 {
-	int btn_id = in_gamepadButtons[(int)btn];
+	int btn_id = IN_GetJoyConf(btn);
 	return (btn_id < 0) ? 0 : ((mask >> btn_id) & 1);
+}
+
+bool IN_IsJoyButtonDown(IN_JoyConfItem btn)
+{
+	int joy = in_controlType - IN_ctrl_Joystick1;
+	if (joy < 0 || joy >= IN_MAX_JOYSTICKS) return false;
+	uint16_t mask = IN_GetJoyButtonsDB(joy);
+	return IN_GetJoyButtonFromMask(mask, btn);
 }
 
 const char *IN_GetJoyName(int joystick)

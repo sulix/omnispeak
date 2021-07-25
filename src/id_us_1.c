@@ -776,7 +776,6 @@ void US_SaveConfig(void)
 	intVal = (int16_t)SD_GetMusicMode();
 	FS_WriteInt16LE(&intVal, 1, f);
 
-	// FIXME: Currently it is unused
 	intVal = (int16_t)in_controlType;
 	FS_WriteInt16LE(&intVal, 1, f); // Input device
 

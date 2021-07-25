@@ -839,7 +839,7 @@ bool CK_TryAgainMenu()
 			}
 
 #ifdef QUICKSAVE_ENABLED
-			if (IN_GetLastScan() == in_kbdControls.quickLoad)
+			if (IN_GetLastScan() == in_kbdControls.quickLoad || IN_IsJoyButtonDown(IN_joy_quickload))
 			{
 				// quickload, but fall back to map screen on failure
 				ck_gameState.currentLevel = 0;

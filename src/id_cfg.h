@@ -42,10 +42,12 @@ bool CFG_ConfigExists(const char *name);
 int CFG_GetConfigInt(const char *name, int defValue);
 const char *CFG_GetConfigString(const char *name, const char *defValue);
 bool CFG_GetConfigBool(const char *name, bool defValue);
+int CFG_GetConfigEnum(const char *name, const char **strings, int defValue);
 
 void CFG_SetConfigInt(const char *name, int value);
 void CFG_SetConfigString(const char *name, const char *value);
 void CFG_SetConfigBool(const char *name, bool value);
+void CFG_SetConfigEnum(const char *name, const char **strings, int value);
 
 void CFG_Startup();
 void CFG_Shutdown();

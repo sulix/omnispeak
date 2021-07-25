@@ -573,6 +573,11 @@ US_CardItem ck_us_joyconfMenuItems[] = {
 	{US_ITEM_Normal, 0, IN_SC_P, "POGO", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_F, "FIRE", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_M, "MENU", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_S, "STATUS", US_Comm_None, 0, 0, 0},
+#ifdef QUICKSAVE_ENABLED
+	{US_ITEM_Normal, 0, IN_SC_L, "QUICKLOAD", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_Q, "QUICKSAVE", US_Comm_None, 0, 0, 0},
+#endif
 	{US_ITEM_Normal, 0, IN_SC_D, "DEAD ZONE", US_Comm_None, 0, 0, 0},
 	{US_ITEM_Submenu, 0, IN_SC_J, "", US_Comm_None, &ck_us_joyMotionModeMenu, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
