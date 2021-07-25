@@ -52,6 +52,20 @@ bool CFG_GetConfigBool(const char *name, bool defValue)
 	return CFG_GetConfigInt(name, defValue ? 1 : 0);
 }
 
+int CFG_GetConfigEnum(const char *name, const char **strings, int defValue)
+{
+	const char *valueStr = CFG_GetConfigString(name, NULL);
+	if (!valueStr)
+		return defValue;
+	
+	for (int i = 0; strings[i]; ++i)
+	{
+		if (!CK_Cross_strcasecmp(strings[i], valueStr))
+			return i;
+	}
+	return defValue;
+}
+
 // Gets or creates a config variable. When created, the name is StrDup'ed into the
 // config arena.
 static CFG_Variable *CFG_GetOrCreateVariable(const char *name)
@@ -97,6 +111,11 @@ void CFG_SetConfigBool(const char *name, bool value)
 	var->str_value = 0;
 	var->int_value = value ? 1 : 0;
 	var->is_boolean = true;
+}
+
+void CFG_SetConfigEnum(const char *name, const char **strings, int value)
+{
+	CFG_SetConfigString(name, strings[value]);
 }
 
 static bool CFG_ParseConfigLine(STR_ParserState *state)
