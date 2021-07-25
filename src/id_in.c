@@ -839,7 +839,7 @@ const char *IN_JoyConfNames[] = {
 
 int IN_GetJoyConf(IN_JoyConfItem item)
 {
-	return CFG_GetConfigInt(IN_JoyConfNames[item], 0);
+	return CFG_GetConfigInt(IN_JoyConfNames[item], item);
 }
 
 void IN_SetJoyConf(IN_JoyConfItem item, int value)
