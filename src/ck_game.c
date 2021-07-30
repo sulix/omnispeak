@@ -870,7 +870,7 @@ void CK_GameLoop()
 
 	do
 	{
-		if (ck_gameState.levelState != 6)
+		if (ck_gameState.levelState != LS_LoadedGame)
 		{
 		resetDifficultyAndLevel:
 			ck_gameState.difficulty = ck_startingDifficulty;
@@ -886,10 +886,9 @@ void CK_GameLoop()
 		SD_WaitSoundDone();
 		CK_PlayLoop();
 
-		if (ck_gameState.levelState != 6)
+		if (ck_gameState.levelState != LS_LoadedGame)
 		{
 			memset(ck_gameState.keyGems, 0, sizeof(ck_gameState.keyGems));
-			// TODO: This is probably (but not necessarily) Keen 5 specific
 			if (ck_currentEpisode->ep == EP_CK5)
 				ck_gameState.ep.ck5.securityCard = 0;
 		}
@@ -899,7 +898,7 @@ void CK_GameLoop()
 		ck_lastLevelFinished = -1;
 		switch (ck_gameState.levelState)
 		{
-		case LS_Died: //1
+		case LS_Died:
 			if (CK_TryAgainMenu())
 				goto replayLevel;
 			//ck_gameState.currentLevel = ck_nextMapNumber;
@@ -911,20 +910,15 @@ void CK_GameLoop()
 				IN_ClearKeysDown();
 				break;
 			}
-		case LS_LevelComplete: // 2:
+		case LS_LevelComplete:
 		levelcomplete:
-		case 13:
+		case LS_TeleportToKorath:
 			if (ca_mapOn == 0)
 			{
+				// TODO: Print the "One Moment" message
 				// US_CenterWindow(8, 0x1A);
 				// window_print_y += 0x19;
 				// window_print("One Moment");
-
-				// This is an omnispeak hack
-				// because we can't change ck_gameState.currentLevel
-				// from within CK_ScanForLevelEntry
-				// UPDATE (Mar 6 2014): Not the case anymore
-				//ck_gameState.currentLevel = ck_nextMapNumber;
 			}
 			else
 			{
@@ -939,19 +933,19 @@ void CK_GameLoop()
 			}
 			break;
 
-		case 5:
+		case LS_ResetGame:
 			goto resetDifficultyAndLevel;
 
-		case 6:
+		case LS_LoadedGame:
 			goto replayLevel;
 
-		case 8:
+		case LS_AbortGame:
 			// Quit to Dos
 			IN_ClearKeysDown();
 			return;
 
 		// Episode Specific Level Endings
-		case LS_CouncilRescued: // 3
+		case LS_CouncilRescued:
 			if (ck_currentEpisode->ep == EP_CK4)
 			{
 				if (ca_mapOn)
@@ -996,13 +990,13 @@ void CK_GameLoop()
 			help_endgame();
 			goto highscores;
 
-		case 14:
+		case LS_KorathFuse:
 			if (ck_currentEpisode->ep == EP_CK5)
 			{
 				// The level has been ended by fuse destruction
 				SD_PlaySound(SOUND_LEVELEXIT);
 				ck_lastLevelFinished = ca_mapOn;
-				ck_gameState.levelsDone[ca_mapOn] = 14;
+				ck_gameState.levelsDone[ca_mapOn] = LS_KorathFuse;
 				CK5_FuseMessage();
 				ck_gameState.currentLevel = 0;
 			}
@@ -1018,15 +1012,6 @@ void CK_GameLoop()
 			help_endgame();
 			CK_SubmitHighScore(ck_gameState.keenScore, 0);
 			return;
-#if 0
-			// Warping level
-			// This code is added for omnispeak so that the warp functionality works
-			// Case 4 normally switches to default
-			// UPDATE (Mar 6 2014): Not needed anymore.
-		case 4:
-			ck_gameState.currentLevel = ck_nextMapNumber;
-			break;
-#endif
 		}
 
 		if (ck_gameState.numLives < 0)

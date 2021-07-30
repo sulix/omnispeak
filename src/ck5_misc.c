@@ -230,7 +230,7 @@ void CK5_SpawnLevelEnd(void)
 
 void CK5_LevelEnd(CK_object *obj)
 {
-	ck_gameState.levelState = (ca_mapOn == 12) ? 15 : 14;
+	ck_gameState.levelState = (ca_mapOn == 12) ? LS_DestroyedQED : LS_KorathFuse;
 }
 
 void CK5_SetupFunctions()

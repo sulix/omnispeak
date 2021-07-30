@@ -392,7 +392,7 @@ void CK_DemoLoop()
 	// Given we're not coming from TED, run through the demos.
 
 	int demoNumber = 0;
-	ck_gameState.levelState = 0;
+	ck_gameState.levelState = LS_Playing;
 
 	while (true)
 	{
@@ -438,16 +438,16 @@ void CK_DemoLoop()
 		// Game Loop
 		while (1)
 		{
-			if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
+			if (ck_gameState.levelState == LS_ResetGame || ck_gameState.levelState == LS_LoadedGame)
 			{
 				CK_GameLoop();
 				CK_DoHighScores();
-				if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
+				if (ck_gameState.levelState == LS_ResetGame || ck_gameState.levelState == LS_LoadedGame)
 					continue;
 
 				CK_ShowTitleScreen();
 
-				if (ck_gameState.levelState == 5 || ck_gameState.levelState == 6)
+				if (ck_gameState.levelState == LS_ResetGame || ck_gameState.levelState == LS_LoadedGame)
 					continue;
 			}
 			else
@@ -761,7 +761,7 @@ int main(int argc, char *argv[])
 		if (!CK_Cross_strcasecmp(argv[i], "/DEMOFILE"))
 		{
 			// A bit of stuff from the usual demo loop
-			ck_gameState.levelState = 0;
+			ck_gameState.levelState = LS_Playing;
 
 			CK_PlayDemoFile(argv[i + 1]);
 			Quit(0);
@@ -769,7 +769,7 @@ int main(int argc, char *argv[])
 		else if (!CK_Cross_strcasecmp(argv[i], "/PLAYDEMO"))
 		{
 			// A bit of stuff from the usual demo loop
-			ck_gameState.levelState = 0;
+			ck_gameState.levelState = LS_Playing;
 
 			CK_PlayDemo(atoi(argv[i + 1]));
 			Quit(0);

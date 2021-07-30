@@ -1521,7 +1521,7 @@ void CK_KeenDeathThink(CK_object *obj)
 	ck_nextX = obj->velX * SD_GetSpriteSync();
 	if (!CK_ObjectVisible(obj))
 	{
-		ck_gameState.levelState = 1;
+		ck_gameState.levelState = LS_Died;
 	}
 }
 

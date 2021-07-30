@@ -890,7 +890,7 @@ bool CK_DebugKeys()
 		if (us_tedLevel)
 			//run_ted();
 			Quit(NULL);
-		ck_gameState.levelState = 2;
+		ck_gameState.levelState = LS_LevelComplete;
 		// Nope, no return of "true"
 	}
 
@@ -1027,7 +1027,7 @@ bool CK_DebugKeys()
 			if (level >= 1 && level <= 18)
 			{
 				ck_gameState.currentLevel = level;
-				ck_gameState.levelState = 4;
+				ck_gameState.levelState = LS_AboutToRecordDemo;
 			}
 		}
 		return true;
@@ -1128,13 +1128,13 @@ void CK_CheckKeys()
 				{
 					ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
 				}
-				ck_gameState.levelState = 6;
+				ck_gameState.levelState = LS_LoadedGame;
 				StartMusic(ck_gameState.currentLevel);
 			}
 			if (load_game_error)
 			{
 				load_game_error = 0;
-				ck_gameState.levelState = 8;
+				ck_gameState.levelState = LS_AbortGame;
 			}
 		}
 		// clang-format off
@@ -1175,18 +1175,18 @@ void CK_CheckKeys()
 			IN_ClearKeysDown();
 
 			if (ck_startingDifficulty)
-				ck_gameState.levelState = 5;
+				ck_gameState.levelState = LS_ResetGame;
 			else if (!ck_startingSavedGame)
 				; // RF_ResetScreen();
 
 			if (load_game_error)
 			{
 				load_game_error = 0;
-				ck_gameState.levelState = 8;
+				ck_gameState.levelState = LS_AbortGame;
 			}
 
 			if (ck_startingSavedGame)
-				ck_gameState.levelState = 6;
+				ck_gameState.levelState = LS_LoadedGame;
 
 			// gameticks_2 = TimeCount
 			// FIXME: Is this the right way to handle this?
@@ -1963,7 +1963,7 @@ void CK_NormalCamera(CK_object *obj)
 	// End level if keen makes it out either side
 	if (obj->clipRects.unitX1 < rf_scrollXMinUnit || obj->clipRects.unitX2 > rf_scrollXMaxUnit + RF_PixelToUnit(320))
 	{
-		ck_gameState.levelState = 2;
+		ck_gameState.levelState = LS_LevelComplete;
 		return;
 	}
 
@@ -2132,7 +2132,7 @@ void CK_PlayLoop()
 	ck_keenState.jumpWasPressed = ck_keenState.pogoWasPressed = ck_keenState.shootWasPressed = false;
 	game_in_progress = 1;
 	// If this is nonzero, the level will quit immediately.
-	ck_gameState.levelState = 0;
+	ck_gameState.levelState = LS_Playing;
 
 	//ck_keenState.pogoTimer = ck_scrollDisabled = ck_keenState.invincibilityTimer = 0;
 
@@ -2148,7 +2148,7 @@ void CK_PlayLoop()
 	SD_SetLastTimeCount(3);
 	SD_SetTimeCount(3);
 
-	while (ck_gameState.levelState == 0)
+	while (ck_gameState.levelState == LS_Playing)
 	{
 
 		IN_PumpEvents();
@@ -2256,7 +2256,7 @@ void CK_PlayLoop()
 					if (currentObj->type == CT_Player)
 					{
 						// Kill Keen if he exits the bottom of the map.
-						ck_gameState.levelState = 1;
+						ck_gameState.levelState = LS_Died;
 						continue;
 					}
 					else
@@ -2315,14 +2315,14 @@ void CK_PlayLoop()
 		{
 			if (!vl_screenFaded && (IN_GetLastScan() != IN_SC_None))
 			{
-				ck_gameState.levelState = 2;
+				ck_gameState.levelState = LS_LevelComplete;
 				if (IN_GetLastScan() != IN_SC_F1)
 					IN_SetLastScan(IN_SC_Space);
 			}
 		}
 		else if (IN_DemoGetMode() == IN_Demo_PlayDone)
 		{
-			ck_gameState.levelState = 2;
+			ck_gameState.levelState = LS_LevelComplete;
 		}
 		else
 		{

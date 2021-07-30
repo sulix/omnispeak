@@ -337,7 +337,7 @@ void CK_ScanForLevelEntry(CK_object *obj)
 				ck_gameState.mapPosX = obj->posX;
 				ck_gameState.mapPosY = obj->posY;
 				ck_gameState.currentLevel = infotile - 0xC000;
-				ck_gameState.levelState = 2;
+				ck_gameState.levelState = LS_LevelComplete;
 				SD_PlaySound(SOUND_UNKNOWN12);
 				return;
 			}

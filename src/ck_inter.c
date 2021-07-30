@@ -62,14 +62,12 @@ void CK_HandleDemoKeys()
 	US_RunCards();
 	if (ck_startingDifficulty)
 	{
-		ck_gameState.levelState = 5;
+		ck_gameState.levelState = LS_ResetGame;
 		return;
 	}
 
-	if (!ck_startingSavedGame)
-		return;
-
-	ck_gameState.levelState = 6;
+	if (ck_startingSavedGame)
+		ck_gameState.levelState = LS_LoadedGame;
 }
 
 /*
@@ -1157,12 +1155,12 @@ void CK_DrawTerminator(void)
 	US_RunCards();
 	if (ck_startingDifficulty)
 	{
-		ck_gameState.levelState = 5;
+		ck_gameState.levelState = LS_ResetGame;
 		return;
 	}
 
 	if (ck_startingSavedGame)
-		ck_gameState.levelState = 6;
+		ck_gameState.levelState = LS_LoadedGame;
 }
 
 /*

@@ -222,13 +222,17 @@ typedef enum CK_LevelState
 	LS_Died = 1,		  // Keen Died
 	LS_LevelComplete = 2,     // Level Completed
 	LS_CouncilRescued = 3,    // Rescued Council Member (Keen 4)
-	LS_AboutToRecordDemo = 4, // About to Record Demo
+	LS_AboutToRecordDemo = 4, // Warped to a new level
+	LS_ResetGame = 5,	  // Started a new game
+	LS_LoadedGame = 6,	  // Loaded a saved game
 	LS_Foot = 7,		  // Keen exited level by touching foot (keen 4)
-	LS_Sandwich = 9,	  // Keen exied level by getting items (Keen 6)
+	LS_AbortGame = 8,	  // Game failed to load
+	LS_Sandwich = 9,	  // Keen exited level by getting items (Keen 6)
 	LS_Rope = 10,
 	LS_Passcard = 11,
 	LS_Molly = 12,		  // Keen rescues Molly (Keen 6)
 	LS_TeleportToKorath = 13, // Keen teleported to Korath III Base (Keen 5)
+	LS_KorathFuse = 14,	  // Keen broke the Korath III fuse (Keen 5)
 	LS_DestroyedQED = 15,     // Destroyed QED (Keen 5)
 } CK_LevelState;
 
