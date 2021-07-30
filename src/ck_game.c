@@ -1016,9 +1016,7 @@ void CK_GameLoop()
 			 * VW_SyncPages();
 			 */
 			help_endgame();
-#if 0
 			CK_SubmitHighScore(ck_gameState.keenScore, 0);
-#endif
 			return;
 #if 0
 			// Warping level
