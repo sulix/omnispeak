@@ -210,7 +210,7 @@ FS_File FSL_OpenFileInDirCaseInsensitive(const char *dirPath, const char *fileNa
 		if (!CK_Cross_strcasecmp(dirEntry->d_name, fileName))
 		{
 			// We've found our file!
-			char *fullFileName = (char *)malloc(strlen(dirPath) + 1 + strlen(dirEntry->d_name));
+			char *fullFileName = (char *)malloc(strlen(dirPath) + 2 + strlen(dirEntry->d_name));
 			sprintf(fullFileName, "%s/%s", dirPath, dirEntry->d_name);
 
 			FS_File f;
@@ -230,7 +230,7 @@ FS_File FSL_OpenFileInDirCaseInsensitive(const char *dirPath, const char *fileNa
 
 FS_File FSL_CreateFileInDir(const char *dirPath, const char *fileName)
 {
-	char *fullFileName = (char *)malloc(strlen(dirPath) + 1 + strlen(fileName));
+	char *fullFileName = (char *)malloc(strlen(dirPath) + 2 + strlen(fileName));
 	sprintf(fullFileName, "%s/%s", dirPath, fileName);
 
 	FS_File f = fopen(fullFileName, "wb");
