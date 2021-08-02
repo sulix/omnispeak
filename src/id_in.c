@@ -549,8 +549,13 @@ void In_GetJoyMotion(int joystick, IN_Motion *p_x, IN_Motion *p_y)
 		// extract the quadrant and map values into the upper-right quadrant
 		signX = valX >> 31;
 		signY = valY >> 31;
-		valX = abs(valX);
-		valY = abs(valY);
+		// We need to clamp these at 32767 because:
+		// - -32768 is a valid int16_t, which (e.g.) SDL returns
+		// - the deadzone calculation below will overflow if both values
+		//   are 32768, causing the deadzone check to fail if the stick
+		//   is all the way to the top-left.
+		valX = CK_Cross_min(CK_Cross_abs(valX), 32767);
+		valY = CK_Cross_min(CK_Cross_abs(valY), 32767);
 
 		// check against the deadzone first
 		if ((valX * valX + valY * valY) <= in_joyScaledDeadzone)
