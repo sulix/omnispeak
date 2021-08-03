@@ -607,13 +607,20 @@ void In_GetJoyMotion(int joystick, IN_Motion *p_x, IN_Motion *p_y)
 
 void IN_ReadCursor(IN_Cursor *cursor)
 {
+#ifdef VANILLA
+	bool forceJoyMenu = CFG_GetConfigBool("in_forceJoyMenu", false);
+#else
+	bool forceJoyMenu = CFG_GetConfigBool("in_forceJoyMenu", true);
+#endif
 	cursor->button0 = false;
 	cursor->button1 = false;
 	cursor->xMotion = IN_motion_None;
 	cursor->yMotion = IN_motion_None;
-	if (in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2)
+	if (forceJoyMenu || in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2)
 	{
 		int joy = in_controlType - IN_ctrl_Joystick1;
+		if (joy < 0 || joy > 1)
+			joy = 0;
 		In_GetJoyMotion(joy, &cursor->xMotion, &cursor->yMotion);
 
 		uint16_t buttons = IN_GetJoyButtonsDB(joy);
