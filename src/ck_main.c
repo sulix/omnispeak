@@ -777,7 +777,7 @@ int main(int argc, char *argv[])
 
 	}
 
-	if (us_noWait || us_tedLevel)
+	if (us_noWait || us_tedLevel || CFG_GetConfigBool("debugActive", false))
 		ck_debugActive = true;
 
 	// Draw the ANSI "Press Key When Ready Screen" here
