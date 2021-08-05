@@ -119,6 +119,21 @@ elseif(RENDERER STREQUAL "dos")
 		src/id_sd_dos.c
 		src/id_vl_dos.c
 	)
+elseif(RENDERER STREQUAL "sdl1")
+	message(STATUS "Using SDL 1.2 renderer backend")
+	find_package(SDL REQUIRED)
+	set(OMNISPEAK_PLATFORM_SRCS
+		src/id_in_sdl.c
+		src/id_sd_sdl.c
+		src/id_vl_sdl12.c
+	)
+	set(OMNISPEAK_PLATFORM_LIBRARIES
+		${SDL_LIBRARY}
+	)
+	include_directories(
+		${SDL_INCLUDE_DIR}
+	)
+	add_definitions(-DWITH_SDL)
 else()
 	message(WARNING "Using NULL platform layer.")
 	set(OMNISPEAK_PLATFORM_SRCS
