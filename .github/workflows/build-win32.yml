@@ -11,49 +11,49 @@ jobs:
     - uses: actions/checkout@v1
     - name: Dependencies
       run: |
-        curl "https://libsdl.org/release/SDL2-devel-2.0.14-VC.zip" -o contrib/SDL2-VC.zip
+        curl "https://libsdl.org/release/SDL2-devel-2.0.16-VC.zip" -o contrib/SDL2-VC.zip
         7z x contrib/SDL2-VC.zip -ocontrib/MSVC/
-        copy contrib/sdl2-config-vc.cmake contrib/MSVC/SDL2-2.0.14/sdl2-config.cmake
-        curl "https://libsdl.org/release/SDL2-devel-2.0.14-mingw.tar.gz" -o contrib/SDL2-mingw.tar.gz
+        copy contrib/sdl2-config-vc.cmake contrib/MSVC/SDL2-2.0.16/sdl2-config.cmake
+        curl "https://libsdl.org/release/SDL2-devel-2.0.16-mingw.tar.gz" -o contrib/SDL2-mingw.tar.gz
         7z x contrib/SDL2-mingw.tar.gz -ocontrib/
         7z x contrib/SDL2-mingw.tar -ocontrib/mingw/
-        copy contrib/sdl2-config-mingw.cmake contrib/mingw/SDL2-2.0.14/sdl2-config.cmake
+        copy contrib/sdl2-config-mingw.cmake contrib/mingw/SDL2-2.0.16/sdl2-config.cmake
 
     - name: Build (Windows/MSVC/Debug/x86)
       shell: cmd
       run: |
         mkdir build32
         cd build32
-        cmake .. -DSDL2_DIR="contrib/MSVC/SDL2-2.0.14" -A Win32
+        cmake .. -DSDL2_DIR="contrib/MSVC/SDL2-2.0.16" -A Win32
         cmake --build . --config Debug
-        copy ..\contrib\MSVC\SDL2-2.0.14\lib\x86\SDL2.dll Debug
+        copy ..\contrib\MSVC\SDL2-2.0.16\lib\x86\SDL2.dll Debug
 
     - name: Build (Windows/MSVC/RelWithDebInfo/x86)
       shell: cmd
       run: |
         mkdir build32
         cd build32
-        cmake .. -DSDL2_DIR="contrib/MSVC/SDL2-2.0.14" -A Win32
+        cmake .. -DSDL2_DIR="contrib/MSVC/SDL2-2.0.16" -A Win32
         cmake --build . --config RelWithDebInfo
-        copy ..\contrib\MSVC\SDL2-2.0.14\lib\x86\SDL2.dll RelWithDebInfo
+        copy ..\contrib\MSVC\SDL2-2.0.16\lib\x86\SDL2.dll RelWithDebInfo
 
     - name: Build (Windows/MSVC/Debug/x64)
       shell: cmd
       run: |
         mkdir build64
         cd build64
-        cmake .. -DSDL2_DIR="contrib/MSVC/SDL2-2.0.14" -A x64
+        cmake .. -DSDL2_DIR="contrib/MSVC/SDL2-2.0.16" -A x64
         cmake --build . --config Debug
-        copy ..\contrib\MSVC\SDL2-2.0.14\lib\x64\SDL2.dll Debug
+        copy ..\contrib\MSVC\SDL2-2.0.16\lib\x64\SDL2.dll Debug
 
     - name: Build (Windows/MSVC/RelWithDebInfo/x64)
       shell: cmd
       run: |
         mkdir build64
         cd build64
-        cmake .. -DSDL2_DIR="contrib/MSVC/SDL2-2.0.14" -A x64
+        cmake .. -DSDL2_DIR="contrib/MSVC/SDL2-2.0.16" -A x64
         cmake --build . --config RelWithDebInfo
-        copy ..\contrib\MSVC\SDL2-2.0.14\lib\x64\SDL2.dll RelWithDebInfo
+        copy ..\contrib\MSVC\SDL2-2.0.16\lib\x64\SDL2.dll RelWithDebInfo
 
     - name: Build (Windows/mingw/RelWithDebInfo/i686)
       shell: cmd
@@ -61,18 +61,18 @@ jobs:
         SET PATH=C:\msys64\mingw32\bin;%PATH%
         mkdir build32-mingw
         cd build32-mingw
-        cmake .. -G "MinGW Makefiles" -DSDL2_DIR="contrib/mingw/SDL2-2.0.14" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc.exe -DCMAKE_MAKE_PROGRAM=mingw32-make.exe
+        cmake .. -G "MinGW Makefiles" -DSDL2_DIR="contrib/mingw/SDL2-2.0.16" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc.exe -DCMAKE_MAKE_PROGRAM=mingw32-make.exe
         cmake --build .
-        copy ..\contrib\mingw\SDL2-2.0.14\i686-w64-mingw32\bin\SDL2.dll .
+        copy ..\contrib\mingw\SDL2-2.0.16\i686-w64-mingw32\bin\SDL2.dll .
 
     - name: Build (Windows/mingw/RelWithDebInfo/x86_64)
       shell: cmd
       run: |
         mkdir build64-mingw
         cd build64-mingw
-        cmake .. -G "MinGW Makefiles" -DSDL2_DIR="contrib/mingw/SDL2-2.0.14" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc.exe -DCMAKE_MAKE_PROGRAM=mingw32-make.exe
+        cmake .. -G "MinGW Makefiles" -DSDL2_DIR="contrib/mingw/SDL2-2.0.16" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc.exe -DCMAKE_MAKE_PROGRAM=mingw32-make.exe
         cmake --build .
-        copy ..\contrib\mingw\SDL2-2.0.14\x86_64-w64-mingw32\bin\SDL2.dll .
+        copy ..\contrib\mingw\SDL2-2.0.16\x86_64-w64-mingw32\bin\SDL2.dll .
 
     - name: Upload (Windows/MSVC/Debug/x86)
       uses: actions/upload-artifact@v2
