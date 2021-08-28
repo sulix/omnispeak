@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_cross.h"
 
 #include "id_in.h"
+#include "id_fs.h"
 
 /* This keeps clang's static analyzer quiet. */
 #ifdef __GNUC__
@@ -184,11 +185,11 @@ bool US_QuickLoad();
 int USL_CtlDialog(const char *s1, const char *s2, const char *s3);
 
 // A few function pointers
-extern bool (*p_save_game)(FILE *handle);
-extern bool (*p_load_game)(FILE *handle, bool fromMenu);
+extern bool (*p_save_game)(FS_File handle);
+extern bool (*p_load_game)(FS_File handle, bool fromMenu);
 extern void (*p_exit_menu)(void);
 
-void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FILE *, bool), bool (*savegamefunc)(FILE *), void (*exitmenufunc)(void));
+void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FS_File, bool), bool (*savegamefunc)(FS_File), void (*exitmenufunc)(void));
 
 
 typedef void (*US_MeasureStringFunc)(const char *string, uint16_t *width, uint16_t *height, int16_t chunk);

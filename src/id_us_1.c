@@ -76,8 +76,8 @@ static int8_t us_printColour = 15;
 #define US_WINDOW_MAX_X 320
 #define US_WINDOW_MAX_Y 200
 
-bool (*p_save_game)(FILE *handle);
-bool (*p_load_game)(FILE *handle, bool fromMenu);
+bool (*p_save_game)(FS_File handle);
+bool (*p_load_game)(FS_File handle, bool fromMenu);
 void (*p_exit_menu)(void);
 
 US_MeasureStringFunc USL_MeasureString = VH_MeasurePropString;
@@ -89,7 +89,7 @@ void US_SetPrintRoutines(US_MeasureStringFunc measure, US_DrawStringFunc draw)
 	USL_DrawString = (draw) ? draw : VHB_DrawPropString;
 }
 
-void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FILE *, bool), bool (*savegamefunc)(FILE *), void (*exitmenufunc)(void))
+void US_SetMenuFunctionPointers(bool (*loadgamefunc)(FS_File, bool), bool (*savegamefunc)(FS_File), void (*exitmenufunc)(void))
 {
 	p_load_game = loadgamefunc;
 	p_save_game = savegamefunc;
@@ -682,7 +682,7 @@ void US_LoadConfig(void)
 		if (strcmp(fileExt, ck_currentEpisode->ext) || (configRev != 4))
 		{
 			FS_CloseFile(f);
-			f = NULL;
+			f = 0;
 		}
 	}
 	if (FS_IsFileValid(f))
@@ -847,7 +847,7 @@ void US_GetSavefiles(void)
 			// Omnispeak - reading US_Savefile fields one-by-one
 			// for cross-platform support
 			uint8_t padding; // One byte of struct padding
-			if ((fread(psfe->id, sizeof(psfe->id), 1, handle) == 1) &&
+			if ((FS_Read(psfe->id, sizeof(psfe->id), 1, handle) == 1) &&
 				(FS_ReadInt16LE(&psfe->printXOffset, 1, handle) == 1) &&
 				(FS_ReadBoolFrom16LE(&psfe->used, 1, handle) == 1) &&
 				(FS_Read(psfe->name, sizeof(psfe->name), 1, handle) == 1) &&

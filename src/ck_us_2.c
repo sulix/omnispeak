@@ -367,14 +367,14 @@ extern const char *footer_str[3];
 static bool US_SaveMain(int i)
 {
 	int n, error = 0;
-	FILE *fp;
+	FS_File fp;
 	const char *fname;
 	US_Savefile *e;
 
 	e = &us_savefiles[i];
 	fname = US_GetSavefileName(i);
 	fp = FS_CreateUserFile(fname);
-	if (fp != NULL)
+	if (FS_IsFileValid(fp))
 	{
 		// Omnispeak - writing US_Savefile fields one-by-one
 		// for cross-platform support

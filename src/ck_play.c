@@ -2200,8 +2200,8 @@ void CK_PlayLoop()
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 		if (ck_dumperFile)
 		{
-			bool CK_SaveObject(FILE * fp, CK_object * o);
-			bool CK_SaveGameState(FILE * fp, CK_GameState * state);
+			bool CK_SaveObject(FS_File fp, CK_object * o);
+			bool CK_SaveGameState(FS_File fp, CK_GameState * state);
 
 			uint32_t timecountToDump = SD_GetTimeCount();
 			FS_WriteInt32LE(&timecountToDump, 1, ck_dumperFile);

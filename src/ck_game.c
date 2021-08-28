@@ -87,7 +87,7 @@ void CK_GameOver()
 }
 
 // OMNISPEAK - New cross-platform methods for reading/writing objects from/to saved games
-bool CK_SaveObject(FILE *fp, CK_object *o)
+bool CK_SaveObject(FS_File fp, CK_object *o)
 {
 	int16_t dummy = 0;
 	// Convert a few enums
@@ -158,7 +158,7 @@ bool CK_SaveObject(FILE *fp, CK_object *o)
 	// clang-format on
 }
 
-static bool CK_LoadObject(FILE *fp, CK_object *o)
+static bool CK_LoadObject(FS_File fp, CK_object *o)
 {
 	int16_t dummy;
 	// Convert a few enums
@@ -224,7 +224,7 @@ static bool CK_LoadObject(FILE *fp, CK_object *o)
 }
 
 // Similar new methods for writing/reading game state
-bool CK_SaveGameState(FILE *fp, CK_GameState *state)
+bool CK_SaveGameState(FS_File fp, CK_GameState *state)
 {
 	int16_t difficultyInt = (int16_t)state->difficulty; // Convert enum
 	// TODO - platform should be a part of the game state
@@ -263,7 +263,7 @@ bool CK_SaveGameState(FILE *fp, CK_GameState *state)
 	// clang-format on
 }
 
-static bool CK_LoadGameState(FILE *fp, CK_GameState *state)
+static bool CK_LoadGameState(FS_File fp, CK_GameState *state)
 {
 	int16_t difficultyInt; // Convert num
 	uint16_t platformObjOffset;
@@ -311,7 +311,7 @@ static bool CK_LoadGameState(FILE *fp, CK_GameState *state)
 	return true;
 }
 
-bool CK_SaveGame(FILE *fp)
+bool CK_SaveGame(FS_File fp)
 {
 	int i;
 	uint16_t cmplen, bufsize;
@@ -360,7 +360,7 @@ bool CK_SaveGame(FILE *fp)
 	return true;
 }
 
-bool CK_LoadGame(FILE *fp, bool fromMenu)
+bool CK_LoadGame(FS_File fp, bool fromMenu)
 {
 	int i;
 	uint16_t cmplen, bufsize;
