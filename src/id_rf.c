@@ -1409,6 +1409,8 @@ void RF_Refresh()
 	if (rf_drawFunc)
 		rf_drawFunc();
 
+	// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
+	VL_SetScrollCoords(RF_UnitToPixel(rf_scrollXUnit & 0xef), RF_UnitToPixel(rf_scrollYUnit & 0xff));
 	VL_SwapOnNextPresent();
 	VL_Present();
 

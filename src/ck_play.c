@@ -2285,8 +2285,6 @@ void CK_PlayLoop()
 		if (ck_startingSavedGame)
 			ck_startingSavedGame = 0;
 
-		// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
-		VL_SetScrollCoords(RF_UnitToPixel(rf_scrollXUnit & 0xef), RF_UnitToPixel(rf_scrollYUnit & 0xff));
 		RF_Refresh();
 
 		if (ck_invincibilityTimer)
