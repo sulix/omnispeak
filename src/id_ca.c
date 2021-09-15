@@ -122,12 +122,16 @@ uint8_t CAL_ReadByte(void *offset)
 
 int16_t CAL_ReadWord(void *offset)
 {
-	return (int16_t)CK_Cross_SwapLE16(*((uint16_t *)(offset)));
+	uint16_t val;
+	memcpy(&val, offset, sizeof(val));
+	return (int16_t)CK_Cross_SwapLE16(val);
 }
 
 int32_t CAL_ReadLong(void *offset)
 {
-	return (int32_t)CK_Cross_SwapLE32(*((uint32_t *)(offset)));
+	uint32_t val;
+	memcpy(&val, offset, sizeof(val));
+	return (int32_t)CK_Cross_SwapLE32(val);
 }
 
 int8_t CAL_ReadSByte(void *offset)
@@ -137,12 +141,16 @@ int8_t CAL_ReadSByte(void *offset)
 
 uint16_t CAL_ReadUWord(void *offset)
 {
-	return CK_Cross_SwapLE16(*((uint16_t *)(offset)));
+	uint16_t val;
+	memcpy(&val, offset, sizeof(val));
+	return CK_Cross_SwapLE16(val);
 }
 
 uint32_t CAL_ReadULong(void *offset)
 {
-	return CK_Cross_SwapLE32(*((uint32_t *)(offset)));
+	uint32_t val;
+	memcpy(&val, offset, sizeof(val));
+	return CK_Cross_SwapLE32(val);
 }
 
 //Begin locals
