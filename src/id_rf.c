@@ -68,7 +68,7 @@ int rf_scrollYMinUnit;
 int rf_scrollXMaxUnit;
 int rf_scrollYMaxUnit;
 
-#define RF_MAX_SPRITETABLEENTRIES 48
+#define RF_MAX_SPRITETABLEENTRIES 60
 #define RF_NUM_SPRITE_Z_LAYERS 4
 
 // Rectangle of previous sprite position.
