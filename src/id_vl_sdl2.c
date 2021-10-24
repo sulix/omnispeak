@@ -60,7 +60,10 @@ static void VL_SDL2_SetVideoMode(int mode)
 
 		//VL_SDL2GL_SetIcon(vl_sdl2_window);
 
-		SDL_RendererFlags flags = vl_swapInterval ? SDL_RENDERER_PRESENTVSYNC : 0;
+		// This should be SDL_RendererFlags, but it doesn't work with the gcw0 toolchain,
+		// which is absurdly strict in not counting integers as valid enum values (breaking
+		// both the 0 here and the |= below). *sigh*
+		int flags = vl_swapInterval ? SDL_RENDERER_PRESENTVSYNC : 0;
 #ifdef VL_SDL2_REQUEST_SOFTWARE
 		flags |= SDL_RENDERER_SOFTWARE;
 #endif
