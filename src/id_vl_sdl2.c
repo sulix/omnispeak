@@ -60,11 +60,11 @@ static void VL_SDL2_SetVideoMode(int mode)
 
 		//VL_SDL2GL_SetIcon(vl_sdl2_window);
 
+		SDL_RendererFlags flags = vl_swapInterval ? SDL_RENDERER_PRESENTVSYNC : 0;
 #ifdef VL_SDL2_REQUEST_SOFTWARE
-		vl_sdl2_renderer = SDL_CreateRenderer(vl_sdl2_window, -1, SDL_RENDERER_SOFTWARE);
-#else
-		vl_sdl2_renderer = SDL_CreateRenderer(vl_sdl2_window, -1, 0);
+		flags |= SDL_RENDERER_SOFTWARE;
 #endif
+		vl_sdl2_renderer = SDL_CreateRenderer(vl_sdl2_window, -1, flags);
 
 		SDL_RendererInfo info;
 		SDL_GetRendererInfo(vl_sdl2_renderer, &info);
@@ -385,6 +385,7 @@ static int VL_SDL2_GetNumBuffers(void *surface)
 
 static void VL_SDL2_FlushParams()
 {
+	// TODO: Find a way to toggle VSync at runtime.
 	SDL_SetWindowFullscreen(vl_sdl2_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 	SDL_SetWindowMinimumSize(vl_sdl2_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER / VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER / VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 	VL_SDL2_ResizeWindow();

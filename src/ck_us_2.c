@@ -134,6 +134,18 @@ bool CK_US_IntegerMenuProc(US_CardMsg msg, US_CardItem *item)
 	return true;
 }
 
+bool CK_US_VSyncMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	if (msg != US_MSG_CardEntered)
+		return false;
+
+	VL_ToggleVSync();
+	CFG_SetConfigBool("swapInterval", vl_swapInterval);
+	USL_CtlDialog((vl_swapInterval ? "VSync is now on" : "VSync is now off"), "Press any key", NULL);
+	CK_US_UpdateOptionsMenus();
+	return true;
+}	
+
 #endif
 
 #ifdef EXTRA_JOYSTICK_OPTIONS
@@ -502,6 +514,7 @@ US_Card ck_us_fullscreenMenu = {0, 0, 0, 0, 0, &CK_US_FullscreenMenuProc, 0, 0, 
 US_Card ck_us_aspectCorrectMenu = {0, 0, 0, 0, 0, &CK_US_AspectCorrectMenuProc, 0, 0, 0};
 US_Card ck_us_borderMenu = {0, 0, 0, 0, 0, &CK_US_BorderMenuProc, 0, 0, 0};
 US_Card ck_us_integerMenu = {0, 0, 0, 0, 0, &CK_US_IntegerMenuProc, 0, 0, 0};
+US_Card ck_us_vsyncMenu = {0, 0, 0, 0, 0, &CK_US_VSyncMenuProc, 0, 0, 0};
 #endif
 #ifdef EXTRA_JOYSTICK_OPTIONS
 US_Card ck_us_joyMotionModeMenu = {0, 0, 0, 0, 0, &CK_US_JoyMotionModeMenuProc, 0, 0, 0};
@@ -517,6 +530,7 @@ US_CardItem ck_us_optionsMenuItems[] = {
 	{US_ITEM_Submenu, 0, IN_SC_A, "", US_Comm_None, &ck_us_aspectCorrectMenu, 0, 0},
 	{US_ITEM_Submenu, 0, IN_SC_B, "", US_Comm_None, &ck_us_borderMenu, 0, 0},
 	{US_ITEM_Submenu, 0, IN_SC_I, "", US_Comm_None, &ck_us_integerMenu, 0, 0},
+	{US_ITEM_Submenu, 0, IN_SC_V, "", US_Comm_None, &ck_us_vsyncMenu, 0, 0},
 #endif
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
@@ -1298,6 +1312,7 @@ void CK_US_UpdateOptionsMenus(void)
 	ck_us_optionsMenuItems[5].caption = vl_isAspectCorrected ? "CORRECT ASPECT RATIO (ON)" : "CORRECT ASPECT RATIO (OFF)";
 	ck_us_optionsMenuItems[6].caption = vl_hasOverscanBorder ? "OVERSCAN BORDER (ON)" : "OVERSCAN BORDER (OFF)";
 	ck_us_optionsMenuItems[7].caption = vl_isIntegerScaled ? "INTEGER SCALING (ON)" : "INTEGER SCALING (OFF)";
+	ck_us_optionsMenuItems[8].caption = vl_swapInterval ? "VSYNC (ON)" : "VSYNC (OFF)";
 #endif
 #ifdef EXTRA_JOYSTICK_OPTIONS
 	ck_us_joyconfMenuItems[(int)IN_joy_modern].caption = in_joyAdvancedMotion ? "MOTION MODE (MODERN)" : "MOTION MODE (CLASSIC)";

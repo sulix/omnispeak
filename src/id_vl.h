@@ -30,6 +30,7 @@ extern bool vl_isFullScreen;
 extern bool vl_isAspectCorrected;
 extern bool vl_isIntegerScaled;
 extern bool vl_hasOverscanBorder;
+extern int vl_swapInterval;
 
 // EGA signal palettes (the 17th entry of each row is the overscan border color)
 // NOTE: Vanilla Keen can modify some of these (e.g. the border color)
@@ -122,6 +123,7 @@ void VL_ToggleFullscreen();
 void VL_ToggleAspect();
 void VL_ToggleBorder();
 void VL_ToggleInteger();
+void VL_ToggleVSync();
 void *VL_CreateSurface(int w, int h);
 void VL_DestroySurface(void *surf);
 void *VL_SetScreen(void *surf);

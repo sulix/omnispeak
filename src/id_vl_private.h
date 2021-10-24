@@ -81,6 +81,7 @@ extern bool vl_isFullScreen;
 extern bool vl_isAspectCorrected;
 extern bool vl_isIntegerScaled;
 extern bool vl_hasOverscanBorder;
+extern int vl_swapInterval;
 
 // The full on-screen region, including overscan border.
 extern int vl_fullRgn_x;

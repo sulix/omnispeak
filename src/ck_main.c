@@ -663,6 +663,7 @@ int main(int argc, char *argv[])
 	bool hasBorder = CFG_GetConfigBool("border", true);
 	bool isIntegerScaled = CFG_GetConfigBool("integer", false);
 	bool overrideCopyProtection = CFG_GetConfigBool("ck6_noCreatureQuestion", false);
+	int swapInterval = CFG_GetConfigInt("swapInterval", 1);
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 	const char *dumperFilename = NULL;
 #endif
@@ -711,6 +712,14 @@ int main(int argc, char *argv[])
 		{
 			isIntegerScaled = true;
 		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/VSYNC"))
+		{
+			swapInterval = 1;
+		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/NOVSYNC"))
+		{
+			swapInterval = 0;
+		}
 		else if (!CK_Cross_strcasecmp(argv[i], "/NOJOYS"))
 		{
 			in_disableJoysticks = true;
@@ -747,6 +756,7 @@ int main(int argc, char *argv[])
 	}
 #endif
 
+	vl_swapInterval = swapInterval;
 	VL_SetParams(isFullScreen, isAspectCorrected, hasBorder, isIntegerScaled);
 
 	ck_currentEpisode->defineConstants();

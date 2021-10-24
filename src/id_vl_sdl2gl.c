@@ -683,6 +683,9 @@ void VL_SDL2GL_FlushParams()
 	SDL_SetWindowFullscreen(vl_sdl2gl_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
 	SDL_SetWindowMinimumSize(vl_sdl2gl_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER / VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER / VL_VGA_GFX_HEIGHT_SCALEFACTOR);
+
+	if (SDL_GL_SetSwapInterval(vl_swapInterval) < 0)
+		vl_swapInterval = SDL_GL_GetSwapInterval();
 }
 
 static void VL_SDL2GL_WaitVBLs(int vbls)

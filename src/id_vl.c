@@ -740,6 +740,7 @@ bool vl_isFullScreen;
 bool vl_isAspectCorrected;
 bool vl_isIntegerScaled;
 bool vl_hasOverscanBorder;
+int vl_swapInterval;
 
 void VL_SetParams(bool isFullScreen, bool isAspectCorrected, bool hasOverscan, bool isIntegerScaled)
 {
@@ -771,6 +772,13 @@ void VL_ToggleInteger()
 	VL_SetParams(vl_isFullScreen, vl_isAspectCorrected, vl_hasOverscanBorder, !vl_isIntegerScaled);
 }
 
+void VL_ToggleVSync()
+{
+	// TODO: Support Adaptive VSync (-1)
+	vl_swapInterval ^= 1;
+	if (vl_currentBackend)
+		vl_currentBackend->flushParams();
+}
 
 void *VL_CreateSurface(int w, int h)
 {
