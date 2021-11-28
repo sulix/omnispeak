@@ -24,6 +24,7 @@ option(XDGUSERPATH "prefer XDG user paths to the default path above" OFF)
 # Optional SD backends
 option(WITH_ALSA "whether to include ALSA support for real OPL2 hardware (Linux only)" OFF)
 option(WITH_IEEE1284 "whether to include support for the OPL2LPT parallel port soundcard" OFF)
+option(WITH_OPLHW "whether to include support for real OPL2 hardware via liboplhw" OFF)
 
 # TODO: Handle this
 #list(APPEND CMAKE_PREFIX_PATH "cmake/")
@@ -198,6 +199,20 @@ if(WITH_IEEE1284)
 		ieee1284
 	)
 	add_definitions(-DSD_OPL2_WITH_IEEE1284)
+endif()
+
+if(WITH_OPLHW)
+	message(STATUS "Enabling hardware OPL2 support (liboplhw)...")
+
+	set(OMNISPEAK_PLATFORM_SRCS
+		${OMNISPEAK_PLATFORM_SRCS}
+		src/id_sd_liboplhw.c
+	)
+	set(OMNISPEAK_PLATFORM_LIBRARIES
+		${OMNISPEAK_PLATFORM_LIBRARIES}
+		oplhw
+	)
+	add_definitions(-DSD_OPL2_WITH_LIBOPLHW)
 endif()
 
 set(OMNISPEAK_ID_SRCS
