@@ -388,9 +388,11 @@ static int VL_SDL2_GetNumBuffers(void *surface)
 
 static void VL_SDL2_FlushParams()
 {
-	// TODO: Find a way to toggle VSync at runtime.
 	SDL_SetWindowFullscreen(vl_sdl2_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 	SDL_SetWindowMinimumSize(vl_sdl2_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER / VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER / VL_VGA_GFX_HEIGHT_SCALEFACTOR);
+#if SDL_VERSION_ATLEAST(2, 0, 18)
+	SDL_RenderSetVSync(vl_sdl2_renderer, vl_swapInterval);
+#endif
 	VL_SDL2_ResizeWindow();
 }
 
