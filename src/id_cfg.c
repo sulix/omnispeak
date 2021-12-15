@@ -232,7 +232,23 @@ static bool CFG_SaveConfigLine(FS_File outputHandle, STR_ParserState *state)
 	}
 	else
 	{
-		int oldValue = STR_GetInteger(state);
+		int oldValue = 0;
+		if (!CK_Cross_strcasecmp(value.valuePtr, "false"))
+		{
+			oldValue = 0;
+			// Eat the token.
+			STR_GetToken(state);
+		}
+		else if (!CK_Cross_strcasecmp(value.valuePtr, "true"))
+		{
+			oldValue = 1;
+			// Eat the token.
+			STR_GetToken(state);
+		}
+		else
+			oldValue = STR_GetInteger(state);
+
+
 		if (oldValue == var->int_value)
 		{
 			// If the old value matches the new, mark it unmodified.
