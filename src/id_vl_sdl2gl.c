@@ -558,7 +558,7 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY, bool singleBu
 
 	VL_CalculateRenderRegions(realWinW, realWinH);
 
-	if (vl_isAspectCorrected)
+	if (vl_isAspectCorrected || vl_isIntegerScaled)
 	{
 		id_glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		id_glClear(GL_COLOR_BUFFER_BIT);
