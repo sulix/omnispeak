@@ -23,7 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vl_private.h"
 
 #include "ck_cross.h"
+#include "id_us.h"
 
+#include <stdlib.h>
 #ifdef WITH_SDL
 #include <SDL.h>
 #endif
@@ -716,6 +718,30 @@ void VL_InitScreen(void)
 	vl_started = true;
 }
 
+static const char *vl_parmStrings[] = { "HIDDENCARD", "NOPAN", "" };
+
+bool vl_hiddenCard = false;
+bool vl_noPan = false;
+
+void VL_Startup()
+{
+	// Check command line args.
+	for (int i = 1; i < us_argc; ++i)
+	{
+		int parmIdx = US_CheckParm(us_argv[i], vl_parmStrings);
+		switch (parmIdx)
+		{
+		case 0:
+			vl_hiddenCard = true;
+			break;
+		case 1:
+			vl_noPan = true;
+			break;
+		}
+	}
+	VL_InitScreen();
+}
+
 void VL_Shutdown()
 {
 	if (vl_started)
@@ -934,12 +960,13 @@ void VL_Yield()
 	vl_currentBackend->waitVBLs(0);
 }
 
-static int vl_scrollXpixels;
-static int vl_scrollYpixels;
+static int vl_scrollXpixels = 0;
+static int vl_scrollYpixels = 0;
 
 void VL_SetScrollCoords(int x, int y)
 {
-	vl_scrollXpixels = x;
+	if (!vl_noPan)
+		vl_scrollXpixels = x;
 	vl_scrollYpixels = y;
 }
 

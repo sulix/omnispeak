@@ -37,6 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // For all the shitty debug stuff  I have.
 #include <stdio.h>
+#include "id_vl.h"
 
 void CK_SpawnKeen(int tileX, int tileY, int direction);
 extern CK_object *ck_keenObj;
@@ -578,14 +579,28 @@ void CK_KeenRidePlatform(CK_object *obj)
 		ck_nextY = plat->clipRects.unitY1 - obj->clipRects.unitY2 - 16;
 		CK_PhysUpdateSimpleObj(obj);
 
-		// Keen has a "/NOPAN" parameter which disables use of the EGA panning
-		// register. In order to make platforms less ugly when this is on
-		// (though not much less ugly, IMHO), we would do some more processing here.
-		// As is, we just do the line below, to keep keen at the same position while scrolling.
-
-		// Keen's x position should move with 2px granularity when on a platform so that scrolling
-		// looks nice. (Keen will stay at the same pixel position when scrolling, as we scroll 2px at a time).
-		obj->posX |= plat->posX & 0x1F;
+		if (vl_noPan)
+		{
+			// Keen has a "/NOPAN" parameter which disables use of the EGA panning
+			// register. In order to make platforms less ugly when this is on
+			// (though not much less ugly, IMHO), clamp Keen's movement to the nearest
+			// 8px, so that scrolling timing is aligned with the platform.
+			// This causes a bug where you can't always walk off bounders, see:
+			//   https://pckf.com/viewtopic.php?p=102264
+			//   https://www.youtube.com/watch?v=cScZlYPhFnU
+			obj->posX &= ~0x7F;
+			obj->posX |= plat->posX & 0x7F;
+		}
+		else
+		{
+		
+			// Make Keen's x-position move in tandem with the platform, so that they appear to move as a unit,
+			// and (more importantly) that the platform moves in time with the camera scrolling (which is based
+			// on Keen's position).
+			// Technically, this probably should clear out the low bits like the /NOPAN case, so that their subpixel
+			// values are identical.
+			obj->posX |= plat->posX & 0x1F;
+		}
 
 		// We've hit the ceiling?
 		if (obj->bottomTI)

@@ -31,6 +31,8 @@ extern bool vl_isAspectCorrected;
 extern bool vl_isIntegerScaled;
 extern bool vl_hasOverscanBorder;
 extern int vl_swapInterval;
+extern bool vl_hiddenCard; //TODO: Use this to enable even unwise fallbacks.
+extern bool vl_noPan;
 
 // EGA signal palettes (the 17th entry of each row is the overscan border color)
 // NOTE: Vanilla Keen can modify some of these (e.g. the border color)
@@ -116,6 +118,7 @@ typedef struct VL_Backend
 } VL_Backend;
 
 void VL_InitScreen(void);
+void VL_Startup();
 void VL_Shutdown();
 void VL_ResizeScreen(int w, int h);
 void VL_SetParams(bool isFullScreen, bool isAspectCorrected, bool hasOverscan, bool isIntegerScaled);

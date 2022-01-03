@@ -1266,6 +1266,10 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 
 	int unshiftedX = RF_UnitToPixel(unitX + VH_GetSpriteTableEntry(sprite_number)->originX);
 	int shift = (unshiftedX&7) / 2;
+	
+	// If NOPAN is enabled, always use the unshifted sprite.
+	if (vl_noPan)
+		shift = 0;
 
 	sde->chunk = chunk;
 	sde->zLayer = zLayer;

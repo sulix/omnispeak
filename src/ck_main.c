@@ -329,7 +329,7 @@ void CK_InitGame()
 	CK_VAR_LoadVars("ACTION.EXT");
 
 	// Setup the screen
-	VL_InitScreen();
+	VL_Startup();
 	// TODO: Palette initialization should be done in the terminator code
 	VL_SetDefaultPalette();
 
@@ -399,14 +399,12 @@ void CK_DemoLoop()
 		switch (demoNumber++)
 		{
 		case 0: // Terminator scroller and Title Screen
-#if 0
 			// If no pixel panning capability
 			// Then the terminator screen isn't shown
-			if (NoPan)
+			if (vl_noPan)
 				CK_ShowTitleScreen();
 			else
-#endif
-			CK_DrawTerminator(); //TODO: Move this to an episode struct.
+				CK_DrawTerminator();
 #if 1					     //DEMO_LOOP_ENABLED
 			break;
 		case 1:
