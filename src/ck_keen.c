@@ -1438,6 +1438,12 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 {
 	if (other->type == CT_CLASS(Platform))
 	{
+		// NOTE: Keen 6 fixes the "pole foreground bug", where Keen can
+		// get stuck with a zLayer of 3 if ledge-grabbing is interrupted.
+		// See:
+		//     https://pckf.com/viewtopic.php?t=12901
+		if (CFG_GetConfigBool("ck_fixPlatformZLayer", (ck_currentEpisode->ep == EP_CK6)))
+			obj->zLayer = 1;
 		obj->clipped = CLIP_normal;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
 		ck_keenState.jumpTimer = 0;
