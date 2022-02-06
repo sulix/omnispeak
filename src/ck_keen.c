@@ -1457,7 +1457,8 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		CK_KillKeen();
 	}
 	else if (((ck_currentEpisode->ep == EP_CK4) && (other->type == CT4_Bounder)) ||
-		((ck_currentEpisode->ep == EP_CK5) && ((other->type == CT5_Ampton) || (other->type == CT5_Korath))))
+		((ck_currentEpisode->ep == EP_CK5) && ((other->type == CT5_Ampton) || (other->type == CT5_Korath))) ||
+		((ck_currentEpisode->ep == EP_CK6) && ((other->type == CT6_Gik) || (other->type == CT6_Flect) || (other->type == CT6_Blooglet))))
 	{
 		obj->zLayer = 1;
 		obj->clipped = CLIP_normal;
@@ -1467,6 +1468,8 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		obj->velY = 0;
 		if (ck_currentEpisode->ep == EP_CK4)
 			CK_PhysPushXY(obj, other, false);
+		else if (ck_currentEpisode->ep == EP_CK6)
+			CK_PhysPushY(obj, other);
 	}
 }
 
