@@ -17,6 +17,7 @@ option(BUILDASCPP "compile all 'c' source files with the C++ compiler" OFF)
 
 set(KEENPATH "." CACHE STRING "set the default path to the Commander Keen data files")
 set(USERPATH "." CACHE STRING "set the default path for user savegames")
+set(OMNIPATH USERPATH CACHE STRING "set the default path for Omnispeak's bundled data files")
 option(XDGUSERPATH "prefer XDG user paths to the default path above" OFF)
 
 
@@ -43,6 +44,9 @@ if(KEENPATH)
 endif()
 if(USERPATH)
 	add_definitions(-DFS_DEFAULT_USER_PATH="${USERPATH}")
+endif()
+if(OMNIPATH)
+	add_definitions(-DFS_DEFAULT_OMNI_PATH="${OMNIPATH}")
 endif()
 if(XDGUSERPATH)
 	add_definitions(-DFS_USER_PATH_PREFER_XDG=1)
