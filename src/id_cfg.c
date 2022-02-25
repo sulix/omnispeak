@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ID_MM_Arena *cfg_configArena;
 STR_Table *cfg_configEntries;
+bool cfg_started = false;
 
 bool CFG_ConfigExists(const char *name)
 {
@@ -349,11 +350,16 @@ void CFG_Startup()
 	STR_AllocTable(&cfg_configEntries, 256);
 
 	CFG_LoadConfig("OMNISPK.CFG");
+	cfg_started = true;
 }
 
 void CFG_Shutdown()
 {
-	CFG_SaveConfig("OMNISPK.CFG");
+	if (cfg_started)
+	{
+		CFG_SaveConfig("OMNISPK.CFG");
 
-	MM_ArenaDestroy(cfg_configArena);
+		MM_ArenaDestroy(cfg_configArena);
+	}
+	cfg_started = false;
 }
