@@ -54,7 +54,7 @@ int US_CheckParm(const char *parm, const char **strings)
 	{
 
 		if (strings[i][0] == '\0')
-			continue;
+			break;
 		if (!CK_Cross_strcasecmp(parm, strings[i]))
 			return i;
 	}
