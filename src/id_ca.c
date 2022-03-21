@@ -930,6 +930,7 @@ void CAL_SetupAudioFile(void)
 		*uptr = CK_Cross_Swap16(*uptr);
 #endif
 
+#ifndef CA_AUDIOUNCOMPRESSED
 	//Load the AUDIODCT
 	CA_LoadFile("AUDIODCT.EXT", (void **)(&ca_audiohuffman), 0);
 
@@ -951,8 +952,19 @@ void CAL_SetupAudioFile(void)
 	ca_audiohandle = FS_OpenKeenFile(FS_AdjustExtension("AUDIO.EXT"));
 	if (!ca_audiohandle)
 	{
-		Quit("Can't open AUDIO.CK5!");
+		Quit("Can't open AUDIO.CKx!");
 	}
+#else
+	//Load the AUDIOHHD
+	CA_LoadFile("AUDIOHED.EXT", (void **)(&ca_audiostarts), 0);
+
+	//Load the sound data --- we will keep the file open for the duration of the game.
+	ca_audiohandle = FS_OpenKeenFile(FS_AdjustExtension("AUDIOT.EXT"));
+	if (!ca_audiohandle)
+	{
+		Quit("Can't open AUDIOT.CKx!");
+	}
+#endif
 }
 
 void CA_CacheMap(int mapIndex)
@@ -1093,6 +1105,10 @@ void CA_CacheAudioChunk(int16_t chunk)
 
 	FS_SeekTo(ca_audiohandle, pos);
 
+#ifdef CA_AUDIOUNCOMPRESSED
+	MM_GetPtr((void**)&CA_audio[chunk], compressed);
+	FS_Read(CA_audio[chunk], 1, compressed, ca_audiohandle);
+#else
 	if (compressed <= BUFFERSIZE)
 	{
 		size_t readSize = FS_Read(buffer, 1, compressed, ca_audiohandle);
@@ -1128,6 +1144,7 @@ void CA_CacheAudioChunk(int16_t chunk)
 	//done:
 	if (compressed > BUFFERSIZE)
 		MM_FreePtr(&bigbuffer);
+#endif
 }
 
 void CA_LoadAllSounds(void)

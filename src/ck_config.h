@@ -102,4 +102,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define FS_XDG_ORGANISATION "Commander Keen"
 #define FS_XDG_APPLICATION "Omnispeak"
 
+// =================================
+// Cache Manager (ID_CA) options. 
+// =================================
+
+// Read uncompressed audio data (AUDIOT, AUDIOHED)
+//#define CA_AUDIOUNCOMPRESSED
+
 #endif //CK_CONFIG_H
