@@ -63,11 +63,12 @@ Omnispeak supports several command-line options, some of which are:
 		- Disables Joystick detection.
 	/NOCOPY
 		- Bypasses the "Creature Question" screen in Keen 6.
-	/NOAUDIOSYNC
-		- When using SDL-based sound backends, use the system clock
-		  rather than the audio clock. Available as the
-		  'sd_sdl_noAudioSync' config option.
-		  (Works around issues with some SDL audio backends under wine)
+	/AUDIOSYNC
+		- When using SDL-based sound backends, use the audio clock
+		  rather than the system clock. Available as the
+		  'sd_sdl_audioSync' config option.
+		  (Enabling this ensures perfect audio timing, at the expense
+		  of worse frame pacing.)
 	/DEMOFILE <filename>
 		- Plays the demo recorded with Keen's F10+D cheat in filename.
 

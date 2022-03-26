@@ -354,12 +354,12 @@ void SD_SDL_Startup(void)
 		sd_oplEmulator = SD_OPL_EMULATOR_DBOPL;
 	}
 
-	SD_SDL_useTimerFallback = CFG_GetConfigBool("sd_sdl_noAudioSync", false);
+	SD_SDL_useTimerFallback = !CFG_GetConfigBool("sd_sdl_audioSync", false);
 
 	for (int i = 0; i < us_argc; ++i)
 	{
-		if (!CK_Cross_strcasecmp(us_argv[i], "/NOAUDIOSYNC"))
-			SD_SDL_useTimerFallback = true;
+		if (!CK_Cross_strcasecmp(us_argv[i], "/AUDIOSYNC"))
+			SD_SDL_useTimerFallback = false;
 		if (!CK_Cross_strcasecmp(us_argv[i], "/NUKEDOPL3"))
 			sd_oplEmulator = SD_OPL_EMULATOR_NUKED;
 	}
