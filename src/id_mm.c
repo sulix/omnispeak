@@ -145,7 +145,7 @@ void MM_GetPtr(mm_ptr_t *ptr, unsigned long size)
 		blk->ptr = malloc(size);
 		if (size && !blk->ptr)
 		{
-			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "MM_GetPtr: Failed to alloc block (%d bytes) with system malloc. Trying to free some space.\n", size);
+			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "MM_GetPtr: Failed to alloc block (%lu bytes) with system malloc. Trying to free some space.\n", size);
 			if (mm_numpurgeable)
 				MML_ClearBlock();
 			else
