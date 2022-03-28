@@ -9,7 +9,7 @@
 #include <execinfo.h>
 #endif
 
-void CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass, const char *format, ...)
+void CK_PRINTF_FORMAT(2, 3) CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass, const char *format, ...)
 {
 	// TODO: For now we simply do this.
 	va_list args;

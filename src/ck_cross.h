@@ -56,6 +56,14 @@
 #error Unknown compiler, no packed struct support
 #endif
 
+
+// Add printf format-string warnings on compilers which support them
+#if defined(__GNUC__)
+#define CK_PRINTF_FORMAT(fmtstridx, firstarg) __attribute__ ((format (printf, fmtstridx, firstarg)))
+#else
+#define CK_PRINTF_FORMAT(fmtstridx, firstarg)
+#endif
+
 typedef enum CK_Log_Message_Class_T
 {
 	CK_LOG_MSG_NORMAL,
@@ -64,7 +72,7 @@ typedef enum CK_Log_Message_Class_T
 } CK_Log_Message_Class_T;
 
 // Used for debugging
-void CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass, const char *format, ...);
+void CK_PRINTF_FORMAT(2, 3) CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass, const char *format, ...);
 
 // Emulates the functionality of the "puts" function in text mode
 void CK_Cross_puts(const char *str);
