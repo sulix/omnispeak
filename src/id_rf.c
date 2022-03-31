@@ -139,7 +139,13 @@ RF_OnscreenAnimTile *rf_firstOnscreenAnimTile, *rf_freeOnscreenAnimTile;
 
 // The minimum number of ticks permitted per frame. 
 // Defaults to 2 (35Hz).
-int rf_minTics;	
+int rf_minTics = 2;	
+// Maximum number of ticks permitted per frame.
+// Defaults to 5 (14Hz)
+int rf_maxTics = 5;
+// Number of ticks per frame during demo record/playback.
+// Must be 3 (23Hz) for demo compatibility.
+int rf_demoTics = 3;
 
 // Block dirty state
 #define RF_BUFFER_SIZE (RF_BUFFER_WIDTH_TILES * RF_BUFFER_HEIGHT_TILES)
@@ -602,6 +608,8 @@ void RF_Startup()
 	// Create the tile backing buffer
 	rf_tileBuffer = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS);
 	rf_minTics = CFG_GetConfigInt("rf_minTics", 2);
+	rf_maxTics = CFG_GetConfigInt("rf_maxTics", 5);
+	rf_demoTics = CFG_GetConfigInt("rf_demoTics", 3);
 }
 
 void RF_Shutdown()
@@ -967,36 +975,41 @@ void RFL_CalcTics()
 	uint32_t inctime;
 	if ((uint32_t)SD_GetLastTimeCount() > SD_GetTimeCount())
 		SD_SetTimeCount(SD_GetLastTimeCount());
+
 	if (in_demoState != IN_Demo_Off)
 	{
+		// If we're recording or playing a demo, we need the speed to be deterministic.
 		uint32_t new_time = SD_GetLastTimeCount();
-		// TODO/FIXME: Better handling of this in the future
-		while (new_time + 6 > SD_GetTimeCount())
+		while (new_time + (rf_demoTics * 2) > SD_GetTimeCount())
 		{
 			// As long as this takes no more than 10ms...
 			VL_Yield();
 		}
 		// We do not want to lose demo sync
-		SD_SetLastTimeCount(new_time + 3);
-		SD_SetTimeCount(new_time + 6);
-		SD_SetSpriteSync(3);
+		SD_SetLastTimeCount(new_time + rf_demoTics);
+		SD_SetTimeCount(new_time + (rf_demoTics * 2));
+		SD_SetSpriteSync(rf_demoTics);
 		return;
 	}
-	// TODO/FIXME: Better handling of this in the future
 	do
 	{
 		inctime = SD_GetTimeCount();
 		SD_SetSpriteSync((uint16_t)(inctime & 0xFFFF) - (uint16_t)(SD_GetLastTimeCount() & 0xFFFF));
+
+		// Ensure speed doesn't go too high. (We don't permit 0 or 1 tics).
 		if (SD_GetSpriteSync() >= rf_minTics)
 			break;
 		// As long as this takes no more than 10ms...
 		VL_Yield();
 	} while (1);
 	SD_SetLastTimeCount(inctime);
-	if (SD_GetSpriteSync() > 5)
+
+	// If the game is running at under 14 Hz, slow down gameplay rather than dropping too many frames.
+	// (Which could cause the physics to be pretty broken.)
+	if (SD_GetSpriteSync() > rf_maxTics)
 	{
-		SD_SetTimeCount(SD_GetTimeCount() - (SD_GetSpriteSync() - 5));
-		SD_SetSpriteSync(5);
+		SD_SetTimeCount(SD_GetTimeCount() - (SD_GetSpriteSync() - rf_maxTics));
+		SD_SetSpriteSync(rf_maxTics);
 	}
 }
 
