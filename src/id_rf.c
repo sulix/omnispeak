@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_vh.h"
 #include "id_vl.h"
+#include "id_cfg.h"
 #include "ck_cross.h"
 #include "ck_ep.h"
 #include "ck_play.h"
@@ -135,6 +136,10 @@ RF_AnimTileTimer rf_animTileTimers[RF_MAX_ANIMTILETIMERS];
 
 RF_OnscreenAnimTile rf_onscreenAnimTiles[RF_MAX_ONSCREENANIMTILES];
 RF_OnscreenAnimTile *rf_firstOnscreenAnimTile, *rf_freeOnscreenAnimTile;
+
+// The minimum number of ticks permitted per frame. 
+// Defaults to 2 (35Hz).
+int rf_minTics;	
 
 // Block dirty state
 #define RF_BUFFER_SIZE (RF_BUFFER_WIDTH_TILES * RF_BUFFER_HEIGHT_TILES)
@@ -596,6 +601,7 @@ void RF_Startup()
 {
 	// Create the tile backing buffer
 	rf_tileBuffer = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS);
+	rf_minTics = CFG_GetConfigInt("rf_minTics", 2);
 }
 
 void RF_Shutdown()
@@ -981,7 +987,7 @@ void RFL_CalcTics()
 	{
 		inctime = SD_GetTimeCount();
 		SD_SetSpriteSync((uint16_t)(inctime & 0xFFFF) - (uint16_t)(SD_GetLastTimeCount() & 0xFFFF));
-		if (SD_GetSpriteSync() >= 2)
+		if (SD_GetSpriteSync() >= rf_minTics)
 			break;
 		// As long as this takes no more than 10ms...
 		VL_Yield();
