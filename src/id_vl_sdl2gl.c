@@ -238,7 +238,8 @@ static void VL_SDL2GL_SetVideoMode(int mode)
 			Quit("Your system does not have one or more required OpenGL extensions.");
 		}
 
-		SDL_GL_SetSwapInterval(1);
+		if (SDL_GL_SetSwapInterval(vl_swapInterval) < 0)
+			vl_swapInterval = SDL_GL_GetSwapInterval();
 
 		// Compile the shader we use to emulate EGA palettes.
 		int compileStatus = 0;
