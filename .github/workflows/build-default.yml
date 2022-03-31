@@ -19,8 +19,6 @@ jobs:
         mkdir csdpmi7b
         unzip csdpmi7b.zip -d csdpmi7b/
         sudo mkdir -p /opt
-        wget http://www.gcw-zero.com/files/opendingux-gcw0-toolchain.2014-08-20.tar.bz2
-        sudo tar xf opendingux-gcw0-toolchain.2014-08-20.tar.bz2 -C /opt
     - name: Build (Linux)
       working-directory: ./src
       run: |
@@ -35,10 +33,6 @@ jobs:
       run: |
         make PLATFORM=dos
         cp ../csdpmi7b/bin/CWSDPMI.EXE ../bin-dos
-    - name: Build (GCW Zero)
-      working-directory: ./src
-      run: |
-        make PLATFORM=gcw0
     - name: Upload (Linux)
       uses: actions/upload-artifact@v2
       with:
@@ -54,8 +48,3 @@ jobs:
       with:
         name: MS-DOS Build
         path: bin-dos/
-    - name: Upload (GCW Zero)
-      uses: actions/upload-artifact@v2
-      with:
-        name: GCW Zero Build
-        path: bin-gcw0/
