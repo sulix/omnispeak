@@ -52,7 +52,7 @@ volatile uint16_t sd_currentSfxPriority;
 
 // Timing functions
 #define PC_PIT_RATE 1193182
-#define SD_SFX_PART_RATE 140
+static int sd_sfxPartRate = 140;
 /* In the original exe, upon setting a rate of 140Hz or 560Hz for some
  * interrupt handler, the value 1192030 divided by the desired rate is
  * calculated, to be programmed for timer 0 as a consequence.
@@ -114,7 +114,7 @@ static void SD_SetIntsPerSecond(int16_t tickrate)
 static void SD_SetTimerSpeed(void)
 {
 	int16_t scaleFactor = (sd_musicMode == smm_AdLib) ? 4 : 1;
-	SD_SetIntsPerSecond(SD_SFX_PART_RATE * scaleFactor);
+	SD_SetIntsPerSecond(sd_sfxPartRate * scaleFactor);
 	sd_scaledPITTimerDivisor *= (2 * scaleFactor);
 }
 
@@ -531,6 +531,8 @@ void SD_Startup()
 {
 	if (sd_started)
 		return;
+
+	sd_sfxPartRate = CFG_GetConfigInt("sd_sfxPartRate", 140);
 
 	sd_backend = SD_Impl_GetBackend();
 
