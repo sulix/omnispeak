@@ -636,6 +636,11 @@ void CAL_ExpandGrChunk(int chunk, void *source)
 		source = (uint8_t *)source + 4;
 	}
 
+	if (length < 0)
+	{
+		Quit("Tried to expand an invalid chunk! Make sure you're using a compatible version of Keen!");
+	}
+
 	if (chunk >= ca_gfxInfoE.offSprites && chunk < ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites)
 	{
 		CAL_CacheSprite(chunk, (uint8_t *)source);
