@@ -209,7 +209,7 @@ void CAL_OptimizeNodes(ca_huffnode *table)
 	//STUB: This optimization is not very helpful on modern machines.
 }
 
-void CAL_HuffExpand(void *src, void *dest, int expLength, ca_huffnode *table)
+void CAL_HuffExpand(void *src, void *dest, int expLength, ca_huffnode *table, int srcLength)
 {
 	int headptr = 254;
 	uint8_t *srcptr = (uint8_t *)src;
@@ -248,6 +248,8 @@ void CAL_HuffExpand(void *src, void *dest, int expLength, ca_huffnode *table)
 			src_char = *(srcptr++);
 			src_bit = 1;
 			complen++;
+			if (complen > srcLength)
+				break;
 		}
 	}
 }
@@ -500,7 +502,7 @@ void CAL_ShiftSprite(uint8_t *srcImage, uint8_t *dstImage, int width, int height
 	}
 }
 
-void CAL_CacheSprite(int chunkNumber, uint8_t *compressed)
+void CAL_CacheSprite(int chunkNumber, uint8_t *compressed, int compLength)
 {
 	int spriteNumber = chunkNumber - ca_gfxInfoE.offSprites;
 
@@ -524,7 +526,7 @@ void CAL_CacheSprite(int chunkNumber, uint8_t *compressed)
 	shiftOffsets[3] = shiftOffsets[2] + bigPlane * 5;
 	shiftOffsets[4] = shiftOffsets[3] + bigPlane * 5;
 
-	CAL_HuffExpand(compressed, shifted->data, smallPlane * 5, ca_gr_huffdict);
+	CAL_HuffExpand(compressed, shifted->data, smallPlane * 5, ca_gr_huffdict, compLength);
 
 	switch (sprite->shifts)
 	{
@@ -625,7 +627,7 @@ void CAL_SetupGrFile()
 	CA_LockGrChunk(ca_gfxInfoE.hdrSprites);
 }
 
-void CAL_ExpandGrChunk(int chunk, void *source)
+void CAL_ExpandGrChunk(int chunk, void *source, int compressedLength)
 {
 	//TODO: Support non-basic chunks.
 	int32_t length = CAL_GetGrChunkExpLength(chunk);
@@ -634,6 +636,7 @@ void CAL_ExpandGrChunk(int chunk, void *source)
 	{
 		length = CAL_ReadLong(source);
 		source = (uint8_t *)source + 4;
+		compressedLength -= 4;
 	}
 
 	if (length < 0)
@@ -643,12 +646,12 @@ void CAL_ExpandGrChunk(int chunk, void *source)
 
 	if (chunk >= ca_gfxInfoE.offSprites && chunk < ca_gfxInfoE.offSprites + ca_gfxInfoE.numSprites)
 	{
-		CAL_CacheSprite(chunk, (uint8_t *)source);
+		CAL_CacheSprite(chunk, (uint8_t *)source, compressedLength);
 	}
 	else
 	{
 		MM_GetPtr(&ca_graphChunks[chunk], length);
-		CAL_HuffExpand(source, ca_graphChunks[chunk], length, ca_gr_huffdict);
+		CAL_HuffExpand(source, ca_graphChunks[chunk], length, ca_gr_huffdict, compressedLength);
 	}
 }
 
@@ -701,7 +704,7 @@ void CA_CacheGrChunk(int chunk)
 		}
 		read += curRead;
 	} while (read < compressedLength);
-	CAL_ExpandGrChunk(chunk, compdata);
+	CAL_ExpandGrChunk(chunk, compdata, compressedLength);
 	MM_FreePtr(&compdata);
 
 #ifdef CK_CROSS_IS_BIGENDIAN
@@ -1144,7 +1147,7 @@ void CA_CacheAudioChunk(int16_t chunk)
 	if (mmerror)
 		goto done;
 #endif
-	CAL_HuffExpand(source, CA_audio[chunk], expanded, ca_audiohuffman);
+	CAL_HuffExpand(source, CA_audio[chunk], expanded, ca_audiohuffman, compressed);
 
 	//done:
 	if (compressed > BUFFERSIZE)
