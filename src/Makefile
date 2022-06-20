@@ -322,9 +322,7 @@ endif
 ifeq ($(RENDERER), sdl2vk)
 	RENDER_OBJS = id_vl_sdl2vk.o id_sd_sdl.o id_in_sdl.o
 	LIBS += $(LIBVULKAN)
-	ifeq ($(PLATFORM),)
-		LIBS += -lX11 -lX11-xcb
-	endif
+	CXXFLAGS += -I$(OBJDIR) #For generated SPIR-V headers
 endif
 
 ifeq ($(RENDERER), dos)
@@ -409,6 +407,12 @@ dumpconfig:
 $(BINDIR):
 	mkdir -p $(BINDIR)
 
+$(OBJDIR)/id_vl_sdl2vk.o: $(OBJDIR)/id_vl_vk_frag.h $(OBJDIR)/id_vl_vk_vert.h
+
+$(OBJDIR)/id_vl_vk_%.h: id_vl_vk_shader.%
+	@mkdir -p $(dir $@)
+	glslc -mfmt=c $< -o $@
+
 $(OBJDIR)/%.o: %.c $(SDL_DIR)
 	@mkdir -p $(dir $@)
 	$(CXX) $(SYSFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -MMD -o $@ $<
@@ -461,7 +465,7 @@ $(SDL_DIR):
 	wget -O- $(SDL_URL) | tar xz -C ..
 
 clean:
-	rm -f $(OUTBIN) $(OUTBIN)/dumpprinter $(OBJ) $(OBJDIR)/windowsres.res $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA) $(BATFILES) $(SHELLFILES)
+	rm -f $(OUTBIN) $(OUTBIN)/dumpprinter $(OBJ) $(OBJDIR)/windowsres.res $(OBJDIR)/*.h $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA) $(BATFILES) $(SHELLFILES)
 
 RMDIR_ERRMSG = Note: Some of the 'bin' directories still contain user data. They have not been removed.
 export RMDIR_ERRMSG

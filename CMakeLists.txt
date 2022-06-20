@@ -71,10 +71,27 @@ elseif(RENDERER STREQUAL "sdl2vk")
 	message(STATUS "Using SDL 2.0 + Vulkan renderer backend")
 	find_package(SDL2 CONFIG)
 	find_package(Vulkan)
+
+	add_custom_command(OUTPUT id_vl_vk_vert.h
+		COMMAND glslc -mfmt=c
+			${CMAKE_CURRENT_SOURCE_DIR}/src/id_vl_vk_shader.vert
+			-o id_vl_vk_vert.h
+		DEPENDS src/id_vl_vk_shader.vert
+	)
+
+	add_custom_command(OUTPUT id_vl_vk_frag.h
+		COMMAND glslc -mfmt=c
+			${CMAKE_CURRENT_SOURCE_DIR}/src/id_vl_vk_shader.frag
+			-o id_vl_vk_frag.h
+		DEPENDS src/id_vl_vk_shader.frag
+	)
+
 	set(OMNISPEAK_PLATFORM_SRCS
 		src/id_in_sdl.c
 		src/id_sd_sdl.c
 		src/id_vl_sdl2vk.c
+		${CMAKE_CURRENT_BINARY_DIR}/id_vl_vk_vert.h
+		${CMAKE_CURRENT_BINARY_DIR}/id_vl_vk_frag.h
 	)
 	set(OMNISPEAK_PLATFORM_LIBRARIES
 		${Vulkan_LIBRARIES}
@@ -83,6 +100,7 @@ elseif(RENDERER STREQUAL "sdl2vk")
 	include_directories(
 		${SDL2_INCLUDE_DIRS}
 		${VULKAN_INCLUDE_DIRS}
+		${CMAKE_CURRENT_BINARY_DIR}
 	)
 	add_definitions(-DWITH_SDL)
 elseif(RENDERER STREQUAL "sdl2gl")
