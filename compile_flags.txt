@@ -1,0 +1,4 @@
+-g
+-O0
+-DCK_DEBUG
+-c
