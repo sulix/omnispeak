@@ -16,10 +16,14 @@ jobs:
         make dumpprinter
     - name: Get Datafiles
       working-directory: ./bin
+      env:
+        K56DATA_URL: ${{ secrets.k56dataUrl }}
       run: |
         wget https://davidgow.net/keen/4keen14.zip
         unzip 4keen14.zip AUDIO.CK4 Gamemaps.ck4 Egagraph.ck4
-    - name: Run Tests
+        wget "$K56DATA_URL"
+        unzip k56data.zip
+    - name: Run Tests (Keen 4)
       working-directory: ./bin
       run: |
         ../tests/testdump.sh 0 4
@@ -27,3 +31,19 @@ jobs:
         ../tests/testdump.sh 2 4
         ../tests/testdump.sh 3 4
         ../tests/testdump.sh 4 4
+    - name: Run Tests (Keen 5)
+      working-directory: ./bin
+      run: |
+        ../tests/testdump.sh 0 5
+        ../tests/testdump.sh 1 5
+        ../tests/testdump.sh 2 5
+        ../tests/testdump.sh 3 5
+        ../tests/testdump.sh 4 5
+    - name: Run Tests (Keen 6)
+      working-directory: ./bin
+      run: |
+        ../tests/testdump.sh 0 6v14
+        ../tests/testdump.sh 1 6v14
+        ../tests/testdump.sh 2 6v14
+        ../tests/testdump.sh 3 6v14
+        ../tests/testdump.sh 4 6v14
