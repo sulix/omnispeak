@@ -39,6 +39,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef CK_DEBUG
 // Debug version of the ID_MM_Arena allocator.
 #define ID_MM_DEBUGARENA
+// Typechecking for variables.
+#define CK_VAR_TYPECHECK
 // Warn on out-of-bounds access to tileinfo.
 #define CK_WARN_ON_TILEINFO_OOB
 // Support the /DUMPFILE option for the playloop dumper

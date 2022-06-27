@@ -105,6 +105,14 @@ typedef enum CK_VAR_VarType
 	VAR_TOK_Include
 } CK_VAR_VarType;
 
+#ifdef CK_VAR_TYPECHECK
+typedef struct CK_VAR_Variable
+{
+	CK_VAR_VarType type;
+	void *value;
+} CK_VAR_Variable;
+#endif
+
 void CK_VAR_Startup()
 {
 	STR_AllocTable(&ck_varTable, CK_VAR_MAXVARS);
@@ -125,7 +133,16 @@ void *CK_VAR_GetByName(const char *name, void *def)
 
 const char *CK_VAR_GetString(const char *name, const char *def)
 {
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)CK_VAR_GetByName(name, NULL);
+	if (!var)
+		return def;
+	if (var->type != VAR_String)
+		Quit("CK_VAR_GetString: Tried to access a non-string variable!");
+	return (const char *)var->value;
+#else
 	return (const char *)CK_VAR_GetByName(name, (void *)def);
+#endif
 }
 
 const char *CK_VAR_GetStringByNameAndIndex(const char *name, int index)
@@ -137,24 +154,60 @@ const char *CK_VAR_GetStringByNameAndIndex(const char *name, int index)
 
 intptr_t CK_VAR_GetInt(const char *name, intptr_t def)
 {
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)CK_VAR_GetByName(name, NULL);
+	if (!var)
+		return def;
+	if (var->type != VAR_Int)
+		Quit("CK_VAR_GetInt: Tried to access a non-integer variable!");
+	return (intptr_t)var->value;
+#else
 	return (intptr_t)CK_VAR_GetByName(name, (void *)def);
+#endif
 }
 
 CK_action *CK_GetActionByName(const char *name)
 {
-	return (CK_action *)CK_VAR_GetByName(name, (void *)0);
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)CK_VAR_GetByName(name, NULL);
+	if (!var)
+		return NULL;
+	if (var->type != VAR_Action)
+		Quit("CK_GetActionByName: Tried to access a non-action variable!");
+	return (CK_action *)var->value;
+#else
+	return (CK_action *)CK_VAR_GetByName(name, NULL);
+#endif
 }
 
 CK_action *CK_GetOrCreateActionByName(const char *name)
 {
-	CK_action *ptr = (CK_action *)STR_LookupEntry(ck_varTable, name);
+	CK_action *ptr = NULL;
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)CK_VAR_GetByName(name, NULL);
+	if (var)
+	{
+		if (var->type != VAR_Action)
+			Quit("CK_GetOrCreateActionByName: Variable already exists with non-action type!");
+		ptr = (CK_action *)var->value;
+	}
+#else
+	ptr = (CK_action *)STR_LookupEntry(ck_varTable, name);
+#endif
 	if (!ptr)
 	{
 		if (ck_actionsUsed >= CK_VAR_MAXACTIONS)
 			Quit("Too many actions!");
 		ptr = &(ck_actionData[ck_actionsUsed++]);
 		char *dupName = MM_ArenaStrDup(ck_varArena, name);
-		STR_AddEntry(ck_varTable, dupName, (void *)(ptr));
+#ifdef CK_VAR_TYPECHECK
+		CK_VAR_Variable *var = (CK_VAR_Variable *)MM_ArenaAlloc(ck_varArena, sizeof(*var));
+		var->type = VAR_Action;
+		var->value = (void *)ptr;
+		CK_VAR_SetEntry(dupName, (void *)var);
+#else
+		CK_VAR_SetEntry(dupName, (void *)ptr);
+#endif
 	}
 	return ptr;
 }
@@ -172,14 +225,28 @@ CK_action *CK_LookupActionFrom16BitOffset(uint16_t offset)
 void CK_VAR_SetInt(const char *name, intptr_t val)
 {
 	const char *realName = MM_ArenaStrDup(ck_varArena, name);
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)MM_ArenaAlloc(ck_varArena, sizeof(*var));
+	var->type = VAR_Int;
+	var->value = (void *)val;
+	CK_VAR_SetEntry(realName, (void *)var);
+#else
 	CK_VAR_SetEntry(realName, (void *)val);
+#endif
 }
 
 void CK_VAR_SetString(const char *name, const char *val)
 {
 	const char *realName = MM_ArenaStrDup(ck_varArena, name);
 	const char *realVal = MM_ArenaStrDup(ck_varArena, val);
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)MM_ArenaAlloc(ck_varArena, sizeof(*var));
+	var->type = VAR_String;
+	var->value = (void *)val;
 	CK_VAR_SetEntry(realName, (void *)realVal);
+#else
+	CK_VAR_SetEntry(realName, (void *)realVal);
+#endif
 }
 
 // == Parser ===
