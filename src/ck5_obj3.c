@@ -901,7 +901,7 @@ void CK5_MasterTele(CK_object *obj)
 			}
 		}
 
-		// make it through previous nested loop == succesful tele
+		// make it through previous nested loop == successful tele
 		ck_nextX = ck_nextY = 0;
 		return;
 	}

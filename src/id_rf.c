@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // The refresh manager (ID_RF) is the core of the game's smooth-scrolling
 // engine. It renders tiles to an offscreen bufferand then blits from
-// there to a screen buffer, which then has the sprites overlayed.
+// there to a screen buffer, which then has the sprites overlaid.
 // John Carmack refers to this technique as 'Virtual Tile Refresh'.
 
 // These buffers are all larger than the physical screen, and scroll

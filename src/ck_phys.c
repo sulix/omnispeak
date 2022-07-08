@@ -468,7 +468,7 @@ void CK_PhysUpdateNormalObj(CK_object *obj)
 			}
 		}
 
-		//TODO: Something strange about reseting if falling?
+		//TODO: Something strange about resetting if falling?
 
 		if (!obj->topTI && wasNotOnPlatform)
 		{

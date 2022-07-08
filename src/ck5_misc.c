@@ -594,7 +594,7 @@ void CK5_DefineConstants(void)
  * Spawn an enemy projectile
  * Note that the behaviour is slightly different from DOS Keen
  * DOS Keen SpawnEnemyShot returns 0 if shot is spawned, or -1 otherwise
- * omnispeak CK5_SpawnEnemyShot returns pointer if succesful, NULL otherwise
+ * omnispeak CK5_SpawnEnemyShot returns pointer if successful, NULL otherwise
  */
 
 CK_object *CK5_SpawnEnemyShot(int posX, int posY, CK_action *action)
@@ -1357,7 +1357,7 @@ void CK5_FuseMessage()
 	// VW_WaitVBL(30);
 
 	IN_ClearKeysDown();
-	// TODO: Add Joystick compatability here
+	// TODO: Add Joystick compatibility here
 	// IN_WaitForButton();
 	IN_WaitButton();
 

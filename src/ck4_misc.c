@@ -424,7 +424,7 @@ void CK4_DefineConstants(void)
  * Spawn an enemy projectile
  * Note that the behaviour is slightly different from DOS Keen
  * DOS Keen SpawnEnemyShot returns 0 if shot is spawned, or -1 otherwise
- * omnispeak CK4_SpawnEnemyShot returns pointer if succesful, NULL otherwise
+ * omnispeak CK4_SpawnEnemyShot returns pointer if successful, NULL otherwise
  */
 
 CK_object *CK4_SpawnEnemyShot(int posX, int posY, CK_action *action)

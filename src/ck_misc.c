@@ -511,7 +511,7 @@ void CK_ShrapnelTileCol(CK_object *obj)
 		break;
 	}
 
-	// if speed is lower than threshhold, then disappear
+	// if speed is lower than threshold, then disappear
 	if (bouncePower < 0x1000)
 	{
 		// The babobba shot DOES have a next action, whereas the CK5 shrapnel doesn't

@@ -495,7 +495,7 @@ void CK6_DefineConstants(void)
  * Spawn an enemy projectile
  * Note that the behaviour is slightly different from DOS Keen
  * DOS Keen SpawnEnemyShot returns 0 if shot is spawned, or -1 otherwise
- * omnispeak CK6_SpawnEnemyShot returns pointer if succesful, NULL otherwise
+ * omnispeak CK6_SpawnEnemyShot returns pointer if successful, NULL otherwise
  */
 
 #if 0

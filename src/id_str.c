@@ -92,7 +92,7 @@ bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
 	return false;
 }
 
-// Iterate through the entires in the hashtable. "index" will be updated afterwards.
+// Iterate through the entries in the hashtable. "index" will be updated afterwards.
 void *STR_GetNextEntry(STR_Table *tabl, size_t *index)
 {
 	for (size_t i = *index;; i++)

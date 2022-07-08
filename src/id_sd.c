@@ -537,7 +537,7 @@ void SD_Startup()
 	sd_backend = SD_Impl_GetBackend();
 
 	const char *backendName = CFG_GetConfigString("sd_backend", "default");
-	(void)(backendName); //Silence unused varible warning when no ALSA/IEE1284
+	(void)(backendName); //Silence unused variable warning when no ALSA/IEE1284
 #ifdef SD_OPL2_WITH_ALSA
 	if (!CK_Cross_strcasecmp(backendName, "alsa"))
 		sd_backend = SD_Impl_GetBackend_ALSAOPL2();

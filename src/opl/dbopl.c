@@ -139,7 +139,7 @@ BLOCK_TEMPLATE(sm3AMAM)
 BLOCK_TEMPLATE(sm2Percussion)
 BLOCK_TEMPLATE(sm3Percussion)
 
-//How much to substract from the base value for the final attenuation
+//How much to subtract from the base value for the final attenuation
 static const Bit8u KslCreateTable[16] = {
 	//0 will always be be lower than 7 * 8
 	64, 32, 24, 19, 
@@ -249,7 +249,7 @@ static void EnvelopeSelect( Bit8u val, Bit8u *index, Bit8u *shift ) {
 
 #if ( DBOPL_WAVE == WAVE_HANDLER )
 /*
-	Generate the different waveforms out of the sine/exponetial table using handlers
+	Generate the different waveforms out of the sine/exponential table using handlers
 */
 static inline Bits MakeVolume( Bitu wave, Bitu volume ) {
 	Bitu total = wave + volume;
@@ -561,7 +561,7 @@ static void Operator__WriteE0(Operator *self, const Chip* chip, Bit8u val ) {
 	Bit8u waveForm; // haleyjd 09/09/10: GNUisms out!
 	if ( !(self->regE0 ^ val) ) 
 		return;
-	//in opl3 mode you can always selet 7 waveforms regardless of waveformselect
+	//in opl3 mode you can always select 7 waveforms regardless of waveformselect
 	waveForm = val & ( ( 0x3 & chip->waveFormMask ) | (0x7 & chip->opl3Active ) );
 	self->regE0 = val;
 #if( DBOPL_WAVE == WAVE_HANDLER )
@@ -984,10 +984,10 @@ Channel* Channel__BlockTemplate(Channel *self, Chip* chip,
 		//Early out for percussion handlers
 		if ( mode == sm2Percussion ) {
 			Channel__GeneratePercussion( self, chip, output + i, FALSE );
-			continue;	//Prevent some unitialized value bitching
+			continue;	//Prevent some uninitialized value bitching
 		} else if ( mode == sm3Percussion ) {
 			Channel__GeneratePercussion( self, chip, output + i * 2, TRUE );
-			continue;	//Prevent some unitialized value bitching
+			continue;	//Prevent some uninitialized value bitching
 		}
 
 		//Do unsigned shift so we can shift out all bits but still stay in 10 bit range otherwise
@@ -1553,7 +1553,7 @@ void DBOPL_InitTables( void ) {
 				ChanOffsetTable[i] = 0;
 				continue;
 			}
-			//Make sure the four op channels follow eachother
+			//Make sure the four op channels follow each other
 			if ( index < 6 ) {
 				index = (index % 3) * 2 + ( index / 3 );
 			}
