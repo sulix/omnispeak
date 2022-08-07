@@ -242,8 +242,8 @@ void CK_VAR_SetString(const char *name, const char *val)
 #ifdef CK_VAR_TYPECHECK
 	CK_VAR_Variable *var = (CK_VAR_Variable *)MM_ArenaAlloc(ck_varArena, sizeof(*var));
 	var->type = VAR_String;
-	var->value = (void *)val;
-	CK_VAR_SetEntry(realName, (void *)realVal);
+	var->value = (void *)realVal;
+	CK_VAR_SetEntry(realName, (void *)var);
 #else
 	CK_VAR_SetEntry(realName, (void *)realVal);
 #endif
