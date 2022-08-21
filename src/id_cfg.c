@@ -121,30 +121,28 @@ void CFG_SetConfigEnum(const char *name, const char **strings, int value)
 
 static bool CFG_ParseConfigLine(STR_ParserState *state)
 {
-	const char *name = STR_GetIdent(state);
-	if (!name)
+	STR_Token nameTok = STR_GetToken(state);
+	if (nameTok.tokenType == STR_TOK_EOF)
 		return false;
+	char name[ID_STR_MAX_TOKEN_LENGTH];
+	STR_GetStringValue(nameTok, name, ID_STR_MAX_TOKEN_LENGTH);
 	if (!STR_ExpectToken(state, "="))
 		return false;
-	STR_Token value = STR_PeekToken(state);
+	STR_Token value = STR_GetToken(state);
 	if (value.tokenType == STR_TOK_EOF)
 		return false;
 	else if (value.tokenType == STR_TOK_String)
-		CFG_SetConfigString(name, STR_GetString(state));
+	{
+		char tokenBuf[ID_STR_MAX_TOKEN_LENGTH];
+		STR_GetStringValue(value, tokenBuf, ID_STR_MAX_TOKEN_LENGTH);
+		CFG_SetConfigString(name, tokenBuf);
+	}
 	else if (STR_IsTokenIdentCase(value, "false"))
-	{
 		CFG_SetConfigBool(name, false);
-		// Eat the token.
-		STR_GetToken(state);
-	}
 	else if (STR_IsTokenIdentCase(value, "true"))
-	{
 		CFG_SetConfigBool(name, true);
-		// Eat the token.
-		STR_GetToken(state);
-	}
 	else
-		CFG_SetConfigInt(name, STR_GetInteger(state));
+		CFG_SetConfigInt(name, STR_GetIntegerValue(value));
 	return true;
 }
 
@@ -161,14 +159,11 @@ void CFG_LoadConfig(const char *filename)
 	parserstate.linecount = 0;
 	parserstate.haveBufferedToken = false;
 
-	parserstate.tempArena = MM_ArenaCreate(4096);
-
 	while (CFG_ParseConfigLine(&parserstate))
 		numVarsParsed++;
 
 	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Parsed %d config options from \"%s\" over %d lines\n", numVarsParsed, filename, parserstate.linecount);
 
-	MM_ArenaDestroy(parserstate.tempArena);
 	MM_FreePtr((mm_ptr_t *)&parserstate.data);
 }
 
@@ -188,11 +183,12 @@ static bool CFG_SaveConfigLine(FS_File outputHandle, STR_ParserState *state)
 	// We update the "unmodified range" so that its end is the beginning
 	// of the name (which is an identifier).
 	//
-	STR_Token nameTok = STR_PeekToken(state);
+	char name[ID_STR_MAX_TOKEN_LENGTH];
+	STR_Token nameTok = STR_GetToken(state);
 	cfg_unmodifiedRangeEnd = nameTok.firstIndex;
-	const char *name = STR_GetString(state);
-	if (!name)
+	if (nameTok.tokenType == STR_TOK_EOF)
 		return false;
+	STR_GetStringValue(nameTok, name, ID_STR_MAX_TOKEN_LENGTH);
 	if (!STR_ExpectToken(state, "="))
 	{
 		// If we're at the end of the file, the unmodified range should
@@ -314,15 +310,12 @@ void CFG_SaveConfig(const char *filename)
 		parserstate.linecount = 0;
 		parserstate.haveBufferedToken = false;
 
-		parserstate.tempArena = MM_ArenaCreate(4096);
-
 		// Go through the file, re-writing the values of all the config vars.
 		while (CFG_SaveConfigLine(outputHandle, &parserstate))
 			numVarsSaved++;
 
 		CFG_FlushUnmodifiedRange(outputHandle, &parserstate);
 
-		MM_ArenaDestroy(parserstate.tempArena);
 		MM_FreePtr((mm_ptr_t *)&parserstate.data);
 	}
 

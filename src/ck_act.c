@@ -284,30 +284,31 @@ CK_VAR_VarType CK_VAR_ParseVarType(STR_ParserState *ps)
 
 CK_ActionType CK_ACT_GetActionType(STR_ParserState *ps)
 {
-	const char *tok = STR_GetIdent(ps);
+	STR_Token tok = STR_GetToken(ps);
 	CK_ActionType at = AT_UnscaledOnce;
 
-	if (!strcmp(tok, "UnscaledOnce"))
+	if (STR_IsTokenIdent(tok, "UnscaledOnce"))
 		at = AT_UnscaledOnce;
-	else if (!strcmp(tok, "ScaledOnce"))
+	else if (STR_IsTokenIdent(tok, "ScaledOnce"))
 		at = AT_ScaledOnce;
-	else if (!strcmp(tok, "Frame"))
+	else if (STR_IsTokenIdent(tok, "Frame"))
 		at = AT_Frame;
-	else if (!strcmp(tok, "UnscaledFrame"))
+	else if (STR_IsTokenIdent(tok, "UnscaledFrame"))
 		at = AT_UnscaledFrame;
-	else if (!strcmp(tok, "ScaledFrame"))
+	else if (STR_IsTokenIdent(tok, "ScaledFrame"))
 		at = AT_ScaledFrame;
 	else
 	{
 		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Got a bad action type %s on line %d.\n", tok, ps->linecount);
-		at = (CK_ActionType)(atoi(tok));
+		at = (CK_ActionType)(STR_GetIntegerValue(tok));
 	}
 	return at;
 }
 
 bool CK_VAR_ParseAction(STR_ParserState *ps)
 {
-	const char *actName = STR_GetIdent(ps);
+	char actName[ID_STR_MAX_TOKEN_LENGTH];
+	STR_GetIdent(ps, actName, ID_STR_MAX_TOKEN_LENGTH);
 
 	CK_action *act = CK_GetOrCreateActionByName(actName);
 
@@ -328,16 +329,19 @@ bool CK_VAR_ParseAction(STR_ParserState *ps)
 	act->velX = STR_GetInteger(ps);
 	act->velY = STR_GetInteger(ps);
 
-	const char *cThink, *cCollide, *cDraw;
-	cThink = STR_GetIdent(ps);
-	cCollide = STR_GetIdent(ps);
-	cDraw = STR_GetIdent(ps);
+	char cThink[ID_STR_MAX_TOKEN_LENGTH];
+	char cCollide[ID_STR_MAX_TOKEN_LENGTH];
+	char cDraw[ID_STR_MAX_TOKEN_LENGTH];
+	STR_GetIdent(ps, cThink, sizeof(cThink));
+	STR_GetIdent(ps, cCollide, sizeof(cCollide));
+	STR_GetIdent(ps, cDraw, sizeof(cDraw));
 
 	act->think = CK_ACT_GetFunction(cThink);
 	act->collide = CK_ACT_GetColFunction(cCollide);
 	act->draw = CK_ACT_GetFunction(cDraw);
 
-	const char *nextActionName = STR_GetIdent(ps);
+	char nextActionName[ID_STR_MAX_TOKEN_LENGTH];
+	STR_GetIdent(ps, nextActionName, ID_STR_MAX_TOKEN_LENGTH);
 
 	act->next = strcmp(nextActionName, "NULL") ? CK_GetOrCreateActionByName(nextActionName) : 0;
 
@@ -346,19 +350,27 @@ bool CK_VAR_ParseAction(STR_ParserState *ps)
 
 void CK_VAR_ParseInt(STR_ParserState *ps)
 {
-	const char *varName = STR_GetIdent(ps);
+	char varName[ID_STR_MAX_TOKEN_LENGTH];
+	STR_GetIdent(ps, varName, ID_STR_MAX_TOKEN_LENGTH);
 	intptr_t val = STR_GetInteger(ps);
 	CK_VAR_SetInt(varName, val);
 }
 
 void CK_VAR_ParseString(STR_ParserState *ps)
 {
-	const char *varName = STR_GetIdent(ps);
+	char varName[ID_STR_MAX_TOKEN_LENGTH];
+	STR_GetIdent(ps, varName, ID_STR_MAX_TOKEN_LENGTH);
 	char stringBuf[4096] = {0};
+	char *valBuf = stringBuf;
+	size_t lengthRemaining = 4096;
 	do
 	{
-		const char *val = STR_GetString(ps);
-		strcat(stringBuf, val);
+		STR_Token tok = STR_GetToken(ps);
+		size_t chunkLen = STR_GetStringValue(tok, valBuf, lengthRemaining);
+		lengthRemaining -= chunkLen;
+		valBuf += chunkLen;
+		if (!lengthRemaining)
+			Quit("String too long!");
 	} while (STR_PeekToken(ps).tokenType == STR_TOK_String);
 	CK_VAR_SetString(varName, stringBuf);
 }
@@ -369,7 +381,6 @@ bool CK_VAR_ParseVar(STR_ParserState *ps)
 
 	if (varType == VAR_EOF)
 	{
-		//MM_ArenaReset(ps->tempArena);
 		return false;
 	}
 
@@ -386,7 +397,8 @@ bool CK_VAR_ParseVar(STR_ParserState *ps)
 		break;
 	case VAR_TOK_Include:
 	{
-		const char *filename = STR_GetString(ps);
+		char filename[ID_STR_MAX_TOKEN_LENGTH];
+		STR_GetString(ps, filename, ID_STR_MAX_TOKEN_LENGTH);
 		CK_VAR_LoadVars(filename);
 		break;
 	}
@@ -394,7 +406,6 @@ bool CK_VAR_ParseVar(STR_ParserState *ps)
 		Quit("Unsupported var type.");
 	}
 
-	//MM_ArenaReset(ps->tempArena);
 	return true;
 }
 
@@ -408,12 +419,8 @@ void CK_VAR_LoadVars(const char *filename)
 	parserstate.linecount = 0;
 	parserstate.haveBufferedToken = false;
 
-	parserstate.tempArena = MM_ArenaCreate(65536);
-
 	while (CK_VAR_ParseVar(&parserstate))
 		numVarsParsed++;
 
 	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Parsed %d vars from \"%s\" over %d lines (%d actions created).\n", numVarsParsed, filename, parserstate.linecount, ck_actionsUsed);
-
-	MM_ArenaDestroy(parserstate.tempArena);
 }

@@ -220,13 +220,12 @@ STR_Token STR_PeekToken(STR_ParserState *ps)
 }
 
 /* Parses the string value out of a token, storing the result in memory from destArena */
-const char *STR_GetStringValue(STR_Token tok, ID_MM_Arena *destArena)
+size_t STR_GetStringValue(STR_Token tok, char *tokenBuf, size_t bufLength)
 {
-	char tokenbuf[ID_STR_MAX_TOKEN_LENGTH];
 	int i = 0;
 	
 	if (tok.tokenType == STR_TOK_EOF)
-		return NULL;
+		return 0;
 	
 	if (tok.tokenType == STR_TOK_String)
 	{
@@ -247,8 +246,8 @@ const char *STR_GetStringValue(STR_Token tok, ID_MM_Arena *destArena)
 					break;
 				}
 			}
-			tokenbuf[i++] = c;
-			if (i == ID_STR_MAX_TOKEN_LENGTH)
+			tokenBuf[i++] = c;
+			if (i == bufLength)
 				Quit("Token exceeded max length!");
 		}
 	}
@@ -256,29 +255,26 @@ const char *STR_GetStringValue(STR_Token tok, ID_MM_Arena *destArena)
 	{
 		while (*(tok.valuePtr) && !isspace(*(tok.valuePtr)))
 		{
-			tokenbuf[i++] = *(tok.valuePtr++);
+			tokenBuf[i++] = *(tok.valuePtr++);
 			if (i == ID_STR_MAX_TOKEN_LENGTH)
 				Quit("Token exceeded max length!");
 		}
 	}
-	tokenbuf[i] = '\0';
+	tokenBuf[i] = '\0';
 
-	const char *value = MM_ArenaStrDup(destArena, tokenbuf);
-	return value;
+	return i;
 }
 
-const char *STR_GetString(STR_ParserState *ps)
+size_t STR_GetString(STR_ParserState *ps, char *tokenBuf, size_t bufLength)
 {
 	STR_Token tok = STR_GetToken(ps);
-	//TODO: Get rid of tempArena?
-	return STR_GetStringValue(tok, ps->tempArena);
+	STR_GetStringValue(tok, tokenBuf, bufLength);
 }
 
-const char *STR_GetIdent(STR_ParserState *ps)
+size_t STR_GetIdent(STR_ParserState *ps, char *tokenBuf, size_t bufLength)
 {
 	STR_Token tok = STR_GetToken(ps);
-	//TODO: Split this out from strings.
-	return STR_GetStringValue(tok, ps->tempArena);
+	STR_GetStringValue(tok, tokenBuf, bufLength);
 }
 
 bool STR_IsTokenIdent(STR_Token tok, const char *str)
