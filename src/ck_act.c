@@ -305,6 +305,20 @@ CK_ActionType CK_ACT_GetActionType(STR_ParserState *ps)
 	return at;
 }
 
+intptr_t CK_VAR_ParseIntOrVar(STR_ParserState *ps)
+{
+	STR_Token tok = STR_GetToken(ps);
+	if (*tok.valuePtr == '@')
+	{
+		// This is an indirectly loaded integer.
+		char varName[ID_STR_MAX_TOKEN_LENGTH];
+		STR_GetStringValue(tok, varName, ID_STR_MAX_TOKEN_LENGTH);
+		return CK_VAR_GetInt(varName+1, 0);
+	}
+	else
+		return STR_GetIntegerValue(tok);
+}
+
 bool CK_VAR_ParseAction(STR_ParserState *ps)
 {
 	char actName[ID_STR_MAX_TOKEN_LENGTH];
@@ -312,22 +326,22 @@ bool CK_VAR_ParseAction(STR_ParserState *ps)
 
 	CK_action *act = CK_GetOrCreateActionByName(actName);
 
-	act->compatDosPointer = STR_GetInteger(ps);
+	act->compatDosPointer = CK_VAR_ParseIntOrVar(ps);
 
-	act->chunkLeft = STR_GetInteger(ps);
+	act->chunkLeft = CK_VAR_ParseIntOrVar(ps);
 
-	act->chunkRight = STR_GetInteger(ps);
+	act->chunkRight = CK_VAR_ParseIntOrVar(ps);
 
 	act->type = CK_ACT_GetActionType(ps);
 
-	act->protectAnimation = STR_GetInteger(ps);
+	act->protectAnimation = CK_VAR_ParseIntOrVar(ps);
 
-	act->stickToGround = STR_GetInteger(ps);
+	act->stickToGround = CK_VAR_ParseIntOrVar(ps);
 
-	act->timer = STR_GetInteger(ps);
+	act->timer = CK_VAR_ParseIntOrVar(ps);
 
-	act->velX = STR_GetInteger(ps);
-	act->velY = STR_GetInteger(ps);
+	act->velX = CK_VAR_ParseIntOrVar(ps);
+	act->velY = CK_VAR_ParseIntOrVar(ps);
 
 	char cThink[ID_STR_MAX_TOKEN_LENGTH];
 	char cCollide[ID_STR_MAX_TOKEN_LENGTH];
@@ -352,7 +366,7 @@ void CK_VAR_ParseInt(STR_ParserState *ps)
 {
 	char varName[ID_STR_MAX_TOKEN_LENGTH];
 	STR_GetIdent(ps, varName, ID_STR_MAX_TOKEN_LENGTH);
-	intptr_t val = STR_GetInteger(ps);
+	intptr_t val = CK_VAR_ParseIntOrVar(ps);
 	CK_VAR_SetInt(varName, val);
 }
 
