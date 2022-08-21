@@ -131,13 +131,13 @@ static bool CFG_ParseConfigLine(STR_ParserState *state)
 		return false;
 	else if (value.tokenType == STR_TOK_String)
 		CFG_SetConfigString(name, STR_GetString(state));
-	else if (!CK_Cross_strcasecmp(value.valuePtr, "false"))
+	else if (STR_IsTokenIdentCase(value, "false"))
 	{
 		CFG_SetConfigBool(name, false);
 		// Eat the token.
 		STR_GetToken(state);
 	}
-	else if (!CK_Cross_strcasecmp(value.valuePtr, "true"))
+	else if (STR_IsTokenIdentCase(value, "true"))
 	{
 		CFG_SetConfigBool(name, true);
 		// Eat the token.

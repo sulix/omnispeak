@@ -82,6 +82,7 @@ void CK_Cross_puts(const char *str);
 int CK_Cross_toupper(int c);
 // A bit less standard, but still done assuming English locale
 int CK_Cross_strcasecmp(const char *s1, const char *s2);
+int CK_Cross_strncasecmp(const char *s1, const char *s2, size_t n);
 
 // The C standard library doesn't have an implementation of min/max, which is sad.
 #define CK_Cross_max(x, y) ((x) < (y) ? (y) : (x))

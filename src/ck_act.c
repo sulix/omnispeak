@@ -264,15 +264,15 @@ CK_VAR_VarType CK_VAR_ParseVarType(STR_ParserState *ps)
 		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Got a non-ident token reading var type (line %d), value = %s\n", ps->linecount, tok.valuePtr);
 		return VAR_Invalid;
 	}
-	if (!strcmp(tok.valuePtr, "%bool"))
+	if (STR_IsTokenIdent(tok, "%bool"))
 		varType = VAR_Bool;
-	else if (!strcmp(tok.valuePtr, "%int"))
+	else if (STR_IsTokenIdent(tok, "%int"))
 		varType = VAR_Int;
-	else if (!strcmp(tok.valuePtr, "%string"))
+	else if (STR_IsTokenIdent(tok, "%string"))
 		varType = VAR_String;
-	else if (!strcmp(tok.valuePtr, "%action"))
+	else if (STR_IsTokenIdent(tok, "%action"))
 		varType = VAR_Action;
-	else if (!strcmp(tok.valuePtr, "%include"))
+	else if (STR_IsTokenIdent(tok, "%include"))
 		varType = VAR_TOK_Include;
 	else
 	{

@@ -203,11 +203,8 @@ STR_Token STR_GetToken(STR_ParserState *ps)
 	tok.lastIndex = ps->dataindex;
 	tokenbuf[i] = '\0';
 
-	// Copy the token into the temp Arena
-	// TODO: Use a range into the input instead
-	const char *value = MM_ArenaStrDup(ps->tempArena, tokenbuf);
-	tok.valuePtr = value;
-	tok.valueLength = i;
+	tok.valuePtr = &ps->data[tok.firstIndex];
+	tok.valueLength = tok.lastIndex - tok.firstIndex;
 	return tok;
 }
 
@@ -222,25 +219,88 @@ STR_Token STR_PeekToken(STR_ParserState *ps)
 	return tok;
 }
 
+/* Parses the string value out of a token, storing the result in memory from destArena */
+const char *STR_GetStringValue(STR_Token tok, ID_MM_Arena *destArena)
+{
+	char tokenbuf[ID_STR_MAX_TOKEN_LENGTH];
+	int i = 0;
+	
+	if (tok.tokenType == STR_TOK_EOF)
+		return NULL;
+	
+	if (tok.tokenType == STR_TOK_String)
+	{
+		tok.valuePtr++;
+		while (*(tok.valuePtr) != '"')
+		{
+			char c = *(tok.valuePtr++);
+			if (c == '\\')
+			{
+				c = *(tok.valuePtr++);
+				switch (c)
+				{
+				case 'n':
+					c = '\n';
+					break;
+				default:
+					// c is now whatever was escaped (e.g. '\')
+					break;
+				}
+			}
+			tokenbuf[i++] = c;
+			if (i == ID_STR_MAX_TOKEN_LENGTH)
+				Quit("Token exceeded max length!");
+		}
+	}
+	else
+	{
+		while (*(tok.valuePtr) && !isspace(*(tok.valuePtr)))
+		{
+			tokenbuf[i++] = *(tok.valuePtr++);
+			if (i == ID_STR_MAX_TOKEN_LENGTH)
+				Quit("Token exceeded max length!");
+		}
+	}
+	tokenbuf[i] = '\0';
+
+	const char *value = MM_ArenaStrDup(destArena, tokenbuf);
+	return value;
+}
+
 const char *STR_GetString(STR_ParserState *ps)
 {
 	STR_Token tok = STR_GetToken(ps);
-	//TODO: If we actually use valueLength, this will need reallocating to
-	// add the NULL terminator.
-	return tok.valuePtr;
+	//TODO: Get rid of tempArena?
+	return STR_GetStringValue(tok, ps->tempArena);
 }
 
 const char *STR_GetIdent(STR_ParserState *ps)
 {
 	STR_Token tok = STR_GetToken(ps);
-	//TODO: If we actually use valueLength, this will need reallocating to
-	// add the NULL terminator.
-	return tok.valuePtr;
+	//TODO: Split this out from strings.
+	return STR_GetStringValue(tok, ps->tempArena);
 }
 
-int STR_GetInteger(STR_ParserState *ps)
+bool STR_IsTokenIdent(STR_Token tok, const char *str)
 {
-	STR_Token token = STR_GetToken(ps);
+	size_t len = strlen(str);
+	if (len != tok.valueLength)
+		return false;
+	
+	return !strncmp(tok.valuePtr, str, len);
+}
+
+bool STR_IsTokenIdentCase(STR_Token tok, const char *str)
+{
+	size_t len = strlen(str);
+	if (len != tok.valueLength)
+		return false;
+	
+	return !CK_Cross_strncasecmp(tok.valuePtr, str, len);
+}
+
+int STR_GetIntegerValue(STR_Token token)
+{
 	int result = 0;
 
 	// NOTE: For the time being,
@@ -252,8 +312,13 @@ int STR_GetInteger(STR_ParserState *ps)
 		result = strtol(token.valuePtr + 1, 0, 16);
 	else
 		result = strtol(token.valuePtr, 0, 0);
-	//printf("GetInteger %s -> %d\n", token, result);
 	return result;
+}
+
+int STR_GetInteger(STR_ParserState *ps)
+{
+	STR_Token token = STR_GetToken(ps);
+	return STR_GetIntegerValue(token);
 }
 
 bool STR_ExpectToken(STR_ParserState *ps, const char *str)

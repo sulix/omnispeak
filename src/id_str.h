@@ -83,8 +83,12 @@ typedef struct STR_ParserState
 
 STR_Token STR_GetToken(STR_ParserState *ps);
 STR_Token STR_PeekToken(STR_ParserState *ps);
+const char *STR_GetStringValue(STR_Token tok, ID_MM_Arena *destArena);
 const char *STR_GetString(STR_ParserState *ps);
 const char *STR_GetIdent(STR_ParserState *ps);
+bool STR_IsTokenIdent(STR_Token tok, const char *str);
+bool STR_IsTokenIdentCase(STR_Token tok, const char *str);
+int STR_GetIntegerValue(STR_Token tok);
 int STR_GetInteger(STR_ParserState *ps);
 bool STR_ExpectToken(STR_ParserState *ps, const char *str);
 
