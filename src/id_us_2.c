@@ -247,7 +247,7 @@ void US_DrawCards()
 	// Draw the watch screen and the active card
 	if (us_currentCard->items || us_currentCard->gfxChunk)
 	{
-		VHB_DrawBitmap(0, 0, PIC_WRISTWATCH);
+		VHB_DrawBitmap(0, 0, CK_CHUNKNUM(PIC_WRISTWATCH));
 		USL_DrawCard();
 	}
 
@@ -257,7 +257,7 @@ void US_DrawCards()
 
 void USL_DialogSetup(uint16_t w, uint16_t h, uint16_t *x, uint16_t *y)
 {
-	VHB_DrawMaskedBitmap(74, 48, MPIC_WRISTWATCHSCREEN);
+	VHB_DrawMaskedBitmap(74, 48, CK_CHUNKNUM(MPIC_WRISTWATCHSCREEN));
 
 	/* Calculate the position */
 	*x = 74 + (160 - w) / 2;
@@ -736,7 +736,7 @@ void USL_BeginCards()
 	}
 
 	// Cache the font
-	CA_CacheGrChunk(FON_WATCHFONT);
+	CA_CacheGrChunk(CK_CHUNKNUM(FON_WATCHFONT));
 
 	// Cache the wristwatch screen masked bitmap
 	CA_CacheGrChunk(ca_gfxInfoE.offMasked);
@@ -747,7 +747,7 @@ void USL_BeginCards()
 
 	// Cache the first few sprites for paddlewar
 	// for (int i = ca_gfxInfoE.offSprites; i < (ca_gfxInfoE.offSprites + 10); ++i)
-	for (int i = SPR_PADDLE; i <= SPR_BALL3; ++i)
+	for (int i = CK_CHUNKNUM(SPR_PADDLE); i <= CK_CHUNKNUM(SPR_BALL3); ++i)
 	{
 		CA_CacheGrChunk(i);
 	}

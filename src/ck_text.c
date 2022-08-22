@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_vh.h"
 #include "id_vl.h"
+#include "ck_act.h"
 #include "ck_cross.h"
 #include "ck_def.h"
 
@@ -310,13 +311,13 @@ void PageLayout(int show_status)
 	VHB_Bar(0, 0, 320, 200, 4);
 	if (ck_currentEpisode->ep != EP_CK6)
 	{
-		VHB_DrawBitmap(0, 0, PIC_BORDERTOP);     /* Top border */
-		VHB_DrawBitmap(0, 8, PIC_BORDERLEFT);    /* Left border */
-		VHB_DrawBitmap(312, 8, PIC_BORDERRIGHT); /* Right border */
+		VHB_DrawBitmap(0, 0, CK_CHUNKNUM(PIC_BORDERTOP));     /* Top border */
+		VHB_DrawBitmap(0, 8, CK_CHUNKNUM(PIC_BORDERLEFT));    /* Left border */
+		VHB_DrawBitmap(312, 8, CK_CHUNKNUM(PIC_BORDERRIGHT)); /* Right border */
 		if (show_status)
-			VHB_DrawBitmap(8, 176, PIC_BORDERBOTTOMSTATUS); /* Bottom status bar */
+			VHB_DrawBitmap(8, 176, CK_CHUNKNUM(PIC_BORDERBOTTOMSTATUS)); /* Bottom status bar */
 		else
-			VHB_DrawBitmap(8, 192, PIC_BORDERBOTTOM); /* Bottom border */
+			VHB_DrawBitmap(8, 192, CK_CHUNKNUM(PIC_BORDERBOTTOM)); /* Bottom border */
 	}
 
 	/* Set the lines' start and end positions so the text stays within the border */
@@ -410,11 +411,11 @@ void CacheLayoutGraphics(void)
 	help_num_pages = help_cur_page = 0;
 
 	/* Cache the border graphics */
-	CA_MarkGrChunk(PIC_BORDERTOP);
-	CA_MarkGrChunk(PIC_BORDERLEFT);
-	CA_MarkGrChunk(PIC_BORDERRIGHT);
-	CA_MarkGrChunk(PIC_BORDERBOTTOMSTATUS);
-	CA_MarkGrChunk(PIC_BORDERBOTTOM);
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_BORDERTOP));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_BORDERLEFT));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_BORDERRIGHT));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_BORDERBOTTOMSTATUS));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_BORDERBOTTOM));
 
 	do
 	{
@@ -468,19 +469,19 @@ int ShowHelp(void)
 	VHB_Bar(0, 0, 320, 200, 4);
 
 	/* Cache graphics */
-	CA_CacheGrChunk(PIC_HELPMENU);     /* Help menu pic */
-	CA_CacheGrChunk(PIC_HELPPOINTER);  /* Help menu pointer */
-	CA_CacheGrChunk(PIC_BORDERTOP);    /* Top border */
-	CA_CacheGrChunk(PIC_BORDERLEFT);   /* Left border */
-	CA_CacheGrChunk(PIC_BORDERRIGHT);  /* Right border */
-	CA_CacheGrChunk(PIC_BORDERBOTTOM); /* Bottom border */
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_HELPMENU));     /* Help menu pic */
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_HELPPOINTER));  /* Help menu pointer */
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_BORDERTOP));    /* Top border */
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_BORDERLEFT));   /* Left border */
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_BORDERRIGHT));  /* Right border */
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_BORDERBOTTOM)); /* Bottom border */
 
 	/* Draw the border and the main menu pic */
-	VHB_DrawBitmap(0, 0, PIC_BORDERTOP);      /* Top border */
-	VHB_DrawBitmap(0, 8, PIC_BORDERLEFT);     /* Left border */
-	VHB_DrawBitmap(312, 8, PIC_BORDERRIGHT);  /* Right border */
-	VHB_DrawBitmap(8, 192, PIC_BORDERBOTTOM); /* Bottom border */
-	VHB_DrawBitmap(96, 8, PIC_HELPMENU);      /* Menu picture */
+	VHB_DrawBitmap(0, 0, CK_CHUNKNUM(PIC_BORDERTOP));      /* Top border */
+	VHB_DrawBitmap(0, 8, CK_CHUNKNUM(PIC_BORDERLEFT));     /* Left border */
+	VHB_DrawBitmap(312, 8, CK_CHUNKNUM(PIC_BORDERRIGHT));  /* Right border */
+	VHB_DrawBitmap(8, 192, CK_CHUNKNUM(PIC_BORDERBOTTOM)); /* Bottom border */
+	VHB_DrawBitmap(96, 8, CK_CHUNKNUM(PIC_HELPMENU));      /* Menu picture */
 
 	ymove = 0;
 	IN_ClearKeysDown();
@@ -495,7 +496,7 @@ int ShowHelp(void)
 			help_topic = 4;
 
 		/* Draw the pointer */
-		VHB_DrawBitmap(48, 48 + help_topic * 24, PIC_HELPPOINTER);
+		VHB_DrawBitmap(48, 48 + help_topic * 24, CK_CHUNKNUM(PIC_HELPPOINTER));
 		VL_SetScrollCoords(0, 0);
 		VH_UpdateScreen();
 
@@ -650,19 +651,19 @@ void help_endgame(void)
 	// CA_SetGrPurge2();
 
 	/* Cache the chunkss we need */
-	CA_CacheGrChunk(PIC_ARROWDIM);    /* Dim arrow */
-	CA_CacheGrChunk(PIC_ARROWBRIGHT); /* Bright arrow */
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_ARROWDIM));    /* Dim arrow */
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_ARROWBRIGHT)); /* Bright arrow */
 
 	// Check for Korath Fuse
 	if (/*ck_currentEpisode->ep == EP_CK5 &&*/ ck_gameState.levelsDone[13] == 0x0E)
 	{
-		CA_CacheGrChunk(TEXT_SECRETEND);
-		ptext = (char *)ca_graphChunks[TEXT_SECRETEND];
+		CA_CacheGrChunk(CK_CHUNKNUM(TEXT_SECRETEND));
+		ptext = (char *)ca_graphChunks[CK_CHUNKNUM(TEXT_SECRETEND)];
 	}
 	else
 	{
-		CA_CacheGrChunk(TEXT_END);
-		ptext = (char *)ca_graphChunks[TEXT_END];
+		CA_CacheGrChunk(CK_CHUNKNUM(TEXT_END));
+		ptext = (char *)ca_graphChunks[CK_CHUNKNUM(TEXT_END)];
 	}
 
 	/* Initialise the parser */
@@ -684,16 +685,18 @@ void help_endgame(void)
 		while (!advancePage)
 		{
 			/* Draw the dim arrow and wait a short time */
-			VHB_DrawBitmap(0x12A & ~3, 0xB8, PIC_ARROWDIM);
+			VHB_DrawBitmap(0x12A & ~3, 0xB8, CK_CHUNKNUM(PIC_ARROWDIM));
 			VH_UpdateScreen();
+
 			if (IN_UserInput(70, false))
 			{
 				advancePage = true;
 				break;
 			}
 			/* Draw the bright arrow and wait a short time */
-			VHB_DrawBitmap(0x12A & ~3, 0xB8, PIC_ARROWBRIGHT);
+			VHB_DrawBitmap(0x12A & ~3, 0xB8, CK_CHUNKNUM(PIC_ARROWBRIGHT));
 			VH_UpdateScreen();
+
 			if (IN_UserInput(70, false))
 			{
 				advancePage = true;
@@ -704,12 +707,12 @@ void help_endgame(void)
 
 	/* Uncache our graphics and clean up */
 	StopMusic();
-	if (ck_gameState.levelsDone[13] == 0x0E)
-		MM_FreePtr(&ca_graphChunks[TEXT_SECRETEND]);
+	if (ck_gameState.levelsDone[13] == LS_KorathFuse)
+		MM_FreePtr(&ca_graphChunks[CK_CHUNKNUM(TEXT_SECRETEND)]);
 	else
-		MM_FreePtr(&ca_graphChunks[TEXT_END]);
-	MM_FreePtr(&ca_graphChunks[PIC_ARROWBRIGHT]);
-	MM_FreePtr(&ca_graphChunks[PIC_ARROWDIM]);
+		MM_FreePtr(&ca_graphChunks[CK_CHUNKNUM(TEXT_END)]);
+	MM_FreePtr(&ca_graphChunks[CK_CHUNKNUM(PIC_ARROWBRIGHT)]);
+	MM_FreePtr(&ca_graphChunks[CK_CHUNKNUM(PIC_ARROWDIM)]);
 	// CA_DownLevel();
 	IN_ClearKeysDown();
 	VL_ClearScreen(4);

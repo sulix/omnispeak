@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_sd.h"
 #include "id_us.h"
 #include "id_vl.h"
+#include "ck_act.h"
 #include "ck_cross.h"
 #include "ck_def.h"
 #include "ck_play.h"
@@ -1225,18 +1226,18 @@ void USL_PlayPaddleWar(void)
 			// (which works around this by having two sprites, one shifted one
 			// pixel over) ends up shifted an extra pixel sometimes. By ignoring
 			// the lower bit of ball_x here, we emulate the shift behaviour we need.
-			VH_DrawSprite(ball_x & ~1, ball_y, (ball_x & 1) ? SPR_BALL1 : SPR_BALL0);
+			VH_DrawSprite(ball_x & ~1, ball_y, (ball_x & 1) ? CK_CHUNKNUM(SPR_BALL1) : CK_CHUNKNUM(SPR_BALL0));
 		}
 
 		// Draw Computer Paddle
 		VH_Bar(old_comp_x - 3, 66, 16, 3, 8);
 		old_comp_x = comp_x;
-		VH_DrawSprite(comp_x, 66, SPR_PADDLE);
+		VH_DrawSprite(comp_x, 66, CK_CHUNKNUM(SPR_PADDLE));
 
 		// Draw Keen paddle
 		VH_Bar(old_keen_x - 3, 135, 16, 3, 8);
 		old_keen_x = keen_x;
-		VH_DrawSprite(keen_x, 135, SPR_PADDLE);
+		VH_DrawSprite(keen_x, 135, CK_CHUNKNUM(SPR_PADDLE));
 
 		//sub_658();
 		VL_Present();
@@ -1252,10 +1253,10 @@ bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item)
 		return 0;
 
 	/* Draw the watch */
-	VH_DrawBitmap(0, 0, PIC_WRISTWATCH);
+	VH_DrawBitmap(0, 0, CK_CHUNKNUM(PIC_WRISTWATCH));
 
 	/* Draw the PaddleWar title */
-	VH_DrawBitmap(130, 48, PIC_PADDLEWAR);
+	VH_DrawBitmap(130, 48, CK_CHUNKNUM(PIC_PADDLEWAR));
 
 	/* Draw a line above the playing area */
 	VH_HLine(77, 231, 60, 10);

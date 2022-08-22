@@ -664,29 +664,29 @@ void CK_BeginCacheBox(const char *title, int numChunks)
 	for (int i = 0; i < 6; i++)
 	{
 		// TODO: Episode independence
-		CA_CacheGrChunk(PIC_COUNTDOWN5 + i);
-		ca_graphChunkNeeded[PIC_COUNTDOWN5 + i] &= ~ca_levelbit;
+		CA_CacheGrChunk(CK_CHUNKNUM(PIC_COUNTDOWN5) + i);
+		ca_graphChunkNeeded[CK_CHUNKNUM(PIC_COUNTDOWN5) + i] &= ~ca_levelbit;
 
 		// If a pic can't be cached, forget updating the hand pics
 		// by setting the countdown counter at 5
-		if (!ca_graphChunks[PIC_COUNTDOWN5 + i])
+		if (!ca_graphChunks[CK_CHUNKNUM(PIC_COUNTDOWN5) + i])
 		{
 			// mmerror = 0;
 			ck_cacheCountdownNum = 5;
 			break;
 		}
 
-		MM_SetPurge(ca_graphChunks + PIC_COUNTDOWN5 + i, 3);
+		MM_SetPurge(ca_graphChunks + CK_CHUNKNUM(PIC_COUNTDOWN5) + i, 3);
 	}
 
 	US_CenterWindow(26, 8);
 
-	if (ca_graphChunks[PIC_COUNTDOWN5])
-		VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), PIC_COUNTDOWN5);
+	if (ca_graphChunks[CK_CHUNKNUM(PIC_COUNTDOWN5)])
+		VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), CK_CHUNKNUM(PIC_COUNTDOWN5));
 	else
 		ck_cacheCountdownNum = 5;
 
-	ca_graphChunkNeeded[PIC_COUNTDOWN5] &= ~ca_levelbit;
+	ca_graphChunkNeeded[CK_CHUNKNUM(PIC_COUNTDOWN5)] &= ~ca_levelbit;
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
 	// Omnispeak FIXME: Start printX at the right spot
@@ -702,10 +702,10 @@ void CK_BeginCacheBox(const char *title, int numChunks)
 	if (!ck_cacheBoxChunksPerPic && !ck_cacheCountdownNum)
 	{
 		ck_cacheCountdownNum = 5;
-		if (ca_graphChunks[PIC_COUNTDOWN0])
+		if (ca_graphChunks[CK_CHUNKNUM(PIC_COUNTDOWN0)])
 		{
 
-			VHB_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN0);
+			VHB_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, CK_CHUNKNUM(PIC_COUNTDOWN0));
 		}
 
 		VH_UpdateScreen();
@@ -720,8 +720,8 @@ void CK_UpdateCacheBox()
 	{
 
 		ck_cacheBoxChunkCounter = ck_cacheBoxChunksPerPic;
-		if (ca_graphChunks[PIC_COUNTDOWN4 + ck_cacheCountdownNum])
-			VHB_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN4 + ck_cacheCountdownNum);
+		if (ca_graphChunks[CK_CHUNKNUM(PIC_COUNTDOWN4) + ck_cacheCountdownNum])
+			VHB_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, CK_CHUNKNUM(PIC_COUNTDOWN4) + ck_cacheCountdownNum);
 		VH_UpdateScreen();
 		// Because loading is VERY fast on omnispeak, add artificial delay
 		int loadingDelay = CFG_GetConfigInt("loadingDelay", 10);

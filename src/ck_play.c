@@ -1675,7 +1675,7 @@ void CK_ScrollStatusWindow(void)
 
 		// MPic atop the statusbox
 		VH_DrawMaskedBitmap(136 + scrX, (ck_statusWindowYPx - STATUS_BOTTOM) + scrY,
-				MPIC_STATUSRIGHT);
+				CK_CHUNKNUM(MPIC_STATUSRIGHT));
 		
 		// Set up the position for the status box.
 		height = STATUS_H;
@@ -1742,7 +1742,7 @@ void CK_ScrollStatusWindow(void)
 	if (ck_statusWindowYPx >= 72)
 	{
 		VH_DrawMaskedBitmap(40 + scrX, ck_statusWindowYPx - STATUS_BOTTOM + scrY,
-				MPIC_STATUSLEFT);
+				CK_CHUNKNUM(MPIC_STATUSLEFT));
 	}
 }
 

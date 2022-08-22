@@ -515,19 +515,6 @@ void HelpScreens(void);
 void CK_US_UpdateOptionsMenus();
 
 // Constants
-extern int FON_MAINFONT;
-extern int FON_WATCHFONT;
-
-extern int PIC_HELPMENU;
-extern int PIC_ARROWDIM;
-extern int PIC_ARROWBRIGHT;
-extern int PIC_HELPPOINTER;
-extern int PIC_BORDERTOP;
-extern int PIC_BORDERLEFT;
-extern int PIC_BORDERRIGHT;
-extern int PIC_BORDERBOTTOMSTATUS;
-extern int PIC_BORDERBOTTOM;
-
 extern int PIC_MENUCARD;
 extern int PIC_NEWGAMECARD;
 extern int PIC_LOADCARD;
@@ -543,31 +530,16 @@ extern int PIC_OPTIONSCARD;
 extern int PIC_PADDLEWAR;
 extern int PIC_DEBUGCARD;
 
-extern int PIC_WRISTWATCH;
 extern int PIC_CREDIT1;
 extern int PIC_CREDIT2;
 extern int PIC_CREDIT3;
 extern int PIC_CREDIT4;
-
-extern int PIC_STARWARS;
-extern int PIC_TITLESCREEN;
-extern int PIC_COUNTDOWN5;
-extern int PIC_COUNTDOWN4;
-extern int PIC_COUNTDOWN0;
-
-extern int MPIC_WRISTWATCHSCREEN;
-extern int MPIC_STATUSLEFT;
-extern int MPIC_STATUSRIGHT;
 
 extern int SPR_PADDLE;
 extern int SPR_BALL0;
 extern int SPR_BALL1;
 extern int SPR_BALL2;
 extern int SPR_BALL3;
-
-extern int SPR_DEMOSIGN;
-
-extern int SPR_STARS1;
 
 extern int SPR_CENTILIFE1UPSHADOW;
 
@@ -584,8 +556,6 @@ extern int SPR_2000_PTS1;
 extern int SPR_5000_PTS1;
 extern int SPR_1UP1;
 extern int SPR_STUNNER1;
-
-extern int SPR_SCOREBOX;
 
 extern int SPR_MAPKEEN_WALK1_N;
 extern int SPR_MAPKEEN_STAND_N;
@@ -605,12 +575,6 @@ extern int TEXT_ABOUTID;
 extern int TEXT_END;
 extern int TEXT_SECRETEND;
 extern int TEXT_ORDER;
-
-extern int EXTERN_ORDERSCREEN;
-extern int EXTERN_KEEN;
-extern int EXTERN_COMMANDER;
-
-extern int DEMOSTART;
 
 extern int SOUND_KEENWALK0;
 extern int SOUND_KEENWALK1;
