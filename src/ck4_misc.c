@@ -128,102 +128,49 @@ int16_t ck4_levelMusic[] = {0, 4, 3, 3, 2, 2, 4, 3, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1
 
 void CK4_DefineConstants(void)
 {
-	FON_MAINFONT = 3;
+	// We can't remove these constants for now, as pointers to them are
+	// compiled in.
+	PIC_MENUCARD = CK_CHUNKNUM(PIC_MENUCARD);
+	PIC_NEWGAMECARD = CK_CHUNKNUM(PIC_NEWGAMECARD);
+	PIC_LOADCARD = CK_CHUNKNUM(PIC_LOADCARD);
+	PIC_SAVECARD = CK_CHUNKNUM(PIC_SAVECARD);
+	PIC_CONFIGURECARD = CK_CHUNKNUM(PIC_CONFIGURECARD);
+	PIC_SOUNDCARD = CK_CHUNKNUM(PIC_SOUNDCARD);
+	PIC_MUSICCARD = CK_CHUNKNUM(PIC_MUSICCARD);
+	PIC_KEYBOARDCARD = CK_CHUNKNUM(PIC_KEYBOARDCARD);
+	PIC_MOVEMENTCARD = CK_CHUNKNUM(PIC_MOVEMENTCARD);
+	PIC_BUTTONSCARD = CK_CHUNKNUM(PIC_BUTTONSCARD);
+	PIC_JOYSTICKCARD = CK_CHUNKNUM(PIC_JOYSTICKCARD);
+	PIC_OPTIONSCARD = CK_CHUNKNUM(PIC_OPTIONSCARD);
+	PIC_PADDLEWAR = CK_CHUNKNUM(PIC_PADDLEWAR);
+	PIC_DEBUGCARD = CK_CHUNKNUM(PIC_DEBUGCARD);
 
-	FON_WATCHFONT = 4;
+	// Terminator credit chunks also need setting up here.
+	PIC_CREDIT1 = CK_CHUNKNUM(PIC_CREDIT1);
+	PIC_CREDIT2 = CK_CHUNKNUM(PIC_CREDIT2);
+	PIC_CREDIT3 = CK_CHUNKNUM(PIC_CREDIT3);
+	PIC_CREDIT4 = CK_CHUNKNUM(PIC_CREDIT4);
 
-	PIC_HELPMENU = 6;
-	PIC_ARROWDIM = 47;
-	PIC_ARROWBRIGHT = 48;
-	PIC_HELPPOINTER = 45;
-	PIC_BORDERTOP = 80;
-	PIC_BORDERLEFT = 81;
-	PIC_BORDERRIGHT = 82;
-	PIC_BORDERBOTTOMSTATUS = 83;
-	PIC_BORDERBOTTOM = 84;
 
-	PIC_MENUCARD = 88;
-	PIC_NEWGAMECARD = 89;
-	PIC_LOADCARD = 90;
-	PIC_SAVECARD = 91;
-	PIC_CONFIGURECARD = 92;
-	PIC_SOUNDCARD = 93;
-	PIC_MUSICCARD = 94;
-	PIC_KEYBOARDCARD = 95;
-	PIC_MOVEMENTCARD = 96;
-	PIC_BUTTONSCARD = 97;
-	PIC_JOYSTICKCARD = 98;
-	PIC_OPTIONSCARD = 99;
-	PIC_PADDLEWAR = 100;
-	PIC_DEBUGCARD = 109;
+	SPR_GEM_A1 = CK_CHUNKNUM(SPR_GEM_A1);
+	SPR_GEM_B1 = CK_CHUNKNUM(SPR_GEM_B1);
+	SPR_GEM_C1 = CK_CHUNKNUM(SPR_GEM_C1);
+	SPR_GEM_D1 = CK_CHUNKNUM(SPR_GEM_D1);
+	SPR_100_PTS1 = CK_CHUNKNUM(SPR_100_PTS1);
+	SPR_200_PTS1 = CK_CHUNKNUM(SPR_200_PTS1);
+	SPR_500_PTS1 = CK_CHUNKNUM(SPR_500_PTS1);
+	SPR_1000_PTS1 = CK_CHUNKNUM(SPR_1000_PTS1);
+	SPR_2000_PTS1 = CK_CHUNKNUM(SPR_2000_PTS1);
+	SPR_5000_PTS1 = CK_CHUNKNUM(SPR_5000_PTS1);
+	SPR_1UP1 = CK_CHUNKNUM(SPR_1UP1);
+	SPR_STUNNER1 = CK_CHUNKNUM(SPR_STUNNER1);
 
-	PIC_WRISTWATCH = 103;
-	PIC_CREDIT1 = 104;
-	PIC_CREDIT2 = 105;
-	PIC_CREDIT3 = 106;
-	PIC_CREDIT4 = 107;
-
-	PIC_STARWARS = 108;
-	PIC_TITLESCREEN = 109;
-	PIC_COUNTDOWN5 = 115;
-	PIC_COUNTDOWN4 = 116;
-	PIC_COUNTDOWN0 = 120;
-
-	MPIC_WRISTWATCHSCREEN = 121;
-	MPIC_STATUSLEFT = 122;
-	MPIC_STATUSRIGHT = 123;
-
-	SPR_PADDLE = 124;
-	SPR_BALL0 = 125;
-	SPR_BALL1 = 126;
-	SPR_BALL2 = 127;
-	SPR_BALL3 = 128;
-
-	SPR_DEMOSIGN = 129;
-
-	SPR_STARS1 = 164;
-
-	SPR_CENTILIFE1UPSHADOW = 218;
-
-	SPR_GEM_A1 = 242;
-	SPR_GEM_B1 = 244;
-	SPR_GEM_C1 = 246;
-	SPR_GEM_D1 = 248;
-	SPR_100_PTS1 = 227;
-	SPR_200_PTS1 = 229;
-	SPR_500_PTS1 = 231;
-	SPR_1000_PTS1 = 233;
-	SPR_2000_PTS1 = 235;
-	SPR_5000_PTS1 = 237;
-	SPR_1UP1 = 239;
-	SPR_STUNNER1 = 251;
-
-	SPR_SCOREBOX = 253;
-
-	SPR_MAPKEEN_WALK1_N = 260;
-	SPR_MAPKEEN_STAND_N = 262;
-	SPR_MAPKEEN_STAND_NE = 277;
-	SPR_MAPKEEN_STAND_E = 259;
-	SPR_MAPKEEN_STAND_SE = 268;
-	SPR_MAPKEEN_WALK1_S = 263;
-	SPR_MAPKEEN_STAND_S = 265;
-	SPR_MAPKEEN_STAND_SW = 271;
-	SPR_MAPKEEN_STAND_W = 256;
-	SPR_MAPKEEN_STAND_NW = 274;
-
-	TEXT_HELPMENU = 4739;
-	TEXT_CONTROLS = 4741;
-	TEXT_STORY = 4740;
-	TEXT_ABOUTID = 4742;
-	TEXT_END = 4743;
-	TEXT_SECRETEND = 4744;
-	TEXT_ORDER = 4745;
-
-	EXTERN_ORDERSCREEN = 4735;
-	EXTERN_COMMANDER = 4736;
-	EXTERN_KEEN = 4737;
-
-	DEMOSTART = 4746;
+	TEXT_HELPMENU = CK_CHUNKNUM(TEXT_HELPMENU);
+	TEXT_CONTROLS = CK_CHUNKNUM(TEXT_CONTROLS);
+	TEXT_STORY = CK_CHUNKNUM(TEXT_STORY);
+	TEXT_ABOUTID = CK_CHUNKNUM(TEXT_ABOUTID);
+	TEXT_END = CK_CHUNKNUM(TEXT_END);
+	TEXT_ORDER = CK_CHUNKNUM(TEXT_ORDER);
 
 	SOUND_KEENWALK0 = 0;
 	SOUND_KEENWALK1 = 1;
@@ -490,13 +437,13 @@ void CK4_ScanInfoLayer()
 			case 1:
 				CK_SpawnKeen(x, y, 1);
 				CK_DemoSignSpawn();
-				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
+				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCOREBOX));
 				ck4_lumpsNeeded[Lump_Keen] = true;
 				break;
 			case 2:
 				CK_SpawnKeen(x, y, -1);
 				CK_DemoSignSpawn();
-				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
+				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCOREBOX));
 				ck4_lumpsNeeded[Lump_Keen] = true;
 				break;
 
@@ -505,12 +452,12 @@ void CK4_ScanInfoLayer()
 				CK4_SpawnScubaKeen(x, y);
 				CK_DemoSignSpawn();
 				ck4_lumpsNeeded[Lump_ScubaKeen] = true;
-				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
+				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCOREBOX));
 				break;
 
 			case 3:
 				CK_DemoSignSpawn();
-				ca_graphChunkNeeded[SPR_SCOREBOX] |= ca_levelbit;
+				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCOREBOX));
 				ck4_lumpsNeeded[Lump_MapKeen] = true;
 				CK_SpawnMapKeen(x, y);
 				break;
@@ -837,14 +784,14 @@ void CK4_ShowPrincessMessage(void)
 	StopMusic();
 	CA_UpLevel();
 
-	CA_MarkGrChunk(0x72);
-	CA_MarkGrChunk(0x6F);
-	CA_MarkGrChunk(0x70);
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_LINDSEY));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_KEENTALK2));
 	CA_CacheMarks(0);
 
 	VL_FixRefreshBuffer();
 	US_CenterWindow(26, 8);
-	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x72);
+	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), CK_CHUNKNUM(PIC_LINDSEY));
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
@@ -861,7 +808,7 @@ void CK4_ShowPrincessMessage(void)
 	IN_ClearKeysDown();
 	IN_WaitButton();
 	US_CenterWindow(26, 8);
-	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 
@@ -876,7 +823,7 @@ void CK4_ShowPrincessMessage(void)
 	IN_ClearKeysDown();
 	IN_WaitButton();
 
-	VHB_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x70);
+	VHB_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK2));
 	VL_Present(); // VW_UpdateScreen();
 	// VW_WaitVBL(30);
 
@@ -892,16 +839,16 @@ void CK4_ShowJanitorMessage(void)
 {
 	SD_WaitSoundDone();
 	CA_UpLevel();
-	CA_MarkGrChunk(0x6E);
-	CA_MarkGrChunk(0x6F);
-	CA_MarkGrChunk(0x71);
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_ORACLE));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_KEENMAD));
 	CA_CacheMarks(0);
 
 	VL_FixRefreshBuffer();
 	StartMusic(0xFFFF);
 
 	US_CenterWindow(26, 8);
-	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
+	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), CK_CHUNKNUM(PIC_ORACLE));
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
@@ -912,7 +859,7 @@ void CK4_ShowJanitorMessage(void)
 	IN_WaitButton();
 
 	US_CenterWindow(26, 8);
-	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
+	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), CK_CHUNKNUM(PIC_ORACLE));
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
@@ -923,7 +870,7 @@ void CK4_ShowJanitorMessage(void)
 	IN_WaitButton();
 
 	US_CenterWindow(26, 8);
-	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint(CK_STRING(ck4_str_janitor3));
@@ -933,7 +880,7 @@ void CK4_ShowJanitorMessage(void)
 	IN_WaitButton();
 
 	US_CenterWindow(26, 8);
-	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x6E);
+	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), CK_CHUNKNUM(PIC_ORACLE));
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
@@ -944,8 +891,8 @@ void CK4_ShowJanitorMessage(void)
 	IN_WaitButton();
 
 	US_CenterWindow(26, 8);
-	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
-	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x28, US_GetWindowY() + 0x18, 0x71);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x28, US_GetWindowY() + 0x18, CK_CHUNKNUM(PIC_KEENMAD));
 	VL_Present(); // VW_UpdateScreen();
 	// VW_WaitVBL(30);
 	IN_ClearKeysDown();
@@ -960,9 +907,9 @@ void CK4_ShowCantSwimMessage(void)
 {
 	SD_WaitSoundDone();
 	CA_UpLevel();
-	CA_CacheGrChunk(0x6F);
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
 	US_CenterWindow(26, 8);
-	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_CPrint(CK_STRING(ck4_str_cantSwim));
@@ -977,11 +924,11 @@ void CK4_ShowWetsuitMessage(void)
 {
 	SD_WaitSoundDone();
 	CA_UpLevel();
-	CA_MarkGrChunk(0x6F);
-	CA_MarkGrChunk(0x70);
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_KEENTALK2));
 	CA_CacheMarks(0);
 	US_CenterWindow(26, 8);
-	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint(CK_STRING(ck4_str_gotWetsuit));
@@ -990,7 +937,7 @@ void CK4_ShowWetsuitMessage(void)
 	IN_ClearKeysDown();
 	IN_WaitButton();
 
-	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), 0x70);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK2));
 	VL_Present(); // VW_UpdateScreen();
 	// VL_WaitVBL(30);
 	IN_ClearKeysDown();
@@ -1004,16 +951,16 @@ void CK4_ShowCouncilMessage(void)
 	SD_WaitSoundDone();
 	CA_UpLevel();
 
-	CA_MarkGrChunk(0x6E);
-	CA_MarkGrChunk(0x6F);
-	CA_MarkGrChunk(0x70);
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_ORACLE));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_KEENTALK2));
 	CA_CacheMarks(0);
 	StartMusic(-1);
 
 	VL_FixRefreshBuffer();
 
 	US_CenterWindow(26, 8);
-	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 110);
+	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), CK_CHUNKNUM(PIC_ORACLE));
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
@@ -1033,7 +980,7 @@ void CK4_ShowCouncilMessage(void)
 	IN_ClearKeysDown();
 	IN_WaitButton();
 	US_CenterWindow(26, 8);
-	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 111);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint(CK_VAR_GetStringByNameAndIndex("ck4_str_councilMessage",ck_gameState.ep.ck4.membersRescued));
@@ -1041,7 +988,7 @@ void CK4_ShowCouncilMessage(void)
 	// VW_WaitVBL(30);
 	IN_ClearKeysDown();
 	IN_WaitButton();
-	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), 112);
+	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK2));
 	VL_Present(); // VW_UpdateScreen();
 	// VW_WaitVBL(30);
 	IN_WaitButton();

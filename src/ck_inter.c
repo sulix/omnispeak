@@ -876,11 +876,11 @@ void CK_FizzleFade()
 	uint8_t *titleBuffer = (uint8_t *)VL_CreateSurface(320, 200);
 
 	// FIXME: This is cached somewhere else
-	CA_CacheGrChunk(PIC_TITLESCREEN);
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_TITLESCREEN));
 
-	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(PIC_TITLESCREEN - ca_gfxInfoE.offBitmaps);
+	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(CK_CHUNKNUM(PIC_TITLESCREEN) - ca_gfxInfoE.offBitmaps);
 
-	VL_UnmaskedToSurface(ca_graphChunks[PIC_TITLESCREEN], titleBuffer, 0, 0, dimensions->width * 8, dimensions->height);
+	VL_UnmaskedToSurface(ca_graphChunks[CK_CHUNKNUM(PIC_TITLESCREEN)], titleBuffer, 0, 0, dimensions->width * 8, dimensions->height);
 
 	// Do the fizzling
 	//
@@ -996,12 +996,12 @@ void CK_DrawTerminator(void)
 	VL_ClearScreen(0);
 
 	// Cache Intro Bitmaps
-	CA_CacheGrChunk(PIC_TITLESCREEN);
-	CA_CacheGrChunk(EXTERN_COMMANDER);
-	CA_CacheGrChunk(EXTERN_KEEN);
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_TITLESCREEN));
+	CA_CacheGrChunk(CK_CHUNKNUM(EXTERN_COMMANDER));
+	CA_CacheGrChunk(CK_CHUNKNUM(EXTERN_KEEN));
 
-	ck_introKeen = (introbmptype *)ca_graphChunks[EXTERN_KEEN];
-	ck_introCommander = (introbmptype *)ca_graphChunks[EXTERN_COMMANDER];
+	ck_introKeen = (introbmptype *)ca_graphChunks[CK_CHUNKNUM(EXTERN_KEEN)];
+	ck_introCommander = (introbmptype *)ca_graphChunks[CK_CHUNKNUM(EXTERN_COMMANDER)];
 
 	// Only writing to plane 0 of display memory
 	VL_SetMapMask(1);
@@ -1047,8 +1047,8 @@ void CK_DrawTerminator(void)
 	for (int i = 0; i < 8; i++)
 		MM_GetPtr(&shiftedCmdrBMPsegs[i], cmdrWidthX100);
 
-	ck_introKeen = (introbmptype *)ca_graphChunks[EXTERN_KEEN];
-	ck_introCommander = (introbmptype *)ca_graphChunks[EXTERN_COMMANDER];
+	ck_introKeen = (introbmptype *)ca_graphChunks[CK_CHUNKNUM(EXTERN_KEEN)];
+	ck_introCommander = (introbmptype *)ca_graphChunks[CK_CHUNKNUM(EXTERN_COMMANDER)];
 
 	// Decompress the RLE-encoded "Commander" bitmap.
 	for (int i = 0; i < 100; i++)
@@ -1104,8 +1104,8 @@ void CK_DrawTerminator(void)
 	}
 
 	// Free the COMMANDER and KEEN bitmaps
-	MM_SetPurge(ca_graphChunks + EXTERN_COMMANDER, 3);
-	MM_SetPurge(ca_graphChunks + EXTERN_KEEN, 3);
+	MM_SetPurge(ca_graphChunks + CK_CHUNKNUM(EXTERN_COMMANDER), 3);
+	MM_SetPurge(ca_graphChunks + CK_CHUNKNUM(EXTERN_KEEN), 3);
 
 	// Restore video mode to normal
 	VL_ClearScreen(0);
@@ -1130,8 +1130,8 @@ void CK_DrawTerminator(void)
 		// RF_Reset();
 
 		// Display Title Screen
-		CA_CacheGrChunk(PIC_TITLESCREEN);
-		VH_DrawBitmap(0, 0, PIC_TITLESCREEN);
+		CA_CacheGrChunk(CK_CHUNKNUM(PIC_TITLESCREEN));
+		VH_DrawBitmap(0, 0, CK_CHUNKNUM(PIC_TITLESCREEN));
 
 		VL_SetScrollCoords(0, 0);
 		VL_Present();
@@ -1424,10 +1424,10 @@ void CK_DrawStarWars()
 	// Restore the font.
 	US_SetPrintFont(0);
 
-	CA_CacheGrChunk(PIC_STARWARS); // Story bkg image.
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_STARWARS)); // Story bkg image.
 
 	// Keen draws this to a separate surface, for fast copies.
-	VH_DrawBitmap(0, 0, PIC_STARWARS);
+	VH_DrawBitmap(0, 0, CK_CHUNKNUM(PIC_STARWARS));
 
 	VL_SetPalette(ck_starWarsPalette);
 
@@ -1459,8 +1459,8 @@ void CK_DrawStarWars()
 void CK_ShowTitleScreen()
 {
 	// scrollofs = 0;
-	CA_CacheGrChunk(PIC_TITLESCREEN);
-	VH_DrawBitmap(0, 0, PIC_TITLESCREEN);
+	CA_CacheGrChunk(CK_CHUNKNUM(PIC_TITLESCREEN));
+	VH_DrawBitmap(0, 0, CK_CHUNKNUM(PIC_TITLESCREEN));
 	// Draw to offscreen buffer and copy?
 	// VW_SetScreen(0,bufferofs_0);
 	VL_SetScrollCoords(0, 0);
@@ -1503,7 +1503,7 @@ void CK_PlayDemo(int demoNumber)
 {
 	uint8_t *demoBuf;
 
-	int demoChunk = DEMOSTART + demoNumber;
+	int demoChunk = CK_CHUNKNUM(DEMOSTART) + demoNumber;
 
 	CK_NewGame();
 

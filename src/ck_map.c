@@ -57,7 +57,7 @@ void CK_DemoSignSpawn()
 	{
 		// If this is a demo, display the DEMO banner
 		CK_SetAction(ck_scoreBoxObj, CK_GetActionByName("CK_ACT_DemoSign"));
-		CA_CacheGrChunk(SPR_DEMOSIGN);
+		CA_CacheGrChunk(CK_CHUNKNUM(SPR_DEMOSIGN));
 	}
 	else
 	{
@@ -74,7 +74,7 @@ void CK_DemoSign(CK_object *demo)
 	demo->posY = rf_scrollYUnit;
 
 	//place demo sprite in center top
-	RF_AddSpriteDraw(&(demo->sde), demo->posX + 0x0A00 - 0x200, demo->posY + 0x80, SPR_DEMOSIGN, false, 3);
+	RF_AddSpriteDraw(&(demo->sde), demo->posX + 0x0A00 - 0x200, demo->posY + 0x80, CK_CHUNKNUM(SPR_DEMOSIGN), false, 3);
 }
 
 /*
@@ -128,9 +128,9 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 	if (!ck_scoreBoxEnabled)
 		return;
 
-	VH_SpriteTableEntry *box = VH_GetSpriteTableEntry(SPR_SCOREBOX - ca_gfxInfoE.offSprites);
+	VH_SpriteTableEntry *box = VH_GetSpriteTableEntry(CK_CHUNKNUM(SPR_SCOREBOX) - ca_gfxInfoE.offSprites);
 
-	VH_ShiftedSprite *spr = (VH_ShiftedSprite *)CA_GetGrChunk(SPR_SCOREBOX, 0, "ScoreBox", true);
+	VH_ShiftedSprite *spr = (VH_ShiftedSprite *)CA_GetGrChunk(CK_CHUNKNUM(SPR_SCOREBOX), 0, "ScoreBox", true);
 
 	// Draw the score if it's changed
 	if ((scorebox->user1 != (ck_gameState.keenScore >> 16)) || (scorebox->user2 != (ck_gameState.keenScore & 0xFFFF)))
@@ -251,7 +251,7 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[1]], box->width, box->height, 2);
 		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[2]], box->width, box->height, 4);
 		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[3]], box->width, box->height, 6);
-		RF_AddSpriteDraw(&scorebox->sde, scorebox->posX + 0x40, scorebox->posY + 0x40, SPR_SCOREBOX, false, 3);
+		RF_AddSpriteDraw(&scorebox->sde, scorebox->posX + 0x40, scorebox->posY + 0x40, CK_CHUNKNUM(SPR_SCOREBOX), false, 3);
 	}
 }
 
@@ -316,7 +316,7 @@ void CK_SpawnMapKeen(int tileX, int tileY)
 	ck_keenObj->user1 = 6;
 	ck_keenObj->user2 = 3;
 	ck_keenObj->user3 = 0;
-	ck_keenObj->gfxChunk = SPR_MAPKEEN_STAND_W;
+	ck_keenObj->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_STAND_W);
 	CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
 }
 
@@ -471,7 +471,7 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 		}
 
 		// Draw Keen walking into target
-		ck_keenObj->gfxChunk = ((SD_GetTimeCount() >> 3) % 3) + SPR_MAPKEEN_WALK1_N;
+		ck_keenObj->gfxChunk = ((SD_GetTimeCount() >> 3) % 3) + CK_CHUNKNUM(SPR_MAPKEEN_WALK1_N);
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
 
 		animTile = ((SD_GetTimeCount() >> 2) & 1) + boltTile; // lighting bolt tile
@@ -529,7 +529,7 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 
 		timer += SD_GetSpriteSync();
 		ck_keenObj->posY += SD_GetSpriteSync() * 3;
-		ck_keenObj->gfxChunk = (SD_GetTimeCount() >> 3) % 3 + SPR_MAPKEEN_WALK1_S;
+		ck_keenObj->gfxChunk = (SD_GetTimeCount() >> 3) % 3 + CK_CHUNKNUM(SPR_MAPKEEN_WALK1_S);
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
 		animTile = ((SD_GetTimeCount() >> 2) & 1) + boltTile; // animate return lighting bolt
 		RF_ReplaceTiles(&animTile, 1, tileX, tileY, 1, 1);

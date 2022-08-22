@@ -270,7 +270,7 @@ void CK_BasicDrawFunc4(CK_object *obj)
 			obj->user2 = 0;
 	}
 
-	RF_AddSpriteDrawUsing16BitOffset(&obj->user3, obj->posX + starsX, obj->posY + starsY, obj->user2 + SPR_STARS1, false, 3);
+	RF_AddSpriteDrawUsing16BitOffset(&obj->user3, obj->posX + starsX, obj->posY + starsY, obj->user2 + CK_CHUNKNUM(SPR_STARS1), false, 3);
 }
 
 void CK_StunCreature(CK_object *creature, CK_object *stunner, CK_action *new_creature_act)

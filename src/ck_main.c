@@ -45,19 +45,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 CK_EpisodeDef *ck_currentEpisode;
 
-int FON_MAINFONT;
-int FON_WATCHFONT;
-
-int PIC_HELPMENU;
-int PIC_ARROWDIM;
-int PIC_ARROWBRIGHT;
-int PIC_HELPPOINTER;
-int PIC_BORDERTOP;
-int PIC_BORDERLEFT;
-int PIC_BORDERRIGHT;
-int PIC_BORDERBOTTOMSTATUS;
-int PIC_BORDERBOTTOM;
-
 int PIC_MENUCARD;
 int PIC_NEWGAMECARD;
 int PIC_LOADCARD;
@@ -73,31 +60,16 @@ int PIC_OPTIONSCARD;
 int PIC_PADDLEWAR;
 int PIC_DEBUGCARD;
 
-int PIC_WRISTWATCH;
 int PIC_CREDIT1;
 int PIC_CREDIT2;
 int PIC_CREDIT3;
 int PIC_CREDIT4;
-
-int PIC_STARWARS;
-int PIC_TITLESCREEN;
-int PIC_COUNTDOWN5;
-int PIC_COUNTDOWN4;
-int PIC_COUNTDOWN0;
-
-int MPIC_WRISTWATCHSCREEN;
-int MPIC_STATUSLEFT;
-int MPIC_STATUSRIGHT;
 
 int SPR_PADDLE;
 int SPR_BALL0;
 int SPR_BALL1;
 int SPR_BALL2;
 int SPR_BALL3;
-
-int SPR_DEMOSIGN;
-
-int SPR_STARS1;
 
 int SPR_CENTILIFE1UPSHADOW;
 
@@ -115,9 +87,6 @@ int SPR_5000_PTS1;
 int SPR_1UP1;
 int SPR_STUNNER1;
 
-int SPR_SCOREBOX;
-
-int SPR_MAPKEEN_WALK1_N;
 int SPR_MAPKEEN_STAND_N;
 int SPR_MAPKEEN_STAND_NE;
 int SPR_MAPKEEN_STAND_E;
@@ -135,12 +104,6 @@ int TEXT_ABOUTID;
 int TEXT_END;
 int TEXT_SECRETEND;
 int TEXT_ORDER;
-
-int EXTERN_ORDERSCREEN;
-int EXTERN_KEEN;
-int EXTERN_COMMANDER;
-
-int DEMOSTART;
 
 int SOUND_KEENWALK0;
 int SOUND_KEENWALK1;
@@ -286,6 +249,22 @@ void CK_ShutdownID(void)
 
 void CK_InitGame()
 {
+
+	// Compile the actions
+	CK_ACT_SetupFunctions();
+	CK_KeenSetupFunctions();
+	CK_OBJ_SetupFunctions();
+	CK_Map_SetupFunctions();
+	CK_Misc_SetupFunctions();
+	ck_currentEpisode->setupFunctions();
+
+	
+	CK_VAR_Startup();
+	CK_VAR_LoadVars("EPISODE.EXT");
+	
+	// Define any remaining constants.
+	ck_currentEpisode->defineConstants();
+
 	// Load the core datafiles
 	CA_Startup();
 	// Setup saved games handling
@@ -301,30 +280,20 @@ void CK_InitGame()
 
 	// Mark some chunks we'll need.
 	CA_ClearMarks();
-	CA_MarkGrChunk(FON_MAINFONT);
+	CA_MarkGrChunk(CK_CHUNKNUM(FON_MAINFONT));
 	CA_MarkGrChunk(ca_gfxInfoE.offTiles8);
 	CA_MarkGrChunk(ca_gfxInfoE.offTiles8m);
-	CA_MarkGrChunk(MPIC_STATUSLEFT);
-	CA_MarkGrChunk(MPIC_STATUSRIGHT);
-	CA_MarkGrChunk(PIC_TITLESCREEN); // Moved from CA_Startup
+	CA_MarkGrChunk(CK_CHUNKNUM(MPIC_STATUSLEFT));
+	CA_MarkGrChunk(CK_CHUNKNUM(MPIC_STATUSRIGHT));
+	CA_MarkGrChunk(CK_CHUNKNUM(PIC_TITLESCREEN)); // Moved from CA_Startup
 	CA_CacheMarks(0);
 
 	// Lock them chunks in memory.
-	CA_LockGrChunk(FON_MAINFONT);
-	MM_SetLock(&ca_graphChunks[ca_gfxInfoE.offTiles8], true);
-	MM_SetLock(&ca_graphChunks[ca_gfxInfoE.offTiles8m], true);
-	MM_SetLock(&ca_graphChunks[MPIC_STATUSLEFT], true);
-	MM_SetLock(&ca_graphChunks[MPIC_STATUSRIGHT], true);
-
-	// Compile the actions
-	CK_ACT_SetupFunctions();
-	CK_KeenSetupFunctions();
-	CK_OBJ_SetupFunctions();
-	CK_Map_SetupFunctions();
-	CK_Misc_SetupFunctions();
-	ck_currentEpisode->setupFunctions();
-	CK_VAR_Startup();
-	CK_VAR_LoadVars("ACTION.EXT");
+	CA_LockGrChunk(CK_CHUNKNUM(FON_MAINFONT));
+	CA_LockGrChunk(ca_gfxInfoE.offTiles8);
+	CA_LockGrChunk(ca_gfxInfoE.offTiles8m);
+	CA_LockGrChunk(CK_CHUNKNUM(MPIC_STATUSLEFT));
+	CA_LockGrChunk(CK_CHUNKNUM(MPIC_STATUSRIGHT));
 
 	// Setup the screen
 	VL_Startup();
@@ -754,8 +723,6 @@ int main(int argc, char *argv[])
 
 	vl_swapInterval = swapInterval;
 	VL_SetParams(isFullScreen, isAspectCorrected, hasBorder, isIntegerScaled);
-
-	ck_currentEpisode->defineConstants();
 
 	if (overrideCopyProtection)
 		ck_currentEpisode->hasCreatureQuestion = false;
