@@ -46,7 +46,7 @@ bool STR_AddEntry(STR_Table *tabl, const char *str, void *value);
 
 void *STR_GetNextEntry(STR_Table *tabl, size_t *index);
 
-#define ID_STR_MAX_TOKEN_LENGTH 64
+#define ID_STR_MAX_TOKEN_LENGTH 1024
 
 typedef enum STR_TokenType
 {
@@ -75,7 +75,6 @@ typedef struct STR_ParserState
 	int dataindex;
 	int datasize;
 	int linecount;
-	ID_MM_Arena *tempArena;
 	// This is a token whose value has been PeekToken()ed.
 	bool haveBufferedToken;
 	STR_Token bufferedToken;
@@ -83,8 +82,12 @@ typedef struct STR_ParserState
 
 STR_Token STR_GetToken(STR_ParserState *ps);
 STR_Token STR_PeekToken(STR_ParserState *ps);
-const char *STR_GetString(STR_ParserState *ps);
-const char *STR_GetIdent(STR_ParserState *ps);
+size_t STR_GetStringValue(STR_Token tok, char *tokenBuf, size_t bufLen);
+size_t STR_GetString(STR_ParserState *ps, char *tokenBuf, size_t bufLen);
+size_t STR_GetIdent(STR_ParserState *ps, char *tokenBuf, size_t bufLen);
+bool STR_IsTokenIdent(STR_Token tok, const char *str);
+bool STR_IsTokenIdentCase(STR_Token tok, const char *str);
+int STR_GetIntegerValue(STR_Token tok);
 int STR_GetInteger(STR_ParserState *ps);
 bool STR_ExpectToken(STR_ParserState *ps, const char *str);
 

@@ -40,5 +40,15 @@ CK_action *CK_LookupActionFrom16BitOffset(uint16_t offset); // POTENTIALLY SLOW 
 void CK_VAR_SetInt(const char *name, intptr_t val);
 void CK_VAR_SetString(const char *name, const char *val);
 void CK_VAR_LoadVars(const char *filename);
+
+#ifdef CK_STRINGS_LINKED
+// TODO: This is here in case we want to support building string values directly
+// into the executable again. (I have an in-progress tool to do this, though
+// it lacks support for a few things, so it's not workable at present.)
+#define CK_STRING(s) STRING_ ## s
+#else
+#define CK_STRING(s) CK_VAR_GetString(#s, #s)
+#endif
+
 #endif
 
