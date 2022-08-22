@@ -268,13 +268,13 @@ size_t STR_GetStringValue(STR_Token tok, char *tokenBuf, size_t bufLength)
 size_t STR_GetString(STR_ParserState *ps, char *tokenBuf, size_t bufLength)
 {
 	STR_Token tok = STR_GetToken(ps);
-	STR_GetStringValue(tok, tokenBuf, bufLength);
+	return STR_GetStringValue(tok, tokenBuf, bufLength);
 }
 
 size_t STR_GetIdent(STR_ParserState *ps, char *tokenBuf, size_t bufLength)
 {
 	STR_Token tok = STR_GetToken(ps);
-	STR_GetStringValue(tok, tokenBuf, bufLength);
+	return STR_GetStringValue(tok, tokenBuf, bufLength);
 }
 
 bool STR_IsTokenIdent(STR_Token tok, const char *str)
