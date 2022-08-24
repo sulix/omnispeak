@@ -650,7 +650,7 @@ void US_SelectCurrentItem()
 	// Play disallowed sound if menu item is disabled
 	if (item->state & US_IS_Disabled)
 	{
-		SD_PlaySound(SOUND_NEEDKEYCARD);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_NEEDKEYCARD));
 		return;
 	}
 
@@ -877,7 +877,7 @@ void USL_EnterCurrentItem()
 
 	if (item->state & US_IS_Disabled)
 	{
-		SD_PlaySound(SOUND_NEEDKEYCARD);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_NEEDKEYCARD));
 		return;
 	}
 

@@ -105,7 +105,7 @@ void CK4_SlugMove(CK_object *obj)
 	{
 		obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 		obj->currentAction = CK_GetActionByName("CK4_ACT_SlugSliming0");
-		SD_PlaySound(SOUND_SLUGSLIME);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_SLUGSLIME));
 	}
 }
 
@@ -181,11 +181,11 @@ void CK4_MushroomDraw(CK_object *obj)
 		{
 			obj->user1 = 0;
 			obj->velY = -68;
-			SD_PlaySound(SOUND_MUSHROOMLEAP);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_MUSHROOMLEAP));
 		}
 		else
 		{
-			SD_PlaySound(SOUND_MUSHROOMHOP);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_MUSHROOMHOP));
 			obj->velY = -40;
 		}
 	}
@@ -508,7 +508,7 @@ void CK4_SkypestGroundCol(CK_object *a, CK_object *b)
 		b->currentAction == CK_GetActionByName("CK_ACT_keenPogo3"))
 	{
 		CK_SetAction2(a, CK_GetActionByName("CK4_ACT_SkypestSquish0"));
-		SD_PlaySound(SOUND_SKYPESTSQUISH);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_SKYPESTSQUISH));
 		a->type = CT_Friendly;
 	}
 }

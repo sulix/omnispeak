@@ -1393,9 +1393,6 @@ void StartMusic(int16_t level)
 //
 //===========================================================================
 
-#define SOUND_STATUSDOWN 34
-#define SOUND_STATUSUP 35
-
 void *ck_statusSurface;
 void *ck_backupSurface;
 
@@ -1799,7 +1796,7 @@ void CK_ShowStatusWindow(void)
 	RF_Refresh();
 
 	// Scroll the window down
-	SD_PlaySound(SOUND_STATUSDOWN);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_STATUSDOWN));
 	ck_statusWindowYPx = 16;
 	ck_statusDown = false;
 	RF_SetDrawFunc(CK_ScrollStatusWindow);
@@ -1822,7 +1819,7 @@ void CK_ShowStatusWindow(void)
 	IN_WaitButton(); //IN_Ack();
 
 	// Scroll the window up
-	SD_PlaySound(SOUND_STATUSUP);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_STATUSUP));
 	ck_statusWindowYPx -= 16;
 	ck_statusDown = true;
 	RF_SetDrawFunc(CK_ScrollStatusWindow);
@@ -1977,7 +1974,7 @@ void CK_NormalCamera(CK_object *obj)
 	if (obj->clipRects.unitY2 > (rf_scrollYMaxUnit + RF_PixelToUnit(208)))
 	{
 		obj->posY -= obj->clipRects.unitY2 - (rf_scrollYMaxUnit + RF_PixelToUnit(208));
-		SD_PlaySound(SOUND_KEENFALL);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENFALL));
 		ck_godMode = false;
 		CK_KillKeen();
 		return;

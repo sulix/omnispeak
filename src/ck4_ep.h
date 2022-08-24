@@ -23,28 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include "ck_ep.h"
 
-#define SOUND_WORMMOUTHBITE 5
-#define SOUND_MIMROCKJUMP 15
-#define SOUND_MUSHROOMLEAP 16
-#define SOUND_SKYPESTSQUISH 22
-#define SOUND_KEENSWIMHI 26
-#define SOUND_KEENSWIMLO 27
-#define SOUND_MUSHROOMHOP 28
-#define SOUND_SMIRKYSTEAL 29
-#define SOUND_SMIRKYTELE 30
-#define SOUND_COUNCILSAVE 31
-#define SOUND_LICKFLAME 32
-#define SOUND_BERKELOIDTHROW 33
-#define SOUND_KEENBUBBLE 36
-#define SOUND_CK4MINEEXPLODE 37
-#define SOUND_SPRITESHOOT 38
-#define SOUND_LIGHTNINGBOLT 39
-#define SOUND_FIREBALLLAND 40
-#define SOUND_DARTSHOOT 41
-#define SOUND_DOPEFISHBURP 42
-#define SOUND_FOOTAPPEAR 45
-#define SOUND_SLUGSLIME 46
-
 /*
  * Contains definitions relevant only to Keen 5
  */

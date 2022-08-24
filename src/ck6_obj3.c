@@ -108,13 +108,11 @@ void CK6_SpawnBobba(int tileX, int tileY)
 	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BobbaJump0"));
 }
 
-#define SOUND_BOBBAFIREBALL 0x1F
 void CK6_BobbaFireball(CK_object *obj)
 {
-	SD_PlaySound(SOUND_BOBBAFIREBALL);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_BOBBAFIREBALL));
 }
 
-#define SOUND_BOBBAJUMP 0x1A
 void CK6_Bobba(CK_object *obj)
 {
 	if (++obj->user1 == 3)
@@ -150,7 +148,7 @@ void CK6_Bobba(CK_object *obj)
 
 		obj->velX = obj->xDirection * 32;
 		obj->velY = -32;
-		SD_PlaySound(SOUND_BOBBAJUMP);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BOBBAJUMP));
 	}
 }
 
@@ -167,7 +165,6 @@ void CK6_BobbaCol(CK_object *a, CK_object *b)
 	}
 }
 
-#define SOUND_BOBBALAND 0x1B
 void CK6_BobbaJumpDraw(CK_object *obj)
 {
 	if (obj->rightTI)
@@ -186,7 +183,7 @@ void CK6_BobbaJumpDraw(CK_object *obj)
 
 	if (obj->topTI)
 	{
-		SD_PlaySound(SOUND_BOBBALAND);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BOBBALAND));
 		CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_BobbaStand0"));
 	}
 
@@ -335,29 +332,28 @@ void CK6_SpawnBlorb(int tileX, int tileY)
 	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Blorb0"));
 }
 
-#define SOUND_BLORBBOUNCE 6
 void CK6_BlorbDraw(CK_object *obj)
 {
 	if (obj->topTI)
 	{
 		obj->yDirection = IN_motion_Up;
-		SD_PlaySound(SOUND_BLORBBOUNCE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BLORBBOUNCE));
 	}
 	else if (obj->bottomTI)
 	{
 		obj->yDirection = IN_motion_Down;
-		SD_PlaySound(SOUND_BLORBBOUNCE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BLORBBOUNCE));
 	}
 
 	if (obj->leftTI)
 	{
 		obj->xDirection = IN_motion_Left;
-		SD_PlaySound(SOUND_BLORBBOUNCE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BLORBBOUNCE));
 	}
 	else if (obj->rightTI)
 	{
 		obj->xDirection = IN_motion_Right;
-		SD_PlaySound(SOUND_BLORBBOUNCE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BLORBBOUNCE));
 	}
 
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
@@ -383,7 +379,7 @@ void CK6_Ceilick(CK_object *obj)
 		obj->clipRects.unitX2 + 0x10 > ck_keenObj->clipRects.unitX1 &&
 		obj->clipRects.unitX1 - 0x10 < ck_keenObj->clipRects.unitX2)
 	{
-		SD_PlaySound(0x33);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_CEILICKATTACK));
 		obj->currentAction = CK_GetActionByName("CK6_ACT_CeilickStrike00");
 	}
 }

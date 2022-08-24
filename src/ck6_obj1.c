@@ -58,13 +58,12 @@ void CK6_SpawnGrabbiter(int tileX, int tileY)
 	}
 }
 
-#define SOUND_GRABBITER 0x39
 void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 {
 	if (!ck_gameState.ep.ck6.sandwich)
 	{
 		CA_CacheGrChunk(0x23);
-		SD_PlaySound(SOUND_GRABBITER);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_GRABBITER));
 
 		US_CenterWindow(26, 8);
 		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
@@ -120,7 +119,6 @@ void CK6_Rocket(CK_object *obj)
 	obj->visible = true;
 }
 
-#define SOUND_ROCKETLAUNCH 0x38
 void CK6_RocketCol(CK_object *a, CK_object *b)
 {
 	if (ck_gameState.ep.ck6.passcard == 0)
@@ -134,7 +132,7 @@ void CK6_RocketCol(CK_object *a, CK_object *b)
 		US_SetPrintY(US_GetPrintY() + 5);
 		US_CPrint(CK_STRING(ck6_str_rocketNoPasscard));
 		VL_Present();
-		SD_PlaySound(SOUND_NEEDKEYCARD);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_NEEDKEYCARD));
 		VL_DelayTics(30); // VW_WaitVBL(30);
 		IN_ClearKeysDown();
 		IN_WaitButton();
@@ -153,7 +151,7 @@ void CK6_RocketCol(CK_object *a, CK_object *b)
 		b->posY = a->posY + 0x100;
 		b->clipped = CLIP_not;
 		CK_SetAction2(b, CK_GetActionByName("CK6_ACT_MapKeenRocketSit0"));
-		SD_PlaySound(SOUND_ROCKETLAUNCH);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_ROCKETLAUNCH));
 		SD_WaitSoundDone();
 	}
 }
@@ -168,13 +166,12 @@ void CK6_RocketFlyCol(CK_object *a, CK_object *b)
 	}
 }
 
-#define SOUND_ROCKETFLY 0x36
 void CK6_RocketFly(CK_object *obj)
 {
 	if (!ck_nextX && !ck_nextY)
 	{
 		if (!SD_SoundPlaying())
-			SD_PlaySound(SOUND_ROCKETFLY);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_ROCKETFLY));
 
 		int delta = SD_GetSpriteSync() * 32;
 
@@ -355,7 +352,6 @@ void CK6_MapKeenClimb(CK_object *obj)
 	}
 }
 
-#define SOUND_KEENTHROWROPE 0x35
 void CK6_MapCliffCol(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_Player)
@@ -370,7 +366,7 @@ void CK6_MapCliffCol(CK_object *a, CK_object *b)
 			US_SetPrintY(US_GetPrintY() + 15);
 			US_CPrint(CK_STRING(ck6_str_cliffNoRope));
 			VL_Present();
-			SD_PlaySound(SOUND_NEEDKEYCARD);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_NEEDKEYCARD));
 			VL_DelayTics(30); // VW_WaitVBL(30);
 			IN_ClearKeysDown();
 			IN_WaitButton();
@@ -383,7 +379,7 @@ void CK6_MapCliffCol(CK_object *a, CK_object *b)
 		else if (ck_gameState.ep.ck6.rope == 1)
 		{
 			ck_gameState.ep.ck6.rope++;
-			SD_PlaySound(SOUND_KEENTHROWROPE);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_KEENTHROWROPE));
 			CK_SetAction2(b, CK_GetActionByName("CK6_ACT_MapKeenThrowRope0"));
 			b->type = CT_Friendly;
 		}
@@ -457,7 +453,6 @@ void CK6_Satellite(CK_object *obj)
 	}
 }
 
-#define SOUND_KEENSATELLITE 0x21
 void CK6_SatelliteCol(CK_object *a, CK_object *b)
 {
 	if (b->currentAction == CK_GetActionByName("CK6_ACT_SatelliteInvisible0"))
@@ -478,7 +473,7 @@ void CK6_SatelliteCol(CK_object *a, CK_object *b)
 		}
 		else
 		{
-			SD_PlaySound(SOUND_KEENSATELLITE);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_KEENSATELLITE));
 			a->user4 = var2;
 			if (ck_keenObj->currentAction == CK_GetActionByName("CK6_ACT_KeenSatellite0"))
 			{
@@ -653,10 +648,9 @@ void CK6_BloogguardWalk(CK_object *obj)
 	}
 }
 
-#define SOUND_BLOOGGUARDSMASH 0x34
 void CK6_BloogguardSmash(CK_object *obj)
 {
-	SD_PlaySound(SOUND_BLOOGGUARDSMASH);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_BLOOGGUARDSMASH));
 	ck6_smashScreenDistance = 25;
 	if (ck_keenObj->topTI)
 		CK_SetAction2(ck_keenObj, CK_GetActionByName("CK6_ACT_keenStunned0"));
@@ -752,7 +746,6 @@ void CK6_SpawnBlooglet(int tileX, int tileY, int type)
 	}
 }
 
-#define SOUND_BLOOGLETGEM 5
 static const char *stunnedBloogletActions[] = {
 	"CK6_ACT_BloogletRStunned0",
 	"CK6_ACT_BloogletYStunned0",
@@ -786,7 +779,7 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
 			gem->user2 = gem->gfxChunk = *CK_ItemSpriteChunks[color];
 			gem->user3 = gem->user2 + 2;
 			CK_SetAction(gem, CK_GetActionByName("CK_ACT_fallingitem"));
-			SD_PlaySound(SOUND_BLOOGLETGEM);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_BLOOGLETGEM));
 		}
 
 		CK_StunCreature(a, b, CK_GetActionByName(stunnedBloogletActions[color]));

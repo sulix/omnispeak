@@ -77,7 +77,7 @@ void CK4_MapKeenSwim(CK_object *obj)
 	if (++obj->user2 == 2)
 		obj->user2 = 0;
 
-	SD_PlaySound(obj->user2 ? SOUND_KEENSWIMHI : SOUND_KEENSWIMLO);
+	SD_PlaySound(obj->user2 ? CK_SOUNDNUM(SOUND_KEENSWIMHI) : CK_SOUNDNUM(SOUND_KEENSWIMLO));
 }
 
 static int ck4_wetsuitOffs[] = {4, 6, 0, 2};
@@ -94,7 +94,7 @@ void CK4_MapMiscFlagsCheck(CK_object *obj)
 		{
 			if (!ck_gameState.ep.ck4.wetsuit)
 			{
-				SD_PlaySound(SOUND_NEEDKEYCARD);
+				SD_PlaySound(CK_SOUNDNUM(SOUND_NEEDKEYCARD));
 				CK4_ShowCantSwimMessage();
 				// RF_ForceRefresh();
 				ck_nextX = -obj->deltaPosX;

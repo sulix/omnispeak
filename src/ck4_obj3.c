@@ -106,7 +106,7 @@ void CK4_SmirkySearch(CK_object *obj)
 	// Decide to teleport if counter hits threshold
 	if (++obj->user1 == 2)
 	{
-		SD_PlaySound(SOUND_SMIRKYTELE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_SMIRKYTELE));
 		obj->currentAction = CK_GetActionByName("CK4_ACT_SmirkyTele0");
 		return;
 	}
@@ -145,7 +145,7 @@ void CK4_SmirkyCol(CK_object *a, CK_object *b)
 		b->type = CT_Friendly;
 		b->zLayer = PRIORITIES - 1;
 		CK_SetAction2(b, CK_GetActionByName("CK4_ACT_StolenItem0"));
-		SD_PlaySound(SOUND_SMIRKYSTEAL);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_SMIRKYSTEAL));
 	}
 	else if (b->type == CT_Stunner)
 	{
@@ -293,7 +293,7 @@ void CK4_MimrockJumpDraw(CK_object *obj)
 {
 	if (obj->topTI)
 	{
-		SD_PlaySound(SOUND_MIMROCKJUMP);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_MIMROCKJUMP));
 		obj->velY = -20;
 		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_MimrockBounce0"));
 	}
@@ -311,7 +311,7 @@ void CK4_MimrockBounceDraw(CK_object *obj)
 {
 	if (obj->topTI)
 	{
-		SD_PlaySound(SOUND_MIMROCKJUMP);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_MIMROCKJUMP));
 		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_Mimrock0"));
 	}
 
@@ -462,7 +462,7 @@ void CK4_DopefishBurp(CK_object *obj)
 	bubble->velY = -20;
 	bubble->velX = 4;
 	CK_SetAction(bubble, CK_GetActionByName("CK4_ACT_DopeBubble0"));
-	SD_PlaySound(SOUND_DOPEFISHBURP);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_DOPEFISHBURP));
 }
 
 void CK4_Bubbles(CK_object *obj)
@@ -485,7 +485,7 @@ void CK4_DopefishCol(CK_object *a, CK_object *b)
 	{
 		b->type = CT_Friendly;
 		b->clipped = CLIP_not;
-		SD_PlaySound(SOUND_KEENDIE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENDIE));
 		CK_SetAction2(b, CK_GetActionByName("CK4_ACT_KeenEaten0"));
 	}
 	else
@@ -599,10 +599,10 @@ void CK4_SpriteShoot(CK_object *obj)
 	shot->zLayer = PRIORITIES - 4;
 	shot->type = CT4_Sprite;
 	shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
-	SD_PlaySound(SOUND_KEENSHOOT);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_KEENSHOOT));
 	shot->xDirection = obj->xDirection;
 	CK_SetAction(shot, CK_GetActionByName("CK4_ACT_SpriteBullet0"));
-	SD_PlaySound(SOUND_SPRITESHOOT);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_SPRITESHOOT));
 }
 
 void CK4_ProjectileDraw(CK_object *obj)
@@ -653,7 +653,7 @@ void CK4_MineCol(CK_object *a, CK_object *b)
 	if (b->type == CT_Player)
 	{
 		CK_SetAction2(a, CK_GetActionByName("CK4_ACT_MineExplode0"));
-		SD_PlaySound(SOUND_CK4MINEEXPLODE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_CK4MINEEXPLODE));
 		CK_KillKeen();
 	}
 }
@@ -752,7 +752,7 @@ void CK4_DartGun(CK_object *obj)
 		break;
 	}
 
-	SD_PlaySound(SOUND_DARTSHOOT);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_DARTSHOOT));
 }
 
 // Wetsuit
@@ -771,7 +771,7 @@ void CK4_WetsuitCol(CK_object *a, CK_object *b)
 	if (b->type == CT_Player && b->topTI)
 	{
 		ck_gameState.ep.ck4.wetsuit = true;
-		SD_PlaySound(SOUND_FOOTAPPEAR);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_FOOTAPPEAR));
 		CK4_ShowWetsuitMessage();
 		//RF_ForceRefresh();
 		ck_gameState.levelState = LS_LevelComplete;

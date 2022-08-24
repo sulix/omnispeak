@@ -242,7 +242,7 @@ void CK5_MineMove(CK_object *obj)
 	// Check if Mine should explode
 	if (deltaX < 0x200 && deltaX > -0x500 && deltaY < 0x300 && deltaY > -0x50)
 	{
-		SD_PlaySound(SOUND_MINEEXPLODE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_MINEEXPLODE));
 		obj->currentAction = CK_GetActionByName("CK5_ACT_MineExplode0");
 		RF_RemoveSpriteDrawUsing16BitOffset(&obj->user4);
 		return;
@@ -331,7 +331,7 @@ void CK5_MineMoveDotsToCenter(CK_object *obj)
 	// Blow up if keen is nearby
 	if (deltaX < 0x200 && deltaX > -0x300 && deltaY < 0x300 && deltaY > -0x300)
 	{
-		SD_PlaySound(SOUND_MINEEXPLODE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_MINEEXPLODE));
 		obj->currentAction = CK_GetActionByName("CK5_ACT_MineExplode0");
 		RF_RemoveSpriteDrawUsing16BitOffset(&obj->user4);
 		return;
@@ -395,7 +395,7 @@ void CK5_MineMoveDotsToSides(CK_object *obj)
 	// Explode if Keen is nearby
 	if (deltaX < 0x200 && deltaX > -0x300 && deltaY < 0x300 && deltaY > -0x300)
 	{
-		SD_PlaySound(SOUND_MINEEXPLODE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_MINEEXPLODE));
 		obj->currentAction = CK_GetActionByName("CK5_ACT_MineExplode0");
 		RF_RemoveSpriteDrawUsing16BitOffset(&obj->user4);
 		return;
@@ -483,7 +483,7 @@ void CK5_MineExplode(CK_object *obj)
 {
 
 	CK_object *new_object;
-	SD_PlaySound(SOUND_MINEEXPLODE);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_MINEEXPLODE));
 
 	// upleft
 	new_object = CK_GetNewObj(true);
@@ -601,7 +601,7 @@ void CK5_RoboShoot(CK_object *obj)
 	{
 		new_object->velX = obj->xDirection * 60;
 		new_object->velY = obj->user1 & 1 ? -8 : 8;
-		SD_PlaySound(SOUND_ENEMYSHOOT);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_ENEMYSHOOT));
 		ck_nextX = obj->xDirection == IN_motion_Right ? -0x40 : 0x40;
 	}
 }
@@ -621,7 +621,7 @@ void CK5_RoboShotTileCol(CK_object *obj)
 
 	if (obj->topTI || obj->rightTI || obj->bottomTI || obj->leftTI)
 	{
-		SD_PlaySound(SOUND_ENEMYSHOTHIT);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_ENEMYSHOTHIT));
 		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_RoboShotHit0"));
 	}
 
@@ -651,7 +651,7 @@ void CK5_SpirogripSpin(CK_object *obj)
 	if (US_RndT() > 20)
 		return;
 
-	SD_PlaySound(SOUND_SPIROFLY);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_SPIROFLY));
 
 	// and we're in the right direction, fly!
 	if (obj->currentAction == CK_GetActionByName("CK5_ACT_SpirogripSpin1"))
@@ -675,7 +675,7 @@ void CK5_SpirogripFlyDraw(CK_object *obj)
 	{
 		//obj->currentAction = obj->currentAction->next;
 		CK_SetAction2(obj, obj->currentAction->next);
-		SD_PlaySound(SOUND_SPIROSLAM);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_SPIROSLAM));
 	}
 }
 
@@ -742,11 +742,11 @@ void CK5_SpindredTileCol(CK_object *obj)
 				obj->user1 = 0;
 				obj->velY = 68;
 				obj->yDirection = -obj->yDirection;
-				SD_PlaySound(SOUND_SPINDREDFLYDOWN); // fly down
+				SD_PlaySound(CK_SOUNDNUM(SOUND_SPINDREDFLYDOWN)); // fly down
 			}
 			else
 			{
-				SD_PlaySound(SOUND_SPINDREDSLAM); // slam once
+				SD_PlaySound(CK_SOUNDNUM(SOUND_SPINDREDSLAM)); // slam once
 				obj->velY = 40;
 			}
 		}
@@ -762,11 +762,11 @@ void CK5_SpindredTileCol(CK_object *obj)
 				obj->user1 = 0;
 				obj->velY = -68;
 				obj->yDirection = -obj->yDirection;
-				SD_PlaySound(SOUND_SPINDREDFLYUP); // fly down
+				SD_PlaySound(CK_SOUNDNUM(SOUND_SPINDREDFLYUP)); // fly down
 			}
 			else
 			{
-				SD_PlaySound(SOUND_SPINDREDSLAM); // slam once
+				SD_PlaySound(CK_SOUNDNUM(SOUND_SPINDREDSLAM)); // slam once
 				obj->velY = -40;
 			}
 		}
@@ -815,7 +815,7 @@ void CK5_MasterShoot(CK_object *obj)
 	{
 		new_object->velX = obj->xDirection * 48;
 		new_object->velY = -16;
-		SD_PlaySound(SOUND_MASTERSHOT);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_MASTERSHOT));
 	}
 }
 
@@ -865,7 +865,7 @@ void CK5_MasterTele(CK_object *obj)
 		CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MasterSparks0"));
 	}
 
-	SD_PlaySound(SOUND_MASTERTELE);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_MASTERTELE));
 
 	// Find a teleportation destination
 	tries = 0;
@@ -976,7 +976,7 @@ void CK5_MasterBallTileCol(CK_object *obj)
 	if (obj->topTI)
 	{
 		//turn ball into sparks, spawn sparks in reverse direction
-		SD_PlaySound(SOUND_MASTERSHOT);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_MASTERSHOT));
 		CK_object *new_object;
 		obj->velX = 48;
 		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_MasterSparks0"));
@@ -1069,7 +1069,7 @@ void CK5_ShikadiWalk(CK_object *obj)
 		obj->user1 = tx;
 		obj->currentAction = CK_GetActionByName("CK5_ACT_ShikadiPole0");
 		ck_nextX = 0;
-		SD_PlaySound(SOUND_POLEZAP);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_POLEZAP));
 	}
 }
 
@@ -1117,7 +1117,7 @@ void CK5_ShikadiPole(CK_object *obj)
 	new_object->clipped = CLIP_not;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_PoleZap0"));
 	new_object->yDirection = obj->posY > ck_keenObj->posY ? IN_motion_Up : IN_motion_Down;
-	SD_PlaySound(SOUND_POLEZAP);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_POLEZAP));
 }
 
 void CK5_PoleZap(CK_object *obj)
@@ -1233,7 +1233,7 @@ void CK5_ShocksundShoot(CK_object *obj)
 
 		new_object->velX = obj->xDirection * 60;
 		new_object->xDirection = obj->xDirection;
-		SD_PlaySound(SOUND_SHOCKSUNDBARK);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_SHOCKSUNDBARK));
 	}
 }
 
@@ -1354,7 +1354,7 @@ void CK5_BarkShotTileCol(CK_object *obj)
 
 	if (obj->topTI || obj->rightTI || obj->bottomTI || obj->leftTI)
 	{
-		SD_PlaySound(SOUND_BARKSHOTDIE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BARKSHOTDIE));
 
 		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_BarkShotDie0"));
 	}
@@ -1413,13 +1413,13 @@ void CK5_SpherefulTileCol(CK_object *obj)
 	if (obj->leftTI || obj->rightTI)
 	{
 		obj->velX = -obj->velX;
-		SD_PlaySound(SOUND_SPHEREFULCEILING);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_SPHEREFULCEILING));
 	}
 
 	if (obj->bottomTI)
 	{
 		obj->velY = -obj->velY;
-		SD_PlaySound(SOUND_SPHEREFULCEILING);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_SPHEREFULCEILING));
 	}
 
 	if (obj->topTI)
@@ -1435,7 +1435,7 @@ void CK5_SpherefulTileCol(CK_object *obj)
 		else if (obj->velY < -12)
 			obj->velY = -12;
 		/* FIXME: Any better name for (shared) sound? */
-		SD_PlaySound(SOUND_SPINDREDFLYUP);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_SPINDREDFLYUP));
 	}
 
 	// First draw the sphereful
