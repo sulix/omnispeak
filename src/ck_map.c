@@ -338,7 +338,7 @@ void CK_ScanForLevelEntry(CK_object *obj)
 				ck_gameState.mapPosY = obj->posY;
 				ck_gameState.currentLevel = infotile - 0xC000;
 				ck_gameState.levelState = LS_LevelComplete;
-				SD_PlaySound(SOUND_UNKNOWN12);
+				SD_PlaySound(CK_SOUNDNUM(SOUND_UNKNOWN12));
 				return;
 			}
 		}
@@ -397,11 +397,11 @@ void CK_MapKeenWalk(CK_object *obj)
 	//walk hi lo sound
 	if (obj->user2 == 1)
 	{
-		SD_PlaySound(SOUND_KEENWALK0);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENWALK0));
 	}
 	else if (obj->user2 == 3)
 	{
-		SD_PlaySound(SOUND_KEENWALK1);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENWALK1));
 	}
 }
 
@@ -419,7 +419,7 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 	int doneTile = ck_currentEpisode->ep == EP_CK5 ? 0x427 : (ck_currentEpisode->ep == EP_CK6 ? 0xA45 : 0);
 	int doneTile2 = ck_currentEpisode->ep == EP_CK5 ? 0 : (ck_currentEpisode->ep == EP_CK6 ? 0xA45 : 0);
 
-	SD_PlaySound(SOUND_UNKNOWN41);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_UNKNOWN41));
 
 	unitX = (tileX << 8);
 	unitY = (tileY << 8);
@@ -515,7 +515,7 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 	RF_Refresh();
 	VL_Present();
 	RF_Refresh();
-	SD_PlaySound(SOUND_UNKNOWN41);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_UNKNOWN41));
 
 	for (timer = 0; timer < 90;)
 	{
@@ -668,7 +668,7 @@ void CK_MapFlagThrown(CK_object *obj)
 	if (!vl_screenFaded)
 	{
 		SD_StopSound();
-		SD_PlaySound(SOUND_FLAGFLIP);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_FLAGFLIP));
 		obj->currentAction = obj->currentAction->next;
 	}
 }
@@ -687,7 +687,7 @@ void CK_MapFlagFall(CK_object *obj)
 
 	obj->visible = true;
 	if (!obj->user1)
-		SD_PlaySound(SOUND_FLAGFLIP);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_FLAGFLIP));
 }
 
 void CK_MapFlagLand(CK_object *obj)
@@ -697,7 +697,7 @@ void CK_MapFlagLand(CK_object *obj)
 	obj->posY = obj->user2 + 0x80;
 	obj->zLayer = PRIORITIES - 1;
 
-	SD_PlaySound(SOUND_FLAGLAND);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_FLAGLAND));
 	if (ck_currentEpisode->ep == EP_CK6)
 	{
 		uint16_t tile = CA_TileAtPos(ck_flagTileSpotX, ck_flagTileSpotY, 1) + 1;

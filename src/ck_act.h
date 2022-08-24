@@ -53,10 +53,13 @@ void CK_VAR_LoadVars(const char *filename);
 #ifdef CK_VARS_LINKED
 #define CK_INT(name) INT_ ## name
 #define CK_CHUNKNUM(name) CHUNK_ ## name
+#define CK_SOUNDNUM(name) INT_ ## name
 #else
 #define CK_INT(name, default) CK_Var_GetInt(#name, default) 
 #define CK_CHUNKNUM(name) CK_VAR_GetInt(#name, 0)
+#define CK_SOUNDNUM(name) CK_VAR_GetInt(#name, 0)
 #endif
+
 
 #endif
 

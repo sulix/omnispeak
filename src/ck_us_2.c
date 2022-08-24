@@ -1143,7 +1143,7 @@ void USL_PlayPaddleWar(void)
 			// Bounce ball off of side wall
 			if ((ball_real_x + ball_x_speed) / 4 > 228 || (ball_real_x + ball_x_speed) / 4 < 78)
 			{
-				SD_PlaySound(SOUND_PONGWALL);
+				SD_PlaySound(CK_SOUNDNUM(SOUND_PONGWALL));
 				ball_x_speed = -ball_x_speed;
 			}
 
@@ -1156,7 +1156,7 @@ void USL_PlayPaddleWar(void)
 				new_round = 1;
 				keen_won_last = 0;
 				comp_score++;
-				SD_PlaySound(SOUND_COMPSCORE);
+				SD_PlaySound(CK_SOUNDNUM(SOUND_COMPSCORE));
 				USL_DrawPaddleWarScore(keen_score, comp_score);
 				if (comp_score == 21)
 				{
@@ -1171,7 +1171,7 @@ void USL_PlayPaddleWar(void)
 				new_round = 1;
 				keen_won_last = 1;
 				keen_score++;
-				SD_PlaySound(SOUND_KEENSCORE); /* play_sound */
+				SD_PlaySound(CK_SOUNDNUM(SOUND_KEENSCORE)); /* play_sound */
 				USL_DrawPaddleWarScore(keen_score, comp_score);
 				if (keen_score == 21)
 				{
@@ -1192,7 +1192,7 @@ void USL_PlayPaddleWar(void)
 				{
 					bounce_point = comp_x;
 					y_bounce = 1;
-					SD_PlaySound(SOUND_COMPPADDLE);
+					SD_PlaySound(CK_SOUNDNUM(SOUND_COMPPADDLE));
 				}
 				else if (ball_y_speed > 0 && ball_y >= 132 && ball_y < 135 && (keen_x - 5) <= ball_x && (keen_x + 11) > ball_x)
 				{
@@ -1206,7 +1206,7 @@ void USL_PlayPaddleWar(void)
 					}
 					bounce_point = keen_x;
 					y_bounce = 1;
-					SD_PlaySound(SOUND_KEENPADDLE);
+					SD_PlaySound(CK_SOUNDNUM(SOUND_KEENPADDLE));
 				}
 
 				if (y_bounce)

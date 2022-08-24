@@ -82,7 +82,7 @@ void CK4_WormmouthMove(CK_object *obj)
 		if ((obj->xDirection == IN_motion_Right && dx > 0x80 && dx < 0x180) ||
 			(obj->xDirection == IN_motion_Left && dx < -0x80 && dx > -0x200))
 		{
-			SD_PlaySound(SOUND_WORMMOUTHBITE);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_WORMMOUTHBITE));
 			obj->currentAction = CK_GetActionByName("CK4_ACT_WormmouthBite0");
 		}
 	}
@@ -184,7 +184,7 @@ void CK4_CloudStrike(CK_object *obj)
 	bolt->posX = obj->posX + 0x100;
 	bolt->posY = obj->posY + 0x100;
 	CK_SetAction(bolt, CK_GetActionByName("CK4_ACT_Lightning0"));
-	SD_PlaySound(SOUND_LIGHTNINGBOLT);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_LIGHTNINGBOLT));
 }
 
 void CK4_CloudCol(CK_object *a, CK_object *b)
@@ -231,7 +231,7 @@ void CK4_BerkeloidMove(CK_object *obj)
 				(obj->xDirection == IN_motion_Left && dx < 0))
 			{
 				obj->currentAction = CK_GetActionByName("CK4_ACT_BerkeloidThrow0");
-				SD_PlaySound(SOUND_BERKELOIDTHROW);
+				SD_PlaySound(CK_SOUNDNUM(SOUND_BERKELOIDTHROW));
 			}
 		}
 	}
@@ -286,7 +286,7 @@ void CK4_FireballDraw(CK_object *obj)
 
 	if (obj->topTI)
 	{
-		SD_PlaySound(SOUND_FIREBALLLAND);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_FIREBALLLAND));
 		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_FireballGround0"));
 	}
 
@@ -388,7 +388,7 @@ void CK4_InchwormCol(CK_object *a, CK_object *b)
 		if (++a->user2 == 11)
 		{
 			// Turn worm into foot
-			SD_PlaySound(SOUND_FOOTAPPEAR);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_FOOTAPPEAR));
 			a->posY -= 0x500;
 			a->type = CT4_Foot;
 			CK_SetAction2(a, CK_GetActionByName("CK4_ACT_Foot1"));
@@ -470,7 +470,7 @@ void CK4_BounderDraw(CK_object *obj)
 	{
 		obj->user2++;
 		if (CK_ObjectVisible(obj))
-			SD_PlaySound(SOUND_MUSHROOMLEAP);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_MUSHROOMLEAP));
 
 		obj->velY = -50;
 
@@ -561,7 +561,7 @@ void CK4_LickMove(CK_object *obj)
 		if ((obj->xDirection == IN_motion_Right && dx > -0x20 && dx < 0x180) ||
 			(obj->xDirection == IN_motion_Left && dx < 0x20 && dx > -0x200))
 		{
-			SD_PlaySound(SOUND_LICKFLAME);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_LICKFLAME));
 			CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_LickFlame0"));
 			return;
 		}

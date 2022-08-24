@@ -565,7 +565,7 @@ void CK_TurretShoot(CK_object *obj)
 	}
 
 	CK_SetAction(shot, CK_GetActionByName("CK_ACT_turretShot1"));
-	SD_PlaySound(SOUND_ENEMYSHOOT);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_ENEMYSHOOT));
 }
 
 void CK_TurretShotCol(CK_object *me, CK_object *other)
@@ -581,7 +581,7 @@ void CK_TurretShotDraw(CK_object *obj)
 {
 	if (obj->topTI || obj->bottomTI || obj->leftTI || obj->rightTI)
 	{
-		SD_PlaySound(SOUND_ENEMYSHOTHIT);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_ENEMYSHOTHIT));
 		//obj->clipped=false;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_turretShotHit1"));
 	}

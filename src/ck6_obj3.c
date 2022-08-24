@@ -111,7 +111,7 @@ void CK6_SpawnBobba(int tileX, int tileY)
 #define SOUND_BOBBAFIREBALL 0x1F
 void CK6_BobbaFireball(CK_object *obj)
 {
-	SD_PlaySound(SOUND_BOBBAFIREBALL);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_BOBBAFIREBALL));
 }
 
 #define SOUND_BOBBAJUMP 0x1A
@@ -150,7 +150,7 @@ void CK6_Bobba(CK_object *obj)
 
 		obj->velX = obj->xDirection * 32;
 		obj->velY = -32;
-		SD_PlaySound(SOUND_BOBBAJUMP);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BOBBAJUMP));
 	}
 }
 
@@ -186,7 +186,7 @@ void CK6_BobbaJumpDraw(CK_object *obj)
 
 	if (obj->topTI)
 	{
-		SD_PlaySound(SOUND_BOBBALAND);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BOBBALAND));
 		CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_BobbaStand0"));
 	}
 
@@ -341,23 +341,23 @@ void CK6_BlorbDraw(CK_object *obj)
 	if (obj->topTI)
 	{
 		obj->yDirection = IN_motion_Up;
-		SD_PlaySound(SOUND_BLORBBOUNCE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BLORBBOUNCE));
 	}
 	else if (obj->bottomTI)
 	{
 		obj->yDirection = IN_motion_Down;
-		SD_PlaySound(SOUND_BLORBBOUNCE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BLORBBOUNCE));
 	}
 
 	if (obj->leftTI)
 	{
 		obj->xDirection = IN_motion_Left;
-		SD_PlaySound(SOUND_BLORBBOUNCE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BLORBBOUNCE));
 	}
 	else if (obj->rightTI)
 	{
 		obj->xDirection = IN_motion_Right;
-		SD_PlaySound(SOUND_BLORBBOUNCE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BLORBBOUNCE));
 	}
 
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);

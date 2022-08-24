@@ -134,7 +134,7 @@ void CK6_NospikeCol(CK_object *a, CK_object *b)
 			a->user4 = b->user4 = a->type;
 			CK_SetAction2(a, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
 			CK_SetAction2(b, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
-			SD_PlaySound(SOUND_NOSPIKECOLLIDE);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_NOSPIKECOLLIDE));
 			a->type = b->type = CT6_StunnedCreature;
 			a->velY = b->velY = -24;
 		}
@@ -163,7 +163,7 @@ void CK6_NospikeFallDraw2(CK_object *obj)
 		obj->user1 = obj->user2 = obj->user3;
 		obj->user4 = obj->type;
 		CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
-		SD_PlaySound(SOUND_NOSPIKECOLLIDE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_NOSPIKECOLLIDE));
 		obj->type = CT6_StunnedCreature;
 		obj->velY = -24;
 	}
@@ -231,7 +231,7 @@ void CK6_GikWalk(CK_object *obj)
 				obj->velX = dx < 0 ? -40 : 40;
 				obj->velY = -28;
 				obj->currentAction = CK_GetActionByName("CK6_ACT_GikJump0");
-				SD_PlaySound(SOUND_GIKJUMP);
+				SD_PlaySound(CK_SOUNDNUM(SOUND_GIKJUMP));
 			}
 		}
 	}
@@ -286,7 +286,7 @@ void CK6_GikJumpDraw(CK_object *obj)
 	if (obj->topTI)
 	{
 		obj->velY = 0;
-		SD_PlaySound(SOUND_GIKLAND);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_GIKLAND));
 		CK_SetAction2(obj, obj->currentAction->next);
 	}
 
@@ -371,7 +371,7 @@ void CK6_OrbatrixBounceDraw(CK_object *obj)
 	if (obj->topTI || obj->leftTI || obj->rightTI)
 	{
 		obj->velX = -obj->velX;
-		SD_PlaySound(SOUND_ORBATRIXBOUNCE);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_ORBATRIXBOUNCE));
 
 		if (obj->topTI && --obj->user1 == 0)
 		{
@@ -446,7 +446,7 @@ void CK6_BipCol(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_Player && b->deltaPosY == 0)
 	{
-		SD_PlaySound(SOUND_BIPSQUISH);
+		SD_PlaySound(CK_SOUNDNUM(SOUND_BIPSQUISH));
 		a->type = CT_Friendly;
 		CK_SetAction2(a, CK_GetActionByName("CK6_ACT_BipSquished0"));
 	}
@@ -488,7 +488,7 @@ void CK6_BipshipFly(CK_object *obj)
 		xdir = (ck_keenObj->posX < obj->posX) ? IN_motion_Left : IN_motion_Right;
 		if (obj->xDirection == xdir && US_RndT() < SD_GetSpriteSync() * 2)
 		{
-			SD_PlaySound(SOUND_KEENSHOOT);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_KEENSHOOT));
 			CK_object *shot = CK_GetNewObj(true);
 			shot->type = CT6_EnemyShot;
 			shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
@@ -539,7 +539,7 @@ checkTurn:
 #define SOUND_BIPSHIPCRASH 24
 void CK6_BipshipCrash(CK_object *obj)
 {
-	SD_PlaySound(SOUND_BIPSHIPCRASH);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_BIPSHIPCRASH));
 
 	// Spawn smoke
 	CK_object *smoke = CK_GetNewObj(true);
@@ -652,7 +652,7 @@ void CK6_FlectCol(CK_object *a, CK_object *b)
 		{
 			b->xDirection = a->xDirection;
 			b->user4 = 1; // Shot is hazardous to keen now
-			SD_PlaySound(SOUND_FLECTSHOT);
+			SD_PlaySound(CK_SOUNDNUM(SOUND_FLECTSHOT));
 		}
 	}
 }

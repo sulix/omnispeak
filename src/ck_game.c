@@ -923,7 +923,7 @@ void CK_GameLoop()
 			{
 				//We've won, return to main map.
 				//TODO: Mark level as done (and more)
-				SD_PlaySound(SOUND_LEVELEXIT);
+				SD_PlaySound(CK_SOUNDNUM(SOUND_LEVELEXIT));
 				ck_gameState.currentLevel = 0;
 				ck_lastLevelFinished = ca_mapOn;
 				ck_gameState.levelsDone[ca_mapOn] = 1;
@@ -948,7 +948,7 @@ void CK_GameLoop()
 			if (ck_currentEpisode->ep == EP_CK4)
 			{
 				if (ca_mapOn)
-					SD_PlaySound(SOUND_LEVELEXIT);
+					SD_PlaySound(CK_SOUNDNUM(SOUND_LEVELEXIT));
 
 				ck_lastLevelFinished = ca_mapOn;
 				ck_gameState.levelsDone[ca_mapOn] = 1;
@@ -993,7 +993,7 @@ void CK_GameLoop()
 			if (ck_currentEpisode->ep == EP_CK5)
 			{
 				// The level has been ended by fuse destruction
-				SD_PlaySound(SOUND_LEVELEXIT);
+				SD_PlaySound(CK_SOUNDNUM(SOUND_LEVELEXIT));
 				ck_lastLevelFinished = ca_mapOn;
 				ck_gameState.levelsDone[ca_mapOn] = LS_KorathFuse;
 				CK5_FuseMessage();

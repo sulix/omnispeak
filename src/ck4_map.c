@@ -94,7 +94,7 @@ void CK4_MapMiscFlagsCheck(CK_object *obj)
 		{
 			if (!ck_gameState.ep.ck4.wetsuit)
 			{
-				SD_PlaySound(SOUND_NEEDKEYCARD);
+				SD_PlaySound(CK_SOUNDNUM(SOUND_NEEDKEYCARD));
 				CK4_ShowCantSwimMessage();
 				// RF_ForceRefresh();
 				ck_nextX = -obj->deltaPosX;

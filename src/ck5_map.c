@@ -192,7 +192,7 @@ void CK5_MapKeenElevator(CK_object *keen)
 
 	keen->posY -= 0x100;
 	RF_AddSpriteDraw(&keen->sde, keen->posX, keen->posY, keen->gfxChunk, false, keen->zLayer);
-	SD_PlaySound(SOUND_UNKNOWN63);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_UNKNOWN63));
 
 	// Animate the elevator operation
 	uint16_t tile_array[4];
@@ -301,7 +301,7 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
 	}
 
-	SD_PlaySound(SOUND_UNKNOWN63);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_UNKNOWN63));
 
 	// Draw the elevator operation
 	uint16_t tile_array[4];
