@@ -110,7 +110,13 @@ static bool VL_SDL2GL_LoadGLProcs()
 {
 	int majorGLVersion = 0;
 	id_glGetString = (PFN_ID_GLGETSTRING)SDL_GL_GetProcAddress("glGetString");
+	if (!id_glGetString)
+		return false;
+
 	const char *GLVersion = (const char *)id_glGetString(GL_VERSION);
+	if (!GLVersion)
+		return false;
+
 	sscanf(GLVersion, "%d", &majorGLVersion);
 	if (majorGLVersion < 2)
 		return false;
