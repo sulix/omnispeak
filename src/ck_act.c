@@ -299,7 +299,9 @@ CK_ActionType CK_ACT_GetActionType(STR_ParserState *ps)
 		at = AT_ScaledFrame;
 	else
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Got a bad action type %s on line %d.\n", tok, ps->linecount);
+		char varTypeString[ID_STR_MAX_TOKEN_LENGTH];
+		STR_GetStringValue(tok, varTypeString, ID_STR_MAX_TOKEN_LENGTH);
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Got a bad action type %s on line %d.\n", varTypeString, ps->linecount);
 		at = (CK_ActionType)(STR_GetIntegerValue(tok));
 	}
 	return at;
