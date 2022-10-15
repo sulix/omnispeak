@@ -40,6 +40,7 @@ typedef struct STR_Table
 } STR_Table;
 
 void STR_AllocTable(STR_Table **tabl, size_t size);
+bool STR_DoesEntryExist(STR_Table *tabl, const char *str);
 void *STR_LookupEntryWithDefault(STR_Table *tabl, const char *str, void *def);
 void *STR_LookupEntry(STR_Table *tabl, const char *str);
 bool STR_AddEntry(STR_Table *tabl, const char *str, void *value);

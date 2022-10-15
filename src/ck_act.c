@@ -315,6 +315,12 @@ intptr_t CK_VAR_ParseIntOrVar(STR_ParserState *ps)
 		// This is an indirectly loaded integer.
 		char varName[ID_STR_MAX_TOKEN_LENGTH];
 		STR_GetStringValue(tok, varName, ID_STR_MAX_TOKEN_LENGTH);
+		
+		// Now, check if it exists. We have to do this separately for integers,
+		// as we can't just use NULL as a default value.
+		if (!STR_DoesEntryExist(ck_varTable, varName+1))
+			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Couldn't resolve integer variable reference %s on line %d.\n", varName, ps->linecount);
+		
 		return CK_VAR_GetInt(varName+1, 0);
 	}
 	else

@@ -55,6 +55,22 @@ void STR_AllocTable(STR_Table **tabl, size_t size)
 	}
 }
 
+// Checks if an entry 'str' in 'tabl' exists.
+bool STR_DoesEntryExist(STR_Table *tabl, const char *str)
+{
+	int hash = STR_HashString(str) % tabl->size;
+	for (size_t i = hash;; i = (i + 1) % tabl->size)
+	{
+		if (tabl->arr[i].str == 0)
+			break;
+		if (strcmp(str, tabl->arr[i].str) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 // Returns the pointer associated with 'str' in 'tabl', defaulting to 'def'
 void *STR_LookupEntryWithDefault(STR_Table *tabl, const char *str, void *def)
 {
