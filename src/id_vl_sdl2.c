@@ -35,8 +35,14 @@ static void VL_SDL2_ResizeWindow()
 
 	if (!vl_isIntegerScaled)
 	{
+#if !SDL_VERSION_ATLEAST(2, 0, 12)
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+#endif
 		vl_sdl2_scaledTarget = SDL_CreateTexture(vl_sdl2_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, vl_integerWidth, vl_integerHeight);
+#if SDL_VERSION_ATLEAST(2, 0, 12)
+		SDL_SetTextureScaleMode(vl_sdl2_scaledTarget, SDL_ScaleModeLinear);
+#endif
+	
 	}
 }
 
@@ -77,8 +83,13 @@ static void VL_SDL2_SetVideoMode(int mode)
 		if (!vl_isIntegerScaled && !vl_sdl2_bilinearSupport)
 			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Using SDL2 software renderer without integer scaling. Pixel size may be inconsistent.\n");
 
+#if !SDL_VERSION_ATLEAST(2, 0, 12)
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+#endif
 		vl_sdl2_texture = SDL_CreateTexture(vl_sdl2_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT);
+#if SDL_VERSION_ATLEAST(2, 0, 12)
+		SDL_SetTextureScaleMode(vl_sdl2_texture, SDL_ScaleModeNearest);
+#endif
 
 		vl_sdl2_palette = SDL_AllocPalette(256);
 
