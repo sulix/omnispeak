@@ -392,16 +392,16 @@ void VL_MaskedBlitToPAL8(void *src, void *dest, int x, int y, int pitch, int w, 
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1 << (7 - ((sy * w + sx) & 7));
 
-			if ((srcptr_a[plane_off] & plane_bit) != 0)
+			if ((srcptr_a[plane_off] & plane_bit) == 0)
 			{
-				continue;
+				dstptr[(sy + y) * pitch + (sx + x)] = 0;
 			}
 			int pixel = ((srcptr_i[plane_off] & plane_bit) ? 8 : 0) |
 				((srcptr_r[plane_off] & plane_bit) ? 4 : 0) |
 				((srcptr_g[plane_off] & plane_bit) ? 2 : 0) |
 				((srcptr_b[plane_off] & plane_bit) ? 1 : 0);
 
-			dstptr[(sy + y) * pitch + (sx + x)] = pixel;
+			dstptr[(sy + y) * pitch + (sx + x)] |= pixel;
 		}
 	}
 }
@@ -466,16 +466,16 @@ void VL_MaskedBlitClipToPAL8(void *src, void *dest, int x, int y, int pitch, int
 			int plane_off = (sy * w + sx) >> 3;
 			int plane_bit = 1 << (7 - ((sy * w + sx) & 7));
 
-			if ((srcptr_a[plane_off] & plane_bit) != 0)
+			if ((srcptr_a[plane_off] & plane_bit) == 0)
 			{
-				continue;
+				dstptr[(sy + y) * pitch + (sx + x)] = 0;
 			}
 			int pixel = ((srcptr_i[plane_off] & plane_bit) ? 8 : 0) |
 				((srcptr_r[plane_off] & plane_bit) ? 4 : 0) |
 				((srcptr_g[plane_off] & plane_bit) ? 2 : 0) |
 				((srcptr_b[plane_off] & plane_bit) ? 1 : 0);
 
-			dstptr[(sy + y) * pitch + (sx + x)] = pixel;
+			dstptr[(sy + y) * pitch + (sx + x)] |= pixel;
 		}
 	}
 }
