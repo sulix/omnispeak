@@ -352,9 +352,15 @@ bool CK_VAR_ParseAction(STR_ParserState *ps)
 	STR_GetIdent(ps, cCollide, sizeof(cCollide));
 	STR_GetIdent(ps, cDraw, sizeof(cDraw));
 
+#ifdef CK_VAR_FUNCTIONS_AS_STRINGS
+	act->think = MM_ArenaStrDup(ck_varArena, cThink);
+	act->collide = MM_ArenaStrDup(ck_varArena, cCollide);
+	act->draw = MM_ArenaStrDup(ck_varArena, cDraw);
+#else
 	act->think = CK_ACT_GetFunction(cThink);
 	act->collide = CK_ACT_GetColFunction(cCollide);
 	act->draw = CK_ACT_GetFunction(cDraw);
+#endif
 
 	char nextActionName[ID_STR_MAX_TOKEN_LENGTH];
 	STR_GetIdent(ps, nextActionName, ID_STR_MAX_TOKEN_LENGTH);

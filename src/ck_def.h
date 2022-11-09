@@ -306,9 +306,15 @@ typedef struct CK_action
 	int16_t protectAnimation, stickToGround; // See KeenWiki: Galaxy Action Parameters (lemm/levelass)
 	int16_t timer;
 	int16_t velX, velY;
+#ifdef CK_VAR_FUNCTIONS_AS_STRINGS
+	const char *think;
+	const char *collide;
+	const char *draw;
+#else
 	void (*think)(struct CK_object *obj);
 	void (*collide)(struct CK_object *obj, struct CK_object *other);
 	void (*draw)(struct CK_object *obj);
+#endif
 	struct CK_action *next;
 	// Omnispeak - backwards compatibility:
 	// Given an instance of this type, stores what would be
