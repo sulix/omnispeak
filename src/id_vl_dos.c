@@ -54,8 +54,8 @@ typedef struct VL_DOS_Surface
 {
 	VL_SurfaceUsage use;
 	int w, h;
-	void *data;
-	void *data2;
+	volatile void *data;
+	volatile void *data2;
 	int activePage;
 } VL_DOS_Surface;
 
@@ -133,14 +133,7 @@ static void *VL_DOS_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 	{
 		if (__djgpp_nearptr_enable())
 		{
-			// Since we scroll each page independently, we need a
-			// "gap" between pages so that one page scrolling
-			// doesn't overwrite another.
-			// The original keen code does this too, though only in
-			// the vertical direction (its screen buffers are much
-			// wider than ours, though, being 64 bytes (512 px)
-			// wide, of which only 21 tiles for the 'viewport'.
-			size_t bufferSize = (w + VL_DOS_MAX_SCROLL_HORZ) / 8 * (h + VL_DOS_MAX_SCROLL_VERT);
+			size_t bufferSize = w / 8 * h ;
 			surf->data = (void *)(__djgpp_conventional_base + vl_dos_vmemAlloc);
 			surf->data2 = (void *)(__djgpp_conventional_base + vl_dos_vmemAlloc + bufferSize);
 		}
@@ -158,7 +151,7 @@ static void VL_DOS_DestroySurface(void *surface)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
 	if ((surf->use != VL_SurfaceUsage_FrontBuffer) && surf->data)
-		free(surf->data);
+		free((void*)surf->data);
 	free(surf);
 }
 
@@ -657,29 +650,24 @@ static void VL_DOS_ScrollSurface(void *surface, int x, int y)
 	if (surf->use == VL_SurfaceUsage_FrontBuffer)
 	{
 		ssize_t bytesToShift = (x / 8) + y * (surf->w / 8);
-		size_t surfaceSize = surf->w / 8 * surf->h;
-		for (int page = 0; page < 2; ++page)
+		size_t surfaceSize = surf->w / 8 * surf->h * 2;
+		volatile uint8_t *oldData = (uint8_t *)surf->data;
+		volatile uint8_t *newData = oldData + bytesToShift;
+		if (newData < (uint8_t *)(__djgpp_conventional_base + 0xA0000) || newData + surfaceSize > (uint8_t *)(__djgpp_conventional_base + 0xAFFFF))
 		{
-			uint8_t *oldData = (uint8_t *)(page ? surf->data2 : surf->data);
-			uint8_t *newData = oldData + bytesToShift;
-			if (newData < (uint8_t *)(__djgpp_conventional_base + 0xA0000) || newData + surfaceSize > (uint8_t *)(__djgpp_conventional_base + 0xAFFFF))
-			{
-				// We've shifted outside of valid video memory.
-				if (bytesToShift < 0)
-					newData = (uint8_t *)(__djgpp_conventional_base + 0xB0000 - surfaceSize * 2);
-				else
-					newData = (uint8_t *)(__djgpp_conventional_base + 0xA0000 + surfaceSize * 2);
-				outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
-				VL_DOS_SetEGAWriteMode(1);
-				for (int i = 0; i < surfaceSize; ++i)
-					newData[i] = oldData[i];
-				newData += bytesToShift;
-			}
-			if (page == 0)
-				surf->data = newData;
+			// We've shifted outside of valid video memory.
+			if (bytesToShift < 0)
+				newData = (uint8_t *)(__djgpp_conventional_base + 0xAFFFF - surfaceSize);
 			else
-				surf->data2 = newData;
+				newData = (uint8_t *)(__djgpp_conventional_base + 0xA0000);
+			outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
+			VL_DOS_SetEGAWriteMode(1);
+			for (int i = 0; i < surfaceSize; ++i)
+				newData[i] = oldData[i];
+			newData += bytesToShift;
 		}
+		surf->data = newData;
+		surf->data2 = newData + surfaceSize / 2;
 	}
 	else
 	{
