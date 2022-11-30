@@ -202,6 +202,11 @@ static int VL_NULL_GetNumBuffers(void *surface)
 	return 1;
 }
 
+static void VL_NULL_SyncBuffers(void *surface)
+{
+	(void)surface;
+}
+
 static void VL_NULL_ScrollSurface(void *surface, int x, int y)
 {
 	VL_NULL_Surface *surf = (VL_NULL_Surface *)surface;
@@ -271,6 +276,7 @@ VL_Backend vl_null_backend =
 		/*.present =*/&VL_NULL_Present,
 		/*.getActiveBufferId =*/&VL_NULL_GetActiveBufferId,
 		/*.getNumBuffers =*/&VL_NULL_GetNumBuffers,
+		/*.syncBuffers =*/&VL_NULL_SyncBuffers,
 		/*.flushParams =*/&VL_NULL_FlushParams,
 		/*.waitVBLs =*/&VL_NULL_WaitVBLs};
 

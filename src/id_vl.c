@@ -1103,6 +1103,11 @@ int VL_GetNumBuffers()
 	return vl_currentBackend->getNumBuffers(vl_emuegavgaadapter.screen);
 }
 
+void VL_FixRefreshBuffer()
+{
+	vl_currentBackend->syncBuffers(vl_emuegavgaadapter.screen);
+}
+
 static bool vl_swapOnNextPresent = false;
 
 void VL_SwapOnNextPresent()
