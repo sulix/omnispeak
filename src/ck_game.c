@@ -78,7 +78,7 @@ void CK_NewGame()
 
 void CK_GameOver()
 {
-	// VW_FixRefreshBuffer(); // Omnispeak TODO - This was originally called
+	VL_FixRefreshBuffer();
 	US_CenterWindow(16, 3);
 	US_PrintCentered(CK_STRING(ck_str_gameOver));
 	VL_Present(); // VW_UpdateScreen();
@@ -753,7 +753,7 @@ bool CK_TryAgainMenu()
 	/* If lives remain, see if they want to try this level again */
 	if (--ck_gameState.numLives >= 0)
 	{
-		//VW_SyncPages();
+		VL_FixRefreshBuffer();
 		US_CenterWindow(20, 8);
 		US_SetPrintY(US_GetPrintY() + 3);
 		US_CPrint(CK_STRING(ck_str_tryAgainIntro));
@@ -892,6 +892,8 @@ void CK_GameLoop()
 
 		//TODO: Some TED launching stuff
 
+		VL_FixRefreshBuffer();
+
 		ck_lastLevelFinished = -1;
 		switch (ck_gameState.levelState)
 		{
@@ -957,7 +959,7 @@ void CK_GameLoop()
 					// Game won
 					CK_EndingPurge();
 					// RF_Reset();
-					// VW_SyncPages();
+					VL_FixRefreshBuffer();
 					help_endgame();
 					CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
 					return;
@@ -983,7 +985,7 @@ void CK_GameLoop()
 			// Game won
 			CK_EndingPurge();
 			// RF_Reset();
-			// VW_SyncPages();
+			VL_FixRefreshBuffer();
 			help_endgame();
 			goto highscores;
 
@@ -1004,8 +1006,9 @@ void CK_GameLoop()
 			/*
 			 * purge_chunks()
 			 * RF_Reset();
-			 * VW_SyncPages();
 			 */
+			CK_EndingPurge();
+			VL_FixRefreshBuffer();
 			help_endgame();
 			CK_SubmitHighScore(ck_gameState.keenScore, 0);
 			return;

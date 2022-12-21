@@ -224,6 +224,7 @@ static void VL_DOS_SurfaceRect(void *dst_surface, int x, int y, int w, int h, in
 	int x_end_bit = x + w - 1;
 	int x_low_byte = x / 8;
 	int x_high_byte = x_end_bit / 8;
+	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; ++plane)
 	{
 		uint8_t *plane_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane);
@@ -263,6 +264,7 @@ static void VL_DOS_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int h,
 	int x_end_bit = x + w - 1;
 	int x_low_byte = x / 8;
 	int x_high_byte = x_end_bit / 8;
+	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; ++plane)
 	{
 		if (!(mapmask & (1 << plane)))
@@ -735,8 +737,8 @@ void VL_DOS_SyncBuffers(void *surface)
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
 
 	size_t surfaceSize = surf->w / 8 * surf->h;
-	volatile uint8_t *oldData = (volatile uint8_t *)(surf->activePage ? surf->data2 : surf->data);
-	volatile uint8_t *newData = (volatile uint8_t *)(surf->activePage ? surf->data : surf->data2);
+	volatile uint8_t *oldData = (volatile uint8_t *)(surf->activePage ? surf->data : surf->data2);
+	volatile uint8_t *newData = (volatile uint8_t *)(surf->activePage ? surf->data2 : surf->data);
 	outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
 	VL_DOS_SetEGAWriteMode(1);
 	for (int i = 0; i < surfaceSize; ++i)

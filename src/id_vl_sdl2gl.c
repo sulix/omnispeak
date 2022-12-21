@@ -8,7 +8,7 @@
 #include "id_vl_private.h"
 #include "ck_cross.h"
 
-#define VL_SDL2GL_NUM_BUFFERS 1
+#define VL_SDL2GL_NUM_BUFFERS 2
 
 // OpenGL 1.0 and 1.1 Function Pointers:
 typedef const GLubyte *(APIENTRYP PFN_ID_GLGETSTRING)(GLenum name);
@@ -702,12 +702,14 @@ static void VL_SDL2GL_WaitVBLs(int vbls)
 static void VL_SDL2GL_SyncBuffers(void *surface)
 {
 	VL_SDL2GL_Surface *srf = (VL_SDL2GL_Surface*)surface;
+	// Get the last fully-rendered page.
+	int prevPage = (srf->activePage + VL_SDL2GL_NUM_BUFFERS - 1) % VL_SDL2GL_NUM_BUFFERS;
 
 	for (int page = 0; page < VL_SDL2GL_NUM_BUFFERS; ++page)
 	{
-		if (page == srf->activePage)
+		if (page == prevPage)
 			continue;
-		memcpy(srf->dataPages[page], srf->data, srf->w * srf->h);
+		memcpy(srf->dataPages[page], srf->dataPages[prevPage], srf->w * srf->h);
 	}
 }
 

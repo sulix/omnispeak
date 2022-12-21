@@ -1531,7 +1531,7 @@ void CK_PlayDemo(int demoNumber)
 	// We have to get rid of the demo buffer, as if we want to play it
 	// again, we need a fresh copy. ID_IN modifies the buffer.
 	MM_FreePtr(&ca_graphChunks[demoChunk]);
-	//VW_SyncPages();
+	VL_FixRefreshBuffer();
 	CA_ClearMarks();
 
 	// What should we do after playing the demo?
