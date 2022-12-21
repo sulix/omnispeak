@@ -162,7 +162,7 @@ FS_File FSL_CreateFileInDir(const char *dirPath, const char *fileName)
 	char fullFileName[MAX_PATH];
 	sprintf(fullFileName, "%s\\%s", dirPath, fileName);
 
-	return fopen(fullFileName, "wbx");
+	return fopen(fullFileName, "wb");
 }
 
 bool FSL_IsDirWritable(const char *dirPath)
@@ -171,7 +171,7 @@ bool FSL_IsDirWritable(const char *dirPath)
 	// security contexts or whatnot.
 	char fullFileName[MAX_PATH];
 	sprintf(fullFileName, "%s\\TestFile", dirPath);
-	FILE *testFile = fopen(fullFileName, "wbx");
+	FILE *testFile = fopen(fullFileName, "wb");
 	if (testFile)
 	{
 		fclose(testFile);
