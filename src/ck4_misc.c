@@ -842,7 +842,7 @@ void CK4_ShowPrincessMessage(void)
 	CA_MarkGrChunk(0x70);
 	CA_CacheMarks(0);
 
-	// VW_SyncPages();
+	VL_FixRefreshBuffer();
 	US_CenterWindow(26, 8);
 	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 0x72);
 	US_SetPrintY(US_GetPrintY() + 6);
@@ -897,7 +897,7 @@ void CK4_ShowJanitorMessage(void)
 	CA_MarkGrChunk(0x71);
 	CA_CacheMarks(0);
 
-	// VW_SyncPages();
+	VL_FixRefreshBuffer();
 	StartMusic(0xFFFF);
 
 	US_CenterWindow(26, 8);
@@ -1010,7 +1010,7 @@ void CK4_ShowCouncilMessage(void)
 	CA_CacheMarks(0);
 	StartMusic(-1);
 
-	// VW_SyncPages();
+	VL_FixRefreshBuffer();
 
 	US_CenterWindow(26, 8);
 	VHB_DrawBitmap(US_GetWindowX(), US_GetWindowY(), 110);

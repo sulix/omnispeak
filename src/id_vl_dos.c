@@ -764,8 +764,8 @@ void VL_DOS_SyncBuffers(void *surface)
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
 
 	size_t surfaceSize = surf->w / 8 * surf->h;
-	volatile uint8_t *oldData = (volatile uint8_t *)(surf->activePage ? surf->data2 : surf->data);
-	volatile uint8_t *newData = (volatile uint8_t *)(surf->activePage ? surf->data : surf->data2);
+	volatile uint8_t *oldData = (volatile uint8_t *)(surf->activePage ? surf->data : surf->data2);
+	volatile uint8_t *newData = (volatile uint8_t *)(surf->activePage ? surf->data2 : surf->data);
 	outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
 	VL_DOS_SetEGAWriteMode(1);
 	for (int i = 0; i < surfaceSize; ++i)

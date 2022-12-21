@@ -154,7 +154,7 @@ void CK_DebugMemory()
 
 void CK_BeginDemoRecord()
 {
-	// VW_SyncPages();
+	VL_FixRefreshBuffer();
 	US_CenterWindow(30, 3);
 	US_SetPrintY(US_GetPrintY() + 3);
 	US_Print("  Record a demo from level (0-21):");
@@ -178,7 +178,7 @@ void CK_BeginDemoRecord()
 void CK_EndDemoRecord()
 {
 	char demoFileName[] = "DEMO?.EXT";
-	// VW_SyncPages();
+	VL_FixRefreshBuffer();
 	IN_DemoStopPlaying();
 	US_CenterWindow(22, 3);
 
@@ -207,7 +207,7 @@ void CK_EndDemoRecord()
 void CK_SpriteTest()
 {
 
-	// VW_SyncPages();
+	VL_FixRefreshBuffer();
 	US_CenterWindow(30, 17);
 	US_CPrint("Sprite Test");
 	US_CPrint("-----------");
@@ -777,7 +777,7 @@ void CK_OverlayForegroundTile(int fgTile, int overlayTile)
 // TODO: make this interoperable between episodes
 void CK_WallDebug()
 {
-	// VW_SyncPages();
+	VL_FixRefreshBuffer();
 	US_CenterWindow(24, 3);
 	US_PrintCentered("WORKING");
 	VL_Present();
@@ -840,7 +840,7 @@ bool CK_DebugKeys()
 	{
 		char str[4];
 		uint16_t w, h;
-		// VW_SyncPages();
+		VL_FixRefreshBuffer();
 		US_CenterWindow(0x18, 3);
 		US_SetPrintY(US_GetPrintY() + 6);
 		VH_MeasurePropString(" Border color (0-15):", &w, &h, US_GetPrintFont());
@@ -897,7 +897,7 @@ bool CK_DebugKeys()
 	// God Mode
 	if (IN_GetKeyState(IN_SC_G) && game_in_progress)
 	{
-		// VW_SyncPages();
+		VL_FixRefreshBuffer();
 		US_CenterWindow(12, 2);
 
 		if (ck_godMode)
@@ -914,7 +914,7 @@ bool CK_DebugKeys()
 	// Free Item Cheat
 	if (IN_GetKeyState(IN_SC_I))
 	{
-		// VW_SyncPages();
+		VL_FixRefreshBuffer();
 		US_CenterWindow(12, 3);
 		US_PrintCentered(CK_STRING(ck_str_freeItems));
 
@@ -1008,7 +1008,7 @@ bool CK_DebugKeys()
 		const char *msg = "  Warp to which level(1-18):";
 		uint16_t h, w, saveX, saveY; // omnispeak hacks
 
-		// VW_SyncPages();
+		VL_FixRefreshBuffer();
 		US_CenterWindow(26, 3);
 		US_SetPrintY(US_GetPrintY() + 6);
 		VH_MeasurePropString(msg, &w, &h, US_GetPrintFont());
@@ -1078,7 +1078,7 @@ void CK_CheckKeys()
 	if (in_Paused)
 	{
 		SD_MusicOff();
-		// VW_SyncPages();
+		VL_FixRefreshBuffer();
 		US_CenterWindow(strlen(in_PausedMessage) + 2, 3);
 		US_PrintCentered(in_PausedMessage);
 		VL_Present(); // VW_UpdateScreen();
@@ -1155,7 +1155,7 @@ void CK_CheckKeys()
 			// via joystick button
 			ck_inputFrame.button3 = false;
 
-			// VW_SyncPages();
+			VL_FixRefreshBuffer();
 			StopMusic();
 			US_RunCards();
 
