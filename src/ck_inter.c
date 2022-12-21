@@ -97,7 +97,7 @@ void CK_HandleDemoKeys()
 // Once all of this is finished, the zoomout routine runs.
 // It dynamically scales a bitmap that is composed of the two COMMANDER and KEEN graphics
 
-#define TERMINATORSCREENWIDTH 248
+#define TERMINATORSCREENWIDTH 150 //124
 
 // Pointers to the two monochrome bitmaps that are scrolled during the intro
 
@@ -142,7 +142,6 @@ unsigned word_499CB;
 // unknown vairables
 
 uint16_t word_46CA2[2];
-uint16_t terminatorPageOn; // always 0 or 1? Maybe a pageflip thing?
 uint16_t word_46CB0;
 
 uint16_t word_499C7;
@@ -260,7 +259,7 @@ void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 	creditY1 = AdvanceTerminatorCredit(elapsedTime);
 
 	// Erasing the area underneath the credit
-	static int oldY2 = 0;
+	static int oldY2[2] = {0};
 	int creditY2 = creditY1 + ck_currentTermPicHeight;
 	// The original assembly code here cleared a word at a time, hence the
 	// rounding here.
@@ -269,9 +268,9 @@ void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 	if (creditY2 < 0)
 		creditY2 = 0;
 
-	if (creditY2 < 200 && oldY2 > creditY2)
+	if (creditY2 < 200 && oldY2[VL_GetActiveBuffer()] > creditY2)
 	{
-		int rowsToClear = oldY2 - creditY2;
+		int rowsToClear = oldY2[VL_GetActiveBuffer()] - creditY2;
 		// Omnispeak: Just draw an empty rectangle over the area
 		VL_ScreenRect_PM(picX, creditY2, termPicClearWidth, rowsToClear, 0x0);
 	}
@@ -279,7 +278,7 @@ void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 	if (creditY2 > 200)
 		creditY2 = 200;
 
-	oldY2 = creditY2;
+	oldY2[VL_GetActiveBuffer()] = creditY2;
 
 	rowsToDraw = ck_currentTermPicHeight;
 	picStartOffset = 0;
@@ -357,7 +356,7 @@ void AnimateTerminator(void)
 	finalCmdrPosFromScreenRight = finalCmdrPosFromScreenLeft - screenWidthInPx;
 	maxTime = abs(finalCmdrPosFromScreenRight);
 
-	terminatorPageOn = terminatorOfs = 0;
+	terminatorOfs = 0;
 
 	// delay for a tic before starting
 	SD_SetLastTimeCount(SD_GetTimeCount());
@@ -433,7 +432,7 @@ void AnimateTerminator(void)
 		{
 			VL_ScreenRect_PM(screenofs * 8, row, leftMarginBlackWords * 16, 1, 0x0);
 			VL_1bppToScreen_PM((uint8_t *)bmpsrcseg + rowptr + cmdrLeftDrawStart, screenofs * 8 + leftMarginBlackWords * 16, row, cmdrWords * 16, 1, 0xF);
-			VL_ScreenRect_PM(screenofs * 8 + (leftMarginBlackWords + cmdrWords) * 16, row, rightMarginBlackWords * 16, 1, 0x0);
+			VL_ScreenRect_PM(screenofs * 8 + (leftMarginBlackWords + cmdrWords) * 16, row, rightMarginBlackWords * 16,1, 0x0);
 
 			if (row & 1)
 			{
@@ -441,9 +440,8 @@ void AnimateTerminator(void)
 			}
 		}
 
-		// In DOS, we handle the double-buffering here.
-
 		// Update the screen
+		VL_SwapOnNextPresent();
 		VL_Present();
 
 		IN_PumpEvents();
@@ -994,7 +992,7 @@ void CK_DrawTerminator(void)
 
 	bool terminator_complete = false;
 
-	VL_ResizeScreen(TERMINATORSCREENWIDTH * 8, 200);
+	VL_ResizeScreen(TERMINATORSCREENWIDTH * 8 + 64, 200);
 	VL_ClearScreen(0);
 
 	// Cache Intro Bitmaps
@@ -1031,8 +1029,7 @@ void CK_DrawTerminator(void)
 		free(destbuf);
 	}
 
-	// In DOS, we copy the KEEN graphic to the second page, in Omnispeak
-	// we only render to one page, so we don't do anything.
+	VL_FixRefreshBuffer();
 
 	// Allocate memory for 8 shifts of the COMMANDER graphic
 	// Notice that there are only 100 rows of memory, which means that
