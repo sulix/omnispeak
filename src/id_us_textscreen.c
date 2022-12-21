@@ -3,7 +3,95 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "id_cfg.h"
 
+#ifdef _WIN32
+
+#include <windows.h>
+
+typedef enum US_Win32ConsoleMode
+{
+	US_W32Console_Never,
+	US_W32Console_IfAvailable,
+	US_W32Console_PreferExisting,
+	US_W32Console_CreateNew
+} US_Win32ConsoleMode;
+
+const char *US_Win32ConsoleMode_Strings[] = {
+	"Never",
+	"IfAvailable",
+	"PreferExisting",
+	"CreateNew"
+};
+
+// Checks if the terminal is compatible with our B8000 text mode emulation.
+bool US_TerminalOk()
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	DWORD consoleMode;
+	US_Win32ConsoleMode mode = CFG_GetConfigEnum("win32_consoleMode", US_Win32ConsoleMode_Strings, US_W32Console_IfAvailable);
+
+	if (mode == US_W32Console_Never)
+		return false;
+
+	if (mode == US_W32Console_CreateNew)
+		FreeConsole();
+
+	// MSDN notes that this is a good way to check a console is a console.
+	if (!GetConsoleMode(hConsole, &consoleMode))
+	{
+		// Try to allocate a console if we don't have one.
+		if (mode >= US_W32Console_PreferExisting)
+		{
+			if (!AllocConsole())
+				return false;
+		}
+		else
+			return false;
+	}
+
+	// Check if CP 437 is available
+	UINT oldCP = GetConsoleOutputCP();
+	if (!SetConsoleOutputCP(437))
+		return false;
+
+	SetConsoleOutputCP(oldCP);
+
+}
+
+void US_PrintB8000Text(const uint8_t *textscreen, int numChars)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO oldInfo;
+	DWORD oldMode;
+	UINT oldCP = GetConsoleOutputCP();
+	GetConsoleScreenBufferInfo(hConsole, &oldInfo);
+	GetConsoleMode(hConsole, &oldMode);
+	SetConsoleOutputCP(437);
+	SetConsoleMode(hConsole, oldMode & ~ENABLE_WRAP_AT_EOL_OUTPUT);
+
+	for (int i = 0; i < numChars; ++i)
+	{
+		uint8_t ch = textscreen[i * 2];
+		uint8_t attrib = textscreen[i * 2 + 1];
+
+		SetConsoleTextAttribute(hConsole, attrib);
+		WriteConsoleA(hConsole, &ch, 1, NULL, NULL);
+
+		// We want to print a newline after every 80 characters
+		if ((i % 80) == 79)
+		{
+			SetConsoleTextAttribute(hConsole, oldInfo.wAttributes);
+			WriteConsoleA(hConsole, "\r\n", 2, NULL, NULL);
+		}
+
+	}
+	SetConsoleOutputCP(oldCP);
+	SetConsoleMode(hConsole, oldMode);
+	SetConsoleTextAttribute(hConsole, oldInfo.wAttributes);
+}
+
+#else
 // Conversion for Codepage 437 (the IBM BIOS font character set) to unicode.
 uint32_t cp437[] = {
 	// So called "non-printable" characters.
@@ -74,7 +162,6 @@ const char *okterms[] = {
 // Checks if the terminal is compatible with our B8000 text mode emulation.
 bool US_TerminalOk()
 {
-#ifndef _WIN32
 	// We need a UTF-8 character encoding.
 	const char *lang = getenv("LANG");
 	if (!lang)
@@ -89,7 +176,6 @@ bool US_TerminalOk()
 	for (int i = 0; okterms[i]; ++i)
 		if (!strcmp(term, okterms[i]))
 			return true;
-#endif
 
 	return false;
 }
@@ -135,3 +221,4 @@ void US_PrintB8000Text(const uint8_t *textscreen, int numChars)
 			printf("\n");
 	}
 }
+#endif
