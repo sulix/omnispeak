@@ -276,6 +276,8 @@ typedef enum IN_JoyConfItem
 
 void IN_PumpEvents();
 void IN_WaitKey();
+void IN_SetupKbdControls();
+void IN_SaveKbdControls();
 const char *IN_GetScanName(IN_ScanCode scan);
 bool IN_GetKeyState(IN_ScanCode scanCode);
 IN_ScanCode IN_GetLastScan(void);

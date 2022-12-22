@@ -245,26 +245,53 @@ void IN_HandleKeyDown(IN_ScanCode sc, bool special)
 	}
 }
 
-static void INL_SetupKbdControls()
+void IN_SetupKbdControls()
 {
-	in_kbdControls.jump = IN_SC_Control;
-	in_kbdControls.pogo = IN_SC_Alt;
-	in_kbdControls.fire = IN_SC_Space;
+	in_kbdControls.jump = CFG_GetConfigInt("in_kbd_jump", IN_SC_Control);
+	in_kbdControls.pogo = CFG_GetConfigInt("in_kbd_pogo", IN_SC_Alt);
+	in_kbdControls.fire = CFG_GetConfigInt("in_kbd_fire", IN_SC_Space);
 #ifdef EXTRA_KEYBOARD_OPTIONS
-	in_kbdControls.status = IN_SC_Enter;
+	in_kbdControls.status = CFG_GetConfigInt("in_kbd_status", IN_SC_Enter);
 #endif
 #ifdef QUICKSAVE_ENABLED
-	in_kbdControls.quickSave = IN_SC_F5;
-	in_kbdControls.quickLoad = IN_SC_F9;
+	in_kbdControls.quickSave = CFG_GetConfigInt("in_kbd_quickSave", IN_SC_F5);
+	in_kbdControls.quickLoad = CFG_GetConfigInt("in_kbd_quickLoad", IN_SC_F9);;
 #endif
-	in_kbdControls.up = IN_SC_UpArrow;
-	in_kbdControls.down = IN_SC_DownArrow;
-	in_kbdControls.left = IN_SC_LeftArrow;
-	in_kbdControls.right = IN_SC_RightArrow;
-	in_kbdControls.upLeft = IN_SC_Home;
-	in_kbdControls.upRight = IN_SC_PgUp;
-	in_kbdControls.downRight = IN_SC_PgDown;
-	in_kbdControls.downLeft = IN_SC_End;
+	in_kbdControls.up = CFG_GetConfigInt("in_kbd_up", IN_SC_UpArrow);
+	in_kbdControls.down = CFG_GetConfigInt("in_kbd_down", IN_SC_DownArrow);
+	in_kbdControls.left = CFG_GetConfigInt("in_kbd_left", IN_SC_LeftArrow);
+	in_kbdControls.right = CFG_GetConfigInt("in_kbd_right", IN_SC_RightArrow);
+	in_kbdControls.upLeft = CFG_GetConfigInt("in_kbd_upLeft", IN_SC_Home);
+	in_kbdControls.upRight = CFG_GetConfigInt("in_kbd_upRight", IN_SC_PgUp);
+	in_kbdControls.downRight = CFG_GetConfigInt("in_kbd_downRight", IN_SC_PgDown);
+	in_kbdControls.downLeft = CFG_GetConfigInt("in_kbd_downLeft", IN_SC_End);
+}
+
+void IN_SaveKbdControls()
+{
+	if (CFG_GetConfigBool("in_preferOmnispeakKeyConfig", true))
+	{
+		CFG_SetConfigInt("in_kbd_jump", in_kbdControls.jump);
+		CFG_SetConfigInt("in_kbd_pogo", in_kbdControls.pogo);
+		CFG_SetConfigInt("in_kbd_fire", in_kbdControls.fire);
+
+		CFG_SetConfigInt("in_kbd_up", in_kbdControls.up);
+		CFG_SetConfigInt("in_kbd_down", in_kbdControls.down);
+		CFG_SetConfigInt("in_kbd_left", in_kbdControls.left);
+		CFG_SetConfigInt("in_kbd_right", in_kbdControls.right);
+		CFG_SetConfigInt("in_kbd_upLeft", in_kbdControls.upLeft);
+		CFG_SetConfigInt("in_kbd_upRight", in_kbdControls.upRight);
+		CFG_SetConfigInt("in_kbd_downRight", in_kbdControls.downRight);
+		CFG_SetConfigInt("in_kbd_downLeft", in_kbdControls.downLeft);
+	}
+
+#ifdef EXTRA_KEYBOARD_OPTIONS
+	CFG_SetConfigInt("in_kbd_status", in_kbdControls.status);
+#endif
+#ifdef QUICKSAVE_ENABLED
+	CFG_SetConfigInt("in_kbd_quickSave", in_kbdControls.quickSave);
+	CFG_SetConfigInt("in_kbd_quickLoad", in_kbdControls.quickLoad);;
+#endif
 }
 
 void IN_PumpEvents()
@@ -378,7 +405,7 @@ void IN_Startup(void)
 		in_keyStates[i] = 0;
 
 	// Set the default kbd controls.
-	INL_SetupKbdControls();
+	IN_SetupKbdControls();
 
 	in_backend->startup(in_disableJoysticks);
 }

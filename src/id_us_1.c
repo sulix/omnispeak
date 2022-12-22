@@ -749,6 +749,8 @@ void US_LoadConfig(void)
 	SD_SetQuietSfx(hadQuietSfx);
 	SD_Default(configFileLoaded && (hadAdlib == SD_IsAdlibPresent()), sd, sm);
 	IN_Default(configFileLoaded, inputDevice);
+	if (CFG_GetConfigBool("in_preferOmnispeakKeyConfig", false))
+		IN_SetupKbdControls();
 }
 
 void US_SaveConfig(void)
@@ -808,6 +810,8 @@ void US_SaveConfig(void)
 	FS_WriteBoolTo16LE(&ck_gamePadEnabled, 1, f);
 	FS_WriteInt16LE(in_gamepadButtons, 4, f);
 	FS_CloseFile(f);
+
+	IN_SaveKbdControls();
 }
 
 //
