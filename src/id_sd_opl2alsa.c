@@ -51,6 +51,9 @@ static volatile int timerDivisor = 1;
 static SDL_mutex *soundSystemMutex = 0;
 static SDL_Thread *t0Thread = 0;
 
+static SDL_cond *SD_ALSAOPL2_TimerConditionVar;
+static bool SD_ALSAOPL2_WaitTicksSpin = false;
+
 void SD_ALSAOPL2_SetTimer0(int16_t int_8_divisor)
 {
 	//Configure the PIT frequency.
@@ -75,8 +78,17 @@ int SD_ALSAOPL2_t0InterruptThread(void *param)
 			//if (SDL_LockMutex(soundSystemMutex))
 			//	continue;
 			SDL_t0Service();
+			if (!SD_ALSAOPL2_WaitTicksSpin)
+				SDL_CondBroadcast(SD_ALSAOPL2_TimerConditionVar);
 			//SDL_UnlockMutex(soundSystemMutex);
 			SD_LastPITTickTime = currPitTicks;
+		}
+		else
+		{
+			uint64_t ticksRemaining = SD_LastPITTickTime + timerDivisor - currPitTicks;
+			uint64_t platformTicks = ticksRemaining * 1000 / PC_PIT_RATE;
+
+			SDL_Delay(platformTicks);
 		}
 	}
 	return 0;
@@ -252,6 +264,12 @@ void SD_ALSAOPL2_Startup(void)
 		if (!CK_Cross_strcasecmp(us_argv[i], "/ALSADEV"))
 			alsaDev = us_argv[i + 1];
 	}
+
+	// Setup a condition variable to signal threads waiting for timer updates.
+	SD_ALSAOPL2_WaitTicksSpin = CFG_GetConfigBool("sd_alsa_waitTicksSpin", false);
+	if (!SD_ALSAOPL2_WaitTicksSpin)
+		SD_ALSAOPL2_TimerConditionVar = SDL_CreateCond();
+
 	if (snd_hwdep_open(&sd_alsa_oplHwDep, alsaDev, SND_HWDEP_OPEN_WRITE) < 0)
 		Quit("Couldn't open OPL3 HWDEP");
 
@@ -305,6 +323,14 @@ void SD_ALSAOPL2_Unlock()
 	SD_ALSAOPL2_mutexLocked = false;
 }
 
+void SD_ALSAOPL2_WaitTick()
+{
+	SDL_mutex *mtx = SDL_CreateMutex();
+	SDL_LockMutex(mtx);
+	SDL_CondWait(SD_ALSAOPL2_TimerConditionVar, mtx);
+	SDL_UnlockMutex(mtx);
+}
+
 SD_Backend sd_opl2_backend = {
 	.startup = SD_ALSAOPL2_Startup,
 	.shutdown = SD_ALSAOPL2_Shutdown,
@@ -312,7 +338,8 @@ SD_Backend sd_opl2_backend = {
 	.unlock = SD_ALSAOPL2_Unlock,
 	.alOut = SD_ALSAOPL2_alOut,
 	.pcSpkOn = SD_ALSAOPL2_PCSpkOn,
-	.setTimer0 = SD_ALSAOPL2_SetTimer0};
+	.setTimer0 = SD_ALSAOPL2_SetTimer0,
+	.waitTick = SD_ALSAOPL2_WaitTick};
 
 SD_Backend *SD_Impl_GetBackend_ALSAOPL2()
 {

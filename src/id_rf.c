@@ -983,7 +983,7 @@ void RFL_CalcTics()
 		while (new_time + (rf_demoTics * 2) > SD_GetTimeCount())
 		{
 			// As long as this takes no more than 10ms...
-			VL_Yield();
+			SD_WaitTick();
 		}
 		// We do not want to lose demo sync
 		SD_SetLastTimeCount(new_time + rf_demoTics);
@@ -1000,7 +1000,7 @@ void RFL_CalcTics()
 		if (SD_GetSpriteSync() >= rf_minTics)
 			break;
 		// As long as this takes no more than 10ms...
-		VL_Yield();
+		SD_WaitTick();
 	} while (1);
 	SD_SetLastTimeCount(inctime);
 

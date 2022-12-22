@@ -362,7 +362,7 @@ void AnimateTerminator(void)
 	// delay for a tic before starting
 	SD_SetLastTimeCount(SD_GetTimeCount());
 	while (SD_GetLastTimeCount() == SD_GetTimeCount())
-		VL_Yield(); // Keep CPU usage low
+		SD_WaitTick(); // Keep CPU usage low
 
 	SD_SetLastTimeCount(SD_GetTimeCount());
 
@@ -452,6 +452,7 @@ void AnimateTerminator(void)
 		{
 			delaytime = SD_GetTimeCount();
 			SD_SetSpriteSync(delaytime - SD_GetLastTimeCount());
+			SD_WaitTick();
 		} while (SD_GetSpriteSync() < 2);
 
 		SD_SetLastTimeCount(delaytime);

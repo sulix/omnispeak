@@ -89,6 +89,7 @@ typedef struct SD_Backend
 	void (*alOut)(uint8_t reg, uint8_t val);
 	void (*pcSpkOn)(bool on, int freq);
 	void (*setTimer0)(int16_t int_8_divisor);
+	void (*waitTick)();
 } SD_Backend;
 
 SD_Backend *SD_Impl_GetBackend();
@@ -100,5 +101,6 @@ int32_t SD_GetLastTimeCount(void);
 void SD_SetLastTimeCount(int32_t newval);
 uint16_t SD_GetSpriteSync(void);
 void SD_SetSpriteSync(uint16_t newval);
+void SD_WaitTick(void);
 
 #endif

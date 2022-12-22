@@ -76,6 +76,9 @@ static volatile bool SD_SDL_useTimerFallback = false;
 static uint64_t SD_SDL_nextTickAt = 0;
 static SDL_Thread *SD_SDL_t0Thread = 0;
 
+static SDL_cond *SD_SDL_TimerConditionVar;
+static bool SD_SDL_WaitTicksSpin = false;
+
 /* NEVER call this from the SDL callback!!! (Or you want a deadlock?) */
 void SD_SDL_SetTimer0(int16_t int_8_divisor)
 {
@@ -270,6 +273,8 @@ void SD_SDL_CallBack(void *unused, Uint8 *stream, int len)
 		if (!SD_SDL_SampleOffsetInSound && !SD_SDL_useTimerFallback)
 		{
 			SDL_t0Service();
+			if (!SD_SDL_WaitTicksSpin)
+				SDL_CondBroadcast(SD_SDL_TimerConditionVar);
 		}
 		// Now generate sound
 		isPartCompleted = (len >= 2 * (SD_SDL_SamplesInCurrentPart - SD_SDL_SampleOffsetInSound));
@@ -327,6 +332,8 @@ int SD_SDL_t0InterruptThread(void *param)
 			SDL_LockAudio();
 			SDL_t0Service();
 			SDL_UnlockAudio();
+			if (!SD_SDL_WaitTicksSpin)
+				SDL_CondBroadcast(SD_SDL_TimerConditionVar);
 			SD_SDL_nextTickAt += SD_SDL_timerDivisor;
 		}
 		else
@@ -370,6 +377,12 @@ void SD_SDL_Startup(void)
 		if (!CK_Cross_strcasecmp(us_argv[i], "/NUKEDOPL3"))
 			sd_oplEmulator = SD_OPL_EMULATOR_NUKED;
 	}
+
+	// Setup a condition variable to signal threads waiting for timer updates.
+	SD_SDL_WaitTicksSpin = CFG_GetConfigBool("sd_sdl_waitTicksSpin", false);
+	if (!SD_SDL_WaitTicksSpin)
+		SD_SDL_TimerConditionVar = SDL_CreateCond();
+
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 	{
 		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
@@ -466,6 +479,14 @@ void SD_SDL_Unlock()
 	SD_SDL_IsLocked = false;
 }
 
+void SD_SDL_WaitTick()
+{
+	SDL_mutex *mtx = SDL_CreateMutex();
+	SDL_LockMutex(mtx);
+	SDL_CondWait(SD_SDL_TimerConditionVar, mtx);
+	SDL_UnlockMutex(mtx);
+}
+
 SD_Backend sd_sdl_backend = {
 	.startup = SD_SDL_Startup,
 	.shutdown = SD_SDL_Shutdown,
@@ -473,7 +494,8 @@ SD_Backend sd_sdl_backend = {
 	.unlock = SD_SDL_Unlock,
 	.alOut = SD_SDL_alOut,
 	.pcSpkOn = SD_SDL_PCSpkOn,
-	.setTimer0 = SD_SDL_SetTimer0};
+	.setTimer0 = SD_SDL_SetTimer0,
+	.waitTick = SD_SDL_WaitTick};
 
 SD_Backend *SD_Impl_GetBackend()
 {

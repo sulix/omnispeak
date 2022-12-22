@@ -678,7 +678,7 @@ void SD_StopSound(void)
 void SD_WaitSoundDone(void)
 {
 	while (SD_SoundPlaying())
-		;
+		SD_WaitTick();
 }
 
 // Start playing the current music track.
@@ -788,4 +788,11 @@ void SDL_t0Service(void)
 			break;
 		}
 	}
+}
+
+
+void SD_WaitTick(void)
+{
+	if (sd_backend->waitTick)
+		sd_backend->waitTick();
 }
