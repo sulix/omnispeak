@@ -329,6 +329,13 @@ int SD_SDL_t0InterruptThread(void *param)
 			SDL_UnlockAudio();
 			SD_SDL_nextTickAt += SD_SDL_timerDivisor;
 		}
+		else
+		{
+			uint64_t ticksRemaining = SD_SDL_nextTickAt - currPitTicks;
+			uint64_t platformTicks = ticksRemaining * 1000 / PC_PIT_RATE;
+
+			SDL_Delay(platformTicks);
+		}
 	}
 	return 0;
 }
