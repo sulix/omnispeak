@@ -138,17 +138,6 @@ static int vl_sdl2vk_integerHeight;
 
 static bool vl_sdl2vk_flushSwapchain;
 
-// Here is how the dimensions of the window are currently picked:
-// 1. The emulated 320x200 sub-window is first zoomed
-// by a factor of 3 (for each dimension) to 960x600.
-// 2. The height is then multiplied by 1.2, so the internal contents
-// (without the borders) have the aspect ratio of 4:3.
-//
-// There are a few more tricks in use to handle the overscan border
-// and VGA line doubling.
-#define VL_SDL2VK_DEFAULT_WINDOW_WIDTH (VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER * 3 / VL_VGA_GFX_WIDTH_SCALEFACTOR)
-#define VL_SDL2VK_DEFAULT_WINDOW_HEIGHT (6 * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER * 3 / (5 * VL_VGA_GFX_HEIGHT_SCALEFACTOR))
-
 static void VL_SDL2VK_LoadVKInstanceProcs()
 {
 	id_vkGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)vkGetInstanceProcAddr(vl_sdl2vk_instance, "vkGetDeviceProcAddr");
@@ -1167,36 +1156,24 @@ typedef struct VL_SDL2VK_Surface
 
 void VL_SDL2VK_SetIcon(SDL_Window *wnd);
 
-// Here is how the dimensions of the window are currently picked:
-// 1. The emulated 320x200 sub-window is first zoomed
-// by a factor of 3 (for each dimension) to 960x600.
-// 2. The height is then multiplied by 1.2, so the internal contents
-// (without the borders) have the aspect ratio of 4:3.
-//
-// There are a few more tricks in use to handle the overscan border
-// and VGA line doubling.
-#define VL_SDL2VK_DEFAULT_WINDOW_WIDTH (VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER * 3 / VL_VGA_GFX_WIDTH_SCALEFACTOR)
-#define VL_SDL2VK_DEFAULT_WINDOW_HEIGHT (6 * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER * 3 / (5 * VL_VGA_GFX_HEIGHT_SCALEFACTOR))
-
 static void VL_SDL2VK_SetVideoMode(int mode)
 {
 	if (mode == 0xD)
 	{
-		// Here is how the dimensions of the window are currently picked:
-		// 1. The emulated 320x200 sub-window is first zoomed
-		// by a factor of 3 (for each dimension) to 960x600.
-		// 2. The height is then multiplied by 1.2, so the internal contents
-		// (without the borders) have the aspect ratio of 4:3.
-		//
-		// There are a few more tricks in use to handle the overscan border
-		// and VGA line doubling.
+		SDL_Rect desktopBounds;
+#if SDL_VERSION_ATLEAST(2, 0, 5)
+		SDL_GetDisplayUsableBounds(0, &desktopBounds);
+#else
+		SDL_GetDisplayBounds(0, &desktopBounds);
+#endif
+		int scale = VL_CalculateDefaultWindowScale(desktopBounds.w, desktopBounds.h);
 		vl_sdl2vk_window = SDL_CreateWindow(VL_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-			VL_SDL2VK_DEFAULT_WINDOW_WIDTH, VL_SDL2VK_DEFAULT_WINDOW_HEIGHT,
+			VL_DEFAULT_WINDOW_WIDTH(scale), VL_DEFAULT_WINDOW_HEIGHT(scale),
 			SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 		vl_sdl2vk_screenWidth = VL_EGAVGA_GFX_WIDTH;
 		vl_sdl2vk_screenHeight = VL_EGAVGA_GFX_HEIGHT;
 
-		VL_CalculateRenderRegions(VL_SDL2VK_DEFAULT_WINDOW_WIDTH, VL_SDL2VK_DEFAULT_WINDOW_HEIGHT);
+		VL_CalculateRenderRegions(VL_DEFAULT_WINDOW_WIDTH(scale), VL_DEFAULT_WINDOW_HEIGHT(scale));
 
 		SDL_SetWindowMinimumSize(vl_sdl2vk_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER / VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER / VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 
@@ -1217,7 +1194,7 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 		VL_SDL2VK_InitPhysicalDevice();
 		VL_SDL2VK_LoadVKDeviceProcs();
 
-		VL_SDL2VK_SetupSwapchain(VL_SDL2VK_DEFAULT_WINDOW_WIDTH, VL_SDL2VK_DEFAULT_WINDOW_HEIGHT);
+		VL_SDL2VK_SetupSwapchain(VL_DEFAULT_WINDOW_WIDTH(scale), VL_DEFAULT_WINDOW_HEIGHT(scale));
 
 		VL_SDL2VK_CreateRenderPass();
 

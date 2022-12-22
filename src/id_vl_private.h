@@ -58,8 +58,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // There are a few more tricks in use to handle the overscan border
 // and VGA line doubling.
-#define VL_DEFAULT_WINDOW_WIDTH (VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER * 3 / VL_VGA_GFX_WIDTH_SCALEFACTOR)
-#define VL_DEFAULT_WINDOW_HEIGHT (6 * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER * 3 / ((vl_isIntegerScaled ? 6 : 5) * VL_VGA_GFX_HEIGHT_SCALEFACTOR))
+#define VL_DEFAULT_WINDOW_WIDTH(n) (VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER * (n) / VL_VGA_GFX_WIDTH_SCALEFACTOR)
+#define VL_DEFAULT_WINDOW_HEIGHT(n) (6 * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER * (n) / ((vl_isIntegerScaled ? 6 : 5) * VL_VGA_GFX_HEIGHT_SCALEFACTOR))
 
 #define VL_WINDOW_TITLE "Omnispeak"
 
@@ -101,5 +101,8 @@ extern int vl_integerHeight;
 
 // Calculates render regions taking the integer scaling into account.
 void VL_CalculateRenderRegions(int realW, int realH);
+
+// Calculates a good default window size, given the desktop size.
+int VL_CalculateDefaultWindowScale(int desktopW, int desktopH);
 
 #endif

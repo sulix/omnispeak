@@ -1004,9 +1004,9 @@ void VL_CalculateRenderRegions(int realW, int realH)
 		 * but we use the default window dimensions instead
 		 * (so 4:3 covers the contents without the overscan border).
 		 */
-		if (realW * VL_DEFAULT_WINDOW_HEIGHT > realH * VL_DEFAULT_WINDOW_WIDTH) // Wider than default ratio
+		if (realW * VL_DEFAULT_WINDOW_HEIGHT(2) > realH * VL_DEFAULT_WINDOW_WIDTH(2)) // Wider than default ratio
 		{
-			vl_fullRgn_w = realH * VL_DEFAULT_WINDOW_WIDTH / VL_DEFAULT_WINDOW_HEIGHT;
+			vl_fullRgn_w = realH * VL_DEFAULT_WINDOW_WIDTH(2) / VL_DEFAULT_WINDOW_HEIGHT(2);
 			vl_fullRgn_h = realH;
 			vl_fullRgn_x = (realW - vl_fullRgn_w) / 2;
 			vl_fullRgn_y = 0;
@@ -1014,7 +1014,7 @@ void VL_CalculateRenderRegions(int realW, int realH)
 		else // Thinner or equal to default ratio
 		{
 			vl_fullRgn_w = realW;
-			vl_fullRgn_h = realW * VL_DEFAULT_WINDOW_HEIGHT / VL_DEFAULT_WINDOW_WIDTH;
+			vl_fullRgn_h = realW * VL_DEFAULT_WINDOW_HEIGHT(2) / VL_DEFAULT_WINDOW_WIDTH(2);
 			vl_fullRgn_x = 0;
 			vl_fullRgn_y = (realH - vl_fullRgn_h) / 2;
 		}
@@ -1060,6 +1060,21 @@ void VL_CalculateRenderRegions(int realW, int realH)
 		vl_integerHeight * (VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT) /
 			(VL_VGA_GFX_HEIGHT_SCALEFACTOR * VL_EGAVGA_GFX_HEIGHT +
 				VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
+}
+
+int VL_CalculateDefaultWindowScale(int desktopW, int desktopH)
+{
+	int scale = 1;
+	while (true)
+	{
+		if (VL_DEFAULT_WINDOW_WIDTH(scale + 1) > desktopW)
+			break;
+		// Stricter bounds for height in order to accommodate a title bar.
+		if (VL_DEFAULT_WINDOW_HEIGHT(scale + 1) >= desktopH)
+			break;
+		scale++;
+	}
+	return scale;
 }
 
 void VL_ClearScreen(int colour)

@@ -50,16 +50,15 @@ static void VL_SDL2_SetVideoMode(int mode)
 {
 	if (mode == 0x0D)
 	{
-		// Here is how the dimensions of the window are currently picked:
-		// 1. The emulated 320x200 sub-window is first zoomed
-		// by a factor of 3 (for each dimension) to 960x600.
-		// 2. The height is then multiplied by 1.2, so the internal contents
-		// (without the borders) have the aspect ratio of 4:3.
-		//
-		// There are a few more tricks in use to handle the overscan border
-		// and VGA line doubling.
+		SDL_Rect desktopBounds;
+#if SDL_VERSION_ATLEAST(2, 0, 5)
+		SDL_GetDisplayUsableBounds(0, &desktopBounds);
+#else
+		SDL_GetDisplayBounds(0, &desktopBounds);
+#endif
+		int scale = VL_CalculateDefaultWindowScale(desktopBounds.w, desktopBounds.h);
 		vl_sdl2_window = SDL_CreateWindow(VL_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-			VL_DEFAULT_WINDOW_WIDTH, VL_DEFAULT_WINDOW_HEIGHT,
+			VL_DEFAULT_WINDOW_WIDTH(scale), VL_DEFAULT_WINDOW_HEIGHT(scale),
 			SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 
 		SDL_SetWindowMinimumSize(vl_sdl2_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER / VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER / VL_VGA_GFX_HEIGHT_SCALEFACTOR);
