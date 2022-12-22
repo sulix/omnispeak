@@ -398,9 +398,9 @@ void SD_SDL_Startup(void)
 		// buffer size. This will result in a tiny amount (~10ms) of extra lag on windows,
 		// but it's a price I'm prepared to pay to not have my ears explode.
 #ifdef _WIN32
-		SD_SDL_AudioSpec.samples = 1024;
+		SD_SDL_AudioSpec.samples = CFG_GetConfigInt("audioBufferSamples", 1024);
 #else
-		SD_SDL_AudioSpec.samples = 512;
+		SD_SDL_AudioSpec.samples = CFG_GetConfigInt("audioBufferSamples", 512);
 #endif
 		SD_SDL_AudioSpec.callback = SD_SDL_CallBack;
 		SD_SDL_AudioSpec.userdata = NULL;
