@@ -88,6 +88,12 @@ void SD_NULL_Unlock()
 	SD_NULL_IsLocked = false;
 }
 
+void SD_NULL_WaitTick()
+{
+	SDL_t0Service();
+}
+
+
 SD_Backend sd_null_backend = {
 	.startup = SD_NULL_Startup,
 	.shutdown = SD_NULL_Shutdown,
@@ -95,7 +101,8 @@ SD_Backend sd_null_backend = {
 	.unlock = SD_NULL_Unlock,
 	.alOut = SD_NULL_alOut,
 	.pcSpkOn = SD_NULL_PCSpkOn,
-	.setTimer0 = SD_NULL_SetTimer0};
+	.setTimer0 = SD_NULL_SetTimer0,
+	.waitTick = SD_NULL_WaitTick};
 
 SD_Backend *SD_Impl_GetBackend()
 {
