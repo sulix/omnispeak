@@ -327,7 +327,8 @@ void SD_ALSAOPL2_WaitTick()
 {
 	SDL_mutex *mtx = SDL_CreateMutex();
 	SDL_LockMutex(mtx);
-	SDL_CondWait(SD_ALSAOPL2_TimerConditionVar, mtx);
+	// Timeout of 2ms, as the PIT rate is ~1.1ms..
+	SDL_CondWaitTimeout(SD_ALSAOPL2_TimerConditionVar, mtx, 2);
 	SDL_UnlockMutex(mtx);
 }
 

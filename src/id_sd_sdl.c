@@ -341,7 +341,13 @@ int SD_SDL_t0InterruptThread(void *param)
 			uint64_t ticksRemaining = SD_SDL_nextTickAt - currPitTicks;
 			uint64_t platformTicks = ticksRemaining * 1000 / PC_PIT_RATE;
 
-			SDL_Delay(platformTicks);
+			if (platformTicks > 5000)
+			{
+				/* If we're more than 5 seconds behind, just reset. */
+				SD_SDL_nextTickAt = currPitTicks;
+			}
+			else
+				SDL_Delay(platformTicks);
 		}
 	}
 	return 0;
@@ -483,7 +489,8 @@ void SD_SDL_WaitTick()
 {
 	SDL_mutex *mtx = SDL_CreateMutex();
 	SDL_LockMutex(mtx);
-	SDL_CondWait(SD_SDL_TimerConditionVar, mtx);
+	// Timeout of 2ms, as the PIT rate is ~1.1ms..
+	SDL_CondWaitTimeout(SD_SDL_TimerConditionVar, mtx, 2);
 	SDL_UnlockMutex(mtx);
 }
 
