@@ -91,6 +91,23 @@ void US_PrintB8000Text(const uint8_t *textscreen, int numChars)
 	SetConsoleTextAttribute(hConsole, oldInfo.wAttributes);
 }
 
+#elif defined(__DJGPP__)
+
+#include <conio.h>
+#include <sys/movedata.h>
+
+bool US_TerminalOk()
+{
+	return true;
+}
+
+void US_PrintB8000Text(const uint8_t *textscreen, int numChars)
+{
+	dosmemput(textscreen, numChars * 2, 0xB8000);
+	gotoxy(0, numChars / 80);
+}
+
+
 #else
 // Conversion for Codepage 437 (the IBM BIOS font character set) to unicode.
 uint32_t cp437[] = {

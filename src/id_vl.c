@@ -750,6 +750,7 @@ void VL_Shutdown()
 		vl_currentBackend->setVideoMode(0);
 		vl_memused = 0;
 		vl_numsurfaces = 0;
+		vl_started = false;
 	}
 }
 

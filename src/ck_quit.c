@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void Quit(const char *msg)
 {
+	// Shutdown VL early to return to text mode.
+	VL_Shutdown();
 	if (!msg || !(*msg))
 	{
 		// Avoid trying to re-print the order screen if caching it failed.
