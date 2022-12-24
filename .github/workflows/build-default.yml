@@ -15,7 +15,7 @@ jobs:
         sudo apt install libsdl2-dev mingw-w64 libasound2-dev libieee1284-3-dev
         wget https://github.com/andrewwutw/build-djgpp/releases/download/v3.1/djgpp-linux64-gcc1020.tar.bz2
         sudo tar xf djgpp-linux64-gcc1020.tar.bz2 -C /usr/local
-        wget -nc http://www.delorie.com/pub/djgpp/current/v2misc/csdpmi7b.zip
+        wget -nc https://davidgow.net/stuff/csdpmi7b.zip
         mkdir csdpmi7b
         unzip csdpmi7b.zip -d csdpmi7b/
         sudo mkdir -p /opt
