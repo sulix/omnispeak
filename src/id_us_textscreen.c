@@ -8,6 +8,7 @@
 #ifdef _WIN32
 
 #include <windows.h>
+#include <conio.h>
 
 typedef enum US_Win32ConsoleMode
 {
@@ -23,6 +24,8 @@ const char *US_Win32ConsoleMode_Strings[] = {
 	"PreferExisting",
 	"CreateNew"
 };
+
+static bool us_console_createdW32Console = false;
 
 // Checks if the terminal is compatible with our B8000 text mode emulation.
 bool US_TerminalOk()
@@ -45,6 +48,7 @@ bool US_TerminalOk()
 		{
 			if (!AllocConsole())
 				return false;
+			us_console_createdW32Console = true;
 		}
 		else
 			return false;
@@ -89,6 +93,12 @@ void US_PrintB8000Text(const uint8_t *textscreen, int numChars)
 	SetConsoleOutputCP(oldCP);
 	SetConsoleMode(hConsole, oldMode);
 	SetConsoleTextAttribute(hConsole, oldInfo.wAttributes);
+	if (CFG_GetConfigBool("us_pressKeyOnExit", us_console_createdW32Console))
+	{
+		printf("Press any key to exit...");
+		_getch();
+		puts("\n");
+	}
 }
 
 #elif defined(__DJGPP__)
