@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_act.h"
 #include "ck_cross.h"
 #include "ck_def.h"
+#include "ck_ep.h"
 
 int help_delay, help_pic, help_y, help_x;
 char *help_ptr;
@@ -562,9 +563,6 @@ void HelpScreens(void)
 	VL_ClearScreen(4);
 	US_SetPrintFont(0);
 
-	if (ck_currentEpisode->ep == EP_CK5)
-		StartMusic(19);
-
 	while (1)
 	{
 		n = ShowHelp();
@@ -654,7 +652,7 @@ void help_endgame(void)
 	CA_CacheGrChunk(CK_CHUNKNUM(PIC_ARROWBRIGHT)); /* Bright arrow */
 
 	// Check for Korath Fuse
-	if (/*ck_currentEpisode->ep == EP_CK5 &&*/ ck_gameState.levelsDone[13] == 0x0E)
+	if (/*ck_currentEpisode->ep == EP_CK5 &&*/ ck_gameState.levelsDone[CK_INT(CK5_SecretFuseLevel,13)] == LS_KorathFuse)
 	{
 		CA_CacheGrChunk(CK_CHUNKNUM(TEXT_SECRETEND));
 		ptext = (char *)ca_graphChunks[CK_CHUNKNUM(TEXT_SECRETEND)];
@@ -670,7 +668,7 @@ void help_endgame(void)
 	CacheLayoutGraphics();
 
 	/* Play some music */
-	StartMusic(ck_currentEpisode->endSongLevel);
+	StartMusic(CK_INT(CK_EndingMusicLevel, ck_currentEpisode->endSongLevel));
 
 	while (help_cur_page < help_num_pages)
 	{
@@ -702,7 +700,7 @@ void help_endgame(void)
 
 	/* Uncache our graphics and clean up */
 	StopMusic();
-	if (ck_gameState.levelsDone[13] == LS_KorathFuse)
+	if (ck_gameState.levelsDone[CK_INT(CK5_SecretFuseLevel, 13)] == LS_KorathFuse)
 		MM_FreePtr(&ca_graphChunks[CK_CHUNKNUM(TEXT_SECRETEND)]);
 	else
 		MM_FreePtr(&ca_graphChunks[CK_CHUNKNUM(TEXT_END)]);

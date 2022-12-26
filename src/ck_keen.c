@@ -99,6 +99,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 	}
 	else if (ck_currentEpisode->ep == EP_CK4)
 	{
+#ifdef WITH_KEEN4
 		if (b->type == CT4_Foot)
 		{
 			ck_gameState.levelState = LS_Foot;
@@ -135,12 +136,25 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		{
 			CK_PhysPushXY(a, b, false);
 		}
+#endif
 	}
 	else if (ck_currentEpisode->ep == EP_CK5)
 	{
+#ifdef MOD_OSI
+		if (b->type == CT_Stunner)
+		{
+			// Reflected off of Big Ampton
+			if (b->user4)
+			{
+				CK_StunKeen(a, b);
+				CK_ShotHit(b);
+			}
+		}
+#endif
 	}
 	else if (ck_currentEpisode->ep == EP_CK6)
 	{
+#ifdef WITH_KEEN6
 		if (b->type == CT_Stunner)
 		{
 			// Reflected off of flect
@@ -155,6 +169,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 			// The legendary bug!  For some reason, the control flows to check if
 			// keen is riding a platform he contacts his own stunner bullet.
 		}
+#endif
 	}
 }
 
@@ -274,7 +289,11 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 					}
 					else
 					{
+#ifdef MOD_OSI
+						obj->user1 = targetXUnit >> 4;
+#else
 						obj->user1 = targetXUnit;
+#endif
 						obj->currentAction = CK_GetActionByName("CK_ACT_keenSlide");
 					}
 				}
@@ -361,7 +380,11 @@ bool CK_KeenPressUp(CK_object *obj)
 		}
 		else
 		{
+#ifdef MOD_OSI
+			obj->user1 = destXunit >> 4;
+#else
 			obj->user1 = destXunit;
+#endif
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenSlide");
 		}
 		ck_keenState.keenSliding = true;
@@ -424,7 +447,11 @@ bool CK_KeenPressUp(CK_object *obj)
 		}
 		else
 		{
+#ifdef MOD_OSI
+			obj->user1 = destUnitX >> 4;
+#else
 			obj->user1 = destUnitX;
+#endif
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenSlide");
 		}
 
@@ -440,7 +467,11 @@ bool CK_KeenPressUp(CK_object *obj)
 // Think function for keen "sliding" towards a switch, keygem or door.
 void CK_KeenSlide(CK_object *obj)
 {
+#ifdef MOD_OSI
+	int32_t deltaX = (obj->user1 << 4) - obj->posX;
+#else
 	int16_t deltaX = obj->user1 - obj->posX;
+#endif
 	if (deltaX < 0)
 	{
 		// Move left one px per tick.
@@ -511,7 +542,7 @@ void CK_KeenEnterDoor(CK_object *obj)
 void CK_KeenPlaceGem(CK_object *obj)
 {
 	uint16_t oldFGTile = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2, 1);
-	uint16_t newFGTile = oldFGTile + 18;
+	uint16_t newFGTile = oldFGTile + CK_INT(CK_KeyHolderNewTileOffset, 18);
 	uint16_t target = CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY2, 2);
 
 	int targetX = target >> 8;
@@ -921,6 +952,13 @@ void CK_KeenDrawFunc(CK_object *obj)
 	if (!obj->topTI)
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENFALL));
+#ifdef MOD_OSI
+		if (obj->user4)
+		{
+			obj->velX = obj->user4 * 8;
+			obj->user4 = 0;
+		} else
+#endif
 		obj->velX = obj->xDirection * 8;
 		obj->velY = 0;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
@@ -937,14 +975,21 @@ void CK_KeenDrawFunc(CK_object *obj)
 		ck_nextY = 0;
 		obj->user1 = 0;
 		CK_PhysUpdateNormalObj(obj);
+#ifdef MOD_OSI
+		obj->user4 = 1;
+#endif
 	}
 	else if (obj->topTI == 0x31)
 	{
 		// Keen6 conveyor belt left
 		ck_nextX = SD_GetSpriteSync() * -8;
 		ck_nextY = 0;
+		obj->velX = -8;
 		obj->user1 = 0;
 		CK_PhysUpdateNormalObj(obj);
+#ifdef MOD_OSI
+		obj->user4 = -1;
+#endif
 	}
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
 }
@@ -956,6 +1001,13 @@ void CK_KeenRunDrawFunc(CK_object *obj)
 	if (!obj->topTI)
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENFALL));
+#ifdef MOD_OSI
+		if (obj->user4)
+		{
+			/* If you're running, most of this isn't required. */
+			obj->user4 = 0;
+		}
+#endif
 		obj->velX = obj->xDirection * 8;
 		obj->velY = 0;
 		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
@@ -1133,8 +1185,10 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 		}
 		else
 		{
+#ifdef WITH_KEEN6
 			if (obj->bottomTI == 0x21) // Bloog switches
 				CK6_ToggleBigSwitch(obj, false);
+#endif
 
 			if (!ck_gameState.jumpCheat)
 			{
@@ -1169,10 +1223,12 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 			{
 				SD_PlaySound(CK_SOUNDNUM(SOUND_KEENLANDONFUSE));
 			}
+#ifdef WITH_KEEN6
 			if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
 			{
 				CK6_ToggleBigSwitch(obj, true);
 			}
+#endif
 			if (obj->topTI != 0x19 || !ck_keenState.jumpTimer) // Or standing on a platform.
 			{
 				obj->user1 = obj->user2 = 0; // Being on the ground is boring.
@@ -1375,8 +1431,10 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 		}
 		else
 		{
+#ifdef WITH_KEEN6
 			if (obj->bottomTI == 0x21) // Bloog switches
 				CK6_ToggleBigSwitch(obj, false);
+#endif
 
 			if (!ck_gameState.jumpCheat)
 			{
@@ -1407,13 +1465,16 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 		}
 		else
 		{
+#ifdef WITH_KEEN6
 			if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
 			{
 				CK6_ToggleBigSwitch(obj, true);
 			}
-			else if (obj->topTI == 0x39) // Fuse
+			else
+#endif
+			if (obj->topTI == 0x39) // Fuse
 			{
-				if (obj->velY >= 0x30)
+				if (obj->velY >= CK_INT(CK5_FuseBreakVel, 0x30))
 				{
 					CK_KeenBreakFuse(obj->clipRects.tileXmid, obj->clipRects.tileY2);
 					RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
@@ -1988,6 +2049,72 @@ void CK_KeenSpawnShot(CK_object *obj)
 	}
 }
 
+#ifdef MOD_OSI
+
+void CK_StunKeen(CK_object *keen, CK_object *stunner)
+{
+	//printf("keen->currentAction->compat = %x\n", keen->currentAction->compatDosPointer);
+	if (ck_invincibilityTimer || ck_stunInvincibilityTimer)
+		return;
+	if (CK_INT(OSI_GodModeNoStun, 1) && ck_godMode)
+		return;
+	if (keen->currentAction == CK_GetActionByName("CK_ACT_keenDie0") || keen->currentAction == CK_GetActionByName("CK_ACT_keenDie1"))
+		return;
+	if (keen->currentAction == CK_GetActionByName("OSI_ACT_keenStunned0"))
+		return;
+	
+	keen->user1 = 70;
+	//keen->xDirection = stunner->xDirection;
+	keen->velX = 0;//stunner->velX;
+	/* If keen is on a pole, he needs to be clipped again. */
+	keen->clipped = CLIP_normal;
+	ck_stunInvincibilityTimer = 30;
+	CK_SetAction2(keen, CK_GetActionByName("OSI_ACT_keenStunned0"));
+}
+
+void CK_KeenStunnedThink(CK_object *obj)
+{
+	CK_PhysGravityHigh(obj);
+	CK_PhysDampHorz(obj);
+	ck_nextX = obj->velX * SD_GetSpriteSync();
+	ck_nextY = obj->velY * SD_GetSpriteSync();
+	if (!obj->user1--)
+	{
+		ck_stunInvincibilityTimer = 30;
+		if (!obj->topTI)
+			CK_SetAction(obj, CK_GetActionByName("CK_ACT_keenFall1"));
+		else
+			CK_SetAction(obj, CK_GetActionByName("CK_ACT_keenStanding"));
+	}
+	//if (obj == ck_keenObj) printf("obj->velY = %d, obj->posY = %d, ck_nextY = %d obj->yDirection = %d\n", obj->velY, obj->posY, ck_nextY, obj->yDirection);
+}
+
+void CK_KeenStunnedDraw(CK_object *obj)
+{
+	if ((obj->topTI & 0xFFF8) == 8)
+	{
+		CK_KillKeen();
+	}
+	else if (obj->topTI == 0x29)
+	{
+		// Keen6 conveyor belt right
+		ck_nextX = SD_GetSpriteSync() * 8;
+		ck_nextY = 0;
+		CK_PhysUpdateNormalObj(obj);
+	}
+	else if (obj->topTI == 0x31)
+	{
+		// Keen6 conveyor belt left
+		ck_nextX = SD_GetSpriteSync() * -8;
+		ck_nextY = 0;
+		CK_PhysUpdateNormalObj(obj);
+	}
+	//RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
+	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
+}
+
+#endif
+
 void CK_KeenSetupFunctions()
 {
 	CK_ACT_AddFunction("CK_KeenSlide", &CK_KeenSlide);
@@ -2027,4 +2154,9 @@ void CK_KeenSetupFunctions()
 	CK_ACT_AddFunction("CK_KeenSpawnShot", &CK_KeenSpawnShot);
 	CK_ACT_AddFunction("CK_ShotThink", &CK_ShotThink);
 	CK_ACT_AddFunction("CK_ShotDrawFunc", &CK_ShotDrawFunc);
+	
+#ifdef MOD_OSI
+	CK_ACT_AddFunction("CK_KeenStunnedThink", &CK_KeenStunnedThink);
+	CK_ACT_AddFunction("CK_KeenStunnedDraw", &CK_KeenStunnedDraw);
+#endif
 }

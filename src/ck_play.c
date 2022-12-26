@@ -79,6 +79,9 @@ bool ck_godMode;
 
 // invincibility timer
 int16_t ck_invincibilityTimer;
+#ifdef MOD_OSI
+int16_t ck_stunInvincibilityTimer;
+#endif
 
 // ScoreBox
 bool ck_scoreBoxEnabled;
@@ -112,6 +115,10 @@ extern CK_object *ck_scoreBoxObj;
 
 extern int ck6_smashScreenDistance;
 extern int16_t ck6_smashScreenOfs[];
+
+#ifdef MOD_OSI
+extern int osi_screenShakeOffset;
+#endif
 
 void CK_CountActiveObjects()
 {
@@ -249,6 +256,7 @@ void CK_SpriteTest()
 			}
 
 			VH_SpriteTableEntry *ste = VH_GetSpriteTableEntry(chunk - ca_gfxInfoE.offSprites);
+			CA_CacheGrChunk(chunk);
 			mm_ptr_t chunk_ptr = ca_graphChunks[chunk];
 
 			VHB_Bar(startpx, startpy, 0x28, var8 - startpy, 0xF);
@@ -374,7 +382,7 @@ void CK_ItemCheat()
 
 void CK_SetupObjArray()
 {
-	for (int i = 0; i < CK_MAX_OBJECTS; ++i)
+	for (int i = 0; i < CK_INT(CK_MaxObjects, CK_MAX_OBJECTS); ++i)
 	{
 		ck_objArray[i].prev = &(ck_objArray[i + 1]);
 		ck_objArray[i].next = 0;
@@ -1322,8 +1330,10 @@ int16_t *ck_levelMusic;
 void StartMusic(int16_t level)
 {
 	int16_t song;
-
-	if ((level >= 20) && (level != -1))
+	char varName[32];
+	sprintf(varName, "CK_LevelMusic%d", level);
+	
+	if ((level != -1) && CK_VAR_GetInt(varName, -1) == -1)
 	{
 		Quit("StartMusic() - bad level number");
 	}
@@ -1331,10 +1341,7 @@ void StartMusic(int16_t level)
 
 	// NOTE: For buffer overflow emulation in Keen 5,
 	// consider assigning in_kbdControls.fire as the song number
-	if ((level == -1) && (ck_currentEpisode->ep == EP_CK4))
-		song = 5;
-	else
-		song = ck_levelMusic[level];
+	song = CK_VAR_GetInt(varName, 5);
 
 	if ((song == -1) || (SD_GetMusicMode() != smm_AdLib))
 		return;
@@ -2004,6 +2011,7 @@ void CK_NormalCamera(CK_object *obj)
 
 	// If we're attached to the ground, or otherwise awesome
 	// do somethink inscrutible.
+#ifdef WITH_KEEN6
 	if (ck_currentEpisode->ep == EP_CK6 && ck6_smashScreenDistance)
 	{
 		int16_t dx, ax;
@@ -2011,7 +2019,20 @@ void CK_NormalCamera(CK_object *obj)
 		ax = ck6_smashScreenOfs[ck6_smashScreenDistance] + obj->clipRects.unitY2;
 		deltaY += (dx - ax); // Undefined behaviour here
 	}
-	else if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_keenHang1"))
+	else
+#elif defined(MOD_OSI)
+	if (osi_screenShakeOffset)
+	{
+		if (CK_INT(OSI_ScreenShakeInAir, 0) || obj->topTI || (CK_INT(OSI_ScreenShakeUnclipped, 0) && !obj->clipped))
+		{
+			deltaY += CK_INT(OSI_ScreenShakeMultiplier, -10) * osi_screenShakeOffset;
+			osi_screenShakeOffset -= SD_GetSpriteSync();
+			if (osi_screenShakeOffset <= 0)
+				osi_screenShakeOffset = 0;
+		}
+	}
+#endif
+	if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_keenHang1"))
 	{
 		if (obj->currentAction != CK_GetActionByName("CK_ACT_keenPull1") &&
 			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull2") &&
@@ -2110,6 +2131,9 @@ void CK_PlayLoop()
 	ck_pogoTimer = 0;
 	memset(&ck_keenState, 0, sizeof(ck_keenState));
 	ck_invincibilityTimer = 0;
+#ifdef MOD_OSI
+	ck_stunInvincibilityTimer = 0;
+#endif
 	ck_scrollDisabled = false;
 	ck_keenState.jumpWasPressed = ck_keenState.pogoWasPressed = ck_keenState.shootWasPressed = false;
 	game_in_progress = 1;
@@ -2275,12 +2299,22 @@ void CK_PlayLoop()
 			if (ck_invincibilityTimer < 0)
 				ck_invincibilityTimer = 0;
 		}
+#ifdef MOD_OSI
+		if (ck_stunInvincibilityTimer)
+		{
+			ck_stunInvincibilityTimer -= SD_GetSpriteSync();
+			if (ck_stunInvincibilityTimer < 0)
+				ck_stunInvincibilityTimer = 0;
+		}
+#endif
 
+#ifdef WITH_KEEN6
 		if (ck_currentEpisode->ep == EP_CK6 && ck6_smashScreenDistance)
 		{
 			if ((ck6_smashScreenDistance -= SD_GetSpriteSync()) < 0)
 				ck6_smashScreenDistance = 0;
 		}
+#endif
 
 		//TODO: Slow-mo, extra VBLs.
 		if (ck_slowMotionEnabled)

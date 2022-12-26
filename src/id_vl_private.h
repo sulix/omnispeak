@@ -61,7 +61,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define VL_DEFAULT_WINDOW_WIDTH(n) (VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER * (n) / VL_VGA_GFX_WIDTH_SCALEFACTOR)
 #define VL_DEFAULT_WINDOW_HEIGHT(n) (6 * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER * (n) / ((vl_isIntegerScaled ? 6 : 5) * VL_VGA_GFX_HEIGHT_SCALEFACTOR))
 
-#define VL_WINDOW_TITLE "Omnispeak"
+#define VL_WINDOW_TITLE "Operation Station Infiltration"
 
 // EGA color table in RGB format (technically more can be chosen with the VGA)
 extern const uint8_t VL_EGARGBColorTable[16][3];

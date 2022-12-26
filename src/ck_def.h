@@ -46,7 +46,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MISCFLAG_LEFTELEVATOR 33
 #define MISCFLAG_RIGHTELEVATOR 34
 
-#define CK_MAX_OBJECTS 100
+#define CK_MAX_OBJECTS 300
 
 struct CK_object;
 
@@ -143,6 +143,11 @@ typedef enum CK_ClassType
 	CT5_Sphereful = 22,
 	CT5_Korath = 23,
 	CT5_QED = 25,
+	CT5_BigAmpton = 26,
+	CT5_SparkyJr = 27,
+	CT5_SparkyII = 28,
+	CT5_Sparky3 = 29,
+	CT5_Vlorg = 30,
 
 	CT6_EnemyShot = 4,
 	CT6_Item = 5,
@@ -283,6 +288,13 @@ typedef struct CK_GameState
 
 	int levelState; // Level State (should probably be enum)
 	bool jumpCheat; // Is the jump cheat enabled? (Not in Keen5 gamestate struct)
+#ifdef MOD_OSI
+	int32_t oldScore;
+	int32_t oldKeenAt;
+	int16_t oldShots;
+	int16_t oldCentilife;
+	int16_t oldLives;
+#endif
 } CK_GameState;
 
 extern CK_GameState ck_gameState;
@@ -461,6 +473,9 @@ extern uint16_t *ck_itemShadows;
 
 void CK_IncreaseScore(int score);
 void CK_KillKeen();
+#ifdef MOD_OSI
+void CK_StunKeen(CK_object *keen, CK_object *stunner);
+#endif
 
 extern CK_object *ck_keenObj;
 

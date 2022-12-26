@@ -44,6 +44,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 static int ck_lastLevelFinished;
 
+#ifdef MOD_OSI
+static uint32_t osi_oldScore;
+#endif
+
 // =========================================================================
 
 // Purge stuff for endgame
@@ -259,6 +263,13 @@ bool CK_SaveGameState(FS_File fp, CK_GameState *state)
 	        && (FS_WriteInt16LE(&state->numLives, 1, fp) == 1)
 	        && (FS_WriteInt16LE(&difficultyInt, 1, fp) == 1)
 	        && (FS_WriteInt16LE(&platformObjOffset, 1, fp) == 1) // BACKWARDS COMPATIBILITY
+#ifdef MOD_OSI
+		&& (FS_WriteInt32LE(&state->oldScore, 1, fp) == 1)
+		&& (FS_WriteInt32LE(&state->oldKeenAt, 1, fp) == 1)
+		&& (FS_WriteInt16LE(&state->oldShots, 1, fp) == 1)
+		&& (FS_WriteInt16LE(&state->oldCentilife, 1, fp) == 1)
+		&& (FS_WriteInt16LE(&state->oldLives, 1, fp) == 1)
+#endif
 	);
 	// clang-format on
 }
@@ -301,6 +312,13 @@ static bool CK_LoadGameState(FS_File fp, CK_GameState *state)
 	    || (FS_ReadInt16LE(&state->numLives, 1, fp) != 1)
 	    || (FS_ReadInt16LE(&difficultyInt, 1, fp) != 1)
 	    || (FS_ReadInt16LE(&platformObjOffset, 1, fp) != 1) // BACKWARDS COMPATIBILITY
+#ifdef MOD_OSI
+	    || (FS_ReadInt32LE(&state->oldScore, 1, fp) != 1)
+	    || (FS_ReadInt32LE(&state->oldKeenAt, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&state->oldShots, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&state->oldCentilife, 1, fp) != 1)
+	    || (FS_ReadInt16LE(&state->oldLives, 1, fp) != 1)
+#endif
 	)
 		return false;
 	// clang-format on
@@ -482,6 +500,10 @@ bool CK_LoadGame(FS_File fp, bool fromMenu)
 				newObj->user4 = 0;
 			else if (newObj->type == CT5_Sphereful)
 				newObj->user1 = newObj->user2 = newObj->user3 = newObj->user4 = 0;
+#ifdef MOD_OSI
+			else if (newObj->type == CT5_Vlorg)
+				newObj->user4 = 0;
+#endif
 		}
 		else if (ck_currentEpisode->ep == EP_CK6)
 		{
@@ -873,6 +895,13 @@ void CK_GameLoop()
 			ck_gameState.difficulty = ck_startingDifficulty;
 			ck_startingDifficulty = D_NotPlaying;
 		loadLevel:
+#ifdef MOD_OSI
+			ck_gameState.oldScore = ck_gameState.keenScore;
+			ck_gameState.oldKeenAt = ck_gameState.nextKeenAt;
+			ck_gameState.oldShots = ck_gameState.numShots;
+			ck_gameState.oldCentilife = ck_gameState.numCentilife;
+			ck_gameState.oldLives = ck_gameState.numLives;
+#endif
 			CK_LoadLevel(true, false);
 
 			//TODO: If this didn't succeed, return to level 0.
@@ -898,6 +927,18 @@ void CK_GameLoop()
 		switch (ck_gameState.levelState)
 		{
 		case LS_Died:
+#ifdef MOD_OSI
+			if (CK_INT(OSI_ResetScoreOnDeath, 0))
+				ck_gameState.keenScore = ck_gameState.oldScore;
+			if (CK_INT(OSI_ResetNextKeenAtOnDeath, 0))
+				ck_gameState.nextKeenAt = ck_gameState.oldKeenAt;
+			if (CK_INT(OSI_ResetShotsOnDeath, 0))
+				ck_gameState.numShots = ck_gameState.oldShots;
+			if (CK_INT(OSI_ResetCentilifeOnDeath, 0))
+				ck_gameState.numCentilife = ck_gameState.oldCentilife;
+			if (CK_INT(OSI_ResetLivesOnDeath, 0))
+				ck_gameState.numLives = ck_gameState.oldLives;
+#endif
 			if (CK_TryAgainMenu())
 				goto replayLevel;
 			//ck_gameState.currentLevel = ck_nextMapNumber;
@@ -945,6 +986,7 @@ void CK_GameLoop()
 
 		// Episode Specific Level Endings
 		case LS_CouncilRescued:
+#ifdef WITH_KEEN4
 			if (ck_currentEpisode->ep == EP_CK4)
 			{
 				if (ca_mapOn)
@@ -970,8 +1012,10 @@ void CK_GameLoop()
 					ck_gameState.currentLevel = 0;
 				}
 			}
+#endif
 			break;
 
+#ifdef WITH_KEEN6
 		case LS_Sandwich:
 			CK6_ShowGetSandwich();
 			goto levelcomplete;
@@ -988,7 +1032,7 @@ void CK_GameLoop()
 			VL_FixRefreshBuffer();
 			help_endgame();
 			goto highscores;
-
+#endif
 		case LS_KorathFuse:
 			if (ck_currentEpisode->ep == EP_CK5)
 			{

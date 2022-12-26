@@ -8,13 +8,13 @@ BEGIN
   BEGIN
     BLOCK "080904E4"
     BEGIN
-      VALUE "CompanyName", "Omnispeak Developers"
-      VALUE "FileDescription", "A Commander Keen Reimplementation"
+      VALUE "CompanyName", "Ceilick"
+      VALUE "FileDescription", "Commander Keen in Operation Station Infiltration"
       VALUE "FileVersion", "1.0"
-      VALUE "InternalName", "omnispeak"
-      VALUE "LegalCopyright", "(C) 2012-2021 Omnispeak Developers. Commander Keen is (C) id Software."
-      VALUE "OriginalFilename", "omnispeak.exe"
-      VALUE "ProductName", "Omnispeak"
+      VALUE "InternalName", "osi"
+      VALUE "LegalCopyright", "(C) 2022 Ceilick, Omnispeak Developers. Commander Keen is (C), TM id Software."
+      VALUE "OriginalFilename", "osi.exe"
+      VALUE "ProductName", "Operation Station Infiltration"
       VALUE "ProductVersion", "1.0"
     END
   END

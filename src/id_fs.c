@@ -387,7 +387,11 @@ void FS_Startup()
 #ifdef WITH_SDL
 #if SDL_VERSION_ATLEAST(2, 0, 1)
 	if (!FSL_IsGoodUserPath())
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "The default user path \"%s\" is not writable.\n");
 		fs_userPath = SDL_GetPrefPath(FS_XDG_ORGANISATION, FS_XDG_APPLICATION);
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Falling back to \"%s\"\n", fs_userPath);
+	}
 #else
 #warning Tried to enable FS_USER_XDG_FALLBACK but SDL version is too old.
 #endif

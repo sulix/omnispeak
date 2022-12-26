@@ -44,6 +44,9 @@ extern bool ck_godMode;
 extern bool ck_debugActive;
 
 extern int16_t ck_invincibilityTimer;
+#ifdef MOD_OSI
+extern int16_t ck_stunInvincibilityTimer;
+#endif
 
 extern bool ck_scoreBoxEnabled;
 extern struct CK_object *ck_scoreBoxObj;

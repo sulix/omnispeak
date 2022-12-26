@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_cross.h"
 #include "ck_ep.h"
 #include "ck_play.h"
+#include "ck_act.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -128,7 +129,7 @@ typedef struct RF_OnscreenAnimTile
 	struct RF_OnscreenAnimTile *prev;
 } RF_OnscreenAnimTile;
 #define RF_MAX_ANIMTILETIMERS 180
-#define RF_MAX_ONSCREENANIMTILES 90
+#define RF_MAX_ONSCREENANIMTILES 190
 #define RF_MAX_ANIM_LOOP 20
 
 int rf_numAnimTileTimers;
@@ -212,12 +213,12 @@ void RFL_SetupOnscreenAnimList()
 {
 	rf_freeOnscreenAnimTile = rf_onscreenAnimTiles;
 
-	for (int i = 0; i < RF_MAX_ONSCREENANIMTILES - 1; ++i)
+	for (int i = 0; i < CK_INT(RF_MaxOnscreenAnimTiles, RF_MAX_ONSCREENANIMTILES) - 1; ++i)
 	{
 		rf_onscreenAnimTiles[i].next = &rf_onscreenAnimTiles[i + 1];
 	}
 
-	rf_onscreenAnimTiles[RF_MAX_ONSCREENANIMTILES - 1].next = 0;
+	rf_onscreenAnimTiles[CK_INT(RF_MaxOnscreenAnimTiles, RF_MAX_ONSCREENANIMTILES) - 1].next = 0;
 
 	rf_firstOnscreenAnimTile = 0;
 

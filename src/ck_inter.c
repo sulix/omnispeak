@@ -1441,7 +1441,7 @@ void CK_DrawStarWars()
 	// ...and scroll the text!
 	if (!IN_GetLastScan())
 	{
-		StartMusic(ck_currentEpisode->starWarsSongLevel);
+		StartMusic(CK_INT(CK_StarWarsMusicLevel, ck_currentEpisode->starWarsSongLevel));
 		CK_ScrollSWText();
 		StopMusic();
 	}
@@ -1692,6 +1692,6 @@ void CK_DoHighScores()
 {
 	ck_inHighScores = true;
 	IN_ClearKeysDown();
-	CK_PlayDemo(4);
+	CK_PlayDemo(CK_INT(CK_HighScoreDemo, 4));
 	ck_inHighScores = false;
 }

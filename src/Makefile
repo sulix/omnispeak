@@ -181,14 +181,10 @@ LIBS ?=
 
 # mandatory source files
 IDOBJECTS = ck_quit.o id_mm.o id_fs.o id_ca.o id_cfg.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id_us_2.o id_us_textscreen.o id_vh.o id_vl.o id_str.o
-CKOBJECTS = ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck4_map.o ck5_map.o ck6_map.o ck4_obj1.o ck4_obj2.o ck4_obj3.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck6_obj1.o ck6_obj2.o ck6_obj3.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck4_misc.o ck5_misc.o ck6_misc.o ck_main.o ck_text.o ck_cross.o icon.o
+EPOBJECTS = mod/osi/ck5_map.o mod/osi/ck5_obj1.o mod/osi/ck5_obj2.o mod/osi/ck5_obj3.o mod/osi/ck5_misc.o mod/osi/ck5_obj4.o
+CKOBJECTS = ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck_main.o ck_text.o ck_cross.o icon.o $(EPOBJECTS)
 OPLOBJECTS = opl/dbopl.o opl/nuked_opl3.o
 
-# data files
-DATAFILES = ACTION AUDINFOE AUDIODCT AUDIOHHD EGADICT EGAHEAD EPISODE GFXINFOE MAPHEAD STRINGS TILEINFO
-K4DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK4)
-K5DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK5)
-K6DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK6)
 
 # output binary file
 OUTBIN = $(BINDIR)/omnispeak$(EXE_EXT)
@@ -359,6 +355,8 @@ ifeq ($(XDGUSERPATH),1)
 	CXXFLAGS += -DFS_USER_PATH_PREFER_XDG=1
 endif
 
+CXXFLAGS += -DMOD_OSI=1
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 OBJ := $(IDOBJECTS:%=$(OBJDIR)/%)
@@ -415,7 +413,7 @@ $(OBJDIR)/id_vl_vk_%.h: id_vl_vk_shader.%
 
 $(OBJDIR)/%.o: %.c $(SDL_DIR)
 	@mkdir -p $(dir $@)
-	$(CXX) $(SYSFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -MMD -o $@ $<
+	$(CXX) $(SYSFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -I. -c -MMD -o $@ $<
 
 $(OBJDIR)/windowsres.res: windowsres.rc
 	mkdir -p $(dir $@)
@@ -431,16 +429,6 @@ $(BINDIR)/dumpprinter: ../tools/dumpprinter/dumpprinter.c
 dumpprinter: $(BINDIR)/dumpprinter
 
 # rules to copy data files
-binfiles: keen4data keen5data keen6data
-keen4data: $(BINDIR) $(K4DATA)
-keen5data: $(BINDIR) $(K5DATA)
-keen6data: $(BINDIR) $(K6DATA)
-$(BINDIR)/%.CK4: ../data/keen4/%.CK4
-	cp -f $< $@ 
-$(BINDIR)/%.CK5: ../data/keen5/%.CK5
-	cp -f $< $@ 
-$(BINDIR)/%.CK6: ../data/$(KEEN6VER)/%.CK6
-	cp -f $< $@
 
 # generate Windows batch files to quickly start a specific episode
 batfiles: $(BATFILES)
