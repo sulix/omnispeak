@@ -67,7 +67,7 @@ static uint32_t SD_SDL_SampleOffsetInSound, SD_SDL_SamplesInCurrentPart;
 
 // Used for filling with samples from alOut (alOut_lLw), in addition
 // to SD_SDL_CallBack (because waits between/after AdLib writes are expected)
-static int16_t SD_ALOut_Samples[512];
+static int16_t SD_ALOut_Samples[512 * 2];
 static uint32_t SD_ALOut_SamplesStart = 0, SD_ALOut_SamplesEnd = 0;
 
 // Used for the timer fallback.
@@ -106,6 +106,7 @@ static SD_OPLEmulator sd_oplEmulator;
 
 Chip oplChip;
 opl3_chip nuked_oplChip;
+int numChannels;
 
 static inline bool YM3812Init(int numChips, int clock, int rate)
 {
@@ -141,47 +142,76 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 		// so 512 is sufficient for a sample rate of 358.4 kHz (default 44.1 kHz)
 		if (length > 512)
 			length = 512;
-#if 0
+
 		if(which->opl3Active)
 		{
 			Chip__GenerateBlock3(which, length, buffer);
 
 			// GenerateBlock3 generates a number of "length" 32-bit stereo samples
 			// so we need to convert them to 16-bit mono samples
-			for(i = 0; i < length; i++)
+			if (numChannels == 1)
 			{
-				// Scale volume and pick one channel
-				Bit32s sample = 2*buffer[2*i];
-				if(sample > 16383) sample = 16383;
-				else if(sample < -16384) sample = -16384;
-				stream[i] = sample;
+				for(i = 0; i < length; i++)
+				{
+					int32_t sample = buffer[i*2] + buffer[i*2+1];
+					if(sample > 16383) sample = 16383;
+					else if(sample < -16384) sample = -16384;
+					stream[i] = sample;
+				}
 			}
+			else if (numChannels == 2)
+			{
+				for(i = 0; i < length * 2; i++)
+				{
+					int32_t sample = buffer[i];
+					if(sample > 16383) sample = 16383;
+					else if(sample < -16384) sample = -16384;
+					stream[i] = sample;
+				}
+			}
+
 		}
 		else
-#endif
 		{
 			Chip__GenerateBlock2(which, length, buffer);
 
 			// GenerateBlock2 generates a number of "length" 32-bit mono samples
 			// so we only need to convert them to 16-bit mono samples
-			for (i = 0; i < length; i++)
+			if (numChannels == 1)
 			{
-				// Scale volume
-				Bit32s sample = 2 * buffer[i];
-				if (sample > 16383)
-					sample = 16383;
-				else if (sample < -16384)
-					sample = -16384;
-				stream[i] = (int16_t)sample;
+				for (i = 0; i < length; i++)
+				{
+					// Scale volume
+					Bit32s sample = 2 * buffer[i];
+					if (sample > 16383)
+						sample = 16383;
+					else if (sample < -16384)
+						sample = -16384;
+					stream[i] = (int16_t)sample;
+				}
+			}
+			else if (numChannels == 2)
+			{
+				for (i = 0; i < length; i++)
+				{
+					// Scale volume
+					Bit32s sample = 2 * buffer[i];
+					if (sample > 16383)
+						sample = 16383;
+					else if (sample < -16384)
+						sample = -16384;
+					stream[i*2] = (int16_t)sample;
+					stream[i*2+1] = (int16_t)sample;
+				}
 			}
 		}
 	}
 	else if (sd_oplEmulator == SD_OPL_EMULATOR_NUKED)
 	{
-		// Nuked OPL3 always generates stereo, but Omnispeak only
-		// supports mono streams. 
+		// Nuked OPL3 always generates stereo, but Omnispeak often uses
+		// mono streams.
 		int16_t buffer[512 * 2];
-		int i;
+		int offset = 0;
 
 		while (length)
 		{
@@ -192,22 +222,30 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 			int chunkLen = CK_Cross_min(length, 512);
 
 
-			OPL3_GenerateStream(&nuked_oplChip, buffer, chunkLen);
 
-			for (i = 0; i < chunkLen; i++)
+			if (numChannels == 1)
 			{
-				// Add L + R to get a mono sample
-				int32_t sample = buffer[i*2] + buffer[i*2+1];
-				// We store it temporarily in a 32-bit value,
-				// then clamp the result to 16-bit. This will
-				// sound bad, but better than integer overflow.
-				if (sample > 16383)
-					sample = 16383;
-				else if (sample < -16384)
-					sample = -16384;
-				stream[i] = (int16_t)sample;
+				OPL3_GenerateStream(&nuked_oplChip, buffer, chunkLen);
+				for (int i = 0; i < chunkLen; i++)
+				{
+					// Add L + R to get a mono sample
+					int32_t sample = buffer[i*2] + buffer[i*2+1];
+					// We store it temporarily in a 32-bit value,
+					// then clamp the result to 16-bit. This will
+					// sound bad, but better than integer overflow.
+					if (sample > 16383)
+						sample = 16383;
+					else if (sample < -16384)
+						sample = -16384;
+					stream[offset + i] = (int16_t)sample;
+				}
+			}
+			else if (numChannels == 2)
+			{
+				OPL3_GenerateStream(&nuked_oplChip, stream + offset * 2, chunkLen);
 			}
 			length -= chunkLen;
+			offset += chunkLen;
 		}
 	}
 }
@@ -223,11 +261,11 @@ void SD_SDL_alOut(uint8_t reg, uint8_t val)
 	YM3812Write(&oplChip, reg, val);
 	// Hack comes with a "magic number" that appears to make it work better
 	int length = SD_SDL_AudioSpec.freq / 10000;
-	if (length > sizeof(SD_ALOut_Samples) / sizeof(int16_t) - SD_ALOut_SamplesEnd)
-		length = sizeof(SD_ALOut_Samples) / sizeof(int16_t) - SD_ALOut_SamplesEnd;
+	if (length > sizeof(SD_ALOut_Samples) / (sizeof(int16_t) * numChannels) - SD_ALOut_SamplesEnd)
+		length = sizeof(SD_ALOut_Samples) / (sizeof(int16_t) * numChannels) - SD_ALOut_SamplesEnd;
 	if (length)
 	{
-		YM3812UpdateOne(&oplChip, &SD_ALOut_Samples[SD_ALOut_SamplesEnd], length);
+		YM3812UpdateOne(&oplChip, &SD_ALOut_Samples[SD_ALOut_SamplesEnd * numChannels], length);
 		SD_ALOut_SamplesEnd += length;
 	}
 }
@@ -239,9 +277,11 @@ ASSUMPTION: The speaker is outputting sound (PCSpeakerUpdateOne == true).
 ************************************************************************/
 static inline void PCSpeakerUpdateOne(int16_t *stream, int length)
 {
-	for (int loopVar = 0; loopVar < length; loopVar++, stream++)
+	for (int loopVar = 0; loopVar < length; loopVar++)
 	{
-		*stream = (*stream + SD_SDL_CurrentBeepSample) / 2; // Mix
+		*stream++ = (*stream + SD_SDL_CurrentBeepSample) / 2; // Mix
+		if (numChannels == 2)
+			*stream++ = (*stream + SD_SDL_CurrentBeepSample) / 2; // Mix
 		SD_SDL_BeepHalfCycleCounter += 2 * PC_PIT_RATE;
 		if (SD_SDL_BeepHalfCycleCounter >= SD_SDL_BeepHalfCycleCounterUpperBound)
 		{
@@ -277,34 +317,34 @@ void SD_SDL_CallBack(void *unused, Uint8 *stream, int len)
 				SDL_CondBroadcast(SD_SDL_TimerConditionVar);
 		}
 		// Now generate sound
-		isPartCompleted = (len >= 2 * (SD_SDL_SamplesInCurrentPart - SD_SDL_SampleOffsetInSound));
-		currNumOfSamples = isPartCompleted ? (SD_SDL_SamplesInCurrentPart - SD_SDL_SampleOffsetInSound) : (len / 2);
+		isPartCompleted = (len >= 2 * numChannels * (SD_SDL_SamplesInCurrentPart - SD_SDL_SampleOffsetInSound));
+		currNumOfSamples = isPartCompleted ? (SD_SDL_SamplesInCurrentPart - SD_SDL_SampleOffsetInSound) : (len / (2 * numChannels));
 
 		// AdLib (including hack for alOut delays)
 		if (SD_ALOut_SamplesEnd - SD_ALOut_SamplesStart <= currNumOfSamples)
 		{
 			// Copy sound generated by alOut
 			if (SD_ALOut_SamplesEnd - SD_ALOut_SamplesStart > 0)
-				memcpy(currSamplePtr, &SD_ALOut_Samples[SD_ALOut_SamplesStart], 2 * (SD_ALOut_SamplesEnd - SD_ALOut_SamplesStart));
+				memcpy(currSamplePtr, &SD_ALOut_Samples[SD_ALOut_SamplesStart], numChannels * 2 * (SD_ALOut_SamplesEnd - SD_ALOut_SamplesStart));
 			// Generate what's left
 			if (currNumOfSamples - (SD_ALOut_SamplesEnd - SD_ALOut_SamplesStart) > 0)
-				YM3812UpdateOne(&oplChip, currSamplePtr + (SD_ALOut_SamplesEnd - SD_ALOut_SamplesStart), currNumOfSamples - (SD_ALOut_SamplesEnd - SD_ALOut_SamplesStart));
+				YM3812UpdateOne(&oplChip, currSamplePtr + (SD_ALOut_SamplesEnd - SD_ALOut_SamplesStart) * numChannels, currNumOfSamples - (SD_ALOut_SamplesEnd - SD_ALOut_SamplesStart));
 			// Finally update these
 			SD_ALOut_SamplesStart = SD_ALOut_SamplesEnd = 0;
 		}
 		else
 		{
 			// Already generated enough by alOut, to be copied
-			memcpy(currSamplePtr, &SD_ALOut_Samples[SD_ALOut_SamplesStart], 2 * currNumOfSamples);
+			memcpy(currSamplePtr, &SD_ALOut_Samples[SD_ALOut_SamplesStart], 2 * numChannels * currNumOfSamples);
 			SD_ALOut_SamplesStart += currNumOfSamples;
 		}
 		// PC Speaker
 		if (SD_PC_Speaker_On)
 			PCSpeakerUpdateOne(currSamplePtr, currNumOfSamples);
 		// We're done for now
-		currSamplePtr += currNumOfSamples;
+		currSamplePtr += currNumOfSamples * numChannels;
 		SD_SDL_SampleOffsetInSound += currNumOfSamples;
-		len -= 2 * currNumOfSamples;
+		len -= 2 * numChannels * currNumOfSamples;
 		// End of part?
 		if (SD_SDL_SampleOffsetInSound >= SD_SDL_SamplesInCurrentPart)
 		{
@@ -389,6 +429,14 @@ void SD_SDL_Startup(void)
 	if (!SD_SDL_WaitTicksSpin)
 		SD_SDL_TimerConditionVar = SDL_CreateCond();
 
+#ifdef _WIN32
+	const char *defaultDriver = "winmm";
+#else
+	const char *defaultDriver = NULL;
+#endif
+	const char *sdlDriver = CFG_GetConfigString("sd_sdl_audioDriver", defaultDriver);
+	SDL_setenv("SDL_AUDIODRIVER", sdlDriver, false);
+
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 	{
 		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
@@ -397,9 +445,9 @@ void SD_SDL_Startup(void)
 	}
 	else
 	{
-		SD_SDL_AudioSpec.freq = CFG_GetConfigInt("sampleRate", 49716); // OPL rate
+		SD_SDL_AudioSpec.freq = CFG_GetConfigInt("sampleRate", 44100); // OPL rate
 		SD_SDL_AudioSpec.format = AUDIO_S16;
-		SD_SDL_AudioSpec.channels = 1;
+		SD_SDL_AudioSpec.channels = CFG_GetConfigInt("audioChannels", 2);
 		// Under wine, small buffer sizes cause a lot of crackling, so we double the
 		// buffer size. This will result in a tiny amount (~10ms) of extra lag on windows,
 		// but it's a price I'm prepared to pay to not have my ears explode.
@@ -419,6 +467,7 @@ void SD_SDL_Startup(void)
 		else
 		{
 			SD_SDL_AudioSubsystem_Up = true;
+			numChannels = SD_SDL_AudioSpec.channels;
 		}
 
 		if (YM3812Init(1, 3579545, SD_SDL_AudioSpec.freq))
