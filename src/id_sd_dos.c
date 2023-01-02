@@ -117,6 +117,7 @@ void SD_DOS_Startup(void)
 
 void SD_DOS_Shutdown(void)
 {
+	SD_DOS_PCSpkOn(false, 0);
 	_go32_dpmi_set_protected_mode_interrupt_vector(8, &sd_dos_oldISR);
 	_go32_dpmi_free_iret_wrapper(&sd_dos_newISR);
 }
