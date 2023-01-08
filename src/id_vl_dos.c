@@ -589,7 +589,9 @@ static void VL_DOS_BitXorWithSurface(void *src, void *dst_surface, int x, int y,
 static void VL_DOS_BitBlitToSurface(void *src, void *dst_surface, int x, int y, int w, int h, int colour)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)dst_surface;
-	int dst_byte_x_offset = x / 8;
+	int initial_x = x / 8, initial_y = y, final_w = w / 8, final_h = h;
+	VL_Clip(&final_w, &final_h, &initial_x, &initial_y, surf->w / 8, surf->h);
+	int dst_byte_x_offset = CK_Cross_max(0, x / 8); // We automatically round coordinates to multiples of 8 (byte boundaries)
 	int dst_bit_x_offset = x & 7;
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
@@ -597,11 +599,11 @@ static void VL_DOS_BitBlitToSurface(void *src, void *dst_surface, int x, int y, 
 		if (!(colour & (1 << plane)))
 			continue;
 		uint8_t prev_byte = 0;
-		for (int _y = 0; _y < h; ++_y)
+		for (int _y = initial_y; _y < initial_y + final_h; ++_y)
 		{
-			uint8_t *src_ptr = (uint8_t *)src + (_y * ((w + 7) / 8));
+			uint8_t *src_ptr = (uint8_t *)src + (_y * ((w + 7) / 8)) + (initial_x);
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
-			size_t copy_len = (w + 7) / 8;
+			size_t copy_len = (final_w);
 			for (int i = 0; i < copy_len; ++i)
 			{
 				uint8_t src_byte = (prev_byte << (8 - dst_bit_x_offset)) | (src_ptr[i] >> dst_bit_x_offset);
@@ -615,7 +617,9 @@ static void VL_DOS_BitBlitToSurface(void *src, void *dst_surface, int x, int y, 
 static void VL_DOS_BitInvBlitToSurface(void *src, void *dst_surface, int x, int y, int w, int h, int colour)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)dst_surface;
-	int dst_byte_x_offset = x / 8;
+	int initial_x = x / 8, initial_y = y, final_w = w / 8, final_h = h;
+	VL_Clip(&final_w, &final_h, &initial_x, &initial_y, surf->w / 8, surf->h);
+	int dst_byte_x_offset = CK_Cross_max(0, x / 8); // We automatically round coordinates to multiples of 8 (byte boundaries)
 	int dst_bit_x_offset = x & 7;
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
@@ -623,11 +627,11 @@ static void VL_DOS_BitInvBlitToSurface(void *src, void *dst_surface, int x, int 
 		if (!(colour & (1 << plane)))
 			continue;
 		uint8_t prev_byte = 0;
-		for (int _y = 0; _y < h; ++_y)
+		for (int _y = initial_y; _y < initial_y + final_h; ++_y)
 		{
-			uint8_t *src_ptr = (uint8_t *)src + (_y * ((w + 7) / 8));
+			uint8_t *src_ptr = (uint8_t *)src + (_y * ((w + 7) / 8)) + (initial_x);
 			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
-			size_t copy_len = (w + 7) / 8;
+			size_t copy_len = (final_w);
 			for (int i = 0; i < copy_len; ++i)
 			{
 				uint8_t src_byte = (prev_byte << (8 - dst_bit_x_offset)) | (src_ptr[i] >> dst_bit_x_offset);
