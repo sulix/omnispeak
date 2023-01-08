@@ -224,6 +224,7 @@ static void VL_DOS_SurfaceRect(void *dst_surface, int x, int y, int w, int h, in
 	int x_end_bit = x + w - 1;
 	int x_low_byte = x / 8;
 	int x_high_byte = x_end_bit / 8;
+	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; ++plane)
 	{
 		uint8_t *plane_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane);
@@ -263,6 +264,7 @@ static void VL_DOS_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int h,
 	int x_end_bit = x + w - 1;
 	int x_low_byte = x / 8;
 	int x_high_byte = x_end_bit / 8;
+	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; ++plane)
 	{
 		if (!(mapmask & (1 << plane)))
