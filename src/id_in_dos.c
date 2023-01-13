@@ -18,11 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #include "id_in.h"
+#include "id_cfg.h"
 
 #include <dos.h>
 #include <dpmi.h>
 #include <go32.h>
 #include <string.h>
+
+static bool in_dos_clearXTKeys = false;
+static bool in_dos_ackInt9 = true;
 
 static void INL_KeyService()
 {
@@ -31,9 +35,12 @@ static void INL_KeyService()
 	uint8_t scanCode = inportb(0x60);
 
 	// Clear the key in the XT keyboard controller
-	uint8_t temp = inportb(0x61);
-	outportb(0x61, temp | 0x80);
-	outportb(0x61, temp);
+	if (in_dos_clearXTKeys)
+	{	
+		uint8_t temp = inportb(0x61);
+		outportb(0x61, temp | 0x80);
+		outportb(0x61, temp);
+	}
 
 	if (scanCode == 0xE0)
 	{
@@ -56,7 +63,8 @@ static void INL_KeyService()
 	// TODO: Support falling through to the system interrupt handler.
 
 	// Reset the interrupt.
-	outportb(0x20, 0x20);
+	if (in_dos_ackInt9)
+		outportb(0x20, 0x20);
 	if (interruptsWereEnabled)
 		enable();
 }
@@ -75,17 +83,27 @@ _go32_dpmi_seginfo in_dos_oldISR, in_dos_newISR;
 void IN_DOS_Shutdown(void)
 {
 	_go32_dpmi_set_protected_mode_interrupt_vector(9, &in_dos_oldISR);
-	_go32_dpmi_free_iret_wrapper(&in_dos_newISR);
+	if (!CFG_GetConfigBool("in_dos_passKeysToBIOS", false))
+		_go32_dpmi_free_iret_wrapper(&in_dos_newISR);
 }
 
 void IN_DOS_Startup(bool disableJoysticks)
 {
+	in_dos_ackInt9 = CFG_GetConfigBool("in_dos_ackInt9", true);
+	in_dos_clearXTKeys = CFG_GetConfigBool("in_dos_clearXTKeys", true);
 	in_dos_newISR.pm_offset = (intptr_t)&INL_KeyService;
 	in_dos_newISR.pm_selector = _go32_my_cs();
 
 	_go32_dpmi_get_protected_mode_interrupt_vector(9, &in_dos_oldISR);
-	_go32_dpmi_allocate_iret_wrapper(&in_dos_newISR);
-	_go32_dpmi_set_protected_mode_interrupt_vector(9, &in_dos_newISR);
+	if (CFG_GetConfigBool("in_dos_passKeysToBIOS", false))
+	{
+		_go32_dpmi_chain_protected_mode_interrupt_vector(9, &in_dos_newISR);
+	}
+	else
+	{
+		_go32_dpmi_allocate_iret_wrapper(&in_dos_newISR);
+		_go32_dpmi_set_protected_mode_interrupt_vector(9, &in_dos_newISR);
+	}
 }
 
 bool IN_DOS_StartJoy(int joystick)
