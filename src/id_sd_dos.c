@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string.h>
 
 #include "id_sd.h"
+#include "id_cfg.h"
 #include "ck_cross.h"
 
 #define PC_PIT_RATE 1193182
@@ -78,10 +79,12 @@ void SD_DOS_alOut(uint8_t reg, uint8_t val)
 
 void SDL_t0Service(void);
 
+static bool sd_dos_ackInt8 = true;
 void SD_DOS_t0InterruptProxy()
 {
 	SDL_t0Service();
-	outportb(0x20, 0x20);
+	if (sd_dos_ackInt8)
+		outportb(0x20, 0x20);
 }
 
 void SD_DOS_PCSpkOn(bool on, int freq)
@@ -109,17 +112,26 @@ void SD_DOS_Startup(void)
 {
 	sd_dos_newISR.pm_offset = (intptr_t)&SD_DOS_t0InterruptProxy;
 	sd_dos_newISR.pm_selector = _go32_my_cs();
+	sd_dos_ackInt8 = CFG_GetConfigBool("sd_dos_ackInt8", true);
 
 	_go32_dpmi_get_protected_mode_interrupt_vector(8, &sd_dos_oldISR);
-	_go32_dpmi_allocate_iret_wrapper(&sd_dos_newISR);
-	_go32_dpmi_set_protected_mode_interrupt_vector(8, &sd_dos_newISR);
+	if (CFG_GetConfigBool("sd_dos_chainTimer", true))
+	{
+		_go32_dpmi_chain_protected_mode_interrupt_vector(8, &sd_dos_newISR);
+	}
+	else
+	{
+		_go32_dpmi_allocate_iret_wrapper(&sd_dos_newISR);
+		_go32_dpmi_set_protected_mode_interrupt_vector(8, &sd_dos_newISR);
+	}
 }
 
 void SD_DOS_Shutdown(void)
 {
 	SD_DOS_PCSpkOn(false, 0);
 	_go32_dpmi_set_protected_mode_interrupt_vector(8, &sd_dos_oldISR);
-	_go32_dpmi_free_iret_wrapper(&sd_dos_newISR);
+	if (!CFG_GetConfigBool("sd_dos_chainTimer", true))
+		_go32_dpmi_free_iret_wrapper(&sd_dos_newISR);
 }
 
 bool SD_DOS_WereInterruptsEnabled = false;
