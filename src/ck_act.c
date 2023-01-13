@@ -365,7 +365,11 @@ bool CK_VAR_ParseAction(STR_ParserState *ps)
 	char nextActionName[ID_STR_MAX_TOKEN_LENGTH];
 	STR_GetIdent(ps, nextActionName, ID_STR_MAX_TOKEN_LENGTH);
 
+#ifdef CK_VAR_FUNCTIONS_AS_STRINGS
+	act->next = MM_ArenaStrDup(ck_varArena, nextActionName);
+#else
 	act->next = strcmp(nextActionName, "NULL") ? CK_GetOrCreateActionByName(nextActionName) : 0;
+#endif
 
 	return true;
 }

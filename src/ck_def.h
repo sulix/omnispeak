@@ -310,12 +310,13 @@ typedef struct CK_action
 	const char *think;
 	const char *collide;
 	const char *draw;
+	const char *next;
 #else
 	void (*think)(struct CK_object *obj);
 	void (*collide)(struct CK_object *obj, struct CK_object *other);
 	void (*draw)(struct CK_object *obj);
-#endif
 	struct CK_action *next;
+#endif
 	// Omnispeak - backwards compatibility:
 	// Given an instance of this type, stores what would be
 	// the 16-bit offset pointer in the dseg while using the
