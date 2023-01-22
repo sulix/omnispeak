@@ -43,6 +43,20 @@
 #include "opl/dbopl.h"
 #include "opl/nuked_opl3.h"
 
+#if SDL_VERSION_ATLEAST(2,0,4)
+#define SD_SDL_WITH_QUEUEAUDIO
+// Are we using the SDL_QueueAudio function?
+#ifdef _WIN32
+// Only enable by default on Win32, as it's still a little more stuttery than
+// the callback version on Linux.
+static bool sd_sdl_queueAudio = true;
+#else
+static bool sd_sdl_queueAudio = false;
+#endif
+#else
+static bool sd_sdl_queueAudio = false;
+#endif
+
 #define PC_PIT_RATE 1193182
 #define SD_SFX_PART_RATE 140
 /* In the original exe, upon setting a rate of 140Hz or 560Hz for some
@@ -128,7 +142,7 @@ static inline void YM3812Write(Chip *which, Bit32u reg, Bit8u val)
 	if (sd_oplEmulator == SD_OPL_EMULATOR_DBOPL)
 		Chip__WriteReg(which, reg, val);
 	else if (sd_oplEmulator == SD_OPL_EMULATOR_NUKED)
-		OPL3_WriteReg(&nuked_oplChip, reg, val); 
+		OPL3_WriteRegBuffered(&nuked_oplChip, reg, val);
 }
 
 static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
@@ -233,10 +247,10 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 					// We store it temporarily in a 32-bit value,
 					// then clamp the result to 16-bit. This will
 					// sound bad, but better than integer overflow.
-					if (sample > 16383)
-						sample = 16383;
-					else if (sample < -16384)
-						sample = -16384;
+					if (sample > 32767)
+						sample = 32767;
+					else if (sample < -32768)
+						sample = -32768;
 					stream[offset + i] = (int16_t)sample;
 				}
 			}
@@ -250,6 +264,9 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 	}
 }
 
+static int sd_sdl_bonusSamplesQueued = 0;
+
+static inline void PCSpeakerUpdateOne(int16_t *stream, int length);
 void SD_SDL_alOut(uint8_t reg, uint8_t val)
 {
 	// FIXME: The original code for alOut adds 6 reads of the register port
@@ -261,12 +278,25 @@ void SD_SDL_alOut(uint8_t reg, uint8_t val)
 	YM3812Write(&oplChip, reg, val);
 	// Hack comes with a "magic number" that appears to make it work better
 	int length = SD_SDL_AudioSpec.freq / 10000;
-	if (length > sizeof(SD_ALOut_Samples) / (sizeof(int16_t) * numChannels) - SD_ALOut_SamplesEnd)
-		length = sizeof(SD_ALOut_Samples) / (sizeof(int16_t) * numChannels) - SD_ALOut_SamplesEnd;
 	if (length)
 	{
-		YM3812UpdateOne(&oplChip, &SD_ALOut_Samples[SD_ALOut_SamplesEnd * numChannels], length);
-		SD_ALOut_SamplesEnd += length;
+#ifdef SD_SDL_WITH_QUEUEAUDIO
+		if (sd_sdl_queueAudio)
+		{
+			YM3812UpdateOne(&oplChip, SD_ALOut_Samples, length);
+			if (SD_PC_Speaker_On)
+				PCSpeakerUpdateOne(SD_ALOut_Samples, length);
+			SDL_QueueAudio(1, SD_ALOut_Samples, length * numChannels * 2);
+			sd_sdl_bonusSamplesQueued += length;
+		}
+		else
+#endif
+		{
+			if (length > sizeof(SD_ALOut_Samples) / (sizeof(int16_t) * numChannels) - SD_ALOut_SamplesEnd)
+				length = sizeof(SD_ALOut_Samples) / (sizeof(int16_t) * numChannels) - SD_ALOut_SamplesEnd;
+			YM3812UpdateOne(&oplChip, &SD_ALOut_Samples[SD_ALOut_SamplesEnd * numChannels], length);
+			SD_ALOut_SamplesEnd += length;
+		}
 	}
 }
 
@@ -361,6 +391,8 @@ void SD_SDL_CallBack(void *unused, Uint8 *stream, int len)
 	}
 }
 
+#define SD_QUEUEAUDIO_MIN_BUF_SIZE 256
+
 int SD_SDL_t0InterruptThread(void *param)
 {
 	while (SD_SDL_useTimerFallback)
@@ -369,6 +401,24 @@ int SD_SDL_t0InterruptThread(void *param)
 		uint64_t currPitTicks = (uint64_t)(SDL_GetPerformanceCounter()) * PC_PIT_RATE / SDL_GetPerformanceFrequency();
 #else
 		uint64_t currPitTicks = (uint64_t)(SDL_GetTicks()) * PC_PIT_RATE / 1000;
+#endif
+		// Top up to min buffer size if below.
+#ifdef SD_SDL_WITH_QUEUEAUDIO
+		if (SD_SDL_AudioSubsystem_Up && sd_sdl_queueAudio)
+		{
+			int curQueueLen = SDL_GetQueuedAudioSize(1) / (numChannels * sizeof(int16_t));
+			if (curQueueLen < SD_QUEUEAUDIO_MIN_BUF_SIZE)
+			{
+				int length = SD_QUEUEAUDIO_MIN_BUF_SIZE - curQueueLen;
+				YM3812UpdateOne(&oplChip, SD_ALOut_Samples, length);
+				if (SD_PC_Speaker_On)
+					PCSpeakerUpdateOne(SD_ALOut_Samples, length);
+				SDL_QueueAudio(1, SD_ALOut_Samples, length * numChannels * sizeof(int16_t));
+				sd_sdl_bonusSamplesQueued -= length;
+				if (sd_sdl_bonusSamplesQueued < 0)
+					sd_sdl_bonusSamplesQueued = 0;
+			}
+		}
 #endif
 
 		if (currPitTicks >= SD_SDL_nextTickAt)
@@ -379,6 +429,23 @@ int SD_SDL_t0InterruptThread(void *param)
 			if (!SD_SDL_WaitTicksSpin)
 				SDL_CondBroadcast(SD_SDL_TimerConditionVar);
 			SD_SDL_nextTickAt += SD_SDL_timerDivisor;
+#ifdef SD_SDL_WITH_QUEUEAUDIO
+			if (SD_SDL_AudioSubsystem_Up && sd_sdl_queueAudio)
+			{
+				int length = SD_SDL_SamplesInCurrentPart - sd_sdl_bonusSamplesQueued;
+				sd_sdl_bonusSamplesQueued -= SD_SDL_SamplesInCurrentPart;
+				if (sd_sdl_bonusSamplesQueued < 0) sd_sdl_bonusSamplesQueued = 0;
+				if (length < 1) continue;
+				YM3812UpdateOne(&oplChip, SD_ALOut_Samples, length);
+				if (SD_PC_Speaker_On)
+					PCSpeakerUpdateOne(SD_ALOut_Samples, length);
+				SDL_QueueAudio(1, SD_ALOut_Samples, length * numChannels * sizeof(int16_t));
+				if (++SD_SDL_ScaledSamplesPartNum == PC_PIT_RATE)
+					SD_SDL_ScaledSamplesPartNum = 0;
+
+				SD_SDL_SamplesInCurrentPart = (SD_SDL_ScaledSamplesPartNum + 1) * SD_SDL_ScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE - SD_SDL_ScaledSamplesPartNum * SD_SDL_ScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE;
+			}
+#endif
 		}
 		else
 		{
@@ -428,6 +495,17 @@ void SD_SDL_Startup(void)
 			sd_oplEmulator = SD_OPL_EMULATOR_NUKED;
 	}
 
+	// Check if we should use SDL_QueueAudio
+	sd_sdl_queueAudio = CFG_GetConfigBool("sd_sdl_queueAudio", sd_sdl_queueAudio);
+#ifndef SD_SDL_WITH_QUEUEAUDIO
+	if (sd_sdl_queueAudio)
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Attempted to use SDL_QueueAudio, but SDL version is too old! Fallbing back!\n");
+		sd_sdl_queueAudio = false;
+		SD_SDL_useTimerFallback = true;
+	}
+#endif
+
 	// Setup a condition variable to signal threads waiting for timer updates.
 	SD_SDL_WaitTicksSpin = CFG_GetConfigBool("sd_sdl_waitTicksSpin", false);
 	if (!SD_SDL_WaitTicksSpin)
@@ -452,7 +530,8 @@ void SD_SDL_Startup(void)
 #else
 		SD_SDL_AudioSpec.samples = CFG_GetConfigInt("audioBufferSamples", 512);
 #endif
-		SD_SDL_AudioSpec.callback = SD_SDL_CallBack;
+		if (!sd_sdl_queueAudio)
+			SD_SDL_AudioSpec.callback = SD_SDL_CallBack;
 		SD_SDL_AudioSpec.userdata = NULL;
 		if (SDL_OpenAudio(&SD_SDL_AudioSpec, NULL))
 		{
