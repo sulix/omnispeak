@@ -20,7 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_vl.h"
 #include "id_vl_private.h"
+#include "id_sd.h"
 #include "ck_cross.h"
+// For "Fix Jerky Motion"
+#include "ck_play.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -684,11 +687,18 @@ static void VL_DOS_ScrollSurface(void *surface, int x, int y)
 static void VL_DOS_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
+	uint32_t timeCount = SD_GetTimeCount();
+	bool latchpel = ck_fixJerkyMotion;
 
 	// Wait for the previous horizontal retrace to end
-	do
+	if (vl_swapInterval)
 	{
-	} while (inportb(0x3DA) & 1);
+		do
+		{
+			if (SD_GetTimeCount() - timeCount > 1)
+				break;
+		} while (inportb(0x3DA) & 1);
+	}
 
 	int were_interrupts_enabled = disable();
 	// We need to make sure that the EGA/VGA has the right pitch
@@ -707,16 +717,29 @@ static void VL_DOS_Present(void *surface, int scrlX, int scrlY, bool singleBuffe
 	outportw(EGA_CRTC_INDEX, crtc_start_low);
 
 	// Wait for the next retrace to begin
-	do
+	if (latchpel)
 	{
-		// Enable interrupts while we wait.
-		if (were_interrupts_enabled)
-			enable();
-		were_interrupts_enabled = disable();
-	} while (!(inportb(0x3DA) & 8));
+		enable();
+		do
+		{
+			if (SD_GetTimeCount() - timeCount > 1)
+				break;
+		} while (!(inportb(0x3DA) & 8));
+		disable();
+	}
 	uint8_t pel_pan_offset = (scrlX & 7);
 	outportb(EGA_ATR_INDEX, EGA_ATR_PELPAN | 0x20);
 	outportb(EGA_ATR_INDEX, pel_pan_offset);
+	if (!latchpel)
+	{
+		enable();
+		do
+		{
+			if (SD_GetTimeCount() - timeCount > 1)
+				break;
+		} while (!(inportb(0x3DA) & 8));
+		disable();
+	}
 
 	if (were_interrupts_enabled)
 		enable();
@@ -744,14 +767,13 @@ void VL_DOS_WaitVBLs(int vbls)
 {
 	for (int i = 0; i < vbls; ++i)
 	{
+		uint32_t timeCount = SD_GetTimeCount();
 		// Wait for the previous retrace to end
 		do
 		{
+			if (SD_GetTimeCount() - timeCount > 1)
+				break;
 		} while (inportb(0x3DA) & 8);
-		// Wait for the next retrace to begin
-		do
-		{
-		} while (!(inportb(0x3DA) & 8));
 	}
 }
 
