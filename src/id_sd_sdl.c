@@ -58,6 +58,9 @@ static bool sd_sdl_queueAudio = false;
 #endif
 static int sd_sdl_queueAudioMinBufSize = 0;
 
+static int sd_oplDelaySamples;
+static bool sd_nukedBufferWrites;
+
 #define PC_PIT_RATE 1193182
 #define SD_SFX_PART_RATE 140
 /* In the original exe, upon setting a rate of 140Hz or 560Hz for some
@@ -141,9 +144,16 @@ static inline bool YM3812Init(int numChips, int clock, int rate)
 static inline void YM3812Write(Chip *which, Bit32u reg, Bit8u val)
 {
 	if (sd_oplEmulator == SD_OPL_EMULATOR_DBOPL)
+	{
 		Chip__WriteReg(which, reg, val);
+	}
 	else if (sd_oplEmulator == SD_OPL_EMULATOR_NUKED)
-		OPL3_WriteRegBuffered(&nuked_oplChip, reg, val);
+	{
+		if (sd_nukedBufferWrites)
+			OPL3_WriteRegBuffered(&nuked_oplChip, reg, val);
+		else
+			OPL3_WriteReg(&nuked_oplChip, reg, val);
+	}
 }
 
 static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
@@ -278,7 +288,7 @@ void SD_SDL_alOut(uint8_t reg, uint8_t val)
 	// at the least. For now a hack is implied.
 	YM3812Write(&oplChip, reg, val);
 	// Hack comes with a "magic number" that appears to make it work better
-	int length = SD_SDL_AudioSpec.freq / 10000;
+	int length = sd_oplDelaySamples;
 	if (length)
 	{
 #ifdef SD_SDL_WITH_QUEUEAUDIO
@@ -505,6 +515,9 @@ void SD_SDL_Startup(void)
 	}
 #endif
 	sd_sdl_queueAudioMinBufSize = CFG_GetConfigInt("sd_sdl_queueAudioMinBufSize", 0);
+
+	sd_oplDelaySamples = CFG_GetConfigInt("sd_oplDelaySamples", SD_SDL_AudioSpec.freq / 10000);
+	sd_nukedBufferWrites = CFG_GetConfigBool("sd_nukedBufferWrites", sd_oplDelaySamples == 0);
 
 	// Setup a condition variable to signal threads waiting for timer updates.
 	SD_SDL_WaitTicksSpin = CFG_GetConfigBool("sd_sdl_waitTicksSpin", false);
