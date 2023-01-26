@@ -286,6 +286,13 @@ void CK_ShutdownID(void)
 
 void CK_InitGame()
 {
+	// On Windows, we want to be DPI-aware
+#if defined(WITH_SDL) && defined(_WIN32)
+#if SDL_VERSION_ATLEAST(2,24,0)
+	SDL_SetHint(SDL_HINT_WINDOWS_DPI_SCALING, "1");
+#endif
+#endif
+
 	// Load the core datafiles
 	CA_Startup();
 	// Setup saved games handling
