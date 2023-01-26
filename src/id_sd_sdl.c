@@ -56,6 +56,7 @@ static bool sd_sdl_queueAudio = false;
 #else
 static bool sd_sdl_queueAudio = false;
 #endif
+static int sd_sdl_queueAudioMinBufSize = 0;
 
 #define PC_PIT_RATE 1193182
 #define SD_SFX_PART_RATE 140
@@ -391,8 +392,6 @@ void SD_SDL_CallBack(void *unused, Uint8 *stream, int len)
 	}
 }
 
-#define SD_QUEUEAUDIO_MIN_BUF_SIZE 256
-
 int SD_SDL_t0InterruptThread(void *param)
 {
 	while (SD_SDL_useTimerFallback)
@@ -404,12 +403,12 @@ int SD_SDL_t0InterruptThread(void *param)
 #endif
 		// Top up to min buffer size if below.
 #ifdef SD_SDL_WITH_QUEUEAUDIO
-		if (SD_SDL_AudioSubsystem_Up && sd_sdl_queueAudio)
+		if (SD_SDL_AudioSubsystem_Up && sd_sdl_queueAudio && sd_sdl_queueAudioMinBufSize)
 		{
 			int curQueueLen = SDL_GetQueuedAudioSize(1) / (numChannels * sizeof(int16_t));
-			if (curQueueLen < SD_QUEUEAUDIO_MIN_BUF_SIZE)
+			if (curQueueLen < sd_sdl_queueAudioMinBufSize)
 			{
-				int length = SD_QUEUEAUDIO_MIN_BUF_SIZE - curQueueLen;
+				int length = sd_sdl_queueAudioMinBufSize - curQueueLen;
 				YM3812UpdateOne(&oplChip, SD_ALOut_Samples, length);
 				if (SD_PC_Speaker_On)
 					PCSpeakerUpdateOne(SD_ALOut_Samples, length);
@@ -505,6 +504,7 @@ void SD_SDL_Startup(void)
 		SD_SDL_useTimerFallback = true;
 	}
 #endif
+	sd_sdl_queueAudioMinBufSize = CFG_GetConfigInt("sd_sdl_queueAudioMinBufSize", 0);
 
 	// Setup a condition variable to signal threads waiting for timer updates.
 	SD_SDL_WaitTicksSpin = CFG_GetConfigBool("sd_sdl_waitTicksSpin", false);
