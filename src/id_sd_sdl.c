@@ -525,9 +525,11 @@ void SD_SDL_Startup(void)
 		SD_SDL_TimerConditionVar = SDL_CreateCond();
 
 	// Allow us to override the audio driver.
+#if SDL_VERSION_ATLEAST(2,0,0)
 	const char *defaultDriver = NULL;
 	const char *sdlDriver = CFG_GetConfigString("sd_sdl_audioDriver", defaultDriver);
 	SDL_setenv("SDL_AUDIODRIVER", sdlDriver, false);
+#endif
 
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 	{
