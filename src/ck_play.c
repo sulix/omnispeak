@@ -132,7 +132,7 @@ void CK_CountActiveObjects()
 	US_CenterWindow(18, 4);
 	US_PrintF("Active Objects : %d\n", active);
 	US_PrintF("Inactive Object : %d\n", inactive);
-	VL_Present();
+	VH_UpdateScreen();
 	IN_WaitButton();
 }
 
@@ -147,7 +147,7 @@ void CK_DebugMemory()
 	US_PrintF("Purgable    : %d\n", MM_PurgableBlocks());
 	US_PrintF("GFX Mem Used: %dk\n", VL_MemUsed() / 1024);
 	US_PrintF("GFX Surfaces: %d\n", VL_NumSurfaces());
-	VL_Present();
+	VH_UpdateScreen();
 	IN_WaitButton();
 	//MM_ShowMemory();
 }
@@ -158,7 +158,7 @@ void CK_BeginDemoRecord()
 	US_CenterWindow(30, 3);
 	US_SetPrintY(US_GetPrintY() + 3);
 	US_Print("  Record a demo from level (0-21):");
-	VL_Present();
+	VH_UpdateScreen();
 	uint16_t saveX = US_GetPrintX();
 	uint16_t saveY = US_GetPrintY();
 	char str[4];
@@ -186,7 +186,7 @@ void CK_EndDemoRecord()
 
 	US_Print("  Save as demo #(0-9):");
 
-	VL_Present();
+	VH_UpdateScreen();
 
 	uint16_t saveX = US_GetPrintX();
 	uint16_t saveY = US_GetPrintY();
@@ -302,7 +302,7 @@ void CK_SpriteTest()
 			selectedChunk = chunk;
 
 		}
-		VL_Present();
+		VH_UpdateScreen();
 
 		IN_WaitKey();
 		IN_ScanCode sc = IN_GetLastScan();
@@ -360,7 +360,8 @@ void CK_ItemCheat()
 	US_CenterWindow(20, 7);
 	// TODO: PrintY+=2;
 	US_CPrint(CK_STRING(ck_str_itemCheat));
-	VL_Present();
+	VH_UpdateScreen();
+	
 	IN_WaitButton();
 	//RF_Reset();
 	ck_gameState.numShots = 99;
@@ -780,7 +781,7 @@ void CK_WallDebug()
 	VL_FixRefreshBuffer();
 	US_CenterWindow(24, 3);
 	US_PrintCentered("WORKING");
-	VL_Present();
+	VH_UpdateScreen();
 
 	// Cache the slope info foreground tiles
 	for (int i = ca_gfxInfoE.offTiles16m + 0x6C; i < ca_gfxInfoE.offTiles16m + 0x6C + 16; i++)
@@ -847,7 +848,7 @@ bool CK_DebugKeys()
 		uint16_t saveX = US_GetPrintX() + w;
 		uint16_t saveY = US_GetPrintY();
 		US_Print(" Border color (0-15):");
-		VL_Present(); // VW_UpdateScreen();
+		VH_UpdateScreen();
 
 		if (US_LineInput(saveX, saveY, str, NULL, true, 2, 0))
 		{
@@ -905,7 +906,7 @@ bool CK_DebugKeys()
 		else
 			US_PrintCentered(CK_STRING(ck_str_godModeOn));
 
-		VL_Present();
+		VH_UpdateScreen();
 		IN_WaitButton();
 		ck_godMode = !ck_godMode;
 		return true;
@@ -929,7 +930,7 @@ bool CK_DebugKeys()
 		else if (ck_currentEpisode->ep == EP_CK6)
 			ck_gameState.ep.ck6.sandwich = ck_gameState.ep.ck6.rope = ck_gameState.ep.ck6.passcard = 1;
 
-		VL_Present();
+		VH_UpdateScreen();
 		IN_WaitButton();
 		CK_IncreaseScore(3000);
 		return true;
@@ -946,7 +947,7 @@ bool CK_DebugKeys()
 		else
 			US_PrintCentered(CK_STRING(ck_str_jumpCheatOff));
 
-		VL_Present();
+		VH_UpdateScreen();
 		IN_WaitButton();
 		return true;
 	}
@@ -970,7 +971,7 @@ bool CK_DebugKeys()
 			US_PrintCentered(CK_STRING(ck_str_noClippingOff));
 			ck_keenObj->clipped = CLIP_normal;
 		}
-		VL_Present();
+		VH_UpdateScreen();
 		IN_WaitButton();
 		return true;
 	}
@@ -987,7 +988,7 @@ bool CK_DebugKeys()
 			US_PrintCentered(CK_STRING(ck_str_slowMotionOn));
 		else
 			US_PrintCentered(CK_STRING(ck_str_slowMotionOff));
-		VL_Present();
+		VH_UpdateScreen();
 		IN_WaitButton();
 		return true;
 	}
@@ -1015,7 +1016,7 @@ bool CK_DebugKeys()
 		saveX = US_GetPrintX() + w;
 		saveY = US_GetPrintY();
 		US_Print(msg);
-		VL_Present(); // VW_UpdateScreen();
+		VH_UpdateScreen();
 
 		if (US_LineInput(saveX, saveY, str, NULL, true, 2, 0))
 		{
@@ -1081,7 +1082,7 @@ void CK_CheckKeys()
 		VL_FixRefreshBuffer();
 		US_CenterWindow(strlen(in_PausedMessage) + 2, 3);
 		US_PrintCentered(in_PausedMessage);
-		VL_Present(); // VW_UpdateScreen();
+		VH_UpdateScreen();
 		IN_WaitButton();
 		RF_ForceRefresh();
 		in_Paused = false;
@@ -1743,7 +1744,7 @@ void CK_ShowStatusWindow(void)
 		US_CenterWindow(20, 2);
 		US_SetPrintY(US_GetPrintY() + 2);
 		US_Print(CK_STRING(ck_str_debugKeysActive));
-		VL_Present(); //VW_UpdateScreen();
+		VH_UpdateScreen();
 		IN_WaitButton();
 		ck_debugActive = true;
 	}

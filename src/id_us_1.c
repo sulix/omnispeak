@@ -553,8 +553,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 		if (cursorvis)
 			USL_XORICursor(x, y, s, cursor);
 
-		//VW_UpdateScreen();
-		VL_Present();
+		VH_UpdateScreen();
 	}
 
 	if (cursorvis)
@@ -568,8 +567,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 		VHB_DrawPropString(olds, x, y, us_printFont, us_printColour);
 	}
 
-	//VW_UpdateScreen();
-	VL_Present();
+	VH_UpdateScreen();
 
 	IN_ClearKeysDown();
 	return (result);

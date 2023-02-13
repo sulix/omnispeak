@@ -718,9 +718,8 @@ void CK_US_SetKeyBinding(US_CardItem *item, int which_control)
 			if (cursor)
 				VH_DrawTile8(item->x + 106, item->y, 100);
 
-			//VW_UpdateScreen();
+			VH_UpdateScreen();
 			lasttime = SD_GetTimeCount() + 35; /* time_count */
-			VL_Present();
 		}
 
 		/* A button push will cancel the key selection */
@@ -926,9 +925,8 @@ void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control)
 			if (cursor)
 				VH_DrawTile8(item->x + 106, item->y, 100);
 
-			//VW_UpdateScreen();
+			VH_UpdateScreen();
 			lasttime = SD_GetTimeCount() + 35; /* time_count */
-			VL_Present();
 		}
 
 		/* any key cancels the selection */

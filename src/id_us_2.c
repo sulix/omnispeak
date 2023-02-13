@@ -252,7 +252,7 @@ void US_DrawCards()
 	}
 
 	VL_SetScrollCoords(0, 0);
-	VL_Present();
+	VH_UpdateScreen();
 }
 
 void USL_DialogSetup(uint16_t w, uint16_t h, uint16_t *x, uint16_t *y)
@@ -299,8 +299,7 @@ void USL_LoadSaveMessage(const char *s1, const char *s2)
 	print_x = x + (window_w - w2) / 2;
 	VHB_DrawPropString(buf, print_x, print_y, 1, US_GetPrintColour());
 
-	// VW_UpdateScreen();
-	VL_Present();
+	VH_UpdateScreen();
 }
 
 int USL_CtlDialog(const char *s1, const char *s2, const char *s3)
@@ -350,8 +349,7 @@ int USL_CtlDialog(const char *s1, const char *s2, const char *s3)
 		VHB_DrawPropString(s3, print_x, print_y, 1, US_GetPrintColour());
 	}
 
-	// VW_UpdateScreen();
-	VL_Present();
+	VH_UpdateScreen();
 
 	/* Wait for button1 or a key to be pressed */
 	IN_ClearKeysDown();
@@ -619,7 +617,7 @@ void USL_DownLevel(US_Card *card)
 		}
 	}
 
-	//TODO: Handle Joystick/Kbd footer stuff
+	//TODO:  Handle Joystick/Kbd footer stuff
 	USL_SetMenuFooter();
 }
 
@@ -858,7 +856,7 @@ void USL_EndCards()
 		US_SetPrintColour(3);
 		US_PrintCentered("Quitting...");
 		US_SetPrintColour(15);
-		//VW_UpdateScreen();
+		VH_UpdateScreen();
 		Quit(NULL);
 	}
 
@@ -957,7 +955,7 @@ void US_RunCards()
 			item->state |= US_IS_Selected;
 		}
 
-		//VW_UpdateScreen();
+		VH_UpdateScreen();
 
 		if (lastScan != IN_SC_None)
 		{

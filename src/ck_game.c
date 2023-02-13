@@ -81,7 +81,7 @@ void CK_GameOver()
 	VL_FixRefreshBuffer();
 	US_CenterWindow(16, 3);
 	US_PrintCentered(CK_STRING(ck_str_gameOver));
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	IN_ClearKeysDown();
 	IN_UserInput(4 * 70, false);
 }
@@ -388,7 +388,7 @@ bool CK_LoadGame(FS_File fp, bool fromMenu)
 			US_CenterWindow(20, 8);
 			US_SetPrintY(20);
 			US_Print("Not enough memory\nto load game!");
-			VL_Present(); //VW_UpdateScreen();
+			VH_UpdateScreen();
 			IN_Ack();
 			return false;
 		}
@@ -414,7 +414,7 @@ bool CK_LoadGame(FS_File fp, bool fromMenu)
 		US_CenterWindow(20, 8);
 		US_SetPrintY(20);
 		US_Print("Not enough memory\nto load game!");
-		VL_Present(); //VW_UpdateScreen();
+		VH_UpdateScreen();
 		IN_Ack();
 		return false;
 	}
@@ -695,7 +695,7 @@ void CK_BeginCacheBox(const char *title, int numChunks)
 	CK_MeasureMultiline(title, &w, &h);
 	US_SetPrintY(US_GetPrintY() + (US_GetWindowH() - h) / 2 - 4);
 	US_CPrint(title);
-	VL_Present();
+	VH_UpdateScreen();
 
 	ck_cacheBoxChunkCounter = ck_cacheBoxChunksPerPic = numChunks / 6;
 
@@ -708,7 +708,7 @@ void CK_BeginCacheBox(const char *title, int numChunks)
 			VHB_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN0);
 		}
 
-		VL_Present();
+		VH_UpdateScreen();
 	}
 }
 
@@ -722,7 +722,7 @@ void CK_UpdateCacheBox()
 		ck_cacheBoxChunkCounter = ck_cacheBoxChunksPerPic;
 		if (ca_graphChunks[PIC_COUNTDOWN4 + ck_cacheCountdownNum])
 			VHB_DrawBitmap(US_GetWindowX() - 24, US_GetWindowY() + 40, PIC_COUNTDOWN4 + ck_cacheCountdownNum);
-		VL_Present();
+		VH_UpdateScreen();
 		// Because loading is VERY fast on omnispeak, add artificial delay
 		int loadingDelay = CFG_GetConfigInt("loadingDelay", 10);
 		if (loadingDelay)
@@ -797,7 +797,7 @@ bool CK_TryAgainMenu()
 			VHB_VLine(y + 1, y + 11, US_GetWindowX() + 5, clr);
 			VHB_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 4, clr);
 			VHB_VLine(y + 1, y + 11, US_GetWindowX() + US_GetWindowW() - 5, clr);
-			VL_Present();
+			VH_UpdateScreen();
 
 			/* Erase the box for next time */
 			VHB_HLine(US_GetWindowX() + 4, US_GetWindowX() + US_GetWindowW() - 4, y, 15);

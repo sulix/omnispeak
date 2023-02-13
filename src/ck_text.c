@@ -497,7 +497,7 @@ int ShowHelp(void)
 		/* Draw the pointer */
 		VHB_DrawBitmap(48, 48 + help_topic * 24, PIC_HELPPOINTER);
 		VL_SetScrollCoords(0, 0);
-		VL_Present(); //update_screen();
+		VH_UpdateScreen();
 
 		/* Erase the pointer */
 		VHB_Bar(48, 48 + help_topic * 24, 39, 24, 4);
@@ -599,6 +599,7 @@ void HelpScreens(void)
 				page_changed = 0;
 				PageLayout(1);
 
+				VL_SwapOnNextPresent();
 				VL_Present();
 			}
 
@@ -684,6 +685,7 @@ void help_endgame(void)
 		{
 			/* Draw the dim arrow and wait a short time */
 			VHB_DrawBitmap(0x12A & ~3, 0xB8, PIC_ARROWDIM);
+			VH_UpdateScreen();
 			if (IN_UserInput(70, false))
 			{
 				advancePage = true;
@@ -691,6 +693,7 @@ void help_endgame(void)
 			}
 			/* Draw the bright arrow and wait a short time */
 			VHB_DrawBitmap(0x12A & ~3, 0xB8, PIC_ARROWBRIGHT);
+			VH_UpdateScreen();
 			if (IN_UserInput(70, false))
 			{
 				advancePage = true;

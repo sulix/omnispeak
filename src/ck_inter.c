@@ -789,6 +789,7 @@ void ZoomOutTerminator(void)
 		}
 
 		IN_PumpEvents();
+		VL_UpdateRect(0, 0, 320, 200);
 		VL_Present();
 
 		newTime = SD_GetTimeCount();
@@ -851,6 +852,7 @@ void CK_FizzleFade()
 		rows1[i] = columns1[i];
 
 	VL_SetDefaultPalette();
+	VL_FixRefreshBuffer();
 
 #if 0
 	// DOS: Calculate the difference between dest and src
@@ -939,9 +941,12 @@ void CK_FizzleFade()
 				// the EGA backend requires VL_SurfaceToScreen()'s x coordinate be divisble by 8.
 				int pixelValue = VL_SurfacePGet(titleBuffer, x, y);
 				VL_ScreenRect(x, y, 1, 1, pixelValue);
+				// Update the byte we modified if we're double-buffering.
+				VL_UpdateRect(x & ~7, y , 8, 1);
 			}
 		}
 
+		VL_FixRefreshBuffer();
 		VL_Present();
 
 		// VL_WaitVBL(1);
@@ -974,7 +979,7 @@ void CK_FizzleFade()
 
 	// Write enable all memory planes
 	// out(0x3C4, 0xF02);
-
+	
 	IN_UserInput(420, false);
 
 	VL_DestroySurface(titleBuffer);
@@ -1029,7 +1034,7 @@ void CK_DrawTerminator(void)
 		free(destbuf);
 	}
 
-	VL_FixRefreshBuffer();
+	VL_UpdateRect(0, 0, TERMINATORSCREENWIDTH * 8 + 64, 200);
 
 	// Allocate memory for 8 shifts of the COMMANDER graphic
 	// Notice that there are only 100 rows of memory, which means that
@@ -1109,6 +1114,9 @@ void CK_DrawTerminator(void)
 
 	// Restore video mode to normal
 	VL_ClearScreen(0);
+	// OMNISPEAK: Because we draw the title screen to both pages, we need
+	// to clear both pages, unlike in the original game.
+	VL_UpdateRect(0, 0, 21*16, 14 * 16);
 	// VW_SetLineWidth(0x40);
 	VL_SetDefaultPalette();
 	// RF_Reset();
@@ -1134,6 +1142,8 @@ void CK_DrawTerminator(void)
 		VH_DrawBitmap(0, 0, PIC_TITLESCREEN);
 
 		VL_SetScrollCoords(0, 0);
+		/* Instead of flipping to the backbuffer here, we update both. */
+		VL_UpdateRect(0, 0, 21*16, 14 * 16);
 		VL_Present();
 		IN_WaitButton();
 		CA_ClearMarks();
@@ -1353,6 +1363,10 @@ void CK_ScrollSWText()
 	VL_SetMapMask(8);
 
 	uint16_t scrollDistance = 0;
+	VL_SwapOnNextPresent();
+	VL_Present();
+	VL_FixRefreshBuffer();
+
 
 	while (scrollDistance <= ck_starWarsTotalHeight + 400)
 	{
@@ -1389,6 +1403,7 @@ void CK_ScrollSWText()
 		}
 
 		IN_PumpEvents();
+		VL_SwapOnNextPresent();
 		VL_Present();
 
 		uint32_t newTime = SD_GetTimeCount();
@@ -1464,7 +1479,7 @@ void CK_ShowTitleScreen()
 	// Draw to offscreen buffer and copy?
 	// VW_SetScreen(0,bufferofs_0);
 	VL_SetScrollCoords(0, 0);
-	// VWL_ScreenToScreen(bufferofs, bufferofs_0, 42, 224);
+	VL_UpdateRect(0, 0, 42 * 8, 224);
 	VL_Present();
 	IN_UserInput(420, false);
 	CA_ClearMarks();

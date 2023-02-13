@@ -855,7 +855,7 @@ void CK4_ShowPrincessMessage(void)
 	else
 		US_CPrint(CK_STRING(ck4_str_lindsayMessage2));
 
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	SD_PlaySound(SOUND_FOOTAPPEAR);
 	// VW_WaitVBL(60);
 	IN_ClearKeysDown();
@@ -870,14 +870,14 @@ void CK4_ShowPrincessMessage(void)
 	else
 		US_CPrint(CK_STRING(ck4_str_lindsayThanks2));
 
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	/// VW_WaitVBL(30);
 
 	IN_ClearKeysDown();
 	IN_WaitButton();
 
 	VHB_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), 0x70);
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	// VW_WaitVBL(30);
 
 	IN_ClearKeysDown();
@@ -906,7 +906,7 @@ void CK4_ShowJanitorMessage(void)
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
 	US_CPrint(CK_STRING(ck4_str_janitor1));
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	// VW_WaitVBL(60);
 	IN_ClearKeysDown();
 	IN_WaitButton();
@@ -917,7 +917,7 @@ void CK4_ShowJanitorMessage(void)
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
 	US_CPrint(CK_STRING(ck4_str_janitor2));
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	// VW_WaitVBL(60);
 	IN_ClearKeysDown();
 	IN_WaitButton();
@@ -927,7 +927,7 @@ void CK4_ShowJanitorMessage(void)
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint(CK_STRING(ck4_str_janitor3));
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	// VW_WaitVBL(60);
 	IN_ClearKeysDown();
 	IN_WaitButton();
@@ -938,7 +938,7 @@ void CK4_ShowJanitorMessage(void)
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
 	US_CPrint(CK_STRING(ck4_str_janitor4));
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	// VW_WaitVBL(60);
 	IN_ClearKeysDown();
 	IN_WaitButton();
@@ -946,7 +946,7 @@ void CK4_ShowJanitorMessage(void)
 	US_CenterWindow(26, 8);
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x6F);
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x28, US_GetWindowY() + 0x18, 0x71);
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	// VW_WaitVBL(30);
 	IN_ClearKeysDown();
 	IN_WaitButton();
@@ -966,7 +966,7 @@ void CK4_ShowCantSwimMessage(void)
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 6);
 	US_CPrint(CK_STRING(ck4_str_cantSwim));
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	// VL_WaitVBL(30);
 	IN_ClearKeysDown();
 	IN_WaitButton();
@@ -985,13 +985,13 @@ void CK4_ShowWetsuitMessage(void)
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint(CK_STRING(ck4_str_gotWetsuit));
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	// VL_WaitVBL(30);
 	IN_ClearKeysDown();
 	IN_WaitButton();
 
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), 0x70);
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	// VL_WaitVBL(30);
 	IN_ClearKeysDown();
 	IN_WaitButton();
@@ -1028,7 +1028,7 @@ void CK4_ShowCouncilMessage(void)
 		US_CPrint(CK_STRING(ck4_str_councilThanks));
 	}
 
-	VL_Present();
+	VH_UpdateScreen();
 	// VL_WaitVBL(60);
 	IN_ClearKeysDown();
 	IN_WaitButton();
@@ -1037,12 +1037,12 @@ void CK4_ShowCouncilMessage(void)
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint(CK_VAR_GetStringByNameAndIndex("ck4_str_councilMessage",ck_gameState.ep.ck4.membersRescued));
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	// VW_WaitVBL(30);
 	IN_ClearKeysDown();
 	IN_WaitButton();
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW(), US_GetWindowY(), 112);
-	VL_Present(); // VW_UpdateScreen();
+	VH_UpdateScreen();
 	// VW_WaitVBL(30);
 	IN_WaitButton();
 	ck_gameState.ep.ck4.membersRescued++;
