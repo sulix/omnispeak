@@ -401,6 +401,15 @@ static void VL_SDL2_SyncBuffers(void *surface)
 	(void)surface;
 }
 
+static void VL_SDL2_UpdateRect(void *surface, int x, int y, int w, int h)
+{
+	(void)surface;
+	(void)x;
+	(void)y;
+	(void)w;
+	(void)h;
+}
+
 static void VL_SDL2_FlushParams()
 {
 	SDL_SetWindowFullscreen(vl_sdl2_window, vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
@@ -444,6 +453,7 @@ VL_Backend vl_sdl2_backend =
 		/*.getActiveBufferId =*/&VL_SDL2_GetActiveBufferId,
 		/*.getNumBuffers =*/&VL_SDL2_GetNumBuffers,
 		/*.syncBuffers =*/&VL_SDL2_SyncBuffers,
+		/*.updateRect =*/&VL_SDL2_UpdateRect,
 		/*.flushParams =*/&VL_SDL2_FlushParams,
 		/*.waitVBLs =*/&VL_SDL2_WaitVBLs,
 };

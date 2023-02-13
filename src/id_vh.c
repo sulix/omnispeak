@@ -264,7 +264,7 @@ void VHB_DrawBitmap(int x, int y, int chunk)
 
 	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(bitmapNumber);
 
-	if (VH_MarkUpdateBlock(x, y, dimensions->width * 8, dimensions->height))
+	if (VH_MarkUpdateBlock(x, y, x + dimensions->width * 8, y + dimensions->height))
 		VL_UnmaskedToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dimensions->width * 8, dimensions->height);
 }
 
@@ -276,7 +276,7 @@ void VHB_DrawMaskedBitmap(int x, int y, int chunk)
 
 	VH_BitmapTableEntry *dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
 
-	if (VH_MarkUpdateBlock(x, y, dim->width * 8, dim->height))
+	if (VH_MarkUpdateBlock(x, y, x + dim->width * 8, y + dim->height))
 		VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dim->width * 8, dim->height);
 }
 
@@ -299,7 +299,7 @@ void VHB_DrawSprite(int x, int y, int chunk)
 	int realX = (x + RF_UnitToPixel(spr->originX)) & ~7;
 	int realY = y + RF_UnitToPixel(spr->originY);
 
-	if (VH_MarkUpdateBlock(realX, realY, spr->width * 8, spr->height))
+	if (VH_MarkUpdateBlock(realX, realY, realX + spr->width * 8, realY + spr->height))
 	{
 		VL_MaskedBlitToScreen(data,
 			realX, realY,
@@ -311,7 +311,7 @@ void VHB_Plot(int x, int y, int colour)
 {
 	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
-	if (VH_MarkUpdateBlock(x, y, 1, 1))
+	if (VH_MarkUpdateBlock(x, y, x + 1, y + 1))
 		VL_ScreenRect(x, y, 1, 1, colour);
 }
 
@@ -320,7 +320,7 @@ void VHB_HLine(int x1, int x2, int y, int colour)
 	x1 += VL_GetScrollX() & 8;
 	x2 += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
-	if (VH_MarkUpdateBlock(x1, y, x2 - x1 + 1, 1))
+	if (VH_MarkUpdateBlock(x1, y, x2 + 1, y + 1))
 		VL_ScreenRect(x1, y, x2 - x1 + 1, 1, colour);
 }
 
@@ -329,7 +329,7 @@ void VHB_VLine(int y1, int y2, int x, int colour)
 	x += VL_GetScrollX() & 8;
 	y1 += VL_GetScrollY();
 	y2 += VL_GetScrollY();
-	if (VH_MarkUpdateBlock(x, y1, 1, y2 - y1 + 1))
+	if (VH_MarkUpdateBlock(x, y1, x + 1, y2 + 1))
 		VL_ScreenRect(x, y1, 1, y2 - y1 + 1, colour);
 }
 
@@ -337,7 +337,7 @@ void VHB_Bar(int x, int y, int w, int h, int colour)
 {
 	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
-	if (VH_MarkUpdateBlock(x, y, w, h))
+	if (VH_MarkUpdateBlock(x, y, x + w, y + h))
 		VL_ScreenRect(x, y, w, h, colour);
 }
 
@@ -351,7 +351,7 @@ void VHB_DrawPropString(const char *string, int x, int y, int chunk, int colour)
 	// Both of these mark the updated blocks _after_ rendering. This all seems to be
 	// an attempt to avoid looping over the string to measure its length.
 	VH_MeasurePropString(string, &w, &h, chunk);
-	if (VH_MarkUpdateBlock(x, y, w, h))
+	if (VH_MarkUpdateBlock(x, y, x + w, y + h))
 		VH_DrawPropString(string, x, y, chunk, colour);
 }
 
@@ -374,11 +374,11 @@ bool VH_MarkUpdateBlock(int x1px, int y1px, int x2px, int y2px)
 
 	if (x2tile < 0)
 		return false;
-	x2tile = (x2tile >= RF_BUFFER_WIDTH_TILES) ? x2tile : (RF_BUFFER_WIDTH_TILES - 1);
+	x2tile = (x2tile < RF_BUFFER_WIDTH_TILES - 1) ? x2tile : (RF_BUFFER_WIDTH_TILES - 2);
 
 	if (y2tile < 0)
 		return false;
-	y2tile = (y2tile >= RF_BUFFER_HEIGHT_TILES) ? y2tile : (RF_BUFFER_HEIGHT_TILES - 1);
+	y2tile = (y2tile < RF_BUFFER_HEIGHT_TILES) ? y2tile : (RF_BUFFER_HEIGHT_TILES - 1);
 
 	for (int y = y1tile; y <= y2tile; y++)
 	{
@@ -388,4 +388,31 @@ bool VH_MarkUpdateBlock(int x1px, int y1px, int x2px, int y2px)
 		}
 	}
 	return true;
+}
+
+
+void VH_UpdateScreen()
+{
+	int dirtyTileRun = 0;
+	for (int y = 0; y < RF_BUFFER_HEIGHT_TILES; ++y)
+	{
+		for (int x = 0; x < RF_BUFFER_WIDTH_TILES; ++x)
+		{
+			if (RFL_IsBlockDirty(x, y, VL_GetActiveBuffer()))
+			{
+				dirtyTileRun++;
+			}
+			else if (dirtyTileRun)
+			{
+				VL_UpdateRect((x-dirtyTileRun)*16,y*16,dirtyTileRun*16,16);
+				dirtyTileRun = 0;
+			}
+			// Note that we don't clear the dirty block buffer here, as we need
+			// ID_RF to clear it up when we return to the game.
+		}
+		if (dirtyTileRun)
+			VL_UpdateRect((RF_BUFFER_WIDTH_TILES-dirtyTileRun)*16,y*16,dirtyTileRun*16,16);
+		dirtyTileRun = 0;
+	}
+	VL_Present();
 }

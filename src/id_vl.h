@@ -114,6 +114,7 @@ typedef struct VL_Backend
 	int (*getActiveBufferId)(void *surface);
 	int (*getNumBuffers)(void *surface);
 	void (*syncBuffers)(void *surface);
+	void (*updateRect)(void *surface, int x, int y, int w, int h);
 	void (*flushParams)();
 	void (*waitVBLs)(int vbls);
 } VL_Backend;
@@ -164,6 +165,7 @@ void VL_SetMapMask(int mapmask);
 int VL_GetActiveBuffer();
 int VL_GetNumBuffers();
 void VL_FixRefreshBuffer();
+void VL_UpdateRect(int x, int y, int w, int h);
 void VL_SwapOnNextPresent();
 void VL_Present();
 

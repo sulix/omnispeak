@@ -704,9 +704,11 @@ static void VL_DOS_Present(void *surface, int scrlX, int scrlY, bool singleBuffe
 	// We need to make sure that the EGA/VGA has the right pitch
 	uint16_t val = ((surf->w >> 4) << 8) | EGA_CRTC_OFFSET;
 	outportw(EGA_CRTC_INDEX, val);
+	if (!singleBuffered)
+		surf->activePage ^= 1;
 
 	// Set the offset for scanout
-	uint16_t surface_vmem_offset = (uint16_t)(((uintptr_t)(surf->activePage ? surf->data2 : surf->data) - (__djgpp_conventional_base + 0xA0000)) & 0xFFFF);
+	uint16_t surface_vmem_offset = (uint16_t)(((uintptr_t)(surf->activePage ? surf->data : surf->data2) - (__djgpp_conventional_base + 0xA0000)) & 0xFFFF);
 	uint16_t byte_offset = surface_vmem_offset + ((scrlY * surf->w + scrlX) >> 3);
 	uint16_t crtc_start_low = ((byte_offset & 0xFF) << 8) | EGA_CRTC_START_ADDR_LOW;
 	uint16_t crtc_start_high = (byte_offset & 0xFF00) | EGA_CRTC_START_ADDR_HIGH;
@@ -744,8 +746,6 @@ static void VL_DOS_Present(void *surface, int scrlX, int scrlY, bool singleBuffe
 	if (were_interrupts_enabled)
 		enable();
 
-	if (!singleBuffered)
-		surf->activePage ^= 1;
 }
 
 int VL_DOS_GetActiveBufferId(void *surface)
@@ -771,6 +771,23 @@ void VL_DOS_SyncBuffers(void *surface)
 	for (int i = 0; i < surfaceSize; ++i)
 		newData[i] = oldData[i];
 
+}
+
+void VL_DOS_UpdateRect(void *surface, int x, int y, int w, int h)
+{
+	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
+
+	int byte_x_offset = x / 8;	// We automatically round coordinates to multiples of 8 (byte boundaries)
+	int pitch = surf->w / 8;
+
+
+	volatile uint8_t *oldData = (volatile uint8_t *)(surf->activePage ? surf->data2 : surf->data);
+	volatile uint8_t *newData = (volatile uint8_t *)(surf->activePage ? surf->data : surf->data2);
+	outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
+	VL_DOS_SetEGAWriteMode(1);
+	for (int _y = y; _y < (y + h); ++_y)
+		for (int _x = byte_x_offset; _x < byte_x_offset + (w / 8); ++_x)
+			newData[_y*pitch+_x] = oldData[_y*pitch+_x];
 }
 
 void VL_DOS_FlushParams()
@@ -819,6 +836,7 @@ VL_Backend vl_dos_backend =
 		/*.getActiveBufferId =*/&VL_DOS_GetActiveBufferId,
 		/*.getNumBuffers =*/&VL_DOS_GetNumBuffers,
 		/*.syncBuffers =*/&VL_DOS_SyncBuffers,
+		/*.updateRect =*/&VL_DOS_UpdateRect,
 		/*.flushParams =*/&VL_DOS_FlushParams,
 		/*.waitVBLs =*/&VL_DOS_WaitVBLs};
 

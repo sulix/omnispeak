@@ -713,6 +713,20 @@ static void VL_SDL2GL_SyncBuffers(void *surface)
 	}
 }
 
+static void VL_SDL2GL_UpdateRect(void *surface, int x, int y, int w, int h)
+{
+	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)surface;
+	for (int page = 0; page < VL_SDL2GL_NUM_BUFFERS; ++page)
+	{
+		if (page == surf->activePage)
+			continue;
+		for (int _y = y; _y < y + h; ++_y)
+		{
+			memcpy(((uint8_t *)surf->dataPages[page]) + (_y) * surf->w + x, ((uint8_t *)surf->data) + _y * surf->w + x, w);
+		}
+	}
+}
+
 // Unfortunately, we can't take advantage of designated initializers in C++.
 VL_Backend vl_sdl2gl_backend =
 	{
@@ -741,6 +755,7 @@ VL_Backend vl_sdl2gl_backend =
 		/*.getActiveBufferId =*/&VL_SDL2GL_GetActiveBufferId,
 		/*.getNumBuffers =*/&VL_SDL2GL_GetNumBuffers,
 		/*.syncBuffers =*/&VL_SDL2GL_SyncBuffers,
+		/*.updateRect =*/&VL_SDL2GL_UpdateRect,
 		/*.flushParams =*/&VL_SDL2GL_FlushParams,
 		/*.waitVBLs =*/&VL_SDL2GL_WaitVBLs};
 

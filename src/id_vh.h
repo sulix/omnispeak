@@ -94,4 +94,5 @@ void VHB_HLine(int x1, int x2, int y, int colour);
 void VHB_VLine(int y1, int y2, int x, int colour);
 void VHB_Bar(int x, int y, int w, int h, int colour);
 void VHB_DrawPropString(const char *string, int x, int y, int chunk, int colour);
+void VH_UpdateScreen();
 #endif

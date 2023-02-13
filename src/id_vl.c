@@ -1108,6 +1108,11 @@ void VL_FixRefreshBuffer()
 	vl_currentBackend->syncBuffers(vl_emuegavgaadapter.screen);
 }
 
+void VL_UpdateRect(int x, int y, int w, int h)
+{
+	vl_currentBackend->updateRect(vl_emuegavgaadapter.screen, x, y, w, h);
+}
+
 static bool vl_swapOnNextPresent = false;
 
 void VL_SwapOnNextPresent()

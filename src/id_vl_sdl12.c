@@ -348,6 +348,15 @@ static void VL_SDL12_SyncBuffers(void *surface)
 	(void)surface;
 }
 
+static void VL_SDL12_UpdateRect(void *surface, int x, int y, int w, int h)
+{
+	(void)surface;
+	(void)x;
+	(void)y;
+	(void)w;
+	(void)h;
+}
+
 static void VL_SDL12_FlushParams()
 {
 }
@@ -385,6 +394,7 @@ VL_Backend vl_sdl12_backend =
 		/*.getActiveBufferId =*/&VL_SDL12_GetActiveBufferId,
 		/*.getNumBuffers =*/&VL_SDL12_GetNumBuffers,
 		/*.syncBuffers =*/&VL_SDL12_SyncBuffers,
+		/*.updateRect =*/&VL_SDL12_UpdateRect,
 		/*.flushParams =*/&VL_SDL12_FlushParams,
 		/*.waitVBLs =*/&VL_SDL12_WaitVBLs};
 
