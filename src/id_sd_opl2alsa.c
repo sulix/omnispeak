@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/io.h>
 
 #include <alsa/asoundlib.h>
 #include <sound/asound_fm.h>
