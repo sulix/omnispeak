@@ -112,6 +112,7 @@ const char *in_PausedMessage = "PAUSED";
 IN_ControlType in_controlType = IN_ctrl_Keyboard1;
 bool in_keyStates[256];
 IN_ScanCode in_lastKeyScanned = IN_SC_None;
+bool in_useTextEvents = false;
 char in_lastASCII;
 bool in_disableJoysticks = false;
 bool INL_StartJoy(int joystick);
@@ -239,10 +240,19 @@ void IN_HandleKeyDown(IN_ScanCode sc, bool special)
 						c -= 'a' - 'A';
 				}
 			}
-			if (c)
+			if (!in_useTextEvents && c)
 				in_lastASCII = c;
 		}
 	}
+}
+
+void IN_HandleTextEvent(const char *utf8Text)
+{
+	if (!in_useTextEvents)
+		return;
+	//TODO: For now, only permit ASCII.
+	if (utf8Text[0] < 0x80)
+		in_lastASCII = utf8Text[0];
 }
 
 void IN_SetupKbdControls()
@@ -403,6 +413,18 @@ void IN_Startup(void)
 	in_backend = IN_Impl_GetBackend();
 	for (int i = 0; i < 256; ++i)
 		in_keyStates[i] = 0;
+
+#ifdef CK_VANILLA
+	in_useTextEvents = CFG_GetConfigBool("in_useTextEvents", false);
+#else
+	in_useTextEvents = CFG_GetConfigBool("in_useTextEvents", in_backend->supportsTextEvents);
+#endif
+	
+	if (in_useTextEvents && !in_backend->supportsTextEvents)
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Requested text event support, but backend doesn't support them!\n");
+		in_useTextEvents = false;
+	}
 
 	// Set the default kbd controls.
 	IN_SetupKbdControls();

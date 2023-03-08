@@ -316,6 +316,7 @@ bool INL_StartJoy(int joystick);
 void INL_StopJoy(int joystick);
 void IN_HandleKeyUp(IN_ScanCode sc, bool special);
 void IN_HandleKeyDown(IN_ScanCode sc, bool special);
+void IN_HandleTextEvent(const char *utf8Text);
 
 typedef struct IN_Backend
 {
@@ -333,6 +334,7 @@ typedef struct IN_Backend
 	// minimum and maximum values returned by joyGetAbs();
 	// requirement: 0 < (joyAxisMax - joyAxisMin) <= 92681
 	int joyAxisMin, joyAxisMax;
+	bool supportsTextEvents;
 } IN_Backend;
 
 IN_Backend *IN_Impl_GetBackend();

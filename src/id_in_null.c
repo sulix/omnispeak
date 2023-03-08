@@ -81,6 +81,7 @@ IN_Backend in_null_backend = {
 	.joyGetName = IN_NULL_JoyGetName,
 	.joyAxisMin = -1000,
 	.joyAxisMax =  1000,
+	.supportsTextEvents = false,
 };
 
 IN_Backend *IN_Impl_GetBackend()

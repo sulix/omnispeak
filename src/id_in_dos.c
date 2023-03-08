@@ -154,6 +154,7 @@ IN_Backend in_dos_backend = {
 	.joyGetName = IN_DOS_JoyGetName,
 	.joyAxisMin = -1000,
 	.joyAxisMax =  1000,
+	.supportsTextEvents = false,
 };
 
 IN_Backend *IN_Impl_GetBackend()

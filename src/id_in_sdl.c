@@ -320,6 +320,9 @@ static void IN_SDL_HandleSDLEvent(SDL_Event *event)
 		IN_HandleKeyUp(sc, false);
 		break;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
+	case SDL_TEXTINPUT:
+		IN_HandleTextEvent(event->text.text);
+		break;
 	case SDL_JOYDEVICEADDED:
 		INL_StartJoy(event->jdevice.which);
 		break;
@@ -482,6 +485,11 @@ IN_Backend in_sdl_backend = {
 	.joyGetName = IN_SDL_JoyGetName,
 	.joyAxisMin = -32768,
 	.joyAxisMax =  32767,
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	.supportsTextEvents = true,
+#else
+	.supportsTextEvents = false,
+#endif
 };
 
 IN_Backend *IN_Impl_GetBackend()
