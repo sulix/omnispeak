@@ -406,6 +406,8 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 	IN_SetLastASCII(IN_KP_None);
 	IN_SetLastScan(IN_SC_None);
 
+	IN_StartTextInput(NULL, NULL);
+
 	while (!done)
 	{
 		// TODO/FIXME: Handle this in a possibly better way
@@ -570,6 +572,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 	VH_UpdateScreen();
 
 	IN_ClearKeysDown();
+	IN_StopTextInput();
 	return (result);
 }
 // Random Number Generator

@@ -472,6 +472,18 @@ const char* IN_SDL_JoyGetName(int joystick)
 #endif
 }
 
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+void IN_SDL_StartTextInput(const char *reason, const char *oldText)
+{
+	SDL_StartTextInput();
+}
+
+void IN_SDL_StopTextInput()
+{
+	SDL_StopTextInput();
+}
+#endif
+
 IN_Backend in_sdl_backend = {
 	.startup = IN_SDL_Startup,
 	.shutdown = 0,
@@ -483,6 +495,13 @@ IN_Backend in_sdl_backend = {
 	.joyGetAbs = IN_SDL_JoyGetAbs,
 	.joyGetButtons = IN_SDL_JoyGetButtons,
 	.joyGetName = IN_SDL_JoyGetName,
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	.startTextInput = IN_SDL_StartTextInput,
+	.stopTextInput = IN_SDL_StopTextInput,
+#else
+	.startTextInput = NULL,
+	.stopTextInput = NULL,
+#endif
 	.joyAxisMin = -32768,
 	.joyAxisMax =  32767,
 #if SDL_VERSION_ATLEAST(2, 0, 0)

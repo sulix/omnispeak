@@ -408,6 +408,18 @@ void IN_SetLastASCII(char c)
 	in_lastASCII = c;
 }
 
+void IN_StartTextInput(const char *reason, const char *existing)
+{
+	if (in_backend->startTextInput)
+		in_backend->startTextInput(reason, existing);
+}
+
+void IN_StopTextInput()
+{
+	if (in_backend->stopTextInput)
+		in_backend->stopTextInput();
+}
+
 void IN_Startup(void)
 {
 	in_backend = IN_Impl_GetBackend();

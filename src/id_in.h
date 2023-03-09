@@ -284,6 +284,8 @@ IN_ScanCode IN_GetLastScan(void);
 void IN_SetLastScan(IN_ScanCode scanCode);
 char IN_GetLastASCII(void);
 void IN_SetLastASCII(char c);
+void IN_StartTextInput(const char *reason, const char *existing);
+void IN_StopTextInput();
 void IN_SetControlType(int player, IN_ControlType type);
 void IN_GetJoyAbs(int joystick, int *x, int *y);
 uint16_t IN_GetJoyButtonsDB(int joystick);
@@ -330,6 +332,8 @@ typedef struct IN_Backend
 	void (*joyGetAbs)(int joystick, int *x, int *y);
 	uint16_t (*joyGetButtons)(int joystick);
 	const char *(*joyGetName)(int joystick);
+	void (*startTextInput)(const char *reason, const char *oldText);
+	void (*stopTextInput)();
 
 	// minimum and maximum values returned by joyGetAbs();
 	// requirement: 0 < (joyAxisMax - joyAxisMin) <= 92681
