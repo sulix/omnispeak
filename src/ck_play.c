@@ -1178,7 +1178,7 @@ void CK_CheckKeys()
 			if (ck_startingDifficulty)
 				ck_gameState.levelState = LS_ResetGame;
 			else if (!ck_startingSavedGame)
-				; // RF_ResetScreen();
+				RF_ForceRefresh();
 
 			if (load_game_error)
 			{
