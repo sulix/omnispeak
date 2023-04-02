@@ -28,6 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define IN_MAX_JOYSTICKS 2
 
 SDL_Joystick *in_joysticks[IN_MAX_JOYSTICKS];
+#if SDL_VERSION_ATLEAST(1, 3, 0)
+SDL_GameController *in_controllers[IN_MAX_JOYSTICKS];
+#endif
 bool in_joystickPresent[IN_MAX_JOYSTICKS];
 bool in_joystickHasHat[IN_MAX_JOYSTICKS];
 
@@ -407,6 +410,11 @@ bool IN_SDL_StartJoy(int joystick)
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 	in_joystickHasHat[joystick_id] = (SDL_JoystickNumHats(in_joysticks[joystick_id]) > 0);
+
+	if (SDL_IsGameController(joystick))
+	{
+		in_controllers[joystick_id] = SDL_GameControllerOpen(joystick);
+	}
 #endif
 
 	return true;
@@ -415,6 +423,10 @@ bool IN_SDL_StartJoy(int joystick)
 void IN_SDL_StopJoy(int joystick)
 {
 	in_joystickPresent[joystick] = false;
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	if (in_controllers[joystick])
+		SDL_GameControllerClose(in_controllers[joystick]);
+#endif
 
 	SDL_JoystickClose(in_joysticks[joystick]);
 }
@@ -458,6 +470,11 @@ uint16_t IN_SDL_JoyGetButtons(int joystick)
 		n = 16;  /* the mask is just 16 bits wide anyway */
 	for (i = 0;  i < n;  i++)
 	{
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+		if (in_controllers[joystick])
+			mask |= SDL_GameControllerGetButton(in_controllers[joystick], (SDL_GameControllerButton)i) << i;
+		else
+#endif
 		mask |= SDL_JoystickGetButton(in_joysticks[joystick], i) << i;
 	}
 	return mask;
@@ -470,6 +487,49 @@ const char* IN_SDL_JoyGetName(int joystick)
 #else
 	return SDL_JoystickName(joystick);
 #endif
+}
+
+const char* IN_SDL_JoyGetButtonName(int joystick, int index)
+{
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	if (in_controllers[joystick])
+	{
+		switch(index)
+		{
+		case SDL_CONTROLLER_BUTTON_A:
+			return "A";
+		case SDL_CONTROLLER_BUTTON_B:
+			return "B";
+		case SDL_CONTROLLER_BUTTON_X:
+			return "X";
+		case SDL_CONTROLLER_BUTTON_Y:
+			return "Y";
+		case SDL_CONTROLLER_BUTTON_BACK:
+			return "Back";
+		case SDL_CONTROLLER_BUTTON_GUIDE:
+			return "Menu";
+		case SDL_CONTROLLER_BUTTON_START:
+			return "Start";
+		case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+			return "Left";
+		case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
+			return "Right";
+		case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+			return "L";
+		case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+			return "R";
+		case SDL_CONTROLLER_BUTTON_DPAD_UP:
+			return "Up";
+		case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+			return "Down";
+		case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+			return "Left";
+		case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+			return "Right";
+		}
+	}
+#endif
+	return NULL;
 }
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -495,6 +555,7 @@ IN_Backend in_sdl_backend = {
 	.joyGetAbs = IN_SDL_JoyGetAbs,
 	.joyGetButtons = IN_SDL_JoyGetButtons,
 	.joyGetName = IN_SDL_JoyGetName,
+	.joyGetButtonName = IN_SDL_JoyGetButtonName,
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 	.startTextInput = IN_SDL_StartTextInput,
 	.stopTextInput = IN_SDL_StopTextInput,

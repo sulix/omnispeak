@@ -79,6 +79,7 @@ IN_Backend in_null_backend = {
 	.joyGetAbs = IN_NULL_JoyGetAbs,
 	.joyGetButtons = IN_NULL_JoyGetButtons,
 	.joyGetName = IN_NULL_JoyGetName,
+	.joyGetButtonName = NULL,
 	.startTextInput = NULL,
 	.stopTextInput = NULL,
 	.joyAxisMin = -1000,

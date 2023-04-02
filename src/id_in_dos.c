@@ -152,6 +152,7 @@ IN_Backend in_dos_backend = {
 	.joyGetAbs = IN_DOS_JoyGetAbs,
 	.joyGetButtons = IN_DOS_JoyGetButtons,
 	.joyGetName = IN_DOS_JoyGetName,
+	.joyGetButtonName = NULL,
 	.startTextInput = NULL,
 	.stopTextInput = NULL,
 	.joyAxisMin = -1000,

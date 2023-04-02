@@ -956,3 +956,10 @@ const char *IN_GetJoyName(int joystick)
 		? in_backend->joyGetName(joystick)
 		: NULL;
 }
+
+const char *IN_GetJoyButtonName(int joystick, int button)
+{
+	return (in_backend->joyPresent(joystick) && in_backend->joyGetButtonName)
+		? in_backend->joyGetButtonName(joystick, button)
+		: NULL;
+}

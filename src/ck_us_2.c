@@ -844,30 +844,26 @@ bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 		VH_Bar(item->x + 91, item->y + 1, 38, 6, 8);
 
 		// construct the value string
-		spos = str;
+		str[0] = '\0';
 		if ((which_control != IN_joy_deadzone) && (value < 0))
 		{
-			*spos++ = 'N';
-			*spos++ = 'o';
-			*spos++ = 'n';
-			*spos++ = 'e';
+			strncpy(str, "None", 8);
 		}
 		else
 		{
-			if (which_control != IN_joy_deadzone)
-			{
-				*spos++ = 'B';
-				*spos++ = 't';
-				*spos++ = 'n';
-				*spos++ = ' ';
-			}
-			if (value >= 10)
-				*spos++ = '0' + (value / 10);
-			*spos++ = '0' + (value % 10);
 			if (which_control == IN_joy_deadzone)
-				*spos++ = '%';
+			{
+				sprintf(str, "%d%%", value);
+			}
+			else
+			{
+				const char *button_name = IN_GetJoyButtonName(0, value);
+				if (button_name)
+					strncpy(str, button_name, 8);
+				else
+					sprintf(str, "Btn %d", value);
+			}
 		}
-		*spos++ = '\0';
 
 		print_x = item->x + 96;
 		print_y = item->y + 1;

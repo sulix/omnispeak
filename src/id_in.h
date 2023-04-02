@@ -313,6 +313,7 @@ void IN_SetJoyConf(IN_JoyConfItem item, int value);
 bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn);
 bool IN_IsJoyButtonDown(IN_JoyConfItem btn);
 const char *IN_GetJoyName(int joystick);
+const char *IN_GetJoyButtonName(int joystick, int button);
 
 // Called by the backend.
 bool INL_StartJoy(int joystick);
@@ -333,6 +334,7 @@ typedef struct IN_Backend
 	void (*joyGetAbs)(int joystick, int *x, int *y);
 	uint16_t (*joyGetButtons)(int joystick);
 	const char *(*joyGetName)(int joystick);
+	const char *(*joyGetButtonName)(int joystick, int index);
 	void (*startTextInput)(const char *reason, const char *oldText);
 	void (*stopTextInput)();
 
