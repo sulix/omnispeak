@@ -107,9 +107,14 @@ static char in_ASCIINames[] = // Unshifted ASCII for scan codes
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    // 7
 };
 
+// If we haven't set the default to anything, Keyboard1 is vanilla.
+#ifndef DEFAULT_INPUT
+#define DEFAULT_INPUT IN_ctrl_Keyboard1
+#endif
+
 bool in_Paused;
 const char *in_PausedMessage = "PAUSED";
-IN_ControlType in_controlType = IN_ctrl_Keyboard1;
+IN_ControlType in_controlType = DEFAULT_INPUT;
 bool in_keyStates[256];
 IN_ScanCode in_lastKeyScanned = IN_SC_None;
 bool in_useTextEvents = false;
@@ -127,7 +132,8 @@ const char *IN_ControlType_Strings[] = {
 	"Keyboard2",
 	"Joystick1",
 	"Joystick2",
-	"Mouse"
+	"Mouse",
+	"All"
 };
 
 IN_KeyMapping in_kbdControls;
@@ -447,6 +453,9 @@ void IN_Startup(void)
 // TODO: IMPLEMENT!
 void IN_Default(bool gotit, int16_t inputChoice)
 {
+#ifdef FORCE_DEFAULT_INPUT
+	inputChoice = DEFAULT_INPUT;
+#endif
 	in_controlType = (IN_ControlType)inputChoice;
 }
 
@@ -544,9 +553,9 @@ void INL_StopJoy(int joystick)
 {
 	in_backend->joyStop(joystick);
 
-	// If the joystick is unplugged, switch to keyboard immediately.
+	// If the joystick is unplugged, switch to default immediately.
 	if (in_controlType == IN_ctrl_Joystick1 + joystick)
-		in_controlType = IN_ctrl_Keyboard1;
+		in_controlType = DEFAULT_INPUT;
 
 	CK_US_UpdateOptionsMenus();
 }
@@ -568,6 +577,9 @@ uint16_t IN_GetJoyButtonsDB(int joystick)
 
 void IN_SetControlType(int player, IN_ControlType type)
 {
+#ifdef FORCE_DEFAULT_INPUT
+	type = DEFAULT_INPUT;
+#endif
 	in_controlType = type;
 	
 	// Save the control type if we need to
@@ -577,7 +589,7 @@ void IN_SetControlType(int player, IN_ControlType type)
 	}
 }
 
-void In_GetJoyMotion(int joystick, IN_Motion *p_x, IN_Motion *p_y)
+void IN_GetJoyMotion(int joystick, IN_Motion *p_x, IN_Motion *p_y)
 {
 	int valX, valY, resX, resY, signX, signY;
 
@@ -677,12 +689,12 @@ void IN_ReadCursor(IN_Cursor *cursor)
 	cursor->button1 = false;
 	cursor->xMotion = IN_motion_None;
 	cursor->yMotion = IN_motion_None;
-	if (forceJoyMenu || in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2)
+	if (forceJoyMenu || in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2 || in_controlType == IN_ctrl_All)
 	{
 		int joy = in_controlType - IN_ctrl_Joystick1;
 		if (joy < 0 || joy > 1)
 			joy = 0;
-		In_GetJoyMotion(joy, &cursor->xMotion, &cursor->yMotion);
+		IN_GetJoyMotion(joy, &cursor->xMotion, &cursor->yMotion);
 
 		uint16_t buttons = IN_GetJoyButtonsDB(joy);
 #ifdef EXTRA_JOYSTICK_OPTIONS
@@ -726,7 +738,29 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 	}
 	else
 	{
-		if (in_controlType == IN_ctrl_Keyboard1 || in_controlType == IN_ctrl_Keyboard2)
+		if (in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2 || in_controlType == IN_ctrl_All)
+		{
+			int joy = in_controlType - IN_ctrl_Joystick1;
+
+			if (joy < 0 || joy > 1)
+				joy = 0;
+
+			IN_GetJoyMotion(joy, &controls->xDirection, &controls->yDirection);
+
+			uint16_t buttons = IN_GetJoyButtonsDB(joy);
+#ifdef EXTRA_JOYSTICK_OPTIONS
+			controls->jump = IN_GetJoyButtonFromMask(buttons, IN_joy_jump);
+			controls->pogo = IN_GetJoyButtonFromMask(buttons, IN_joy_pogo);
+			controls->button2 = IN_GetJoyButtonFromMask(buttons, IN_joy_fire);
+			controls->button3 = IN_GetJoyButtonFromMask(buttons, IN_joy_menu);
+#else
+			controls->jump = buttons & 1;
+			controls->pogo = (buttons >> 1) & 1;
+			controls->button2 = 0;
+			controls->button3 = 0;
+#endif
+		}
+		if (in_controlType == IN_ctrl_Keyboard1 || in_controlType == IN_ctrl_Keyboard2 || in_controlType == IN_ctrl_All)
 		{
 			if (IN_GetKeyState(in_kbdControls.upLeft))
 			{
@@ -766,24 +800,6 @@ void IN_ReadControls(int player, IN_ControlFrame *controls)
 			// TODO: Handle fire input separately? (e.g. two-button firing)
 			if (IN_GetKeyState(in_kbdControls.fire))
 				controls->button2 = true;
-		}
-		else if (in_controlType == IN_ctrl_Joystick1 || in_controlType == IN_ctrl_Joystick2)
-		{
-			int joy = in_controlType - IN_ctrl_Joystick1;
-			In_GetJoyMotion(joy, &controls->xDirection, &controls->yDirection);
-
-			uint16_t buttons = IN_GetJoyButtonsDB(joy);
-#ifdef EXTRA_JOYSTICK_OPTIONS
-			controls->jump = IN_GetJoyButtonFromMask(buttons, IN_joy_jump);
-			controls->pogo = IN_GetJoyButtonFromMask(buttons, IN_joy_pogo);
-			controls->button2 = IN_GetJoyButtonFromMask(buttons, IN_joy_fire);
-			controls->button3 = IN_GetJoyButtonFromMask(buttons, IN_joy_menu);
-#else
-			controls->jump = buttons & 1;
-			controls->pogo = (buttons >> 1) & 1;
-			controls->button2 = 0;
-			controls->button3 = 0;
-#endif
 		}
 
 		controls->dir = in_dirTable[3 * (controls->yDirection + 1) + controls->xDirection + 1];
@@ -929,7 +945,7 @@ bool IN_GetJoyButtonFromMask(uint16_t mask, IN_JoyConfItem btn)
 bool IN_IsJoyButtonDown(IN_JoyConfItem btn)
 {
 	int joy = in_controlType - IN_ctrl_Joystick1;
-	if (joy < 0 || joy >= IN_MAX_JOYSTICKS) return false;
+	if (joy < 0 || joy >= IN_MAX_JOYSTICKS) joy = 0;
 	uint16_t mask = IN_GetJoyButtonsDB(joy);
 	return IN_GetJoyButtonFromMask(mask, btn);
 }

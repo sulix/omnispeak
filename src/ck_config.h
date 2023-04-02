@@ -62,6 +62,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // QuickSave
 #define QUICKSAVE_ENABLED
+
+// Use all input devices by default
+#define DEFAULT_INPUT IN_ctrl_All
+#define FORCE_DEFAULT_INPUT
 #endif
 
 // =================================

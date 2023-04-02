@@ -230,7 +230,8 @@ typedef enum IN_ControlType
 	IN_ctrl_Keyboard2,
 	IN_ctrl_Joystick1,
 	IN_ctrl_Joystick2,
-	IN_ctrl_Mouse
+	IN_ctrl_Mouse,
+	IN_ctrl_All
 } IN_ControlType;
 
 extern const char *IN_ControlType_Strings[];
