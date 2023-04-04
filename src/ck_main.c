@@ -43,9 +43,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef WITH_SDL
-#include <SDL.h> // For main (SDL_main) function prototype
-#endif
 /*
  * The 'episode' we're playing.
  */

@@ -33,6 +33,7 @@ This Makefile supports the following options:
 		  sdl2sw  = SDL 2.0 + Software SDL_Renderer
 		  sdl2gl  = SDL 2.0 + OpenGL 2.0 (default)
 		  sdl2vk  = SDL 2.0 + Vulkan (experimental)
+		  sdl3    = SDL 3.0 + SDL_Renderer
 		  null    = dummy renderer
 
   WITH_KEEN4    whether to include support for Keen 4: Secret of the Oracle (0/1; default: on)
@@ -350,6 +351,12 @@ ifeq ($(RENDERER), sdl2vk)
 	RENDER_OBJS = id_vl_sdl2vk.o id_sd_sdl.o id_in_sdl.o
 	LIBS += $(LIBVULKAN)
 	CXXFLAGS += -I$(OBJDIR) #For generated SPIR-V headers
+endif
+
+ifeq ($(RENDERER), sdl3)
+	RENDER_OBJS = id_vl_sdl3.o id_sd_sdl3.o id_in_sdl3.o
+	SDL_CFLAGS = `pkg-config sdl3 --cflags` -DWITH_SDL=3
+	SDL_LIBS = `pkg-config sdl3 $(SDL_LIB_QUERY)`
 endif
 
 ifeq ($(RENDERER), dos)

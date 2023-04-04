@@ -161,6 +161,21 @@ elseif(RENDERER STREQUAL "sdl1")
 		${SDL_INCLUDE_DIR}
 	)
 	add_definitions(-DWITH_SDL)
+elseif(RENDERER STREQUAL "sdl3")
+	message(STATUS "Using SDL3 renderer backend")
+	find_package(SDL3 REQUIRED)
+	set(OMNISPEAK_PLATFORM_SRCS
+		src/id_in_sdl3.c
+		src/id_sd_sdl3.c
+		src/id_vl_sdl3.c
+	)
+	set(OMNISPEAK_PLATFORM_LIBRARIES
+		${SDL3_LIBRARIES}
+	)
+	include_directories(
+		${SDL3_INCLUDE_DIRS}
+	)
+	add_definitions(-DWITH_SDL=3)
 else()
 	message(WARNING "Using NULL platform layer.")
 	set(OMNISPEAK_PLATFORM_SRCS
