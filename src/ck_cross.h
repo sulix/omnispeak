@@ -7,7 +7,11 @@
 #include <stdio.h>
 
 #ifdef WITH_SDL
+#if WITH_SDL == 3
+#include <SDL3/SDL.h>
+#else
 #include "SDL.h"
+#endif
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define CK_CROSS_IS_BIGENDIAN
 #elif (SDL_BYTEORDER == SDL_LIL_ENDIAN)

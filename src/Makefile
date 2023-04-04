@@ -33,6 +33,7 @@ This Makefile supports the following options:
 		  sdl2sw  = SDL 2.0 + Software SDL_Renderer
 		  sdl2gl  = SDL 2.0 + OpenGL 2.0 (default)
 		  sdl2vk  = SDL 2.0 + Vulkan (experimental)
+		  sdl3    = SDL 3.0 + SDL_Renderer
 		  null    = dummy renderer
 
   WITH_KEEN4    whether to include support for Keen 4: Secret of the Oracle (0/1; default: on)
@@ -83,6 +84,7 @@ This Makefile supports the following options:
 
   SDL1_VERSION  version of SDL 1.x to download and use (if LOCAL_SDL=1)
   SDL2_VERSION  version of SDL 2.x to download and use (if LOCAL_SDL=1)
+  SDL3_VERSION  version of SDL 3.x to download and use (if LOCAL_SDL=1)
 
   COMPILER	explicit path of the compiler (overrides CLANG option)
   CXXFLAGS      additional options for the compiler
@@ -117,7 +119,11 @@ endif
 ifneq (,$(findstring win,$(PLATFORM)))
 	# common Windows stuff
 	EXE_EXT = .exe
-	DEFAULT_STATIC = 1
+	# SDL3 no longer provides static binaries for mingw, so don't make it the default
+	# https://github.com/libsdl-org/SDL/issues/11132
+	ifeq (,$(findstring sdl3,$(RENDERER)))
+		DEFAULT_STATIC = 1
+	endif
 	DEFAULT_LOCAL_SDL = 1
 	DEFAULT_RENDERER = sdl2
 	LIBGL = -lopengl32
@@ -184,6 +190,7 @@ KEEN6VER ?= keen6e15
 XDGUSERPATH ?= 0
 SDL1_VERSION ?= 1.2.15
 SDL2_VERSION ?= 2.30.9
+SDL3_VERSION ?= 3.2.0
 SYSFLAGS ?=
 CXX ?=
 CXXFLAGS ?=
@@ -263,7 +270,11 @@ endif
 # set linker flags for static linking
 ifeq ($(STATIC), 1)
 	LDFLAGS += -static
-	SDL_LIB_QUERY = --static-libs
+	ifneq (,$(findstring sdl3,$(RENDERER)))
+		SDL_LIB_QUERY = --static --libs
+	else
+		SDL_LIB_QUERY = --static-libs
+	endif
 else
 	SDL_LIB_QUERY = --libs
 endif
@@ -274,11 +285,15 @@ ifeq ($(RENDERER), sdl1)
 	SDL_VERSION = $(SDL1_VERSION)
 	SDL_URL = http://libsdl.org/release/SDL-devel-$(SDL_VERSION)-mingw32.tar.gz
 	SDL_LOCAL_PREFIX = SDL-$(SDL_VERSION)
-else
+else ifneq (,$(findstring sdl2,$(RENDERER)))
 	SDL_CONFIG_BIN = $(SDL_CONFIG_PREFIX)sdl2-config
 	SDL_VERSION = $(SDL2_VERSION)
 	SDL_URL = http://libsdl.org/release/SDL2-devel-$(SDL_VERSION)-mingw.tar.gz
 	SDL_LOCAL_PREFIX = SDL2-$(SDL_VERSION)/$(TOOLSET)
+else
+	SDL_VERSION = $(SDL3_VERSION)
+	SDL_URL = https://www.libsdl.org/release/SDL3-devel-$(SDL_VERSION)-mingw.tar.gz
+	SDL_LOCAL_PREFIX = SDL3-$(SDL_VERSION)/$(TOOLSET)
 endif
 
 # set SDL specific parameters
@@ -286,6 +301,7 @@ ifneq (,$(findstring sdl,$(RENDERER)))
 	ifeq ($(LOCAL_SDL),1)
 		SDL_DIR = ../$(SDL_LOCAL_PREFIX)
 		SDL_CONFIG = $(SDL_DIR)/bin/$(SDL_CONFIG_BIN) --prefix=$(SDL_DIR)
+		SDL_PKG_CONFIG_PREFIX = "--with-path=$(SDL_DIR)/lib/pkgconfig"
 	else
 		SDL_CONFIG = $(SDL_CONFIG_BIN)
 	endif
@@ -350,6 +366,12 @@ ifeq ($(RENDERER), sdl2vk)
 	RENDER_OBJS = id_vl_sdl2vk.o id_sd_sdl.o id_in_sdl.o
 	LIBS += $(LIBVULKAN)
 	CXXFLAGS += -I$(OBJDIR) #For generated SPIR-V headers
+endif
+
+ifeq ($(RENDERER), sdl3)
+	RENDER_OBJS = id_vl_sdl3.o id_sd_sdl3.o id_in_sdl3.o
+	SDL_CFLAGS = `$(BINPREFIX)pkg-config sdl3 $(SDL_PKG_CONFIG_PREFIX) --cflags` -DWITH_SDL=3
+	SDL_LIBS = `$(BINPREFIX)pkg-config sdl3 $(SDL_PKG_CONFIG_PREFIX) $(SDL_LIB_QUERY)`
 endif
 
 ifeq ($(RENDERER), dos)

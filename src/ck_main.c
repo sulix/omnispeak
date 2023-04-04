@@ -43,9 +43,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef WITH_SDL
-#include <SDL.h> // For main (SDL_main) function prototype
-#endif
 /*
  * The 'episode' we're playing.
  */
@@ -115,7 +112,7 @@ void CK_InitGame()
 {
 	// On Windows, we want to be DPI-aware
 #if defined(WITH_SDL) && defined(_WIN32)
-#if SDL_VERSION_ATLEAST(2,24,0)
+#if SDL_VERSION_ATLEAST(2,24,0) && !SDL_VERSION_ATLEAST(3,0,0)
 	SDL_SetHint(SDL_HINT_WINDOWS_DPI_SCALING, "1");
 #endif
 #endif
