@@ -386,10 +386,10 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 #endif
 	char c,
 		s[128], olds[128];
-	uint16_t i,
+	size_t i,
 		cursor,
-		w, h,
 		len /*, temp*/;
+	uint16_t w, h;
 	uint32_t lasttime;
 
 	if (def)
