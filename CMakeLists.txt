@@ -112,15 +112,15 @@ elseif(RENDERER STREQUAL "sdl2gl")
 		src/id_sd_sdl.c
 		src/id_vl_sdl2gl.c
 	)
-	if (UNIX)
+	if(APPLE)
+		set(OMNISPEAK_PLATFORM_LIBRARIES
+			${SDL2_LIBRARIES}
+			"-framework OpenGL"
+		)
+	elseif (UNIX)
 		set(OMNISPEAK_PLATFORM_LIBRARIES
 			${SDL2_LIBRARIES}
 			GL
-		)
-	elseif(APPLE)
-		set(OMNISPEAK_PLATFORM_LIBRARIES
-			${SDL2_LIBRARIES}
-			OpenGL
 		)
 	elseif(WIN32)
 		set(OMNISPEAK_PLATFORM_LIBRARIES
