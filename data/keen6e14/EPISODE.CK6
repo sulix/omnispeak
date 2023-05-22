@@ -2,6 +2,8 @@
 # Episode definition for Keen 6 (v1.5 EGA)
 #
 
+# Episode variables
+%int CK_activeLimit 4
 
 # Graphics Chunks
 %int FON_MAINFONT 3

@@ -48,6 +48,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define CK_MAX_OBJECTS 100
 
+// The "default" limit (beyond the edge of the screen) sprites remain active.
+// Override with %int CK_activeLimit 6 in EPISODE.CKx
+#define DEFAULT_ACTIVE_LIMIT 4
+
 struct CK_object;
 
 struct RF_SpriteDrawEntry;

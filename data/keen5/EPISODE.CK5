@@ -2,6 +2,8 @@
 # Episode definition for Keen 5 (Apogee v1.4)
 #
 
+# Episode variables
+%int CK_activeLimit 6
 
 # Graphics Chunks
 %int FON_MAINFONT 3
@@ -260,7 +262,6 @@
 %int SOUND_UNKNOWN62 62
 %int SOUND_UNKNOWN63 63
 %int LASTSOUND 64
-
 
 %include "STRINGS.CK5"
 %include "ACTION.CK5"

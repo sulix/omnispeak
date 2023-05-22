@@ -58,9 +58,6 @@ typedef struct CK_EpisodeDef
 	// Check if the episode's files are all present.
 	bool (*isPresent)();
 
-	// Limit in tiles beyond which active objects become inactive
-	int activeLimit;
-
 	int highScoreLevel;
 	int highScoreTopMargin;
 	int highScoreLeftMargin;

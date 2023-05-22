@@ -38,7 +38,6 @@ CK_EpisodeDef ck5_episode = {
 	&CK5_DefineConstants,
 	&CK5_MapMiscFlagsCheck,
 	&CK5_IsPresent,
-	/* .activeLimit = */ 6,
 	/* .highScoreLevel = */ 15,
 	/* .highScoreTopMargin = */ 0x23,
 	/* .highScoreLeftMargin = */ 0x28,

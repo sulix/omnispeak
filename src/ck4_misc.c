@@ -41,7 +41,6 @@ CK_EpisodeDef ck4_episode = {
 	&CK4_DefineConstants,
 	&CK4_MapMiscFlagsCheck,
 	&CK4_IsPresent,
-	/* .activeLimit = */ 4,
 	/* .highScoreLevel = */ 19,
 	/* .highScoreTopMargin = */ 0x33,
 	/* .highScoreLeftMargin = */ 0x18,

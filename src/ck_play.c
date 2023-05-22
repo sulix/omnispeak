@@ -1887,10 +1887,10 @@ void CK_CentreCamera(CK_object *obj)
 		RF_Reposition(screenX, screenY);
 
 	//TODO: This is 4 in Andy's disasm.
-	ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - ck_currentEpisode->activeLimit, 0);
-	ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + ck_currentEpisode->activeLimit, 0);
-	ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - ck_currentEpisode->activeLimit, 0);
-	ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + ck_currentEpisode->activeLimit, 0);
+	ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+	ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+	ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+	ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 }
 
 /*
@@ -1943,10 +1943,10 @@ void CK_MapCamera(CK_object *keen)
 		 */
 
 		//TODO: This is 4 in Andy's disasm.
-		ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - ck_currentEpisode->activeLimit, 0);
-		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + ck_currentEpisode->activeLimit, 0);
-		ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - ck_currentEpisode->activeLimit, 0);
-		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + ck_currentEpisode->activeLimit, 0);
+		ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 	}
 }
 
@@ -2116,10 +2116,10 @@ void CK_NormalCamera(CK_object *obj)
 		RF_SmoothScroll(deltaX, deltaY);
 
 		// Update the rectangle of active objects
-		ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - ck_currentEpisode->activeLimit, 0);
-		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + ck_currentEpisode->activeLimit, 0);
-		ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - ck_currentEpisode->activeLimit, 0);
-		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + ck_currentEpisode->activeLimit, 0);
+		ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 	}
 }
 
