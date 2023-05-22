@@ -4,6 +4,11 @@
 
 # Episode variables
 %int CK_activeLimit 6
+%int CK_highScoreLevel 15
+%int CK_highScoreTopMargin 0x23
+%int CK_highScoreLeftMargin 0x28
+%int CK_highScoreRightMargin 0x118
+%int CK_highScoreFontColour 12 # BLUE ^ LIGHTMAGENTA
 
 # Graphics Chunks
 %int FON_MAINFONT 3

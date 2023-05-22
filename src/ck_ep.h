@@ -58,10 +58,6 @@ typedef struct CK_EpisodeDef
 	// Check if the episode's files are all present.
 	bool (*isPresent)();
 
-	int highScoreLevel;
-	int highScoreTopMargin;
-	int highScoreLeftMargin;
-	int highScoreRightMargin;
 	int endSongLevel;
 	int starWarsSongLevel;
 

@@ -1574,9 +1574,9 @@ extern void *rf_tileBuffer;
 void CK_OverlayHighScores()
 {
 	// Omnispeak
-	int topMargin = ck_currentEpisode->highScoreTopMargin;
-	int rightMargin = ck_currentEpisode->highScoreRightMargin;
-	int leftMargin = ck_currentEpisode->highScoreLeftMargin;
+	int topMargin = CK_INT(CK_highScoreTopMargin, 0);
+	int rightMargin = CK_INT(CK_highScoreRightMargin, 0);
+	int leftMargin = CK_INT(CK_highScoreLeftMargin, 0);
 
 	RF_Reposition(0, 0);
 
@@ -1592,8 +1592,7 @@ void CK_OverlayHighScores()
 
 	US_SetPrintRoutines(NULL, VH_DrawPropString);
 
-	if (ck_currentEpisode->ep == EP_CK5)
-		US_SetPrintColour(12);
+	US_SetPrintColour(CK_INT(CK_highScoreFontColour, 15));
 
 	for (int entry = 0; entry < 8; entry++)
 	{
@@ -1643,8 +1642,8 @@ static bool ck_highScoresDirty;
 void CK_SubmitHighScore(int score, uint16_t arg_4)
 {
 	// Omnispeak
-	int topMargin = ck_currentEpisode->highScoreTopMargin;
-	int leftMargin = ck_currentEpisode->highScoreLeftMargin;
+	int topMargin = CK_INT(CK_highScoreTopMargin, 0);
+	int leftMargin = CK_INT(CK_highScoreLeftMargin, 0);
 
 	int entry, entryRank;
 
@@ -1681,11 +1680,10 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 	if (entryRank != -1)
 	{
 		ck_inHighScores = true;
-		ck_gameState.currentLevel = ck_currentEpisode->highScoreLevel;
+		ck_gameState.currentLevel = CK_INT(CK_highScoreLevel, 1);
 		CK_LoadLevel(true, false);
 		CK_OverlayHighScores();
-		if (ck_currentEpisode->ep == EP_CK5)
-			US_SetPrintColour(12);
+		US_SetPrintColour(CK_INT(CK_highScoreFontColour, 15));
 
 		// FIXME: Calling these causes segfault
 		RF_Refresh();

@@ -4,6 +4,10 @@
 
 # Episode variables
 %int CK_activeLimit 4
+%int CK_highScoreLevel 18
+%int CK_highScoreTopMargin 0x33
+%int CK_highScoreLeftMargin 0x28
+%int CK_highScoreRightMargin 0x118
 
 # Graphics Chunks
 %int FON_MAINFONT 3
