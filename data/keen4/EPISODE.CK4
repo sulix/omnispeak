@@ -11,6 +11,37 @@
 %int CK_EndingMusicLevel 7
 %int CK_StarWarsMusicLevel 12
 
+# Music Table
+# -----------
+%int SHADOWS_MUS 0 # Shadows Don't Scare Commander Keen!!
+%int VEGGIES_MUS 1 # You've Got to Eat Your Vegetables!!
+%int TOOHOT_MUS 2 # Too Hot to Handle
+%int OASIS_MUS 3 # Tropical Ghost Oasis
+%int KICKPANT_MUS 4 # Welcome to a Kick In Yore Pants In Good Ole Hillville!
+%int WONDER_MUS 5 # In a Land of Wonderment and Awe
+
+
+%int CK_LevelMusic0 @SHADOWS_MUS
+%int CK_LevelMusic1 @KICKPANT_MUS
+%int CK_LevelMusic2 @OASIS_MUS
+%int CK_LevelMusic3 @OASIS_MUS
+%int CK_LevelMusic4 @TOOHOT_MUS
+%int CK_LevelMusic5 @TOOHOT_MUS
+%int CK_LevelMusic6 @KICKPANT_MUS
+%int CK_LevelMusic7 @OASIS_MUS
+%int CK_LevelMusic8 @VEGGIES_MUS
+%int CK_LevelMusic9 @VEGGIES_MUS
+%int CK_LevelMusic10 @VEGGIES_MUS
+%int CK_LevelMusic11 @TOOHOT_MUS
+%int CK_LevelMusic12 @TOOHOT_MUS
+%int CK_LevelMusic13 @TOOHOT_MUS
+%int CK_LevelMusic14 @TOOHOT_MUS
+%int CK_LevelMusic15 @TOOHOT_MUS
+%int CK_LevelMusic16 @TOOHOT_MUS
+%int CK_LevelMusic17 @VEGGIES_MUS
+%int CK_LevelMusic18 @OASIS_MUS
+%int CK_LevelMusic19 -1 # Should be @WONDER_MUS, but fixed up in code?
+
 # Graphics Chunks
 %int FON_MAINFONT 3
 %int FON_WATCHFONT 4

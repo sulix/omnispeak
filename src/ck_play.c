@@ -1342,19 +1342,24 @@ int16_t *ck_levelMusic;
 
 void StartMusic(int16_t level)
 {
-	int16_t song;
+	char varName[32];
+	sprintf(varName, "CK_LevelMusic%d", level);
 
-	if ((level >= 20) && (level != -1))
+	int16_t song = CK_VAR_GetInt(varName, -1);
+
+	if ((song != -1) && (level >= 20) && (level != -1))
 	{
 		Quit("StartMusic() - bad level number");
 	}
 	SD_MusicOff();
 
+
+
 	// NOTE: For buffer overflow emulation in Keen 5,
 	// consider assigning in_kbdControls.fire as the song number
-	if ((level == -1) && (ck_currentEpisode->ep == EP_CK4))
+	if ((song != -1) && (level == -1) && (ck_currentEpisode->ep == EP_CK4))
 		song = 5;
-	else
+	else if (song != -1)
 		song = ck_levelMusic[level];
 
 	if ((song == -1) || (SD_GetMusicMode() != smm_AdLib))

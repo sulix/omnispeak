@@ -11,6 +11,39 @@
 %int CK_EndingMusicLevel 1
 %int CK_StarWarsMusicLevel 13
 
+# Music Table
+# -----------
+%int WONDER_MUS 0 # In a Land of Wonderment and Awe
+%int BRER_TAR_MUS 1 # Br'er Tar Ain't Gonna Get Me!
+%int TOFUTURE_MUS 2 # To The Future
+%int FASTER_MUS 3 # Faster and Faster Yet!
+%int SPACFUNK_MUS 4 # Space Funk
+%int ALIENATE_MUS 5 # Aliens Ate My Babysitter
+%int OMINOUS_MUS 6 # Ominousity
+%int METAL_MUS 7 # Please Don't Metal With Me!
+%int MAMSNAKE_MUS 8 # The Mambo Snake Gonna Eat You, Boy!
+
+%int CK_LevelMusic0 @ALIENATE_MUS
+%int CK_LevelMusic1 @FASTER_MUS
+%int CK_LevelMusic2 @BRER_TAR_MUS
+%int CK_LevelMusic3 @MAMSNAKE_MUS
+%int CK_LevelMusic4 @MAMSNAKE_MUS
+%int CK_LevelMusic5 @MAMSNAKE_MUS
+%int CK_LevelMusic6 @METAL_MUS
+%int CK_LevelMusic7 @TOFUTURE_MUS
+%int CK_LevelMusic8 @METAL_MUS
+%int CK_LevelMusic9 @BRER_TAR_MUS
+%int CK_LevelMusic10 @FASTER_MUS
+%int CK_LevelMusic11 @TOFUTURE_MUS
+%int CK_LevelMusic12 @BRER_TAR_MUS
+%int CK_LevelMusic13 @SPACFUNK_MUS
+%int CK_LevelMusic14 @SPACFUNK_MUS
+%int CK_LevelMusic15 @OMINOUS_MUS
+%int CK_LevelMusic16 @TOFUTURE_MUS
+%int CK_LevelMusic17 @WONDER_MUS
+%int CK_LevelMusic18 @WONDER_MUS
+%int CK_LevelMusic19 @WONDER_MUS
+
 # Graphics Chunks
 %int FON_MAINFONT 3
 %int FON_WATCHFONT 4
