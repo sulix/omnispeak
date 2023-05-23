@@ -9,6 +9,8 @@
 %int CK_highScoreLeftMargin 0x28
 %int CK_highScoreRightMargin 0x118
 %int CK_highScoreFontColour 12 # BLUE ^ LIGHTMAGENTA
+%int CK_EndingMusicLevel 14
+%int CK_StarWarsMusicLevel 17
 
 # Graphics Chunks
 %int FON_MAINFONT 3

@@ -41,8 +41,6 @@ CK_EpisodeDef ck4_episode = {
 	&CK4_DefineConstants,
 	&CK4_MapMiscFlagsCheck,
 	&CK4_IsPresent,
-	/* .endSongLevel = */ 7,
-	/* .starWarsSongLevel = */ 12,
 	/* .lastLevelToMarkAsDone = */ 17,
 	/* .objArrayOffset = */ 0xA807,
 	/* .tempObjOffset = */ 0xC5D3,

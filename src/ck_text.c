@@ -671,7 +671,7 @@ void help_endgame(void)
 	CacheLayoutGraphics();
 
 	/* Play some music */
-	StartMusic(ck_currentEpisode->endSongLevel);
+	StartMusic(CK_INT(CK_EndingMusicLevel, 0));
 
 	while (help_cur_page < help_num_pages)
 	{

@@ -58,9 +58,6 @@ typedef struct CK_EpisodeDef
 	// Check if the episode's files are all present.
 	bool (*isPresent)();
 
-	int endSongLevel;
-	int starWarsSongLevel;
-
 	int lastLevelToMarkAsDone;
 
 	// A few offsets to data in the original EXE

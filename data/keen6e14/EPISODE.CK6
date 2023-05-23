@@ -8,6 +8,8 @@
 %int CK_highScoreTopMargin 0x33
 %int CK_highScoreLeftMargin 0x28
 %int CK_highScoreRightMargin 0x118
+%int CK_EndingMusicLevel 1
+%int CK_StarWarsMusicLevel 13
 
 # Graphics Chunks
 %int FON_MAINFONT 3

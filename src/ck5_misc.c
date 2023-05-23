@@ -38,8 +38,6 @@ CK_EpisodeDef ck5_episode = {
 	&CK5_DefineConstants,
 	&CK5_MapMiscFlagsCheck,
 	&CK5_IsPresent,
-	/* .endSongLevel = */ 14,
-	/* .starWarsSongLevel = */ 17,
 	/* .lastLevelToMarkAsDone = */ 17,
 	/* .objArrayOffset = */ 0x9E6F,
 	/* .tempObjOffset = */ 0xBC3B,

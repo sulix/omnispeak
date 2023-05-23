@@ -1456,7 +1456,7 @@ void CK_DrawStarWars()
 	// ...and scroll the text!
 	if (!IN_GetLastScan())
 	{
-		StartMusic(ck_currentEpisode->starWarsSongLevel);
+		StartMusic(CK_INT(CK_StarWarsMusicLevel, 0));
 		CK_ScrollSWText();
 		StopMusic();
 	}

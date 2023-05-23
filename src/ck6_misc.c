@@ -40,8 +40,6 @@ CK_EpisodeDef ck6v14e_episode = {
 	&CK6_DefineConstants,
 	&CK6_MapMiscFlagsCheck,
 	&CK6_IsPresent,
-	/* .endSongLevel = */ 1,
-	/* .starWarsSongLevel = */ 13,
 	/* .lastLevelToMarkAsDone = */ 16,
 	// Note these offsets are for version 1.4
 	/* .objArrayOffset = */ 0xA995,
@@ -61,8 +59,6 @@ CK_EpisodeDef ck6v15e_episode = {
 	&CK6_DefineConstants,
 	&CK6_MapMiscFlagsCheck,
 	&CK6_IsPresent,
-	/* .endSongLevel = */ 1,
-	/* .starWarsSongLevel = */ 13,
 	/* .lastLevelToMarkAsDone = */ 16,
 	// Note these offsets are for version 1.5
 	/* .objArrayOffset = */ 0x75CE,
