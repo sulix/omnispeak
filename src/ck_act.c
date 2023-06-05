@@ -136,7 +136,12 @@ const char *CK_VAR_GetString(const char *name, const char *def)
 #ifdef CK_VAR_TYPECHECK
 	CK_VAR_Variable *var = (CK_VAR_Variable *)CK_VAR_GetByName(name, NULL);
 	if (!var)
+	{
+#ifdef CK_VAR_WARNONNOTSET
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "String variable \"%s\" not set, returning default \"%s\"\n", name, def);
+#endif
 		return def;
+	}
 	if (var->type != VAR_String)
 		Quit("CK_VAR_GetString: Tried to access a non-string variable!");
 	return (const char *)var->value;
@@ -157,7 +162,12 @@ intptr_t CK_VAR_GetInt(const char *name, intptr_t def)
 #ifdef CK_VAR_TYPECHECK
 	CK_VAR_Variable *var = (CK_VAR_Variable *)CK_VAR_GetByName(name, NULL);
 	if (!var)
+	{
+#ifdef CK_VAR_WARNONNOTSET
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Integer variable \"%s\" not set, returning default %ld (0x%lX)\n", name, def, def);
+#endif
 		return def;
+	}
 	if (var->type != VAR_Int)
 		Quit("CK_VAR_GetInt: Tried to access a non-integer variable!");
 	return (intptr_t)var->value;
@@ -171,7 +181,12 @@ CK_action *CK_GetActionByName(const char *name)
 #ifdef CK_VAR_TYPECHECK
 	CK_VAR_Variable *var = (CK_VAR_Variable *)CK_VAR_GetByName(name, NULL);
 	if (!var)
+	{
+#ifdef CK_VAR_WARNONNOTSET
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Action \"%s\" not set, returning NULL\n", name);
+#endif
 		return NULL;
+	}
 	if (var->type != VAR_Action)
 		Quit("CK_GetActionByName: Tried to access a non-action variable!");
 	return (CK_action *)var->value;

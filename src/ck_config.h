@@ -43,6 +43,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CK_VAR_TYPECHECK // Might already be set for varparser
 #define CK_VAR_TYPECHECK
 #endif
+// Warn on use of unset variable
+#define CK_VAR_WARNONNOTSET
 // Warn on out-of-bounds access to tileinfo.
 #define CK_WARN_ON_TILEINFO_OOB
 // Support the /DUMPFILE option for the playloop dumper
