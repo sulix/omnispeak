@@ -37,7 +37,7 @@ void CK4_SpawnSmirky(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 1;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x180;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK4_SmirkySpawnYOffset, -0x180);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Smirky0"));
@@ -56,10 +56,10 @@ void CK4_SmirkySearch(CK_object *obj)
 				o->clipRects.unitX2 > obj->clipRects.unitX1 &&
 				o->clipRects.unitX1 < obj->clipRects.unitX2 &&
 				o->clipRects.unitY2 < obj->clipRects.unitY1 &&
-				o->clipRects.unitY2 > obj->clipRects.unitY1 + 0x300)
+				o->clipRects.unitY2 > obj->clipRects.unitY1 + RF_TileToUnit(CK_INT(CK4_SmirkyHeightInTiles, 3)))
 			{
-				obj->velX = 0;
-				obj->velY = -48;
+				obj->velX = CK_INT(CK4_SmirkyJumpXVelocity, 0);
+				obj->velY = CK_INT(CK4_SmirkyJumpYVelocity, -48);
 				return;
 			}
 		}
@@ -68,22 +68,22 @@ void CK4_SmirkySearch(CK_object *obj)
 	// Jump for tile goodies
 	// DOS Keen increments a far pointer to the foreground plane, but it is
 	// semantically equivalent to calculate the offset on every iteration
-	for (int y = obj->clipRects.tileY1 - 3; y < obj->clipRects.tileY1; y++)
+	for (int y = obj->clipRects.tileY1 - CK_INT(CK4_SmirkyHeightInTiles, 3); y < obj->clipRects.tileY1; y++)
 	{
 		for (int x = obj->clipRects.tileX1; x < obj->clipRects.tileX2 + 1; x++)
 		{
 			int mf = TI_ForeMisc(CA_TileAtPos(x, y, 1)) & 0x7F;
 			if (mf == MF_Centilife || (mf >= MF_Points100 && mf <= MF_Stunner))
 			{
-				obj->velX = 0;
-				obj->velY = -48;
+				obj->velX = CK_INT(CK4_SmirkyJumpXVelocity, 0);
+				obj->velY = CK_INT(CK4_SmirkyJumpYVelocity, -48);
 				return;
 			}
 		}
 	}
 
 	// Decide to teleport for some reason
-	if (obj->user1 >= 2)
+	if (obj->user1 >= CK_INT(CK4_SmirkyTeleCycle, 2))
 	{
 		obj->currentAction = CK_GetActionByName("CK4_ACT_SmirkyTele0");
 		return;
@@ -97,14 +97,14 @@ void CK4_SmirkySearch(CK_object *obj)
 		int tf = TI_ForeTop(CA_TileAtPos(x, y, 1));
 		if (tf)
 		{
-			obj->velX = obj->xDirection * 20;
-			obj->velY = -24;
+			obj->velX = obj->xDirection * CK_INT(CK4_SmirkyHopXVelocity, 20);
+			obj->velY = CK_INT(CK4_SmirkyHopYVelocity, -24);
 			return;
 		}
 	}
 
 	// Decide to teleport if counter hits threshold
-	if (++obj->user1 == 2)
+	if (++obj->user1 == CK_INT(CK4_SmirkyTeleCycle, 2))
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_SMIRKYTELE));
 		obj->currentAction = CK_GetActionByName("CK4_ACT_SmirkyTele0");
@@ -112,8 +112,8 @@ void CK4_SmirkySearch(CK_object *obj)
 	}
 
 	// Finally, just turn around and hop back where we came from
-	obj->velX = -obj->xDirection * 20;
-	obj->velY = -24;
+	obj->velX = -obj->xDirection * CK_INT(CK4_SmirkyHopXVelocity, 20);
+	obj->velY = CK_INT(CK4_SmirkyHopYVelocity, -24);
 }
 
 void CK4_SmirkyTeleport(CK_object *obj)
@@ -124,7 +124,7 @@ void CK4_SmirkyTeleport(CK_object *obj)
 	{
 		if (o->type == CT4_Item)
 		{
-			obj->posX = o->posX - 0x80;
+			obj->posX = o->posX + CK_INT(CK4_SmirkyTeleItemXOffset, -0x80);
 			obj->posY = o->posY;
 			CK_SetAction(obj, CK_GetActionByName("CK4_ACT_SmirkyTele0"));
 		}
@@ -154,7 +154,7 @@ void CK4_SmirkyCol(CK_object *a, CK_object *b)
 		a->type = CT4_StunnedCreature;
 		CK_ShotHit(b);
 		CK_SetAction2(a, CK_GetActionByName("CK4_ACT_SmirkyStunned0"));
-		a->velY -= 16;
+		a->velY += CK_INT(CK4_SmirkyDeathHopYVelocity, -16);
 	}
 }
 
@@ -213,7 +213,7 @@ void CK4_SpawnMimrock(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 1;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0xD0;
+	obj->posY = RF_TileToUnit(tileY) - CK_INT(CK4_MimrockSpawnYOffset, 0xD0);
 	obj->xDirection = IN_motion_Right;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Mimrock0"));
@@ -221,9 +221,9 @@ void CK4_SpawnMimrock(int tileX, int tileY)
 
 void CK4_MimrockWait(CK_object *obj)
 {
-	if (CK_Cross_abs((int16_t)(obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2)) <= 0x500)
+	if (CK_Cross_abs((int16_t)(obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2)) <= CK_INT(CK4_MimrockWaitYRadius, 0x500))
 	{
-		if (CK_Cross_abs((int16_t)(obj->posX - ck_keenObj->posX)) > 0x300)
+		if (CK_Cross_abs((int16_t)(obj->posX - ck_keenObj->posX)) > CK_INT(CK4_MimrockWaitXRadius, 0x300))
 		{
 			if (ck_keenObj->posX < obj->posX)
 			{
@@ -247,13 +247,13 @@ void CK4_MimrockWait(CK_object *obj)
 
 void CK4_MimrockCheckJump(CK_object *obj)
 {
-	if ((CK_Cross_abs((int16_t)(obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2)) <= 0x500) &&
+	if ((CK_Cross_abs((int16_t)(obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2)) <= CK_INT(CK4_MimrockJumpYRadius, 0x500)) &&
 		(obj->xDirection == ck_keenObj->xDirection))
 	{
-		if (CK_Cross_abs((int16_t)(obj->posX - ck_keenObj->posX)) < 0x400)
+		if (CK_Cross_abs((int16_t)(obj->posX - ck_keenObj->posX)) < CK_INT(CK4_MimrockJumpXRadius, 0x400))
 		{
-			obj->velX = obj->xDirection * 20;
-			obj->velY = -40;
+			obj->velX = obj->xDirection * CK_INT(CK4_MimrockJumpXVelocity, 20);
+			obj->velY = CK_INT(CK4_MimrockJumpYVelocity, -40);
 			ck_nextY = obj->velY * SD_GetSpriteSync();
 			obj->currentAction = CK_GetActionByName("CK4_ACT_MimrockJump0");
 		}
@@ -273,7 +273,7 @@ void CK4_MimrockCol(CK_object *a, CK_object *b)
 		a->type = CT4_StunnedCreature;
 		CK_ShotHit(b);
 		CK_SetAction2(a, CK_GetActionByName("CK4_ACT_MimrockStunned0"));
-		a->velY -= 16;
+		a->velY += CK_INT(CK4_MimrockDeathHopYVelocity, -16);
 	}
 }
 
@@ -294,7 +294,7 @@ void CK4_MimrockJumpDraw(CK_object *obj)
 	if (obj->topTI)
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_MIMROCKJUMP));
-		obj->velY = -20;
+		obj->velY = CK_INT(CK4_MimrockBounceYVelocity, -20);
 		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_MimrockBounce0"));
 	}
 
@@ -334,7 +334,7 @@ void CK4_SpawnDopefish(int tileX, int tileY)
 	obj->zLayer = PRIORITIES - 2;
 	obj->clipped = CLIP_simple;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x300;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK4_DopefishSpawnYOffset, -0x300);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_DopefishSwim0"));
@@ -350,12 +350,12 @@ void CK4_DopefishMove(CK_object *obj)
 	if (!obj->user1)
 		obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 
-	CK_PhysAccelHorz2(obj, obj->xDirection, 10);
+	CK_PhysAccelHorz2(obj, obj->xDirection, CK_INT(CK4_DopefishXAccel, 10));
 
 	if (obj->posY < ck_keenObj->posY)
-		CK_PhysAccelVert1(obj, 1, 10);
+		CK_PhysAccelVert1(obj, 1, CK_INT(CK4_DopefishYAccel, 10));
 	else
-		CK_PhysAccelVert1(obj, -1, 10);
+		CK_PhysAccelVert1(obj, -1, CK_INT(CK4_DopefishYAccel, 10));
 }
 
 void CK4_DopefishEat(CK_object *obj)
@@ -363,35 +363,35 @@ void CK4_DopefishEat(CK_object *obj)
 	CK_object *si = obj;
 
 	si = CK_ConvertObj16BitOffsetToPointer(obj->user4);
-	int16_t dy = si->posY - 0x100 - obj->posY;
+	int16_t dy = si->posY - CK_INT(CK4_DopefishMouthYOffset, 0x100) - obj->posY;
 	int16_t dx;
 	if (obj->xDirection == IN_motion_Right)
-		dx = (si->clipRects.unitX2 + 0x20) - obj->clipRects.unitX2;
+		dx = (si->clipRects.unitX2 + CK_INT(CK4_DopefishMouthXOffset, 0x20)) - obj->clipRects.unitX2;
 	else
-		dx = (si->clipRects.unitX1 - 0x20) - obj->clipRects.unitX1;
+		dx = (si->clipRects.unitX1 - CK_INT(CK4_DopefishMouthXOffset, 0x20)) - obj->clipRects.unitX1;
 
 	if (dx < 0)
 	{
-		ck_nextX = SD_GetSpriteSync() * -32;
+		ck_nextX = SD_GetSpriteSync() * -CK_INT(CK4_DopefishEatVelocity, 32);
 		if (ck_nextX < dx)
 			ck_nextX = dx;
 	}
 	else
 	{
-		ck_nextX = SD_GetSpriteSync() * 32;
+		ck_nextX = SD_GetSpriteSync() * CK_INT(CK4_DopefishEatVelocity, 32);
 		if (ck_nextX > dx)
 			ck_nextX = dx;
 	}
 
 	if (dy < 0)
 	{
-		ck_nextY = SD_GetSpriteSync() * -32;
+		ck_nextY = SD_GetSpriteSync() * -CK_INT(CK4_DopefishEatVelocity, 32);
 		if (ck_nextY < dy)
 			ck_nextY = dy;
 	}
 	else
 	{
-		ck_nextY = SD_GetSpriteSync() * 32;
+		ck_nextY = SD_GetSpriteSync() * CK_INT(CK4_DopefishEatVelocity, 32);
 		if (ck_nextY > dy)
 			ck_nextY = dy;
 	}
@@ -418,26 +418,26 @@ void CK4_DopefishAfterBurp(CK_object *obj)
 
 	if (dx < 0)
 	{
-		ck_nextX = SD_GetSpriteSync() * -32;
+		ck_nextX = SD_GetSpriteSync() * -CK_INT(CK4_DopefishEatVelocity, 32);
 		if (ck_nextX < dx)
 			ck_nextX = dx;
 	}
 	else
 	{
-		ck_nextX = SD_GetSpriteSync() * 32;
+		ck_nextX = SD_GetSpriteSync() * CK_INT(CK4_DopefishEatVelocity, 32);
 		if (ck_nextX > dx)
 			ck_nextX = dx;
 	}
 
 	if (dy < 0)
 	{
-		ck_nextY = SD_GetSpriteSync() * -32;
+		ck_nextY = SD_GetSpriteSync() * -CK_INT(CK4_DopefishEatVelocity, 32);
 		if (ck_nextY < dy)
 			ck_nextY = dy;
 	}
 	else
 	{
-		ck_nextY = SD_GetSpriteSync() * 32;
+		ck_nextY = SD_GetSpriteSync() * CK_INT(CK4_DopefishEatVelocity, 32);
 		if (ck_nextY > dy)
 			ck_nextY = dy;
 	}
@@ -453,14 +453,14 @@ void CK4_DopefishBurp(CK_object *obj)
 {
 	// Spawn a bubble
 	CK_object *bubble = CK_GetNewObj(true);
-	bubble->posX = obj->posX + 0x380;
-	bubble->posY = obj->posY + 0x200;
+	bubble->posX = obj->posX + CK_INT(CK4_DopefishBurpBubbleXOffset, 0x380);
+	bubble->posY = obj->posY + CK_INT(CK4_DopefishBurpBubbleYOffset, 0x200);
 	bubble->type = CT_Friendly;
 	bubble->zLayer = PRIORITIES - 1;
 	bubble->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	bubble->clipped = CLIP_not;
-	bubble->velY = -20;
-	bubble->velX = 4;
+	bubble->velY = CK_INT(CK4_DopefishBurpBubbleYVelocity, -20);
+	bubble->velX = CK_INT(CK4_DopefishBurpBubbleXVelocity, 4);
 	CK_SetAction(bubble, CK_GetActionByName("CK4_ACT_DopeBubble0"));
 	SD_PlaySound(CK_SOUNDNUM(SOUND_DOPEFISHBURP));
 }
@@ -468,10 +468,10 @@ void CK4_DopefishBurp(CK_object *obj)
 void CK4_Bubbles(CK_object *obj)
 {
 	CK_Glide(obj);
-	if (US_RndT() < SD_GetSpriteSync() * 16)
+	if (US_RndT() < SD_GetSpriteSync() * CK_INT(CK4_DopefishBubbleWaveChance, 16))
 		obj->velX = -obj->velX;
 
-	if (obj->posY < 0x300)
+	if (obj->posY < CK_INT(CK4_DopefishBurpBubbleMaxY, 0x300))
 		CK_RemoveObj(obj);
 }
 
@@ -539,12 +539,12 @@ void CK4_SchoolfishMove(CK_object *obj)
 	if (!obj->user1)
 		obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 
-	CK_PhysAccelHorz2(obj, obj->xDirection, 10);
+	CK_PhysAccelHorz2(obj, obj->xDirection, CK_INT(CK4_SchoolfishXVelocity, 10));
 
 	if (obj->posY < ck_keenObj->posY)
-		CK_PhysAccelVert1(obj, 1, 10);
+		CK_PhysAccelVert1(obj, 1, CK_INT(CK4_SchoolfishYVelocity, 10));
 	else
-		CK_PhysAccelVert1(obj, -1, 10);
+		CK_PhysAccelVert1(obj, -1, CK_INT(CK4_SchoolfishYVelocity, 10));
 }
 
 // Sprites - the underwater kind
@@ -566,11 +566,11 @@ void CK4_SpawnSprite(int tileX, int tileY)
 
 void CK4_SpritePatrol(CK_object *obj)
 {
-	CK_PhysAccelVert1(obj, obj->yDirection, 8);
-	if (obj->user1 - obj->posY > 0x20)
+	CK_PhysAccelVert1(obj, obj->yDirection, CK_INT(CK4_SpritePatrolYAccel, 8));
+	if (obj->user1 - obj->posY > CK_INT(CK4_SpritePatrolYRadius, 0x20))
 		obj->yDirection = IN_motion_Down;
 
-	if (obj->posY - obj->user1 > 0x20)
+	if (obj->posY - obj->user1 > CK_INT(CK4_SpritePatrolYRadius, 0x20))
 		obj->yDirection = IN_motion_Up;
 
 	if (ck_keenObj->clipRects.unitY1 < obj->clipRects.unitY2 &&
@@ -595,7 +595,7 @@ void CK4_SpriteShoot(CK_object *obj)
 {
 	CK_object *shot = CK_GetNewObj(true);
 	shot->posX = obj->posX;
-	shot->posY = obj->posY + 0x80;
+	shot->posY = obj->posY + CK_INT(CK4_SpriteShotYOffset, 0x80);
 	shot->zLayer = PRIORITIES - 4;
 	shot->type = CT4_Sprite;
 	shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
@@ -667,18 +667,18 @@ void CK4_SpawnLindsey(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->user1 = obj->posY = RF_TileToUnit(tileY) - 0x100;
+	obj->user1 = obj->posY = RF_TileToUnit(tileY) + CK_INT(CK4_LindseySpawnYOffset, -0x100);
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Lindsey0"));
 }
 
 void CK4_LindseyFloat(CK_object *obj)
 {
-	CK_PhysAccelVert1(obj, obj->yDirection, 8);
-	if (obj->user1 - obj->posY > 0x20)
+	CK_PhysAccelVert1(obj, obj->yDirection, CK_INT(CK4_LindseyFloatYAccel, 8));
+	if (obj->user1 - obj->posY > CK_INT(CK4_LindseyFloatYRadius, 0x20))
 		obj->yDirection = IN_motion_Down;
 
-	if (obj->posY - obj->user1 > 0x20)
+	if (obj->posY - obj->user1 > CK_INT(CK4_LindseyFloatYRadius, 0x20))
 		obj->yDirection = IN_motion_Up;
 }
 
@@ -762,7 +762,7 @@ void CK4_SpawnWetsuit(int tileX, int tileY)
 	obj->type = CT4_Wetsuit;
 	obj->active = OBJ_ACTIVE;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x100;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK4_WetsuitSpawnYOffset, -0x100);
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Wetsuit0"));
 }
 

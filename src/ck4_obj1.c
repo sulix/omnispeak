@@ -93,7 +93,7 @@ void CK4_SpawnSlug(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 2;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x71;
+	obj->posY = RF_TileToUnit(tileY) - CK_INT(CK4_SlugSpawnYOffset, 0x71);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_SlugMove0"));
@@ -101,7 +101,7 @@ void CK4_SpawnSlug(int tileX, int tileY)
 
 void CK4_SlugMove(CK_object *obj)
 {
-	if (US_RndT() < 0x10)
+	if (US_RndT() < CK_INT(CK4_SlugSlimeChance, 0x10))
 	{
 		obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 		obj->currentAction = CK_GetActionByName("CK4_ACT_SlugSliming0");
@@ -116,7 +116,7 @@ void CK4_SlugSlime(CK_object *obj)
 	slime->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	slime->zLayer = PRIORITIES - 4;
 	slime->posX = obj->posX;
-	slime->posY = obj->clipRects.unitY2 - 0x80;
+	slime->posY = obj->clipRects.unitY2 - CK_INT(CK4_SlugSlimeYOffset, 0x80);
 	CK_SetAction(slime, CK_GetActionByName("CK4_ACT_SlugSlime0"));
 }
 
@@ -129,7 +129,7 @@ void CK4_SlugCol(CK_object *a, CK_object *b)
 	else if (b->type == CT_Stunner)
 	{
 		CK_StunCreature(a, b, CK_GetActionByName(US_RndT() < 0x80 ? "CK4_ACT_SlugStunned0" : "CK4_ACT_SlugStunned1"));
-		a->velY = -24;
+		a->velY = CK_INT(CK4_SlugDeathYVel, -24);
 		a->velX = a->xDirection * 8;
 	}
 }
@@ -143,7 +143,7 @@ void CK4_SpawnMushroom(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit((tileY)) - 0xF1;
+	obj->posY = RF_TileToUnit((tileY)) - CK_INT(CK4_MushroomSpawnYOffset, 0xF1);
 	obj->xDirection = IN_motion_Right;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Mushroom0"));
@@ -177,16 +177,16 @@ void CK4_MushroomDraw(CK_object *obj)
 	if (obj->topTI)
 	{
 		obj->velY = 0;
-		if (++obj->user1 == 3) // Jump counter
+		if (++obj->user1 ==CK_INT(CK4_MushroomNumJumps, 3)) // Jump counter
 		{
 			obj->user1 = 0;
-			obj->velY = -68;
+			obj->velY = CK_INT(CK4_MushroomJumpYVel, -68);
 			SD_PlaySound(CK_SOUNDNUM(SOUND_MUSHROOMLEAP));
 		}
 		else
 		{
 			SD_PlaySound(CK_SOUNDNUM(SOUND_MUSHROOMHOP));
-			obj->velY = -40;
+			obj->velY = CK_INT(CK4_MushroomHopYVel, -40);
 		}
 	}
 
@@ -202,7 +202,7 @@ void CK4_SpawnEgg(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 2;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x71;
+	obj->posY = RF_TileToUnit(tileY) - CK_INT(CK4_EggSpawnYOffset, 0x71);
 	obj->xDirection = IN_motion_Right;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Egg0"));
@@ -220,7 +220,7 @@ void CK4_SpawnBird(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 2;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0xF1;
+	obj->posY = RF_TileToUnit(tileY) - CK_INT(CK4_BirdSpawnYOffset, 0xF1);
 	obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_BirdHatched0"));
@@ -242,7 +242,7 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 		bird->type = CT4_Bird;
 		bird->active = OBJ_ACTIVE;
 		bird->posX = a->posX;
-		bird->posY = a->posY - 0x80;
+		bird->posY = a->posY - CK_INT(CK4_BirdHatchYOffset, 0x80);
 		bird->xDirection = a->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 		bird->yDirection = IN_motion_Down;
 		CK_SetAction(bird, CK_GetActionByName("CK4_ACT_BirdHatched0"));
@@ -253,8 +253,8 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 		shell->active = OBJ_EXISTS_ONLY_ONSCREEN;
 		shell->posX = a->posX;
 		shell->posY = a->posY;
-		shell->velX = -28;
-		shell->velY = -40;
+		shell->velX = CK_INT(CK4_BirdEggShellBitAXVel, -28);
+		shell->velY = CK_INT(CK4_BirdEggShellBitAYVel, -40);
 		CK_SetAction(shell, CK_GetActionByName("CK4_ACT_EggshellBitA0"));
 
 		shell = CK_GetNewObj(true);
@@ -262,8 +262,8 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 		shell->active = OBJ_EXISTS_ONLY_ONSCREEN;
 		shell->posX = a->posX;
 		shell->posY = a->posY;
-		shell->velX = 28;
-		shell->velY = -40;
+		shell->velX = CK_INT(CK4_BirdEggShellBitBXVel, 28);
+		shell->velY = CK_INT(CK4_BirdEggShellBitBYVel, -40);
 		CK_SetAction(shell, CK_GetActionByName("CK4_ACT_EggshellBitB0"));
 
 		shell = CK_GetNewObj(true);
@@ -271,8 +271,8 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 		shell->active = OBJ_EXISTS_ONLY_ONSCREEN;
 		shell->posX = a->posX;
 		shell->posY = a->posY;
-		shell->velX = 0;
-		shell->velY = -56;
+		shell->velX = CK_INT(CK4_BirdEggShellBitCXVel, 0);
+		shell->velY = CK_INT(CK4_BirdEggShellBitCYVel, -56);
 		CK_SetAction(shell, CK_GetActionByName("CK4_ACT_EggshellBitC0"));
 	}
 }
@@ -280,13 +280,13 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 void CK4_BirdWalk(CK_object *obj)
 {
 	obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
-	if (obj->clipRects.unitY2 >= ck_keenObj->clipRects.unitY2 + 0x300 &&
+	if (obj->clipRects.unitY2 >= ck_keenObj->clipRects.unitY2 + CK_INT(CK4_BirdWalkKeenYHeight, 0x300) &&
 		ck_keenObj->topTI &&
 		CK_PreviewClipRects(obj, CK_GetActionByName("CK4_ACT_BirdFly0")))
 	{
 		obj->currentAction = CK_GetActionByName("CK4_ACT_BirdFly0");
 		obj->clipped = CLIP_simple;
-		obj->velY = -8;
+		obj->velY = CK_INT(CK4_BirdInitialFlyVel, -8);
 		obj->user1 = 0;
 	}
 }
@@ -296,12 +296,12 @@ void CK4_BirdFly(CK_object *obj)
 	if (obj->user1 == 0)
 		obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 
-	CK_PhysAccelHorz2(obj, obj->xDirection, 16);
+	CK_PhysAccelHorz2(obj, obj->xDirection, CK_INT(CK4_BirdFlyXAccel, 16));
 
 	if (obj->posY < ck_keenObj->posY)
-		CK_PhysAccelVert1(obj, 1, 16);
+		CK_PhysAccelVert1(obj, 1, CK_INT(CK4_BirdFlyYAccel, 16));
 	else
-		CK_PhysAccelVert1(obj, -1, 16);
+		CK_PhysAccelVert1(obj, -1, CK_INT(CK4_BirdFlyYAccel, 16));
 }
 
 void CK4_BirdCol(CK_object *a, CK_object *b)
@@ -334,7 +334,7 @@ void CK4_BirdDraw(CK_object *obj)
 	{
 		obj->posX -= obj->deltaPosX;
 		obj->xDirection = IN_motion_Left;
-		obj->timeUntillThink = US_RndT() / 32;
+		obj->timeUntillThink = US_RndT() / CK_INT(CK4_BirdWallCooldownDivisor, 32);
 		CK_SetAction2(obj, obj->currentAction);
 	}
 	// Hit wall walking left; turn around and go right
@@ -342,13 +342,13 @@ void CK4_BirdDraw(CK_object *obj)
 	{
 		obj->posX -= obj->deltaPosX;
 		obj->xDirection = IN_motion_Right;
-		obj->timeUntillThink = US_RndT() / 32;
+		obj->timeUntillThink = US_RndT() / CK_INT(CK4_BirdWallCooldownDivisor, 32);
 		CK_SetAction2(obj, obj->currentAction);
 	}
 
 	if (!obj->topTI)
 	{
-		obj->velY = -16;
+		obj->velY = -CK_INT(CK4_BirdFlyYAccel, 16);
 		obj->clipped = CLIP_simple;
 		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_BirdFly0"));
 	}
@@ -384,14 +384,14 @@ void CK4_BirdFlyingDraw(CK_object *obj)
 		obj->xDirection = -obj->xDirection;
 	}
 
-	if (obj->topTI == 1 && ck_keenObj->clipRects.unitY2 - obj->clipRects.unitY2 < 0x80)
+	if (obj->topTI == 1 && ck_keenObj->clipRects.unitY2 - obj->clipRects.unitY2 < CK_INT(CK4_BirdLandYOffset, 0x80))
 	{
 		// Attempt to land, and remain flying if can't
 		CK_action *act = obj->currentAction;
 		obj->clipped = CLIP_normal;
 		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_BirdWalk0"));
 		ck_nextX = 0;
-		ck_nextY = 0x80;
+		ck_nextY = CK_INT(CK4_BirdLandYOffset, 0x80);
 		CK_PhysUpdateSimpleObj(obj);
 		if (!obj->topTI)
 		{
@@ -417,7 +417,7 @@ void CK4_SpawnArachnut(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x171;
+	obj->posY = RF_TileToUnit(tileY) - CK_INT(CK4_ArachnutSpawnYOffset, 0x171);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_ArachnutWalk0"));
@@ -474,8 +474,8 @@ void CK4_SkypestFly(CK_object *obj)
 	if (obj->yDirection == IN_motion_Down && US_RndT() < SD_GetSpriteSync() * 2)
 		obj->yDirection = -obj->yDirection;
 
-	CK_PhysAccelHorz(obj, obj->xDirection, 20);
-	CK_PhysAccelVert1(obj, obj->yDirection, 20);
+	CK_PhysAccelHorz(obj, obj->xDirection, CK_INT(CK4_SkypestAccelX, 20));
+	CK_PhysAccelVert1(obj, obj->yDirection, CK_INT(CK4_SkypestAccelY, 20));
 }
 
 void CK4_SkypestAirCol(CK_object *a, CK_object *b)
@@ -489,13 +489,13 @@ void CK4_SkypestAirCol(CK_object *a, CK_object *b)
 	if (b->type == CT_Stunner)
 	{
 		if (b->xDirection == IN_motion_Right)
-			a->velX = 20;
+			a->velX = CK_INT(CK4_SkypestAccelX, 20);
 		else if (b->xDirection == IN_motion_Left)
-			a->velX = -20;
+			a->velX = -CK_INT(CK4_SkypestAccelX, 20);
 		else if (b->yDirection == IN_motion_Down)
-			a->velY = 20;
+			a->velY = CK_INT(CK4_SkypestAccelY, 20);
 		else if (b->yDirection == IN_motion_Up)
-			a->velY = -20;
+			a->velY = -CK_INT(CK4_SkypestAccelY, 20);
 
 		CK_ShotHit(b);
 	}
@@ -516,21 +516,21 @@ void CK4_SkypestGroundCol(CK_object *a, CK_object *b)
 void CK4_SkypestTakeoff(CK_object *obj)
 {
 	obj->yDirection = IN_motion_Up;
-	obj->velY = -16;
-	ck_nextY = -144;
+	obj->velY = CK_INT(CK4_SkypestTakeoffYVel, -16);
+	ck_nextY = CK_INT(CK4_SkypestTakeoffYOffset, -144);
 }
 
 void CK4_SkypestDraw(CK_object *obj)
 {
 	if (obj->bottomTI)
 	{
-		obj->velY = 8;
+		obj->velY = CK_INT(CK4_SkypestHitCeilingYVel, 8);
 		obj->yDirection = IN_motion_Down;
 	}
 
 	if (obj->topTI && !obj->rightTI && !obj->leftTI)
 	{
-		obj->posY += 0x80;
+		obj->posY += CK_INT(CK4_SkypestPreenYOffset, 0x80);
 		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_SkypestPreen0"));
 	}
 

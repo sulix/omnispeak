@@ -287,6 +287,174 @@
 %int SOUND_KEENSCORE 51
 %int LASTSOUND 52
 
+# Object Variables
+# ----------------
+
+# Poison Slug
+%int CK4_SlugSpawnYOffset 0x71
+%int CK4_SlugSlimeChance 0x10 # 1/16th probability
+%int CK4_SlugSlimeYOffset 0x80
+%int CK4_SlugDeathYVel -24
+
+# Mad Mushroom
+%int CK4_MushroomSpawnYOffset 0xF1
+%int CK4_MushroomNumJumps 3 # Length of a Hop-Hop-Jump cycle
+%int CK4_MushroomJumpYVel -68
+%int CK4_MushroomHopYVel -40
+
+# Blue Bird
+%int CK4_EggSpawnYOffset 0x71
+%int CK4_BirdSpawnYOffset 0xF1
+%int CK4_BirdHatchYOffset 0x80
+%int CK4_BirdLandYOffset 0x80
+%int CK4_BirdEggShellBitAXVel -28
+%int CK4_BirdEggShellBitAYVel -40
+%int CK4_BirdEggShellBitBXVel 28
+%int CK4_BirdEggShellBitBYVel -40
+%int CK4_BirdEggShellBitCXVel 0
+%int CK4_BirdEggShellBitCYVel -56
+%int CK4_BirdWalkKeenYHeight 0x300 # Bird takes off if keen is >=3 tiles above
+%int CK4_BirdInitialFlyVel -8
+%int CK4_BirdFlyXAccel 16
+%int CK4_BirdFlyYAccel 16
+%int CK4_BirdWallCooldownDivisor 32 # Wait a random time (divided by this) after hitting a wall before being able to turn around again.
+
+# Arachnut
+%int CK4_ArachnutSpawnYOffset 0x171
+
+# Skypest
+%int CK4_SkypestAccelX 20
+%int CK4_SkypestAccelY 20
+%int CK4_SkypestTakeoffYVel -16
+%int CK4_SkypestTakeoffYOffset -144
+%int CK4_SkypestHitCeilingYVel 8
+%int CK4_SkypestPreenYOffset 0x80
+
+# Wormmouth
+%int CK4_WormmouthSpawnYOffset 0x8F
+%int CK4_WormmouthPeepChance 6
+%int CK4_WormmouthPeepXRadius 0x300
+%int CK4_WormmouthBiteYRadius 0x100
+%int CK4_WormmouthBiteRightMinX 0x80
+%int CK4_WormmouthBiteRightMaxX 0x180
+%int CK4_WormmouthBiteLeftMinX -0x200
+%int CK4_WormmouthBiteLeftMaxX -0x80
+
+# Cloud
+%int CK4_CloudXAccel 10
+%int CK4_CloudBoltXOffset 0x100
+%int CK4_CloudBoltYOffset 0x100
+
+# Berkeloid
+%int CK4_BerkeloidSpawnYOffset -0x200
+%int CK4_BerkeloidTurnChance 0x20
+%int CK4_BerkeloidThrowChance 8
+%int CK4_BerkeloidTargetKeenChance 0x40
+%int CK4_BerkeloidTargetKeenYRadius 0x100
+%int CK4_BerkeloidFireballXOffsetLeft -0x100
+%int CK4_BerkeloidFireballXOffsetRight 0x200
+%int CK4_BerkeloidFireballXVelocity 48
+%int CK4_BerkeloidFireballYOffset 0x80
+%int CK4_BerkeloidFireballYVelocity -8
+%int CK4_BerkeloidThrowCooldown 4
+%int CK4_BerkeloidHoverMaxYOffset 0
+%int CK4_BerkeloidHoverMinYOffset -0x100
+%int CK4_BerkeloidHoverYVelocity 8
+%int CK4_BerkeloidThinkTimeDivisor 32
+
+# Inchworm / Foot
+%int CK4_InchwormThinkTimeDivisor 32
+%int CK4_FootSpawnYOffsetTiles 3
+%int CK4_InchworkMaxCount 11 # If more than this, become a foot.
+%int CK4_InchwormFootYOffset 0x500
+%int CK4_FootPoof1XOffset -0x80
+%int CK4_FootPoof1YOffset 0x100
+%int CK4_FootPoof2XOffset 0x100
+%int CK4_FootPoof2YOffset 0x180
+%int CK4_FootPoof3XOffset 0x280
+%int CK4_FootPoof3YOffset 0x100
+%int CK4_FootPoof4XOffset 0
+%int CK4_FootPoof4YOffset -0x80
+
+# Bounder
+%int CK4_BounderSpawnYOffset -0x80
+%int CK4_BounderDeathHopVelocity -32
+%int CK4_BounderBounceYVelocity -50
+%int CK4_BounderRideRadius 0x40
+%int CK4_BounderBounceCycle 2
+%int CK4_BounderBounceLeftChance 100
+%int CK4_BounderBounceRightChance 200
+%int CK4_BounderBounceXVel 24
+%int CK4_BounderRideXVel @CK4_BounderBounceXVel
+
+# Lick
+%int CK4_LickThinkTimeDivisor 0x40
+%int CK4_LickFlameYRadius 0x100
+%int CK4_LickFlameLeftMinX -0x200
+%int CK4_LickFlameLeftMaxX 0x20
+%int CK4_LickFlameRightMinX -0x20
+%int CK4_LickFlameRightMaxX 0x180
+%int CK4_LickLongHopRadius 0x300
+%int CK4_LickLongHopXVelocity 32
+%int CK4_LickLongHopYVelocity -32
+%int CK4_LickShortHopXVelocity 16
+%int CK4_LickShortHopYVelocity -16
+%int CK4_LickDeathHopYVelocity 16
+
+# TODO: Platform flames
+
+# Smirky / Gnosticene Ancient / Treasure Eater
+%int CK4_SmirkySpawnYOffset -0x180
+%int CK4_SmirkyHeightInTiles 3
+%int CK4_SmirkyJumpXVelocity 0
+%int CK4_SmirkyJumpYVelocity -48
+%int CK4_SmirkyTeleCycle 2
+%int CK4_SmirkyHopXVelocity 20
+%int CK4_SmirkyHopYVelocity -24
+%int CK4_SmirkyTeleItemXOffset -0x80
+%int CK4_SmirkyDeathHopYVelocity -16
+
+# Mimrock
+%int CK4_MimrockSpawnYOffset 0xD0
+%int CK4_MimrockWaitXRadius 0x300
+%int CK4_MimrockWaitYRadius 0x500
+%int CK4_MimrockJumpXRadius 0x400
+%int CK4_MimrockJumpYRadius 0x500
+%int CK4_MimrockJumpXVelocity 20
+%int CK4_MimrockJumpYVelocity -40
+%int CK4_MimrockDeathHopYVelocity -16
+%int CK4_MimrockBounceYVelocity -20
+
+# Dopefish
+%int CK4_DopefishSpawnYOffset -0x300
+%int CK4_DopefishXAccel 10
+%int CK4_DopefishYAccel 10
+%int CK4_DopefishMouthYOffset 0x100
+%int CK4_DopefishMouthXOffset 0x20
+%int CK4_DopefishEatVelocity 32
+%int CK4_DopefishBurpBubbleXOffset 0x380
+%int CK4_DopefishBurpBubbleYOffset 0x200
+%int CK4_DopefishBurpBubbleXVelocity 4
+%int CK4_DopefishBurpBubbleYVelocity -20
+%int CK4_DopefishBubbleWaveChance, 16
+%int CK4_DopefishBurpBubbleMaxY 0x300
+
+# Schoolfish
+%int CK4_SchoolfishXVelocity 10
+%int CK4_SchoolfishYVelocity 10
+
+# Sprite
+%int CK4_SpritePatrolYAccel 8
+%int CK4_SpritePatrolYRadius 0x20
+%int CK4_SpriteShotYOffset 0x80
+
+# Princess Lindsey
+%int CK4_LindseySpawnYOffset -0x100
+%int CK4_LindseyFloatYAccel 8
+%int CK4_LindseyFloatYRadius 0x20
+
+# Wetsuit
+%int CK4_WetsuitSpawnYOffset -0x100
 
 %include "STRINGS.CK4"
 %include "ACTION.CK4"

@@ -37,7 +37,7 @@ void CK4_SpawnWormmouth(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) + 0x8F;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK4_WormmouthSpawnYOffset, 0x8F);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_WormmouthMove0"));
@@ -71,16 +71,16 @@ void CK4_WormmouthMove(CK_object *obj)
 	int16_t dx = (int16_t)ck_keenObj->posX - (int16_t)obj->posX;
 	int16_t dy = (int16_t)ck_keenObj->clipRects.unitY2 - (int16_t)obj->clipRects.unitY2;
 
-	if ((dx < -0x300 || dx > 0x300) && US_RndT() < 6)
+	if ((dx < -CK_INT(CK4_WormmouthPeepXRadius, 0x300) || dx > CK_INT(CK4_WormmouthPeepXRadius, 0x300)) && US_RndT() < CK_INT(CK4_WormmouthPeepChance, 6))
 	{
 		obj->currentAction = CK_GetActionByName("CK4_ACT_WormmouthPeep0");
 		return;
 	}
 
-	if (dy >= -0x100 && dy <= 0x100)
+	if (dy >= -CK_INT(CK4_WormmouthBiteYRadius, 0x100) && dy <= CK_INT(CK4_WormmouthBiteYRadius, 0x100))
 	{
-		if ((obj->xDirection == IN_motion_Right && dx > 0x80 && dx < 0x180) ||
-			(obj->xDirection == IN_motion_Left && dx < -0x80 && dx > -0x200))
+		if ((obj->xDirection == IN_motion_Right && dx > CK_INT(CK4_WormmouthBiteRightMinX, 0x80) && dx < CK_INT(CK4_WormmouthBiteRightMaxX, 0x180)) ||
+			(obj->xDirection == IN_motion_Left && dx < CK_INT(CK4_WormmouthBiteLeftMaxX, -0x80) && dx > CK_INT(CK4_WormmouthBiteLeftMinX, -0x200)))
 		{
 			SD_PlaySound(CK_SOUNDNUM(SOUND_WORMMOUTHBITE));
 			obj->currentAction = CK_GetActionByName("CK4_ACT_WormmouthBite0");
@@ -129,7 +129,7 @@ void CK4_CloudMove(CK_object *obj)
 	if (US_RndT() < SD_GetSpriteSync())
 		obj->xDirection = ck_keenObj->posX < obj->posX ? IN_motion_Left : IN_motion_Right;
 
-	CK_PhysAccelHorz(obj, obj->xDirection, 10);
+	CK_PhysAccelHorz(obj, obj->xDirection, CK_INT(CK4_CloudXAccel, 10));
 
 	if (ck_keenObj->clipRects.unitY2 >= obj->clipRects.unitY2 &&
 		ck_keenObj->clipRects.unitY1 - obj->clipRects.unitY2 <= 0x400 &&
@@ -142,7 +142,7 @@ void CK4_CloudMove(CK_object *obj)
 
 void CK4_CloudCheckStrike(CK_object *obj)
 {
-	CK_PhysAccelHorz(obj, obj->xDirection, 10);
+	CK_PhysAccelHorz(obj, obj->xDirection, CK_INT(CK4_CloudXAccel, 10));
 
 	// Align the cloud on an 8px boundary so that the lightning bolt,
 	// which has one shift, is aligned properly
@@ -181,8 +181,8 @@ void CK4_CloudStrike(CK_object *obj)
 	bolt->type = CT4_Bolt;
 	bolt->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	bolt->clipped = CLIP_not;
-	bolt->posX = obj->posX + 0x100;
-	bolt->posY = obj->posY + 0x100;
+	bolt->posX = obj->posX + CK_INT(CK4_CloudBoltXOffset, 0x100);
+	bolt->posY = obj->posY + CK_INT(CK4_CloudBoltYOffset, 0x100);
 	CK_SetAction(bolt, CK_GetActionByName("CK4_ACT_Lightning0"));
 	SD_PlaySound(CK_SOUNDNUM(SOUND_LIGHTNINGBOLT));
 }
@@ -204,7 +204,7 @@ void CK4_SpawnBerkeloid(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 2;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x200;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK4_BerkeloidSpawnYOffset, -0x200);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	obj->user2 = 8;
@@ -213,19 +213,19 @@ void CK4_SpawnBerkeloid(int tileX, int tileY)
 
 void CK4_BerkeloidMove(CK_object *obj)
 {
-	if (US_RndT() < 0x20)
+	if (US_RndT() < CK_INT(CK4_BerkeloidTurnChance, 0x20))
 		obj->xDirection = ck_keenObj->posX < obj->posX ? IN_motion_Left : IN_motion_Right;
 
-	if (US_RndT() < 8)
+	if (US_RndT() < CK_INT(CK4_BerkeloidThrowChance, 8))
 	{
 		obj->currentAction = CK_GetActionByName("CK4_ACT_BerkeloidThrow0");
 	}
-	else if (US_RndT() < 0x40)
+	else if (US_RndT() < CK_INT(CK4_BerkeloidTargetKeenChance, 0x40))
 	{
 		int16_t dx = ck_keenObj->posX - obj->posX;
 		int16_t dy = ck_keenObj->posY - obj->posY;
 
-		if (dy >= -0x100 && dy <= 0x100)
+		if (dy >= -CK_INT(CK4_BerkeloidTargetKeenYRadius, 0x100) && dy <= CK_INT(CK4_BerkeloidTargetKeenYRadius, 0x100))
 		{
 			if ((obj->xDirection == IN_motion_Right && dx > 0) ||
 				(obj->xDirection == IN_motion_Left && dx < 0))
@@ -242,18 +242,18 @@ void CK4_BerkeloidThrow(CK_object *obj)
 	CK_object *ball = CK_GetNewObj(true);
 	ball->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	ball->type = CT4_Berkeloid;
-	ball->posY = obj->posY + 0x80;
-	ball->velY = -8;
+	ball->posY = obj->posY + CK_INT(CK4_BerkeloidFireballYOffset, 0x80);
+	ball->velY = CK_INT(CK4_BerkeloidFireballYVelocity, -8);
 	if (obj->xDirection == IN_motion_Right)
 	{
-		ball->velX = 48;
-		ball->posX = obj->posX + 0x200;
+		ball->velX = CK_INT(CK4_BerkeloidFireballXVelocity, 48);
+		ball->posX = obj->posX + CK_INT(CK4_BerkeloidFireballXOffsetRight, 0x200);
 		ball->xDirection = IN_motion_Right;
 	}
 	else
 	{
-		ball->velX = -48;
-		ball->posX = obj->posX - 0x100;
+		ball->velX = -CK_INT(CK4_BerkeloidFireballXVelocity, 48);
+		ball->posX = obj->posX + CK_INT(CK4_BerkeloidFireballXOffsetLeft, -0x100);
 		ball->xDirection = IN_motion_Left;
 	}
 
@@ -263,7 +263,7 @@ void CK4_BerkeloidThrow(CK_object *obj)
 
 void CK4_BerkeloidThrowDone(CK_object *obj)
 {
-	obj->timeUntillThink = 4;
+	obj->timeUntillThink = CK_INT(CK4_BerkeloidThrowCooldown, 4);
 	obj->visible = true;
 }
 
@@ -296,15 +296,15 @@ void CK4_FireballDraw(CK_object *obj)
 void CK4_BerkeloidHover(CK_object *obj)
 {
 	obj->user1 = obj->user2 * SD_GetSpriteSync() + obj->user1;
-	if (obj->user1 > 0)
+	if (obj->user1 > CK_INT(CK4_BerkeloidHoverMaxYOffset, 0))
 	{
-		obj->user1 = 0;
-		obj->user2 = -8;
+		obj->user1 = CK_INT(CK4_BerkeloidHoverMaxYOffset, 0);
+		obj->user2 = -CK_INT(CK4_BerkeloidHoverYVelocity, 8);
 	}
-	else if (obj->user1 < -0x100)
+	else if (obj->user1 < CK_INT(CK4_BerkeloidHoverMinYOffset, -0x100))
 	{
-		obj->user1 = -0x100;
-		obj->user2 = 8;
+		obj->user1 = CK_INT(CK4_BerkeloidHoverMinYOffset, -0x100);
+		obj->user2 = CK_INT(CK4_BerkeloidHoverYVelocity, 8);
 	}
 
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY + obj->user1, obj->gfxChunk, false, obj->zLayer);
@@ -317,7 +317,7 @@ void CK4_BerkeloidDraw(CK_object *obj)
 	{
 		obj->posX -= obj->deltaPosX;
 		obj->xDirection = IN_motion_Left;
-		obj->timeUntillThink = US_RndT() / 32;
+		obj->timeUntillThink = US_RndT() / CK_INT(CK4_BerkeloidThinkTimeDivisor, 32);
 		CK_SetAction2(obj, obj->currentAction);
 	}
 	// Hit wall walking left; turn around and go right
@@ -325,14 +325,14 @@ void CK4_BerkeloidDraw(CK_object *obj)
 	{
 		obj->posX -= obj->deltaPosX;
 		obj->xDirection = IN_motion_Right;
-		obj->timeUntillThink = US_RndT() / 32;
+		obj->timeUntillThink = US_RndT() / CK_INT(CK4_BerkeloidThinkTimeDivisor, 32);
 		CK_SetAction2(obj, obj->currentAction);
 	}
 	else if (obj->topTI == 0)
 	{
 		obj->posX -= obj->deltaPosX * 2;
 		obj->xDirection = -obj->xDirection;
-		obj->timeUntillThink = US_RndT() / 32;
+		obj->timeUntillThink = US_RndT() / CK_INT(CK4_BerkeloidThinkTimeDivisor, 32);
 		CK_SetAction2(obj, obj->currentAction);
 	}
 
@@ -351,7 +351,7 @@ void CK4_SpawnInchworm(int tileX, int tileY)
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Inchworm0"));
-	obj->actionTimer = US_RndT() / 32; // So the worms don't all inch in unison?
+	obj->actionTimer = US_RndT() / CK_INT(CK4_InchwormThinkTimeDivisor, 32); // So the worms don't all inch in unison?
 }
 
 void CK4_SpawnFoot(int tileX, int tileY)
@@ -361,7 +361,7 @@ void CK4_SpawnFoot(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY - 3);
+	obj->posY = RF_TileToUnit(tileY - CK_INT(CK4_FootSpawnYOffsetTiles, 3));
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Foot1"));
 }
 
@@ -385,36 +385,36 @@ void CK4_InchwormCol(CK_object *a, CK_object *b)
 			a->user2 = 0;
 		}
 
-		if (++a->user2 == 11)
+		if (++a->user2 == CK_INT(CK4_InchworkMaxCount, 11))
 		{
 			// Turn worm into foot
 			SD_PlaySound(CK_SOUNDNUM(SOUND_FOOTAPPEAR));
-			a->posY -= 0x500;
+			a->posY -= CK_INT(CK4_InchwormFootYOffset, 0x500);
 			a->type = CT4_Foot;
 			CK_SetAction2(a, CK_GetActionByName("CK4_ACT_Foot1"));
 
 			// Spawn Foot poofs
 			CK_object *poof = CK_GetNewObj(true);
-			poof->posX = a->posX - 0x80;
-			poof->posY = a->posY + 0x100;
+			poof->posX = a->posX + CK_INT(CK4_FootPoof1XOffset, -0x80);
+			poof->posY = a->posY + CK_INT(CK4_FootPoof1YOffset, 0x100);
 			poof->zLayer = PRIORITIES - 1;
 			CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
 
 			poof = CK_GetNewObj(true);
-			poof->posX = a->posX + 0x100;
-			poof->posY = a->posY + 0x180;
+			poof->posX = a->posX + CK_INT(CK4_FootPoof2XOffset, 0x100);
+			poof->posY = a->posY + CK_INT(CK4_FootPoof2YOffset, 0x180);
 			poof->zLayer = PRIORITIES - 1;
 			CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
 
 			poof = CK_GetNewObj(true);
-			poof->posX = a->posX + 0x280;
-			poof->posY = a->posY + 0x100;
+			poof->posX = a->posX + CK_INT(CK4_FootPoof3XOffset, 0x280);
+			poof->posY = a->posY + CK_INT(CK4_FootPoof3YOffset, 0x100);
 			poof->zLayer = PRIORITIES - 1;
 			CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
 
 			poof = CK_GetNewObj(true);
-			poof->posX = a->posX;
-			poof->posY = a->posY - 0x80;
+			poof->posX = a->posX + CK_INT(CK4_FootPoof4XOffset, 0);
+			poof->posY = a->posY + CK_INT(CK4_FootPoof4YOffset, -0x80);
 			poof->zLayer = PRIORITIES - 1;
 			CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
 
@@ -442,7 +442,7 @@ void CK4_SpawnBounder(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x80;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK4_BounderSpawnYOffset, -0x80);
 	obj->yDirection = IN_motion_Down;
 	obj->xDirection = IN_motion_None;
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Bounder0"));
@@ -457,7 +457,7 @@ void CK4_BounderCheckShot(CK_object *a, CK_object *b)
 		CK_ShotHit(b);
 		CK_SetAction2(a, CK_GetActionByName("CK4_ACT_BounderStunned0"));
 		a->type = CT4_StunnedCreature;
-		a->velY -= 32;
+		a->velY += CK_INT(CK4_BounderDeathHopVelocity, -32);
 	}
 }
 
@@ -472,16 +472,16 @@ void CK4_BounderDraw(CK_object *obj)
 		if (CK_ObjectVisible(obj))
 			SD_PlaySound(CK_SOUNDNUM(SOUND_MUSHROOMLEAP));
 
-		obj->velY = -50;
+		obj->velY = CK_INT(CK4_BounderBounceYVelocity, -50);
 
 		if (ck_keenState.platform == obj)
 		{
 			obj->user2 = 0;
-			if (ck_keenObj->clipRects.unitX1 < obj->clipRects.unitX1 - 0x40)
+			if (ck_keenObj->clipRects.unitX1 < obj->clipRects.unitX1 - CK_INT(CK4_BounderRideRadius, 0x40))
 			{
 				obj->xDirection = IN_motion_Left;
 			}
-			else if (ck_keenObj->clipRects.unitX2 > obj->clipRects.unitX2 + 0x40)
+			else if (ck_keenObj->clipRects.unitX2 > obj->clipRects.unitX2 + CK_INT(CK4_BounderRideRadius, 0x40))
 			{
 				obj->xDirection = IN_motion_Right;
 			}
@@ -489,21 +489,21 @@ void CK4_BounderDraw(CK_object *obj)
 			{
 				obj->xDirection = IN_motion_None;
 			}
-			obj->velX = obj->xDirection * 24;
+			obj->velX = obj->xDirection * CK_INT(CK4_BounderRideXVel, 24);
 		}
-		else if (obj->user2 > 2 && obj->user1)
+		else if (obj->user2 > CK_INT(CK4_BounderBounceCycle, 2) && obj->user1)
 		{
 			// Change direction every third bounce, and not if just changed direction
 			obj->user1 = 0;
 			int16_t r = US_RndT();
-			if (r < 100)
+			if (r < CK_INT(CK4_BounderBounceLeftChance, 100))
 				obj->xDirection = IN_motion_Left;
-			else if (r < 200)
+			else if (r < CK_INT(CK4_BounderBounceRightChance, 200))
 				obj->xDirection = IN_motion_Right;
 			else
 				obj->xDirection = IN_motion_None;
 
-			obj->velX = obj->xDirection * 24;
+			obj->velX = obj->xDirection * CK_INT(CK4_BounderBounceXVel, 24);
 		}
 		else
 		{
@@ -545,7 +545,7 @@ void CK4_SpawnLick(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	obj->timeUntillThink = US_RndT() / 0x40;
+	obj->timeUntillThink = US_RndT() / CK_INT(CK4_LickThinkTimeDivisor, 0x40);
 	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_LickHop2"));
 }
 
@@ -556,10 +556,10 @@ void CK4_LickMove(CK_object *obj)
 	int16_t dx = ck_keenObj->posX - obj->posX;
 	int16_t dy = ck_keenObj->posY - obj->posY;
 
-	if (dy >= -0x100 && dy <= 0x100)
+	if (dy >= -CK_INT(CK4_LickFlameYRadius, 0x100) && dy <= CK_INT(CK4_LickFlameYRadius, 0x100))
 	{
-		if ((obj->xDirection == IN_motion_Right && dx > -0x20 && dx < 0x180) ||
-			(obj->xDirection == IN_motion_Left && dx < 0x20 && dx > -0x200))
+		if ((obj->xDirection == IN_motion_Right && dx > CK_INT(CK4_LickFlameRightMinX, -0x20) && dx < CK_INT(CK4_LickFlameRightMaxX, 0x180)) ||
+			(obj->xDirection == IN_motion_Left && dx < CK_INT(CK4_LickFlameLeftMaxX, 0x20) && dx > CK_INT(CK4_LickFlameLeftMinX, -0x200)))
 		{
 			SD_PlaySound(CK_SOUNDNUM(SOUND_LICKFLAME));
 			CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_LickFlame0"));
@@ -567,15 +567,15 @@ void CK4_LickMove(CK_object *obj)
 		}
 	}
 
-	if (CK_Cross_abs(dx) > 0x300)
+	if (CK_Cross_abs(dx) > CK_INT(CK4_LickLongHopRadius, 0x300))
 	{
-		obj->velX = obj->xDirection * 32;
-		obj->velY = -32;
+		obj->velX = obj->xDirection * CK_INT(CK4_LickLongHopXVelocity, 32);
+		obj->velY = CK_INT(CK4_LickLongHopYVelocity, -32);
 	}
 	else
 	{
-		obj->velX = (obj->xDirection * 32) / 2;
-		obj->velY = -16;
+		obj->velX = obj->xDirection * CK_INT(CK4_LickShortHopXVelocity, 16);
+		obj->velY = CK_INT(CK4_LickShortHopYVelocity, -16);
 	}
 }
 
@@ -584,7 +584,7 @@ void CK4_LickCheckShot(CK_object *a, CK_object *b)
 	if (b->type == CT_Stunner)
 	{
 		CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_LickStunned0"));
-		a->velY -= 16;
+		a->velY += CK_INT(CK4_LickDeathHopYVelocity, 16);
 	}
 }
 
