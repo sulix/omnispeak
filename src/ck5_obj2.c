@@ -36,7 +36,7 @@ void CK5_SpawnSparky(int tileX, int tileY)
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 0;
 	new_object->posX = RF_TileToUnit(tileX);
-	new_object->posY = RF_TileToUnit(tileY) - 0x100;
+	new_object->posY = RF_TileToUnit(tileY) + CK_INT(CK5_SparkySpawnYOffset, -0x100);
 	new_object->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	new_object->yDirection = IN_motion_Down;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Sparky0"));
@@ -45,7 +45,7 @@ void CK5_SpawnSparky(int tileX, int tileY)
 void CK5_SparkyWait(CK_object *obj)
 {
 
-	if (US_RndT() < 0x40)
+	if (US_RndT() < CK_INT(CK5_SparkySearchChance, 0x40))
 	{
 		obj->currentAction = CK_GetActionByName("CK5_ACT_SparkySearch0");
 		ck_nextX = 0;
@@ -63,12 +63,12 @@ void CK5_SparkySearchLeft(CK_object *obj)
 
 	uint16_t delY = ck_keenObj->clipRects.unitY2 + 0x100 - obj->clipRects.unitY2;
 
-	if (delY < 0x200 && ck_keenObj->posX < obj->posX)
+	if (delY < CK_INT(CK5_SparkySearchYRadius, 0x200) && ck_keenObj->posX < obj->posX)
 	{
 		obj->xDirection = IN_motion_Left;
 		SD_PlaySound(CK_SOUNDNUM(SOUND_SPARKYPREPCHARGE));
 		obj->currentAction = CK_GetActionByName("CK5_ACT_SparkyPrepCharge0");
-		obj->user1 = 3; //should this counter be multiplied by spritesync?
+		obj->user1 = CK_INT(CK5_SparkyPrepChargeDelay, 3); //should this counter be multiplied by spritesync?
 	}
 }
 
@@ -77,12 +77,12 @@ void CK5_SparkySearchRight(CK_object *obj)
 
 	uint16_t delY = ck_keenObj->clipRects.unitY2 + 0x100 - obj->clipRects.unitY2;
 
-	if (delY < 0x200 && ck_keenObj->posX > obj->posX)
+	if (delY < CK_INT(CK5_SparkySearchYRadius, 0x200) && ck_keenObj->posX > obj->posX)
 	{
 		obj->xDirection = IN_motion_Right;
 		SD_PlaySound(CK_SOUNDNUM(SOUND_SPARKYPREPCHARGE));
 		obj->currentAction = CK_GetActionByName("CK5_ACT_SparkyPrepCharge0");
-		obj->user1 = 3; //should this counter be multiplied by spritesync?
+		obj->user1 = CK_INT(CK5_SparkyPrepChargeDelay, 3); //should this counter be multiplied by spritesync?
 	}
 }
 
@@ -145,7 +145,7 @@ void CK5_SpawnAmpton(int tileX, int tileY)
 	new_object->active = OBJ_ACTIVE;
 	new_object->zLayer = 0;
 	new_object->posX = RF_TileToUnit(tileX);
-	new_object->posY = RF_TileToUnit(tileY) - 0x80;
+	new_object->posY = RF_TileToUnit(tileY) + CK_INT(CK5_AmptonSpawnYOffset, -0x80);
 	new_object->xDirection = (US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left);
 	new_object->yDirection = IN_motion_Down;
 	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Ampton0"));
@@ -181,7 +181,7 @@ void CK5_AmptonWalk(CK_object *obj)
 		if (miscflags == MISCFLAG_POLE)
 		{
 			// Don't always climb the pole
-			if (US_RndT() < 0xC4)
+			if (US_RndT() < CK_INT(CK5_AmptonClimbPoleChance, 0xC4))
 			{
 				bool polebelow = ((TI_ForeMisc(CA_TileAtPos(tileX, tileY + 2, 1)) & 0x7F) == MISCFLAG_POLE);
 				bool poleabove = ((TI_ForeMisc(CA_TileAtPos(tileX, tileY - 2, 1)) & 0x7F) == MISCFLAG_POLE);
@@ -243,8 +243,8 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 		{
 			// Dismount if there are fewer than 4 pole tiles above the hole
 			// or randomly, if there are more than 4
-			if (((TI_ForeMisc(CA_TileAtPos(tileX, tileY - 4, 1)) & 0x7F) != MISCFLAG_POLE) ||
-				US_RndT() >= 0x80)
+			if (((TI_ForeMisc(CA_TileAtPos(tileX, tileY - CK_INT(CK5_AmptonPoleMinHeight, 4), 1)) & 0x7F) != MISCFLAG_POLE) ||
+				US_RndT() >= CK_INT(CK5_AmptonPoleDismountChance, 0x80))
 			{
 
 				// Set the ampton on the ground
@@ -279,7 +279,7 @@ void CK5_AmptonPoleClimb(CK_object *obj)
 			// Dismount if not landing on pole hole
 			// If pole hole, randomly dismount
 			if ((TI_ForeMisc(CA_TileAtPos(tileX, tileY, 1)) & 0x7F) != MISCFLAG_POLE ||
-				US_RndT() >= 0x80)
+				US_RndT() >= CK_INT(CK5_AmptonPoleDismountChance, 0x80))
 			{
 
 				// Set ampton on the ground
@@ -369,7 +369,7 @@ void CK5_SpawnSlice(int tileX, int tileY, int dir)
 	new_object->zLayer = 2;
 	new_object->posX = RF_TileToUnit(tileX);
 	new_object->posY = RF_TileToUnit(tileY);
-	new_object->user4 = 20;
+	new_object->user4 = CK_INT(CK5_SliceHealth, 20);
 
 	switch (dir)
 	{
@@ -406,7 +406,7 @@ void CK5_SpawnSliceDiag(int tileX, int tileY)
 	new_object->clipped = CLIP_simple;
 	new_object->posX = RF_TileToUnit(tileX);
 	new_object->posY = RF_TileToUnit(tileY);
-	new_object->user4 = 50; // strength
+	new_object->user4 = CK_INT(CK5_SliceDiagHealth, 50); // strength
 
 	switch (US_RndT() / 0x40)
 	{
@@ -500,20 +500,20 @@ void CK5_ShellyWait(CK_object *obj)
 		int xDel = ck_keenObj->clipRects.unitXmid - obj->clipRects.unitXmid;
 		if (obj->xDirection == IN_motion_Right)
 		{
-			if (xDel > 0x100 && xDel < 0x300)
+			if (xDel > CK_INT(CK5_ShelleyDiveMinX, 0x100) && xDel < CK_INT(CK5_ShelleyDiveMaxX, 0x300))
 			{
-				obj->velX = 0x10;
-				obj->velY = -0x18;
+				obj->velX = CK_INT(CK5_ShelleyDiveXVel, 0x10);
+				obj->velY = CK_INT(CK5_ShelleyDiveYVel, -0x18);
 				obj->currentAction = CK_GetActionByName("CK5_ACT_ShellyDive0");
 				ck_nextY = ck_nextX = 0;
 			}
 		}
 		else
 		{
-			if (xDel < -0x100 && xDel > -0x300)
+			if (xDel < -CK_INT(CK5_ShelleyDiveMinX, 0x100) && xDel > -CK_INT(CK5_ShelleyDiveMaxX, 0x300))
 			{
-				obj->velX = -0x10;
-				obj->velY = -0x18;
+				obj->velX = -CK_INT(CK5_ShelleyDiveXVel, 0x10);
+				obj->velY = CK_INT(CK5_ShelleyDiveYVel, -0x18);
 				obj->currentAction = CK_GetActionByName("CK5_ACT_ShellyDive0");
 				ck_nextY = ck_nextX = 0;
 			}
@@ -535,8 +535,8 @@ void CK5_SpawnShellyBits(CK_object *obj)
 	{
 		new_object->posX = obj->posX;
 		new_object->posY = obj->posY;
-		new_object->velX = 0x20;
-		new_object->velY = -0x18;
+		new_object->velX = CK_INT(CK5_ShelleyBits0XVel, 0x20);
+		new_object->velY = CK_INT(CK5_ShelleyBits0YVel, -0x18);
 		CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_ShellyBits0"));
 	}
 
@@ -544,8 +544,8 @@ void CK5_SpawnShellyBits(CK_object *obj)
 	{
 		new_object->posX = obj->posX;
 		new_object->posY = obj->posY;
-		new_object->velX = -0x20;
-		new_object->velY = -0x18;
+		new_object->velX = CK_INT(CK5_ShelleyBits1XVel, -0x20);
+		new_object->velY = CK_INT(CK5_ShelleyBits1YVel, -0x18);
 		CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_ShellyBits1"));
 	}
 }

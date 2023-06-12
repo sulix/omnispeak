@@ -174,7 +174,7 @@ void CK5_VolteMove(CK_object *obj)
 	if (ck_nextX || ck_nextY)
 		return;
 
-	int16_t delta = SD_GetSpriteSync() * 32;
+	int16_t delta = SD_GetSpriteSync() * CK_INT(CK5_VolteSpeed, 32);
 
 	// Will we reach a new tile?
 	if (obj->user2 > delta)

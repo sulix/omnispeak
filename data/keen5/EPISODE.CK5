@@ -227,6 +227,8 @@
 %int SPR_MAPKEEN_STAND_W 244
 %int SPR_MAPKEEN_STAND_NW 262
 
+%int SPR_SHIKADIMINEEYE 379
+
 %int TEXT_HELPMENU 4914
 %int TEXT_CONTROLS 4915
 %int TEXT_STORY 4916
@@ -308,6 +310,154 @@
 %int SOUND_UNKNOWN62 62
 %int SOUND_UNKNOWN63 63
 %int LASTSOUND 64
+
+
+# Object Variables
+# ----------------
+
+# Volte-face
+%int CK5_VolteSpeed 32
+
+# Sparky
+%int CK5_SparkySpawnYOffset -0x100
+%int CK5_SparkySearchChance 0x40
+%int CK5_SparkySearchYRadius 0x200
+%int CK5_SparkyPrepChargeDelay 3
+
+# Li'l Ampton
+%int CK5_AmptonSpawnYOffset -0x80
+%int CK5_AmptonClimbPoleChance 0xC4
+%int CK5_AmptonPoleMinHeight 4
+%int CK5_AmptonPoleDismountChance 0x80
+
+# Slicestar
+%int CK5_SliceHealth 20
+%int CK5_SliceDiagHealth 50
+
+# Shelley
+%int CK5_ShelleyDiveMinX 0x100
+%int CK5_ShelleyDiveMaxX 0x300
+%int CK5_ShelleyDiveXVel 0x10
+%int CK5_ShelleyDiveYVel -0x18
+%int CK5_ShelleyBits0XVel 0x20
+%int CK5_ShelleyBits0YVel -0x18
+%int CK5_ShelleyBits1XVel -0x20
+%int CK5_ShelleyBits1YVel -0x18
+
+# Shikadi Mine
+%int CK5_MineSpawnYOffset -0x1F1
+%int CK5_MineDotLeftXOffset 0x80
+%int CK5_MineDotXOffset 0x100
+%int CK5_MineDotRightXOffset 0x180
+%int CK5_MineDotUpYOffset 0x50
+%int CK5_MineDotYOffset 0xD0
+%int CK5_MineDotDownYOffset 0x150
+%int CK5_MineDotsSpeed 4
+%int CK5_MinePathTileWidth 3
+%int CK5_MinePathTileHeight 2
+%int CK5_MineExplodeMinX -0x500
+%int CK5_MineExplodeMaxX 0x200
+%int CK5_MineExplodeMinY -0x50
+%int CK5_MineExplodeMaxY 0x300
+%int CK5_MineExplode2MinX -0x300
+%int CK5_MineExplode2MaxX 0x200
+%int CK5_MineExplode2MinY -0x300
+%int CK5_MineExplode2MaxY 0x300
+%int CK5_MineMoveDist 10
+%int CK5_MineShrapASpawnXOffset 0
+%int CK5_MineShrapABaseXVel 0
+%int CK5_MineShrapARndXVel -8 #Divisor for random component
+%int CK5_MineShrapABaseYVel -48
+%int CK5_MineShrapBSpawnXOffset 0x100
+%int CK5_MineShrapBBaseXVel 0
+%int CK5_MineShrapBRndXVel 8
+%int CK5_MineShrapBBaseYVel -48
+%int CK5_MineShrapCSpawnXOffset 0
+%int CK5_MineShrapCBaseXVel 40
+%int CK5_MineShrapCRndXVel 16
+%int CK5_MineShrapCBaseYVel -24
+%int CK5_MineShrapDSpawnXOffset 0x100
+%int CK5_MineShrapDBaseXVel -40
+%int CK5_MineShrapDRndXVel 16
+%int CK5_MineShrapDBaseYVel -24
+%int CK5_MineShrapESpawnXOffset 0
+%int CK5_MineShrapEBaseXVel 24
+%int CK5_MineShrapEBaseYVel 16
+%int CK5_MineShrapFSpawnXOffset 0x100
+%int CK5_MineShrapFBaseXVel 24
+%int CK5_MineShrapFBaseYVel 16
+
+# Robo Red
+%int CK5_RoboSpawnYOffset -0x400
+%int CK5_RoboShootChance 0x10
+%int CK5_RoboNumShots 10
+%int CK5_RoboShotLeftXOffset 0
+%int CK5_RoboShotRightXOffset 0x380
+%int CK5_RoboShotYOffset 0x200
+%int CK5_RoboShotXVelocity 60
+%int CK5_RoboShotYVelocity 8
+%int CK5_RoboShotRecoil 0x40
+
+# Spirogrip
+%int CK5_SpirogripSpawnYOffset -256
+%int CK5_SpirogripLaunchChance 20
+
+# Spindred
+%int CK5_SpindredSpawnYOffset -0x80
+%int CK5_SpindredAccel 3
+%int CK5_SpindredTerminalVelocity 70
+%int CK5_SpindredNumBounces 3
+%int CK5_SpindredFlyVel 68
+%int CK5_SpindredSlamVel 40
+
+# Shikadi Master
+%int CK5_MasterSpawnYOffset -0x180
+%int CK5_MasterStandChance 0x40
+%int CK5_MasterShotLeftXOffset 0x100
+%int CK5_MasterShotRightXOffset 0
+%int CK5_MasterShotYOffset 0x80
+%int CK5_MasterShotXVel 48
+%int CK5_MasterShotYVel -16
+%int CK5_MasterTeleNumTries 10
+%int CK5_MasterTeleRadiusDiv 8 # Teleport within 256/(8) = (32) tiles of keen if possible.
+%int CK5_MasterTeleXOffset -0x10
+%int CK5_MasterTeleYOffset -0x10
+%int CK5_MasterTeleClipX1 -1
+%int CK5_MasterTeleClipX2 4
+%int CK5_MasterTeleClipY1 -1
+%int CK5_MasterTeleClipY2 4
+%int CK5_MasterSparksXVel 48
+
+# Shikadi
+%int CK5_ShikadiSpawnYOffset -0x100
+%int CK5_ShikadiHealth 4
+%int CK5_ShikadiPoleXRadius 0x100
+%int CK5_ShikadiPoleZapChance 0x10
+%int CK5_ShikadiPoleZapSpeed 48
+
+# Shocksund
+%int CK5_ShocksundSpawnYOffset -0x80
+%int CK5_ShocksundHealth 2
+%int CK5_ShocksundStandChance 0x10
+%int CK5_ShocksundStandTime 0x10
+%int CK5_ShocksundJumpXVel 40
+%int CK5_ShocksundJumpYVel -40
+%int CK5_ShocksundShootChance 0x80
+%int CK5_ShocksundShotLeftXOffset 0
+%int CK5_ShocksundShotRightXOffset 0x70
+%int CK5_ShocksundShotYOffset 0x40
+%int CK5_ShocksundShotXVel 60
+
+# Sphereful
+%int CK5_SpherefulSpawnYOffset -0x100
+%int CK5_SpherefulMaxYVel 8
+%int CK5_SpherefulMaxXVel 8
+%int CK5_SpherefulBounceMaxYVel -4
+%int CK5_SpherefulBounceMinYVel -12
+
+# Korath / Scotty
+%int CK5_KorathSpawnYOffset -128
+%int CK5_KorathTurnChance 10
 
 %include "STRINGS.CK5"
 %include "ACTION.CK5"
