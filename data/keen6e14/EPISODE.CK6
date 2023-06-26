@@ -1,5 +1,5 @@
 #
-# Episode definition for Keen 6 (v1.5 EGA)
+# Episode definition for Keen 6 (v1.4 EGA)
 #
 
 # Episode variables
@@ -230,6 +230,10 @@
 %int SPR_MAPKEEN_STAND_W 186
 %int SPR_MAPKEEN_STAND_NW 204
 
+%int SPR_MAPKEEN_HANG 227
+
+%int SPR_NOSPIKE_QUESTIONMARK 316
+
 #%int TEXT_HELPMENU 4739
 #%int TEXT_CONTROLS 4741
 #%int TEXT_STORY 4740
@@ -301,7 +305,7 @@
 %int SOUND_NOSPIKECOLLIDE @SOUND_BLOOGGUARDSMASH
 %int SOUND_KEENTHROWROPE 53
 %int SOUND_ROCKETFLY 54
-%int SOUND_GOTKEYCARD 55
+%int SOUND_CEILICKLAUGH 55
 %int SOUND_ROCKETLAUNCH 56
 %int SOUND_GRABBITER 57
 %int SOUND_SPARKYPREPCHARGE 58
@@ -309,6 +313,134 @@
 %int LASTSOUND 60
 
 
+# Object Variables
+# ----------------
+
+# Map Rocket
+%int CK6_RocketFlyYOffset 0x100
+%int CK6_RocketFlySpeed 32
+
+# Map Cliff / Rope
+%int CK6_MapCliffTileWidth 1
+%int CK6_MapCliffTileHeight 1
+%int CK6_MapKeenRopeSpawnYOffset -0x200
+%int CK6_MapKeenRopeClimbSpeed 0x30
+%int CK6_MapKeenRopeClimbStartY 0x40
+
+# Map Satellite
+%int CK6_KeenSatelliteXOffset 0xC0
+%int CK6_KeenSatelliteYOffset 0x100
+%int CK6_SatelliteDrawXOffset 0x40
+%int CK6_SatelliteDrawYOffset 0x80
+
+# Molly
+%int CK6_MollySpawnYOffset -0x80
+
+# GoPlat
+%int CK6_GoplatGikXOffset 0x100
+%int CK6_GoplatGikYOffset 0x100
+
+# Bloog
+%int CK6_BloogSpawnYOffset -0x200
+%int CK6_BloogTurnChance 0x20
+
+# Blooguard
+%int CK6_BloogguardSpawnYOffset -0x280
+%int CK6_BloogguardHealth 3
+%int CK6_BloogguardTurnChance 0x20
+%int CK6_BloogguardClubChance 0x20
+%int CK6_BloogguardSmashDist 25
+
+# Blooglet
+%int CK6_BloogletSpawnYOffset -0x80
+%int CK6_BloogletGemYVel -40
+
+# Nospike
+%int CK6_NospikeSpawnYOffset -0x180
+%int CK6_NospikeHealth 4
+%int CK6_NospikeSitChance 0x10
+%int CK6_NospikeChargeChance 0x20
+%int CK6_NospikeGiveUpChance 0x8
+%int CK6_NospikeDeathHopYVel -24
+%int CK6_NospikeQuestionXOffset 0x100
+%int CK6_NospikeQuestionYOffset -0x80
+%int CK6_NospikeAirHangTime 6
+
+# Gik
+%int CK6_GikJumpKeenYMin 0
+%int CK6_GikJumpKeenYMax 0x400
+%int CK6_GikJumpKeenXRadiusMax 0x700
+%int CK6_GikJumpKeenXRadiusMin 0x100
+%int CK6_GikJumpXVel 40
+%int CK6_GikJumpYVel -28
+
+# Orbatrices
+%int CK6_OrbatrixSpawnYOffset -0x180
+%int CK6_OrbatrixIdleChance 0x20
+%int CK6_OrbatrixCurlKeenXRadius 0x500
+%int CK6_OrbatrixMaxFloatYVel 0x80
+%int CK6_OrbatrixRiseHeight 0x180
+%int CK6_OrbatrixRiseYVel -8
+%int CK6_OrbatrixBounceMinYVel 0x10 # Min Y vel before curled orbatrix starts bouncing
+%int CK6_OrbatrixBounceXVel 60
+%int CK6_OrbatrixBounceYVel -32
+%int CK6_OrbatrixBounceCount 5
+
+# Bips
+%int CK6_BipTurnRadius 0x40
+%int CK6_BipStandChance 0x10
+
+# Bipships
+%int CK6_BipshipSpawnYOffset -0x180
+%int CK6_BipshipInitXVel 20
+%int CK6_BipshipXAccel 20
+%int CK6_BipshipSearchYDiameter 0x200
+%int CK6_BipshipSearchYOffset 0x100
+%int CK6_BipshipShotXOffsetLeft 0
+%int CK6_BipshipShotXOffsetRight 0x100
+%int CK6_BipshipShotYOffset 0xA0
+%int CK6_BipshipShotXVel 64
+%int CK6_BipshipShotYVel 16
+%int CK6_BipshipCrashSmokeYOffset -0x180
+%int CK6_BipCrashYOffset -0x80
+
+# Flects
+%int CK6_FlectSpawnYOffset -0x100
+%int CK6_FlectTurnChance 0x20
+
+# Fleex
+%int CK6_FleexSpawnYOffset -0x280
+%int CK6_FleexHealth 4
+%int CK6_FleexDeathHopYVel -20
+
+# Bobbas
+%int CK6_BobbaSpawnYOffset -0x200
+%int CK6_BobbaShotXOffsetLeft 0xB0
+%int CK6_BobbaShotXOffsetRight 0x100
+%int CK6_BobbaShotYOffset 0xB0
+%int CK6_BobbaHopsPerShot 3
+%int CK6_BobbaHopXVel 32
+%int CK6_BobbaHopYVel -32
+
+# Babobbas
+%int CK6_BabobbaSpawnYOffset -0x200
+%int CK6_BabobbaNapChance 4
+%int CK6_BabobbaHopsPerShot 3
+%int CK6_BabobbaShotYOffset 0x40
+%int CK6_BabobbaShotXOffsetLeft 0xB0
+%int CK6_BabobbaShotXOffsetRight 0x100
+%int CK6_BabobbaShotXVel 32
+%int CK6_BabobbaHopXVel 24
+%int CK6_BabobbaHopYVel -32
+%int CK6_BabobbaShotDecayTime 10
+%int CK6_BabobbaShotVanishTime 5
+
+# Blorbs
+%int CK6_BlorbSpawnYOffset -0x80
+
+# Ceilicks
+%int CK6_CeilickSearchHeight 0x280
+%int CK6_CeilickSearchXRadius 0x10
 
 %include "STRINGS.CK6"
 %include "ACTION.CK6"

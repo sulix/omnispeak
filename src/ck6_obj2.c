@@ -38,20 +38,20 @@ void CK6_SpawnNospike(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x180;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_NospikeSpawnYOffset, -0x180);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_NospikeSit0"));
-	obj->user4 = 4;
+	obj->user4 = CK_INT(CK6_NospikeHealth, 4);
 }
 
 void CK6_NospikeWalk(CK_object *obj)
 {
-	if (US_RndT() < 0x10)
+	if (US_RndT() < CK_INT(CK6_NospikeSitChance, 0x10))
 	{
 		obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeSit0");
 	}
-	else if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2 && US_RndT() <= 0x20)
+	else if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2 && US_RndT() <= CK_INT(CK6_NospikeChargeChance, 0x20))
 	{
 		obj->xDirection = ck_keenObj->posX > obj->posX ? IN_motion_Right : IN_motion_Left;
 		obj->user1 = 0;
@@ -75,7 +75,7 @@ void CK6_NospikeCharge(CK_object *obj)
 		if (((ck_keenObj->clipRects.unitY2 != obj->clipRects.unitY2 ||
 			     (obj->xDirection == IN_motion_Left && obj->posX < ck_keenObj->posX) ||
 			     (obj->xDirection == IN_motion_Right && obj->posX > ck_keenObj->posX)) &&
-			    US_RndT() < 0x8) ||
+			    US_RndT() < CK_INT(CK6_NospikeGiveUpChance, 0x8)) ||
 			!CK_ObjectVisible(obj))
 		{
 			// Stop charging if nospike gets bored, or goes off screen
@@ -135,7 +135,7 @@ void CK6_NospikeCol(CK_object *a, CK_object *b)
 			CK_SetAction2(b, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
 			SD_PlaySound(CK_SOUNDNUM(SOUND_NOSPIKECOLLIDE));
 			a->type = b->type = CT6_StunnedCreature;
-			a->velY = b->velY = -24;
+			a->velY = b->velY = CK_INT(CK6_NospikeDeathHopYVel, -24);
 		}
 	}
 }
@@ -150,7 +150,7 @@ void CK6_NospikeFallDraw(CK_object *obj)
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 
 	// Place the question mark
-	RF_AddSpriteDrawUsing16BitOffset(&(obj->user3), obj->posX + 0x100, obj->posY - 0x80, 0x13C, false, 3);
+	RF_AddSpriteDrawUsing16BitOffset(&(obj->user3), obj->posX + CK_INT(CK6_NospikeQuestionXOffset, 0x100), obj->posY + CK_INT(CK6_NospikeQuestionYOffset, -0x80), CK_CHUNKNUM(SPR_NOSPIKE_QUESTIONMARK), false, 3);
 }
 
 void CK6_NospikeFallDraw2(CK_object *obj)
@@ -164,7 +164,7 @@ void CK6_NospikeFallDraw2(CK_object *obj)
 		CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
 		SD_PlaySound(CK_SOUNDNUM(SOUND_NOSPIKECOLLIDE));
 		obj->type = CT6_StunnedCreature;
-		obj->velY = -24;
+		obj->velY = CK_INT(CK6_NospikeDeathHopYVel, -24);
 	}
 }
 
@@ -182,7 +182,7 @@ void CK6_NospikeChargeDraw(CK_object *obj)
 			return;
 		}
 	}
-	else if (++obj->user1 == 6)
+	else if (++obj->user1 == CK_INT(CK6_NospikeAirHangTime, 6))
 	{
 		CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_NospikeFall0"));
 	}
@@ -221,13 +221,13 @@ void CK6_GikWalk(CK_object *obj)
 		int dx = ck_keenObj->posX - obj->posX;
 
 		int dy = obj->clipRects.unitY2 - ck_keenObj->clipRects.unitY2;
-		if (dy >= 0 && dy <= 0x400)
+		if (dy >= CK_INT(CK6_GikJumpKeenYMin, 0) && dy <= CK_INT(CK6_GikJumpKeenYMax, 0x400))
 		{
 			obj->xDirection = dx < 0 ? IN_motion_Left : IN_motion_Right;
-			if (dx >= -0x700 && dx <= 0x700 && (dx <= -0x100 || dx >= 0x100))
+			if (dx >= -CK_INT(CK6_GikJumpKeenXRadiusMax, 0x700) && dx <= CK_INT(CK6_GikJumpKeenXRadiusMax, 0x700) && (dx <= -CK_INT(CK6_GikJumpKeenXRadiusMin, 0x100) || dx >= CK_INT(CK6_GikJumpKeenXRadiusMin, 0x100)))
 			{
-				obj->velX = dx < 0 ? -40 : 40;
-				obj->velY = -28;
+				obj->velX = dx < 0 ? -CK_INT(CK6_GikJumpXVel, 40) : CK_INT(CK6_GikJumpXVel, 40);
+				obj->velY = CK_INT(CK6_GikJumpYVel, -28);
 				obj->currentAction = CK_GetActionByName("CK6_ACT_GikJump0");
 				SD_PlaySound(CK_SOUNDNUM(SOUND_GIKJUMP));
 			}
@@ -306,7 +306,7 @@ void CK6_SpawnOrbatrix(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit((tileY)) - 0x180;
+	obj->posY = RF_TileToUnit((tileY)) + CK_INT(CK6_OrbatrixSpawnYOffset, -0x180);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	obj->user4 = 1;
@@ -315,7 +315,7 @@ void CK6_SpawnOrbatrix(int tileX, int tileY)
 
 void CK6_OrbatrixFloat(CK_object *obj)
 {
-	if (US_RndT() < 0x20)
+	if (US_RndT() < CK_INT(CK6_OrbatrixIdleChance, 0x20))
 	{
 		obj->currentAction = CK_GetActionByName("CK6_ACT_OrbatrixUncurl2");
 	}
@@ -323,7 +323,7 @@ void CK6_OrbatrixFloat(CK_object *obj)
 	{
 		int dx = ck_keenObj->posX - obj->posX;
 		obj->xDirection = dx < 0 ? IN_motion_Left : IN_motion_Right;
-		if (dx > -0x500 && dx < 0x500)
+		if (dx > -CK_INT(CK6_OrbatrixCurlKeenXRadius, 0x500) && dx < CK_INT(CK6_OrbatrixCurlKeenXRadius, 0x500))
 			obj->currentAction = CK_GetActionByName("CK6_ACT_OrbatrixCurl0");
 	}
 }
@@ -345,14 +345,14 @@ void CK6_OrbatrixDraw(CK_object *obj)
 
 	obj->user3 += obj->user4 * SD_GetSpriteSync() * 4;
 
-	if (obj->user3 > 0x80)
+	if (obj->user3 > CK_INT(CK6_OrbatrixMaxFloatYVel, 0x80))
 	{
-		obj->user3 = 0x80;
+		obj->user3 = CK_INT(CK6_OrbatrixMaxFloatYVel, 0x80);
 		obj->user4 = -1;
 	}
-	else if (obj->user3 < -0x80)
+	else if (obj->user3 < -CK_INT(CK6_OrbatrixMaxFloatYVel, 0x80))
 	{
-		obj->user3 = -0x80;
+		obj->user3 = -CK_INT(CK6_OrbatrixMaxFloatYVel, 0x80);
 		obj->user4 = 1;
 	}
 }
@@ -372,19 +372,19 @@ void CK6_OrbatrixBounceDraw(CK_object *obj)
 		if (obj->topTI && --obj->user1 == 0)
 		{
 			CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_OrbatrixUncurl0"));
-			obj->user2 = 0x180;
+			obj->user2 = CK_INT(CK6_OrbatrixRiseHeight, 0x180);
 		}
 	}
 }
 
 void CK6_OrbatrixCurl(CK_object *obj)
 {
-	if (obj->user3 >= 0x10)
+	if (obj->user3 >= CK_INT(CK6_OrbatrixBounceMinYVel, 0x10))
 	{
-		obj->velX = obj->xDirection * 60;
-		obj->velY = -32;
+		obj->velX = obj->xDirection * CK_INT(CK6_OrbatrixBounceXVel, 60);
+		obj->velY = CK_INT(CK6_OrbatrixBounceYVel, -32);
 		obj->posY -= obj->user3;
-		obj->user1 = 5;
+		obj->user1 = CK_INT(CK6_OrbatrixBounceCount, 5);
 		obj->currentAction = obj->currentAction->next;
 	}
 
@@ -393,7 +393,7 @@ void CK6_OrbatrixCurl(CK_object *obj)
 
 void CK6_OrbatrixUncurlThink(CK_object *obj)
 {
-	ck_nextY = SD_GetSpriteSync() * -8;
+	ck_nextY = SD_GetSpriteSync() * CK_INT(CK6_OrbatrixRiseYVel, -8);
 	obj->user2 += ck_nextY;
 	if (obj->user2 <= 0)
 	{
@@ -421,15 +421,15 @@ void CK6_BipWalk(CK_object *obj)
 {
 	if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2)
 	{
-		if (ck_keenObj->clipRects.unitX1 - 0x40 < obj->clipRects.unitX2)
+		if (ck_keenObj->clipRects.unitX1 - CK_INT(CK6_BipTurnRadius, 0x40) < obj->clipRects.unitX2)
 			obj->xDirection = IN_motion_Right;
 
-		if (ck_keenObj->clipRects.unitX2 + 0x40 > obj->clipRects.unitX1)
+		if (ck_keenObj->clipRects.unitX2 + CK_INT(CK6_BipTurnRadius, 0x40) > obj->clipRects.unitX1)
 			obj->xDirection = IN_motion_Left;
 	}
 	else
 	{
-		if (US_RndT() < 0x10)
+		if (US_RndT() < CK_INT(CK6_BipStandChance, 0x10))
 		{
 			obj->xDirection = -obj->xDirection;
 			obj->currentAction = CK_GetActionByName("CK6_ACT_BipStand0");
@@ -453,9 +453,9 @@ void CK6_SpawnBipship(int tileX, int tileY)
 	obj->type = CT6_Bipship;
 	obj->active = OBJ_ACTIVE;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x180;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_BipshipSpawnYOffset, -0x180);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
-	obj->velX = obj->xDirection * 20;
+	obj->velX = obj->xDirection * CK_INT(CK6_BipshipInitXVel, 20);
 	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BipshipFly0"));
 }
 
@@ -469,15 +469,15 @@ void CK6_BipShotDraw(CK_object *obj)
 
 void CK6_BipshipTurn(CK_object *obj)
 {
-	CK_PhysAccelHorz(obj, obj->xDirection, 20);
+	CK_PhysAccelHorz(obj, obj->xDirection, CK_INT(CK6_BipshipXAccel, 20));
 }
 
 void CK6_BipshipFly(CK_object *obj)
 {
-	CK_PhysAccelHorz(obj, obj->xDirection, 20);
+	CK_PhysAccelHorz(obj, obj->xDirection, CK_INT(CK6_BipshipXAccel, 20));
 	int xdir = obj->xDirection;
-	int ycheck = ck_keenObj->clipRects.unitY2 + 0x100 - obj->clipRects.unitY2;
-	if (ycheck <= 0x200 && ycheck >= 0)
+	int ycheck = ck_keenObj->clipRects.unitY2 + CK_INT(CK6_BipshipSearchYOffset, 0x100) - obj->clipRects.unitY2;
+	if (ycheck <= CK_INT(CK6_BipshipSearchYDiameter, 0x200) && ycheck >= 0)
 	{
 		// Fire!!
 		xdir = (ck_keenObj->posX < obj->posX) ? IN_motion_Left : IN_motion_Right;
@@ -490,17 +490,17 @@ void CK6_BipshipFly(CK_object *obj)
 			shot->zLayer = PRIORITIES - 3;
 			if (obj->xDirection == IN_motion_Right)
 			{
-				shot->posX = obj->posX + 0x100;
-				shot->velX = 64;
+				shot->posX = obj->posX + CK_INT(CK6_BipshipShotXOffsetRight, 0x100);
+				shot->velX = CK_INT(CK6_BipshipShotXVel, 64);
 			}
 			else
 			{
-				shot->posX = obj->posX;
-				shot->velX = -64;
+				shot->posX = obj->posX + CK_INT(CK6_BipshipShotXOffsetLeft, 0);
+				shot->velX = -CK_INT(CK6_BipshipShotXVel, 64);
 			}
 
-			shot->posY = obj->posY + 0xA0;
-			shot->velY = 16;
+			shot->posY = obj->posY + CK_INT(CK6_BipshipShotYOffset, 0xA0);
+			shot->velY = CK_INT(CK6_BipshipShotYVel, 16);
 			CK_SetAction(shot, CK_GetActionByName("CK6_ACT_BipShot0"));
 		}
 	}
@@ -541,7 +541,7 @@ void CK6_BipshipCrash(CK_object *obj)
 	smoke->active = OBJ_ACTIVE;
 	smoke->zLayer = PRIORITIES - 2;
 	smoke->posX = obj->posX;
-	smoke->posY = obj->posY - 0x180;
+	smoke->posY = obj->posY + CK_INT(CK6_BipshipCrashSmokeYOffset, -0x180);
 	CK_SetAction(smoke, CK_GetActionByName("CK6_ACT_BipshipSmoke0"));
 	smoke->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 
@@ -550,7 +550,7 @@ void CK6_BipshipCrash(CK_object *obj)
 	bip->active = OBJ_ACTIVE;
 	bip->zLayer = PRIORITIES - 4;
 	bip->posX = obj->posX;
-	bip->posY = obj->posY - 0x80;
+	bip->posY = obj->posY + CK_INT(CK6_BipCrashYOffset, -0x80);
 	bip->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	CK_SetAction(bip, CK_GetActionByName("CK6_ACT_BipStand0"));
 }
@@ -573,7 +573,7 @@ void CK6_SpawnFlect(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x100;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_FlectSpawnYOffset, -0x100);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_FlectWalk0"));
@@ -625,7 +625,7 @@ void CK6_FlectWalk(CK_object *obj)
 		obj->xDirection = IN_motion_Right;
 	}
 
-	if (US_RndT() < 0x20)
+	if (US_RndT() < CK_INT(CK6_FlectTurnChance, 0x20))
 		obj->currentAction = CK_GetActionByName("CK6_ACT_FlectTurn0");
 }
 

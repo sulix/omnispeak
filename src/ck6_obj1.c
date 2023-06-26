@@ -62,11 +62,11 @@ void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 {
 	if (!ck_gameState.ep.ck6.sandwich)
 	{
-		CA_CacheGrChunk(0x23);
+		CA_CacheGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
 		SD_PlaySound(CK_SOUNDNUM(SOUND_GRABBITER));
 
 		US_CenterWindow(26, 8);
-		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 5);
 		US_CPrint(CK_STRING(ck6_str_grabbiterHungry));
@@ -83,9 +83,9 @@ void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 	else
 	{
 		ck_gameState.ep.ck6.sandwich++;
-		CA_CacheGrChunk(0x23);
+		CA_CacheGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
 		US_CenterWindow(26, 8);
-		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 2);
 		US_CPrint(CK_STRING(ck6_str_grabbiterFed));
@@ -124,10 +124,10 @@ void CK6_RocketCol(CK_object *a, CK_object *b)
 	if (ck_gameState.ep.ck6.passcard == 0)
 	{
 
-		CA_CacheGrChunk(0x23);
+		CA_CacheGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
 
 		US_CenterWindow(26, 8);
-		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 5);
 		US_CPrint(CK_STRING(ck6_str_rocketNoPasscard));
@@ -148,7 +148,7 @@ void CK6_RocketCol(CK_object *a, CK_object *b)
 		a->user2 = 0x100;
 		CK_SetAction2(a, CK_GetActionByName("CK6_ACT_RocketFly0"));
 		b->posX = a->posX;
-		b->posY = a->posY + 0x100;
+		b->posY = a->posY + CK_INT(CK6_RocketFlyYOffset, 0x100);
 		b->clipped = CLIP_not;
 		CK_SetAction2(b, CK_GetActionByName("CK6_ACT_MapKeenRocketSit0"));
 		SD_PlaySound(CK_SOUNDNUM(SOUND_ROCKETLAUNCH));
@@ -173,7 +173,7 @@ void CK6_RocketFly(CK_object *obj)
 		if (!SD_SoundPlaying())
 			SD_PlaySound(CK_SOUNDNUM(SOUND_ROCKETFLY));
 
-		int delta = SD_GetSpriteSync() * 32;
+		int delta = SD_GetSpriteSync() * CK_INT(CK6_RocketFlySpeed, 32);
 
 		// Will we reach a new tile?
 		if (obj->user2 > delta)
@@ -246,7 +246,7 @@ void CK6_RocketFly(CK_object *obj)
 				ck_keenObj->posX = RF_TileToUnit(tileX + 1) + 0x10;
 				ck_keenObj->posY = RF_TileToUnit(tileY + 1);
 				ck_keenObj->type = CT_Player;
-				ck_keenObj->gfxChunk = 0xBD;
+				ck_keenObj->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_STAND_E);
 				ck_keenObj->clipped = CLIP_normal;
 				CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
 				ck_gameState.ep.ck6.inRocket ^= 1;
@@ -297,9 +297,9 @@ void CK6_SpawnMapCliff(int tileX, int tileY, int dir)
 	obj->clipRects.tileY1 = obj->clipRects.tileY2 = tileY;
 	obj->user1 = dir;
 	obj->posX = obj->clipRects.unitX1 = RF_TileToUnit(tileX);
-	obj->clipRects.unitX2 = obj->clipRects.unitX1 + 0x100;
+	obj->clipRects.unitX2 = obj->clipRects.unitX1 + RF_TileToUnit(CK_INT(CK6_MapCliffTileWidth, 1));
 	if (dir)
-		obj->posY = obj->clipRects.unitY1 = RF_TileToUnit(tileY + 1) - 1;
+		obj->posY = obj->clipRects.unitY1 = RF_TileToUnit(tileY + CK_INT(CK6_MapCliffTileHeight, 1)) - 1;
 	else
 		obj->posY = obj->clipRects.unitY1 = RF_TileToUnit(tileY);
 
@@ -314,7 +314,7 @@ void CK6_SpawnMapCliff(int tileX, int tileY, int dir)
 		obj->zLayer = PRIORITIES - 4;
 		obj->type = CT_Friendly;
 		obj->posX = RF_TileToUnit(tileX);
-		obj->posY = RF_TileToUnit(tileY + 1);
+		obj->posY = RF_TileToUnit(tileY + CK_INT(CK6_MapCliffTileHeight, 1));
 		CK_SetAction(obj, CK_GetActionByName("CK6_ACT_RopeOnMap0"));
 	}
 }
@@ -327,10 +327,10 @@ void CK6_MapKeenThrowRope(CK_object *obj)
 	rope->zLayer = PRIORITIES - 4;
 	rope->type = CT_Friendly;
 	rope->posX = RF_TileToUnit(obj->clipRects.tileX2);
-	rope->posY = obj->posY - 0x200;
+	rope->posY = obj->posY + CK_INT(CK6_MapKeenRopeSpawnYOffset, -0x200);
 	CK_SetAction(rope, CK_GetActionByName("CK6_ACT_RopeOnMap0"));
 	obj->type = CT_Player;
-	obj->gfxChunk = 192;
+	obj->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_STAND_N);
 }
 
 void CK6_MapKeenClimb(CK_object *obj)
@@ -339,13 +339,13 @@ void CK6_MapKeenClimb(CK_object *obj)
 	{
 		if (obj->yDirection == IN_motion_Down)
 		{
-			obj->posY += 0x30;
-			obj->gfxChunk = 0xC3;
+			obj->posY += CK_INT(CK6_MapKeenRopeClimbSpeed, 0x30);
+			obj->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_STAND_S);
 		}
 		else
 		{
-			obj->posY -= 0x30;
-			obj->gfxChunk = 0xC0;
+			obj->posY -= CK_INT(CK6_MapKeenRopeClimbSpeed, 0x30);
+			obj->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_STAND_N);
 		}
 		obj->type = CT_Player;
 		CK_SetAction(obj, CK_GetActionByName("CK_ACT_MapKeenStart"));
@@ -358,10 +358,10 @@ void CK6_MapCliffCol(CK_object *a, CK_object *b)
 	{
 		if (ck_gameState.ep.ck6.rope == 0)
 		{
-			CA_CacheGrChunk(0x23);
+			CA_CacheGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
 
 			US_CenterWindow(26, 8);
-			VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), 0x23);
+			VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 			US_SetWindowW(US_GetWindowW() - 0x30);
 			US_SetPrintY(US_GetPrintY() + 15);
 			US_CPrint(CK_STRING(ck6_str_cliffNoRope));
@@ -387,14 +387,14 @@ void CK6_MapCliffCol(CK_object *a, CK_object *b)
 		{
 			if (a->user1)
 			{
-				b->posY += 0x40;
-				b->user4 = 6;
+				b->posY += CK_INT(CK6_MapKeenRopeClimbStartY, 0x40);
+				b->user4 = CK_INT(CK6_MapKeenRopeClimbDist, 6);
 				b->yDirection = IN_motion_Down;
 			}
 			else
 			{
-				b->posY -= 0x40;
-				b->user4 = 6;
+				b->posY -= CK_INT(CK6_MapKeenRopeClimbStartY, 0x40);
+				b->user4 = CK_INT(CK6_MapKeenRopeClimbDist, 6);
 				b->yDirection = IN_motion_Up;
 			}
 
@@ -466,8 +466,8 @@ void CK6_SatelliteCol(CK_object *a, CK_object *b)
 		{
 			if (b->currentAction == CK_GetActionByName("CK6_ACT_KeenSatellite0"))
 			{
-				b->posX = a->posX + 0xC0;
-				b->posY = a->posY + 0x100;
+				b->posX = a->posX + CK_INT(CK6_KeenSatelliteXOffset, 0xC0);
+				b->posY = a->posY + CK_INT(CK6_KeenSatelliteYOffset, 0x100);
 				CK_SetAction2(b, b->currentAction);
 			}
 		}
@@ -484,7 +484,7 @@ void CK6_SatelliteCol(CK_object *a, CK_object *b)
 					{
 						b->posX = a->posX;
 						b->posY = a->posY;
-						b->gfxChunk = 192;
+						b->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_STAND_N);
 						CK_SetAction2(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
 						b->clipped = CLIP_normal;
 						break;
@@ -494,8 +494,8 @@ void CK6_SatelliteCol(CK_object *a, CK_object *b)
 			}
 			else
 			{
-				b->posX = a->posX + 0xC0;
-				b->posY = a->posY + 0x100;
+				b->posX = a->posX + CK_INT(CK6_KeenSatelliteXOffset, 0xC0);
+				b->posY = a->posY + CK_INT(CK6_KeenSatelliteYOffset, 0x100);
 				b->clipped = CLIP_not;
 				CK_SetAction2(ck_keenObj, CK_GetActionByName("CK6_ACT_KeenSatellite0"));
 			}
@@ -505,7 +505,7 @@ void CK6_SatelliteCol(CK_object *a, CK_object *b)
 
 void CK6_KeenSatelliteDraw(CK_object *obj)
 {
-	RF_AddSpriteDraw(&(obj->sde), obj->posX + 0x40, obj->posY + 0x80, 0xE3, false, 1);
+	RF_AddSpriteDraw(&(obj->sde), obj->posX + CK_INT(CK6_SatelliteDrawXOffset, 0x40), obj->posY + CK_INT(CK6_SatelliteDrawYOffset, 0x80), CK_CHUNKNUM(SPR_MAPKEEN_HANG), false, 1);
 }
 
 // Story Items
@@ -564,7 +564,7 @@ void CK6_SpawnMolly(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x80;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_MollySpawnYOffset, -0x80);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Molly0"));
@@ -575,7 +575,7 @@ void CK6_SpawnMolly(int tileX, int tileY)
 void CK6_GoPlatDraw(CK_object *obj)
 {
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
-	RF_AddSpriteDrawUsing16BitOffset(&(obj->user3), obj->posX + 0x100, obj->posY + 0x100, obj->user1 + 425, false, 0);
+	RF_AddSpriteDrawUsing16BitOffset(&(obj->user3), obj->posX + CK_INT(CK6_GoplatGikXOffset, 0x100), obj->posY + 0x100, obj->user1 + 425, false, 0);
 }
 
 // Bloogs
@@ -587,7 +587,7 @@ void CK6_SpawnBloog(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x200;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_BloogSpawnYOffset, -0x200);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogWalk0"));
@@ -596,7 +596,7 @@ void CK6_SpawnBloog(int tileX, int tileY)
 // Bloogs
 void CK6_Bloog(CK_object *obj)
 {
-	if (US_RndT() < 0x20)
+	if (US_RndT() < CK_INT(CK6_BloogTurnChance, 0x20))
 		obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 }
 
@@ -625,16 +625,16 @@ void CK6_SpawnBloogguard(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x280;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_BloogguardSpawnYOffset, -0x280);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	obj->user2 = 3;
+	obj->user2 = CK_INT(CK6_BloogguardHealth, 3);
 	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogguardWalk0"));
 }
 
 void CK6_BloogguardWalk(CK_object *obj)
 {
-	if (US_RndT() < 0x20)
+	if (US_RndT() < CK_INT(CK6_BloogguardTurnChance, 0x20))
 		obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 
 	if ((obj->xDirection == IN_motion_Right && ck_keenObj->posX > obj->posX) ||
@@ -642,7 +642,7 @@ void CK6_BloogguardWalk(CK_object *obj)
 	{
 		if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2)
 		{
-			if (US_RndT() < 0x20)
+			if (US_RndT() < CK_INT(CK6_BloogguardClubChance, 0x20))
 				obj->currentAction = CK_GetActionByName("CK6_ACT_BloogguardClub0");
 		}
 	}
@@ -651,7 +651,7 @@ void CK6_BloogguardWalk(CK_object *obj)
 void CK6_BloogguardSmash(CK_object *obj)
 {
 	SD_PlaySound(CK_SOUNDNUM(SOUND_BLOOGGUARDSMASH));
-	ck6_smashScreenDistance = 25;
+	ck6_smashScreenDistance = CK_INT(CK6_BloogguardSmashDist, 25);
 	if (ck_keenObj->topTI)
 		CK_SetAction2(ck_keenObj, CK_GetActionByName("CK6_ACT_keenStunned0"));
 }
@@ -724,7 +724,7 @@ void CK6_SpawnBlooglet(int tileX, int tileY, int type)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x80;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_BloogletSpawnYOffset, -0x80);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	obj->user1 = type;
@@ -774,7 +774,7 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
 			gem->posX = a->posX;
 			gem->posY = a->posY;
 			gem->yDirection = IN_motion_Up;
-			gem->velY = -40;
+			gem->velY = CK_INT(CK6_BloogletGemYVel, -40);
 			gem->user1 = color;
 			gem->user2 = gem->gfxChunk = *CK_ItemSpriteChunks[color];
 			gem->user3 = gem->user2 + 2;

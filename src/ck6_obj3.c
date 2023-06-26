@@ -42,11 +42,11 @@ void CK6_SpawnFleex(int tileX, int tileY)
 	obj->type = CT6_Fleex;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x280;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_FleexSpawnYOffset, -0x280);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_FleexWalk0"));
-	obj->user2 = 4;
+	obj->user2 = CK_INT(CK6_FleexHealth, 4);
 }
 
 void CK6_FleexWalk(CK_object *obj)
@@ -88,7 +88,7 @@ void CK6_FleexCol(CK_object *a, CK_object *b)
 		else
 		{
 			CK_StunCreature(a, b, CK_GetActionByName("CK6_ACT_FleexStunned0"));
-			a->velY = -20;
+			a->velY = CK_INT(CK6_FleexDeathHopYVel, -20);
 		}
 	}
 }
@@ -102,7 +102,7 @@ void CK6_SpawnBobba(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x200;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_BobbaSpawnYOffset, -0x200);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BobbaJump0"));
@@ -115,16 +115,16 @@ void CK6_BobbaFireball(CK_object *obj)
 
 void CK6_Bobba(CK_object *obj)
 {
-	if (++obj->user1 == 3)
+	if (++obj->user1 == CK_INT(CK6_BobbaHopsPerShot, 3))
 	{
 		// Shoot every third hop
 		obj->user1 = 0;
 		CK_object *shot = CK_GetNewObj(true);
 		shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
 		shot->type = CT6_EnemyShot;
-		shot->posY = obj->posY + 0xB0;
+		shot->posY = obj->posY + CK_INT(CK6_BobbaShotYOffset, 0xB0);
 		shot->xDirection = obj->xDirection;
-		shot->posX = obj->xDirection == IN_motion_Right ? obj->posX + 0x100 : obj->posX + 0xB0;
+		shot->posX = obj->xDirection == IN_motion_Right ? obj->posX + CK_INT(CK6_BobbaShotXOffsetRight, 0x100) : obj->posX + CK_INT(CK6_BobbaShotXOffsetLeft, 0xB0);
 		CK_SetAction(shot, CK_GetActionByName("CK6_ACT_BobbaTwinkle0"));
 		shot->zLayer = PRIORITIES - 2;
 
@@ -146,8 +146,8 @@ void CK6_Bobba(CK_object *obj)
 			tile += obj->xDirection;
 		}
 
-		obj->velX = obj->xDirection * 32;
-		obj->velY = -32;
+		obj->velX = obj->xDirection * CK_INT(CK6_BobbaHopXVel, 32);
+		obj->velY = CK_INT(CK6_BobbaHopYVel, -32);
 		SD_PlaySound(CK_SOUNDNUM(SOUND_BOBBAJUMP));
 	}
 }
@@ -208,7 +208,7 @@ void CK6_SpawnBabobba(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x200;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_BabobbaSpawnYOffset, -0x200);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BabobbaJump0"));
@@ -216,23 +216,23 @@ void CK6_SpawnBabobba(int tileX, int tileY)
 
 void CK6_BabobbaSit(CK_object *obj)
 {
-	if (US_RndT() < 4)
+	if (US_RndT() < CK_INT(CK6_BabobbaNapChance, 4))
 	{
 		// Nap time
 		obj->user1 = 0;
 		obj->currentAction = CK_GetActionByName("CK6_ACT_BabobbaNap0");
 	}
-	else if (++obj->user1 == 3)
+	else if (++obj->user1 == CK_INT(CK6_BabobbaHopsPerShot, 3))
 	{
 		// Shoot every third hop
 		obj->user1 = 0;
 		CK_object *shot = CK_GetNewObj(true);
 		shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
 		shot->type = CT6_EnemyShot;
-		shot->posY = obj->posY + 0x40;
+		shot->posY = obj->posY + CK_INT(CK6_BabobbaShotYOffset, 0x40);
 		shot->xDirection = obj->xDirection;
-		shot->posX = obj->xDirection == IN_motion_Right ? obj->posX + 0x100 : obj->posX + 0xB0;
-		shot->velX = shot->xDirection * 32;
+		shot->posX = obj->xDirection == IN_motion_Right ? obj->posX + CK_INT(CK6_BabobbaShotXOffsetRight, 0x100) : obj->posX + CK_INT(CK6_BabobbaShotXOffsetLeft, 0xB0);
+		shot->velX = shot->xDirection * CK_INT(CK6_BabobbaShotXVel, 32);
 		CK_SetAction(shot, CK_GetActionByName("CK6_ACT_BabobbaShotStart0"));
 		shot->zLayer = PRIORITIES - 2;
 
@@ -254,8 +254,8 @@ void CK6_BabobbaSit(CK_object *obj)
 			tile += obj->xDirection;
 		}
 
-		obj->velX = obj->xDirection * 24;
-		obj->velY = -32;
+		obj->velX = obj->xDirection * CK_INT(CK6_BabobbaHopXVel, 24);
+		obj->velY = CK_INT(CK6_BabobbaHopYVel, -32);
 	}
 }
 
@@ -301,7 +301,7 @@ void CK6_BabobbaJumpDraw(CK_object *obj)
 
 void CK6_BabobbaShot(CK_object *obj)
 {
-	if (++obj->user1 == 10)
+	if (++obj->user1 == CK_INT(CK6_BabobbaShotDecayTime, 10))
 	{
 		obj->user1 = 0;
 		obj->currentAction = CK_GetActionByName("CK6_ACT_BabobbaShotVanish0");
@@ -310,7 +310,7 @@ void CK6_BabobbaShot(CK_object *obj)
 
 void CK6_BabobbaShotVanish(CK_object *obj)
 {
-	if (++obj->user1 == 5)
+	if (++obj->user1 == CK_INT(CK6_BabobbaShotVanishTime, 5))
 	{
 		CK_RemoveObj(obj);
 	}
@@ -325,7 +325,7 @@ void CK6_SpawnBlorb(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 0x80;
+	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_BlorbSpawnYOffset, -0x80);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = US_RndT() < 0x80 ? IN_motion_Down : IN_motion_Up;
 	obj->clipped = CLIP_simple;
@@ -374,10 +374,10 @@ void CK6_SpawnCeilick(int tileX, int tileY)
 
 void CK6_Ceilick(CK_object *obj)
 {
-	if (ck_keenObj->posY - obj->posY < 0x280 &&  // <- relies on unsignedness of posY
+	if (ck_keenObj->posY - obj->posY < CK_INT(CK6_CeilickSearchHeight, 0x280) &&  // <- relies on unsignedness of posY
 		ck_keenObj->posY - obj->posY >= 0 && // this line not in dos version
-		obj->clipRects.unitX2 + 0x10 > ck_keenObj->clipRects.unitX1 &&
-		obj->clipRects.unitX1 - 0x10 < ck_keenObj->clipRects.unitX2)
+		obj->clipRects.unitX2 + CK_INT(CK6_CeilickSearchXRadius, 0x10) > ck_keenObj->clipRects.unitX1 &&
+		obj->clipRects.unitX1 - CK_INT(CK6_CeilickSearchXRadius, 0x10) < ck_keenObj->clipRects.unitX2)
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_CEILICKATTACK));
 		obj->currentAction = CK_GetActionByName("CK6_ACT_CeilickStrike00");
@@ -386,7 +386,7 @@ void CK6_Ceilick(CK_object *obj)
 
 void CK6_CeilickDescend(CK_object *obj)
 {
-	SD_PlaySound(0x37);
+	SD_PlaySound(CK_SOUNDNUM(SOUND_CEILICKLAUGH));
 }
 
 void CK6_CeilickStunned(CK_object *obj)
