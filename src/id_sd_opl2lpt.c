@@ -219,6 +219,12 @@ void SD_OPL2LPT_Unlock()
 	SD_OPL2LPT_mutexLocked = false;
 }
 
+unsigned int SD_OPL2LPT_Detect()
+{
+	// TODO: Support OPL3LPT
+	return SD_CARD_OPL2;
+}
+
 SD_Backend sd_opl2lpt_backend = {
 	.startup = SD_OPL2LPT_Startup,
 	.shutdown = SD_OPL2LPT_Shutdown,
@@ -226,7 +232,9 @@ SD_Backend sd_opl2lpt_backend = {
 	.unlock = SD_OPL2LPT_Unlock,
 	.alOut = SD_OPL2LPT_alOut,
 	.pcSpkOn = SD_OPL2LPT_PCSpkOn,
-	.setTimer0 = SD_OPL2LPT_SetTimer0};
+	.setTimer0 = SD_OPL2LPT_SetTimer0,
+	.detect = SD_OPL2LPT_Detect
+};
 
 SD_Backend *SD_Impl_GetBackend_OPL2LPT()
 {

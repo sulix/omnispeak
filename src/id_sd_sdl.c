@@ -638,6 +638,11 @@ void SD_SDL_WaitTick()
 	SDL_UnlockMutex(mtx);
 }
 
+unsigned int SD_SDL_Detect()
+{
+	return SD_CARD_PC_SPEAKER | SD_CARD_OPL2 | SD_CARD_OPL3;
+}
+
 SD_Backend sd_sdl_backend = {
 	.startup = SD_SDL_Startup,
 	.shutdown = SD_SDL_Shutdown,
@@ -646,7 +651,9 @@ SD_Backend sd_sdl_backend = {
 	.alOut = SD_SDL_alOut,
 	.pcSpkOn = SD_SDL_PCSpkOn,
 	.setTimer0 = SD_SDL_SetTimer0,
-	.waitTick = SD_SDL_WaitTick};
+	.waitTick = SD_SDL_WaitTick,
+	.detect = SD_SDL_Detect
+};
 
 SD_Backend *SD_Impl_GetBackend()
 {

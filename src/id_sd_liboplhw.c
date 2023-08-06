@@ -180,6 +180,13 @@ void SD_OPLHW_WaitTick()
 	SDL_UnlockMutex(mtx);
 }
 
+unsigned int SD_OPLHW_Detect()
+{
+	unsigned int cards = SD_CARD_OPL2;
+	if (oplhw_IsOPL3(sd_oplhw_device))
+		cards |= SD_CARD_OPL3;
+	return cards;
+}
 
 SD_Backend sd_liboplhw_backend = {
 	.startup = SD_OPLHW_Startup,

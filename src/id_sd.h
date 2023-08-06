@@ -78,6 +78,11 @@ bool SD_MusicPlaying(void); // Actually return false for all time
 
 #define SD_ADLIB_NUM_CHANNELS 10
 
+// Soundcard Detection (bitmasks)
+#define SD_CARD_PC_SPEAKER 1 // Has PC-speaker support
+#define SD_CARD_OPL2 2 // Has Adlib support
+#define SD_CARD_OPL3 4 // Has OPL3 (SB16/Adlib Gold) support
+#define SD_CARD_BLASTER 8 // Has Digitised Sound (Sound Blaster) support.
 
 
 typedef struct SD_Backend
@@ -90,6 +95,7 @@ typedef struct SD_Backend
 	void (*pcSpkOn)(bool on, int freq);
 	void (*setTimer0)(int16_t int_8_divisor);
 	void (*waitTick)();
+	unsigned int (*detect)();
 } SD_Backend;
 
 SD_Backend *SD_Impl_GetBackend();

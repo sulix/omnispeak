@@ -147,6 +147,12 @@ void SD_DOS_Unlock()
 		enable();
 }
 
+unsigned int SD_DOS_Detect()
+{
+	// TODO: Actually detect the Adlib
+	return SD_CARD_PC_SPEAKER | SD_CARD_OPL2;
+}
+
 SD_Backend sd_dos_backend = {
 	.startup = SD_DOS_Startup,
 	.shutdown = SD_DOS_Shutdown,
@@ -154,7 +160,9 @@ SD_Backend sd_dos_backend = {
 	.unlock = SD_DOS_Unlock,
 	.alOut = SD_DOS_alOut,
 	.pcSpkOn = SD_DOS_PCSpkOn,
-	.setTimer0 = SD_DOS_SetTimer0};
+	.setTimer0 = SD_DOS_SetTimer0,
+	.detect = SD_DOS_Detect
+};
 
 SD_Backend *SD_Impl_GetBackend()
 {

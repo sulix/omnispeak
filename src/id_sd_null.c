@@ -93,6 +93,10 @@ void SD_NULL_WaitTick()
 	SDL_t0Service();
 }
 
+unsigned int SD_NULL_Detect()
+{
+	return 0;
+}
 
 SD_Backend sd_null_backend = {
 	.startup = SD_NULL_Startup,
@@ -102,7 +106,9 @@ SD_Backend sd_null_backend = {
 	.alOut = SD_NULL_alOut,
 	.pcSpkOn = SD_NULL_PCSpkOn,
 	.setTimer0 = SD_NULL_SetTimer0,
-	.waitTick = SD_NULL_WaitTick};
+	.waitTick = SD_NULL_WaitTick,
+	.detect = SD_NULL_Detect
+};
 
 SD_Backend *SD_Impl_GetBackend()
 {

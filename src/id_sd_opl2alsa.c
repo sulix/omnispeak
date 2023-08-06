@@ -331,6 +331,12 @@ void SD_ALSAOPL2_WaitTick()
 	SDL_UnlockMutex(mtx);
 }
 
+unsigned int SD_ALSAOPL2_Detect()
+{
+	// TODO: Support OPL3
+	return SD_CARD_OPL2;
+}
+
 SD_Backend sd_opl2_backend = {
 	.startup = SD_ALSAOPL2_Startup,
 	.shutdown = SD_ALSAOPL2_Shutdown,
@@ -339,7 +345,9 @@ SD_Backend sd_opl2_backend = {
 	.alOut = SD_ALSAOPL2_alOut,
 	.pcSpkOn = SD_ALSAOPL2_PCSpkOn,
 	.setTimer0 = SD_ALSAOPL2_SetTimer0,
-	.waitTick = SD_ALSAOPL2_WaitTick};
+	.waitTick = SD_ALSAOPL2_WaitTick,
+	.detect = SD_ALSAOPL2_Detect
+};
 
 SD_Backend *SD_Impl_GetBackend_ALSAOPL2()
 {
