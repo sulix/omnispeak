@@ -643,6 +643,13 @@ unsigned int SD_SDL_Detect()
 	return SD_CARD_PC_SPEAKER | SD_CARD_OPL2 | SD_CARD_OPL3;
 }
 
+void SD_SDL_SetOPL3(bool on)
+{
+	YM3812Write(&oplChip, 0x105, on ? 0x01 : 0x00);
+	// Reset 4-OPs to 2-op.
+	YM3812Write(&oplChip, 0x104, 0x00);
+}
+
 SD_Backend sd_sdl_backend = {
 	.startup = SD_SDL_Startup,
 	.shutdown = SD_SDL_Shutdown,
@@ -652,7 +659,8 @@ SD_Backend sd_sdl_backend = {
 	.pcSpkOn = SD_SDL_PCSpkOn,
 	.setTimer0 = SD_SDL_SetTimer0,
 	.waitTick = SD_SDL_WaitTick,
-	.detect = SD_SDL_Detect
+	.detect = SD_SDL_Detect,
+	.setOPL3 = SD_SDL_SetOPL3
 };
 
 SD_Backend *SD_Impl_GetBackend()

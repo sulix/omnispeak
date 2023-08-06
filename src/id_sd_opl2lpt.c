@@ -225,6 +225,11 @@ unsigned int SD_OPL2LPT_Detect()
 	return SD_CARD_OPL2;
 }
 
+void SD_OPL2LPT_SetOPL3(bool on)
+{
+	// TODO: Support OPL3LPT. liboplhw should handle it.
+}
+
 SD_Backend sd_opl2lpt_backend = {
 	.startup = SD_OPL2LPT_Startup,
 	.shutdown = SD_OPL2LPT_Shutdown,
@@ -233,7 +238,8 @@ SD_Backend sd_opl2lpt_backend = {
 	.alOut = SD_OPL2LPT_alOut,
 	.pcSpkOn = SD_OPL2LPT_PCSpkOn,
 	.setTimer0 = SD_OPL2LPT_SetTimer0,
-	.detect = SD_OPL2LPT_Detect
+	.detect = SD_OPL2LPT_Detect,
+	.setOPL3 = SD_OPL2LPT_SetOPL3
 };
 
 SD_Backend *SD_Impl_GetBackend_OPL2LPT()

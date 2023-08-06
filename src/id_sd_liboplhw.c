@@ -188,6 +188,13 @@ unsigned int SD_OPLHW_Detect()
 	return cards;
 }
 
+void SD_OPLHW_SetOPL3(bool on)
+{
+	oplhw_Write(sd_oplhw_device, 0x105, on ? 1 : 0);
+	// Reset any 4-OP registers
+	oplhw_Write(sd_oplhw_device, 0x104, 0);
+}
+
 SD_Backend sd_liboplhw_backend = {
 	.startup = SD_OPLHW_Startup,
 	.shutdown = SD_OPLHW_Shutdown,
@@ -196,7 +203,10 @@ SD_Backend sd_liboplhw_backend = {
 	.alOut = SD_OPLHW_alOut,
 	.pcSpkOn = SD_OPLHW_PCSpkOn,
 	.setTimer0 = SD_OPLHW_SetTimer0,
-	.waitTick = SD_OPLHW_WaitTick};
+	.waitTick = SD_OPLHW_WaitTick,
+	.detect = SD_OPLHW_Detect,
+	.setOPL3 = SD_OPLHW_SetOPL3
+};
 
 SD_Backend *SD_Impl_GetBackend_OPLHW()
 {

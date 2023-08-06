@@ -149,8 +149,34 @@ void SD_DOS_Unlock()
 
 unsigned int SD_DOS_Detect()
 {
+	unsigned int card = SD_CARD_PC_SPEAKER;
 	// TODO: Actually detect the Adlib
-	return SD_CARD_PC_SPEAKER | SD_CARD_OPL2;
+	card |= SD_CARD_OPL2;
+
+	uint8_t reg0 = inportb(SD_ADLIB_REG_PORT);
+	if ((reg0 & 0x06) == 0)
+		card |= SD_CARD_OPL3;
+	return card;
+}
+
+void SD_DOS_SetOPL3(bool on)
+{
+	int wereIntsEnabled = disable();
+
+	outportb(SD_ADLIB_REG_PORT + 2, 0x05);
+
+	// Delay 6 'in's to give the OPL2 some processing time.
+	for (int timer = 6; timer; --timer)
+		(void)inportb(SD_ADLIB_REG_PORT);
+
+	outportb(SD_ADLIB_DATA_PORT + 2, on ? 0x01 : 0x00);
+
+	// And wait a lot more after sending the data.
+	for (int timer = 35; timer; --timer)
+		(void)inportb(SD_ADLIB_REG_PORT);
+
+	if (wereIntsEnabled)
+		enable();
 }
 
 SD_Backend sd_dos_backend = {
@@ -161,7 +187,8 @@ SD_Backend sd_dos_backend = {
 	.alOut = SD_DOS_alOut,
 	.pcSpkOn = SD_DOS_PCSpkOn,
 	.setTimer0 = SD_DOS_SetTimer0,
-	.detect = SD_DOS_Detect
+	.detect = SD_DOS_Detect,
+	.setOPL3 = SD_DOS_SetOPL3
 };
 
 SD_Backend *SD_Impl_GetBackend()

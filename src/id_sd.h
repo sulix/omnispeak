@@ -96,6 +96,7 @@ typedef struct SD_Backend
 	void (*setTimer0)(int16_t int_8_divisor);
 	void (*waitTick)();
 	unsigned int (*detect)();
+	void (*setOPL3)(bool on);
 } SD_Backend;
 
 SD_Backend *SD_Impl_GetBackend();

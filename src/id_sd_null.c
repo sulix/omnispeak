@@ -98,6 +98,10 @@ unsigned int SD_NULL_Detect()
 	return 0;
 }
 
+void SD_NULL_SetOPL3(bool on)
+{
+}
+
 SD_Backend sd_null_backend = {
 	.startup = SD_NULL_Startup,
 	.shutdown = SD_NULL_Shutdown,
@@ -107,7 +111,8 @@ SD_Backend sd_null_backend = {
 	.pcSpkOn = SD_NULL_PCSpkOn,
 	.setTimer0 = SD_NULL_SetTimer0,
 	.waitTick = SD_NULL_WaitTick,
-	.detect = SD_NULL_Detect
+	.detect = SD_NULL_Detect,
+	.setOPL3 = SD_NULL_SetOPL3
 };
 
 SD_Backend *SD_Impl_GetBackend()

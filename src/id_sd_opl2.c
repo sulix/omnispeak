@@ -167,6 +167,11 @@ unsigned int SD_OPL2_Detect()
 	return SD_CARD_OPL2;
 }
 
+void SD_OPL2_SetOPL3(bool on)
+{
+	// This card is OPL2 only
+}
+
 SD_Backend sd_opl2_backend = {
 	.startup = SD_OPL2_Startup,
 	.shutdown = SD_OPL2_Shutdown,
@@ -175,7 +180,8 @@ SD_Backend sd_opl2_backend = {
 	.alOut = SD_OPL2_alOut,
 	.pcSpkOn = SD_OPL2_PCSpkOn,
 	.setTimer0 = SD_OPL2_SetTimer0,
-	.detect = SD_OPL2_Detect
+	.detect = SD_OPL2_Detect,
+	.setOPL3 = SD_OPL2_SetOPL3
 };
 
 SD_Backend *SD_Impl_GetBackend()
