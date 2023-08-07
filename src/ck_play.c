@@ -363,7 +363,7 @@ void CK_ItemCheat()
 	VH_UpdateScreen();
 	
 	IN_WaitButton();
-	//RF_Reset();
+	RF_ForceRefresh();
 	ck_gameState.numShots = 99;
 	ck_gameState.numLives++;
 	ck_gameState.ep.ck5.securityCard = 1;
@@ -1102,6 +1102,7 @@ void CK_CheckKeys()
 		{
 			ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
 		}
+		RF_ForceRefresh();
 	}
 
 	if (!ck_demoParm)
@@ -1206,7 +1207,7 @@ void CK_CheckKeys()
 	{
 		if (ck_debugActive && CK_DebugKeys())
 		{
-			//RF_ResetScreen();
+			RF_ForceRefresh();
 			SD_SetLastTimeCount(SD_GetTimeCount());
 		}
 	}
