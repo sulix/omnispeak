@@ -43,6 +43,11 @@ static int vl_dos_screenHeight;
 #define EGA_SC_INDEX 0x3C4
 #define EGA_SC_MAP_MASK 0x02
 #define EGA_GC_INDEX 0x3CE
+#define EGA_GC_ROTATE 0x03
+#define EGA_GC_ALU_WRITE 0x00
+#define EGA_GC_ALU_AND 0x08
+#define EGA_GC_ALU_OR 0x10
+#define EGA_GC_ALU_XOR 0x18
 #define EGA_GC_READMAP 0x04
 #define EGA_GC_MODE 0x05
 #define EGA_CRTC_INDEX 0x3D4
@@ -64,6 +69,10 @@ typedef struct VL_DOS_Surface
 
 static int vl_dos_palSegment;
 static int vl_dos_palSelector;
+
+// We cache the plane and write mode (they start invalid)
+static int vl_dos_currentPlane = 0xFF;
+static int vl_dos_currentWriteMode = 0xFF;
 
 static void VL_DOS_SetVideoMode(int mode)
 {
@@ -100,7 +109,11 @@ intptr_t vl_dos_maxvmemPtr = 0xB0000;
 
 static void VL_DOS_SetEGAWriteMode(int write_mode)
 {
-	outportw(EGA_GC_INDEX, (write_mode << 8) | EGA_GC_MODE);
+	if (vl_dos_currentWriteMode != write_mode)
+	{
+		outportw(EGA_GC_INDEX, (write_mode << 8) | EGA_GC_MODE);
+		vl_dos_currentWriteMode = write_mode;
+	}
 }
 
 static uint8_t *VL_DOS_GetSurfacePlanePointer(VL_DOS_Surface *surf, int plane)
@@ -110,9 +123,13 @@ static uint8_t *VL_DOS_GetSurfacePlanePointer(VL_DOS_Surface *surf, int plane)
 	if (surf->use == VL_SurfaceUsage_FrontBuffer)
 	{
 		// Set the plane.
-		uint16_t plane_val = (0x0100 << plane);
-		outportw(EGA_SC_INDEX, plane_val | EGA_SC_MAP_MASK);
-		outportw(EGA_GC_INDEX, (plane << 8) | EGA_GC_READMAP);
+		if (vl_dos_currentPlane != plane)
+		{
+			uint16_t plane_val = (0x0100 << plane);
+			outportw(EGA_SC_INDEX, plane_val | EGA_SC_MAP_MASK);
+			outportw(EGA_GC_INDEX, (plane << 8) | EGA_GC_READMAP);
+			vl_dos_currentPlane = plane;
+		}
 		// Add the plane length to switch to the active page.
 		return base_ptr;
 	}
@@ -305,15 +322,19 @@ static void VL_DOS_SurfaceToSurface(void *src_surface, void *dst_surface, int x,
 	VL_DOS_Surface *dest = (VL_DOS_Surface *)dst_surface;
 	int dst_byte_x_offset = x / 8;	// We automatically round coordinates to multiples of 8 (byte boundaries)
 	int src_byte_x_offset = sx / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
+	int src_pitch = surf->w / 8;
+	int dst_pitch = dest->w / 8;
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
-		for (int _y = sy; _y < sy + sh; ++_y)
+		uint8_t *src_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + (sy * src_pitch) + src_byte_x_offset;
+		uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(dest, plane) + (y * dst_pitch) + dst_byte_x_offset;
+		size_t copy_len = (sx + sw + 7) / 8 - src_byte_x_offset;
+		for (int _y = 0; _y < sh; ++_y)
 		{
-			uint8_t *src_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + (_y * (surf->w / 8)) + src_byte_x_offset;
-			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(dest, plane) + ((_y - sy + y) * (dest->w / 8)) + dst_byte_x_offset;
-			size_t copy_len = (sx + sw + 7) / 8 - src_byte_x_offset;
 			memcpy(dst_ptr, src_ptr, copy_len);
+			dst_ptr += dst_pitch;
+			src_ptr += src_pitch;
 		}
 	}
 }
@@ -337,6 +358,7 @@ static void VL_DOS_SurfaceToSelf(void *surface, int x, int y, int sx, int sy, in
 			uint8_t *plane_ptr = (uint8_t *)(srf->activePage ? srf->data2 : srf->data);
 			// Enable all planes.
 			outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
+			vl_dos_currentPlane = 0xFF; // Invalidate the current plane cache.
 			VL_DOS_SetEGAWriteMode(1);
 			if (directionY)
 			{
@@ -455,15 +477,19 @@ static void VL_DOS_MaskedToSurface(void *src, void *dst_surface, int x, int y, i
 	VL_Clip(&final_w, &final_h, &initial_x, &initial_y, surf->w, surf->h);
 	int src_plane_size = (w / 8) * h;
 	int dst_byte_x_offset = x / 8; // We automatically round coordinates to multiples of 8 (byte boundaries)
+	int src_pitch = w / 8;
+	int dst_pitch = surf->w / 8;
 	VL_DOS_SetEGAWriteMode(0);
 	for (int plane = 0; plane < 4; plane++)
 	{
+		uint8_t *src_ptr = (uint8_t *)src + (initial_y * src_pitch) + (src_plane_size * (plane + 1));
+		uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((initial_y + y) * dst_pitch) + dst_byte_x_offset;
+		size_t copy_len = (final_w + 7) / 8;
 		for (int _y = initial_y; _y < initial_y + final_h; ++_y)
 		{
-			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * (plane + 1)) + (_y * (w / 8));
-			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
-			size_t copy_len = (final_w + 7) / 8;
 			memcpy(dst_ptr, src_ptr, copy_len);
+			src_ptr += src_pitch;
+			dst_ptr += dst_pitch;
 		}
 	}
 }
@@ -472,22 +498,74 @@ static void VL_DOS_MaskedBlitToSurface(void *src, void *dst_surface, int x, int 
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)dst_surface;
 	int initial_x = x / 8, initial_y = y, final_w = w / 8, final_h = h;
+	int src_pitch = final_w, dst_pitch = surf->w / 8;
 	VL_Clip(&final_w, &final_h, &initial_x, &initial_y, surf->w / 8, surf->h);
-	int src_plane_size = (w / 8) * h;
+	int src_plane_size = src_pitch * h;
 	int dst_byte_x_offset = CK_Cross_max(0, x / 8); // We automatically round coordinates to multiples of 8 (byte boundaries)
 	VL_DOS_SetEGAWriteMode(0);
-	for (int plane = 0; plane < 4; plane++)
+
+	if (surf->use == VL_SurfaceUsage_FrontBuffer)
 	{
-		for (int _y = initial_y; _y < initial_y + final_h; ++_y)
+		// Mask first, which we can do 4 planes at a time.
 		{
-			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * (plane + 1)) + (_y * (w / 8)) + (initial_x);
-			uint8_t *mask_ptr = (uint8_t *)src + (_y * (w / 8)) + (initial_x);
-			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((_y + y) * (surf->w / 8)) + dst_byte_x_offset;
-			size_t copy_len = (final_w);
-			for (int _x = 0; _x < copy_len; ++_x)
+			uint8_t *mask_ptr = (uint8_t *)src + (initial_y * src_pitch) + initial_x;
+			volatile uint8_t *dst_ptr = (uint8_t *)(surf->activePage ? surf->data2 : surf->data) + ((y + initial_y) * dst_pitch) + dst_byte_x_offset;
+
+			outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
+			vl_dos_currentPlane = 0xFF; // Invalidate the current plane cache.
+
+			// We're ANDing on the GPU
+			outportw(EGA_GC_INDEX, EGA_GC_ALU_AND << 8 | EGA_GC_ROTATE);
+
+			for (int _y = initial_y; _y < initial_y + final_h; ++_y)
 			{
-				*dst_ptr &= *(mask_ptr++);
-				*(dst_ptr++) |= *(src_ptr++);
+				for (int _x = 0; _x < final_w; ++_x)
+				{
+					uint8_t force_read = *dst_ptr;
+					*(dst_ptr++) = *(mask_ptr++);
+				}
+				mask_ptr += src_pitch - final_w;
+				dst_ptr += dst_pitch - final_w;
+			}
+
+			// And back to normal
+			outportw(EGA_GC_INDEX, EGA_GC_ALU_WRITE << 8 | EGA_GC_ROTATE);
+		}
+
+
+		for (int plane = 0; plane < 4; plane++)
+		{
+			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * (plane + 1)) + (initial_y * src_pitch) + (initial_x);
+			//uint8_t *mask_ptr = (uint8_t *)src + initial_x;
+			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((y + initial_y) * dst_pitch) + dst_byte_x_offset;
+			for (int _y = initial_y; _y < initial_y + final_h; ++_y)
+			{
+				for (int _x = 0; _x < final_w; ++_x)
+				{
+					*(dst_ptr++) |= *(src_ptr++);
+				}
+				src_ptr += src_pitch - final_w;
+				dst_ptr += dst_pitch - final_w;
+			}
+		}
+	}
+	else
+	{
+		for (int plane = 0; plane < 4; plane++)
+		{
+			uint8_t *src_ptr = (uint8_t *)src + (src_plane_size * (plane + 1)) + (initial_y * src_pitch) + (initial_x);
+			uint8_t *mask_ptr = (uint8_t *)src + initial_x;
+			uint8_t *dst_ptr = VL_DOS_GetSurfacePlanePointer(surf, plane) + ((y + initial_y) * dst_pitch) + dst_byte_x_offset;
+			for (int _y = initial_y; _y < initial_y + final_h; ++_y)
+			{
+				for (int _x = 0; _x < final_w; ++_x)
+				{
+					*dst_ptr &= *(mask_ptr++);
+					*(dst_ptr++) |= *(src_ptr++);
+				}
+				src_ptr += src_pitch - final_w;
+				mask_ptr += src_pitch - final_w;
+				dst_ptr += dst_pitch - final_w;
 			}
 		}
 	}
@@ -645,7 +723,7 @@ static void VL_DOS_BitInvBlitToSurface(void *src, void *dst_surface, int x, int 
 	}
 }
 
-static void VL_DOS_ScrollSurface(void *surface, int x, int y)
+void VL_DOS_ScrollSurface(void *surface, int x, int y)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
 	int dest_x = (x < 0) ? -x : 0;
@@ -680,7 +758,17 @@ static void VL_DOS_ScrollSurface(void *surface, int x, int y)
 	}
 	else
 	{
-		VL_ScreenToScreen(dest_x, dest_y, src_x, src_y, surf->w + wOffset, surf->h + hOffset);
+		//VL_DOS_SurfaceToSelf(surf, dest_x, dest_y, src_x, src_y, surf->w + wOffset, surf->h + hOffset);
+		//return;
+
+		// Moving a surface doesn't preserve the new bits.
+		ssize_t srcOffset = (src_x / 8) + src_y * surf->w / 8;
+		ssize_t destOffset = (dest_x / 8) + dest_y * surf->w / 8;
+		size_t surfaceSize = (surf->w - wOffset) * (surf->h - hOffset) / 2;
+		uint8_t *newData = (uint8_t *)surf->data + destOffset;
+		uint8_t *oldData = (uint8_t *)surf->data + srcOffset;
+
+		memmove(newData, oldData, surfaceSize);
 	}
 }
 
