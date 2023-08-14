@@ -116,7 +116,7 @@ typedef struct CK_VAR_Variable
 void CK_VAR_Startup()
 {
 	STR_AllocTable(&ck_varTable, CK_VAR_MAXVARS);
-	ck_varArena = MM_ArenaCreate(16384);
+	ck_varArena = MM_ArenaCreate(65536);
 	MM_GetPtr((mm_ptr_t *)&ck_actionData, sizeof(CK_action) * CK_VAR_MAXACTIONS);
 	ck_actionsUsed = 0;
 }

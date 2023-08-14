@@ -438,6 +438,12 @@ $(BINDIR)/dumpprinter: ../tools/dumpprinter/dumpprinter.c
 # Phony rule to put the dump printer in the right directory
 dumpprinter: $(BINDIR)/dumpprinter
 
+# VarParser
+$(BINDIR)/varparser: ../tools/varparser/main.c ck_act.c id_str.c ck_cross.c id_mm.c
+	$(CXX) $(CXXFLAGS) -I. -DCK_VAR_FUNCTIONS_AS_STRINGS=1  -DCK_VAR_TYPECHECK=1 -o $@ $^
+
+varparser: $(BINDIR)/varparser
+
 # rules to copy data files
 binfiles: keen4data keen5data keen6data
 keen4data: $(BINDIR) $(K4DATA)
@@ -473,7 +479,7 @@ $(SDL_DIR):
 	wget -O- $(SDL_URL) | tar xz -C ..
 
 clean:
-	rm -f $(OUTBIN) $(OUTBIN)/dumpprinter $(OBJ) $(OBJDIR)/windowsres.res $(OBJDIR)/*.h $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA) $(BATFILES) $(SHELLFILES)
+	rm -f $(OUTBIN) $(OUTBIN)/dumpprinter $(OUTBIN)/varparser $(OBJ) $(OBJDIR)/windowsres.res $(OBJDIR)/*.h $(DEPS) $(K4DATA) $(K5DATA) $(K6DATA) $(BATFILES) $(SHELLFILES)
 
 RMDIR_ERRMSG = Note: Some of the 'bin' directories still contain user data. They have not been removed.
 export RMDIR_ERRMSG
@@ -485,4 +491,4 @@ distclean:
 
 -include $(DEPS)
 
-.PHONY: all help dumpconfig binfiles batfiles shellfiles keen4data keen5data keen6data clean distclean dumpprinter
+.PHONY: all help dumpconfig binfiles batfiles shellfiles keen4data keen5data keen6data clean distclean dumpprinter varparser
