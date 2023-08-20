@@ -29,9 +29,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_def.h"
 #include "ck_game.h"
 #include "ck_play.h"
+#ifdef WITH_KEEN4
 #include "ck4_ep.h"
+#endif
+#ifdef WITH_KEEN5
 #include "ck5_ep.h"
+#endif
+#ifdef WITH_KEEN6
 #include "ck6_ep.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -594,11 +600,18 @@ int main(int argc, char *argv[])
 #else // !CK_RUN_ACTION_VALIDATOR
 
 CK_EpisodeDef *ck_episodes[] = {
+#ifdef WITH_KEEN4
 	&ck4_episode,
+#endif
+#ifdef WITH_KEEN5
 	&ck5_episode,
+#endif
+#ifdef WITH_KEEN6
 	&ck6v14e_episode,
 	&ck6v15e_episode,
-	0};
+#endif
+	0
+};
 
 int main(int argc, char *argv[])
 {
@@ -617,9 +630,9 @@ int main(int argc, char *argv[])
 	CFG_Startup();
 
 	// Default to the first episode with all files present.
-	// If no episodes are found, we default to Keen 4, in order
-	// to show the file not found messages.
-	ck_currentEpisode = &ck4_episode;
+	// If no episodes are found, we default to the first DEMO_LOOP_ENABLED
+	// epside (usually Keen 4) in order to show the file not found messages.
+	ck_currentEpisode = ck_episodes[0];
 	for (int i = 0; ck_episodes[i]; ++i)
 	{
 		if (ck_episodes[i]->isPresent())
@@ -646,11 +659,18 @@ int main(int argc, char *argv[])
 			// A bit of stuff from the usual demo loop
 			if (argc >= i + 1)
 			{
+#ifdef WITH_KEEN4
 				if (!strcmp(argv[i + 1], "4"))
 					ck_currentEpisode = &ck4_episode;
-				else if (!strcmp(argv[i + 1], "5"))
+				else
+#endif
+#ifdef WITH_KEEN5
+				if (!strcmp(argv[i + 1], "5"))
 					ck_currentEpisode = &ck5_episode;
-				else if (!strcmp(argv[i + 1], "6"))
+				else
+#endif
+#ifdef WITH_KEEN6
+				if (!strcmp(argv[i + 1], "6"))
 				{
 					// For now, we use the 1.4 structure to
 					// call the IsPresent function, which
@@ -664,6 +684,7 @@ int main(int argc, char *argv[])
 				else if (!strcmp(argv[i + 1], "6v15"))
 					ck_currentEpisode = &ck6v15e_episode;
 				else
+#endif
 					Quit("Unsupported episode!");
 			}
 		}

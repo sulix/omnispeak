@@ -23,8 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_play.h"
 
 // TODO: Handle multiple episodes in some way
+#ifdef WITH_KEEN4
 #include "ck4_ep.h"
+#endif
+#ifdef WITH_KEEN5
 #include "ck5_ep.h"
+#endif
 
 #include "id_ca.h"
 #include "id_heads.h"
@@ -85,10 +89,12 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		{
 			ck_gameState.numShots += (ck_gameState.difficulty == D_Easy) ? 8 : 5;
 		}
+#ifdef WITH_KEEN5
 		else if ((ck_currentEpisode->ep == EP_CK5) && (b->user1 == 12))
 		{
 			ck_gameState.ep.ck5.securityCard = 1;
 		}
+#endif
 		CK_SetAction2(b, CK_GetActionByName("CK_ACT_itemNotify"));
 	}
 	else if (b->type == CT_CLASS(Platform)) //Platform
@@ -97,6 +103,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		if (!ck_keenState.platform)
 			CK_PhysPushY(a, b);
 	}
+#ifdef WITH_KEEN4
 	else if (ck_currentEpisode->ep == EP_CK4)
 	{
 		if (b->type == CT4_Foot)
@@ -136,9 +143,13 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 			CK_PhysPushXY(a, b, false);
 		}
 	}
+#endif
+#ifdef WITH_KEEN5
 	else if (ck_currentEpisode->ep == EP_CK5)
 	{
 	}
+#endif
+#ifdef WITH_KEEN6
 	else if (ck_currentEpisode->ep == EP_CK6)
 	{
 		if (b->type == CT_Stunner)
@@ -156,6 +167,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 			// keen is riding a platform he contacts his own stunner bullet.
 		}
 	}
+#endif
 }
 
 int ck_KeenRunXVels[8] = {0, 0, 4, 4, 8, -4, -4, -8};
@@ -331,12 +343,16 @@ void CK_KeenPressSwitchThink(CK_object *obj)
 	{
 		int infoPlaneInverses[8] = {2, 3, 0, 1, 6, 7, 4, 5};
 		uint16_t infoPlaneValue = CA_TileAtPos(switchTargetX, switchTargetY, 2);
+		// NOTE: This is only officially supported in Keen 5, though we probably will
+		// want to add it for mods.
+#ifdef WITH_KEEN5
 		if (infoPlaneValue >= 91 && infoPlaneValue < 99)
 		{
 			// Invert the direction of the goplat arrow.
 			infoPlaneValue = infoPlaneInverses[infoPlaneValue - 91] + 91;
 		}
 		else
+#endif
 		{
 			// Insert or remove a [B] block.
 			infoPlaneValue ^= 0x1F;
@@ -385,6 +401,7 @@ bool CK_KeenPressUp(CK_object *obj)
 			//We're at the door.
 
 			// Is it a security door?
+#ifdef WITH_KEEN5
 			if (tileMiscFlag == MISCFLAG_SECURITYDOOR)
 			{
 				if (ck_gameState.ep.ck5.securityCard)
@@ -411,15 +428,18 @@ bool CK_KeenPressUp(CK_object *obj)
 				}
 			}
 			else
+#endif
 			{
 				ck_invincibilityTimer = 110;
 				obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor0");
 				obj->zLayer = 0;
 
+#ifdef WITH_KEEN5
 				if ((ck_currentEpisode->ep == EP_CK5) && !CA_TileAtPos(obj->clipRects.tileXmid, obj->clipRects.tileY1, 2))
 				{
 					CK5_SpawnLightning();
 				}
+#endif
 			}
 		}
 		else
@@ -482,6 +502,7 @@ void CK_KeenEnterDoor(CK_object *obj)
 {
 	uint16_t destination = CA_TileAtPos(obj->clipRects.tileX1, obj->clipRects.tileY2, 2);
 
+#ifdef WITH_KEEN5
 	if (ck_currentEpisode->ep == EP_CK5)
 	{
 		if (destination == 0x0000)
@@ -498,7 +519,7 @@ void CK_KeenEnterDoor(CK_object *obj)
 			return;
 		}
 	}
-
+#endif
 	obj->posY = RF_TileToUnit((destination & 0xFF)) - 256 + 15;
 	obj->posX = RF_TileToUnit((destination >> 8));
 	obj->zLayer = 1;
@@ -1133,8 +1154,10 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 		}
 		else
 		{
+#ifdef WITH_KEEN6
 			if (obj->bottomTI == 0x21) // Bloog switches
 				CK6_ToggleBigSwitch(obj, false);
+#endif
 
 			if (!ck_gameState.jumpCheat)
 			{
@@ -1169,10 +1192,12 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 			{
 				SD_PlaySound(CK_SOUNDNUM(SOUND_KEENLANDONFUSE));
 			}
+#ifdef WITH_KEEN6
 			if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
 			{
 				CK6_ToggleBigSwitch(obj, true);
 			}
+#endif
 			if (obj->topTI != 0x19 || !ck_keenState.jumpTimer) // Or standing on a platform.
 			{
 				obj->user1 = obj->user2 = 0; // Being on the ground is boring.
@@ -1337,6 +1362,7 @@ void CK_KeenPogoThink(CK_object *obj)
 	}
 }
 
+#ifdef WITH_KEEN5
 void CK_KeenBreakFuse(int x, int y)
 {
 	CK5_SpawnFuseExplosion(x, y);
@@ -1351,6 +1377,7 @@ void CK_KeenBreakFuse(int x, int y)
 
 	RF_ReplaceTiles(brokenFuseTiles, 1, x, y, 1, 2);
 }
+#endif
 
 void CK_KeenPogoDrawFunc(CK_object *obj)
 {
@@ -1375,8 +1402,10 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 		}
 		else
 		{
+#ifdef WITH_KEEN6
 			if (obj->bottomTI == 0x21) // Bloog switches
 				CK6_ToggleBigSwitch(obj, false);
+#endif
 
 			if (!ck_gameState.jumpCheat)
 			{
@@ -1407,11 +1436,14 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 		}
 		else
 		{
+#ifdef WITH_KEEN6
 			if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
 			{
 				CK6_ToggleBigSwitch(obj, true);
 			}
-			else if (obj->topTI == 0x39) // Fuse
+#endif
+#ifdef WITH_KEEN5
+			if (obj->topTI == 0x39) // Fuse
 			{
 				if (obj->velY >= 0x30)
 				{
@@ -1421,6 +1453,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 				}
 				SD_PlaySound(CK_SOUNDNUM(SOUND_KEENLANDONFUSE));
 			}
+#endif
 			if (obj->topTI != 0x19 || ck_keenState.jumpTimer == 0)
 			{
 				obj->velY = -48;
@@ -1451,14 +1484,24 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		obj->velY = 0;
 		CK_PhysPushY(obj, other);
 	}
+#ifdef WITH_KEEN4
 	else if ((ck_currentEpisode->ep == EP_CK4) &&
 		((other->type == CT4_Mushroom) || (other->type == CT4_Arachnut) || (other->type == CT4_Berkeloid)))
 	{
 		CK_KillKeen();
 	}
-	else if (((ck_currentEpisode->ep == EP_CK4) && (other->type == CT4_Bounder)) ||
+#endif
+	else if (
+#ifdef WITH_KEEN4
+		((ck_currentEpisode->ep == EP_CK4) && (other->type == CT4_Bounder)) ||
+#endif
+#ifdef WITH_KEEN5
 		((ck_currentEpisode->ep == EP_CK5) && ((other->type == CT5_Ampton) || (other->type == CT5_Korath))) ||
-		((ck_currentEpisode->ep == EP_CK6) && ((other->type == CT6_Gik) || (other->type == CT6_Flect) || (other->type == CT6_Blooglet))))
+#endif
+#ifdef WITH_KEEN6
+		((ck_currentEpisode->ep == EP_CK6) && ((other->type == CT6_Gik) || (other->type == CT6_Flect) || (other->type == CT6_Blooglet))) ||
+#endif
+		false)
 	{
 		obj->zLayer = 1;
 		obj->clipped = CLIP_normal;
@@ -1466,6 +1509,7 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		ck_keenState.jumpTimer = 0;
 		obj->velX = 0;
 		obj->velY = 0;
+
 		// Keen's yDirection needs to be Down (1) when on the ground, or
 		// we can hit _nasty_ issues when going through a door, leading to
 		// a visual glitch (walking down into the door) and an exploit
@@ -1478,10 +1522,14 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		//   https://keenwiki.shikadi.net/wiki/Keen_4_Bugs#Bounder_Pole_Door_Glitch
 		if (!CFG_GetConfigBool("ck_poleDoorGlitch", true))
 			obj->yDirection = IN_motion_Down;
+#ifdef WITH_KEEN4
 		if (ck_currentEpisode->ep == EP_CK4)
 			CK_PhysPushXY(obj, other, false);
-		else if (ck_currentEpisode->ep == EP_CK6)
+#endif
+#ifdef WITH_KEEN6
+		if (ck_currentEpisode->ep == EP_CK6)
 			CK_PhysPushY(obj, other);
+#endif
 	}
 }
 

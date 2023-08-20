@@ -21,6 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CK_CONFIG_H
 
 // =================================
+// Episode Selection
+// =================================
+
+// We always need at least one episode enabled.
+#if !defined(WITH_KEEN4) && !defined(WITH_KEEN5) && !defined(WITH_KEEN6)
+#error Need to enable at least one episode!
+#endif
+
+
+// =================================
 // Always-enabled config options
 // =================================
 

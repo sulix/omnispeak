@@ -945,6 +945,7 @@ void CK_GameLoop()
 
 		// Episode Specific Level Endings
 		case LS_CouncilRescued:
+#ifdef WITH_KEEN4
 			if (ck_currentEpisode->ep == EP_CK4)
 			{
 				if (ca_mapOn)
@@ -970,8 +971,9 @@ void CK_GameLoop()
 					ck_gameState.currentLevel = 0;
 				}
 			}
+#endif
 			break;
-
+#ifdef WITH_KEEN6
 		case LS_Sandwich:
 			CK6_ShowGetSandwich();
 			goto levelcomplete;
@@ -988,7 +990,8 @@ void CK_GameLoop()
 			VL_FixRefreshBuffer();
 			help_endgame();
 			goto highscores;
-
+#endif
+#ifdef WITH_KEEN5
 		case LS_KorathFuse:
 			if (ck_currentEpisode->ep == EP_CK5)
 			{
@@ -1012,6 +1015,7 @@ void CK_GameLoop()
 			help_endgame();
 			CK_SubmitHighScore(ck_gameState.keenScore, 0);
 			return;
+#endif
 		}
 
 		if (ck_gameState.numLives < 0)
@@ -1021,26 +1025,33 @@ void CK_GameLoop()
 	} while (true);
 
 	// Keen 5: Blow up the galaxy
+#ifdef WITH_KEEN5
 	if (ck_currentEpisode->ep == EP_CK5)
 	{
 		CK5_ExplodeGalaxy();
 	}
 	else
+#endif
 	{
 		CK_GameOver();
 	}
 
 	//TODO: Update High Scores
 highscores:
+#ifdef WITH_KEEN4
 	if (ck_currentEpisode->ep == EP_CK4)
 	{
 		CK_SubmitHighScore(ck_gameState.keenScore, ck_gameState.ep.ck4.membersRescued);
 	}
-	else if (ck_currentEpisode->ep == EP_CK5)
+#endif
+#ifdef WITH_KEEN5
+	if (ck_currentEpisode->ep == EP_CK5)
 	{
 		CK_SubmitHighScore(ck_gameState.keenScore, 0);
 	}
-	else if (ck_currentEpisode->ep == EP_CK6)
+#endif
+#ifdef WITH_KEEN6
+	if (ck_currentEpisode->ep == EP_CK6)
 	{
 		int complete = 0;
 		for (int i = 0; i < 25; i++)
@@ -1050,4 +1061,5 @@ highscores:
 		}
 		CK_SubmitHighScore(ck_gameState.keenScore, complete);
 	}
+#endif
 }

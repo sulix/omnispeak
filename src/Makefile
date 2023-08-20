@@ -35,6 +35,12 @@ This Makefile supports the following options:
 		  sdl2vk  = SDL 2.0 + Vulkan (experimental)
 		  null    = dummy renderer
 
+  WITH_KEEN4    whether to include support for Keen 4: Secret of the Oracle (0/1; default: on)
+
+  WITH_KEEN5    whether to include support for Keen 5: The Armageddon Machine (0/1; default: on)
+
+  WITH_KEEN6    whether to include support for Keen 6: Aliens Ate My Babysitter (0/1; default: on)
+
   WITH_ALSA     whether to include ALSA support for real OPL2 hardware (Linux only)
   
   WITH_IEEE1284 whether to include support for the OPL2LPT parallel port soundcard
@@ -164,6 +170,9 @@ endif
 
 RENDERER ?= $(DEFAULT_RENDERER)
 BUILDASCPP ?= $(DEFAULT_BUILDASCPP)
+WITH_KEEN4 ?= 1
+WITH_KEEN5 ?= 1
+WITH_KEEN6 ?= 1
 WITH_ALSA ?= 0
 WITH_IEEE1284 ?= 0
 WITH_OPLHW ?= 0
@@ -183,14 +192,14 @@ LIBS ?=
 
 # mandatory source files
 IDOBJECTS = ck_quit.o id_mm.o id_fs.o id_ca.o id_cfg.o id_in.o id_rf.o id_sd.o id_ti.o id_us_1.o id_us_2.o id_us_textscreen.o id_vh.o id_vl.o id_str.o
-CKOBJECTS = ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck4_map.o ck5_map.o ck6_map.o ck4_obj1.o ck4_obj2.o ck4_obj3.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck6_obj1.o ck6_obj2.o ck6_obj3.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck4_misc.o ck5_misc.o ck6_misc.o ck_main.o ck_text.o ck_cross.o icon.o
+CK4OBJECTS = ck4_map.o ck4_obj1.o ck4_obj2.o ck4_obj3.o ck4_misc.o
+CK5OBJECTS = ck5_map.o ck5_obj1.o ck5_obj2.o ck5_obj3.o ck5_misc.o
+CK6OBJECTS = ck6_map.o ck6_obj1.o ck6_obj2.o ck6_obj3.o ck6_misc.o
+CKOBJECTS = ck_act.o ck_inter.o ck_keen.o ck_obj.o ck_map.o ck_phys.o ck_game.o ck_play.o ck_misc.o ck_main.o ck_text.o ck_cross.o icon.o
 OPLOBJECTS = opl/dbopl.o opl/nuked_opl3.o
 
 # data files
 DATAFILES = ACTION AUDINFOE AUDIODCT AUDIOHHD EGADICT EGAHEAD EPISODE GFXINFOE MAPHEAD STRINGS TILEINFO
-K4DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK4)
-K5DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK5)
-K6DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK6)
 
 # output binary file
 OUTBIN = $(BINDIR)/omnispeak$(EXE_EXT)
@@ -286,7 +295,15 @@ endif
 
 # set Windows-specific parameters
 ifneq (,$(findstring win,$(PLATFORM)))
-	BATFILES = $(BINDIR)/_keen4.cmd $(BINDIR)/_keen5.cmd $(BINDIR)/_keen6.cmd
+	ifeq ($(WITH_KEEN4),1)
+		BATFILES += $(BINDIR)/_keen4.cmd
+	endif
+	ifeq ($(WITH_KEEN5),1)
+		BATFILES += $(BINDIR)/_keen5.cmd
+	endif
+	ifeq ($(WITH_KEEN6),1)
+		BATFILES += $(BINDIR)/_keen6.cmd
+	endif
 	RES = $(OBJDIR)/windowsres.res
 	# MS Bitfields has a bug with packed structures on some GCC versions:
 	# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52991
@@ -295,7 +312,15 @@ endif
 
 # set GCW Zero-specific parameters
 ifeq ($(PLATFORM), gcw0)
-        SHELLFILES = $(BINDIR)/keen4.sh $(BINDIR)/keen5.sh $(BINDIR)/keen6.sh
+	ifeq ($(WITH_KEEN4),1)
+		SHELLFILES += $(BINDIR)/keen4.sh
+	endif
+	ifeq ($(WITH_KEEN5),1)
+		SHELLFILES += $(BINDIR)/keen5.sh
+	endif
+	ifeq ($(WITH_KEEN6),1)
+		SHELLFILES += $(BINDIR)/keen6.sh
+	endif
         SHELLOPTS = /FULLSCREEN /NOBORDER /NOCOPY
 endif
 
@@ -367,6 +392,24 @@ ifeq ($(XDGUSERPATH),1)
 	CXXFLAGS += -DFS_USER_PATH_PREFER_XDG=1
 endif
 
+ifeq ($(WITH_KEEN4),1)
+	CXXFLAGS += -DWITH_KEEN4
+	CKOBJECTS += $(CK4OBJECTS)
+	K4DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK4)
+endif
+
+ifeq ($(WITH_KEEN5),1)
+	CXXFLAGS += -DWITH_KEEN5
+	CKOBJECTS += $(CK5OBJECTS)
+	K5DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK5)
+endif
+
+ifeq ($(WITH_KEEN6),1)
+	CXXFLAGS += -DWITH_KEEN6
+	CKOBJECTS += $(CK6OBJECTS)
+	K6DATA = $(foreach f, $(DATAFILES), $(BINDIR)/$(f).CK6)
+endif
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 OBJ := $(IDOBJECTS:%=$(OBJDIR)/%)
@@ -383,6 +426,9 @@ help:
 dumpconfig:
 	@echo PLATFORM = $(PLATFORM)
 	@echo RENDERER = $(RENDERER)
+	@echo WITH_KEEN4 = $(WITH_KEEN4)
+	@echo WITH_KEEN5 = $(WITH_KEEN5)
+	@echo WITH_KEEN6 = $(WITH_KEEN6)
 	@echo WITH_ALSA = $(WITH_ALSA)
 	@echo WITH_IEEE1284 = $(WITH_IEEE1284)
 	@echo STATIC = $(STATIC)

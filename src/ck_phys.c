@@ -507,6 +507,7 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 
 	switch (ck_currentEpisode->ep)
 	{
+#ifdef WITH_KEEN4
 	case EP_CK4:
 		if (obj->type == CT4_Schoolfish)
 		{
@@ -534,6 +535,8 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 			goto badobjclass;
 		}
 		break;
+#endif
+#ifdef WITH_KEEN5
 	case EP_CK5:
 		if (obj->type == CT5_SliceStar || obj->type == CT5_Sphereful)
 		{
@@ -544,7 +547,8 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 			goto badobjclass;
 		}
 		break;
-
+#endif
+#ifdef WITH_KEEN6
 	case EP_CK6:
 		if (obj->type == CT6_Blorb)
 		{
@@ -555,7 +559,7 @@ void CK_PhysFullClipToWalls(CK_object *obj)
 			goto badobjclass;
 		}
 		break;
-
+#endif
 	default:
 		// Fallthrough, as if no episode is set, all obclasses are bad.
 	badobjclass:

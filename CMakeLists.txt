@@ -15,6 +15,9 @@ endif()
 # Misc config options
 option(VANILLA "whether to disable omnispeak-only features" OFF)
 option(BUILDASCPP "compile all 'c' source files with the C++ compiler" OFF)
+option(WITH_KEEN4 "include Keen 4: Secret of the Oracle support" ON)
+option(WITH_KEEN5 "include Keen 5: The Armageddon Machine support" ON)
+option(WITH_KEEN6 "include Keen 6: Aliens Ate My Baby Sitter support" ON)
 
 set(KEENPATH "." CACHE STRING "set the default path to the Commander Keen data files")
 set(USERPATH "." CACHE STRING "set the default path for user savegames")
@@ -247,25 +250,34 @@ set(OMNISPEAK_ID_SRCS
 	src/id_vl_private.h
 )
 
-set(OMNISPEAK_CK_SRCS
+set(OMNISPEAK_CK4_SRCS
 	src/ck4_ep.h
 	src/ck4_map.c
 	src/ck4_misc.c
 	src/ck4_obj1.c
 	src/ck4_obj2.c
 	src/ck4_obj3.c
+)
+
+set(OMNISPEAK_CK5_SRCS
 	src/ck5_ep.h
 	src/ck5_map.c
 	src/ck5_misc.c
 	src/ck5_obj1.c
 	src/ck5_obj2.c
 	src/ck5_obj3.c
+)
+
+set(OMNISPEAK_CK6_SRCS
 	src/ck6_ep.h
 	src/ck6_map.c
 	src/ck6_misc.c
 	src/ck6_obj1.c
 	src/ck6_obj2.c
 	src/ck6_obj3.c
+)
+
+set(OMNISPEAK_CK_SRCS
 	src/ck_act.c
 	src/ck_act.h
 	src/ck_cross.c
@@ -297,9 +309,33 @@ set(OMNISPEAK_OPL_SRCS
 	src/opl/nuked_opl3.c
 )
 
+# Build all episodes
+if (WITH_KEEN4)
+	add_definitions(-DWITH_KEEN4=1)
+	set(OMNISPEAK_EPISODE_SRCS
+		${OMNISPEAK_EPISODE_SRCS}
+		${OMNISPEAK_CK4_SRCS}
+	)
+endif()
+if (WITH_KEEN5)
+	add_definitions(-DWITH_KEEN5=1)
+	set(OMNISPEAK_EPISODE_SRCS
+		${OMNISPEAK_EPISODE_SRCS}
+		${OMNISPEAK_CK5_SRCS}
+	)
+endif()
+if (WITH_KEEN6)
+	add_definitions(-DWITH_KEEN6=1)
+	set(OMNISPEAK_EPISODE_SRCS
+		${OMNISPEAK_EPISODE_SRCS}
+		${OMNISPEAK_CK6_SRCS}
+	)
+endif()
+
 if (BUILDASCPP)
 	set(OMNISPEAK_C_SRC_FILES
 		${OMNISPEAK_ID_SRCS}
+		${OMNISPEAK_EPISODE_SRCS}
 		${OMNISPEAK_CK_SRCS}
 		${OMNISPEAK_PLATFORM_SRCS}
 		${OMNISPEAK_OPL_SRCS}
@@ -342,6 +378,7 @@ endif()
 
 add_executable(omnispeak
 	${OMNISPEAK_ID_SRCS}
+	${OMNISPEAK_EPISODE_SRCS}
 	${OMNISPEAK_CK_SRCS}
 	${OMNISPEAK_PLATFORM_SRCS}
 	${OMNISPEAK_OPL_SRCS}
