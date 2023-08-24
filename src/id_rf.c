@@ -323,13 +323,15 @@ void RF_MarkTileGraphics()
 					RFL_MarkTileWithSound(&rf_animTileTimers[i], backTile);
 				// Mark all tiles in the animation loop to be cached.
 				int animLength = 0;
-				int nextTile = backTile + TI_BackAnimTile(backTile);
-				while (TI_BackAnimTile(nextTile) && (nextTile != backTile))
+				int nextTileOffset = TI_BackAnimTile(backTile);
+				int nextTile = backTile + nextTileOffset;
+				while (nextTileOffset && (nextTile != backTile))
 				{
 					if (ck_currentEpisode->ep == EP_CK6)
 						RFL_MarkTileWithSound(&rf_animTileTimers[i], nextTile);
 					CA_MarkGrChunk(ca_gfxInfoE.offTiles16 + nextTile);
-					nextTile += TI_BackAnimTile(nextTile);
+					nextTileOffset = TI_BackAnimTile(nextTile);
+					nextTile += nextTileOffset;
 					if (++animLength > RF_MAX_ANIM_LOOP)
 					{
 						Quit("RF_MarkTileGraphics: Unending background animation");
@@ -389,13 +391,15 @@ void RF_MarkTileGraphics()
 
 				// Mark all tiles in the animation loop to be cached.
 				int animLength = 0;
-				int nextTile = foreTile + TI_ForeAnimTile(foreTile);
-				while (TI_ForeAnimTile(nextTile) && (nextTile != foreTile))
+				int nextTileOffset = TI_ForeAnimTile(foreTile);
+				int nextTile = foreTile + nextTileOffset;
+				while (nextTileOffset && (nextTile != foreTile))
 				{
 					if (ck_currentEpisode->ep == EP_CK6)
 						RFL_MarkTileWithSound(&rf_animTileTimers[i], nextTile | 0x8000);
 					CA_MarkGrChunk(ca_gfxInfoE.offTiles16m + nextTile);
-					nextTile += TI_ForeAnimTile(nextTile);
+					nextTileOffset = TI_ForeAnimTile(nextTile);
+					nextTile += nextTileOffset;
 					if (++animLength > RF_MAX_ANIM_LOOP)
 					{
 						Quit("RF_MarkTileGraphics: Unending foreground animation");
