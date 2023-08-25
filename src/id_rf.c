@@ -273,7 +273,7 @@ void RF_MarkTileGraphics()
 		for (int tileX = 0; tileX < rf_mapWidthTiles; ++tileX)
 		{
 			bool needNewTimer = true;
-			int backTile = CA_mapPlanes[0][tileY * rf_mapWidthTiles + tileX];
+			int backTile = CA_TileAtPos(tileX, tileY, 0);
 
 			CA_MarkGrChunk(ca_gfxInfoE.offTiles16 + backTile);
 			if (TI_BackAnimTile(backTile))
@@ -293,7 +293,7 @@ void RF_MarkTileGraphics()
 						if (rf_animTileTimers[i].tileNumber == backTile)
 						{
 							// Add the timer index to the info-plane
-							CA_mapPlanes[2][tileY * rf_mapWidthTiles + tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
+							CA_SetTileAtPos(tileX, tileY, 2, RFL_ConvertAnimTileTimerIndexTo16BitOffset(i));
 							needNewTimer = false;
 							break;
 						}
@@ -312,7 +312,7 @@ void RF_MarkTileGraphics()
 							animTileTimer->numOfOnScreenTiles = 0;
 							animTileTimer->sound = -1;
 						}
-						CA_mapPlanes[2][tileY * rf_mapWidthTiles + tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
+						CA_SetTileAtPos(tileX, tileY, 2, RFL_ConvertAnimTileTimerIndexTo16BitOffset(i));
 						rf_numAnimTileTimers++;
 					}
 					else
@@ -345,7 +345,7 @@ void RF_MarkTileGraphics()
 		for (int tileX = 0; tileX < rf_mapWidthTiles; ++tileX)
 		{
 			bool needNewTimer = true;
-			int foreTile = CA_mapPlanes[1][tileY * rf_mapWidthTiles + tileX];
+			int foreTile = CA_TileAtPos(tileX, tileY, 1);
 
 			CA_MarkGrChunk(ca_gfxInfoE.offTiles16m + foreTile);
 			if (TI_ForeAnimTile(foreTile))
@@ -361,7 +361,7 @@ void RF_MarkTileGraphics()
 						if (rf_animTileTimers[i].tileNumber == (foreTile | 0x8000))
 						{
 							// Add the timer index to the info-plane
-							CA_mapPlanes[2][tileY * rf_mapWidthTiles + tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
+							CA_SetTileAtPos(tileX, tileY, 2, RFL_ConvertAnimTileTimerIndexTo16BitOffset(i));
 							needNewTimer = false;
 							break;
 						}
@@ -380,7 +380,7 @@ void RF_MarkTileGraphics()
 							animTileTimer->numOfOnScreenTiles = 0;
 							animTileTimer->sound = -1;
 						}
-						CA_mapPlanes[2][tileY * rf_mapWidthTiles + tileX] = RFL_ConvertAnimTileTimerIndexTo16BitOffset(i);
+						CA_SetTileAtPos(tileX, tileY, 2, RFL_ConvertAnimTileTimerIndexTo16BitOffset(i));
 						rf_numAnimTileTimers++;
 					}
 					else
@@ -412,8 +412,8 @@ void RF_MarkTileGraphics()
 
 void RFL_CheckForAnimTile(int tileX, int tileY)
 {
-	int backTile = CA_mapPlanes[0][tileY * rf_mapWidthTiles + tileX];
-	int foreTile = CA_mapPlanes[1][tileY * rf_mapWidthTiles + tileX];
+	int backTile = CA_TileAtPos(tileX, tileY, 0);
+	int foreTile = CA_TileAtPos(tileX, tileY, 1);
 
 	if (TI_BackAnimTile(backTile) != 0 && TI_BackAnimTime(backTile) != 0)
 	{
@@ -427,7 +427,7 @@ void RFL_CheckForAnimTile(int tileX, int tileY)
 		ost->tileY = tileY;
 		ost->tile = backTile;
 		ost->plane = 0;
-		ost->timerIndex = RFL_ConvertAnimTileTimer16BitOffsetToIndex(CA_mapPlanes[2][tileY * rf_mapWidthTiles + tileX]);
+		ost->timerIndex = RFL_ConvertAnimTileTimer16BitOffsetToIndex(CA_TileAtPos(tileX, tileY, 2));
 		if (ck_currentEpisode->ep == EP_CK6)
 			++rf_animTileTimers[ost->timerIndex].numOfOnScreenTiles;
 
@@ -448,7 +448,7 @@ void RFL_CheckForAnimTile(int tileX, int tileY)
 		ost->tileY = tileY;
 		ost->tile = foreTile;
 		ost->plane = 1;
-		ost->timerIndex = RFL_ConvertAnimTileTimer16BitOffsetToIndex(CA_mapPlanes[2][tileY * rf_mapWidthTiles + tileX]);
+		ost->timerIndex = RFL_ConvertAnimTileTimer16BitOffsetToIndex(CA_TileAtPos(tileX, tileY, 2));
 		if (ck_currentEpisode->ep == EP_CK6)
 			++rf_animTileTimers[ost->timerIndex].numOfOnScreenTiles;
 
@@ -591,10 +591,10 @@ void RFL_AnimateTiles()
 				Quit("RFL_AnimateTiles: Out of bounds!");
 			}
 
-			CA_mapPlanes[ost->plane][ost->tileY * rf_mapWidthTiles + ost->tileX] = tile;
+			CA_SetTileAtPos(ost->tileX, ost->tileY, ost->plane, tile);
 
-			RF_RenderTile16(screenTileX, screenTileY, CA_mapPlanes[0][ost->tileY * rf_mapWidthTiles + ost->tileX]);
-			RF_RenderTile16m(screenTileX, screenTileY, CA_mapPlanes[1][ost->tileY * rf_mapWidthTiles + ost->tileX]);
+			RF_RenderTile16(screenTileX, screenTileY, CA_TileAtPos(ost->tileX, ost->tileY, 0));
+			RF_RenderTile16m(screenTileX, screenTileY, CA_TileAtPos(ost->tileX, ost->tileY, 1));
 			RFL_MarkBlockDirty(screenTileX, screenTileY, 1, -1);
 		}
 	}
@@ -749,12 +749,12 @@ void RF_ReplaceTiles(uint16_t *tilePtr, int plane, int dstX, int dstY, int width
 
 			int tileScreenX = dstTileX - RF_UnitToTile(rf_scrollXUnit);
 			int tileScreenY = dstTileY - RF_UnitToTile(rf_scrollYUnit);
-			int oldTile = CA_mapPlanes[plane][dstTileY * rf_mapWidthTiles + dstTileX];
+			int oldTile = CA_TileAtPos(dstTileX, dstTileY, plane);
 			int newTile = tilePtr[y * width + x];
 			// Update the tile on the map.
 			if (oldTile != newTile)
 			{
-				CA_mapPlanes[plane][dstTileY * rf_mapWidthTiles + dstTileX] = newTile;
+				CA_SetTileAtPos(dstTileX, dstTileY, plane, newTile);
 			}
 			// If the tile is onscreen...
 			if (tileScreenX >= 0 && tileScreenX < RF_BUFFER_WIDTH_TILES &&
@@ -764,8 +764,8 @@ void RF_ReplaceTiles(uint16_t *tilePtr, int plane, int dstX, int dstY, int width
 				if (oldTile != newTile)
 				{
 					RFL_MarkBlockDirty(tileScreenX, tileScreenY, 1, -1);
-					RF_RenderTile16(tileScreenX, tileScreenY, CA_mapPlanes[0][dstTileY * rf_mapWidthTiles + dstTileX]);
-					RF_RenderTile16m(tileScreenX, tileScreenY, CA_mapPlanes[1][dstTileY * rf_mapWidthTiles + dstTileX]);
+					RF_RenderTile16(tileScreenX, tileScreenY, CA_TileAtPos(dstTileX, dstTileY, 0));
+					RF_RenderTile16m(tileScreenX, tileScreenY, CA_TileAtPos(dstTileX, dstTileY, 1));
 				}
 				// And check it for animations.
 				RFL_CheckForAnimTile(dstTileX, dstTileY);
@@ -783,7 +783,7 @@ void RFL_RenderForeTiles()
 	{
 		for (int sty = scrollYtile; sty < scrollYtile + RF_BUFFER_HEIGHT_TILES; ++sty)
 		{
-			int tile = CA_mapPlanes[1][sty * rf_mapWidthTiles + stx];
+			int tile = CA_TileAtPos(stx, sty, 1);
 			int bufferX = stx - scrollXtile;
 			int bufferY = sty - scrollYtile;
 #ifndef ALWAYS_REDRAW
@@ -822,8 +822,8 @@ void RFL_NewRowHorz(bool dir)
 	{
 		RFL_CheckForAnimTile(i + xOffset, mapRow);
 		RFL_MarkBlockDirty(i, bufferRow, 1, -1);
-		RF_RenderTile16(i, bufferRow, CA_mapPlanes[0][mapRow * rf_mapWidthTiles + xOffset + i]);
-		RF_RenderTile16m(i, bufferRow, CA_mapPlanes[1][mapRow * rf_mapWidthTiles + xOffset + i]);
+		RF_RenderTile16(i, bufferRow, CA_TileAtPos(xOffset + i, mapRow, 0));
+		RF_RenderTile16m(i, bufferRow, CA_TileAtPos(xOffset + i, mapRow, 1));
 	}
 }
 
@@ -849,8 +849,8 @@ void RFL_NewRowVert(bool dir)
 	{
 		RFL_CheckForAnimTile(mapCol, i + yOffset);
 		RFL_MarkBlockDirty(bufferCol, i, 1, -1);
-		RF_RenderTile16(bufferCol, i, CA_mapPlanes[0][(yOffset + i) * rf_mapWidthTiles + mapCol]);
-		RF_RenderTile16m(bufferCol, i, CA_mapPlanes[1][(yOffset + i) * rf_mapWidthTiles + mapCol]);
+		RF_RenderTile16(bufferCol, i, CA_TileAtPos(mapCol, yOffset + i, 0));
+		RF_RenderTile16m(bufferCol, i, CA_TileAtPos(mapCol, yOffset + i, 1));
 	}
 }
 
@@ -1033,8 +1033,8 @@ void RF_Reposition(int scrollXunit, int scrollYunit)
 		for (int tx = 0; tx < RF_BUFFER_WIDTH_TILES; ++tx)
 		{
 			RFL_CheckForAnimTile(tx + scrollXtile, ty + scrollYtile);
-			RF_RenderTile16(tx, ty, CA_mapPlanes[0][(ty + scrollYtile) * rf_mapWidthTiles + tx + scrollXtile]);
-			RF_RenderTile16m(tx, ty, CA_mapPlanes[1][(ty + scrollYtile) * rf_mapWidthTiles + tx + scrollXtile]);
+			RF_RenderTile16(tx, ty, CA_TileAtPos(tx + scrollXtile, ty + scrollYtile, 0));
+			RF_RenderTile16m(tx, ty, CA_TileAtPos(tx + scrollXtile, ty + scrollYtile, 1));
 			RFL_MarkBlockDirty(tx, ty, 1, -1);
 		}
 	}
