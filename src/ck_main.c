@@ -459,7 +459,29 @@ void CK_DemoLoop()
 
 #define MAX_NUM_OF_FUNCTIONS 256
 
-extern STR_Table *ck_functionTable; // HACK
+
+typedef enum CK_VAR_VarType
+{
+	VAR_Invalid,
+	VAR_EOF,
+	VAR_Bool,
+	VAR_Int,
+	VAR_String,
+	VAR_Action,
+	VAR_TOK_Include
+} CK_VAR_VarType;
+
+#ifdef CK_VAR_TYPECHECK
+typedef struct CK_VAR_Variable
+{
+	CK_VAR_VarType type;
+	void *value;
+} CK_VAR_Variable;
+#else
+#error Action validator requires typechecking to be enabled.
+#endif
+
+extern STR_Table *ck_varTable; // HACK
 
 typedef struct
 {
@@ -512,7 +534,7 @@ int main(int argc, char *argv[])
 		ck_currentEpisode = &ck5_episode;
 		break;
 	case 6:
-		ck_currentEpisode = &ck6_episode;
+		ck_currentEpisode = &ck6v14e_episode;
 		break;
 	default:
 		fprintf(stderr, "Invalid episode selected - only 4 or 5 is valid!\n");
@@ -542,28 +564,34 @@ int main(int argc, char *argv[])
 
 	// We need this here
 	MM_Startup();
+	FS_Startup();
 
 	// Compile the actions
+	CK_VAR_Startup();
 	CK_ACT_SetupFunctions();
 	CK_KeenSetupFunctions();
 	CK_OBJ_SetupFunctions();
 	CK_Map_SetupFunctions();
 	CK_Misc_SetupFunctions();
 	ck_currentEpisode->setupFunctions();
-	CK_ACT_LoadActions(argv[2]);
+	CK_VAR_LoadVars(argv[2]);
 
 	char *exeImage = fileBuffer + 16 * (*(uint16_t *)(fileBuffer + 8));
 	char *dsegBuffer = exeImage + 16 * (*(uint16_t *)(exeImage + 1)); // HUGE HACK for fetching dseg
 
 	// HACK
-	extern STR_Table *ck_actionTable;
-	for (int i = 0, count = 0; i < ck_actionTable->size; ++i)
+	extern STR_Table *ck_varTable;
+	for (int i = 0, count = 0; i < ck_varTable->size; ++i)
 	{
-		if (ck_actionTable->arr[i].str == NULL)
+		if (ck_varTable->arr[i].str == NULL)
 			continue;
 
-		const char *name = ck_actionTable->arr[i].str;
-		CK_action *act = (CK_action *)(ck_actionTable->arr[i].ptr);
+		const char *name = ck_varTable->arr[i].str;
+		CK_VAR_Variable *var = (CK_VAR_Variable *)(ck_varTable->arr[i].ptr);
+		if (var->type != VAR_Action)
+			continue;
+
+		CK_action *act = (CK_action *)(var->value);
 
 		char *dataToCompare = &dsegBuffer[act->compatDosPointer];
 		if (*(int16_t *)dataToCompare != act->chunkLeft)
