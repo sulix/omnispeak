@@ -86,7 +86,7 @@ CK_ACT_ColFunction CK_ACT_GetColFunction(const char *fnName)
 	return fnPtr;
 }
 
-#define CK_VAR_MAXVARS 1024
+#define CK_VAR_MAXVARS 2048
 #define CK_VAR_MAXACTIONS 512
 
 STR_Table *ck_varTable;
