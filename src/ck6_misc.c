@@ -149,20 +149,6 @@ uint8_t ck6_terminator_palette2[] = {0, 0x05, 0x05, 0x15, 1, 1, 1, 1, 0x11, 0x11
 // ck_keen.c
 
 soundnames ck6_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9};
-uint16_t ck6_itemShadows[] = {
-	172,
-	172,
-	172,
-	172,
-	138,
-	139,
-	140,
-	141,
-	142,
-	143,
-	144,
-	145,
-};
 
 // ck_map.c
 int ck6_mapKeenFrames[] = {189, 204, 186, 195, 192, 198, 183, 201};
@@ -219,7 +205,6 @@ void CK6_DefineConstants(void)
 
 	// ck_keen.c
 	ck_itemSounds = ck6_itemSounds;
-	ck_itemShadows = ck6_itemShadows;
 
 	// ck_map.c
 	ck_mapKeenFrames = ck6_mapKeenFrames;

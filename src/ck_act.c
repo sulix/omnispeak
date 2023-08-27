@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include "ck_act.h"
 #include "ck_cross.h"
+#include "ck_def.h"
 
 /* The Action Manager
  * This subsystem loads the 'ACTION.CKx' file, which is a text file

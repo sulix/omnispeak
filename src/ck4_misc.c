@@ -111,7 +111,6 @@ uint8_t ck4_terminator_palette2[] = {0, 0x18, 0x18, 0x07, 1, 1, 1, 1, 0x11, 0x11
 // ck_keen.c
 
 soundnames ck4_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9, 55};
-uint16_t ck4_itemShadows[] = {250, 250, 250, 250, 219, 220, 221, 222, 223, 224, 225, 226};
 
 // ck_map.c
 int ck4_mapKeenFrames[] = {0x103, 0x112, 0x100, 0x109, 0x106, 0x10c, 0xFD, 0x10f};
@@ -172,7 +171,6 @@ void CK4_DefineConstants(void)
 
 	// ck_keen.c
 	ck_itemSounds = ck4_itemSounds;
-	ck_itemShadows = ck4_itemShadows;
 
 	// ck_map.c
 	ck_mapKeenFrames = ck4_mapKeenFrames;
@@ -1108,7 +1106,7 @@ void CK4_KeenSwimCol(CK_object *a, CK_object *b)
 
 		b->type = CT_Friendly;
 		b->zLayer = PRIORITIES - 1;
-		b->gfxChunk = ck_itemShadows[b->user1];
+		b->gfxChunk = CK_LookupChunk(ck_itemShadows[b->user1]);
 
 		CK_IncreaseScore(ck_itemPoints[b->user1]);
 

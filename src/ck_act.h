@@ -20,7 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CK_ACT_H
 #define CK_ACT_H
 
-#include "ck_def.h"
+#include <stdint.h>
+
+typedef struct CK_object CK_object;
+typedef struct CK_action CK_action;
 
 typedef void (*CK_ACT_Function)(CK_object *obj);
 typedef void (*CK_ACT_ColFunction)(CK_object *obj1, CK_object *obj2);
@@ -54,10 +57,16 @@ void CK_VAR_LoadVars(const char *filename);
 #define CK_INT(name) INT_ ## name
 #define CK_CHUNKNUM(name) CHUNK_ ## name
 #define CK_SOUNDNUM(name) INT_ ## name
+typedef int16_t chunk_id_t;
+#define CK_CHUNKID(name) CK_CHUNKNUM(name)
+#define CK_LookupChunk(id) (id)
 #else
 #define CK_INT(name, default) CK_VAR_GetInt(#name, default)
 #define CK_CHUNKNUM(name) CK_VAR_GetInt(#name, 0)
 #define CK_SOUNDNUM(name) CK_VAR_GetInt(#name, 0)
+typedef const char *chunk_id_t;
+#define CK_CHUNKID(name) #name
+#define CK_LookupChunk(id) CK_VAR_GetInt(id, 0)
 #endif
 
 

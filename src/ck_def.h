@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "id_heads.h"
 #include "ck_ep.h"
+#include "ck_act.h"
 #include "ck_phys.h"
 
 #define MISCFLAG_POLE 1
@@ -468,7 +469,7 @@ bool CK_LoadGame(FS_File fp, bool fromMenu);
 /* ck_keen.c */
 extern soundnames *ck_itemSounds;
 extern uint16_t ck_itemPoints[];
-extern uint16_t *ck_itemShadows;
+extern chunk_id_t ck_itemShadows[];
 
 void CK_IncreaseScore(int score);
 void CK_KillKeen();

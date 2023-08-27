@@ -265,6 +265,7 @@ void CK_UpdateScoreBox(CK_object *scorebox)
  */
 
 int *ck_mapKeenFrames;
+
 static int word_417BA[] = {2, 3, 1, 3, 4, 6, 0, 2};
 
 void CK_SpawnMapKeen(int tileX, int tileY)

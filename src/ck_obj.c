@@ -72,6 +72,7 @@ int *CK_ItemSpriteChunks[] = {
 	&SPR_100_PTS1, &SPR_200_PTS1, &SPR_500_PTS1, &SPR_1000_PTS1, &SPR_2000_PTS1, &SPR_5000_PTS1,
 	&SPR_1UP1, &SPR_STUNNER1, &SPR_SECURITYCARD_1};
 
+
 // Object and Centilife functions "should" be in ckx_obj1.c
 // but they are similar enough between episodes to put them all here
 void CK_SpawnItem(int tileX, int tileY, int itemNumber)

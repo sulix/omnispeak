@@ -52,7 +52,23 @@ void CK_BasicDrawFunc1(CK_object *obj);
 
 soundnames *ck_itemSounds;
 uint16_t ck_itemPoints[] = {0, 0, 0, 0, 100, 200, 500, 1000, 2000, 5000, 0, 0, 0};
-uint16_t *ck_itemShadows;
+chunk_id_t ck_itemShadows[] = {
+	CK_CHUNKID(SPR_BONUSGEM),
+	CK_CHUNKID(SPR_BONUSGEM),
+	CK_CHUNKID(SPR_BONUSGEM),
+	CK_CHUNKID(SPR_BONUSGEM),
+	CK_CHUNKID(SPR_BONUS100),
+	CK_CHUNKID(SPR_BONUS200),
+	CK_CHUNKID(SPR_BONUS500),
+	CK_CHUNKID(SPR_BONUS1000),
+	CK_CHUNKID(SPR_BONUS2000),
+	CK_CHUNKID(SPR_BONUS5000),
+	CK_CHUNKID(SPR_BONUS1UP),
+	CK_CHUNKID(SPR_BONUSCLIP),
+#ifdef WITH_KEEN5
+	CK_CHUNKID(SPR_BONUSSECURITYCARD),
+#endif
+};
 
 // Episode dependent stuff
 int16_t ck_keenMoon;
@@ -71,7 +87,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 
 		b->type = 1;
 		b->zLayer = 3;
-		b->gfxChunk = ck_itemShadows[b->user1];
+		b->gfxChunk = CK_LookupChunk(ck_itemShadows[b->user1]);
 
 		CK_IncreaseScore(ck_itemPoints[b->user1]);
 
@@ -223,7 +239,7 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 	notify->posX = RF_TileToUnit(tileX);
 	notify->posY = RF_TileToUnit(tileY);
 	notify->yDirection = -1;
-	notify->user2 = ck_itemShadows[itemNumber];
+	notify->user2 = CK_LookupChunk(ck_itemShadows[itemNumber]);
 	notify->gfxChunk = notify->user2;
 	CK_SetAction(notify, CK_GetActionByName("CK_ACT_itemNotify"));
 	notify->clipped = CLIP_not;

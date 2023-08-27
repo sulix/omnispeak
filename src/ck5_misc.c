@@ -256,7 +256,6 @@ soundnames ck5_itemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND
 };
 */
 soundnames ck5_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9, 55};
-uint16_t ck5_itemShadows[] = {232, 232, 232, 232, 195, 196, 197, 198, 199, 200, 201, 202, 209};
 
 // ck_map.c
 int ck5_mapKeenFrames[] = {0xF7, 0x106, 0xF4, 0xFD, 0xFA, 0x100, 0xF1, 0x103};
@@ -334,7 +333,6 @@ void CK5_DefineConstants(void)
 
 	// ck_keen.c
 	ck_itemSounds = ck5_itemSounds;
-	ck_itemShadows = ck5_itemShadows;
 
 	// ck_map.c
 	ck_mapKeenFrames = ck5_mapKeenFrames;
