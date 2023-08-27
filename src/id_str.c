@@ -48,6 +48,9 @@ void STR_AllocTable(STR_Table **tabl, size_t size)
 	// Lock it in memory so that it doesn't get purged.
 	MM_SetLock((mm_ptr_t *)(tabl), true);
 	(*tabl)->size = size;
+#ifdef CK_DEBUG
+	(*tabl)->numElements = 0;
+#endif
 	for (size_t i = 0; i < size; ++i)
 	{
 		(*tabl)->arr[i].str = 0;
@@ -103,6 +106,13 @@ bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
 		{
 			tabl->arr[i].str = str;
 			tabl->arr[i].ptr = value;
+#ifdef CK_DEBUG
+			tabl->numElements++;
+			if (tabl->numElements == tabl->size)
+			{
+				Quit("Tried to over-fill a hashtable!");
+			}
+#endif
 			return true;
 		}
 	}

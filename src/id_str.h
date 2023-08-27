@@ -36,6 +36,9 @@ typedef struct STR_Entry
 typedef struct STR_Table
 {
 	size_t size;
+#ifdef CK_DEBUG
+	size_t numElements;
+#endif
 	STR_Entry arr[];
 } STR_Table;
 
