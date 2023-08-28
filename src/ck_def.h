@@ -483,7 +483,7 @@ void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h);
 void CK_ShutdownID();
 
 /* ck_map.c */
-extern int *ck_mapKeenFrames;
+extern chunk_id_t ck_mapKeenBaseFrame[];
 
 void CK_DemoSignSpawn();
 void CK_UpdateScoreBox(CK_object *scorebox);

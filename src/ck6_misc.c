@@ -135,9 +135,6 @@ uint8_t ck6_terminator_palette2[] = {0, 0x05, 0x05, 0x15, 1, 1, 1, 1, 0x11, 0x11
 
 soundnames ck6_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9};
 
-// ck_map.c
-int ck6_mapKeenFrames[] = {189, 204, 186, 195, 192, 198, 183, 201};
-
 // ck_play.c
 int16_t ck6_levelMusic[] = {5, 3, 1, 8, 8, 8, 7, 2, 7, 1, 3, 2, 1, 4, 4, 6, 2, 0, 0, 0};
 
@@ -190,9 +187,6 @@ void CK6_DefineConstants(void)
 
 	// ck_keen.c
 	ck_itemSounds = ck6_itemSounds;
-
-	// ck_map.c
-	ck_mapKeenFrames = ck6_mapKeenFrames;
 
 	// ck_play.c
 	ck_levelMusic = ck6_levelMusic;

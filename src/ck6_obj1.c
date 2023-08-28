@@ -575,7 +575,7 @@ void CK6_SpawnMolly(int tileX, int tileY)
 void CK6_GoPlatDraw(CK_object *obj)
 {
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
-	RF_AddSpriteDrawUsing16BitOffset(&(obj->user3), obj->posX + CK_INT(CK6_GoplatGikXOffset, 0x100), obj->posY + 0x100, obj->user1 + 425, false, 0);
+	RF_AddSpriteDrawUsing16BitOffset(&(obj->user3), obj->posX + CK_INT(CK6_GoplatGikXOffset, 0x100), obj->posY + 0x100, obj->user1 + CK_CHUNKNUM(SPR_PLATBIP1), false, 0);
 }
 
 // Bloogs
@@ -753,7 +753,7 @@ static const char *stunnedBloogletActions[] = {
 	"CK6_ACT_BloogletGStunned0",
 };
 
-extern int16_t *CK_ItemSpriteChunks[];
+extern chunk_id_t CK_ItemSpriteChunks[];
 void CK6_BloogletCol(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_Player && b->currentAction->collide)
@@ -776,7 +776,7 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
 			gem->yDirection = IN_motion_Up;
 			gem->velY = CK_INT(CK6_BloogletGemYVel, -40);
 			gem->user1 = color;
-			gem->user2 = gem->gfxChunk = *CK_ItemSpriteChunks[color];
+			gem->user2 = gem->gfxChunk = CK_LookupChunk(CK_ItemSpriteChunks[color]);
 			gem->user3 = gem->user2 + 2;
 			CK_SetAction(gem, CK_GetActionByName("CK_ACT_fallingitem"));
 			SD_PlaySound(CK_SOUNDNUM(SOUND_BLOOGLETGEM));

@@ -264,9 +264,20 @@ void CK_UpdateScoreBox(CK_object *scorebox)
  * user3 stores some sort of velocity
  */
 
-int *ck_mapKeenFrames;
+// Note that, in the original game uses these values -1, then has an extra +1 in the anim frame
+// array below (and elsewhere where updated).
+chunk_id_t ck_mapKeenBaseFrame[] = {
+	CK_CHUNKID(SPR_MAPKEEN_WALK1_N),
+	CK_CHUNKID(SPR_MAPKEEN_WALK1_NE),
+	CK_CHUNKID(SPR_MAPKEEN_WALK1_E),
+	CK_CHUNKID(SPR_MAPKEEN_WALK1_SE),
+	CK_CHUNKID(SPR_MAPKEEN_WALK1_S),
+	CK_CHUNKID(SPR_MAPKEEN_WALK1_SW),
+	CK_CHUNKID(SPR_MAPKEEN_WALK1_W),
+	CK_CHUNKID(SPR_MAPKEEN_WALK1_NW),
+};
 
-static int word_417BA[] = {2, 3, 1, 3, 4, 6, 0, 2};
+static int ck_mapKeenAnimFrame[] = {1, 2, 0, 2};
 
 void CK_SpawnMapKeen(int tileX, int tileY)
 {
@@ -376,7 +387,7 @@ void CK_MapKeenWalk(CK_object *obj)
 		if (ck_inputFrame.dir == IN_dir_None)
 		{
 			obj->currentAction = CK_GetActionByName("CK_ACT_MapKeenStart");
-			obj->gfxChunk = ck_mapKeenFrames[obj->user1] + 3;
+			obj->gfxChunk = CK_LookupChunk(ck_mapKeenBaseFrame[obj->user1]) + 2;
 			return;
 		}
 		else
@@ -393,7 +404,7 @@ void CK_MapKeenWalk(CK_object *obj)
 	// Advance Walking Frame Animation
 	if (++obj->user2 == 4)
 		obj->user2 = 0;
-	obj->gfxChunk = ck_mapKeenFrames[obj->user1] + word_417BA[obj->user2];
+	obj->gfxChunk = CK_LookupChunk(ck_mapKeenBaseFrame[obj->user1]) + ck_mapKeenAnimFrame[obj->user2];
 
 	//walk hi lo sound
 	if (obj->user2 == 1)

@@ -112,9 +112,6 @@ uint8_t ck4_terminator_palette2[] = {0, 0x18, 0x18, 0x07, 1, 1, 1, 1, 0x11, 0x11
 
 soundnames ck4_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9, 55};
 
-// ck_map.c
-int ck4_mapKeenFrames[] = {0x103, 0x112, 0x100, 0x109, 0x106, 0x10c, 0xFD, 0x10f};
-
 // ck_play.c
 int16_t ck4_levelMusic[] = {0, 4, 3, 3, 2, 2, 4, 3, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 3, -1};
 
@@ -171,9 +168,6 @@ void CK4_DefineConstants(void)
 
 	// ck_keen.c
 	ck_itemSounds = ck4_itemSounds;
-
-	// ck_map.c
-	ck_mapKeenFrames = ck4_mapKeenFrames;
 
 	// ck_play.c
 	ck_levelMusic = ck4_levelMusic;
