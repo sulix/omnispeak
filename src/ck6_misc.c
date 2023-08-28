@@ -70,21 +70,6 @@ CK_EpisodeDef ck6v15e_episode = {
 	/* .hasCreatureQuestion = */ true,
 };
 
-int16_t CK6_ItemSpriteChunks[] = {
-	164,
-	166,
-	168,
-	170,
-	150,
-	152,
-	154,
-	156,
-	158,
-	160,
-	162,
-	173,
-};
-
 void CK6_SetupFunctions()
 {
 	CK6_Obj1_SetupFunctions();

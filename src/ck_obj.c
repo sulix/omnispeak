@@ -65,13 +65,23 @@ void CK_SecurityDoorOpen(CK_object *obj)
 	}
 }
 
-// Should be an integer array
-// Is int* array for multiple episode support
-int *CK_ItemSpriteChunks[] = {
-	&SPR_GEM_A1, &SPR_GEM_B1, &SPR_GEM_C1, &SPR_GEM_D1,
-	&SPR_100_PTS1, &SPR_200_PTS1, &SPR_500_PTS1, &SPR_1000_PTS1, &SPR_2000_PTS1, &SPR_5000_PTS1,
-	&SPR_1UP1, &SPR_STUNNER1, &SPR_SECURITYCARD_1};
-
+chunk_id_t CK_ItemSpriteChunks[] = {
+	CK_CHUNKID(SPR_GEM_A1),
+	CK_CHUNKID(SPR_GEM_B1),
+	CK_CHUNKID(SPR_GEM_C1),
+	CK_CHUNKID(SPR_GEM_D1),
+	CK_CHUNKID(SPR_100_PTS1),
+	CK_CHUNKID(SPR_200_PTS1),
+	CK_CHUNKID(SPR_500_PTS1),
+	CK_CHUNKID(SPR_1000_PTS1),
+	CK_CHUNKID(SPR_2000_PTS1),
+	CK_CHUNKID(SPR_5000_PTS1),
+	CK_CHUNKID(SPR_1UP1),
+	CK_CHUNKID(SPR_STUNNER1),
+#ifdef WITH_KEEN5
+	CK_CHUNKID(SPR_SECURITYCARD_1)
+#endif
+};
 
 // Object and Centilife functions "should" be in ckx_obj1.c
 // but they are similar enough between episodes to put them all here
@@ -87,7 +97,7 @@ void CK_SpawnItem(int tileX, int tileY, int itemNumber)
 	obj->posY = RF_TileToUnit(tileY);
 	obj->yDirection = -1;
 	obj->user1 = itemNumber;
-	obj->gfxChunk = (int16_t)*CK_ItemSpriteChunks[itemNumber];
+	obj->gfxChunk = CK_LookupChunk(CK_ItemSpriteChunks[itemNumber]);
 	obj->user2 = obj->gfxChunk;
 	obj->user3 = obj->gfxChunk + 2;
 	CK_SetAction(obj, CK_GetActionByName("CK_ACT_item"));
