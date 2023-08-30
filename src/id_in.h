@@ -201,6 +201,7 @@ typedef struct IN_KeyMapping
 	IN_ScanCode fire;
 #ifdef EXTRA_KEYBOARD_OPTIONS
 	IN_ScanCode status; // not saved in CONFIG.CKx
+	IN_ScanCode toggleScorebox;
 #endif
 #ifdef QUICKSAVE_ENABLED
 	IN_ScanCode quickSave; // not saved in CONFIG.CKx
@@ -304,6 +305,7 @@ bool IN_DemoIsPlaying();
 IN_DemoMode IN_DemoGetMode();
 void IN_DemoSaveToFile(const char *fileName, uint16_t mapNumber);
 void IN_ClearKeysDown();
+void IN_ClearKey(IN_ScanCode key);
 void IN_ReadControls(int player, IN_ControlFrame *controls);
 void IN_WaitButton();
 int IN_CheckAck();

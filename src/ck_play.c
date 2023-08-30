@@ -1075,6 +1075,25 @@ void CK_CheckKeys()
 		SD_SetLastTimeCount(SD_GetTimeCount());
 	}
 
+#ifdef EXTRA_KEYBOARD_OPTIONS
+	if (IN_GetKeyState(in_kbdControls.toggleScorebox))
+	{
+		ck_scoreBoxEnabled = !ck_scoreBoxEnabled;
+
+		if (ck_scoreBoxEnabled)
+		{
+			// Force scorebox redraw if it's enabled
+			ck_scoreBoxObj->user1 = ck_scoreBoxObj->user2 = ck_scoreBoxObj->user3 = ck_scoreBoxObj->user4 = -1;
+		}
+		else if (ck_scoreBoxObj->sde)
+		{
+			// Wipe the scorebox if it got disabled
+			RF_RemoveSpriteDraw(&ck_scoreBoxObj->sde);
+		}
+		IN_ClearKey(in_kbdControls.toggleScorebox);
+	}
+#endif
+
 	// TODO: If Paused
 	if (in_Paused)
 	{

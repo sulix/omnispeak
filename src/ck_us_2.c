@@ -557,6 +557,7 @@ US_CardItem ck_us_buttonsMenuItems[] = {
 	{US_ITEM_Normal, 0, IN_SC_F, "FIRE", US_Comm_None, 0, 0, 0},
 #ifdef EXTRA_KEYBOARD_OPTIONS
 	{US_ITEM_Normal, 0, IN_SC_I, "STATUS", US_Comm_None, 0, 0, 0},
+	{US_ITEM_Normal, 0, IN_SC_B, "SCOREBOX", US_Comm_None, 0, 0, 0},
 #endif
 #ifdef QUICKSAVE_ENABLED
 	{US_ITEM_Normal, 0, IN_SC_S, "QUICKSAVE", US_Comm_None, 0, 0, 0},

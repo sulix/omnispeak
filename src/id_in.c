@@ -148,6 +148,7 @@ IN_ScanCode *in_key_controls[] = {
 	&in_kbdControls.jump, &in_kbdControls.pogo, &in_kbdControls.fire,
 #ifdef EXTRA_KEYBOARD_OPTIONS
 	&in_kbdControls.status,
+	&in_kbdControls.toggleScorebox,
 #endif
 #ifdef QUICKSAVE_ENABLED
 	&in_kbdControls.quickSave, &in_kbdControls.quickLoad,
@@ -157,7 +158,7 @@ IN_ScanCode *in_key_controls[] = {
 	&in_kbdControls.downLeft, &in_kbdControls.left};
 const int in_key_button_controls = 3 +
 #ifdef EXTRA_KEYBOARD_OPTIONS
-	1 +
+	2 +
 #endif
 #ifdef QUICKSAVE_ENABLED
 	2 +
@@ -268,6 +269,7 @@ void IN_SetupKbdControls()
 	in_kbdControls.fire = CFG_GetConfigInt("in_kbd_fire", IN_SC_Space);
 #ifdef EXTRA_KEYBOARD_OPTIONS
 	in_kbdControls.status = CFG_GetConfigInt("in_kbd_status", IN_SC_Enter);
+	in_kbdControls.toggleScorebox = CFG_GetConfigInt("in_kbd_toggleScorebox", IN_SC_Backspace);
 #endif
 #ifdef QUICKSAVE_ENABLED
 	in_kbdControls.quickSave = CFG_GetConfigInt("in_kbd_quickSave", IN_SC_F5);
@@ -303,6 +305,7 @@ void IN_SaveKbdControls()
 
 #ifdef EXTRA_KEYBOARD_OPTIONS
 	CFG_SetConfigInt("in_kbd_status", in_kbdControls.status);
+	CFG_SetConfigInt("in_kbd_toggleScorebox", in_kbdControls.toggleScorebox);
 #endif
 #ifdef QUICKSAVE_ENABLED
 	CFG_SetConfigInt("in_kbd_quickSave", in_kbdControls.quickSave);
@@ -533,6 +536,14 @@ void IN_ClearKeysDown()
 	in_lastKeyScanned = IN_SC_None;
 	in_lastASCII = IN_KP_None;
 	memset(in_keyStates, 0, sizeof(in_keyStates));
+}
+
+void IN_ClearKey(IN_ScanCode key)
+{
+	if (in_lastKeyScanned == key)
+		in_lastKeyScanned = IN_SC_None;
+
+	in_keyStates[key] = false;
 }
 
 void CK_US_UpdateOptionsMenus(void);
