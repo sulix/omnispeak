@@ -1466,6 +1466,18 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		ck_keenState.jumpTimer = 0;
 		obj->velX = 0;
 		obj->velY = 0;
+		// Keen's yDirection needs to be Down (1) when on the ground, or
+		// we can hit _nasty_ issues when going through a door, leading to
+		// a visual glitch (walking down into the door) and an exploit
+		// (the door's target is read from the wrong tile, becoming 0000 in
+		// most cases, leading to finishing the level, and possibly going to
+		// the secret level in Keen 5).
+		// See:
+		//   https://keenwiki.shikadi.net/wiki/Keen_5_Bugs#Ampton_Pole_Push_Door_Trick
+		//   https://keenwiki.shikadi.net/wiki/Keen_5_Bugs#Shelley.2FDoor_Trick
+		//   https://keenwiki.shikadi.net/wiki/Keen_4_Bugs#Bounder_Pole_Door_Glitch
+		if (!CFG_GetConfigBool("ck_poleDoorGlitch", true))
+			obj->yDirection = IN_motion_Down;
 		if (ck_currentEpisode->ep == EP_CK4)
 			CK_PhysPushXY(obj, other, false);
 		else if (ck_currentEpisode->ep == EP_CK6)
