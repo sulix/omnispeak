@@ -258,7 +258,7 @@ void IN_HandleTextEvent(const char *utf8Text)
 	if (!in_useTextEvents)
 		return;
 	//TODO: For now, only permit ASCII.
-	if (utf8Text[0] < 0x80)
+	if (((unsigned char*)utf8Text)[0] < 0x80)
 		in_lastASCII = utf8Text[0];
 }
 
@@ -440,7 +440,7 @@ void IN_Startup(void)
 #else
 	in_useTextEvents = CFG_GetConfigBool("in_useTextEvents", in_backend->supportsTextEvents);
 #endif
-	
+
 	if (in_useTextEvents && !in_backend->supportsTextEvents)
 	{
 		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Requested text event support, but backend doesn't support them!\n");
@@ -592,7 +592,7 @@ void IN_SetControlType(int player, IN_ControlType type)
 	type = DEFAULT_INPUT;
 #endif
 	in_controlType = type;
-	
+
 	// Save the control type if we need to
 	if (CFG_GetConfigEnum("in_controlType", IN_ControlType_Strings, -1) != -1)
 	{
