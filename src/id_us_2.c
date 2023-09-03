@@ -72,7 +72,7 @@ US_CardItem new_game_menu_items[] = {
 	{US_ITEM_None, 0, IN_SC_None, NULL, US_Comm_None, NULL, 0, 0},
 };
 
-US_Card new_game_menu = {8, 0, &PIC_NEWGAMECARD, 0, new_game_menu_items, NULL, 0, 0, 0};
+US_Card new_game_menu = {8, 0, CK_CHUNKID(PIC_NEWGAMECARD), 0, new_game_menu_items, NULL, 0, 0, 0};
 
 US_CardItem main_menu_items[] = {
 	{US_ITEM_Submenu, 0, IN_SC_N, "NEW GAME", US_Comm_None, &new_game_menu, 0, 0},
@@ -86,7 +86,7 @@ US_CardItem main_menu_items[] = {
 	{US_ITEM_None, 0, IN_SC_None, NULL, US_Comm_None, NULL, 0, 0}};
 
 //AS:00A2
-US_Card main_menu = {32, 4, &PIC_MENUCARD, 0, main_menu_items, NULL, 0, 0, 0};
+US_Card main_menu = {32, 4, CK_CHUNKID(PIC_MENUCARD), 0, main_menu_items, NULL, 0, 0, 0};
 
 void US_SetupCards(US_Card *initial)
 {
@@ -208,7 +208,7 @@ void USL_DrawCard()
 	if (us_currentCard->gfxChunk)
 	{
 		VHB_HLine(77, 231, 55, 10);
-		VHB_DrawBitmap(80, 48, *us_currentCard->gfxChunk);
+		VHB_DrawBitmap(80, 48, CK_LookupChunk(us_currentCard->gfxChunk));
 	}
 
 	// Draw the Footer

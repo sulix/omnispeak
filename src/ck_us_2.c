@@ -178,7 +178,7 @@ US_CardItem ck_us_debugMenuItems[] = {
 	{US_ITEM_Normal, 0, IN_SC_None, "DEBUG", US_Comm_None, 0, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_debugMenu = {0, 0, &PIC_DEBUGCARD, 0, ck_us_debugMenuItems, 0, 0, 0, 0};
+US_Card ck_us_debugMenu = {0, 0, CK_CHUNKID(PIC_DEBUGCARD), 0, ck_us_debugMenuItems, 0, 0, 0, 0};
 
 // Sound Menu
 US_CardItem ck_us_soundMenuItems[] = {
@@ -188,7 +188,7 @@ US_CardItem ck_us_soundMenuItems[] = {
 	{US_ITEM_Radio, 0, IN_SC_Q, "QUIET ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_soundMenu = {8, 0, &PIC_SOUNDCARD, 0, ck_us_soundMenuItems, 0, 0, 0, 0};
+US_Card ck_us_soundMenu = {8, 0, CK_CHUNKID(PIC_SOUNDCARD), 0, ck_us_soundMenuItems, 0, 0, 0, 0};
 
 // Music Menu
 US_CardItem ck_us_musicMenuItems[] = {
@@ -196,7 +196,7 @@ US_CardItem ck_us_musicMenuItems[] = {
 	{US_ITEM_Radio, 0, IN_SC_A, "ADLIB/SOUNDBLASTER", US_Comm_None, 0, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_musicMenu = {8, 0, &PIC_MUSICCARD, 0, ck_us_musicMenuItems, 0, 0, 0, 0};
+US_Card ck_us_musicMenu = {8, 0, CK_CHUNKID(PIC_MUSICCARD), 0, ck_us_musicMenuItems, 0, 0, 0, 0};
 
 // New Game Menu
 US_CardItem ck_us_newGameMenuItems[] = {
@@ -205,7 +205,7 @@ US_CardItem ck_us_newGameMenuItems[] = {
 	{US_ITEM_Normal, 0, IN_SC_H, "BEGIN HARD GAME", US_Comm_NewHardGame, 0, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_newGameMenu = {8, 0, &PIC_NEWGAMECARD, 0, ck_us_newGameMenuItems, 0, 1, 0, 0 /*, 0*/};
+US_Card ck_us_newGameMenu = {8, 0, CK_CHUNKID(PIC_NEWGAMECARD), 0, ck_us_newGameMenuItems, 0, 1, 0, 0 /*, 0*/};
 
 // Load/Save Game Menus
 US_CardItem ck_us_loadSaveMenuItems[] = {
@@ -501,8 +501,8 @@ bool CK_US_SaveGameMenuProc(US_CardMsg msg, US_CardItem *item)
 	}
 }
 
-US_Card ck_us_loadGameMenu = {4, 3, &PIC_LOADCARD, 0, ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0};
-US_Card ck_us_saveGameMenu = {4, 3, &PIC_SAVECARD, 0, ck_us_loadSaveMenuItems, &CK_US_SaveGameMenuProc, 0, 0, 0};
+US_Card ck_us_loadGameMenu = {4, 3, CK_CHUNKID(PIC_LOADCARD), 0, ck_us_loadSaveMenuItems, &CK_US_LoadGameMenuProc, 0, 0, 0};
+US_Card ck_us_saveGameMenu = {4, 3, CK_CHUNKID(PIC_SAVECARD), 0, ck_us_loadSaveMenuItems, &CK_US_SaveGameMenuProc, 0, 0, 0};
 
 // Dummy Menus
 
@@ -535,7 +535,7 @@ US_CardItem ck_us_optionsMenuItems[] = {
 #endif
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_optionsMenu = {8, 0, &PIC_OPTIONSCARD, 0, ck_us_optionsMenuItems, 0, 0, 0, 0};
+US_Card ck_us_optionsMenu = {8, 0, CK_CHUNKID(PIC_OPTIONSCARD), 0, ck_us_optionsMenuItems, 0, 0, 0, 0};
 
 // Movement Kbd Controls Menu
 US_CardItem ck_us_movementMenuItems[] = {
@@ -549,7 +549,7 @@ US_CardItem ck_us_movementMenuItems[] = {
 	{US_ITEM_Normal, 0, IN_SC_None, "LEFT", US_Comm_None, 0, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_movementMenu = {0, 0, &PIC_MOVEMENTCARD, 0, ck_us_movementMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
+US_Card ck_us_movementMenu = {0, 0, CK_CHUNKID(PIC_MOVEMENTCARD), 0, ck_us_movementMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
 
 // Buttons Kbd Controls Menu
 US_CardItem ck_us_buttonsMenuItems[] = {
@@ -566,7 +566,7 @@ US_CardItem ck_us_buttonsMenuItems[] = {
 #endif
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_buttonsMenu = {0, 0, &PIC_BUTTONSCARD, 0, ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
+US_Card ck_us_buttonsMenu = {0, 0, CK_CHUNKID(PIC_BUTTONSCARD), 0, ck_us_buttonsMenuItems, &CK_US_ControlsMenuProc, 0, 0, 0};
 
 // Keyboard Menu
 US_CardItem ck_us_keyboardMenuItems[] = {
@@ -574,13 +574,13 @@ US_CardItem ck_us_keyboardMenuItems[] = {
 	{US_ITEM_Submenu, 0, IN_SC_M, "BUTTONS", US_Comm_None, &ck_us_buttonsMenu, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_keyboardMenu = {8, 0, &PIC_KEYBOARDCARD, 0, ck_us_keyboardMenuItems, &CK_US_KeyboardMenuProc, 0, 0, 0};
+US_Card ck_us_keyboardMenu = {8, 0, CK_CHUNKID(PIC_KEYBOARDCARD), 0, ck_us_keyboardMenuItems, &CK_US_KeyboardMenuProc, 0, 0, 0};
 
 // Custom Menus
 
-US_Card ck_us_joystick1Menu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick1MenuProc, 0, 0, 0};
-US_Card ck_us_joystick2Menu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0};
-US_Card ck_us_gamepadMenu = {0, 0, &PIC_JOYSTICKCARD, 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0};
+US_Card ck_us_joystick1Menu = {0, 0, CK_CHUNKID(PIC_JOYSTICKCARD), 0, 0, &CK_US_Joystick1MenuProc, 0, 0, 0};
+US_Card ck_us_joystick2Menu = {0, 0, CK_CHUNKID(PIC_JOYSTICKCARD), 0, 0, &CK_US_Joystick2MenuProc, 0, 0, 0};
+US_Card ck_us_gamepadMenu = {0, 0, CK_CHUNKID(PIC_JOYSTICKCARD), 0, 0, &CK_US_GamepadMenuProc, 0, 0, 0};
 
 #ifdef EXTRA_JOYSTICK_OPTIONS
 // Joystick Config Menu
@@ -598,7 +598,7 @@ US_CardItem ck_us_joyconfMenuItems[] = {
 	{US_ITEM_Submenu, 0, IN_SC_J, "", US_Comm_None, &ck_us_joyMotionModeMenu, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_joyconfMenu = {0, 0, &PIC_BUTTONSCARD, 0, ck_us_joyconfMenuItems, &CK_US_JoyConfMenuProc, 0, 0, 0};
+US_Card ck_us_joyconfMenu = {0, 0, CK_CHUNKID(PIC_BUTTONSCARD), 0, ck_us_joyconfMenuItems, &CK_US_JoyConfMenuProc, 0, 0, 0};
 #endif
 
 // Configure Menu
@@ -615,7 +615,7 @@ US_CardItem ck_us_configureMenuItems[] = {
 #endif
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_configureMenu = {0, 0, &PIC_CONFIGURECARD, 0, ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0};
+US_Card ck_us_configureMenu = {0, 0, CK_CHUNKID(PIC_CONFIGURECARD), 0, ck_us_configureMenuItems, &CK_US_ConfigureMenuProc, 0, 0, 0};
 
 // Paddle War!
 
@@ -633,7 +633,7 @@ US_CardItem ck_us_mainMenuItems[] = {
 	{US_ITEM_Normal, 0, IN_SC_Q, "QUIT", US_Comm_Quit, 0, 0, 0},
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
-US_Card ck_us_mainMenu = {32, 4, &PIC_MENUCARD, 0, ck_us_mainMenuItems, 0, 0, 0, 0};
+US_Card ck_us_mainMenu = {32, 4, CK_CHUNKID(PIC_MENUCARD), 0, ck_us_mainMenuItems, 0, 0, 0, 0};
 
 extern US_Card *us_currentCard;
 

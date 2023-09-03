@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdio.h>
 
 #include "ck_cross.h"
+// Needed for chunk_id_t
+#include "ck_act.h"
 
 #include "id_in.h"
 #include "id_fs.h"
@@ -166,7 +168,7 @@ typedef struct US_Card
 	int x;
 	int y;
 	//int gfxChunk;
-	int *gfxChunk; // converted to pointer for multiple episode support
+	chunk_id_t gfxChunk;
 	// An unknown int
 	int unknown;
 	US_CardItem *items; //Pointer to item array.
