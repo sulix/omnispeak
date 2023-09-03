@@ -1340,7 +1340,7 @@ void StopMusic(void)
 {
 	int16_t i;
 	SD_MusicOff();
-	for (i = 0; i < LASTMUSTRACK; i++)
+	for (i = 0; i < ca_audInfoE.numSongs; i++)
 
 		if (CA_audio[ca_audInfoE.startMusic + i])
 			MM_SetPurge((void **)&CA_audio[ca_audInfoE.startMusic + i], 3);
