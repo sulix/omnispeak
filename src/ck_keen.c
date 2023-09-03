@@ -263,7 +263,7 @@ void CK_KeenGetTileCentilife(int tileX, int tileY)
 		obj->posX = RF_TileToUnit(tileX);
 		obj->posY = RF_TileToUnit(tileY);
 		obj->yDirection = IN_motion_Up;
-		obj->user2 = obj->gfxChunk = SPR_CENTILIFE1UPSHADOW;
+		obj->user2 = obj->gfxChunk = CK_CHUNKNUM(SPR_CENTILIFE1UPSHADOW);
 		CK_SetAction(obj, CK_GetActionByName("CK_ACT_itemNotify"));
 		obj->clipped = CLIP_not;
 	}
