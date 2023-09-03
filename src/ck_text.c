@@ -38,9 +38,10 @@ int help_line_startx[18], help_line_endx[18];
 int help_cur_page, help_num_pages, help_topic;
 int help_full_page;
 /* The chunks for each of the topics */
-// Converted into an array of pointers for multiple-episode support
-int *help_chunks[] = {
-	&TEXT_HELPMENU, &TEXT_CONTROLS, &TEXT_STORY, &TEXT_ORDER, &TEXT_ABOUTID};
+chunk_id_t help_chunks[] = {
+	CK_CHUNKID(TEXT_HELPMENU), CK_CHUNKID(TEXT_CONTROLS), CK_CHUNKID(TEXT_STORY), CK_CHUNKID(TEXT_ORDER), CK_CHUNKID(TEXT_ABOUTID)
+
+};
 
 void RipToEOL(void)
 {
@@ -585,7 +586,7 @@ void HelpScreens(void)
 		}
 
 		/* Cache the chunk with the topic */
-		n = *help_chunks[n];
+		n = CK_LookupChunk(help_chunks[n]);
 		CA_CacheGrChunk(n);
 
 		/* Set up the help ptr and initialise the parser */
