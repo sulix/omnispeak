@@ -115,7 +115,7 @@ uint8_t *ck_terminator_palette1;
 uint8_t *ck_terminator_palette2;
 
 // chunk #'s for the vertically scrolling pics
-int *terminator_pics[4] = {&PIC_CREDIT1, &PIC_CREDIT2, &PIC_CREDIT3, &PIC_CREDIT4};
+chunk_id_t terminator_pics[4] = {CK_CHUNKID(PIC_CREDIT1), CK_CHUNKID(PIC_CREDIT2), CK_CHUNKID(PIC_CREDIT3), CK_CHUNKID(PIC_CREDIT4)};
 // storage for the vertically scrolling pics
 mm_ptr_t terminator_pic_memptrs[4];
 
@@ -177,7 +177,7 @@ int AdvanceTerminatorCredit(int elapsedTime)
 
 	case -1:
 		// loading
-		picchunk = *terminator_pics[ck_currentTerminatorCredit];
+		picchunk = CK_LookupChunk(terminator_pics[ck_currentTerminatorCredit]);
 		CA_CacheGrChunk(picchunk);
 		bmp = VH_GetBitmapTableEntry(picchunk - ca_gfxInfoE.offBitmaps);
 		ck_currentTermPicSeg = ca_graphChunks[picchunk];
