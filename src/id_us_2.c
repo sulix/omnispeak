@@ -978,6 +978,7 @@ void US_RunCards()
 				action_taken = true;
 				break;
 			case IN_SC_F1:
+#ifdef HAS_HELPSCREEN
 				if (ck_currentEpisode->ep != EP_CK6)
 				{
 					HelpScreens();
@@ -985,6 +986,7 @@ void US_RunCards()
 					action_taken = true;
 					break;
 				}
+#endif
 				// Fall-through
 			default:
 				if (lastScan == in_kbdControls.jump || lastScan == in_kbdControls.pogo)

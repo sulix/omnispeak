@@ -53,11 +53,13 @@ void CK_HandleDemoKeys()
 	 * return;
 	 */
 
+#ifdef HAS_HELPSCREEN
 	if ((ck_currentEpisode->ep != EP_CK6) && (IN_GetLastScan() == IN_SC_F1))
 	{
 		HelpScreens();
 		return;
 	}
+#endif
 
 	// Otherwise, start the wristwatch menu
 	US_RunCards();
@@ -1126,12 +1128,14 @@ void CK_DrawTerminator(void)
 	if (!IN_GetLastScan())
 		return;
 
+#ifdef HAS_HELPSCREEN
 	// Go to help screen
 	if ((ck_currentEpisode->ep != EP_CK6) && (IN_GetLastScan() == IN_SC_F1))
 	{
 		HelpScreens();
 		return;
 	}
+#endif
 
 	if (!terminator_complete)
 	{

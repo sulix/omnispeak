@@ -38,10 +38,12 @@ int help_line_startx[18], help_line_endx[18];
 int help_cur_page, help_num_pages, help_topic;
 int help_full_page;
 /* The chunks for each of the topics */
+#ifdef HAS_HELPSCREEN
 chunk_id_t help_chunks[] = {
 	CK_CHUNKID(TEXT_HELPMENU), CK_CHUNKID(TEXT_CONTROLS), CK_CHUNKID(TEXT_STORY), CK_CHUNKID(TEXT_ORDER), CK_CHUNKID(TEXT_ABOUTID)
 
 };
+#endif
 
 void RipToEOL(void)
 {
@@ -310,6 +312,7 @@ void PageLayout(int show_status)
 
 	/* Fill the background and draw the border */
 	VHB_Bar(0, 0, 320, 200, 4);
+#ifdef HAS_HELPSCREEN
 	if (ck_currentEpisode->ep != EP_CK6)
 	{
 		VHB_DrawBitmap(0, 0, CK_CHUNKNUM(PIC_BORDERTOP));     /* Top border */
@@ -320,6 +323,7 @@ void PageLayout(int show_status)
 		else
 			VHB_DrawBitmap(8, 192, CK_CHUNKNUM(PIC_BORDERBOTTOM)); /* Bottom border */
 	}
+#endif
 
 	/* Set the lines' start and end positions so the text stays within the border */
 	for (i = 0; i < 18; i++)
@@ -412,11 +416,13 @@ void CacheLayoutGraphics(void)
 	help_num_pages = help_cur_page = 0;
 
 	/* Cache the border graphics */
+#ifdef HAS_HELPSCREEN
 	CA_MarkGrChunk(CK_CHUNKNUM(PIC_BORDERTOP));
 	CA_MarkGrChunk(CK_CHUNKNUM(PIC_BORDERLEFT));
 	CA_MarkGrChunk(CK_CHUNKNUM(PIC_BORDERRIGHT));
 	CA_MarkGrChunk(CK_CHUNKNUM(PIC_BORDERBOTTOMSTATUS));
 	CA_MarkGrChunk(CK_CHUNKNUM(PIC_BORDERBOTTOM));
+#endif
 
 	do
 	{
@@ -459,6 +465,8 @@ void CacheLayoutGraphics(void)
 	/* If we got here, we didn't find the end of the text */
 	Quit("CacheLayoutGraphics: No ^E to terminate file!");
 }
+
+#ifdef HAS_HELPSCREEN
 
 int ShowHelp(void)
 {
@@ -640,6 +648,8 @@ void HelpScreens(void)
 	}
 }
 
+#endif
+
 void help_endgame(void)
 {
 	char *ptext;
@@ -656,12 +666,14 @@ void help_endgame(void)
 	CA_CacheGrChunk(CK_CHUNKNUM(PIC_ARROWBRIGHT)); /* Bright arrow */
 
 	// Check for Korath Fuse
+#ifdef WITH_KEEN5
 	if (/*ck_currentEpisode->ep == EP_CK5 &&*/ ck_gameState.levelsDone[13] == 0x0E)
 	{
 		CA_CacheGrChunk(CK_CHUNKNUM(TEXT_SECRETEND));
 		ptext = (char *)ca_graphChunks[CK_CHUNKNUM(TEXT_SECRETEND)];
 	}
 	else
+#endif
 	{
 		CA_CacheGrChunk(CK_CHUNKNUM(TEXT_END));
 		ptext = (char *)ca_graphChunks[CK_CHUNKNUM(TEXT_END)];
@@ -708,9 +720,11 @@ void help_endgame(void)
 
 	/* Uncache our graphics and clean up */
 	StopMusic();
+#ifdef WITH_KEEN5
 	if (ck_gameState.levelsDone[13] == LS_KorathFuse)
 		MM_FreePtr(&ca_graphChunks[CK_CHUNKNUM(TEXT_SECRETEND)]);
 	else
+#endif
 		MM_FreePtr(&ca_graphChunks[CK_CHUNKNUM(TEXT_END)]);
 	MM_FreePtr(&ca_graphChunks[CK_CHUNKNUM(PIC_ARROWBRIGHT)]);
 	MM_FreePtr(&ca_graphChunks[CK_CHUNKNUM(PIC_ARROWDIM)]);

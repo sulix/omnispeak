@@ -44,6 +44,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //#define ALWAYS_REDRAW
 
 // =================================
+// Episode-specific config options
+// =================================
+#if defined(WITH_KEEN4) || defined(WITH_KEEN5)
+#define HAS_HELPSCREEN
+#endif
+
+// =================================
 // Options for DEBUG builds only.
 // =================================
 #ifdef CK_DEBUG

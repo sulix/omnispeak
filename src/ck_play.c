@@ -1117,6 +1117,7 @@ void CK_CheckKeys()
 		SD_MusicOn();
 	}
 
+#ifdef HAS_HELPSCREEN
 	// HELP
 	if ((ck_currentEpisode->ep != EP_CK6) && (IN_GetLastScan() == IN_SC_F1))
 	{
@@ -1131,6 +1132,7 @@ void CK_CheckKeys()
 		}
 		RF_ForceRefresh();
 	}
+#endif
 
 	if (!ck_demoParm)
 	{

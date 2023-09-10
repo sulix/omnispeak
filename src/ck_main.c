@@ -131,7 +131,6 @@ void CK_InitGame()
 	
 	CK_VAR_Startup();
 	CK_VAR_LoadVars("EPISODE.EXT");
-	
 	// Define any remaining constants.
 	ck_currentEpisode->defineConstants();
 
