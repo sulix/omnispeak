@@ -10,6 +10,7 @@
 %int CK_highScoreRightMargin 0x118
 %int CK_EndingMusicLevel 1
 %int CK_StarWarsMusicLevel 13
+%int CK_highScoreFontColour 15
 
 # Music Table
 # -----------
@@ -94,7 +95,7 @@
 %int SOUND_FLECTSHOT 42
 %int SOUND_FLAGFLIP 43
 %int SOUND_FLAGLAND 44
-%int SOUND_BARKSHOTDIE 45
+%int SOUND_STORYITEM 45
 %int SOUND_KEENPADDLE 46
 %int SOUND_PONGWALL 47
 %int SOUND_COMPPADDLE 48
@@ -126,6 +127,7 @@
 %int CK6_MapKeenRopeSpawnYOffset -0x200
 %int CK6_MapKeenRopeClimbSpeed 0x30
 %int CK6_MapKeenRopeClimbStartY 0x40
+%int CK6_MapKeenRopeClimbDist 6
 
 # Map Satellite
 %int CK6_KeenSatelliteXOffset 0xC0
