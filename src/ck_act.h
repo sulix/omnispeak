@@ -37,6 +37,8 @@ void CK_VAR_Startup();
 const char *CK_VAR_GetString(const char *name, const char *def);
 const char *CK_VAR_GetStringByNameAndIndex(const char *name, int index);
 intptr_t CK_VAR_GetInt(const char *name, intptr_t def);
+intptr_t *CK_VAR_GetIntArray(const char *name);
+intptr_t CK_VAR_GetIntArrayElement(const char *name, int index);
 CK_action *CK_GetActionByName(const char *name);
 CK_action *CK_GetOrCreateActionByName(const char *name);
 CK_action *CK_LookupActionFrom16BitOffset(uint16_t offset); // POTENTIALLY SLOW function - Use in game loading only!
@@ -60,6 +62,8 @@ void CK_VAR_LoadVars(const char *filename);
 typedef int16_t chunk_id_t;
 #define CK_CHUNKID(name) CK_CHUNKNUM(name)
 #define CK_LookupChunk(id) (id)
+#define CK_INTARRAY(name) INTARRAY_ ## name
+#define CK_INTELEMENT(name, i) (CK_INTARRAY(name)[i])
 #else
 #define CK_INT(name, default) CK_VAR_GetInt(#name, default)
 #define CK_CHUNKNUM(name) CK_VAR_GetInt(#name, 0)
@@ -67,6 +71,8 @@ typedef int16_t chunk_id_t;
 typedef const char *chunk_id_t;
 #define CK_CHUNKID(name) #name
 #define CK_LookupChunk(id) CK_VAR_GetInt(id, 0)
+#define CK_INTARRAY(name) CK_VAR_GetIntArray(#name)
+#define CK_INTELEMENT(name, i) CK_VAR_GetIntArrayElement(#name, i)
 #endif
 
 

@@ -250,7 +250,7 @@
 %int CK4_DopefishBurpBubbleYOffset 0x200
 %int CK4_DopefishBurpBubbleXVelocity 4
 %int CK4_DopefishBurpBubbleYVelocity -20
-%int CK4_DopefishBubbleWaveChance, 16
+%int CK4_DopefishBubbleWaveChance 16
 %int CK4_DopefishBurpBubbleMaxY 0x300
 
 # Schoolfish

@@ -324,6 +324,8 @@ typedef enum CK_VAR_VarType
 	VAR_Bool,
 	VAR_Int,
 	VAR_String,
+	VAR_IntArray,
+	VAR_StringArray,
 	VAR_Action,
 	VAR_TOK_Include
 } CK_VAR_VarType;
@@ -333,6 +335,7 @@ typedef struct CK_VAR_Variable
 {
 	CK_VAR_VarType type;
 	void *value;
+	size_t arrayLength;
 } CK_VAR_Variable;
 #else
 #error Action validator requires typechecking to be enabled.

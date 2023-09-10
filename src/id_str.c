@@ -217,14 +217,14 @@ STR_Token STR_GetToken(STR_ParserState *ps)
 		STR_GetCharacter(ps);
 	}
 	else if (STR_PeekCharacter(ps))
-		tok.tokenType = STR_TOK_Ident;
 	{
-		while (STR_PeekCharacter(ps) && !isspace(STR_PeekCharacter(ps)))
+		tok.tokenType = STR_TOK_Ident;
+		do
 		{
 			tokenbuf[i++] = STR_GetCharacter(ps);
 			if (i == ID_STR_MAX_TOKEN_LENGTH)
 				Quit("Token exceeded max length!");
-		}
+		} while (STR_PeekCharacter(ps) && !isspace(STR_PeekCharacter(ps)) && !(STR_PeekCharacter(ps) == ','));
 	}
 	tok.lastIndex = ps->dataindex;
 	tokenbuf[i] = '\0';
@@ -279,12 +279,10 @@ size_t STR_GetStringValue(STR_Token tok, char *tokenBuf, size_t bufLength)
 	}
 	else
 	{
-		while (*(tok.valuePtr) && !isspace(*(tok.valuePtr)))
-		{
-			tokenBuf[i++] = *(tok.valuePtr++);
-			if (i == ID_STR_MAX_TOKEN_LENGTH)
-				Quit("Token exceeded max length!");
-		}
+		if (tok.valueLength >= bufLength)
+			Quit("Token exceeded max length!");
+		memcpy(tokenBuf, tok.valuePtr, tok.valueLength);
+		i = tok.valueLength;
 	}
 	tokenBuf[i] = '\0';
 

@@ -89,6 +89,7 @@ CK_ACT_ColFunction CK_ACT_GetColFunction(const char *fnName)
 
 #define CK_VAR_MAXVARS 2048
 #define CK_VAR_MAXACTIONS 512
+#define CK_VAR_MAX_ARRAY_LEN 96
 
 STR_Table *ck_varTable;
 ID_MM_Arena *ck_varArena;
@@ -102,6 +103,8 @@ typedef enum CK_VAR_VarType
 	VAR_Bool,
 	VAR_Int,
 	VAR_String,
+	VAR_IntArray,
+	VAR_StringArray,
 	VAR_Action,
 	VAR_TOK_Include
 } CK_VAR_VarType;
@@ -111,6 +114,7 @@ typedef struct CK_VAR_Variable
 {
 	CK_VAR_VarType type;
 	void *value;
+	size_t length;
 } CK_VAR_Variable;
 #endif
 
@@ -174,6 +178,47 @@ intptr_t CK_VAR_GetInt(const char *name, intptr_t def)
 	return (intptr_t)var->value;
 #else
 	return (intptr_t)CK_VAR_GetByName(name, (void *)def);
+#endif
+}
+
+// NOTE: No default for an Int Array.
+intptr_t *CK_VAR_GetIntArray(const char *name)
+{
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)CK_VAR_GetByName(name, NULL);
+	if (!var)
+	{
+#ifdef CK_VAR_WARNONNOTSET
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Integer array variable \"%s\" not set, returning NULL\n", name);
+#endif
+		return NULL;
+	}
+	if (var->type != VAR_IntArray)
+		Quit("CK_VAR_GetIntArray: Tried to access a non-integer array variable!");
+	return (intptr_t *)var->value;
+#else
+	return (intptr_t *)CK_VAR_GetByName(name, NULL);
+#endif
+}
+
+intptr_t CK_VAR_GetIntArrayElement(const char *name, int index)
+{
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)CK_VAR_GetByName(name, NULL);
+	if (!var)
+	{
+#ifdef CK_VAR_WARNONNOTSET
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Integer array variable \"%s\" not set, returning NULL\n", name);
+#endif
+		return 0;
+	}
+	if (var->type != VAR_IntArray)
+		Quit("CK_VAR_GetIntArrayElement: Tried to access a non-integer array variable!");
+	if (index < 0 || index >= var->length)
+		Quit("CK_VAR_GetIntArrayElement: Index out of range!");
+	return ((intptr_t *)var->value)[index];
+#else
+	return ((intptr_t *)CK_VAR_GetByName(name, 0))[index];
 #endif
 }
 
@@ -251,6 +296,22 @@ void CK_VAR_SetInt(const char *name, intptr_t val)
 #endif
 }
 
+void CK_VAR_SetIntArray(const char *name, intptr_t *array, size_t arrayLen)
+{
+	const char *realName = MM_ArenaStrDup(ck_varArena, name);
+	intptr_t *realArray = (intptr_t *)MM_ArenaAlloc(ck_varArena, arrayLen * sizeof(intptr_t));
+	memcpy(realArray, array, arrayLen * sizeof(intptr_t));
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)MM_ArenaAlloc(ck_varArena, sizeof(*var));
+	var->type = VAR_IntArray;
+	var->value = (void *)realArray;
+	var->length = arrayLen;
+	CK_VAR_SetEntry(realName, (void *)var);
+#else
+	CK_VAR_SetEntry(realName, (void *)realArray);
+#endif
+}
+
 void CK_VAR_SetString(const char *name, const char *val)
 {
 	const char *realName = MM_ArenaStrDup(ck_varArena, name);
@@ -286,6 +347,10 @@ CK_VAR_VarType CK_VAR_ParseVarType(STR_ParserState *ps)
 		varType = VAR_Int;
 	else if (STR_IsTokenIdent(tok, "%string"))
 		varType = VAR_String;
+	else if (STR_IsTokenIdent(tok, "%intarray"))
+		varType = VAR_IntArray;
+	else if (STR_IsTokenIdent(tok, "%stringarray"))
+		varType = VAR_StringArray;
 	else if (STR_IsTokenIdent(tok, "%action"))
 		varType = VAR_Action;
 	else if (STR_IsTokenIdent(tok, "%include"))
@@ -404,6 +469,33 @@ void CK_VAR_ParseInt(STR_ParserState *ps)
 	CK_VAR_SetInt(varName, val);
 }
 
+void CK_VAR_ParseIntArray(STR_ParserState *ps)
+{
+	char varName[ID_STR_MAX_TOKEN_LENGTH];
+	intptr_t tempArray[CK_VAR_MAX_ARRAY_LEN];
+	STR_GetIdent(ps, varName, ID_STR_MAX_TOKEN_LENGTH);
+
+	size_t num_elements = 0;
+
+	while (true)
+	{
+		tempArray[num_elements] = CK_VAR_ParseIntOrVar(ps);
+		num_elements++;
+		STR_Token next = STR_PeekToken(ps);
+		if (!(next.tokenType == STR_TOK_Ident && next.valueLength == 1 && *next.valuePtr == ','))
+		{
+			// The next token is not a comma, so we're at the end of the list.
+			break;
+		}
+		// Eat the comma.
+		STR_GetToken(ps);
+
+		if (num_elements == CK_VAR_MAX_ARRAY_LEN)
+			Quit("Array exceeded max size!");
+	}
+	CK_VAR_SetIntArray(varName, tempArray, num_elements);
+}
+
 void CK_VAR_ParseString(STR_ParserState *ps)
 {
 	char varName[ID_STR_MAX_TOKEN_LENGTH];
@@ -439,6 +531,9 @@ bool CK_VAR_ParseVar(STR_ParserState *ps)
 		break;
 	case VAR_String:
 		CK_VAR_ParseString(ps);
+		break;
+	case VAR_IntArray:
+		CK_VAR_ParseIntArray(ps);
 		break;
 	case VAR_Action:
 		CK_VAR_ParseAction(ps);
