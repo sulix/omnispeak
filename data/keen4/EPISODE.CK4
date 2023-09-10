@@ -21,26 +21,27 @@
 %int WONDER_MUS 5 # In a Land of Wonderment and Awe
 
 
-%int CK_LevelMusic0 @SHADOWS_MUS
-%int CK_LevelMusic1 @KICKPANT_MUS
-%int CK_LevelMusic2 @OASIS_MUS
-%int CK_LevelMusic3 @OASIS_MUS
-%int CK_LevelMusic4 @TOOHOT_MUS
-%int CK_LevelMusic5 @TOOHOT_MUS
-%int CK_LevelMusic6 @KICKPANT_MUS
-%int CK_LevelMusic7 @OASIS_MUS
-%int CK_LevelMusic8 @VEGGIES_MUS
-%int CK_LevelMusic9 @VEGGIES_MUS
-%int CK_LevelMusic10 @VEGGIES_MUS
-%int CK_LevelMusic11 @TOOHOT_MUS
-%int CK_LevelMusic12 @TOOHOT_MUS
-%int CK_LevelMusic13 @TOOHOT_MUS
-%int CK_LevelMusic14 @TOOHOT_MUS
-%int CK_LevelMusic15 @TOOHOT_MUS
-%int CK_LevelMusic16 @TOOHOT_MUS
-%int CK_LevelMusic17 @VEGGIES_MUS
-%int CK_LevelMusic18 @OASIS_MUS
-%int CK_LevelMusic19 -1 # Should be @WONDER_MUS, but fixed up in code?
+%intarray CK_LevelMusic	@SHADOWS_MUS,
+			@KICKPANT_MUS,
+			@OASIS_MUS,
+			@OASIS_MUS,
+			@TOOHOT_MUS,
+			@TOOHOT_MUS,
+			@KICKPANT_MUS,
+			@OASIS_MUS,
+			@VEGGIES_MUS,
+			@VEGGIES_MUS,
+			@VEGGIES_MUS,
+			@TOOHOT_MUS,
+			@TOOHOT_MUS,
+			@TOOHOT_MUS,
+			@TOOHOT_MUS,
+			@TOOHOT_MUS,
+			@TOOHOT_MUS,
+			@VEGGIES_MUS,
+			@OASIS_MUS,
+			-1 # Should be @WONDER_MUS, but fixed up in code?
+%int ck4_specialMusic @WONDER_MUS
 
 # Graphics Chunks
 %include "GFXCHUNK.CK4"

@@ -29,26 +29,26 @@
 %int FANFARE_MUS 12 # Commander Keen's Fanfare
 %int FEARSOME_MUS 13 # Mars, the Bringer of War
 
-%int CK_LevelMusic0 @ROBOROCK_MUS
-%int CK_LevelMusic1 @WEDNESDY_MUS
-%int CK_LevelMusic2 @BREATHE_MUS
-%int CK_LevelMusic3 @SPHEREFUL_MUS
-%int CK_LevelMusic4 @TIGHTER_MUS
-%int CK_LevelMusic5 @SPHEREFUL_MUS
-%int CK_LevelMusic6 @TIGHTER_MUS
-%int CK_LevelMusic7 @SPHEREFUL_MUS
-%int CK_LevelMusic8 @TIGHTER_MUS
-%int CK_LevelMusic9 @SPHEREFUL_MUS
-%int CK_LevelMusic10 @TIGHTER_MUS
-%int CK_LevelMusic11 @SNOOPING_MUS
-%int CK_LevelMusic12 @FEARSOME_MUS
-%int CK_LevelMusic13 @BAGPIPES_MUS
-%int CK_LevelMusic14 @FANFARE_MUS
-%int CK_LevelMusic15 @SKATING_MUS
-%int CK_LevelMusic16 @ROCK_ME_MUS
-%int CK_LevelMusic17 @HAVING_T_MUS
-%int CK_LevelMusic18 @CAMEIN_MUS
-%int CK_LevelMusic19 @SHIKAIRE_MUS
+%intarray CK_LevelMusic	@ROBOROCK_MUS,
+			@WEDNESDY_MUS,
+			@BREATHE_MUS,
+			@SPHEREFUL_MUS,
+			@TIGHTER_MUS,
+			@SPHEREFUL_MUS,
+			@TIGHTER_MUS,
+			@SPHEREFUL_MUS,
+			@TIGHTER_MUS,
+			@SPHEREFUL_MUS,
+			@TIGHTER_MUS,
+			@SNOOPING_MUS,
+			@FEARSOME_MUS,
+			@BAGPIPES_MUS,
+			@FANFARE_MUS,
+			@SKATING_MUS,
+			@ROCK_ME_MUS,
+			@HAVING_T_MUS,
+			@CAMEIN_MUS,
+			@SHIKAIRE_MUS
 
 
 # Graphics Chunks

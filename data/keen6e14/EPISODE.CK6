@@ -24,26 +24,26 @@
 %int METAL_MUS 7 # Please Don't Metal With Me!
 %int MAMSNAKE_MUS 8 # The Mambo Snake Gonna Eat You, Boy!
 
-%int CK_LevelMusic0 @ALIENATE_MUS
-%int CK_LevelMusic1 @FASTER_MUS
-%int CK_LevelMusic2 @BRER_TAR_MUS
-%int CK_LevelMusic3 @MAMSNAKE_MUS
-%int CK_LevelMusic4 @MAMSNAKE_MUS
-%int CK_LevelMusic5 @MAMSNAKE_MUS
-%int CK_LevelMusic6 @METAL_MUS
-%int CK_LevelMusic7 @TOFUTURE_MUS
-%int CK_LevelMusic8 @METAL_MUS
-%int CK_LevelMusic9 @BRER_TAR_MUS
-%int CK_LevelMusic10 @FASTER_MUS
-%int CK_LevelMusic11 @TOFUTURE_MUS
-%int CK_LevelMusic12 @BRER_TAR_MUS
-%int CK_LevelMusic13 @SPACFUNK_MUS
-%int CK_LevelMusic14 @SPACFUNK_MUS
-%int CK_LevelMusic15 @OMINOUS_MUS
-%int CK_LevelMusic16 @TOFUTURE_MUS
-%int CK_LevelMusic17 @WONDER_MUS
-%int CK_LevelMusic18 @WONDER_MUS
-%int CK_LevelMusic19 @WONDER_MUS
+%intarray CK_LevelMusic @ALIENATE_MUS,
+			@FASTER_MUS,
+			@BRER_TAR_MUS,
+			@MAMSNAKE_MUS,
+			@MAMSNAKE_MUS,
+			@MAMSNAKE_MUS,
+			@METAL_MUS,
+			@TOFUTURE_MUS,
+			@METAL_MUS,
+			@BRER_TAR_MUS,
+			@FASTER_MUS,
+			@TOFUTURE_MUS,
+			@BRER_TAR_MUS,
+			@SPACFUNK_MUS,
+			@SPACFUNK_MUS,
+			@OMINOUS_MUS,
+			@TOFUTURE_MUS,
+			@WONDER_MUS,
+			@WONDER_MUS,
+			@WONDER_MUS
 
 
 # Graphics Chunks
