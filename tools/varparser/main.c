@@ -17,9 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "../../src/id_mm.h"
 #include "../../src/id_str.h"
 #include "../../src/ck_act.h"
+#include "../../src/ck_def.h"
 
 bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 {
