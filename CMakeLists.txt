@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 project(omnispeak)
 
 option(WITH_ASAN "Compile with Address Sanitizer" OFF)
+add_compile_options("$<$<CONFIG:DEBUG>:-DCK_DEBUG>")
 
 # Default to 'sdl2' on Windows
 if (WIN32)
