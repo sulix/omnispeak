@@ -154,155 +154,12 @@ CK_object *CK4_SpawnEnemyShot(int posX, int posY, CK_action *action)
 	}
 }
 
-// TODO: Cache stuff here instead of spawner handlers
-
-#define MAXLUMPS 0x25
-static bool ck4_lumpsNeeded[MAXLUMPS];
-typedef enum
-{
-	Lump_0 = 0,
-	Lump_Keen = 1,
-	Lump_Soda = 2,
-	Lump_Candybar = 3,
-	Lump_Choc = 4,
-	Lump_Jawbreaker = 5,
-	Lump_Donut = 6,
-	Lump_Icecream = 7,
-	Lump_LifewaterFlask = 8,
-	Lump_Stunner = 9,
-	Lump_MapKeen = 10,
-	Lump_Slug = 11,
-	Lump_Mushroom = 12,
-	Lump_DartShooter = 13,
-	Lump_Lindsey = 14,
-	Lump_FootWorm = 15,
-	Lump_Smirky = 16,
-	Lump_CouncilMember = 17,
-	Lump_Bird = 18,
-	Lump_Mimrock = 19,
-	Lump_Dopefish = 20,
-	Lump_Schoolfish = 21,
-	Lump_Arachnut = 22,
-	Lump_Skypest = 23,
-	Lump_Wormmouth = 24,
-	Lump_Lick = 25,
-	Lump_Platform = 26,
-	Lump_Bounder = 27,
-	Lump_Cloud = 28,
-	Lump_Berkeloid = 29,
-	Lump_Gems = 30,
-	Lump_Dart = 31,
-	Lump_ScubaKeen = 32,
-	Lump_Sprite = 33,
-	Lump_Mine = 34,
-	Lump_KeenMoon = 35,
-	Lump_Egg = 36,
-} CK_Lumptype;
-
-static int16_t ck4_itemLumps[] =
-	{
-		Lump_Gems,
-		Lump_Gems,
-		Lump_Gems,
-		Lump_Gems,
-		Lump_Soda,
-		Lump_Candybar,
-		Lump_Choc,
-		Lump_Jawbreaker,
-		Lump_Donut,
-		Lump_Icecream,
-		Lump_LifewaterFlask,
-		Lump_Stunner,
-};
-
-static int16_t ck4_lumpStarts[MAXLUMPS] =
-	{
-		88,
-		130,
-		227,
-		229,
-		231,
-		233,
-		235,
-		237,
-		239,
-		251,
-		254,
-		315,
-		325,
-		0,
-		329,
-		333, // SPR_INCHWORM_R1
-		338, // SPR_SMIRKY_LOOKLEFT
-		356, // SPR_COUNCILWALK_R1
-		367, // SPR_BIRDWALK_R1
-		388, // SPR_MIMROCK
-		404, // SPR_DOPEFISHR1
-		421, // SPR_SCHOOLFISHL1
-		425, // SPR_ARACHNUTWALK_1
-		443, // SPR_SKYPESTFLYL1
-		457, // wormouth
-		469, // SPR_LICKR1
-		484, // SPR_PLATFORM
-		491, // SPR_BOUNDERL1
-		498, // SPR_CLOUD1
-		503, // SPR_BERKELOIDL1
-		242,
-		380,
-		309,
-		431,
-		440,
-		519,
-		362, // SPR_EGG1
-};
-
-static int16_t ck4_lumpEnds[MAXLUMPS] =
-	{
-		103,
-		226,
-		228,
-		230,
-		232,
-		234,
-		236,
-		238,
-		240,
-		252,
-		308,
-		324,
-		328,
-		0,
-		332,
-		337, // SPR_FOOT
-		355, // SPR_SMIRKYSTUNNED
-		361, // SPR_COUNCILPAUSE2
-		379, // SPR_BIRDSTUNNED
-		403, // SPR_MIMROCKSTUNNED
-		420,
-		424,
-		429, // SPR_ARACHNUTSTUNNED
-		456, // SPR_SKYPESTSQUISH
-		468, // wormmouth
-		483, // SPR_LICKSTUNNED
-		490, // SPR_PLATFORMFLAMES_BOT2
-		497, // SPR_BOUNDERSTUNNED
-		502, // SPR_BOLT2
-		518,
-		250,
-		387,
-		314,
-		439,
-		442,
-		520,
-		366, // SPR_EGGBIT4
-};
-
 void CK4_ScanInfoLayer()
 {
 
 	// Reset the lumps (contiguous lists of chunks for sprites) required by
 	// the level.
-	memset(ck4_lumpsNeeded, 0, sizeof(ck4_lumpsNeeded));
+	CA_ClearLumps();
 
 	//TODO: Work out where to store current map number, etc.
 	int mapW = CA_MapHeaders[ca_mapOn]->width;
@@ -319,33 +176,33 @@ void CK4_ScanInfoLayer()
 				CK_SpawnKeen(x, y, 1);
 				CK_DemoSignSpawn();
 				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCOREBOX));
-				ck4_lumpsNeeded[Lump_Keen] = true;
+				CA_MARKLUMP(LUMP_KEEN);
 				break;
 			case 2:
 				CK_SpawnKeen(x, y, -1);
 				CK_DemoSignSpawn();
 				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCOREBOX));
-				ck4_lumpsNeeded[Lump_Keen] = true;
+				CA_MARKLUMP(LUMP_KEEN);
 				break;
 
 			// ScubaKeen
 			case 42:
 				CK4_SpawnScubaKeen(x, y);
 				CK_DemoSignSpawn();
-				ck4_lumpsNeeded[Lump_ScubaKeen] = true;
+				CA_MARKLUMP(LUMP_SCUBAKEEN);
 				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCOREBOX));
 				break;
 
 			case 3:
 				CK_DemoSignSpawn();
 				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCOREBOX));
-				ck4_lumpsNeeded[Lump_MapKeen] = true;
+				CA_MARKLUMP(LUMP_MAPKEEN);
 				CK_SpawnMapKeen(x, y);
 				break;
 
 			case 4:
 				CK4_SpawnCouncilMember(x, y);
-				ck4_lumpsNeeded[Lump_CouncilMember] = true;
+				CA_MARKLUMP(LUMP_ORACLEMEMBER);
 				break;
 
 			case 25:
@@ -368,20 +225,20 @@ void CK4_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 22:
-				ck4_lumpsNeeded[Lump_Slug] = true;
+				CA_MARKLUMP(LUMP_SLUG);
 				CK4_SpawnSlug(x, y);
 				break;
 
 				// Mushrooms
 			case 21:
-				ck4_lumpsNeeded[Lump_Mushroom] = true;
+				CA_MARKLUMP(LUMP_MUSHROOM);
 				CK4_SpawnMushroom(x, y);
 				break;
 
 				// Birds
 			case 13:
-				ck4_lumpsNeeded[Lump_Egg] = true;
-				ck4_lumpsNeeded[Lump_Bird] = true;
+				CA_MARKLUMP(LUMP_EGG);
+				CA_MARKLUMP(LUMP_BLUEBIRD);
 				CK4_SpawnEgg(x, y);
 				break;
 
@@ -391,7 +248,7 @@ void CK4_ScanInfoLayer()
 			case 77:
 				if (ck_gameState.difficulty < D_Normal)
 					break;
-				ck4_lumpsNeeded[Lump_Bird] = true;
+				CA_MARKLUMP(LUMP_BLUEBIRD);
 				CK4_SpawnBird(x, y);
 				break;
 
@@ -403,12 +260,12 @@ void CK4_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 20:
-				ck4_lumpsNeeded[Lump_Arachnut] = true;
+				CA_MARKLUMP(LUMP_ARACHNUT);
 				CK4_SpawnArachnut(x, y);
 				break;
 
 			case 75:
-				ck4_lumpsNeeded[Lump_KeenMoon] = true;
+				CA_MARKLUMP(LUMP_KEENMOON);
 				break;
 
 				// Skypest
@@ -420,7 +277,7 @@ void CK4_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 8:
-				ck4_lumpsNeeded[Lump_Skypest] = true;
+				CA_MARKLUMP(LUMP_SKYPEST);
 				CK4_SpawnSkypest(x, y);
 				break;
 
@@ -433,13 +290,13 @@ void CK4_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 7:
-				ck4_lumpsNeeded[Lump_Wormmouth] = true;
+				CA_MARKLUMP(LUMP_WORMMOUTH);
 				CK4_SpawnWormmouth(x, y);
 				break;
 
 				// Clouds
 			case 9:
-				ck4_lumpsNeeded[Lump_Cloud] = true;
+				CA_MARKLUMP(LUMP_CLOUD);
 				CK4_SpawnCloud(x, y);
 				break;
 
@@ -451,24 +308,25 @@ void CK4_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 5:
-				ck4_lumpsNeeded[Lump_Berkeloid] = true;
+				CA_MARKLUMP(LUMP_BERKELOID);
 				CK4_SpawnBerkeloid(x, y);
 				break;
 
 				// Inchworms
 			case 10:
-				ck4_lumpsNeeded[Lump_FootWorm] = true;
+				CA_MARKLUMP(LUMP_INCHWORM);
 				CK4_SpawnFoot(x, y);
 				goto cachePoofs;
 
 			case 11:
-				ck4_lumpsNeeded[Lump_FootWorm] = true;
+				CA_MARKLUMP(LUMP_INCHWORM);
 				CK4_SpawnInchworm(x, y);
 				goto cachePoofs;
 
 			cachePoofs:
 
-				for (int i = 350; i <= 353; i++)
+				// We re-use the smirky smoke, but only the first three frames.
+				for (int i = CK_CHUNKNUM(SPR_EATERPUFF1); i <= CK_CHUNKNUM(SPR_EATERPUFF3); i++)
 				{
 					CA_MarkGrChunk(i);
 				}
@@ -476,7 +334,7 @@ void CK4_ScanInfoLayer()
 
 			// Bounders
 			case 12:
-				ck4_lumpsNeeded[Lump_Bounder] = true;
+				CA_MARKLUMP(LUMP_BOUNDER);
 				CK4_SpawnBounder(x, y);
 				break;
 
@@ -488,7 +346,7 @@ void CK4_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 14:
-				ck4_lumpsNeeded[Lump_Lick] = true;
+				CA_MARKLUMP(LUMP_LICK);
 				CK4_SpawnLick(x, y);
 				break;
 
@@ -498,7 +356,7 @@ void CK4_ScanInfoLayer()
 			case 29:
 			case 30:
 				CK4_SpawnAxisPlatform(x, y, infoValue - 27);
-				ck4_lumpsNeeded[Lump_Platform] = true;
+				CA_MARKLUMP(LUMP_PLATFORM);
 				break;
 
 			case 31:
@@ -507,19 +365,19 @@ void CK4_ScanInfoLayer()
 
 			case 32:
 				CK_SpawnFallPlat(x, y);
-				ck4_lumpsNeeded[Lump_Platform] = true;
+				CA_MARKLUMP(LUMP_PLATFORM);
 				break;
 
 				//Smirkies
 			case 18:
 				CK4_SpawnSmirky(x, y);
-				ck4_lumpsNeeded[Lump_Smirky] = true;
+				CA_MARKLUMP(LUMP_ANCIENT);
 				break;
 
 				//Mimrocks
 			case 19:
 				CK4_SpawnMimrock(x, y);
-				ck4_lumpsNeeded[Lump_Mimrock] = true;
+				CA_MARKLUMP(LUMP_MIMROCK);
 				break;
 
 			// Dopefish
@@ -530,13 +388,13 @@ void CK4_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 15:
-				ck4_lumpsNeeded[Lump_Dopefish] = true;
+				CA_MARKLUMP(LUMP_DOPEFISH);
 				CK4_SpawnDopefish(x, y);
 				break;
 
 				// Schoolfish
 			case 16:
-				ck4_lumpsNeeded[Lump_Schoolfish] = true;
+				CA_MARKLUMP(LUMP_SCHOOLFISH);
 				CK4_SpawnSchoolfish(x, y);
 				break;
 
@@ -548,7 +406,7 @@ void CK4_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 17:
-				ck4_lumpsNeeded[Lump_Sprite] = true;
+				CA_MARKLUMP(LUMP_SPRITE);
 				CK4_SpawnSprite(x, y);
 				break;
 
@@ -557,13 +415,13 @@ void CK4_ScanInfoLayer()
 			case 70:
 			case 71:
 			case 72:
-				ck4_lumpsNeeded[Lump_Mine] = true;
+				CA_MARKLUMP(LUMP_MINE);
 				CK4_SpawnMine(x, y, infoValue - 69);
 				break;
 
 				// Lindsey
 			case 6:
-				ck4_lumpsNeeded[Lump_Lindsey] = true;
+				CA_MARKLUMP(LUMP_LINDSEY);
 				CK4_SpawnLindsey(x, y);
 				break;
 
@@ -575,7 +433,7 @@ void CK4_ScanInfoLayer()
 					break;
 			case 53:
 				CK4_SpawnDartGun(x, y, 0);
-				ck4_lumpsNeeded[Lump_Dart] = true;
+				CA_MARKLUMP(LUMP_POISONDART);
 				break;
 
 			case 84:
@@ -586,7 +444,7 @@ void CK4_ScanInfoLayer()
 					break;
 			case 54:
 				CK4_SpawnDartGun(x, y, 1);
-				ck4_lumpsNeeded[Lump_Dart] = true;
+				CA_MARKLUMP(LUMP_POISONDART);
 				break;
 
 			case 85:
@@ -597,7 +455,7 @@ void CK4_ScanInfoLayer()
 					break;
 			case 55:
 				CK4_SpawnDartGun(x, y, 2);
-				ck4_lumpsNeeded[Lump_Dart] = true;
+				CA_MARKLUMP(LUMP_POISONDART);
 				break;
 
 			case 86:
@@ -608,13 +466,13 @@ void CK4_ScanInfoLayer()
 					break;
 			case 56:
 				CK4_SpawnDartGun(x, y, 3);
-				ck4_lumpsNeeded[Lump_Dart] = true;
+				CA_MARKLUMP(LUMP_POISONDART);
 				break;
 
 				// Wetsuit
 			case 35:
 				CK4_SpawnWetsuit(x, y);
-				CA_MarkGrChunk(0x1AE);
+				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCUBAGEAR));
 				break;
 
 			case 34:
@@ -622,7 +480,7 @@ void CK4_ScanInfoLayer()
 				if (ck_gameState.numShots >= 5)
 					break;
 				infoValue = 68;
-				ck4_lumpsNeeded[Lump_Stunner] = true;
+				CA_MARKLUMP(LUMP_STUNNER);
 			case 57:
 			case 58:
 			case 59:
@@ -636,7 +494,7 @@ void CK4_ScanInfoLayer()
 			case 67:
 			case 68:
 				CK_SpawnItem(x, y, infoValue - 57);
-				ck4_lumpsNeeded[ck4_itemLumps[infoValue - 57]] = true;
+				CA_MarkLumpNeeded(CK_INTELEMENT(ck_itemLumps, infoValue - 57));
 				break;
 
 			default:
@@ -651,10 +509,7 @@ void CK4_ScanInfoLayer()
 			obj->active = OBJ_INACTIVE;
 	}
 
-	for (int i = 0; i < MAXLUMPS; i++)
-		if (ck4_lumpsNeeded[i])
-			for (int j = ck4_lumpStarts[i]; j <= ck4_lumpEnds[i]; j++)
-				CA_MarkGrChunk(j);
+	CA_MarkAllLumps();
 }
 
 // Dialog Functions

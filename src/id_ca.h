@@ -124,4 +124,12 @@ void CA_SetTileAtPos(int16_t x, int16_t y, int16_t plane, uint16_t value);
 uint16_t CA_GetMapHeight();
 uint16_t CA_GetMapWidth();
 
+// Omnispeak: Common lump marking code
+void CA_InitLumps(void);
+void CA_ClearLumps(void);
+void CA_ClearLumps(void);
+void CA_MarkLumpNeeded(int lump);
+void CA_MarkAllLumps(void);
+#define CA_MARKLUMP(name) CA_MarkLumpNeeded(CK_INT(name, -1))
+
 #endif

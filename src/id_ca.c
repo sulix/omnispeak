@@ -877,6 +877,54 @@ void CA_DownLevel(void)
 	CA_CacheMarks(0);
 }
 
+// Lump helper functions
+bool *ca_lumpsNeeded;
+
+void CA_InitLumps(void)
+{
+	int numLumps = CK_INT(NUMLUMPS, 0);
+	MM_GetPtr((mm_ptr_t*)&ca_lumpsNeeded, sizeof(bool) * numLumps);
+
+}
+
+void CA_ClearLumps(void)
+{
+	int numLumps = CK_INT(NUMLUMPS, 0);
+	memset(ca_lumpsNeeded, 0, numLumps * sizeof(bool));
+}
+
+void CA_MarkLumpNeeded(int lump)
+{
+#ifdef CK_DEBUG
+	if (!ca_lumpsNeeded)
+		Quit("CA_MarkLumpNeeded: Lump array not initialised with CA_InitLumps()!");
+
+	if (lump < 0 || lump >= CK_INT(NUMLUMPS, 0))
+		Quit("CA_MarkLumpNeeded: Tried to mark a nonexistant lump!");
+#endif
+
+	ca_lumpsNeeded[lump] = true;
+}
+
+void CA_MarkAllLumps(void)
+{
+	int numLumps = CK_INT(NUMLUMPS, 0);
+#ifdef CK_DEBUG
+	if (!ca_lumpsNeeded)
+		Quit("CA_MarkAllLumps: Lump array not initialised with CA_InitLumps()!");
+#endif
+	for (int i = 0; i < numLumps; ++i)
+	{
+		if (ca_lumpsNeeded[i])
+		{
+			intptr_t lumpStart = CK_INTELEMENT(lumpStarts, i);
+			intptr_t lumpEnd = CK_INTELEMENT(lumpEnds, i);
+			for (int chunk = lumpStart; chunk <= lumpEnd; ++chunk)
+				CA_MarkGrChunk(chunk);
+		}
+	}
+}
+
 // Map loading fns
 typedef CK_PACKED_STRUCT(CA_MapHead
 {

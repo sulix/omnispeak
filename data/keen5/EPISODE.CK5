@@ -54,6 +54,20 @@
 # Graphics Chunks
 %include "GFXCHUNK.CK5"
 
+%intarray ck_itemLumps
+		@LUMP_KEYGEMS,
+		@LUMP_KEYGEMS,
+		@LUMP_KEYGEMS,
+		@LUMP_KEYGEMS,
+		@LUMP_100PTS,
+		@LUMP_200PTS,
+		@LUMP_500PTS,
+		@LUMP_1000PTS,
+		@LUMP_2000PTS,
+		@LUMP_5000PTS,
+		@LUMP_ONEUP,
+		@LUMP_STUNNER
+
 # Sounds
 %int SOUND_KEENWALK0 0
 %int SOUND_KEENWALK1 1

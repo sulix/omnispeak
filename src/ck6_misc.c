@@ -244,157 +244,9 @@ void CK6_SpawnRedStandPlatform(int tileX, int tileY)
 	CK_ResetClipRects(obj);
 }
 
-#define MAXLUMPS 0x28
-static bool ck6_lumpsNeeded[MAXLUMPS];
-
-typedef enum
-{
-	Lump_0,
-	Lump_Keen,
-	Lump_100Pts,
-	Lump_200Pts,
-	Lump_500Pts,
-	Lump_1000Pts,
-	Lump_2000Pts,
-	Lump_5000Pts,
-	Lump_1UP,
-	Lump_Gems,
-	Lump_Stunner,
-	Lump_Mapkeen,
-	Lump_12,
-	Lump_Bloog,
-	Lump_BloogletR,
-	Lump_BloogletY,
-	Lump_BloogletB,
-	Lump_BloogletG,
-	Lump_Platform,
-	Lump_Gik,
-	Lump_Blorb,
-	Lump_Bobba,
-	Lump_Babobba,
-	Lump_Bloogguard,
-	Lump_Flect,
-	Lump_Bip,
-	Lump_PlatBip,
-	Lump_Bipship,
-	Lump_Nospike,
-	Lump_Orbatrix,
-	Lump_Ceilick,
-	Lump_Fleex,
-	Lump_Rope,
-	Lump_Sandwich,
-	Lump_Turret,
-	Lump_Passcard,
-	Lump_Molly,
-} CK6_LumpType;
-
-static int16_t ck6_itemLumps[] =
-	{
-		Lump_Gems,
-		Lump_Gems,
-		Lump_Gems,
-		Lump_Gems,
-		Lump_100Pts,
-		Lump_200Pts,
-		Lump_500Pts,
-		Lump_1000Pts,
-		Lump_2000Pts,
-		Lump_5000Pts,
-		Lump_1UP,
-		Lump_Stunner,
-};
-
-static int16_t ck6_lumpStarts[MAXLUMPS] =
-	{
-		11,
-		52,
-		150,
-		152,
-		154,
-		156,
-		158,
-		160,
-		162,
-		164,
-		173,
-		184,
-		0,
-		342,
-		351,
-		360,
-		369,
-		378,
-		424,
-		387,
-		399,
-		402,
-		285,
-		254,
-		317,
-		414,
-		423,
-		269,
-		298,
-		329,
-		246,
-		239,
-		183,
-		182,
-		176,
-		435,
-		433,
-		0,
-		0,
-		0,
-};
-
-static int16_t ck6_lumpEnds[MAXLUMPS] =
-	{
-		26,
-		149,
-		151,
-		153,
-		155,
-		157,
-		159,
-		161,
-		163,
-		172,
-		174,
-		238,
-		0,
-		350,
-		359,
-		368,
-		377,
-		386,
-		432,
-		398,
-		401,
-		413,
-		297,
-		268,
-		328,
-		422,
-		423,
-		284,
-		316,
-		341,
-		253,
-		245,
-		183,
-		182,
-		181,
-		435,
-		434,
-		0,
-		0,
-		0,
-};
-
-// TODO: Cache stuff here instead of spawner handlers
 void CK6_ScanInfoLayer()
 {
+	CA_ClearLumps();
 
 	//TODO: Work out where to store current map number, etc.
 	int mapW = CA_MapHeaders[ca_mapOn]->width;
@@ -410,21 +262,21 @@ void CK6_ScanInfoLayer()
 			case 1:
 				CK_SpawnKeen(x, y, 1);
 				CK_DemoSignSpawn();
-				ca_graphChunkNeeded[175] |= ca_levelbit;
-				ck6_lumpsNeeded[Lump_Keen] = true;
+				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCOREBOX));
+				CA_MARKLUMP(LUMP_KEEN);
 				break;
 			case 2:
 				CK_SpawnKeen(x, y, -1);
 				CK_DemoSignSpawn();
-				ca_graphChunkNeeded[175] |= ca_levelbit;
-				ck6_lumpsNeeded[Lump_Keen] = true;
+				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCOREBOX));
+				CA_MARKLUMP(LUMP_KEEN);
 				break;
 
 			case 3:
 				CK_DemoSignSpawn();
 				ca_graphChunkNeeded[175] |= ca_levelbit;
 				CK_SpawnMapKeen(x, y);
-				ck6_lumpsNeeded[Lump_Mapkeen] = true;
+				CA_MARKLUMP(LUMP_MAPKEEN);
 				break;
 
 			// Bloogs
@@ -435,7 +287,7 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 4:
-				ck6_lumpsNeeded[Lump_Bloog] = true;
+				CA_MARKLUMP(LUMP_BLOOG);
 				CK6_SpawnBloog(x, y);
 				break;
 
@@ -449,7 +301,7 @@ void CK6_ScanInfoLayer()
 			case 14:
 			{
 				int color = (infoValue - 7) % 4;
-				ck6_lumpsNeeded[Lump_BloogletR + color] = true;
+				CA_MarkLumpNeeded(CK_INT(LUMP_RBLOOGLET, -color) + color);
 				CK6_SpawnBlooglet(x, y, infoValue - 7);
 				break;
 			}
@@ -460,7 +312,7 @@ void CK6_ScanInfoLayer()
 				break;
 
 			case 24:
-				ck6_lumpsNeeded[Lump_Molly] = true;
+				CA_MARKLUMP(LUMP_MOLLY);
 				CK6_SpawnMolly(x, y);
 				break;
 
@@ -472,7 +324,7 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 18:
-				ck6_lumpsNeeded[Lump_Fleex] = true;
+				CA_MARKLUMP(LUMP_FLEEX);
 				CK6_SpawnFleex(x, y);
 				break;
 
@@ -489,11 +341,11 @@ void CK6_ScanInfoLayer()
 			case 29:
 			case 30:
 				CK_SpawnAxisPlatform(x, y, infoValue - 27, false);
-				ck6_lumpsNeeded[Lump_Platform] = true;
+				CA_MARKLUMP(LUMP_PLATFORM);
 				break;
 			case 32:
 				CK_SpawnFallPlat(x, y);
-				ck6_lumpsNeeded[Lump_Platform] = true;
+				CA_MARKLUMP(LUMP_PLATFORM);
 				break;
 
 			case 33:
@@ -504,7 +356,7 @@ void CK6_ScanInfoLayer()
 					break;
 			case 35:
 				CK_SpawnStandPlatform(x, y);
-				ck6_lumpsNeeded[Lump_Platform] = true;
+				CA_MARKLUMP(LUMP_PLATFORM);
 				break;
 
 			case 36:
@@ -512,12 +364,12 @@ void CK6_ScanInfoLayer()
 			case 38:
 			case 39:
 				CK_SpawnGoPlat(x, y, infoValue - 36, false);
-				ck6_lumpsNeeded[Lump_Platform] = true;
-				ck6_lumpsNeeded[Lump_PlatBip] = true;
+				CA_MARKLUMP(LUMP_PLATFORM);
+				CA_MARKLUMP(LUMP_BIPSQUISHED);
 				break;
 			case 40:
 				CK_SneakPlatSpawn(x, y);
-				ck6_lumpsNeeded[Lump_Platform] = true;
+				CA_MARKLUMP(LUMP_PLATFORM);
 				break;
 
 			// Bobbas
@@ -528,7 +380,7 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 41:
-				ck6_lumpsNeeded[Lump_Bobba] = true;
+				CA_MARKLUMP(LUMP_BOBBA);
 				CK6_SpawnBobba(x, y);
 				break;
 
@@ -545,7 +397,7 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 47:
-				ck6_lumpsNeeded[Lump_Nospike] = true;
+				CA_MARKLUMP(LUMP_NOSPIKE);
 				CK6_SpawnNospike(x, y);
 				break;
 
@@ -557,7 +409,7 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 50:
-				ck6_lumpsNeeded[Lump_Gik] = true;
+				CA_MARKLUMP(LUMP_GIK);
 				CK6_SpawnGik(x, y);
 				break;
 
@@ -566,7 +418,7 @@ void CK6_ScanInfoLayer()
 			case 54:
 			case 55:
 			case 56:
-				ck6_lumpsNeeded[Lump_Turret] = true;
+				CA_MARKLUMP(LUMP_LASER);
 				CK_TurretSpawn(x, y, infoValue - 53);
 				break;
 
@@ -588,7 +440,7 @@ void CK6_ScanInfoLayer()
 			case 67:
 			case 68:
 				CK_SpawnItem(x, y, infoValue - 57);
-				ck6_lumpsNeeded[ck6_itemLumps[infoValue - 57]] = true;
+				CA_MarkLumpNeeded(CK_INTELEMENT(ck_itemLumps, infoValue - 57));
 				break;
 
 			// Orbatrices
@@ -599,7 +451,7 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 70:
-				ck6_lumpsNeeded[Lump_Orbatrix] = true;
+				CA_MARKLUMP(LUMP_ORBATRIX);
 				CK6_SpawnOrbatrix(x, y);
 				break;
 
@@ -611,9 +463,9 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 73:
-				ck6_lumpsNeeded[Lump_Bip] = true;
-				ck6_lumpsNeeded[Lump_PlatBip] = true;
-				ck6_lumpsNeeded[Lump_Bipship] = true;
+				CA_MARKLUMP(LUMP_BIP);
+				CA_MARKLUMP(LUMP_BIPSQUISHED);
+				CA_MARKLUMP(LUMP_BIPSHIP);
 				CK6_SpawnBipship(x, y);
 				break;
 
@@ -625,7 +477,7 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 76:
-				ck6_lumpsNeeded[Lump_Flect] = true;
+				CA_MARKLUMP(LUMP_FLECT);
 				CK6_SpawnFlect(x, y);
 				break;
 
@@ -637,7 +489,7 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 79:
-				ck6_lumpsNeeded[Lump_Blorb] = true;
+				CA_MARKLUMP(LUMP_BLORB);
 				CK6_SpawnBlorb(x, y);
 				break;
 
@@ -649,7 +501,7 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 82:
-				ck6_lumpsNeeded[Lump_Ceilick] = true;
+				CA_MARKLUMP(LUMP_CEILICK);
 				CK6_SpawnCeilick(x, y);
 				break;
 
@@ -661,7 +513,7 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 85:
-				ck6_lumpsNeeded[Lump_Bloogguard] = true;
+				CA_MARKLUMP(LUMP_BLOOGGUARD);
 				CK6_SpawnBloogguard(x, y);
 				break;
 
@@ -677,15 +529,15 @@ void CK6_ScanInfoLayer()
 
 			// Story Items
 			case 99:
-				ck6_lumpsNeeded[Lump_Rope] = true;
+				CA_MARKLUMP(LUMP_HOOK);
 				CK6_SpawnRope(x, y);
 				break;
 			case 100:
-				ck6_lumpsNeeded[Lump_Sandwich] = true;
+				CA_MARKLUMP(LUMP_SANDWICH);
 				CK6_SpawnSandwich(x, y);
 				break;
 			case 101:
-				ck6_lumpsNeeded[Lump_Passcard] = true;
+				CA_MARKLUMP(LUMP_PASSCARD);
 				CK6_SpawnPasscard(x, y);
 				break;
 
@@ -697,7 +549,7 @@ void CK6_ScanInfoLayer()
 				if (ck_gameState.difficulty < D_Normal)
 					break;
 			case 102:
-				ck6_lumpsNeeded[Lump_Babobba] = true;
+				CA_MARKLUMP(LUMP_BABOBBA);
 				CK6_SpawnBabobba(x, y);
 				break;
 
@@ -720,10 +572,7 @@ void CK6_ScanInfoLayer()
 		//int keenYTilePos = RF_UnitToTile(ck_keenObj->posY);
 	}
 
-	for (int i = 0; i < MAXLUMPS; i++)
-		if (ck6_lumpsNeeded[i])
-			for (int j = ck6_lumpStarts[i]; j <= ck6_lumpEnds[i]; j++)
-				CA_CacheGrChunk(j);
+	CA_MarkAllLumps();
 }
 
 void CK6_ToggleBigSwitch(CK_object *obj, bool dir)
