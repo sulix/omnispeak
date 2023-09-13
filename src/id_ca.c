@@ -995,7 +995,7 @@ void CA_CacheMap(int mapIndex)
 
 		if (headerOffset <= 0)
 		{
-			Quit("CA_CacheMap: Tried to load a non-existant map!");
+			Quit("CA_CacheMap: Tried to load a non-existent map!");
 		}
 
 		MM_GetPtr((void **)(&CA_MapHeaders[mapIndex]), sizeof(CA_MapHeader));
@@ -1214,7 +1214,7 @@ uint16_t *CA_TilePtrAtPos(int16_t x, int16_t y, int16_t plane)
 
 uint16_t CA_TileAtPos(int16_t x, int16_t y, int16_t plane)
 {
-	// HACK - Somewhat reproducing a glitch occuring in Keen 4: Level 10,
+	// HACK - Somewhat reproducing a glitch occurring in Keen 4: Level 10,
 	// when an object goes through the top of the map
 	// (not reproduced in the exact same manner)
 	CA_MapHeader *mapheader = CA_MapHeaders[ca_mapOn];

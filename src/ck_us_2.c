@@ -1424,7 +1424,7 @@ bool CK6_CreatureQuestion()
 	if (US_LineInput(x, y, buf, NULL, true, 16, varC))
 	{
 		var2 = 1;
-		// In the disassembly, a loop which appears to do a  case-insensitve strcmp
+		// In the disassembly, a loop which appears to do a  case-insensitive strcmp
 		if (CK_Cross_strcasecmp(buf, creature.name))
 		{
 			VH_Bar(0, 0, 320, 200, 8);

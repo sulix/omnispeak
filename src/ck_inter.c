@@ -139,7 +139,7 @@ unsigned *word_499D1;
 mm_ptr_t ck_currentTermPicSeg;
 
 unsigned word_499CB;
-// unknown vairables
+// unknown variables
 
 uint16_t word_46CA2[2];
 uint16_t word_46CB0;
@@ -1283,7 +1283,7 @@ void CK_TranslateString(const char *input, char *output)
 
 // This is PrintStarWars in CKSRCMOD.
 // We print the story text to an offscreen buffer, which we'll later scale
-// invidual rows from to produce the final trapezoidal text.
+// individual rows from to produce the final trapezoidal text.
 void CK_DrawSWText()
 {
 	char currentTextLine[81];
@@ -1388,7 +1388,7 @@ void CK_ScrollSWText()
 			int masterX = 0;
 
 			// Start drawing.
-			// For each screen (destination) pixel, we calulate the
+			// For each screen (destination) pixel, we calculate the
 			// "master" pixel coordinates in the offscreen buffer,
 			// read the pixel from it, and then mask it to the
 			// screen in plane 4.

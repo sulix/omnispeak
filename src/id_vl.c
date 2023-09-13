@@ -179,7 +179,7 @@ void VL_FadeFromBlack(void)
  * VL_Clip:
  * This is a somewhat nasty function which clips an input rect to an output.
  * As input, it takes:
- *  - src_{w,h} as the "source" rectange, to be clipped to the "dest" dst_{x,y,w,h}
+ *  - src_{w,h} as the "source" rectangle, to be clipped to the "dest" dst_{x,y,w,h}
  * It then outputs:
  *  - A new src_{w,h} (called final{W,H}), which is the final width, height of the src
  *  - A new dst_{x,y}, which is the offset _in source coordinates_ of the top left of
