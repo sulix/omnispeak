@@ -100,25 +100,12 @@ bool CK4_IsPresent()
 	return true;
 }
 
-// ck_inter.c
-uint8_t ck4_starWarsPalette[] = {
-	0x00, 0x01, 0x02, 0x03, 0x04, 0x10, 0x06, 0x07,
-	0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x00};
-
-uint8_t ck4_terminator_palette1[] = {0, 0x18, 0x18, 0x07, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x13, 0};
-uint8_t ck4_terminator_palette2[] = {0, 0x18, 0x18, 0x07, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x18, 0};
-
 // ck_keen.c
 
 soundnames ck4_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9, 55};
 
 void CK4_DefineConstants(void)
 {
-	// ck_inter.c
-	ck_starWarsPalette = ck4_starWarsPalette;
-	ck_terminator_palette1 = ck4_terminator_palette1;
-	ck_terminator_palette2 = ck4_terminator_palette2;
-
 	// ck_keen.c
 	ck_itemSounds = ck4_itemSounds;
 }

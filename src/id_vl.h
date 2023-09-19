@@ -46,6 +46,7 @@ void VL_SetPalEntry(int id, uint8_t r, uint8_t g, uint8_t b);
 
 void VL_SetPaletteByID(int id);
 void VL_SetPalette(uint8_t *palette);
+void VL_SetPaletteFromArray(intptr_t *palArray);
 void VL_SetPaletteAndBorderColor(uint8_t *palette);
 void VL_ColorBorder(uint16_t color);
 void VL_SetDefaultPalette(void);

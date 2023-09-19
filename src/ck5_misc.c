@@ -237,15 +237,6 @@ void CK5_SetupFunctions()
 	CK_ACT_AddFunction("CK5_LevelEnd", &CK5_LevelEnd);
 }
 
-// ck_inter.c
-uint8_t ck5_starWarsPalette[] = {
-	0x00, 0x01, 0x18, 0x1E, 0x1F, 0x1C, 0x06, 0x07,
-	0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x13, 0x00};
-
-uint8_t ck5_terminator_palette1[] = {0, 4, 4, 0x1c, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x13, 0};
-uint8_t ck5_terminator_palette2[] = {0, 4, 4, 0x1c, 1, 1, 1, 1, 0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 4, 0};
-
-
 
 // ck_keen.c
 
@@ -259,11 +250,6 @@ soundnames ck5_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9, 55};
 
 void CK5_DefineConstants(void)
 {
-	// ck_inter.c
-	ck_starWarsPalette = ck5_starWarsPalette;
-	ck_terminator_palette1 = ck5_terminator_palette1;
-	ck_terminator_palette2 = ck5_terminator_palette2;
-
 	// ck_keen.c
 	ck_itemSounds = ck5_itemSounds;
 }

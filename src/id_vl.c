@@ -106,6 +106,14 @@ void VL_SetPaletteAndBorderColor(uint8_t *palette)
 	vl_currentBackend->refreshPaletteAndBorderColor(vl_emuegavgaadapter.screen);
 }
 
+// Update the palette (but not the border colour) from a CK_VAR-style intptr_t array.
+void VL_SetPaletteFromArray(intptr_t *palArray)
+{
+	for (int i = 0; i < 16; i++)
+		vl_emuegavgaadapter.palette[i] = VL_ConvertEGASignalToEGAEntry(palArray[i]);
+	vl_currentBackend->refreshPaletteAndBorderColor(vl_emuegavgaadapter.screen);
+}
+
 void VL_ColorBorder(uint16_t color)
 {
 	vl_emuegavgaadapter.bordercolor = VL_ConvertEGASignalToEGAEntry(color); // Updated EGA/VGA status

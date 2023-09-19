@@ -728,7 +728,7 @@ void ZoomOutTerminator(void)
 	uint16_t newTime, scaleFactor, finalHeight, varC, varE;
 
 	// Set the palette
-	VL_SetPaletteAndBorderColor(ck_terminator_palette2);
+	VL_SetPaletteFromArray(CK_INTARRAY(ck_terminatorPalette2));
 
 	// The starting (negative) offset of the COMMANDER graphic from the left edge of the screen
 	startingLeftOffset = 120 - ck_introCommander->width;
@@ -1083,10 +1083,7 @@ void CK_DrawTerminator(void)
 	}
 
 	// Set the terminator palette
-	ck_terminator_palette2[16] = vl_border_color;
-	ck_terminator_palette1[16] = vl_border_color;
-
-	VL_SetPaletteAndBorderColor(ck_terminator_palette1);
+	VL_SetPaletteFromArray(CK_INTARRAY(ck_terminatorPalette1));
 
 	// Do the terminator
 	ck_currentTermPicStartTime = ck_currentTerminatorCredit = 0;
@@ -1179,8 +1176,6 @@ void CK_DrawTerminator(void)
 /*
  * Star Wars Story Text
  */
-
-uint8_t *ck_starWarsPalette;
 
 const char *ck_storyText;
 
@@ -1448,7 +1443,7 @@ void CK_DrawStarWars()
 	// Keen draws this to a separate surface, for fast copies.
 	VH_DrawBitmap(0, 0, CK_CHUNKNUM(PIC_STARWARS));
 
-	VL_SetPalette(ck_starWarsPalette);
+	VL_SetPaletteFromArray(CK_INTARRAY(ck_starWarsPalette));
 
 	// At this point, Keen generates a set of buffers full of machine code,
 	// one per line, which scale the text (from the surface mentioned above)
