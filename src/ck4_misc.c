@@ -38,7 +38,6 @@ CK_EpisodeDef ck4_episode = {
 	"CK4",
 	&CK4_SetupFunctions,
 	&CK4_ScanInfoLayer,
-	&CK4_DefineConstants,
 	&CK4_MapMiscFlagsCheck,
 	&CK4_IsPresent,
 	/* .lastLevelToMarkAsDone = */ 17,
@@ -98,12 +97,6 @@ bool CK4_IsPresent()
 
 	// We clearly have all of the required files.
 	return true;
-}
-
-// ck_keen.c
-
-void CK4_DefineConstants(void)
-{
 }
 
 /*

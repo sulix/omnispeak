@@ -35,7 +35,6 @@ CK_EpisodeDef ck5_episode = {
 	"CK5",
 	&CK5_SetupFunctions,
 	&CK5_ScanInfoLayer,
-	&CK5_DefineConstants,
 	&CK5_MapMiscFlagsCheck,
 	&CK5_IsPresent,
 	/* .lastLevelToMarkAsDone = */ 17,
@@ -235,13 +234,6 @@ void CK5_SetupFunctions()
 	CK5_Map_SetupFunctions();
 	CK_ACT_AddFunction("CK5_PurpleAxisPlatform", &CK5_PurpleAxisPlatform);
 	CK_ACT_AddFunction("CK5_LevelEnd", &CK5_LevelEnd);
-}
-
-
-// ck_keen.c
-
-void CK5_DefineConstants(void)
-{
 }
 
 /*

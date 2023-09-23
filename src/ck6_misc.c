@@ -37,7 +37,6 @@ CK_EpisodeDef ck6v14e_episode = {
 	"CK6",
 	&CK6_SetupFunctions,
 	&CK6_ScanInfoLayer,
-	&CK6_DefineConstants,
 	&CK6_MapMiscFlagsCheck,
 	&CK6_IsPresent,
 	/* .lastLevelToMarkAsDone = */ 16,
@@ -56,7 +55,6 @@ CK_EpisodeDef ck6v15e_episode = {
 	"CK6",
 	&CK6_SetupFunctions,
 	&CK6_ScanInfoLayer,
-	&CK6_DefineConstants,
 	&CK6_MapMiscFlagsCheck,
 	&CK6_IsPresent,
 	/* .lastLevelToMarkAsDone = */ 16,
@@ -121,12 +119,6 @@ bool CK6_IsPresent()
 
 	// We clearly have all of the required files.
 	return true;
-}
-
-// ck_keen.c
-
-void CK6_DefineConstants(void)
-{
 }
 
 /*

@@ -49,9 +49,6 @@ typedef struct CK_EpisodeDef
 	// Scan the 'info layer' of a map.
 	void (*scanInfoLayer)();
 
-	// Faux-#define episode-dependent constants
-	void (*defineConstants)();
-
 	// World map miscflags check function
 	void (*mapMiscFlagsCheck)(struct CK_object *);
 
