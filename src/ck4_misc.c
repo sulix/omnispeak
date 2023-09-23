@@ -102,12 +102,8 @@ bool CK4_IsPresent()
 
 // ck_keen.c
 
-soundnames ck4_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9, 55};
-
 void CK4_DefineConstants(void)
 {
-	// ck_keen.c
-	ck_itemSounds = ck4_itemSounds;
 }
 
 /*
@@ -888,7 +884,7 @@ void CK4_KeenSwimCol(CK_object *a, CK_object *b)
 		if (b->user1 > 11)
 			return;
 
-		SD_PlaySound(ck_itemSounds[b->user1]);
+		SD_PlaySound(CK_INTELEMENT(ck_itemSounds, b->user1));
 
 		b->type = CT_Friendly;
 		b->zLayer = PRIORITIES - 1;

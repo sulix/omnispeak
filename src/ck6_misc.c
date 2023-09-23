@@ -125,12 +125,8 @@ bool CK6_IsPresent()
 
 // ck_keen.c
 
-soundnames ck6_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9};
-
 void CK6_DefineConstants(void)
 {
-	// ck_keen.c
-	ck_itemSounds = ck6_itemSounds;
 }
 
 /*

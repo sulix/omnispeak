@@ -240,18 +240,8 @@ void CK5_SetupFunctions()
 
 // ck_keen.c
 
-/*
-soundnames ck5_itemSounds[]  = { SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM, SOUND_GOTGEM,
-                               SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,SOUND_GOTITEM,
-                               SOUND_GOTEXTRALIFE, SOUND_GOTSTUNNER, SOUND_GOTKEYCARD
-};
-*/
-soundnames ck5_itemSounds[] = {19, 19, 19, 19, 8, 8, 8, 8, 8, 8, 17, 9, 55};
-
 void CK5_DefineConstants(void)
 {
-	// ck_keen.c
-	ck_itemSounds = ck5_itemSounds;
 }
 
 /*

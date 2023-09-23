@@ -50,7 +50,6 @@ CK_keenState ck_keenState;
 
 void CK_BasicDrawFunc1(CK_object *obj);
 
-soundnames *ck_itemSounds;
 uint16_t ck_itemPoints[] = {0, 0, 0, 0, 100, 200, 500, 1000, 2000, 5000, 0, 0, 0};
 chunk_id_t ck_itemShadows[] = {
 	CK_CHUNKID(SPR_BONUSGEM),
@@ -83,7 +82,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 			(ck_currentEpisode->ep == EP_CK5 && b->user1 > 12))
 			return;
 
-		SD_PlaySound(ck_itemSounds[b->user1]);
+		SD_PlaySound(CK_INTELEMENT(ck_itemSounds, b->user1));
 
 		b->type = 1;
 		b->zLayer = 3;
@@ -222,7 +221,7 @@ static uint16_t emptyTile = 0;
 void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 {
 	RF_ReplaceTiles(&emptyTile, 1, tileX, tileY, 1, 1);
-	SD_PlaySound(ck_itemSounds[itemNumber]);
+	SD_PlaySound(CK_INTELEMENT(ck_itemSounds, itemNumber));
 
 	CK_IncreaseScore(ck_itemPoints[itemNumber]);
 

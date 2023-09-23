@@ -139,6 +139,13 @@
 %int SOUND_SPHEREFULCEILING 59
 %int LASTSOUND 60
 
+# Item Audio chunks
+
+%intarray ck_itemSounds
+		@SOUND_GOTGEM, @SOUND_GOTGEM, @SOUND_GOTGEM, @SOUND_GOTGEM, # Gems
+		@SOUND_GOTITEM, @SOUND_GOTITEM, @SOUND_GOTITEM, @SOUND_GOTITEM, @SOUND_GOTITEM, @SOUND_GOTITEM, # Points
+		@SOUND_GOTEXTRALIFE, # One Up
+		@SOUND_GOTSTUNNER # Stunner
 
 # Object Variables
 # ----------------

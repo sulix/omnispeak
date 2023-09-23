@@ -129,6 +129,14 @@
 %int SOUND_KEENSCORE 51
 %int LASTSOUND 52
 
+# Item Audio chunks
+
+%intarray ck_itemSounds
+		@SOUND_GOTGEM, @SOUND_GOTGEM, @SOUND_GOTGEM, @SOUND_GOTGEM, # Gems
+		@SOUND_GOTITEM, @SOUND_GOTITEM, @SOUND_GOTITEM, @SOUND_GOTITEM, @SOUND_GOTITEM, @SOUND_GOTITEM, # Points
+		@SOUND_GOTEXTRALIFE, # One Up
+		@SOUND_GOTSTUNNER # Stunner
+
 # Object Variables
 # ----------------
 
