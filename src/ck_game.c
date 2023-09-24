@@ -626,7 +626,7 @@ void CK_LoadLevel(bool doCache, bool silent)
 		}
 		else
 		{
-			CA_CacheMarks(CK_VAR_GetStringByNameAndIndex("ck_str_levelEntryText", ca_mapOn));
+			CA_CacheMarks(CK_STRINGELEMENT(ck_str_levelEntryText, ca_mapOn));
 		}
 	}
 
@@ -744,7 +744,7 @@ bool CK_TryAgainMenu()
 	char buf[80];
 
 	/* Copy and measure the level name */
-	strcpy(buf, CK_VAR_GetStringByNameAndIndex("ck_str_levelName", ca_mapOn));
+	strcpy(buf, CK_STRINGELEMENT(ck_str_levelNames, ca_mapOn));
 	CK_MeasureMultiline(buf, &w, &h);
 
 	/* Take away all gems */

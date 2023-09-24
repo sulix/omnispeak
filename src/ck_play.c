@@ -1493,7 +1493,7 @@ void CK_DrawStatusWindow(void)
 	US_SetPrintColour(15);
 	US_CPrint(CK_STRING(ck_str_statusLocation));
 	VHB_Bar(79, 38, 162, 20, 15);
-	strcpy(str, CK_VAR_GetStringByNameAndIndex("ck_str_levelName", ca_mapOn));
+	strcpy(str, CK_STRINGELEMENT(ck_str_levelNames, ca_mapOn));
 	CK_MeasureMultiline(str, &strW, &strH);
 	US_SetPrintY((20 - strH) / 2 + 40 - 2);
 	US_CPrint(str);

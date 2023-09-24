@@ -112,83 +112,91 @@
 %string ck4_str_statusWetsuit "Wetsuit"
 %string ck4_str_statusNoWetsuit "???"
 
-%string ck_str_levelName0 "Shadowlands"
-%string ck_str_levelName1 "Border Village"
-%string ck_str_levelName2 "Slug Village"
-%string ck_str_levelName3 "The Perilous Pit"
-%string ck_str_levelName4 "Cave of the Descendents"
-%string ck_str_levelName5 "Chasm of Chills"
-%string ck_str_levelName6 "Crystalus"
-%string ck_str_levelName7 "Hilville"
-%string ck_str_levelName8 "Sand Yego"
-%string ck_str_levelName9 "Miragia"
-%string ck_str_levelName10 "Lifewater Oasis"
-%string ck_str_levelName11 "Pyramid of the Moons"
-%string ck_str_levelName12 "Pyramid of Shadows"
-%string ck_str_levelName13 "Pyramid of the\nGnosticene Ancients"
-%string ck_str_levelName14 "Pyramid of the Forbidden"
-%string ck_str_levelName15 "Isle of Tar"
-%string ck_str_levelName16 "Isle of Fire"
-%string ck_str_levelName17 "Well of Wishes"
-%string ck_str_levelName18 "Bean-with-Bacon\nMegarocket"
+%stringarray ck_str_levelNames
+	"Shadowlands",
+	"Border Village",
+	"Slug Village",
+	"The Perilous Pit",
+	"Cave of the Descendents",
+	"Chasm of Chills",
+	"Crystalus",
+	"Hilville",
+	"Sand Yego",
+	"Miragia",
+	"Lifewater Oasis",
+	"Pyramid of the Moons",
+	"Pyramid of Shadows",
+	"Pyramid of the\nGnosticene Ancients",
+	"Pyramid of the Forbidden",
+	"Isle of Tar",
+	"Isle of Fire",
+	"Well of Wishes",
+	"Bean-with-Bacon\nMegarocket"
 
 
 
 
-%string ck_str_levelEntryText0 "Keen enters the\nShadowlands\n"
+%stringarray ck_str_levelEntryText
+	"Keen enters the\n"
+	"Shadowlands\n",
 
-%string ck_str_levelEntryText1 "Keen makes a run for\nthe Border Village"
+	"Keen makes a run for\n"
+	"the Border Village",
 
-%string ck_str_levelEntryText2 "Keen slips into\nSlug Village"
+	"Keen slips into\n"
+	"Slug Village",
 
-%string ck_str_levelEntryText3 "Keen plummets into\nthe The Perilous Pit"
+	"Keen plummets into\n"
+	"the The Perilous Pit",
 
-%string ck_str_levelEntryText4 "Keen plods down into\nthe Cave of the\nDescendents"
+	"Keen plods down into\n"
+	"the Cave of the\n"
+	"Descendents",
 
-%string ck_str_levelEntryText5	"Keen shivers along\n"
-				"the Chasm of Chills"
+	"Keen shivers along\n"
+	"the Chasm of Chills",
 
-%string ck_str_levelEntryText6	"Keen reflects upon\n"
-				"entering Crystalus"
+	"Keen reflects upon\n"
+	"entering Crystalus",
 
-%string ck_str_levelEntryText7	"Keen stumbles upon\n"
-				"Hillville"
+	"Keen stumbles upon\n"
+	"Hillville",
 
-%string ck_str_levelEntryText8	"Keen grits his teeth\n"
-				"and enters Sand Yego"
+	"Keen grits his teeth\n"
+	"and enters Sand Yego",
 
-%string ck_str_levelEntryText9	"Keen disappears into\n"
-				"Miragia"
+	"Keen disappears into\n"
+	"Miragia",
 
-%string ck_str_levelEntryText10	"Keen crawls into\n"
-				"Lifewater Oasis"
+	"Keen crawls into\n"
+	"Lifewater Oasis",
 
-%string ck_str_levelEntryText11	"Keen backs into the\n"
-				"Pyramid of the Moons"
+	"Keen backs into the\n"
+	"Pyramid of the Moons",
 
-%string	ck_str_levelEntryText12	"Keen move silently in\n"
-				"the Pyramid of Shadows"
+	"Keen move silently in\n"
+	"the Pyramid of Shadows",
 
-%string ck_str_levelEntryText13	"Keen reverently enters\n"
-				"the Pyramid of the\n"
-				"Gnosticene Ancients"
+	"Keen reverently enters\n"
+	"the Pyramid of the\n"
+	"Gnosticene Ancients",
 
-%string ck_str_levelEntryText14	"Keen hesitantly crosses\n"
-				"into the Pyramid of the\n"
-				"Forbidden"
+	"Keen hesitantly crosses\n"
+	"into the Pyramid of the\n"
+	"Forbidden",
 
-%string ck_str_levelEntryText15	"Keen mucks along the\n"
-				"Isle of Tar"
+	"Keen mucks along the\n"
+	"Isle of Tar",
 
-%string ck_str_levelEntryText16	"Keen blazes across the\n"
-				"Isle of Fire"
+	"Keen blazes across the\n"
+	"Isle of Fire",
 
-%string ck_str_levelEntryText17	"Keen hopefully enters\n"
-				"the Well of Wishes"
+	"Keen hopefully enters\n"
+	"the Well of Wishes",
 
-%string ck_str_levelEntryText18	"Keen launches into the\n"
-				"Bean-with-Bacon\n"
-				"Megarocket"
+	"Keen launches into the\n"
+	"Bean-with-Bacon\n"
+	"Megarocket"
 
 %string ck_str_storyText
 	"Episode Four\n"

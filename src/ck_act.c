@@ -222,6 +222,47 @@ intptr_t CK_VAR_GetIntArrayElement(const char *name, int index)
 #endif
 }
 
+// NOTE: No default for a String Array.
+const char **CK_VAR_GetStringArray(const char *name)
+{
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)CK_VAR_GetByName(name, NULL);
+	if (!var)
+	{
+#ifdef CK_VAR_WARNONNOTSET
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "String array variable \"%s\" not set, returning NULL\n", name);
+#endif
+		return NULL;
+	}
+	if (var->type != VAR_StringArray)
+		Quit("CK_VAR_GetStringArray: Tried to access a non-string-array variable!");
+	return (const char **)var->value;
+#else
+	return (const char **)CK_VAR_GetByName(name, NULL);
+#endif
+}
+
+const char *CK_VAR_GetStringArrayElement(const char *name, int index)
+{
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)CK_VAR_GetByName(name, NULL);
+	if (!var)
+	{
+#ifdef CK_VAR_WARNONNOTSET
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "String array variable \"%s\" not set, returning NULL\n", name);
+#endif
+		return 0;
+	}
+	if (var->type != VAR_StringArray)
+		Quit("CK_VAR_GetStringArrayElement: Tried to access a non-string-array variable!");
+	if (index < 0 || index >= var->length)
+		Quit("CK_VAR_GetStringArrayElement: Index out of range!");
+	return ((const char **)var->value)[index];
+#else
+	return ((const char **)CK_VAR_GetByName(name, 0))[index];
+#endif
+}
+
 CK_action *CK_GetActionByName(const char *name)
 {
 #ifdef CK_VAR_TYPECHECK
@@ -323,6 +364,22 @@ void CK_VAR_SetString(const char *name, const char *val)
 	CK_VAR_SetEntry(realName, (void *)var);
 #else
 	CK_VAR_SetEntry(realName, (void *)realVal);
+#endif
+}
+
+void CK_VAR_SetStringArray(const char *name, const char **array, size_t arrayLen)
+{
+	const char *realName = MM_ArenaStrDup(ck_varArena, name);
+	intptr_t *realArray = (intptr_t *)MM_ArenaAlloc(ck_varArena, arrayLen * sizeof(intptr_t));
+	memcpy(realArray, array, arrayLen * sizeof(const char *));
+#ifdef CK_VAR_TYPECHECK
+	CK_VAR_Variable *var = (CK_VAR_Variable *)MM_ArenaAlloc(ck_varArena, sizeof(*var));
+	var->type = VAR_StringArray;
+	var->value = (void *)realArray;
+	var->length = arrayLen;
+	CK_VAR_SetEntry(realName, (void *)var);
+#else
+	CK_VAR_SetEntry(realName, (void *)realArray);
 #endif
 }
 
@@ -515,6 +572,48 @@ void CK_VAR_ParseString(STR_ParserState *ps)
 	CK_VAR_SetString(varName, stringBuf);
 }
 
+void CK_VAR_ParseStringArray(STR_ParserState *ps)
+{
+	char varName[ID_STR_MAX_TOKEN_LENGTH];
+	const char *tempArray[CK_VAR_MAX_ARRAY_LEN];
+	STR_GetIdent(ps, varName, ID_STR_MAX_TOKEN_LENGTH);
+	char stringBuf[4096] = {0};
+	size_t num_elements = 0;
+
+	while (true)
+	{
+
+		char *valBuf = stringBuf;
+		*valBuf = '\0';
+		size_t lengthRemaining = 4096;
+		do
+		{
+			STR_Token tok = STR_GetToken(ps);
+			size_t chunkLen = STR_GetStringValue(tok, valBuf, lengthRemaining);
+			lengthRemaining -= chunkLen;
+			valBuf += chunkLen;
+			if (!lengthRemaining)
+				Quit("String too long!");
+		} while (STR_PeekToken(ps).tokenType == STR_TOK_String);
+
+		tempArray[num_elements] = MM_ArenaStrDup(ck_varArena, stringBuf);
+		num_elements++;
+		STR_Token next = STR_PeekToken(ps);
+		if (!(next.tokenType == STR_TOK_Ident && next.valueLength == 1 && *next.valuePtr == ','))
+		{
+			// The next token is not a comma, so we're at the end of the list.
+			break;
+		}
+		// Eat the comma.
+		STR_GetToken(ps);
+
+		if (num_elements == CK_VAR_MAX_ARRAY_LEN)
+			Quit("Array exceeded max size!");
+	}
+	CK_VAR_SetStringArray(varName, tempArray, num_elements);
+}
+
+
 bool CK_VAR_ParseVar(STR_ParserState *ps)
 {
 	CK_VAR_VarType varType = CK_VAR_ParseVarType(ps);
@@ -534,6 +633,9 @@ bool CK_VAR_ParseVar(STR_ParserState *ps)
 		break;
 	case VAR_IntArray:
 		CK_VAR_ParseIntArray(ps);
+		break;
+	case VAR_StringArray:
+		CK_VAR_ParseStringArray(ps);
 		break;
 	case VAR_Action:
 		CK_VAR_ParseAction(ps);

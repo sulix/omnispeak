@@ -64,91 +64,93 @@
 
 
 
-%string ck_str_levelName0 "Fribbulus Xax"
-%string ck_str_levelName1 "Bloogwaters\nCrossing"
-%string ck_str_levelName2 "Guard Post One"
-%string ck_str_levelName3 "First Dome\nof Darkness"
-%string ck_str_levelName4 "Second Dome\nof Darkness"
-%string ck_str_levelName5 "The Bloogdome"
-%string ck_str_levelName6 "Bloogton Mfg.,\nIncorporated"
-%string ck_str_levelName7 "Bloogton Tower"
-%string ck_str_levelName8 "Bloogfoods, Inc."
-%string ck_str_levelName9 "Guard Post Two"
-%string ck_str_levelName10 "Bloogville"
-%string ck_str_levelName11 "BASA"
-%string ck_str_levelName12 "Guard Post Three"
-%string ck_str_levelName13 "Bloogbase Rec\nDistrict"
-%string ck_str_levelName14 "Bloogbase Mgmt.\nDistrict"
-%string ck_str_levelName15 "Bloog Control Center"
-%string ck_str_levelName16 "Blooglab"
-%string ck_str_levelName17 "Bean-with-Bacon\nMegarocket"
-%string ck_str_levelName18 "High Scores"
+%stringarray ck_str_levelNames
+	"Fribbulus Xax",
+	"Bloogwaters\nCrossing",
+	"Guard Post One",
+	"First Dome\nof Darkness",
+	"Second Dome\nof Darkness",
+	"The Bloogdome",
+	"Bloogton Mfg.,\nIncorporated",
+	"Bloogton Tower",
+	"Bloogfoods, Inc.",
+	"Guard Post Two",
+	"Bloogville",
+	"BASA",
+	"Guard Post Three",
+	"Bloogbase Rec\nDistrict",
+	"Bloogbase Mgmt.\nDistrict",
+	"Bloog Control Center",
+	"Blooglab",
+	"Bean-with-Bacon\nMegarocket",
+	"High Scores"
 
 
-%string ck_str_levelEntryText0	"Keen attacks\n"
-				"Fribbulus Xax"
+%stringarray ck_str_levelEntryText
+	"Keen attacks\n"
+	"Fribbulus Xax",
 
-%string ck_str_levelEntryText1	"Keen hops across\n"
-				"Bloogwaters\n"
-				"Crossing"
+	"Keen hops across\n"
+	"Bloogwaters\n"
+	"Crossing",
 
-%string ck_str_levelEntryText2	"Keen fights his way\n"
-				"through Guard Post One"
+	"Keen fights his way\n"
+	"through Guard Post One",
 
-%string ck_str_levelEntryText3	"Keen crosses into the\n"
-				"First Dome of Darkness"
+	"Keen crosses into the\n"
+	"First Dome of Darkness",
 
-%string ck_str_levelEntryText4	"Keen dares to enter the\n"
-				"Second Dome of Darkness"
+	"Keen dares to enter the\n"
+	"Second Dome of Darkness",
 
-%string ck_str_levelEntryText5	"Keen foolishly enters\n"
-				"the Bloogdome"
+	"Keen foolishly enters\n"
+	"the Bloogdome",
 
-%string ck_str_levelEntryText6	"Keen makes his way\n"
-				"into Bloogton\n"
-				"Manufacturing"
+	"Keen makes his way\n"
+	"into Bloogton\n"
+	"Manufacturing",
 
-%string ck_str_levelEntryText7	"Keen ascends\n"
-				"Bloogton Tower"
+	"Keen ascends\n"
+	"Bloogton Tower",
 
-%string ck_str_levelEntryText8	"Keen hungrily enters\n"
-				"Bloogfoods, Inc."
+	"Keen hungrily enters\n"
+	"Bloogfoods, Inc.",
 
-%string ck_str_levelEntryText9	"Keen smashes through\n"
-				"Guard Post Two"
+	"Keen smashes through\n"
+	"Guard Post Two",
 
-%string ck_str_levelEntryText10	"Keen seeks thrills\n"
-				"in Bloogville"
+	"Keen seeks thrills\n"
+	"in Bloogville",
 
-%string ck_str_levelEntryText11	"Keen rockets into the\n"
-				"Bloog Aeronautics and\n"
-				"Space Administration"
+	"Keen rockets into the\n"
+	"Bloog Aeronautics and\n"
+	"Space Administration",
 
-%string ck_str_levelEntryText12	"Keen boldly assaults\n"
-				"Guard Post Three"
+	"Keen boldly assaults\n"
+	"Guard Post Three",
 
-%string ck_str_levelEntryText13	"Keen whoops it up in\n"
-				"the Bloogbae\n"
-				"Recreational District"
+	"Keen whoops it up in\n"
+	"the Bloogbae\n"
+	"Recreational District",
 
-%string ck_str_levelEntryText14	"Keen purposefully struts\n"
-				"into the Bloogbase\n"
-				"Management District"
+	"Keen purposefully struts\n"
+	"into the Bloogbase\n"
+	"Management District",
 
-%string ck_str_levelEntryText15	"Keen bravely enters the\n"
-				"Bloog Control Center,\n"
-				"looking for Molly"
+	"Keen bravely enters the\n"
+	"Bloog Control Center,\n"
+	"looking for Molly",
 
-%string ck_str_levelEntryText16	"Keen warily enters\n"
-				"Blooglab Space\n"
-				"Station"
+	"Keen warily enters\n"
+	"Blooglab Space\n"
+	"Station",
 
-%string ck_str_levelEntryText17	"Keen returns to the\n"
-				"Bean-with-Bacon\n"
-				"Megarocket"
+	"Keen returns to the\n"
+	"Bean-with-Bacon\n"
+	"Megarocket",
 
-%string ck_str_levelEntryText18	"Keen is in the High\n"
-				"Score screen. Call Id!"
+	"Keen is in the High\n"
+	"Score screen. Call Id!"
 
 
 %string ck_str_storyText
