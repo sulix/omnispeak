@@ -1005,7 +1005,7 @@ void USL_DrawPaddleWarScore(int16_t keen_score, int16_t comp_score)
 	// Draw keen's score
 	int print_x = 80;
 	VH_Bar(print_x, print_y, 42, 6, 8);
-	const char *keenString = "KEEN:";
+	const char *keenString = CK_STRING(ck_str_paddleWarKeen);
 	VH_MeasurePropString(keenString, &w, &h, 1);
 	VH_DrawPropString(keenString, print_x, print_y, 1, print_color);
 	US_SetPrintX(print_x + w);
@@ -1015,7 +1015,7 @@ void USL_DrawPaddleWarScore(int16_t keen_score, int16_t comp_score)
 	// Draw Comp score
 	print_x = 182;
 	VH_Bar(print_x, print_y, 50, 6, 8);
-	const char *compString = "COMP:";
+	const char *compString = CK_STRING(ck_str_paddleWarComp);
 	VH_MeasurePropString(compString, &w, &h, 1);
 	VH_DrawPropString(compString, print_x, print_y, 1, print_color);
 
@@ -1155,7 +1155,7 @@ void USL_PlayPaddleWar(void)
 				USL_DrawPaddleWarScore(keen_score, comp_score);
 				if (comp_score == 21)
 				{
-					USL_CtlDialog("You lost!", "Press any key", NULL);
+					USL_CtlDialog(CK_STRING(ck_str_paddleWarDefeat), CK_STRING(ck_str_paddleWarPressAKey), NULL);
 					done = 1;
 					continue;
 				}
@@ -1170,7 +1170,7 @@ void USL_PlayPaddleWar(void)
 				USL_DrawPaddleWarScore(keen_score, comp_score);
 				if (keen_score == 21)
 				{
-					USL_CtlDialog("You won!", "Press any key", NULL);
+					USL_CtlDialog(CK_STRING(ck_str_paddleWarVictory), CK_STRING(ck_str_paddleWarPressAKey), NULL);
 					done = 1;
 					continue;
 				}

@@ -7,6 +7,13 @@
 
 %string ck_str_gameOver "Game Over!"
 
+# Paddle War
+%string ck_str_paddleWarKeen "KEEN:"
+%string ck_str_paddleWarComp "COMP:"
+%string ck_str_paddleWarDefeat "You lost!"
+%string ck_str_paddleWarVictory "You won!"
+%string ck_str_paddleWarPressAKey "Press any key"
+
 # Loading box for demos
 %string ck_str_demo "DEMO"
 
