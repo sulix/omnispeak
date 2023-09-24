@@ -535,7 +535,7 @@ void CK_MapLevelMarkAsDone(void)
 		{
 			w = *pw;
 			level = w & 0xFF;
-			if (level >= 1 && level <= ck_currentEpisode->lastLevelToMarkAsDone && ck_gameState.levelsDone[level])
+			if (level >= CK_INT(ck_minDoneLevel, 1) && level <= CK_INT(ck_maxDoneLevel, 17) && ck_gameState.levelsDone[level])
 			{ /* Is this a level tile */
 				flags = w >> 8;
 				/* Set the info tile at this position to 0 */

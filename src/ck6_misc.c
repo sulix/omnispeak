@@ -39,7 +39,6 @@ CK_EpisodeDef ck6v14e_episode = {
 	&CK6_ScanInfoLayer,
 	&CK6_MapMiscFlagsCheck,
 	&CK6_IsPresent,
-	/* .lastLevelToMarkAsDone = */ 16,
 	// Note these offsets are for version 1.4
 	/* .objArrayOffset = */ 0xA995,
 	/* .tempObjOffset = */ 0xC761,
@@ -57,7 +56,6 @@ CK_EpisodeDef ck6v15e_episode = {
 	&CK6_ScanInfoLayer,
 	&CK6_MapMiscFlagsCheck,
 	&CK6_IsPresent,
-	/* .lastLevelToMarkAsDone = */ 16,
 	// Note these offsets are for version 1.5
 	/* .objArrayOffset = */ 0x75CE,
 	/* .tempObjOffset = */ 0x939E,

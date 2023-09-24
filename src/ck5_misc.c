@@ -37,7 +37,6 @@ CK_EpisodeDef ck5_episode = {
 	&CK5_ScanInfoLayer,
 	&CK5_MapMiscFlagsCheck,
 	&CK5_IsPresent,
-	/* .lastLevelToMarkAsDone = */ 17,
 	/* .objArrayOffset = */ 0x9E6F,
 	/* .tempObjOffset = */ 0xBC3B,
 	/* .spriteArrayOffset = */ 0xCD50,

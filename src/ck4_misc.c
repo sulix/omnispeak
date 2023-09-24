@@ -40,7 +40,6 @@ CK_EpisodeDef ck4_episode = {
 	&CK4_ScanInfoLayer,
 	&CK4_MapMiscFlagsCheck,
 	&CK4_IsPresent,
-	/* .lastLevelToMarkAsDone = */ 17,
 	/* .objArrayOffset = */ 0xA807,
 	/* .tempObjOffset = */ 0xC5D3,
 	/* .spriteArrayOffset = */ 0xD622,

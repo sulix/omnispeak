@@ -55,8 +55,6 @@ typedef struct CK_EpisodeDef
 	// Check if the episode's files are all present.
 	bool (*isPresent)();
 
-	int lastLevelToMarkAsDone;
-
 	// A few offsets to data in the original EXE
 	uint16_t objArrayOffset;
 	uint16_t tempObjOffset;

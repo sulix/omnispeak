@@ -11,6 +11,8 @@
 %int CK_highScoreFontColour 12 # BLUE ^ LIGHTMAGENTA
 %int CK_EndingMusicLevel 14
 %int CK_StarWarsMusicLevel 17
+%int ck_minDoneLevel 1
+%int ck_maxDoneLevel 17
 
 %intarray ck_starWarsPalette
 	0x00, 0x01, 0x18, 0x1E, 0x1F, 0x1C, 0x06, 0x07,

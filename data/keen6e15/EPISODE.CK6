@@ -11,7 +11,8 @@
 %int CK_highScoreFontColour 15 # Invert the colour (Cyan -> Dark red)
 %int CK_EndingMusicLevel 1
 %int CK_StarWarsMusicLevel 13
-%int CK_highScoreFontColour 15
+%int ck_minDoneLevel 1
+%int ck_maxDoneLevel 17
 
 %intarray ck_starWarsPalette
 	0x00, 0x01, 0x18, 0x19, 0x04, 0x1C, 0x06, 0x07,

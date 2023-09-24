@@ -11,6 +11,8 @@
 %int CK_highScoreFontColour 15 # Invert the colour (Light grey -> Dark grey)
 %int CK_EndingMusicLevel 7
 %int CK_StarWarsMusicLevel 12
+%int ck_minDoneLevel 1
+%int ck_maxDoneLevel 17
 
 
 %intarray ck_starWarsPalette
