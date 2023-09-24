@@ -155,13 +155,6 @@ const char *CK_VAR_GetString(const char *name, const char *def)
 #endif
 }
 
-const char *CK_VAR_GetStringByNameAndIndex(const char *name, int index)
-{
-	char fullName[256];
-	sprintf(fullName, "%s%d", name, index);
-	return CK_VAR_GetString(fullName, name);
-}
-
 intptr_t CK_VAR_GetInt(const char *name, intptr_t def)
 {
 #ifdef CK_VAR_TYPECHECK
