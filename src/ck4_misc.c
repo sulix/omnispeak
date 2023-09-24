@@ -698,7 +698,7 @@ void CK4_ShowCouncilMessage(void)
 	VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
-	US_CPrint(CK_VAR_GetStringByNameAndIndex("ck4_str_councilMessage",ck_gameState.ep.ck4.membersRescued));
+	US_CPrint(CK_STRINGELEMENT(ck4_str_councilMessage,ck_gameState.ep.ck4.membersRescued));
 	VH_UpdateScreen();
 	// VW_WaitVBL(30);
 	IN_ClearKeysDown();

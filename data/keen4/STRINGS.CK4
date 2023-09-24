@@ -274,31 +274,32 @@
 
 # Council members:
 
-%string ck4_str_councilMessage0	"No sweat, oh guardian\n"
-				"of wisdom!"
+%stringarray ck4_str_councilMessage
+	"No sweat, oh guardian\n"
+	"of wisdom!",
 
-%string ck4_str_councilMessage1	"Sounds like a plan,\n"
-				"bearded one!"
+	"Sounds like a plan,\n"
+	"bearded one!",
 
-%string ck4_str_councilMessage2	"No problemo."
+	"No problemo.",
 
-%string ck4_str_councilMessage3	"Great.  You known, you\n"
-				"look a lot like the\n"
-				"last guy I rescued..."
+	"Great.  You known, you\n"
+	"look a lot like the\n"
+	"last guy I rescued...",
 
-%string ck4_str_councilMessage4	"Good idea, Gramps."
+	"Good idea, Gramps.",
 
-%string ck4_str_councilMessage5	"May the road rise\n"
-				"to meet your feet,\n"
-				"Mr. Member."
+	"May the road rise\n"
+	"to meet your feet,\n"
+	"Mr. Member.",
 
-%string ck4_str_councilMessage6	"Wise plan of action,\n"
-				"your ancientness."
+	"Wise plan of action,\n"
+	"your ancientness.",
 
-%string ck4_str_councilMessage7	"You're the last one,\n"
-				"fella. Let's both\n"
-				"get back to the\n"
-				"Oracle chamber!"
+	"You're the last one,\n"
+	"fella. Let's both\n"
+	"get back to the\n"
+	"Oracle chamber!"
 
 %string ck4_str_councilThanks	"Oh thank you so much\n"
 				"for rescuing me!\n"
