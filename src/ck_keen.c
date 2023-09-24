@@ -764,16 +764,17 @@ void CK_KeenRunningThink(CK_object *obj)
 
 void CK_HandleInputOnGround(CK_object *obj)
 {
+#ifdef WITH_KEEN5
 	// If we're riding a platform, do it surfin' style!
 	if (obj->topTI == 0x19)
 	{
 		// But only if such an action exists in this episode. :/
-		if (CK_GetActionByName("CK_ACT_keenRidePlatform"))
+		if (ck_currentEpisode->ep == EP_CK5)
 		{
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenRidePlatform");
 		}
 	}
-
+#endif
 	if (ck_inputFrame.xDirection)
 	{
 		obj->currentAction = CK_GetActionByName("CK_ACT_keenRun1");
@@ -841,16 +842,17 @@ void CK_HandleInputOnGround(CK_object *obj)
 
 void CK_KeenStandingThink(CK_object *obj)
 {
+#ifdef WITH_KEEN5
 	// If we're riding a platform, do it surfin' style!
 	if (obj->topTI == 0x19)
 	{
 		// But only if such an action exists in this episode. :/
-		if (CK_GetActionByName("CK_ACT_keenRidePlatform"))
+		if (ck_currentEpisode->ep == EP_CK5)
 		{
 			obj->currentAction = CK_GetActionByName("CK_ACT_keenRidePlatform");
 		}
 	}
-
+#endif
 	if (ck_inputFrame.xDirection || ck_inputFrame.yDirection || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed || ck_keenState.shootIsPressed)
 	{
 		obj->user1 = obj->user2 = 0; //Idle Time + Idle State
