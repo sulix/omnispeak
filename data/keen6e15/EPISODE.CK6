@@ -8,6 +8,7 @@
 %int CK_highScoreTopMargin 0x33
 %int CK_highScoreLeftMargin 0x28
 %int CK_highScoreRightMargin 0x118
+%int CK_highScoreFontColour 15 # Invert the colour (Cyan -> Dark red)
 %int CK_EndingMusicLevel 1
 %int CK_StarWarsMusicLevel 13
 %int CK_highScoreFontColour 15
