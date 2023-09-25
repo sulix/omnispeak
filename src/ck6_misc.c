@@ -30,19 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_play.h"
 #include "ck6_ep.h"
 
-CK_EpisodeDef *ck6_episode;
-
-CK_EpisodeDef ck6v14e_episode = {
-	EP_CK6,
-	"CK6",
-	&CK6_SetupFunctions,
-	&CK6_ScanInfoLayer,
-	&CK6_MapMiscFlagsCheck,
-	&CK6_IsPresent,
-	/* .hasCreatureQuestion = */ true,
-};
-
-CK_EpisodeDef ck6v15e_episode = {
+CK_EpisodeDef ck6_episode = {
 	EP_CK6,
 	"CK6",
 	&CK6_SetupFunctions,
@@ -70,14 +58,6 @@ bool CK6_IsPresent()
 		return false;
 	if (!FS_IsKeenFilePresent("AUDIO.CK6"))
 		return false;
-
-	FS_File egaGraph = FS_OpenKeenFile("EGAGRAPH.CK6");
-	size_t egaGraphSize = FS_GetFileSize(egaGraph);
-	FS_CloseFile(egaGraph);
-	if (egaGraphSize == 464662)
-		ck6_episode = &ck6v15e_episode;
-	else
-		ck6_episode = &ck6v14e_episode;
 
 	// Omnispeak-provided files
 	if (!FS_IsOmniFilePresent("EGAHEAD.CK6"))

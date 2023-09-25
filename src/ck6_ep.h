@@ -26,9 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /*
  * Contains definitions relevant only to Keen 5
  */
-extern CK_EpisodeDef *ck6_episode;
-extern CK_EpisodeDef ck6v14e_episode;
-extern CK_EpisodeDef ck6v15e_episode;
+extern CK_EpisodeDef ck6_episode;
 
 /* Action functions setup */
 void CK6_Obj1_SetupFunctions(void);

@@ -39,14 +39,16 @@ them in the same directory as the 'omnispeak' binary:
 	* AUDIO.CK?
 
 You'll also need the files from the 'data' directory corresponding to your
-version of Keen. 
+version of Keen. For Keen 6 in particular, you'll need to check if you have
+version 1.4 or version 1.5, and copy keen6e14 and keen6e15 accordingly. The
+initialisation screen contains the version of the game.
 
 To run the game, simply switch to the directory with the data files, and run:
 	./omnispeak
 
 Omnispeak supports several command-line options, some of which are:
-	/EPISODE <4,5,6,6v14,6v15>
-		- Runs the given episode/version of Commander Keen
+	/EPISODE <4,5,6>
+		- Runs the given episode of Commander Keen
 	/GAMEPATH <directory>
 		- Sets the path to the game data files.
 	/USERPATH <directory>
