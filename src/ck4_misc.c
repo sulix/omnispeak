@@ -718,7 +718,7 @@ void CK4_SpawnScubaKeen(int tileX, int tileY)
 	ck_keenObj->xDirection = IN_motion_Right;
 	ck_keenObj->yDirection = IN_motion_Down;
 	ck_keenObj->clipped = CLIP_simple;
-	CK_SetAction(ck_keenObj, CK_GetActionByName("CK4_ACT_KeenSwim0"));
+	CK_SetAction(ck_keenObj, CK_ACTION(CK4_ACT_KeenSwim0));
 }
 
 void CK4_SpawnKeenBubble(CK_object *obj)
@@ -738,19 +738,19 @@ void CK4_SpawnKeenBubble(CK_object *obj)
 	switch (US_RndT() / 64)
 	{
 	case 0:
-		CK_SetAction(bubble, CK_GetActionByName("CK4_ACT_Bubble0"));
+		CK_SetAction(bubble, CK_ACTION(CK4_ACT_Bubble0));
 		break;
 
 	case 1:
-		CK_SetAction(bubble, CK_GetActionByName("CK4_ACT_Bubble1"));
+		CK_SetAction(bubble, CK_ACTION(CK4_ACT_Bubble1));
 		break;
 
 	case 2:
-		CK_SetAction(bubble, CK_GetActionByName("CK4_ACT_Bubble2"));
+		CK_SetAction(bubble, CK_ACTION(CK4_ACT_Bubble2));
 		break;
 
 	case 3:
-		CK_SetAction(bubble, CK_GetActionByName("CK4_ACT_Bubble3"));
+		CK_SetAction(bubble, CK_ACTION(CK4_ACT_Bubble3));
 		break;
 	}
 
@@ -847,10 +847,10 @@ void CK4_KeenSwimFast(CK_object *obj)
 			obj->velY = ck_inputFrame.yDirection * 18;
 	}
 
-	if (obj->currentAction == CK_GetActionByName("CK4_ACT_KeenSwimFast0"))
-		obj->currentAction = CK_GetActionByName("CK4_ACT_KeenSwimFast1");
+	if (obj->currentAction == CK_ACTION(CK4_ACT_KeenSwimFast0))
+		obj->currentAction = CK_ACTION(CK4_ACT_KeenSwimFast1);
 	else
-		obj->currentAction = CK_GetActionByName("CK4_ACT_KeenSwimFast0");
+		obj->currentAction = CK_ACTION(CK4_ACT_KeenSwimFast0);
 
 	ck_nextX += obj->velX * SD_GetSpriteSync();
 	ck_nextY += obj->velY * SD_GetSpriteSync();
@@ -892,7 +892,7 @@ void CK4_KeenSwimCol(CK_object *a, CK_object *b)
 		{
 			ck_gameState.numShots += (ck_gameState.difficulty == D_Easy) ? 8 : 5;
 		}
-		CK_SetAction2(b, CK_GetActionByName("CK_ACT_itemNotify"));
+		CK_SetAction2(b, CK_ACTION(CK_ACT_itemNotify));
 	}
 	else if (b->type == CT4_CouncilMember)
 	{

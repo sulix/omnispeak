@@ -146,7 +146,7 @@ void CK5_SpawnVolte(int tileX, int tileY)
 	new_object->posX = RF_TileToUnit(tileX);
 	new_object->posY = RF_TileToUnit(tileY);
 	new_object->clipped = CLIP_not;
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Volte0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_Volte0));
 
 	// Initialize Volte Direction
 	// (Vanilla keen does this with far pointer arithmetic)
@@ -285,7 +285,7 @@ void CK5_VolteCol(CK_object *volte, CK_object *other)
 	else if (other->type == CT_Stunner)
 	{ //stunner
 		CK_ShotHit(other);
-		CK_SetAction2(volte, CK_GetActionByName("CK5_ACT_VolteStunned"));
+		CK_SetAction2(volte, CK_ACTION(CK5_ACT_VolteStunned));
 	}
 }
 

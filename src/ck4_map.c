@@ -49,7 +49,7 @@ void CK4_MapKeenFoot(CK_object *obj)
 		obj->user2 = 3;
 		obj->user3 = 0;
 		ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None; // use global pointer for some reason
-		obj->currentAction = CK_GetActionByName("CK_ACT_MapKeenStart");
+		obj->currentAction = CK_ACTION(CK_ACT_MapKeenStart);
 		obj->gfxChunk = 256;
 		obj->clipped = CLIP_normal;
 	}
@@ -106,7 +106,7 @@ void CK4_MapMiscFlagsCheck(CK_object *obj)
 			{
 				obj->user1 = ck4_wetsuitOffs[mf - MF_WaterN];
 
-				if (obj->currentAction == CK_GetActionByName("CK4_ACT_MapKeenSwim0"))
+				if (obj->currentAction == CK_ACTION(CK4_ACT_MapKeenSwim0))
 					obj->user1 = ck4_wetsuitOffs2[obj->user1];
 
 				switch (obj->user1)
@@ -132,10 +132,10 @@ void CK4_MapMiscFlagsCheck(CK_object *obj)
 				obj->user2 = 0;
 				obj->user3 = 18;
 
-				if (obj->currentAction == CK_GetActionByName("CK4_ACT_MapKeenSwim0"))
-					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_MapKeenStart"));
+				if (obj->currentAction == CK_ACTION(CK4_ACT_MapKeenSwim0))
+					CK_SetAction2(obj, CK_ACTION(CK_ACT_MapKeenStart));
 				else
-					CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_MapKeenSwim0"));
+					CK_SetAction2(obj, CK_ACTION(CK4_ACT_MapKeenSwim0));
 			}
 		}
 	}

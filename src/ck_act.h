@@ -60,6 +60,7 @@ void CK_VAR_LoadVars(const char *filename);
 #define CK_INT(name) INT_ ## name
 #define CK_CHUNKNUM(name) CHUNK_ ## name
 #define CK_SOUNDNUM(name) INT_ ## name
+#define CK_ACTION(name) ##name
 typedef int16_t chunk_id_t;
 #define CK_CHUNKID(name) CK_CHUNKNUM(name)
 #define CK_LookupChunk(id) (id)
@@ -71,6 +72,7 @@ typedef int16_t chunk_id_t;
 #define CK_INT(name, default) CK_VAR_GetInt(#name, default)
 #define CK_CHUNKNUM(name) CK_VAR_GetInt(#name, 0)
 #define CK_SOUNDNUM(name) CK_VAR_GetInt(#name, 0)
+#define CK_ACTION(name) CK_GetActionByName(#name)
 typedef const char *chunk_id_t;
 #define CK_CHUNKID(name) #name
 #define CK_LookupChunk(id) CK_VAR_GetInt(id, 0)

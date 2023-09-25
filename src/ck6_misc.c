@@ -152,12 +152,12 @@ void CK6_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
 	{
 		obj->posX += 0x40;
 		obj->posY += 0x40;
-		CK_SetAction(obj, CK_GetActionByName("CK6_ACT_purpleAxisPlatform"));
+		CK_SetAction(obj, CK_ACTION(CK6_ACT_purpleAxisPlatform));
 	}
 	else
 	{
 
-		CK_SetAction(obj, CK_GetActionByName("CK_ACT_AxisPlatform"));
+		CK_SetAction(obj, CK_ACTION(CK_ACT_AxisPlatform));
 	}
 	// TODO: These should *not* be done here.
 	obj->gfxChunk = obj->currentAction->chunkLeft;
@@ -177,7 +177,7 @@ void CK6_SpawnRedStandPlatform(int tileX, int tileY)
 	obj->xDirection = 0;
 	obj->yDirection = 1;
 	obj->clipped = CLIP_not;
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_redStandPlatform"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_redStandPlatform));
 	obj->gfxChunk = obj->currentAction->chunkLeft;
 	CA_CacheGrChunk(obj->gfxChunk);
 	CK_ResetClipRects(obj);

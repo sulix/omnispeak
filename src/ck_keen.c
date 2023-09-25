@@ -110,7 +110,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 			ck_gameState.ep.ck5.securityCard = 1;
 		}
 #endif
-		CK_SetAction2(b, CK_GetActionByName("CK_ACT_itemNotify"));
+		CK_SetAction2(b, CK_ACTION(CK_ACT_itemNotify));
 	}
 	else if (b->type == CT_CLASS(Platform)) //Platform
 	{
@@ -173,7 +173,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 			if (b->user4)
 			{
 				CK_ShotHit(b);
-				CK_SetAction2(a, CK_GetActionByName("CK6_ACT_keenStunned0"));
+				CK_SetAction2(a, CK_ACTION(CK6_ACT_keenStunned0));
 			}
 
 			if (CFG_GetConfigBool("impossibleBullet", true))
@@ -213,7 +213,7 @@ void CK_SpawnKeen(int tileX, int tileY, int direction)
 	ck_keenObj->posY = RF_TileToUnit(tileY) - 241;
 	ck_keenObj->xDirection = direction;
 	ck_keenObj->yDirection = 1;
-	CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_keenStanding"));
+	CK_SetAction(ck_keenObj, CK_ACTION(CK_ACT_keenStanding));
 }
 
 static uint16_t emptyTile = 0;
@@ -240,7 +240,7 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 	notify->yDirection = -1;
 	notify->user2 = CK_LookupChunk(ck_itemShadows[itemNumber]);
 	notify->gfxChunk = notify->user2;
-	CK_SetAction(notify, CK_GetActionByName("CK_ACT_itemNotify"));
+	CK_SetAction(notify, CK_ACTION(CK_ACT_itemNotify));
 	notify->clipped = CLIP_not;
 }
 
@@ -263,7 +263,7 @@ void CK_KeenGetTileCentilife(int tileX, int tileY)
 		obj->posY = RF_TileToUnit(tileY);
 		obj->yDirection = IN_motion_Up;
 		obj->user2 = obj->gfxChunk = CK_CHUNKNUM(SPR_CENTILIFE1UPSHADOW);
-		CK_SetAction(obj, CK_GetActionByName("CK_ACT_itemNotify"));
+		CK_SetAction(obj, CK_ACTION(CK_ACT_itemNotify));
 		obj->clipped = CLIP_not;
 	}
 }
@@ -291,18 +291,18 @@ void CK_KeenCheckSpecialTileInfo(CK_object *obj)
 			case MISCFLAG_GEMHOLDER1:
 			case MISCFLAG_GEMHOLDER2:
 			case MISCFLAG_GEMHOLDER3:
-				if (y == obj->clipRects.tileY2 && obj->topTI && obj->currentAction != CK_GetActionByName("CK_ACT_keenPlaceGem") && ck_gameState.keyGems[specialTileInfo - MISCFLAG_GEMHOLDER0])
+				if (y == obj->clipRects.tileY2 && obj->topTI && obj->currentAction != CK_ACTION(CK_ACT_keenPlaceGem) && ck_gameState.keyGems[specialTileInfo - MISCFLAG_GEMHOLDER0])
 				{
 					int targetXUnit = RF_TileToUnit(x) - 64;
 					if (obj->posX == targetXUnit)
 					{
 						ck_gameState.keyGems[specialTileInfo - MISCFLAG_GEMHOLDER0]--;
-						CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenPlaceGem"));
+						CK_SetAction2(obj, CK_ACTION(CK_ACT_keenPlaceGem));
 					}
 					else
 					{
 						obj->user1 = targetXUnit;
-						obj->currentAction = CK_GetActionByName("CK_ACT_keenSlide");
+						obj->currentAction = CK_ACTION(CK_ACT_keenSlide);
 					}
 				}
 				return;
@@ -388,12 +388,12 @@ bool CK_KeenPressUp(CK_object *obj)
 		if (obj->posX == destXunit)
 		{
 			// Flip that switch!
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenPressSwitch1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenPressSwitch1);
 		}
 		else
 		{
 			obj->user1 = destXunit;
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenSlide");
+			obj->currentAction = CK_ACTION(CK_ACT_keenSlide);
 		}
 		ck_keenState.keenSliding = true;
 		return true;
@@ -428,8 +428,8 @@ bool CK_KeenPressUp(CK_object *obj)
 					newObj->posY = obj->clipRects.tileY2 - 4;
 					newObj->active = OBJ_ALWAYS_ACTIVE;
 					newObj->type = 1;
-					CK_SetAction(newObj, CK_GetActionByName("CK_ACT_SecurityDoorOpen"));
-					obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterSecurityDoor");
+					CK_SetAction(newObj, CK_ACTION(CK_ACT_SecurityDoorOpen));
+					obj->currentAction = CK_ACTION(CK_ACT_keenEnterSecurityDoor);
 					obj->zLayer = 0;
 					ck_keenState.keenSliding = true;
 					return true;
@@ -437,7 +437,7 @@ bool CK_KeenPressUp(CK_object *obj)
 				else
 				{
 					SD_PlaySound(CK_SOUNDNUM(SOUND_NEEDKEYCARD));
-					obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
+					obj->currentAction = CK_ACTION(CK_ACT_keenStanding);
 					ck_keenState.keenSliding = true;
 					return false;
 				}
@@ -446,7 +446,7 @@ bool CK_KeenPressUp(CK_object *obj)
 #endif
 			{
 				ck_invincibilityTimer = 110;
-				obj->currentAction = CK_GetActionByName("CK_ACT_keenEnterDoor0");
+				obj->currentAction = CK_ACTION(CK_ACT_keenEnterDoor0);
 				obj->zLayer = 0;
 
 #ifdef WITH_KEEN5
@@ -460,7 +460,7 @@ bool CK_KeenPressUp(CK_object *obj)
 		else
 		{
 			obj->user1 = destUnitX;
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenSlide");
+			obj->currentAction = CK_ACTION(CK_ACT_keenSlide);
 		}
 
 		ck_keenState.keenSliding = true;
@@ -498,7 +498,7 @@ void CK_KeenSlide(CK_object *obj)
 	obj->user1 = 0;
 	if (!CK_KeenPressUp(obj))
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
+		obj->currentAction = CK_ACTION(CK_ACT_keenStanding);
 	}
 }
 
@@ -523,14 +523,14 @@ void CK_KeenEnterDoor(CK_object *obj)
 		if (destination == 0x0000)
 		{
 			ck_gameState.levelState = LS_TeleportToKorath;
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenEnteredDoor");
+			obj->currentAction = CK_ACTION(CK_ACT_keenEnteredDoor);
 			return;
 		}
 
 		if (destination == 0xB1B1)
 		{
 			ck_gameState.levelState = LS_LevelComplete;
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenEnteredDoor");
+			obj->currentAction = CK_ACTION(CK_ACT_keenEnteredDoor);
 			return;
 		}
 	}
@@ -581,7 +581,7 @@ void CK_KeenPlaceGem(CK_object *obj)
 	newObj->clipped = CLIP_not;
 	newObj->type = CT_Friendly;
 	newObj->active = OBJ_ALWAYS_ACTIVE;
-	CK_SetAction(newObj, CK_GetActionByName("CK_ACT_DoorOpen1"));
+	CK_SetAction(newObj, CK_ACTION(CK_ACT_DoorOpen1));
 }
 
 void CK_KeenRidePlatform(CK_object *obj)
@@ -666,7 +666,7 @@ bool CK_KeenTryClimbPole(CK_object *obj)
 		ck_nextX = 0;
 		ck_nextY = (ck_inputFrame.yDirection << 5);
 		obj->clipped = CLIP_not;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleSit");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPoleSit);
 		return true;
 	}
 	return false;
@@ -678,7 +678,7 @@ void CK_KeenRunningThink(CK_object *obj)
 {
 	if (!ck_inputFrame.xDirection)
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
+		obj->currentAction = CK_ACTION(CK_ACT_keenStanding);
 		CK_HandleInputOnGround(obj);
 		return;
 	}
@@ -704,11 +704,11 @@ void CK_KeenRunningThink(CK_object *obj)
 
 		if (ck_inputFrame.yDirection == -1)
 		{
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenShootUp1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenShootUp1);
 		}
 		else
 		{
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenShoot1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenShoot1);
 		}
 		return;
 	}
@@ -721,7 +721,7 @@ void CK_KeenRunningThink(CK_object *obj)
 		obj->velY = -40;
 		ck_nextX = ck_nextY = 0;
 		ck_keenState.jumpTimer = 18;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenJump1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenJump1);
 		// Is this the mystical 'impossible pogo'?
 		// k5disasm has a 'return' here, probably a mistake?
 	}
@@ -729,7 +729,7 @@ void CK_KeenRunningThink(CK_object *obj)
 	if (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed)
 	{
 		ck_keenState.pogoWasPressed = true;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPogo1);
 		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENJUMP));
 		obj->velX = obj->xDirection * 16;
 		obj->velY = -48;
@@ -743,20 +743,20 @@ void CK_KeenRunningThink(CK_object *obj)
 	// If this is an X vel, then surely we'd want to multiply it by the direction?
 	ck_nextX += ck_KeenRunXVels[obj->topTI & 7] * SD_GetSpriteSync();
 
-	if ((obj->currentAction->chunkLeft == CK_GetActionByName("CK_ACT_keenRun1")->chunkLeft) && !(obj->user3))
+	if ((obj->currentAction->chunkLeft == CK_ACTION(CK_ACT_keenRun1)->chunkLeft) && !(obj->user3))
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENWALK0));
 		obj->user3 = 1;
 		return;
 	}
 
-	if ((obj->currentAction->chunkLeft == CK_GetActionByName("CK_ACT_keenRun3")->chunkLeft) && !(obj->user3))
+	if ((obj->currentAction->chunkLeft == CK_ACTION(CK_ACT_keenRun3)->chunkLeft) && !(obj->user3))
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENWALK1));
 		obj->user3 = 1;
 		return;
 	}
-	if ((obj->currentAction->chunkLeft == CK_GetActionByName("CK_ACT_keenRun2")->chunkLeft) || (obj->currentAction->chunkLeft == CK_GetActionByName("CK_ACT_keenRun4")->chunkLeft))
+	if ((obj->currentAction->chunkLeft == CK_ACTION(CK_ACT_keenRun2)->chunkLeft) || (obj->currentAction->chunkLeft == CK_ACTION(CK_ACT_keenRun4)->chunkLeft))
 	{
 		obj->user3 = 0;
 	}
@@ -771,13 +771,13 @@ void CK_HandleInputOnGround(CK_object *obj)
 		// But only if such an action exists in this episode. :/
 		if (ck_currentEpisode->ep == EP_CK5)
 		{
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenRidePlatform");
+			obj->currentAction = CK_ACTION(CK_ACT_keenRidePlatform);
 		}
 	}
 #endif
 	if (ck_inputFrame.xDirection)
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenRun1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenRun1);
 		CK_KeenRunningThink(obj);
 		ck_nextX = (obj->xDirection * obj->currentAction->velX * SD_GetSpriteSync()) / 4;
 		return;
@@ -788,11 +788,11 @@ void CK_HandleInputOnGround(CK_object *obj)
 		ck_keenState.shootWasPressed = true;
 		if (ck_inputFrame.yDirection == -1)
 		{
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenShootUp1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenShootUp1);
 		}
 		else
 		{
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenShoot1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenShoot1);
 		}
 		return;
 	}
@@ -805,7 +805,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 		obj->velY = -40;
 		ck_nextY = 0;
 		ck_keenState.jumpTimer = 18;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenJump1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenJump1);
 		return;
 	}
 
@@ -813,7 +813,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 	{
 		ck_keenState.pogoWasPressed = true;
 		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENJUMP));
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPogo1);
 		obj->velX = 0;
 		obj->velY = -48;
 		ck_nextY = 0;
@@ -827,7 +827,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 			return;
 		if (!ck_keenState.keenSliding && CK_KeenPressUp(obj))
 			return;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookUp1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenLookUp1);
 	}
 	else if (ck_inputFrame.yDirection == 1)
 	{
@@ -835,7 +835,7 @@ void CK_HandleInputOnGround(CK_object *obj)
 		if (CK_KeenTryClimbPole(obj))
 			return;
 		// Keen looks down.
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookDown1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenLookDown1);
 		return;
 	}
 }
@@ -849,14 +849,14 @@ void CK_KeenStandingThink(CK_object *obj)
 		// But only if such an action exists in this episode. :/
 		if (ck_currentEpisode->ep == EP_CK5)
 		{
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenRidePlatform");
+			obj->currentAction = CK_ACTION(CK_ACT_keenRidePlatform);
 		}
 	}
 #endif
 	if (ck_inputFrame.xDirection || ck_inputFrame.yDirection || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed || ck_keenState.shootIsPressed)
 	{
 		obj->user1 = obj->user2 = 0; //Idle Time + Idle State
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
+		obj->currentAction = CK_ACTION(CK_ACT_keenStanding);
 		CK_HandleInputOnGround(obj);
 
 		return;
@@ -869,7 +869,7 @@ void CK_KeenStandingThink(CK_object *obj)
 	if (obj->user2 == 0 && obj->user1 > 200)
 	{
 		obj->user2++;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenIdle");
+		obj->currentAction = CK_ACTION(CK_ACT_keenIdle);
 		obj->user1 = 0;
 		return;
 	}
@@ -880,11 +880,11 @@ void CK_KeenStandingThink(CK_object *obj)
 		if ((ck_currentEpisode->ep == EP_CK4) && (ck_keenMoon == 1))
 		{
 			ck_keenMoon = 2;
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenMoon1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenMoon1);
 		}
 		else
 		{
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenBored1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenBored1);
 		}
 		obj->user1 = 0;
 		return;
@@ -893,7 +893,7 @@ void CK_KeenStandingThink(CK_object *obj)
 	if (obj->user2 == 2 && obj->user1 > 700)
 	{
 		obj->user2++;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenOpenBook1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenOpenBook1);
 		obj->user1 = 0;
 	}
 }
@@ -906,7 +906,7 @@ void CK_KeenLookUpThink(CK_object *obj)
 		(ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed) ||
 		(ck_keenState.shootIsPressed))
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
+		obj->currentAction = CK_ACTION(CK_ACT_keenStanding);
 		CK_HandleInputOnGround(obj);
 	}
 }
@@ -940,7 +940,7 @@ void CK_KeenLookDownThink(CK_object *obj)
 		obj->posY += deltay;
 		ck_nextX = 0;
 		ck_nextY = 0;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenFall1);
 		obj->velX = obj->velY = 0;
 		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENFALL));
 		return;
@@ -948,7 +948,7 @@ void CK_KeenLookDownThink(CK_object *obj)
 
 	if (ck_inputFrame.yDirection != 1 || ck_inputFrame.xDirection != 0 || (ck_keenState.jumpIsPressed && !ck_keenState.jumpWasPressed) || (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed))
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenLookDown4");
+		obj->currentAction = CK_ACTION(CK_ACT_keenLookDown4);
 		return;
 	}
 }
@@ -961,7 +961,7 @@ void CK_KeenDrawFunc(CK_object *obj)
 		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENFALL));
 		obj->velX = obj->xDirection * 8;
 		obj->velY = 0;
-		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
+		CK_SetAction2(obj, CK_ACTION(CK_ACT_keenFall1));
 		ck_keenState.jumpTimer = 0;
 	}
 	else if ((obj->topTI & 0xFFF8) == 8)
@@ -996,7 +996,7 @@ void CK_KeenRunDrawFunc(CK_object *obj)
 		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENFALL));
 		obj->velX = obj->xDirection * 8;
 		obj->velY = 0;
-		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
+		CK_SetAction2(obj, CK_ACTION(CK_ACT_keenFall1));
 		ck_keenState.jumpTimer = 0;
 	}
 	else if ((obj->topTI & 0xFFF8) == 8)
@@ -1024,7 +1024,7 @@ void CK_KeenRunDrawFunc(CK_object *obj)
 	if ((obj->rightTI && obj->xDirection == -1) || (obj->leftTI && obj->xDirection == 1))
 	{
 		obj->actionTimer = 0;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenStanding");
+		obj->currentAction = CK_ACTION(CK_ACT_keenStanding);
 		obj->gfxChunk = (obj->xDirection == -1) ? obj->currentAction->chunkLeft : obj->currentAction->chunkRight;
 	}
 
@@ -1035,7 +1035,7 @@ void CK_KeenReadThink(CK_object *obj)
 {
 	if (ck_inputFrame.xDirection != 0 || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed)
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenStowBook1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenStowBook1);
 		obj->user1 = obj->user2 = 0;
 	}
 }
@@ -1089,7 +1089,7 @@ void CK_KeenJumpThink(CK_object *obj)
 			CK_PhysGravityHigh(obj);
 		}
 
-		if (obj->velY > 0 && obj->currentAction != CK_GetActionByName("CK_ACT_keenFall1") && obj->currentAction != CK_GetActionByName("CK_ACT_keenFall2"))
+		if (obj->velY > 0 && obj->currentAction != CK_ACTION(CK_ACT_keenFall1) && obj->currentAction != CK_ACTION(CK_ACT_keenFall2))
 		{
 			obj->currentAction = obj->currentAction->next;
 		}
@@ -1119,13 +1119,13 @@ void CK_KeenJumpThink(CK_object *obj)
 		switch (ck_inputFrame.yDirection)
 		{
 		case -1:
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShootUp1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenJumpShootUp1);
 			break;
 		case 0:
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShoot1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenJumpShoot1);
 			break;
 		case 1:
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShootDown1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenJumpShootDown1);
 			break;
 		}
 		return;
@@ -1134,7 +1134,7 @@ void CK_KeenJumpThink(CK_object *obj)
 	if (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed)
 	{
 		ck_keenState.pogoWasPressed = true;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPogo2");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPogo2);
 		ck_keenState.jumpTimer = 0;
 		return;
 	}
@@ -1220,21 +1220,21 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 				obj->user1 = obj->user2 = 0; // Being on the ground is boring.
 
 				//TODO: Finish these
-				if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShoot1"))
+				if (obj->currentAction == CK_ACTION(CK_ACT_keenJumpShoot1))
 				{
-					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenShoot1"));
+					CK_SetAction2(obj, CK_ACTION(CK_ACT_keenShoot1));
 				}
-				else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShootUp1"))
+				else if (obj->currentAction == CK_ACTION(CK_ACT_keenJumpShootUp1))
 				{
-					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenShootUp1"));
+					CK_SetAction2(obj, CK_ACTION(CK_ACT_keenShootUp1));
 				}
 				else if (ck_inputFrame.xDirection)
 				{
-					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenRun1"));
+					CK_SetAction2(obj, CK_ACTION(CK_ACT_keenRun1));
 				}
 				else
 				{
-					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenStanding"));
+					CK_SetAction2(obj, CK_ACTION(CK_ACT_keenStanding));
 				}
 				SD_PlaySound(CK_SOUNDNUM(SOUND_KEENLAND));
 			}
@@ -1268,7 +1268,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 					obj->posX = (obj->posX & 0xFF00) + 128;
 					obj->posY = (temp8 - 64);
 					obj->velY = obj->deltaPosY = 0;
-					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenHang1"));
+					CK_SetAction2(obj, CK_ACTION(CK_ACT_keenHang1));
 				}
 			}
 			else if (ck_inputFrame.xDirection == 1)
@@ -1286,7 +1286,7 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 					obj->posX = (obj->posX & 0xFF00) + 256;
 					obj->posY = (temp8 - 64);
 					obj->velY = obj->deltaPosY = 0;
-					CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenHang1"));
+					CK_SetAction2(obj, CK_ACTION(CK_ACT_keenHang1));
 				}
 			}
 		}
@@ -1360,13 +1360,13 @@ void CK_KeenPogoThink(CK_object *obj)
 		switch (ck_inputFrame.yDirection)
 		{
 		case -1:
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShootUp1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenJumpShootUp1);
 			return;
 		case 0:
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShoot1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenJumpShoot1);
 			return;
 		case 1:
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenJumpShootDown1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenJumpShootDown1);
 			return;
 		}
 	}
@@ -1375,7 +1375,7 @@ void CK_KeenPogoThink(CK_object *obj)
 	if (ck_keenState.pogoIsPressed && !ck_keenState.pogoWasPressed)
 	{
 		ck_keenState.pogoWasPressed = true;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenFall1);
 	}
 }
 
@@ -1476,7 +1476,7 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 				obj->velY = -48;
 				ck_keenState.jumpTimer = 24;
 				SD_PlaySound(CK_SOUNDNUM(SOUND_KEENPOGO));
-				CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenPogo2"));
+				CK_SetAction2(obj, CK_ACTION(CK_ACT_keenPogo2));
 			}
 		}
 	}
@@ -1495,7 +1495,7 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 		if (CFG_GetConfigBool("ck_fixPlatformZLayer", (ck_currentEpisode->ep == EP_CK6)))
 			obj->zLayer = 1;
 		obj->clipped = CLIP_normal;
-		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
+		CK_SetAction2(obj, CK_ACTION(CK_ACT_keenFall1));
 		ck_keenState.jumpTimer = 0;
 		obj->velX = 0;
 		obj->velY = 0;
@@ -1522,7 +1522,7 @@ void CK_KeenSpecialColFunc(CK_object *obj, CK_object *other)
 	{
 		obj->zLayer = 1;
 		obj->clipped = CLIP_normal;
-		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenFall1"));
+		CK_SetAction2(obj, CK_ACTION(CK_ACT_keenFall1));
 		ck_keenState.jumpTimer = 0;
 		obj->velX = 0;
 		obj->velY = 0;
@@ -1566,7 +1566,7 @@ void CK_KeenHangThink(CK_object *obj)
 	if (ck_inputFrame.yDirection == -1 || ck_inputFrame.xDirection == obj->xDirection)
 	{
 		uint16_t tile;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPull1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPull1);
 
 		if (obj->xDirection == 1)
 		{
@@ -1585,7 +1585,7 @@ void CK_KeenHangThink(CK_object *obj)
 	else if (ck_inputFrame.yDirection == 1 || (ck_inputFrame.xDirection && ck_inputFrame.xDirection != obj->xDirection))
 	{
 		// Drop down.
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenFall1);
 		obj->clipped = CLIP_normal;
 	}
 }
@@ -1629,7 +1629,7 @@ void CK_KeenDeathThink(CK_object *obj)
 void CK_KillKeen()
 {
 	CK_object *obj = ck_keenObj;
-	if (ck_invincibilityTimer || ck_godMode || (obj->currentAction == CK_GetActionByName("CK_ACT_keenNot")))
+	if (ck_invincibilityTimer || ck_godMode || (obj->currentAction == CK_ACTION(CK_ACT_keenNot)))
 	{
 		return;
 	}
@@ -1643,22 +1643,22 @@ void CK_KillKeen()
 	{
 		if (US_RndT() < 0x80)
 		{
-			CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_KeenSwimDie0"));
+			CK_SetAction2(obj, CK_ACTION(CK4_ACT_KeenSwimDie0));
 		}
 		else
 		{
-			CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_KeenSwimDie1"));
+			CK_SetAction2(obj, CK_ACTION(CK4_ACT_KeenSwimDie1));
 		}
 	}
 	else
 	{
 		if (US_RndT() < 0x80)
 		{
-			CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie0"));
+			CK_SetAction2(obj, CK_ACTION(CK_ACT_keenDie0));
 		}
 		else
 		{
-			CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenDie1"));
+			CK_SetAction2(obj, CK_ACTION(CK_ACT_keenDie1));
 		}
 	}
 
@@ -1681,13 +1681,13 @@ void CK_KeenPoleHandleInput(CK_object *obj)
 		switch (ck_inputFrame.yDirection)
 		{
 		case -1:
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleShootUp1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenPoleShootUp1);
 			break;
 		case 0:
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleShoot1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenPoleShoot1);
 			break;
 		case 1:
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleShootDown1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenPoleShootDown1);
 			break;
 		}
 	}
@@ -1700,7 +1700,7 @@ void CK_KeenPoleHandleInput(CK_object *obj)
 		obj->velY = -20;
 		obj->clipped = CLIP_normal;
 		ck_keenState.jumpTimer = 10;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenJump1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenJump1);
 		obj->yDirection = 1;
 		ck_keenState.poleGrabTime = SD_GetLastTimeCount();
 	}
@@ -1714,14 +1714,14 @@ void CK_KeenPoleSitThink(CK_object *obj)
 	//TODO: Support climb up/down
 	if (ck_inputFrame.yDirection == 1)
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleDown1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPoleDown1);
 		obj->yDirection = 1;
 		CK_KeenPoleDownThink(obj);
 		return;
 	}
 	else if (ck_inputFrame.yDirection == -1)
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleUp1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPoleUp1);
 		obj->yDirection = -1;
 		//CK_KeenPoleUpThink(obj);
 		return;
@@ -1737,7 +1737,7 @@ void CK_KeenPoleSitThink(CK_object *obj)
 			obj->velY = 0;
 			obj->clipped = CLIP_normal;
 			ck_keenState.jumpTimer = 0;
-			obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
+			obj->currentAction = CK_ACTION(CK_ACT_keenFall1);
 			obj->yDirection = 1;
 			SD_PlaySound(CK_SOUNDNUM(SOUND_KEENFALL));
 			return;
@@ -1755,20 +1755,20 @@ void CK_KeenPoleUpThink(CK_object *obj)
 	if ((TI_ForeMisc(topTile) & 127) != 1)
 	{
 		ck_nextY = 0;
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleSit");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPoleSit);
 		CK_KeenPoleHandleInput(obj);
 		return;
 	}
 
 	if (ck_inputFrame.yDirection == 0)
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleSit");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPoleSit);
 		obj->yDirection = 0;
 		//CK_KeenPoleSitThink(obj);
 	}
 	else if (ck_inputFrame.yDirection == 1)
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleDown1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPoleDown1);
 		obj->yDirection = 1;
 		CK_KeenPoleDownThink(obj);
 	}
@@ -1785,7 +1785,7 @@ void CK_KeenPoleDownThink(CK_object *obj)
 	{
 		// We're no longer on a pole.
 		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENFALL));
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenFall1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenFall1);
 		ck_keenState.jumpTimer = 0;
 		obj->velX = ck_KeenPoleOffs[ck_inputFrame.xDirection + 1];
 		obj->velY = 0;
@@ -1796,12 +1796,12 @@ void CK_KeenPoleDownThink(CK_object *obj)
 
 	if (ck_inputFrame.yDirection == 0)
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleSit");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPoleSit);
 		obj->yDirection = 0;
 	}
 	else if (ck_inputFrame.yDirection == -1)
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_keenPoleUp1");
+		obj->currentAction = CK_ACTION(CK_ACT_keenPoleUp1);
 		obj->yDirection = -1;
 	}
 
@@ -1822,7 +1822,7 @@ void CK_KeenPoleDownDrawFunc(CK_object *obj)
 		obj->clipRects.unitY2 += yReset;
 		obj->clipRects.tileY2 += -1;
 		obj->clipped = CLIP_normal;
-		CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenLookDown1"));
+		CK_SetAction2(obj, CK_ACTION(CK_ACT_keenLookDown1));
 	}
 
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
@@ -1877,7 +1877,7 @@ void CK_SpawnShot(int x, int y, int direction)
 		Quit("SpawnShot: Bad dir!");
 	}
 
-	CK_SetAction(shot, CK_GetActionByName("CK_ACT_keenShot1"));
+	CK_SetAction(shot, CK_ACTION(CK_ACT_keenShot1));
 
 	// This assists when Keen may shoot "through" a blooglet (see last demo in Keen 6 v1.5)
 	if (ck_currentEpisode->ep == EP_CK6)
@@ -1897,7 +1897,7 @@ void CK_ShotHit(CK_object *obj)
 {
 	//TODO: Implement obj_ classes.
 	obj->type = CT_Friendly;
-	CK_SetAction2(obj, CK_GetActionByName("CK_ACT_keenShotHit1"));
+	CK_SetAction2(obj, CK_ACTION(CK_ACT_keenShotHit1));
 	SD_PlaySound(CK_SOUNDNUM(SOUND_KEENSHOTHIT));
 }
 
@@ -1996,7 +1996,7 @@ void CK_ShotDrawFunc(CK_object *obj)
 
 void CK_KeenSpawnShot(CK_object *obj)
 {
-	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenShoot1"))
+	if (obj->currentAction == CK_ACTION(CK_ACT_keenShoot1))
 	{
 		if (obj->xDirection == 1)
 		{
@@ -2007,7 +2007,7 @@ void CK_KeenSpawnShot(CK_object *obj)
 			CK_SpawnShot(obj->posX - 128, obj->posY + 64, 6);
 		}
 	}
-	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShoot2"))
+	if (obj->currentAction == CK_ACTION(CK_ACT_keenJumpShoot2))
 	{
 		if (obj->xDirection == 1)
 		{
@@ -2018,19 +2018,19 @@ void CK_KeenSpawnShot(CK_object *obj)
 			CK_SpawnShot(obj->posX, obj->posY + 32, 6);
 		}
 	}
-	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShootDown2"))
+	if (obj->currentAction == CK_ACTION(CK_ACT_keenJumpShootDown2))
 	{
 		CK_SpawnShot(obj->posX + 128, obj->posY + 288, 4);
 	}
-	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenJumpShootUp2"))
+	if (obj->currentAction == CK_ACTION(CK_ACT_keenJumpShootUp2))
 	{
 		CK_SpawnShot(obj->posX + 80, obj->posY - 160, 0);
 	}
-	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenShootUp1"))
+	if (obj->currentAction == CK_ACTION(CK_ACT_keenShootUp1))
 	{
 		CK_SpawnShot(obj->posX + 80, obj->posY - 160, 0);
 	}
-	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShoot1"))
+	if (obj->currentAction == CK_ACTION(CK_ACT_keenPoleShoot1))
 	{
 		if (obj->xDirection == 1)
 		{
@@ -2041,7 +2041,7 @@ void CK_KeenSpawnShot(CK_object *obj)
 			CK_SpawnShot(obj->posX - 128, obj->posY + 64, 6);
 		}
 	}
-	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShootUp1"))
+	if (obj->currentAction == CK_ACTION(CK_ACT_keenPoleShootUp1))
 	{
 		if (obj->xDirection == 1)
 		{
@@ -2052,7 +2052,7 @@ void CK_KeenSpawnShot(CK_object *obj)
 			CK_SpawnShot(obj->posX + 192, obj->posY + 64, 0);
 		}
 	}
-	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenPoleShootDown1"))
+	if (obj->currentAction == CK_ACTION(CK_ACT_keenPoleShootDown1))
 	{
 		if (obj->xDirection == 1)
 		{

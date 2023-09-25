@@ -2008,7 +2008,7 @@ void CK_NormalCamera(CK_object *obj)
 		deltaX = obj->posX - (rf_scrollXUnit + RF_PixelToUnit(192));
 
 	// Keen should be able to look up and down.
-	if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookUp2"))
+	if (obj->currentAction == CK_ACTION(CK_ACT_keenLookUp2))
 	{
 		int16_t pxToMove;
 		if (screenYpx + SD_GetSpriteSync() > 167)
@@ -2025,7 +2025,7 @@ void CK_NormalCamera(CK_object *obj)
 		screenYpx += pxToMove;
 		deltaY = RF_PixelToUnit(-pxToMove);
 	}
-	else if (obj->currentAction == CK_GetActionByName("CK_ACT_keenLookDown3"))
+	else if (obj->currentAction == CK_ACTION(CK_ACT_keenLookDown3))
 	{
 		int16_t pxToMove;
 		if (screenYpx - SD_GetSpriteSync() < 33)
@@ -2055,12 +2055,12 @@ void CK_NormalCamera(CK_object *obj)
 	}
 	else
 #endif
-	if (obj->topTI || !obj->clipped || obj->currentAction == CK_GetActionByName("CK_ACT_keenHang1"))
+	if (obj->topTI || !obj->clipped || obj->currentAction == CK_ACTION(CK_ACT_keenHang1))
 	{
-		if (obj->currentAction != CK_GetActionByName("CK_ACT_keenPull1") &&
-			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull2") &&
-			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull3") &&
-			obj->currentAction != CK_GetActionByName("CK_ACT_keenPull4"))
+		if (obj->currentAction != CK_ACTION(CK_ACT_keenPull1) &&
+			obj->currentAction != CK_ACTION(CK_ACT_keenPull2) &&
+			obj->currentAction != CK_ACTION(CK_ACT_keenPull3) &&
+			obj->currentAction != CK_ACTION(CK_ACT_keenPull4))
 		{
 			deltaY += obj->deltaPosY;
 

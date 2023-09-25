@@ -46,7 +46,7 @@ void CK5_SpawnMine(int tileX, int tileY)
 	// X and Y offsets of the Dot relative to the mine
 	obj->user2 = CK_INT(CK5_MineDotXOffset, 0x100);
 	obj->user3 = CK_INT(CK5_MineDotYOffset, 0xD0);
-	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_Mine2"));
+	CK_SetAction(obj, CK_ACTION(CK5_ACT_Mine2));
 	obj->velX = 0x100;
 
 	for (i = 0; i < 4; i++)
@@ -245,7 +245,7 @@ void CK5_MineMove(CK_object *obj)
 	if (deltaX < CK_INT(CK5_MineExplodeMaxX, 0x200) && deltaX > CK_INT(CK5_MineExplodeMinX, -0x500) && deltaY < CK_INT(CK5_MineExplodeMaxY, 0x300) && deltaY > CK_INT(CK5_MineExplodeMinY, -0x50))
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_MINEEXPLODE));
-		obj->currentAction = CK_GetActionByName("CK5_ACT_MineExplode0");
+		obj->currentAction = CK_ACTION(CK5_ACT_MineExplode0);
 		RF_RemoveSpriteDrawUsing16BitOffset(&obj->user4);
 		return;
 	}
@@ -268,7 +268,7 @@ void CK5_MineMove(CK_object *obj)
 		obj->velX = 0x100;
 		if (obj->xDirection != xDir || obj->yDirection != yDir)
 		{
-			obj->currentAction = CK_GetActionByName("CK5_ACT_Mine1");
+			obj->currentAction = CK_ACTION(CK5_ACT_Mine1);
 			return;
 		}
 	}
@@ -334,7 +334,7 @@ void CK5_MineMoveDotsToCenter(CK_object *obj)
 	if (deltaX < CK_INT(CK5_MineExplode2MaxX, 0x200) && deltaX > CK_INT(CK5_MineExplode2MinX, -0x300) && deltaY < CK_INT(CK5_MineExplode2MaxY, 0x300) && deltaY > CK_INT(CK5_MineExplode2MinY, -0x300))
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_MINEEXPLODE));
-		obj->currentAction = CK_GetActionByName("CK5_ACT_MineExplode0");
+		obj->currentAction = CK_ACTION(CK5_ACT_MineExplode0);
 		RF_RemoveSpriteDrawUsing16BitOffset(&obj->user4);
 		return;
 	}
@@ -398,7 +398,7 @@ void CK5_MineMoveDotsToSides(CK_object *obj)
 	if (deltaX < CK_INT(CK5_MineExplode2MaxX, 0x200) && deltaX > CK_INT(CK5_MineExplode2MinX, -0x300) && deltaY < CK_INT(CK5_MineExplode2MaxY, 0x300) && deltaY > CK_INT(CK5_MineExplode2MinY, -0x300))
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_MINEEXPLODE));
-		obj->currentAction = CK_GetActionByName("CK5_ACT_MineExplode0");
+		obj->currentAction = CK_ACTION(CK5_ACT_MineExplode0);
 		RF_RemoveSpriteDrawUsing16BitOffset(&obj->user4);
 		return;
 	}
@@ -493,7 +493,7 @@ void CK5_MineExplode(CK_object *obj)
 	new_object->posY = obj->posY;
 	new_object->velX = CK_INT(CK5_MineShrapABaseXVel, 0) + US_RndT() / CK_INT(CK5_MineShrapARndXVel, -8);
 	new_object->velY = CK_INT(CK5_MineShrapABaseYVel, -48);
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_MineShrap0));
 
 	// upright
 	new_object = CK_GetNewObj(true);
@@ -501,35 +501,35 @@ void CK5_MineExplode(CK_object *obj)
 	new_object->posY = obj->posY;
 	new_object->velX = CK_INT(CK5_MineShrapBBaseXVel, 0) + US_RndT() / CK_INT(CK5_MineShrapBRndXVel, 8);
 	new_object->velY = CK_INT(CK5_MineShrapBBaseYVel, -48);
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_MineShrap0));
 
 	new_object = CK_GetNewObj(true);
 	new_object->posX = obj->posX + CK_INT(CK5_MineShrapCSpawnXOffset, 0);
 	new_object->posY = obj->posY;
 	new_object->velX = US_RndT() / CK_INT(CK5_MineShrapCRndXVel, 16) + CK_INT(CK5_MineShrapCBaseXVel, 40);
 	new_object->velY = CK_INT(CK5_MineShrapCBaseYVel, -24);
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_MineShrap0));
 
 	new_object = CK_GetNewObj(true);
 	new_object->posX = obj->posX + CK_INT(CK5_MineShrapDSpawnXOffset, 0x100);
 	new_object->posY = obj->posY;
 	new_object->velX = CK_INT(CK5_MineShrapDBaseXVel, -40) + US_RndT() / CK_INT(CK5_MineShrapDRndXVel, 16);
 	new_object->velY = CK_INT(CK5_MineShrapDBaseYVel, -24);
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_MineShrap0));
 
 	new_object = CK_GetNewObj(true);
 	new_object->posX = obj->posX + CK_INT(CK5_MineShrapESpawnXOffset, 0);
 	new_object->posY = obj->posY;
 	new_object->velX = CK_INT(CK5_MineShrapEBaseXVel, 24);
 	new_object->velY = CK_INT(CK5_MineShrapEBaseYVel, 16);
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_MineShrap0));
 
 	new_object = CK_GetNewObj(true);
 	new_object->posX = obj->posX + CK_INT(CK5_MineShrapFSpawnXOffset, 0x100);
 	new_object->posY = obj->posY;
 	new_object->velX = CK_INT(CK5_MineShrapFBaseXVel, 24);
 	new_object->velY = CK_INT(CK5_MineShrapFBaseYVel, 16);
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MineShrap0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_MineShrap0));
 
 	return;
 }
@@ -554,7 +554,7 @@ void CK5_SpawnRobo(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK5_RoboSpawnYOffset, -0x400);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_None;
-	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_Robo0"));
+	CK_SetAction(obj, CK_ACTION(CK5_ACT_Robo0));
 }
 
 void CK5_RoboMove(CK_object *obj)
@@ -566,7 +566,7 @@ void CK5_RoboMove(CK_object *obj)
 	{
 		obj->xDirection = obj->posX > ck_keenObj->posX ? IN_motion_Left : IN_motion_Right;
 		obj->user1 = CK_INT(CK5_RoboNumShots, 10);
-		obj->currentAction = CK_GetActionByName("CK5_ACT_RoboShoot0");
+		obj->currentAction = CK_ACTION(CK5_ACT_RoboShoot0);
 	}
 }
 // time is number of shots
@@ -579,7 +579,7 @@ void CK5_RoboCol(CK_object *o1, CK_object *o2)
 		CK_ShotHit(o2);
 		o1->xDirection = o1->posX > ck_keenObj->posX ? IN_motion_Left : IN_motion_Right;
 		o1->user1 = CK_INT(CK5_RoboNumShots, 10);
-		CK_SetAction2(o1, CK_GetActionByName("CK5_ACT_RoboShoot0"));
+		CK_SetAction2(o1, CK_ACTION(CK5_ACT_RoboShoot0));
 		return;
 	}
 	if (o2->type == CT_Player)
@@ -595,11 +595,11 @@ void CK5_RoboShoot(CK_object *obj)
 	int shotSpawnX;
 
 	if (--obj->user1 == 0)
-		obj->currentAction = CK_GetActionByName("CK5_ACT_Robo0");
+		obj->currentAction = CK_ACTION(CK5_ACT_Robo0);
 
 	shotSpawnX = obj->xDirection == IN_motion_Right ? (obj->posX + CK_INT(CK5_RoboShotRightXOffset, 0x380)) : (obj->posX + CK_INT(CK5_RoboShotLeftXOffset, 0));
 
-	if ((new_object = CK5_SpawnEnemyShot(shotSpawnX, obj->posY + CK_INT(CK5_RoboShotYOffset, 0x200), CK_GetActionByName("CK5_ACT_RoboShot0"))))
+	if ((new_object = CK5_SpawnEnemyShot(shotSpawnX, obj->posY + CK_INT(CK5_RoboShotYOffset, 0x200), CK_ACTION(CK5_ACT_RoboShot0))))
 	{
 		new_object->velX = obj->xDirection * CK_INT(CK5_RoboShotXVelocity, 60);
 		new_object->velY = obj->user1 & 1 ? -CK_INT(CK5_RoboShotYVelocity, 8) : CK_INT(CK5_RoboShotYVelocity, 8);
@@ -614,7 +614,7 @@ void CK5_RoboShotCol(CK_object *o1, CK_object *o2)
 	if (o2->type == CT_Player)
 	{
 		CK_KillKeen();
-		CK_SetAction2(o1, CK_GetActionByName("CK5_ACT_RoboShotHit0"));
+		CK_SetAction2(o1, CK_ACTION(CK5_ACT_RoboShotHit0));
 	}
 }
 
@@ -624,7 +624,7 @@ void CK5_RoboShotTileCol(CK_object *obj)
 	if (obj->topTI || obj->rightTI || obj->bottomTI || obj->leftTI)
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_ENEMYSHOTHIT));
-		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_RoboShotHit0"));
+		CK_SetAction2(obj, CK_ACTION(CK5_ACT_RoboShotHit0));
 	}
 
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
@@ -644,7 +644,7 @@ void CK5_SpawnSpirogrip(int tileX, int tileY)
 	obj->xDirection = 1; // Right
 	obj->yDirection = 1; // Down
 
-	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_SpirogripAttachDown"));
+	CK_SetAction(obj, CK_ACTION(CK5_ACT_SpirogripAttachDown));
 }
 
 void CK5_SpirogripSpin(CK_object *obj)
@@ -656,14 +656,14 @@ void CK5_SpirogripSpin(CK_object *obj)
 	SD_PlaySound(CK_SOUNDNUM(SOUND_SPIROFLY));
 
 	// and we're in the right direction, fly!
-	if (obj->currentAction == CK_GetActionByName("CK5_ACT_SpirogripSpin1"))
-		obj->currentAction = CK_GetActionByName("CK5_ACT_SpirogripFlyUp");
-	else if (obj->currentAction == CK_GetActionByName("CK5_ACT_SpirogripSpin3"))
-		obj->currentAction = CK_GetActionByName("CK5_ACT_SpirogripFlyRight");
-	else if (obj->currentAction == CK_GetActionByName("CK5_ACT_SpirogripSpin5"))
-		obj->currentAction = CK_GetActionByName("CK5_ACT_SpirogripFlyDown");
-	else if (obj->currentAction == CK_GetActionByName("CK5_ACT_SpirogripSpin7"))
-		obj->currentAction = CK_GetActionByName("CK5_ACT_SpirogripFlyLeft");
+	if (obj->currentAction == CK_ACTION(CK5_ACT_SpirogripSpin1))
+		obj->currentAction = CK_ACTION(CK5_ACT_SpirogripFlyUp);
+	else if (obj->currentAction == CK_ACTION(CK5_ACT_SpirogripSpin3))
+		obj->currentAction = CK_ACTION(CK5_ACT_SpirogripFlyRight);
+	else if (obj->currentAction == CK_ACTION(CK5_ACT_SpirogripSpin5))
+		obj->currentAction = CK_ACTION(CK5_ACT_SpirogripFlyDown);
+	else if (obj->currentAction == CK_ACTION(CK5_ACT_SpirogripSpin7))
+		obj->currentAction = CK_ACTION(CK5_ACT_SpirogripFlyLeft);
 }
 
 void CK5_SpirogripFlyDraw(CK_object *obj)
@@ -691,7 +691,7 @@ void CK5_SpawnSpindred(int tileX, int tileY)
 	new_object->posX = RF_TileToUnit(tileX);
 	new_object->posY = RF_TileToUnit(tileY) + CK_INT(CK5_SpindredSpawnYOffset, -0x80);
 	new_object->yDirection = IN_motion_Down;
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Spindred0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_Spindred0));
 }
 
 void CK5_SpindredBounce(CK_object *obj)
@@ -785,7 +785,7 @@ void CK5_SpawnMaster(int tileX, int tileY)
 	new_object->active = OBJ_ACTIVE;
 	new_object->posX = RF_TileToUnit(tileX);
 	new_object->posY = RF_TileToUnit(tileY) + CK_INT(CK5_MasterSpawnYOffset, -0x180);
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Master0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_Master0));
 }
 
 void CK5_MasterStand(CK_object *obj)
@@ -796,14 +796,14 @@ void CK5_MasterStand(CK_object *obj)
 
 	if (obj->user1)
 	{
-		obj->currentAction = CK_GetActionByName("CK5_ACT_MasterTele0");
+		obj->currentAction = CK_ACTION(CK5_ACT_MasterTele0);
 		obj->user1 = 0;
 		return;
 	}
 
 	obj->user1 = 1;
 	obj->xDirection = ck_keenObj->posX > obj->posX ? IN_motion_Right : IN_motion_Left;
-	obj->currentAction = CK_GetActionByName("CK5_ACT_MasterShoot0");
+	obj->currentAction = CK_ACTION(CK5_ACT_MasterShoot0);
 }
 
 void CK5_MasterShoot(CK_object *obj)
@@ -813,7 +813,7 @@ void CK5_MasterShoot(CK_object *obj)
 	CK_object *new_object;
 
 	xPos = obj->xDirection == IN_motion_Right ? (CK_INT(CK5_MasterShotRightXOffset, 0x100) + obj->posX) : (CK_INT(CK5_MasterShotLeftXOffset, 0) + obj->posX);
-	if ((new_object = CK5_SpawnEnemyShot(xPos, obj->posY + CK_INT(CK5_MasterShotYOffset, 0x80), CK_GetActionByName("CK5_ACT_MasterBall0"))))
+	if ((new_object = CK5_SpawnEnemyShot(xPos, obj->posY + CK_INT(CK5_MasterShotYOffset, 0x80), CK_ACTION(CK5_ACT_MasterBall0))))
 	{
 		new_object->velX = obj->xDirection * CK_INT(CK5_MasterShotXVel, 48);
 		new_object->velY = CK_INT(CK5_MasterShotYVel, -16);
@@ -831,7 +831,7 @@ void CK5_MasterCol(CK_object *o1, CK_object *o2)
 		CK_ShotHit(o2);
 		o1->xDirection = ck_keenObj->posX - o1->posX ? IN_motion_Right : IN_motion_Left;
 		o1->user1 = 1;
-		CK_SetAction2(o1, CK_GetActionByName("CK5_ACT_MasterShoot0"));
+		CK_SetAction2(o1, CK_ACTION(CK5_ACT_MasterShoot0));
 		return;
 	}
 
@@ -856,7 +856,7 @@ void CK5_MasterTele(CK_object *obj)
 		new_object->posX = obj->posX;
 		new_object->posY = obj->posY;
 		new_object->velX = 0x30;
-		CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MasterSparks0"));
+		CK_SetAction(new_object, CK_ACTION(CK5_ACT_MasterSparks0));
 	}
 
 	if ((new_object = CK_GetNewObj(true)))
@@ -864,7 +864,7 @@ void CK5_MasterTele(CK_object *obj)
 		new_object->posX = obj->posX;
 		new_object->posY = obj->posY;
 		new_object->velX = -0x30;
-		CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MasterSparks0"));
+		CK_SetAction(new_object, CK_ACTION(CK5_ACT_MasterSparks0));
 	}
 
 	SD_PlaySound(CK_SOUNDNUM(SOUND_MASTERTELE));
@@ -910,7 +910,7 @@ void CK5_MasterTele(CK_object *obj)
 
 	// couldn't find a suitable spawn point, so reset to default master behaviour
 	US_RndT(); // Advance the random table for some reason
-	obj->currentAction = CK_GetActionByName("CK5_ACT_Master0");
+	obj->currentAction = CK_ACTION(CK5_ACT_Master0);
 	obj->posX = posX_0 - 1;
 	obj->posY = posY_0;
 	ck_nextX = 1;
@@ -981,14 +981,14 @@ void CK5_MasterBallTileCol(CK_object *obj)
 		SD_PlaySound(CK_SOUNDNUM(SOUND_MASTERSHOT));
 		CK_object *new_object;
 		obj->velX = CK_INT(CK5_MasterSparksXVel, 48);
-		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_MasterSparks0"));
+		CK_SetAction2(obj, CK_ACTION(CK5_ACT_MasterSparks0));
 		if ((new_object = CK_GetNewObj(true)))
 		{
 			new_object->posX = obj->posX;
 			new_object->posY = obj->posY;
 			new_object->velX = -CK_INT(CK5_MasterSparksXVel, 48);
 
-			CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_MasterSparks0"));
+			CK_SetAction(new_object, CK_ACTION(CK5_ACT_MasterSparks0));
 		}
 	}
 
@@ -1018,7 +1018,7 @@ void CK5_SpawnShikadi(int tileX, int tileY)
 	new_object->user2 = CK_INT(CK5_ShikadiHealth, 4);
 	new_object->xDirection = (US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left);
 	new_object->yDirection = IN_motion_Down;
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_ShikadiStand0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_ShikadiStand0));
 }
 
 #define MISCFLAG_POLE 1
@@ -1051,7 +1051,7 @@ void CK5_ShikadiWalk(CK_object *obj)
 		{
 			// 1/16 chance of stopping walk
 			ck_nextX = 0;
-			obj->currentAction = CK_GetActionByName("CK5_ACT_ShikadiStand0");
+			obj->currentAction = CK_ACTION(CK5_ACT_ShikadiStand0);
 			return;
 		}
 
@@ -1069,7 +1069,7 @@ void CK5_ShikadiWalk(CK_object *obj)
 	{
 
 		obj->user1 = tx;
-		obj->currentAction = CK_GetActionByName("CK5_ACT_ShikadiPole0");
+		obj->currentAction = CK_ACTION(CK5_ACT_ShikadiPole0);
 		ck_nextX = 0;
 		SD_PlaySound(CK_SOUNDNUM(SOUND_POLEZAP));
 	}
@@ -1098,7 +1098,7 @@ void CK5_ShikadiCol(CK_object *o1, CK_object *o2)
 		{
 
 			o1->velX = o1->velY = 0;
-			CK_StunCreature(o1, o2, CK_GetActionByName("CK5_ACT_ShikadiStun0"));
+			CK_StunCreature(o1, o2, CK_ACTION(CK5_ACT_ShikadiStun0));
 		}
 	}
 }
@@ -1117,7 +1117,7 @@ void CK5_ShikadiPole(CK_object *obj)
 	new_object->type = CT5_EnemyShot;
 	new_object->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	new_object->clipped = CLIP_not;
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_PoleZap0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_PoleZap0));
 	new_object->yDirection = obj->posY > ck_keenObj->posY ? IN_motion_Up : IN_motion_Down;
 	SD_PlaySound(CK_SOUNDNUM(SOUND_POLEZAP));
 }
@@ -1186,7 +1186,7 @@ void CK5_SpawnShocksund(int tileX, int tileY)
 	new_object->user2 = CK_INT(CK5_ShocksundHealth, 2);
 	new_object->xDirection = IN_motion_Right;
 	new_object->yDirection = IN_motion_Down;
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Shocksund0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_Shocksund0));
 }
 
 void CK5_ShocksundSearch(CK_object *obj)
@@ -1197,7 +1197,7 @@ void CK5_ShocksundSearch(CK_object *obj)
 	if (US_RndT() < CK_INT(CK5_ShocksundStandChance, 0x10))
 	{
 		ck_nextX = 0;
-		obj->currentAction = CK_GetActionByName("CK5_ACT_ShocksundStand0");
+		obj->currentAction = CK_ACTION(CK5_ACT_ShocksundStand0);
 		obj->user1 = CK_INT(CK5_ShocksundStandTime, 0x10);
 		return;
 	}
@@ -1205,7 +1205,7 @@ void CK5_ShocksundSearch(CK_object *obj)
 	if (obj->clipRects.unitY2 != ck_keenObj->clipRects.unitY2)
 	{
 
-		obj->currentAction = CK_GetActionByName("CK5_ACT_ShocksundJump0");
+		obj->currentAction = CK_ACTION(CK5_ACT_ShocksundJump0);
 		obj->velX = (obj->xDirection == IN_motion_Right ? 1 : -1) * CK_INT(CK5_ShocksundJumpXVel, 40);
 		obj->velY = CK_INT(CK5_ShocksundJumpYVel, -40);
 	}
@@ -1214,7 +1214,7 @@ void CK5_ShocksundSearch(CK_object *obj)
 	{
 
 		ck_nextX = 0;
-		obj->currentAction = CK_GetActionByName("CK5_ACT_ShocksundShoot0");
+		obj->currentAction = CK_ACTION(CK5_ACT_ShocksundShoot0);
 	}
 }
 
@@ -1222,7 +1222,7 @@ void CK5_ShocksundStand(CK_object *obj)
 {
 
 	if (--obj->user1 == 0)
-		obj->currentAction = CK_GetActionByName("CK5_ACT_Shocksund0");
+		obj->currentAction = CK_ACTION(CK5_ACT_Shocksund0);
 }
 
 void CK5_ShocksundShoot(CK_object *obj)
@@ -1230,7 +1230,7 @@ void CK5_ShocksundShoot(CK_object *obj)
 	CK_object *new_object;
 	int posX = obj->xDirection == IN_motion_Right ? (obj->posX + CK_INT(CK5_ShocksundShotRightXOffset, 0x70)) : (obj->posX + CK_INT(CK5_ShocksundShotLeftXOffset, 0));
 
-	if ((new_object = CK5_SpawnEnemyShot(posX, obj->posY + CK_INT(CK5_ShocksundShotYOffset, 0x40), CK_GetActionByName("CK5_ACT_BarkShot0"))))
+	if ((new_object = CK5_SpawnEnemyShot(posX, obj->posY + CK_INT(CK5_ShocksundShotYOffset, 0x40), CK_ACTION(CK5_ACT_BarkShot0))))
 	{
 
 		new_object->velX = obj->xDirection * CK_INT(CK5_ShocksundShotXVel, 60);
@@ -1258,7 +1258,7 @@ void CK5_ShocksundCol(CK_object *o1, CK_object *o2)
 		else
 		{
 			o1->velX = o1->velY = 0;
-			CK_StunCreature(o1, o2, CK_GetActionByName("CK5_ACT_ShocksundStun0"));
+			CK_StunCreature(o1, o2, CK_ACTION(CK5_ACT_ShocksundStun0));
 		}
 	}
 }
@@ -1287,7 +1287,7 @@ void CK5_ShocksundGroundTileCol(CK_object *obj)
 		if ((obj->xDirection == IN_motion_Right && ck_keenObj->posX > obj->posX) ||
 			(obj->xDirection == IN_motion_Left && ck_keenObj->posX < obj->posX))
 		{
-			CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_ShocksundJump0"));
+			CK_SetAction2(obj, CK_ACTION(CK5_ACT_ShocksundJump0));
 			obj->velX = obj->xDirection == IN_motion_Right ? CK_INT(CK5_ShocksundJumpXVel, 40) : -CK_INT(CK5_ShocksundJumpXVel, 40);
 			obj->velY = CK_INT(CK5_ShocksundJumpYVel, -40);
 		}
@@ -1319,7 +1319,7 @@ void CK5_ShocksundJumpTileCol(CK_object *obj)
 	if (obj->topTI)
 	{
 		obj->timeUntillThink = US_RndT() / 32;
-		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_Shocksund0"));
+		CK_SetAction2(obj, CK_ACTION(CK5_ACT_Shocksund0));
 	}
 	if (obj->user3)
 	{
@@ -1339,7 +1339,7 @@ void CK5_BarkShotCol(CK_object *o1, CK_object *o2)
 	if (o2->type == CT_Player)
 	{
 		CK_KillKeen();
-		CK_SetAction2(o1, CK_GetActionByName("CK5_ACT_BarkShotDie0"));
+		CK_SetAction2(o1, CK_ACTION(CK5_ACT_BarkShotDie0));
 		return;
 	}
 
@@ -1347,7 +1347,7 @@ void CK5_BarkShotCol(CK_object *o1, CK_object *o2)
 	{
 
 		CK_ShotHit(o2);
-		CK_SetAction2(o1, CK_GetActionByName("CK5_ACT_BarkShotDie0"));
+		CK_SetAction2(o1, CK_ACTION(CK5_ACT_BarkShotDie0));
 	}
 }
 
@@ -1358,7 +1358,7 @@ void CK5_BarkShotTileCol(CK_object *obj)
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_BARKSHOTDIE));
 
-		CK_SetAction2(obj, CK_GetActionByName("CK5_ACT_BarkShotDie0"));
+		CK_SetAction2(obj, CK_ACTION(CK5_ACT_BarkShotDie0));
 	}
 
 	RF_AddSpriteDraw(&obj->sde, obj->posX, obj->posY, obj->gfxChunk, 0, obj->zLayer);
@@ -1374,7 +1374,7 @@ void CK5_SpawnSphereful(int tileX, int tileY)
 	new_object->posX = RF_TileToUnit(tileX);
 	new_object->posY = RF_TileToUnit(tileY) + CK_INT(CK5_SpherefulSpawnYOffset, -0x100);
 	new_object->zLayer = 1;
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_Sphereful0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_Sphereful0));
 }
 
 void CK5_SpherefulBounce(CK_object *obj)
@@ -1474,7 +1474,7 @@ void CK5_KorathWalk(CK_object *obj)
 
 		ck_nextX = 0;
 		obj->xDirection = US_RndT() < 128 ? 1 : -1;
-		obj->currentAction = CK_GetActionByName("CK5_ACT_KorathWait");
+		obj->currentAction = CK_ACTION(CK5_ACT_KorathWait);
 	}
 }
 
@@ -1488,7 +1488,7 @@ void CK5_KorathColFunc(CK_object *obj, CK_object *other)
 	}
 	else if (other->type == CT_Stunner)
 	{
-		CK_StunCreature(obj, other, CK_GetActionByName("CK5_ACT_KorathStun0"));
+		CK_StunCreature(obj, other, CK_ACTION(CK5_ACT_KorathStun0));
 	}
 }
 
@@ -1502,7 +1502,7 @@ void CK5_SpawnKorath(int tileX, int tileY)
 	obj->posX = RF_TileToUnit(tileX);
 	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK5_KorathSpawnYOffset, -128);
 	obj->xDirection = US_RndT() < 128 ? 1 : -1;
-	CK_SetAction(obj, CK_GetActionByName("CK5_ACT_KorathWalk1"));
+	CK_SetAction(obj, CK_ACTION(CK5_ACT_KorathWalk1));
 }
 
 void CK5_QEDSpawn(int tileX, int tileY)
@@ -1519,7 +1519,7 @@ void CK5_QEDSpawn(int tileX, int tileY)
 	new_object->clipRects.unitY1 = RF_TileToUnit(tileY) - 0x10;
 	new_object->clipRects.unitX2 = new_object->clipRects.unitX1 + 0x220;
 	new_object->clipRects.unitY2 = new_object->clipRects.unitY1 + 0x220;
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_QED"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_QED));
 }
 
 /*

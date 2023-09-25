@@ -40,7 +40,7 @@ void CK4_SpawnWormmouth(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK4_WormmouthSpawnYOffset, 0x8F);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_WormmouthMove0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_WormmouthMove0));
 }
 
 void CK4_WormmouthLookRight(CK_object *obj)
@@ -48,7 +48,7 @@ void CK4_WormmouthLookRight(CK_object *obj)
 	if (ck_keenObj->posX > obj->posX)
 	{
 		obj->xDirection = IN_motion_Right;
-		obj->currentAction = CK_GetActionByName("CK4_ACT_WormmouthMove0");
+		obj->currentAction = CK_ACTION(CK4_ACT_WormmouthMove0);
 	}
 }
 
@@ -62,7 +62,7 @@ void CK4_WormmouthLookLeft(CK_object *obj)
 	if (ck_keenObj->posX < obj->posX)
 	{
 		obj->xDirection = IN_motion_Left;
-		obj->currentAction = CK_GetActionByName("CK4_ACT_WormmouthMove0");
+		obj->currentAction = CK_ACTION(CK4_ACT_WormmouthMove0);
 	}
 }
 
@@ -73,7 +73,7 @@ void CK4_WormmouthMove(CK_object *obj)
 
 	if ((dx < -CK_INT(CK4_WormmouthPeepXRadius, 0x300) || dx > CK_INT(CK4_WormmouthPeepXRadius, 0x300)) && US_RndT() < CK_INT(CK4_WormmouthPeepChance, 6))
 	{
-		obj->currentAction = CK_GetActionByName("CK4_ACT_WormmouthPeep0");
+		obj->currentAction = CK_ACTION(CK4_ACT_WormmouthPeep0);
 		return;
 	}
 
@@ -83,7 +83,7 @@ void CK4_WormmouthMove(CK_object *obj)
 			(obj->xDirection == IN_motion_Left && dx < CK_INT(CK4_WormmouthBiteLeftMaxX, -0x80) && dx > CK_INT(CK4_WormmouthBiteLeftMinX, -0x200)))
 		{
 			SD_PlaySound(CK_SOUNDNUM(SOUND_WORMMOUTHBITE));
-			obj->currentAction = CK_GetActionByName("CK4_ACT_WormmouthBite0");
+			obj->currentAction = CK_ACTION(CK4_ACT_WormmouthBite0);
 		}
 	}
 }
@@ -91,7 +91,7 @@ void CK4_WormmouthMove(CK_object *obj)
 void CK4_WormmouthCheckShot(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_Stunner)
-		CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_WormmouthStunned0"));
+		CK_StunCreature(a, b, CK_ACTION(CK4_ACT_WormmouthStunned0));
 }
 
 void CK4_WormmouthCol(CK_object *a, CK_object *b)
@@ -121,7 +121,7 @@ void CK4_SpawnCloud(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY);
 	obj->xDirection = IN_motion_Right;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_CloudDormant0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_CloudDormant0));
 }
 
 void CK4_CloudMove(CK_object *obj)
@@ -136,7 +136,7 @@ void CK4_CloudMove(CK_object *obj)
 		obj->clipRects.unitX1 < ck_keenObj->clipRects.unitX2 &&
 		obj->clipRects.unitX2 > ck_keenObj->clipRects.unitX1)
 	{
-		obj->currentAction = CK_GetActionByName("CK4_ACT_CloudCheckStrike0");
+		obj->currentAction = CK_ACTION(CK4_ACT_CloudCheckStrike0);
 	}
 }
 
@@ -149,13 +149,13 @@ void CK4_CloudCheckStrike(CK_object *obj)
 	if (ck_nextX < 0 && (obj->posX & 0x7F) + ck_nextX <= 0)
 	{
 		ck_nextX = -(obj->posX & 0x7F);
-		obj->currentAction = CK_GetActionByName("CK4_ACT_CloudStrike0");
+		obj->currentAction = CK_ACTION(CK4_ACT_CloudStrike0);
 	}
 
 	if (ck_nextX > 0 && (obj->posX & 0x7F) + ck_nextX >= 0x80)
 	{
 		ck_nextX = 0x80 - (obj->posX & 0x7F);
-		obj->currentAction = CK_GetActionByName("CK4_ACT_CloudStrike0");
+		obj->currentAction = CK_ACTION(CK4_ACT_CloudStrike0);
 	}
 }
 
@@ -183,14 +183,14 @@ void CK4_CloudStrike(CK_object *obj)
 	bolt->clipped = CLIP_not;
 	bolt->posX = obj->posX + CK_INT(CK4_CloudBoltXOffset, 0x100);
 	bolt->posY = obj->posY + CK_INT(CK4_CloudBoltYOffset, 0x100);
-	CK_SetAction(bolt, CK_GetActionByName("CK4_ACT_Lightning0"));
+	CK_SetAction(bolt, CK_ACTION(CK4_ACT_Lightning0));
 	SD_PlaySound(CK_SOUNDNUM(SOUND_LIGHTNINGBOLT));
 }
 
 void CK4_CloudCol(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_Player)
-		CK_SetAction2(a, CK_GetActionByName("CK4_ACT_CloudAwaken0"));
+		CK_SetAction2(a, CK_ACTION(CK4_ACT_CloudAwaken0));
 }
 
 // Berkeloids
@@ -208,7 +208,7 @@ void CK4_SpawnBerkeloid(int tileX, int tileY)
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	obj->user2 = 8;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_BerkeloidMove0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_BerkeloidMove0));
 }
 
 void CK4_BerkeloidMove(CK_object *obj)
@@ -218,7 +218,7 @@ void CK4_BerkeloidMove(CK_object *obj)
 
 	if (US_RndT() < CK_INT(CK4_BerkeloidThrowChance, 8))
 	{
-		obj->currentAction = CK_GetActionByName("CK4_ACT_BerkeloidThrow0");
+		obj->currentAction = CK_ACTION(CK4_ACT_BerkeloidThrow0);
 	}
 	else if (US_RndT() < CK_INT(CK4_BerkeloidTargetKeenChance, 0x40))
 	{
@@ -230,7 +230,7 @@ void CK4_BerkeloidMove(CK_object *obj)
 			if ((obj->xDirection == IN_motion_Right && dx > 0) ||
 				(obj->xDirection == IN_motion_Left && dx < 0))
 			{
-				obj->currentAction = CK_GetActionByName("CK4_ACT_BerkeloidThrow0");
+				obj->currentAction = CK_ACTION(CK4_ACT_BerkeloidThrow0);
 				SD_PlaySound(CK_SOUNDNUM(SOUND_BERKELOIDTHROW));
 			}
 		}
@@ -257,7 +257,7 @@ void CK4_BerkeloidThrow(CK_object *obj)
 		ball->xDirection = IN_motion_Left;
 	}
 
-	CK_SetAction(ball, CK_GetActionByName("CK4_ACT_FireballAir0"));
+	CK_SetAction(ball, CK_ACTION(CK4_ACT_FireballAir0));
 	obj->visible = true;
 }
 
@@ -287,7 +287,7 @@ void CK4_FireballDraw(CK_object *obj)
 	if (obj->topTI)
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_FIREBALLLAND));
-		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_FireballGround0"));
+		CK_SetAction2(obj, CK_ACTION(CK4_ACT_FireballGround0));
 	}
 
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
@@ -350,7 +350,7 @@ void CK4_SpawnInchworm(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Inchworm0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_Inchworm0));
 	obj->actionTimer = US_RndT() / CK_INT(CK4_InchwormThinkTimeDivisor, 32); // So the worms don't all inch in unison?
 }
 
@@ -362,7 +362,7 @@ void CK4_SpawnFoot(int tileX, int tileY)
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
 	obj->posY = RF_TileToUnit(tileY - CK_INT(CK4_FootSpawnYOffsetTiles, 3));
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Foot1"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_Foot1));
 }
 
 void CK4_InchwormMove(CK_object *obj)
@@ -391,32 +391,32 @@ void CK4_InchwormCol(CK_object *a, CK_object *b)
 			SD_PlaySound(CK_SOUNDNUM(SOUND_FOOTAPPEAR));
 			a->posY -= CK_INT(CK4_InchwormFootYOffset, 0x500);
 			a->type = CT4_Foot;
-			CK_SetAction2(a, CK_GetActionByName("CK4_ACT_Foot1"));
+			CK_SetAction2(a, CK_ACTION(CK4_ACT_Foot1));
 
 			// Spawn Foot poofs
 			CK_object *poof = CK_GetNewObj(true);
 			poof->posX = a->posX + CK_INT(CK4_FootPoof1XOffset, -0x80);
 			poof->posY = a->posY + CK_INT(CK4_FootPoof1YOffset, 0x100);
 			poof->zLayer = PRIORITIES - 1;
-			CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
+			CK_SetAction(poof, CK_ACTION(CK4_ACT_FootPoof0));
 
 			poof = CK_GetNewObj(true);
 			poof->posX = a->posX + CK_INT(CK4_FootPoof2XOffset, 0x100);
 			poof->posY = a->posY + CK_INT(CK4_FootPoof2YOffset, 0x180);
 			poof->zLayer = PRIORITIES - 1;
-			CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
+			CK_SetAction(poof, CK_ACTION(CK4_ACT_FootPoof0));
 
 			poof = CK_GetNewObj(true);
 			poof->posX = a->posX + CK_INT(CK4_FootPoof3XOffset, 0x280);
 			poof->posY = a->posY + CK_INT(CK4_FootPoof3YOffset, 0x100);
 			poof->zLayer = PRIORITIES - 1;
-			CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
+			CK_SetAction(poof, CK_ACTION(CK4_ACT_FootPoof0));
 
 			poof = CK_GetNewObj(true);
 			poof->posX = a->posX + CK_INT(CK4_FootPoof4XOffset, 0);
 			poof->posY = a->posY + CK_INT(CK4_FootPoof4YOffset, -0x80);
 			poof->zLayer = PRIORITIES - 1;
-			CK_SetAction(poof, CK_GetActionByName("CK4_ACT_FootPoof0"));
+			CK_SetAction(poof, CK_ACTION(CK4_ACT_FootPoof0));
 
 			// Remove all other worms on level
 			for (CK_object *o = ck_keenObj; o; o = o->next)
@@ -445,7 +445,7 @@ void CK4_SpawnBounder(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK4_BounderSpawnYOffset, -0x80);
 	obj->yDirection = IN_motion_Down;
 	obj->xDirection = IN_motion_None;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Bounder0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_Bounder0));
 }
 
 void CK4_BounderCheckShot(CK_object *a, CK_object *b)
@@ -455,7 +455,7 @@ void CK4_BounderCheckShot(CK_object *a, CK_object *b)
 		a->user1 = a->user2 = a->user3 = 0;
 		a->user4 = a->type;
 		CK_ShotHit(b);
-		CK_SetAction2(a, CK_GetActionByName("CK4_ACT_BounderStunned0"));
+		CK_SetAction2(a, CK_ACTION(CK4_ACT_BounderStunned0));
 		a->type = CT4_StunnedCreature;
 		a->velY += CK_INT(CK4_BounderDeathHopVelocity, -32);
 	}
@@ -511,16 +511,16 @@ void CK4_BounderDraw(CK_object *obj)
 			obj->user1 = 1;
 			obj->velX = 0;
 			obj->xDirection = IN_motion_None;
-			CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_Bounder0"));
+			CK_SetAction2(obj, CK_ACTION(CK4_ACT_Bounder0));
 		}
 
 		if (obj->xDirection != IN_motion_None)
 		{
-			CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_BounderMoveHorz0"));
+			CK_SetAction2(obj, CK_ACTION(CK4_ACT_BounderMoveHorz0));
 		}
 		else
 		{
-			CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_Bounder0"));
+			CK_SetAction2(obj, CK_ACTION(CK4_ACT_Bounder0));
 		}
 	}
 
@@ -546,7 +546,7 @@ void CK4_SpawnLick(int tileX, int tileY)
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	obj->timeUntillThink = US_RndT() / CK_INT(CK4_LickThinkTimeDivisor, 0x40);
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_LickHop2"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_LickHop2));
 }
 
 void CK4_LickMove(CK_object *obj)
@@ -562,7 +562,7 @@ void CK4_LickMove(CK_object *obj)
 			(obj->xDirection == IN_motion_Left && dx < CK_INT(CK4_LickFlameLeftMaxX, 0x20) && dx > CK_INT(CK4_LickFlameLeftMinX, -0x200)))
 		{
 			SD_PlaySound(CK_SOUNDNUM(SOUND_LICKFLAME));
-			CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_LickFlame0"));
+			CK_SetAction2(obj, CK_ACTION(CK4_ACT_LickFlame0));
 			return;
 		}
 	}
@@ -583,7 +583,7 @@ void CK4_LickCheckShot(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_Stunner)
 	{
-		CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_LickStunned0"));
+		CK_StunCreature(a, b, CK_ACTION(CK4_ACT_LickStunned0));
 		a->velY += CK_INT(CK4_LickDeathHopYVelocity, 16);
 	}
 }
@@ -607,7 +607,7 @@ void CK4_LickDraw(CK_object *obj)
 {
 	if (obj->topTI)
 	{
-		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_LickHop3"));
+		CK_SetAction2(obj, CK_ACTION(CK4_ACT_LickHop3));
 	}
 
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
@@ -645,7 +645,7 @@ void CK4_SpawnAxisPlatform(int tileX, int tileY, int direction)
 		break;
 	}
 
-	CK_SetAction(obj, CK_GetActionByName("CK_ACT_AxisPlatform"));
+	CK_SetAction(obj, CK_ACTION(CK_ACT_AxisPlatform));
 }
 
 // AxisPlatformMove in ck_obj.c

@@ -41,7 +41,7 @@ void CK6_SpawnNospike(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_NospikeSpawnYOffset, -0x180);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_NospikeSit0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_NospikeSit0));
 	obj->user4 = CK_INT(CK6_NospikeHealth, 4);
 }
 
@@ -49,7 +49,7 @@ void CK6_NospikeWalk(CK_object *obj)
 {
 	if (US_RndT() < CK_INT(CK6_NospikeSitChance, 0x10))
 	{
-		obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeSit0");
+		obj->currentAction = CK_ACTION(CK6_ACT_NospikeSit0);
 	}
 	else if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2 && US_RndT() <= CK_INT(CK6_NospikeChargeChance, 0x20))
 	{
@@ -57,14 +57,14 @@ void CK6_NospikeWalk(CK_object *obj)
 		obj->user1 = 0;
 		obj->user2 = 1;
 
-		if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk0"))
-			obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeCharge1");
-		else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk1"))
-			obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeCharge2");
-		else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk2"))
-			obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeCharge3");
-		else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk3"))
-			obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeCharge0");
+		if (obj->currentAction == CK_ACTION(CK6_ACT_NospikeWalk0))
+			obj->currentAction = CK_ACTION(CK6_ACT_NospikeCharge1);
+		else if (obj->currentAction == CK_ACTION(CK6_ACT_NospikeWalk1))
+			obj->currentAction = CK_ACTION(CK6_ACT_NospikeCharge2);
+		else if (obj->currentAction == CK_ACTION(CK6_ACT_NospikeWalk2))
+			obj->currentAction = CK_ACTION(CK6_ACT_NospikeCharge3);
+		else if (obj->currentAction == CK_ACTION(CK6_ACT_NospikeWalk3))
+			obj->currentAction = CK_ACTION(CK6_ACT_NospikeCharge0);
 	}
 }
 
@@ -80,14 +80,14 @@ void CK6_NospikeCharge(CK_object *obj)
 		{
 			// Stop charging if nospike gets bored, or goes off screen
 			obj->user2 = 0;
-			if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeCharge0"))
-				obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeWalk1");
-			else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeCharge1"))
-				obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeWalk2");
-			else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeCharge2"))
-				obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeWalk3");
-			else if (obj->currentAction == CK_GetActionByName("CK6_ACT_NospikeCharge3"))
-				obj->currentAction = CK_GetActionByName("CK6_ACT_NospikeWalk0");
+			if (obj->currentAction == CK_ACTION(CK6_ACT_NospikeCharge0))
+				obj->currentAction = CK_ACTION(CK6_ACT_NospikeWalk1);
+			else if (obj->currentAction == CK_ACTION(CK6_ACT_NospikeCharge1))
+				obj->currentAction = CK_ACTION(CK6_ACT_NospikeWalk2);
+			else if (obj->currentAction == CK_ACTION(CK6_ACT_NospikeCharge2))
+				obj->currentAction = CK_ACTION(CK6_ACT_NospikeWalk3);
+			else if (obj->currentAction == CK_ACTION(CK6_ACT_NospikeCharge3))
+				obj->currentAction = CK_ACTION(CK6_ACT_NospikeWalk0);
 		}
 	}
 }
@@ -102,7 +102,7 @@ void CK6_NospikeCol(CK_object *a, CK_object *b)
 	{
 		if (--a->user4 == 0)
 		{
-			CK_StunCreature(a, b, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
+			CK_StunCreature(a, b, CK_ACTION(CK6_ACT_NospikeStunned0));
 		}
 		else
 		{
@@ -110,15 +110,15 @@ void CK6_NospikeCol(CK_object *a, CK_object *b)
 			a->user2 |= 0x400;
 			a->visible = true;
 
-			if (a->currentAction == CK_GetActionByName("CK6_ACT_NospikeSit0") ||
-				a->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk0"))
-				CK_SetAction2(a, CK_GetActionByName("CK6_ACT_NospikeCharge1"));
-			else if (a->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk1"))
-				CK_SetAction2(a, CK_GetActionByName("CK6_ACT_NospikeCharge2"));
-			else if (a->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk2"))
-				CK_SetAction2(a, CK_GetActionByName("CK6_ACT_NospikeCharge3"));
-			else if (a->currentAction == CK_GetActionByName("CK6_ACT_NospikeWalk3"))
-				CK_SetAction2(a, CK_GetActionByName("CK6_ACT_NospikeCharge0"));
+			if (a->currentAction == CK_ACTION(CK6_ACT_NospikeSit0) ||
+				a->currentAction == CK_ACTION(CK6_ACT_NospikeWalk0))
+				CK_SetAction2(a, CK_ACTION(CK6_ACT_NospikeCharge1));
+			else if (a->currentAction == CK_ACTION(CK6_ACT_NospikeWalk1))
+				CK_SetAction2(a, CK_ACTION(CK6_ACT_NospikeCharge2));
+			else if (a->currentAction == CK_ACTION(CK6_ACT_NospikeWalk2))
+				CK_SetAction2(a, CK_ACTION(CK6_ACT_NospikeCharge3));
+			else if (a->currentAction == CK_ACTION(CK6_ACT_NospikeWalk3))
+				CK_SetAction2(a, CK_ACTION(CK6_ACT_NospikeCharge0));
 
 			CK_ShotHit(b);
 		}
@@ -131,8 +131,8 @@ void CK6_NospikeCol(CK_object *a, CK_object *b)
 			a->user1 = a->user2 = a->user3 = 0;
 			b->user1 = b->user2 = b->user3 = 0;
 			a->user4 = b->user4 = a->type;
-			CK_SetAction2(a, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
-			CK_SetAction2(b, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
+			CK_SetAction2(a, CK_ACTION(CK6_ACT_NospikeStunned0));
+			CK_SetAction2(b, CK_ACTION(CK6_ACT_NospikeStunned0));
 			SD_PlaySound(CK_SOUNDNUM(SOUND_NOSPIKECOLLIDE));
 			a->type = b->type = CT6_StunnedCreature;
 			a->velY = b->velY = CK_INT(CK6_NospikeDeathHopYVel, -24);
@@ -161,7 +161,7 @@ void CK6_NospikeFallDraw2(CK_object *obj)
 	{
 		obj->user1 = obj->user2 = obj->user3;
 		obj->user4 = obj->type;
-		CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_NospikeStunned0"));
+		CK_SetAction2(obj, CK_ACTION(CK6_ACT_NospikeStunned0));
 		SD_PlaySound(CK_SOUNDNUM(SOUND_NOSPIKECOLLIDE));
 		obj->type = CT6_StunnedCreature;
 		obj->velY = CK_INT(CK6_NospikeDeathHopYVel, -24);
@@ -176,7 +176,7 @@ void CK6_NospikeChargeDraw(CK_object *obj)
 		if (obj->rightTI || obj->leftTI)
 		{
 			obj->posX -= obj->xDirection * 128;
-			CK_SetAction(obj, CK_GetActionByName("CK6_ACT_NospikeSit0")); // Not Setaction2
+			CK_SetAction(obj, CK_ACTION(CK6_ACT_NospikeSit0)); // Not Setaction2
 			RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 			obj->user2 = 0;
 			return;
@@ -184,7 +184,7 @@ void CK6_NospikeChargeDraw(CK_object *obj)
 	}
 	else if (++obj->user1 == CK_INT(CK6_NospikeAirHangTime, 6))
 	{
-		CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_NospikeFall0"));
+		CK_SetAction2(obj, CK_ACTION(CK6_ACT_NospikeFall0));
 	}
 
 	if (obj->user2 & 0xFF00)
@@ -211,7 +211,7 @@ void CK6_SpawnGik(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_GikWalk0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_GikWalk0));
 }
 
 void CK6_GikWalk(CK_object *obj)
@@ -228,7 +228,7 @@ void CK6_GikWalk(CK_object *obj)
 			{
 				obj->velX = dx < 0 ? -CK_INT(CK6_GikJumpXVel, 40) : CK_INT(CK6_GikJumpXVel, 40);
 				obj->velY = CK_INT(CK6_GikJumpYVel, -28);
-				obj->currentAction = CK_GetActionByName("CK6_ACT_GikJump0");
+				obj->currentAction = CK_ACTION(CK6_ACT_GikJump0);
 				SD_PlaySound(CK_SOUNDNUM(SOUND_GIKJUMP));
 			}
 		}
@@ -247,7 +247,7 @@ void CK6_GikSlide(CK_object *obj)
 	if (obj->velX == 0 && obj->topTI)
 	{
 		// Hit a wall and on the ground
-		obj->currentAction = CK_GetActionByName("CK6_ACT_GikEndSlide0");
+		obj->currentAction = CK_ACTION(CK6_ACT_GikEndSlide0);
 	}
 	else
 	{
@@ -262,7 +262,7 @@ void CK6_GikSlide(CK_object *obj)
 				{
 					if ((obj->velX < 0 && ++obj->velX == 0) || (obj->velX > 0 && --obj->velX == 0))
 					{
-						obj->currentAction = CK_GetActionByName("CK6_ACT_GikEndSlide0");
+						obj->currentAction = CK_ACTION(CK6_ACT_GikEndSlide0);
 						break;
 					}
 				}
@@ -310,21 +310,21 @@ void CK6_SpawnOrbatrix(int tileX, int tileY)
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	obj->user4 = 1;
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_OrbatrixFloat0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_OrbatrixFloat0));
 }
 
 void CK6_OrbatrixFloat(CK_object *obj)
 {
 	if (US_RndT() < CK_INT(CK6_OrbatrixIdleChance, 0x20))
 	{
-		obj->currentAction = CK_GetActionByName("CK6_ACT_OrbatrixUncurl2");
+		obj->currentAction = CK_ACTION(CK6_ACT_OrbatrixUncurl2);
 	}
 	else if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2)
 	{
 		int dx = ck_keenObj->posX - obj->posX;
 		obj->xDirection = dx < 0 ? IN_motion_Left : IN_motion_Right;
 		if (dx > -CK_INT(CK6_OrbatrixCurlKeenXRadius, 0x500) && dx < CK_INT(CK6_OrbatrixCurlKeenXRadius, 0x500))
-			obj->currentAction = CK_GetActionByName("CK6_ACT_OrbatrixCurl0");
+			obj->currentAction = CK_ACTION(CK6_ACT_OrbatrixCurl0);
 	}
 }
 
@@ -333,7 +333,7 @@ void CK6_OrbatrixCol(CK_object *a, CK_object *b)
 	if (b->type == CT_Stunner)
 	{
 		CK_ShotHit(b);
-		CK_SetAction2(a, CK_GetActionByName("CK6_ACT_OrbatrixUncurl2"));
+		CK_SetAction2(a, CK_ACTION(CK6_ACT_OrbatrixUncurl2));
 	}
 }
 
@@ -371,7 +371,7 @@ void CK6_OrbatrixBounceDraw(CK_object *obj)
 
 		if (obj->topTI && --obj->user1 == 0)
 		{
-			CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_OrbatrixUncurl0"));
+			CK_SetAction2(obj, CK_ACTION(CK6_ACT_OrbatrixUncurl0));
 			obj->user2 = CK_INT(CK6_OrbatrixRiseHeight, 0x180);
 		}
 	}
@@ -432,7 +432,7 @@ void CK6_BipWalk(CK_object *obj)
 		if (US_RndT() < CK_INT(CK6_BipStandChance, 0x10))
 		{
 			obj->xDirection = -obj->xDirection;
-			obj->currentAction = CK_GetActionByName("CK6_ACT_BipStand0");
+			obj->currentAction = CK_ACTION(CK6_ACT_BipStand0);
 		}
 	}
 }
@@ -443,7 +443,7 @@ void CK6_BipCol(CK_object *a, CK_object *b)
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_BIPSQUISH));
 		a->type = CT_Friendly;
-		CK_SetAction2(a, CK_GetActionByName("CK6_ACT_BipSquished0"));
+		CK_SetAction2(a, CK_ACTION(CK6_ACT_BipSquished0));
 	}
 }
 
@@ -456,7 +456,7 @@ void CK6_SpawnBipship(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_BipshipSpawnYOffset, -0x180);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->velX = obj->xDirection * CK_INT(CK6_BipshipInitXVel, 20);
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BipshipFly0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_BipshipFly0));
 }
 
 void CK6_BipShotDraw(CK_object *obj)
@@ -501,7 +501,7 @@ void CK6_BipshipFly(CK_object *obj)
 
 			shot->posY = obj->posY + CK_INT(CK6_BipshipShotYOffset, 0xA0);
 			shot->velY = CK_INT(CK6_BipshipShotYVel, 16);
-			CK_SetAction(shot, CK_GetActionByName("CK6_ACT_BipShot0"));
+			CK_SetAction(shot, CK_ACTION(CK6_ACT_BipShot0));
 		}
 	}
 
@@ -527,7 +527,7 @@ checkTurn:
 	if (obj->xDirection != xdir)
 	{
 		obj->xDirection = xdir;
-		CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_BipshipTurn0"));
+		CK_SetAction2(obj, CK_ACTION(CK6_ACT_BipshipTurn0));
 	}
 }
 
@@ -542,7 +542,7 @@ void CK6_BipshipCrash(CK_object *obj)
 	smoke->zLayer = PRIORITIES - 2;
 	smoke->posX = obj->posX;
 	smoke->posY = obj->posY + CK_INT(CK6_BipshipCrashSmokeYOffset, -0x180);
-	CK_SetAction(smoke, CK_GetActionByName("CK6_ACT_BipshipSmoke0"));
+	CK_SetAction(smoke, CK_ACTION(CK6_ACT_BipshipSmoke0));
 	smoke->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 
 	CK_object *bip = CK_GetNewObj(true);
@@ -552,7 +552,7 @@ void CK6_BipshipCrash(CK_object *obj)
 	bip->posX = obj->posX;
 	bip->posY = obj->posY + CK_INT(CK6_BipCrashYOffset, -0x80);
 	bip->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
-	CK_SetAction(bip, CK_GetActionByName("CK6_ACT_BipStand0"));
+	CK_SetAction(bip, CK_ACTION(CK6_ACT_BipStand0));
 }
 
 void CK6_BipshipCol(CK_object *a, CK_object *b)
@@ -560,7 +560,7 @@ void CK6_BipshipCol(CK_object *a, CK_object *b)
 	if (b->type == CT_Stunner)
 	{
 		CK_ShotHit(b);
-		CK_SetAction2(a, CK_GetActionByName("CK6_ACT_BipshipHit0"));
+		CK_SetAction2(a, CK_ACTION(CK6_ACT_BipshipHit0));
 	}
 }
 
@@ -576,7 +576,7 @@ void CK6_SpawnFlect(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_FlectSpawnYOffset, -0x100);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_FlectWalk0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_FlectWalk0));
 }
 
 void CK6_FlectTurn(CK_object *obj)
@@ -585,11 +585,11 @@ void CK6_FlectTurn(CK_object *obj)
 	{
 		if (obj->xDirection == IN_motion_Left)
 		{
-			obj->currentAction = CK_GetActionByName("CK6_ACT_FlectWalk0");
+			obj->currentAction = CK_ACTION(CK6_ACT_FlectWalk0);
 		}
 		else
 		{
-			obj->currentAction = CK_GetActionByName("CK6_ACT_FlectTurn1");
+			obj->currentAction = CK_ACTION(CK6_ACT_FlectTurn1);
 			obj->xDirection = IN_motion_Left;
 		}
 	}
@@ -597,11 +597,11 @@ void CK6_FlectTurn(CK_object *obj)
 	{
 		if (obj->xDirection == IN_motion_Right)
 		{
-			obj->currentAction = CK_GetActionByName("CK6_ACT_FlectWalk0");
+			obj->currentAction = CK_ACTION(CK6_ACT_FlectWalk0);
 		}
 		else
 		{
-			obj->currentAction = CK_GetActionByName("CK6_ACT_FlectTurn1");
+			obj->currentAction = CK_ACTION(CK6_ACT_FlectTurn1);
 			obj->xDirection = IN_motion_Right;
 		}
 	}
@@ -612,7 +612,7 @@ void CK6_FlectWalk(CK_object *obj)
 	if (ck_keenObj->posX < obj->posX && obj->xDirection == IN_motion_Right)
 	{
 		if (obj->xDirection == IN_motion_Left)
-			obj->currentAction = CK_GetActionByName("CK6_ACT_FlectTurn1");
+			obj->currentAction = CK_ACTION(CK6_ACT_FlectTurn1);
 
 		obj->xDirection = IN_motion_Left;
 	}
@@ -620,13 +620,13 @@ void CK6_FlectWalk(CK_object *obj)
 	if (ck_keenObj->posX > obj->posX && obj->xDirection == IN_motion_Left)
 	{
 		if (obj->xDirection == IN_motion_Right)
-			obj->currentAction = CK_GetActionByName("CK6_ACT_FlectTurn1");
+			obj->currentAction = CK_ACTION(CK6_ACT_FlectTurn1);
 
 		obj->xDirection = IN_motion_Right;
 	}
 
 	if (US_RndT() < CK_INT(CK6_FlectTurnChance, 0x20))
-		obj->currentAction = CK_GetActionByName("CK6_ACT_FlectTurn0");
+		obj->currentAction = CK_ACTION(CK6_ACT_FlectTurn0);
 }
 
 void CK6_FlectCol(CK_object *a, CK_object *b)
@@ -639,7 +639,7 @@ void CK6_FlectCol(CK_object *a, CK_object *b)
 	{
 		if (b->xDirection == IN_motion_None)
 		{
-			CK_StunCreature(a, b, CK_GetActionByName("CK6_ACT_FlectStunned0"));
+			CK_StunCreature(a, b, CK_ACTION(CK6_ACT_FlectStunned0));
 		}
 		else if (a->xDirection != b->xDirection)
 		{

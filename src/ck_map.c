@@ -51,18 +51,18 @@ void CK_DemoSignSpawn()
 	if (ck_inHighScores)
 	{
 		// Don't display anything in the high scores
-		ck_scoreBoxObj->currentAction = CK_GetActionByName("CK_ACT_NULL");
+		ck_scoreBoxObj->currentAction = CK_ACTION(CK_ACT_NULL);
 	}
 	else if (IN_DemoGetMode())
 	{
 		// If this is a demo, display the DEMO banner
-		CK_SetAction(ck_scoreBoxObj, CK_GetActionByName("CK_ACT_DemoSign"));
+		CK_SetAction(ck_scoreBoxObj, CK_ACTION(CK_ACT_DemoSign));
 		CA_CacheGrChunk(CK_CHUNKNUM(SPR_DEMOSIGN));
 	}
 	else
 	{
 		// If a normal game, display the scorebox
-		CK_SetAction(ck_scoreBoxObj, CK_GetActionByName("CK_ACT_ScoreBox"));
+		CK_SetAction(ck_scoreBoxObj, CK_ACTION(CK_ACT_ScoreBox));
 	}
 }
 
@@ -306,7 +306,7 @@ void CK_SpawnMapKeen(int tileX, int tileY)
 			ck_keenObj->velY = (0x2F00 - ck_keenObj->posY) / 140 + 1;
 		}
 
-		CK_SetAction(ck_keenObj, CK_GetActionByName("CK4_ACT_MapKeenFoot0"));
+		CK_SetAction(ck_keenObj, CK_ACTION(CK4_ACT_MapKeenFoot0));
 		return;
 	}
 
@@ -329,7 +329,7 @@ void CK_SpawnMapKeen(int tileX, int tileY)
 	ck_keenObj->user2 = 3;
 	ck_keenObj->user3 = 0;
 	ck_keenObj->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_STAND_W);
-	CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
+	CK_SetAction(ck_keenObj, CK_ACTION(CK_ACT_MapKeenStart));
 }
 
 //look for level entrry
@@ -362,7 +362,7 @@ void CK_MapKeenStill(CK_object *obj)
 
 	if (ck_inputFrame.dir != IN_dir_None)
 	{
-		obj->currentAction = CK_GetActionByName("CK_ACT_MapKeenWalk0");
+		obj->currentAction = CK_ACTION(CK_ACT_MapKeenWalk0);
 		obj->user2 = 0;
 		CK_MapKeenWalk(obj);
 	}
@@ -386,7 +386,7 @@ void CK_MapKeenWalk(CK_object *obj)
 		// Go back to standing if no arrows pressed
 		if (ck_inputFrame.dir == IN_dir_None)
 		{
-			obj->currentAction = CK_GetActionByName("CK_ACT_MapKeenStart");
+			obj->currentAction = CK_ACTION(CK_ACT_MapKeenStart);
 			obj->gfxChunk = CK_LookupChunk(ck_mapKeenBaseFrame[obj->user1]) + 2;
 			return;
 		}
@@ -586,7 +586,7 @@ void CK_MapFlagSpawn(int tileX, int tileY)
 		RF_ReplaceTiles(&tile, 1, tileX, tileY, 1, 1);
 	}
 
-	CK_SetAction(flag, CK_GetActionByName("CK_ACT_MapFlag0"));
+	CK_SetAction(flag, CK_ACTION(CK_ACT_MapFlag0));
 }
 
 int ck_flagTileSpotX, ck_flagTileSpotY;
@@ -670,7 +670,7 @@ void CK_FlippingFlagSpawn(int tileX, int tileY)
 		} while (i != 30);
 	}
 
-	CK_SetAction(obj, CK_GetActionByName("CK_ACT_MapFlagFlips0"));
+	CK_SetAction(obj, CK_ACTION(CK_ACT_MapFlagFlips0));
 }
 
 void CK_MapFlagThrown(CK_object *obj)

@@ -39,7 +39,7 @@ void CK4_SpawnMiragia(int tileX, int tileY)
 	obj->active = OBJ_ALWAYS_ACTIVE;
 	obj->posX = tileX;
 	obj->posY = tileY;
-	obj->currentAction = CK_GetActionByName("CK4_ACT_Miragia0");
+	obj->currentAction = CK_ACTION(CK4_ACT_Miragia0);
 }
 
 void CK4_Miragia0(CK_object *obj)
@@ -49,7 +49,7 @@ void CK4_Miragia0(CK_object *obj)
 		(ck_keenObj->clipRects.tileY1 >= obj->posY) &&
 		(ck_keenObj->clipRects.tileY2 <= obj->posY + 4))
 	{
-		obj->currentAction = CK_GetActionByName("CK4_ACT_Miragia7");
+		obj->currentAction = CK_ACTION(CK4_ACT_Miragia7);
 	}
 	else
 	{
@@ -75,13 +75,13 @@ void CK4_SpawnCouncilMember(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) - 369;
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_CouncilWalk0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_CouncilWalk0));
 }
 
 void CK4_CouncilWalk(CK_object *obj)
 {
 	if (SD_GetSpriteSync() << 3 > US_RndT())
-		obj->currentAction = CK_GetActionByName("CK4_ACT_CouncilPause");
+		obj->currentAction = CK_ACTION(CK4_ACT_CouncilPause);
 }
 
 // Slugs
@@ -96,7 +96,7 @@ void CK4_SpawnSlug(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) - CK_INT(CK4_SlugSpawnYOffset, 0x71);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_SlugMove0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_SlugMove0));
 }
 
 void CK4_SlugMove(CK_object *obj)
@@ -104,7 +104,7 @@ void CK4_SlugMove(CK_object *obj)
 	if (US_RndT() < CK_INT(CK4_SlugSlimeChance, 0x10))
 	{
 		obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
-		obj->currentAction = CK_GetActionByName("CK4_ACT_SlugSliming0");
+		obj->currentAction = CK_ACTION(CK4_ACT_SlugSliming0);
 		SD_PlaySound(CK_SOUNDNUM(SOUND_SLUGSLIME));
 	}
 }
@@ -117,7 +117,7 @@ void CK4_SlugSlime(CK_object *obj)
 	slime->zLayer = PRIORITIES - 4;
 	slime->posX = obj->posX;
 	slime->posY = obj->clipRects.unitY2 - CK_INT(CK4_SlugSlimeYOffset, 0x80);
-	CK_SetAction(slime, CK_GetActionByName("CK4_ACT_SlugSlime0"));
+	CK_SetAction(slime, CK_ACTION(CK4_ACT_SlugSlime0));
 }
 
 void CK4_SlugCol(CK_object *a, CK_object *b)
@@ -128,7 +128,7 @@ void CK4_SlugCol(CK_object *a, CK_object *b)
 	}
 	else if (b->type == CT_Stunner)
 	{
-		CK_StunCreature(a, b, CK_GetActionByName(US_RndT() < 0x80 ? "CK4_ACT_SlugStunned0" : "CK4_ACT_SlugStunned1"));
+		CK_StunCreature(a, b, (US_RndT() < 0x80 ? CK_ACTION(CK4_ACT_SlugStunned0) : CK_ACTION(CK4_ACT_SlugStunned1)));
 		a->velY = CK_INT(CK4_SlugDeathYVel, -24);
 		a->velX = a->xDirection * 8;
 	}
@@ -146,7 +146,7 @@ void CK4_SpawnMushroom(int tileX, int tileY)
 	obj->posY = RF_TileToUnit((tileY)) - CK_INT(CK4_MushroomSpawnYOffset, 0xF1);
 	obj->xDirection = IN_motion_Right;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Mushroom0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_Mushroom0));
 }
 
 void CK4_MushroomMove(CK_object *obj)
@@ -205,7 +205,7 @@ void CK4_SpawnEgg(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) - CK_INT(CK4_EggSpawnYOffset, 0x71);
 	obj->xDirection = IN_motion_Right;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_Egg0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_Egg0));
 }
 
 void CK4_BirdRecover(CK_object *obj)
@@ -223,7 +223,7 @@ void CK4_SpawnBird(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) - CK_INT(CK4_BirdSpawnYOffset, 0xF1);
 	obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_BirdHatched0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_BirdHatched0));
 }
 
 void CK4_EggCol(CK_object *a, CK_object *b)
@@ -235,7 +235,7 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 
 		a->type = CT_Friendly;
 		a->active = OBJ_EXISTS_ONLY_ONSCREEN;
-		CK_SetAction(a, CK_GetActionByName("CK4_ACT_Eggshell0"));
+		CK_SetAction(a, CK_ACTION(CK4_ACT_Eggshell0));
 
 		// Spawn bird
 		CK_object *bird = CK_GetNewObj(true);
@@ -245,7 +245,7 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 		bird->posY = a->posY - CK_INT(CK4_BirdHatchYOffset, 0x80);
 		bird->xDirection = a->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 		bird->yDirection = IN_motion_Down;
-		CK_SetAction(bird, CK_GetActionByName("CK4_ACT_BirdHatched0"));
+		CK_SetAction(bird, CK_ACTION(CK4_ACT_BirdHatched0));
 
 		// Shell bits
 		CK_object *shell = CK_GetNewObj(true);
@@ -255,7 +255,7 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 		shell->posY = a->posY;
 		shell->velX = CK_INT(CK4_BirdEggShellBitAXVel, -28);
 		shell->velY = CK_INT(CK4_BirdEggShellBitAYVel, -40);
-		CK_SetAction(shell, CK_GetActionByName("CK4_ACT_EggshellBitA0"));
+		CK_SetAction(shell, CK_ACTION(CK4_ACT_EggshellBitA0));
 
 		shell = CK_GetNewObj(true);
 		shell->type = CT_Friendly;
@@ -264,7 +264,7 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 		shell->posY = a->posY;
 		shell->velX = CK_INT(CK4_BirdEggShellBitBXVel, 28);
 		shell->velY = CK_INT(CK4_BirdEggShellBitBYVel, -40);
-		CK_SetAction(shell, CK_GetActionByName("CK4_ACT_EggshellBitB0"));
+		CK_SetAction(shell, CK_ACTION(CK4_ACT_EggshellBitB0));
 
 		shell = CK_GetNewObj(true);
 		shell->type = CT_Friendly;
@@ -273,7 +273,7 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 		shell->posY = a->posY;
 		shell->velX = CK_INT(CK4_BirdEggShellBitCXVel, 0);
 		shell->velY = CK_INT(CK4_BirdEggShellBitCYVel, -56);
-		CK_SetAction(shell, CK_GetActionByName("CK4_ACT_EggshellBitC0"));
+		CK_SetAction(shell, CK_ACTION(CK4_ACT_EggshellBitC0));
 	}
 }
 
@@ -282,9 +282,9 @@ void CK4_BirdWalk(CK_object *obj)
 	obj->xDirection = obj->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 	if (obj->clipRects.unitY2 >= ck_keenObj->clipRects.unitY2 + CK_INT(CK4_BirdWalkKeenYHeight, 0x300) &&
 		ck_keenObj->topTI &&
-		CK_PreviewClipRects(obj, CK_GetActionByName("CK4_ACT_BirdFly0")))
+		CK_PreviewClipRects(obj, CK_ACTION(CK4_ACT_BirdFly0)))
 	{
-		obj->currentAction = CK_GetActionByName("CK4_ACT_BirdFly0");
+		obj->currentAction = CK_ACTION(CK4_ACT_BirdFly0);
 		obj->clipped = CLIP_simple;
 		obj->velY = CK_INT(CK4_BirdInitialFlyVel, -8);
 		obj->user1 = 0;
@@ -314,7 +314,7 @@ void CK4_BirdCol(CK_object *a, CK_object *b)
 	{
 		a->velX = 0;
 		a->clipped = CLIP_normal;
-		CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_BirdStunned0"));
+		CK_StunCreature(a, b, CK_ACTION(CK4_ACT_BirdStunned0));
 	}
 }
 
@@ -323,7 +323,7 @@ void CK4_BirdHatchedCol(CK_object *a, CK_object *b)
 	if (b->type == CT_Stunner)
 	{
 		a->velX = 0;
-		CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_BirdStunned0"));
+		CK_StunCreature(a, b, CK_ACTION(CK4_ACT_BirdStunned0));
 	}
 }
 
@@ -350,7 +350,7 @@ void CK4_BirdDraw(CK_object *obj)
 	{
 		obj->velY = -CK_INT(CK4_BirdFlyYAccel, 16);
 		obj->clipped = CLIP_simple;
-		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_BirdFly0"));
+		CK_SetAction2(obj, CK_ACTION(CK4_ACT_BirdFly0));
 	}
 
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
@@ -359,7 +359,7 @@ void CK4_BirdDraw(CK_object *obj)
 void CK4_BirdLandingDraw(CK_object *obj)
 {
 	if (obj->topTI)
-		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_BirdWalk0"));
+		CK_SetAction2(obj, CK_ACTION(CK4_ACT_BirdWalk0));
 
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, false, obj->zLayer);
 }
@@ -389,7 +389,7 @@ void CK4_BirdFlyingDraw(CK_object *obj)
 		// Attempt to land, and remain flying if can't
 		CK_action *act = obj->currentAction;
 		obj->clipped = CLIP_normal;
-		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_BirdWalk0"));
+		CK_SetAction2(obj, CK_ACTION(CK4_ACT_BirdWalk0));
 		ck_nextX = 0;
 		ck_nextY = CK_INT(CK4_BirdLandYOffset, 0x80);
 		CK_PhysUpdateSimpleObj(obj);
@@ -420,7 +420,7 @@ void CK4_SpawnArachnut(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) - CK_INT(CK4_ArachnutSpawnYOffset, 0x171);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_ArachnutWalk0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_ArachnutWalk0));
 }
 
 void CK4_ArachnutSearch(CK_object *obj)
@@ -432,7 +432,7 @@ void CK4_ArachnutCol(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_Stunner)
 	{
-		CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_ArachnutStunned0"));
+		CK_StunCreature(a, b, CK_ACTION(CK4_ACT_ArachnutStunned0));
 	}
 	else if (b->type == CT_Player)
 	{
@@ -444,7 +444,7 @@ void CK4_ArachnutStunnedCol(CK_object *a, CK_object *b)
 {
 	if (b->type == CT_Stunner)
 	{
-		CK_StunCreature(a, b, CK_GetActionByName("CK4_ACT_ArachnutStunned0"));
+		CK_StunCreature(a, b, CK_ACTION(CK4_ACT_ArachnutStunned0));
 	}
 }
 
@@ -460,7 +460,7 @@ void CK4_SpawnSkypest(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = US_RndT() < 0x80 ? IN_motion_Down : IN_motion_Up;
-	CK_SetAction(obj, CK_GetActionByName("CK4_ACT_SkypestFly0"));
+	CK_SetAction(obj, CK_ACTION(CK4_ACT_SkypestFly0));
 }
 
 void CK4_SkypestFly(CK_object *obj)
@@ -503,11 +503,11 @@ void CK4_SkypestAirCol(CK_object *a, CK_object *b)
 
 void CK4_SkypestGroundCol(CK_object *a, CK_object *b)
 {
-	if (b->currentAction == CK_GetActionByName("CK_ACT_keenPogo1") ||
-		b->currentAction == CK_GetActionByName("CK_ACT_keenPogo2") ||
-		b->currentAction == CK_GetActionByName("CK_ACT_keenPogo3"))
+	if (b->currentAction == CK_ACTION(CK_ACT_keenPogo1) ||
+		b->currentAction == CK_ACTION(CK_ACT_keenPogo2) ||
+		b->currentAction == CK_ACTION(CK_ACT_keenPogo3))
 	{
-		CK_SetAction2(a, CK_GetActionByName("CK4_ACT_SkypestSquish0"));
+		CK_SetAction2(a, CK_ACTION(CK4_ACT_SkypestSquish0));
 		SD_PlaySound(CK_SOUNDNUM(SOUND_SKYPESTSQUISH));
 		a->type = CT_Friendly;
 	}
@@ -531,7 +531,7 @@ void CK4_SkypestDraw(CK_object *obj)
 	if (obj->topTI && !obj->rightTI && !obj->leftTI)
 	{
 		obj->posY += CK_INT(CK4_SkypestPreenYOffset, 0x80);
-		CK_SetAction2(obj, CK_GetActionByName("CK4_ACT_SkypestPreen0"));
+		CK_SetAction2(obj, CK_ACTION(CK4_ACT_SkypestPreen0));
 	}
 
 	if (obj->leftTI)

@@ -171,7 +171,7 @@ void CK5_SpawnLightning()
 	new_object->type = 24;
 	new_object->posX = RF_TileToUnit(ck_keenObj->clipRects.tileX1) - 0x80;
 	new_object->posY = RF_TileToUnit(ck_keenObj->clipRects.tileY2) - 0x500;
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_LightningH0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_LightningH0));
 
 	// Spawn the vertical lightning that covers keen
 	new_object = CK_GetNewObj(true);
@@ -180,7 +180,7 @@ void CK5_SpawnLightning()
 	new_object->type = 24;
 	new_object->posX = RF_TileToUnit(ck_keenObj->clipRects.tileX1);
 	new_object->posY = RF_TileToUnit(ck_keenObj->clipRects.tileY1) - 0x80;
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_LightningV0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_LightningV0));
 
 	SD_PlaySound(CK_SOUNDNUM(SOUND_UNKNOWN41));
 }
@@ -195,7 +195,7 @@ void CK5_SpawnFuseExplosion(int tileX, int tileY)
 	new_object->type = 24;
 	new_object->posX = RF_TileToUnit(tileX - 1);
 	new_object->posY = RF_TileToUnit(tileY);
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_FuseExplosion0"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_FuseExplosion0));
 	SD_PlaySound(CK_SOUNDNUM(SOUND_UNKNOWN52));
 }
 
@@ -206,7 +206,7 @@ void CK5_SpawnLevelEnd(void)
 	CK_object *new_object = CK_GetNewObj(false);
 	new_object->active = OBJ_ALWAYS_ACTIVE;
 	new_object->clipped = CLIP_not;
-	CK_SetAction(new_object, CK_GetActionByName("CK5_ACT_LevelEnd"));
+	CK_SetAction(new_object, CK_ACTION(CK5_ACT_LevelEnd));
 }
 
 // LevelEnd Behaviour

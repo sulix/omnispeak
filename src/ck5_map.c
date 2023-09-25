@@ -77,7 +77,7 @@ void CK5_MapKeenTeleSpawn(int tileX, int tileY)
 	ck_keenObj->user2 = 3;
 	ck_keenObj->user3 = 0;
 	ck_keenObj->gfxChunk = 244;
-	CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
+	CK_SetAction(ck_keenObj, CK_ACTION(CK_ACT_MapKeenStart));
 }
 
 //this is a move proc.. closes doors on keen
@@ -174,7 +174,7 @@ void CK5_MapKeenElevator(CK_object *keen)
 	keen->user2 = 3;
 	keen->user3 = 0;
 	ck_keenObj->xDirection = ck_keenObj->yDirection = IN_motion_None;
-	keen->currentAction = CK_GetActionByName("CK_ACT_MapKeenStart");
+	keen->currentAction = CK_ACTION(CK_ACT_MapKeenStart);
 	keen->gfxChunk = 0xFD;
 	keen->clipped = CLIP_normal;
 	tileX = keen->posX >> 8;
@@ -344,7 +344,7 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 
 	// Keen is going to become invisible and "fly" to the destination
 	ck_keenObj->clipped = CLIP_not;
-	ck_keenObj->currentAction = CK_GetActionByName("CK5_ACT_MapKeenElevator");
+	ck_keenObj->currentAction = CK_ACTION(CK5_ACT_MapKeenElevator);
 
 	// Note: This should have been added
 	// ck_keenObj->user3 = 1;

@@ -50,11 +50,11 @@ void CK6_SpawnGrabbiter(int tileX, int tileY)
 
 	if (ck_gameState.ep.ck6.sandwich == 2)
 	{
-		CK_SetAction(obj, CK_GetActionByName("CK6_ACT_GrabbiterNapping0"));
+		CK_SetAction(obj, CK_ACTION(CK6_ACT_GrabbiterNapping0));
 	}
 	else
 	{
-		CK_SetAction(obj, CK_GetActionByName("CK6_ACT_GrabbiterHungry0"));
+		CK_SetAction(obj, CK_ACTION(CK6_ACT_GrabbiterHungry0));
 	}
 }
 
@@ -93,7 +93,7 @@ void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 		VL_DelayTics(30); // VW_WaitVBL(30);
 		IN_ClearKeysDown();
 		IN_WaitButton();
-		CK_SetAction2(a, CK_GetActionByName("CK6_ACT_GrabbiterNapping0"));
+		CK_SetAction2(a, CK_ACTION(CK6_ACT_GrabbiterNapping0));
 		RF_ForceRefresh();
 	}
 }
@@ -110,7 +110,7 @@ void CK6_SpawnRocket(int tileX, int tileY, int dir)
 		obj->type = CT6_Rocket;
 		obj->posX = RF_TileToUnit(tileX);
 		obj->posY = RF_TileToUnit(tileY);
-		CK_SetAction(obj, CK_GetActionByName("CK6_ACT_RocketSit0"));
+		CK_SetAction(obj, CK_ACTION(CK6_ACT_RocketSit0));
 	}
 }
 
@@ -146,11 +146,11 @@ void CK6_RocketCol(CK_object *a, CK_object *b)
 	{
 		a->user1 = 0;
 		a->user2 = 0x100;
-		CK_SetAction2(a, CK_GetActionByName("CK6_ACT_RocketFly0"));
+		CK_SetAction2(a, CK_ACTION(CK6_ACT_RocketFly0));
 		b->posX = a->posX;
 		b->posY = a->posY + CK_INT(CK6_RocketFlyYOffset, 0x100);
 		b->clipped = CLIP_not;
-		CK_SetAction2(b, CK_GetActionByName("CK6_ACT_MapKeenRocketSit0"));
+		CK_SetAction2(b, CK_ACTION(CK6_ACT_MapKeenRocketSit0));
 		SD_PlaySound(CK_SOUNDNUM(SOUND_ROCKETLAUNCH));
 		SD_WaitSoundDone();
 	}
@@ -241,14 +241,14 @@ void CK6_RocketFly(CK_object *obj)
 			{
 				obj->posX += ck_nextX;
 				obj->posY += ck_nextY;
-				CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_RocketSit0"));
+				CK_SetAction2(obj, CK_ACTION(CK6_ACT_RocketSit0));
 
 				ck_keenObj->posX = RF_TileToUnit(tileX + 1) + 0x10;
 				ck_keenObj->posY = RF_TileToUnit(tileY + 1);
 				ck_keenObj->type = CT_Player;
 				ck_keenObj->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_STAND_E);
 				ck_keenObj->clipped = CLIP_normal;
-				CK_SetAction(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
+				CK_SetAction(ck_keenObj, CK_ACTION(CK_ACT_MapKeenStart));
 				ck_gameState.ep.ck6.inRocket ^= 1;
 				return;
 			}
@@ -304,7 +304,7 @@ void CK6_SpawnMapCliff(int tileX, int tileY, int dir)
 		obj->posY = obj->clipRects.unitY1 = RF_TileToUnit(tileY);
 
 	obj->clipRects.unitY2 = obj->clipRects.unitY1 + 1;
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_MapCliff0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_MapCliff0));
 
 	if (ck_gameState.ep.ck6.rope == 2 && dir)
 	{
@@ -315,7 +315,7 @@ void CK6_SpawnMapCliff(int tileX, int tileY, int dir)
 		obj->type = CT_Friendly;
 		obj->posX = RF_TileToUnit(tileX);
 		obj->posY = RF_TileToUnit(tileY + CK_INT(CK6_MapCliffTileHeight, 1));
-		CK_SetAction(obj, CK_GetActionByName("CK6_ACT_RopeOnMap0"));
+		CK_SetAction(obj, CK_ACTION(CK6_ACT_RopeOnMap0));
 	}
 }
 
@@ -328,7 +328,7 @@ void CK6_MapKeenThrowRope(CK_object *obj)
 	rope->type = CT_Friendly;
 	rope->posX = RF_TileToUnit(obj->clipRects.tileX2);
 	rope->posY = obj->posY + CK_INT(CK6_MapKeenRopeSpawnYOffset, -0x200);
-	CK_SetAction(rope, CK_GetActionByName("CK6_ACT_RopeOnMap0"));
+	CK_SetAction(rope, CK_ACTION(CK6_ACT_RopeOnMap0));
 	obj->type = CT_Player;
 	obj->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_STAND_N);
 }
@@ -348,7 +348,7 @@ void CK6_MapKeenClimb(CK_object *obj)
 			obj->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_STAND_N);
 		}
 		obj->type = CT_Player;
-		CK_SetAction(obj, CK_GetActionByName("CK_ACT_MapKeenStart"));
+		CK_SetAction(obj, CK_ACTION(CK_ACT_MapKeenStart));
 	}
 }
 
@@ -380,7 +380,7 @@ void CK6_MapCliffCol(CK_object *a, CK_object *b)
 		{
 			ck_gameState.ep.ck6.rope++;
 			SD_PlaySound(CK_SOUNDNUM(SOUND_KEENTHROWROPE));
-			CK_SetAction2(b, CK_GetActionByName("CK6_ACT_MapKeenThrowRope0"));
+			CK_SetAction2(b, CK_ACTION(CK6_ACT_MapKeenThrowRope0));
 			b->type = CT_Friendly;
 		}
 		else if (ck_gameState.ep.ck6.rope == 2)
@@ -398,7 +398,7 @@ void CK6_MapCliffCol(CK_object *a, CK_object *b)
 				b->yDirection = IN_motion_Up;
 			}
 
-			CK_SetAction(b, CK_GetActionByName("CK6_ACT_MapKeenClimbRope0"));
+			CK_SetAction(b, CK_ACTION(CK6_ACT_MapKeenClimbRope0));
 			b->type = CT_Friendly;
 		}
 	}
@@ -420,7 +420,7 @@ void CK6_SpawnSatelliteLoading(int tileX, int tileY, int dir)
 	obj->clipRects.unitX2 = obj->clipRects.unitX1 + 0x100;
 	obj->posY = obj->clipRects.unitY1 = RF_TileToUnit(tileY);
 	obj->clipRects.unitY2 = obj->clipRects.unitY1 + 0x100;
-	CK_SetAction2(obj, CK_GetActionByName("CK6_ACT_SatelliteInvisible0"));
+	CK_SetAction2(obj, CK_ACTION(CK6_ACT_SatelliteInvisible0));
 }
 
 void CK6_SpawnSatellite(int tileX, int tileY)
@@ -432,7 +432,7 @@ void CK6_SpawnSatellite(int tileX, int tileY)
 	obj->type = CT6_Satellite;
 	obj->posX = RF_TileToUnit(tileX);
 	obj->posY = RF_TileToUnit(tileY);
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Satellite0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_Satellite0));
 	CA_SetTileAtPos(tileX, tileY, 2, 0x5B + 3);
 	obj->user1 = 3;
 	obj->user2 = 0x100;
@@ -455,7 +455,7 @@ void CK6_Satellite(CK_object *obj)
 
 void CK6_SatelliteCol(CK_object *a, CK_object *b)
 {
-	if (b->currentAction == CK_GetActionByName("CK6_ACT_SatelliteInvisible0"))
+	if (b->currentAction == CK_ACTION(CK6_ACT_SatelliteInvisible0))
 	{
 		a->user3 |= b->user1;
 	}
@@ -464,7 +464,7 @@ void CK6_SatelliteCol(CK_object *a, CK_object *b)
 		int var2 = a->user3 / 256;
 		if (var2 == 0 || a->user4 == var2)
 		{
-			if (b->currentAction == CK_GetActionByName("CK6_ACT_KeenSatellite0"))
+			if (b->currentAction == CK_ACTION(CK6_ACT_KeenSatellite0))
 			{
 				b->posX = a->posX + CK_INT(CK6_KeenSatelliteXOffset, 0xC0);
 				b->posY = a->posY + CK_INT(CK6_KeenSatelliteYOffset, 0x100);
@@ -475,7 +475,7 @@ void CK6_SatelliteCol(CK_object *a, CK_object *b)
 		{
 			SD_PlaySound(CK_SOUNDNUM(SOUND_KEENSATELLITE));
 			a->user4 = var2;
-			if (ck_keenObj->currentAction == CK_GetActionByName("CK6_ACT_KeenSatellite0"))
+			if (ck_keenObj->currentAction == CK_ACTION(CK6_ACT_KeenSatellite0))
 			{
 				a = ck_keenObj->next;
 				while (a)
@@ -485,7 +485,7 @@ void CK6_SatelliteCol(CK_object *a, CK_object *b)
 						b->posX = a->posX;
 						b->posY = a->posY;
 						b->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_STAND_N);
-						CK_SetAction2(ck_keenObj, CK_GetActionByName("CK_ACT_MapKeenStart"));
+						CK_SetAction2(ck_keenObj, CK_ACTION(CK_ACT_MapKeenStart));
 						b->clipped = CLIP_normal;
 						break;
 					}
@@ -497,7 +497,7 @@ void CK6_SatelliteCol(CK_object *a, CK_object *b)
 				b->posX = a->posX + CK_INT(CK6_KeenSatelliteXOffset, 0xC0);
 				b->posY = a->posY + CK_INT(CK6_KeenSatelliteYOffset, 0x100);
 				b->clipped = CLIP_not;
-				CK_SetAction2(ck_keenObj, CK_GetActionByName("CK6_ACT_KeenSatellite0"));
+				CK_SetAction2(ck_keenObj, CK_ACTION(CK6_ACT_KeenSatellite0));
 			}
 		}
 	}
@@ -517,7 +517,7 @@ void CK6_SpawnSandwich(int tileX, int tileY)
 	obj->type = CT6_Sandwich;
 	obj->posX = RF_TileToUnit(tileX);
 	obj->posY = RF_TileToUnit(tileY);
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Sandwich0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_Sandwich0));
 }
 
 void CK6_SpawnRope(int tileX, int tileY)
@@ -528,7 +528,7 @@ void CK6_SpawnRope(int tileX, int tileY)
 	obj->type = CT6_Rope;
 	obj->posX = RF_TileToUnit(tileX);
 	obj->posY = RF_TileToUnit(tileY);
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Rope0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_Rope0));
 }
 
 void CK6_SpawnPasscard(int tileX, int tileY)
@@ -539,7 +539,7 @@ void CK6_SpawnPasscard(int tileX, int tileY)
 	obj->type = CT6_Passcard;
 	obj->posX = RF_TileToUnit(tileX);
 	obj->posY = RF_TileToUnit(tileY);
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Passcard0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_Passcard0));
 }
 
 void CK6_StoryItemCol(CK_object *a, CK_object *b)
@@ -567,7 +567,7 @@ void CK6_SpawnMolly(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_MollySpawnYOffset, -0x80);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_Molly0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_Molly0));
 }
 
 // Go Plats
@@ -590,7 +590,7 @@ void CK6_SpawnBloog(int tileX, int tileY)
 	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_BloogSpawnYOffset, -0x200);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogWalk0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_BloogWalk0));
 }
 
 // Bloogs
@@ -608,7 +608,7 @@ void CK6_BloogCol(CK_object *a, CK_object *b)
 	}
 	else if (b->type == CT_Stunner)
 	{
-		CK_StunCreature(a, b, CK_GetActionByName("CK6_ACT_BloogStunned0"));
+		CK_StunCreature(a, b, CK_ACTION(CK6_ACT_BloogStunned0));
 	}
 }
 
@@ -629,7 +629,7 @@ void CK6_SpawnBloogguard(int tileX, int tileY)
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	obj->user2 = CK_INT(CK6_BloogguardHealth, 3);
-	CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogguardWalk0"));
+	CK_SetAction(obj, CK_ACTION(CK6_ACT_BloogguardWalk0));
 }
 
 void CK6_BloogguardWalk(CK_object *obj)
@@ -643,7 +643,7 @@ void CK6_BloogguardWalk(CK_object *obj)
 		if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2)
 		{
 			if (US_RndT() < CK_INT(CK6_BloogguardClubChance, 0x20))
-				obj->currentAction = CK_GetActionByName("CK6_ACT_BloogguardClub0");
+				obj->currentAction = CK_ACTION(CK6_ACT_BloogguardClub0);
 		}
 	}
 }
@@ -653,7 +653,7 @@ void CK6_BloogguardSmash(CK_object *obj)
 	SD_PlaySound(CK_SOUNDNUM(SOUND_BLOOGGUARDSMASH));
 	ck6_smashScreenDistance = CK_INT(CK6_BloogguardSmashDist, 25);
 	if (ck_keenObj->topTI)
-		CK_SetAction2(ck_keenObj, CK_GetActionByName("CK6_ACT_keenStunned0"));
+		CK_SetAction2(ck_keenObj, CK_ACTION(CK6_ACT_keenStunned0));
 }
 
 void CK6_BloogguardCol(CK_object *a, CK_object *b)
@@ -666,7 +666,7 @@ void CK6_BloogguardCol(CK_object *a, CK_object *b)
 	{
 		if (--a->user2 == 0)
 		{
-			CK_StunCreature(a, b, CK_GetActionByName("CK6_ACT_BloogguardStunned0"));
+			CK_StunCreature(a, b, CK_ACTION(CK6_ACT_BloogguardStunned0));
 		}
 		else
 		{
@@ -732,16 +732,16 @@ void CK6_SpawnBlooglet(int tileX, int tileY, int type)
 	switch (type % 4)
 	{
 	case 0:
-		CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogletRRun0"));
+		CK_SetAction(obj, CK_ACTION(CK6_ACT_BloogletRRun0));
 		break;
 	case 1:
-		CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogletYRun0"));
+		CK_SetAction(obj, CK_ACTION(CK6_ACT_BloogletYRun0));
 		break;
 	case 2:
-		CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogletBRun0"));
+		CK_SetAction(obj, CK_ACTION(CK6_ACT_BloogletBRun0));
 		break;
 	case 3:
-		CK_SetAction(obj, CK_GetActionByName("CK6_ACT_BloogletGRun0"));
+		CK_SetAction(obj, CK_ACTION(CK6_ACT_BloogletGRun0));
 		break;
 	}
 }
@@ -778,7 +778,7 @@ void CK6_BloogletCol(CK_object *a, CK_object *b)
 			gem->user1 = color;
 			gem->user2 = gem->gfxChunk = CK_LookupChunk(CK_ItemSpriteChunks[color]);
 			gem->user3 = gem->user2 + 2;
-			CK_SetAction(gem, CK_GetActionByName("CK_ACT_fallingitem"));
+			CK_SetAction(gem, CK_ACTION(CK_ACT_fallingitem));
 			SD_PlaySound(CK_SOUNDNUM(SOUND_BLOOGLETGEM));
 		}
 
