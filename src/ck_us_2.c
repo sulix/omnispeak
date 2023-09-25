@@ -435,7 +435,7 @@ bool US_QuickSave(void)
 {
 	US_Savefile *e;
 	e = &us_savefiles[US_MAX_NUM_OF_SAVED_GAMES - 1];
-	e->printXOffset = ck_currentEpisode->printXOffset;
+	e->printXOffset = CK_INT(ck_exe_printXOffset, 0xF00D);
 	strcpy(e->name, "QuickSave");
 	e->used = 1;
 	return US_SaveMain(US_MAX_NUM_OF_SAVED_GAMES - 1);
@@ -459,7 +459,7 @@ void save_savegame_item(US_CardItem *item)
 	US_SetPrintColour(2);
 	//fontcolour = 2;
 	VH_Bar(item->x + 1, item->y + 2, 146, 7, 8);
-	e->printXOffset = ck_currentEpisode->printXOffset;
+	e->printXOffset = CK_INT(ck_exe_printXOffset, 0xF00D);
 	n = US_LineInput(item->x + 2, item->y + 2, e->name, (e->used ? e->name : NULL), 1, 32, 138);
 
 	/* If they entered no name, give a default */

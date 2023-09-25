@@ -37,12 +37,6 @@ CK_EpisodeDef ck5_episode = {
 	&CK5_ScanInfoLayer,
 	&CK5_MapMiscFlagsCheck,
 	&CK5_IsPresent,
-	/* .objArrayOffset = */ 0x9E6F,
-	/* .tempObjOffset = */ 0xBC3B,
-	/* .spriteArrayOffset = */ 0xCD50,
-	/* .printXOffset = */ 0x9B9F,
-	/* .animTilesOffset = */ 0xD4DC,
-	/* .animTileSize = */ 4,
 	/* .hasCreatureQuestion = */ false,
 };
 

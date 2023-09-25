@@ -859,7 +859,7 @@ void US_GetSavefiles(void)
 				(FS_Read(&padding, sizeof(padding), 1, handle) == 1))
 				//if( fread( psfe, sizeof( US_Savefile ), 1, handle) == 1 )
 				if (strcmp(psfe->id, ck_currentEpisode->ext) == 0) /* AZ:46AA */
-					if (psfe->printXOffset == ck_currentEpisode->printXOffset)
+					if (psfe->printXOffset == CK_INT(ck_exe_printXOffset, 0xF00D))
 						valid = 1;
 
 			FS_CloseFile(handle);

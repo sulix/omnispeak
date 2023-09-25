@@ -39,13 +39,6 @@ CK_EpisodeDef ck6v14e_episode = {
 	&CK6_ScanInfoLayer,
 	&CK6_MapMiscFlagsCheck,
 	&CK6_IsPresent,
-	// Note these offsets are for version 1.4
-	/* .objArrayOffset = */ 0xA995,
-	/* .tempObjOffset = */ 0xC761,
-	/* .spriteArrayOffset = */ 0xD7EC,
-	/* .printXOffset = */ 0xA6C5,
-	/* .animTilesOffset = */ 0xDF78,
-	/* .animTileSize = */ 10,
 	/* .hasCreatureQuestion = */ true,
 };
 
@@ -56,13 +49,6 @@ CK_EpisodeDef ck6v15e_episode = {
 	&CK6_ScanInfoLayer,
 	&CK6_MapMiscFlagsCheck,
 	&CK6_IsPresent,
-	// Note these offsets are for version 1.5
-	/* .objArrayOffset = */ 0x75CE,
-	/* .tempObjOffset = */ 0x939E,
-	/* .spriteArrayOffset = */ 0xCEA2,
-	/* .printXOffset = */ 0xE81A,
-	/* .animTilesOffset = */ 0xD62E,
-	/* .animTileSize = */ 10,
 	/* .hasCreatureQuestion = */ true,
 };
 

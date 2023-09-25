@@ -14,6 +14,16 @@
 %int ck_minDoneLevel 1
 %int ck_maxDoneLevel 17
 
+# Offsets into the .exe for savegame compatability
+# Note these offsets are for version 1.5
+%int ck_exe_objArrayOffset 0x75CE
+%int ck_exe_tempObjOffset 0x939E
+%int ck_exe_spriteArrayOffset 0xCEA2
+%int ck_exe_printXOffset 0xE81A
+%int ck_exe_animTilesOffset 0xD62E
+%int ck_exe_animTileSize 10
+
+
 %intarray ck_starWarsPalette
 	0x00, 0x01, 0x18, 0x19, 0x04, 0x1C, 0x06, 0x07,
 	0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x00

@@ -109,12 +109,12 @@ typedef struct RF_AnimTileTimer
 /*** Used for saved games compatibility ***/
 static uint16_t RFL_ConvertAnimTileTimerIndexTo16BitOffset(int i)
 {
-	return ck_currentEpisode->animTileSize * i + ck_currentEpisode->animTilesOffset;
+	return CK_INT(ck_exe_animTileSize, 4) * i + CK_INT(ck_exe_animTilesOffset, 0x0000);
 }
 
 static int RFL_ConvertAnimTileTimer16BitOffsetToIndex(uint16_t offset)
 {
-	return (offset - ck_currentEpisode->animTilesOffset) / ck_currentEpisode->animTileSize;
+	return (offset - CK_INT(ck_exe_animTilesOffset, 0x0000)) / CK_INT(ck_exe_animTileSize, 4);
 }
 
 typedef struct RF_OnscreenAnimTile
@@ -1310,12 +1310,12 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 
 RF_SpriteDrawEntry *RF_ConvertSpriteArray16BitOffsetToPtr(uint16_t drawEntryoffset)
 {
-	return drawEntryoffset ? &rf_spriteTable[(drawEntryoffset - ck_currentEpisode->spriteArrayOffset) / 32] : NULL;
+	return drawEntryoffset ? &rf_spriteTable[(drawEntryoffset - CK_INT(ck_exe_spriteArrayOffset, 0x0000)) / 32] : NULL;
 }
 
 uint16_t RF_ConvertSpriteArrayPtrTo16BitOffset(RF_SpriteDrawEntry *drawEntry)
 {
-	return drawEntry ? ((drawEntry - rf_spriteTable) * 32 + ck_currentEpisode->spriteArrayOffset) : 0;
+	return drawEntry ? ((drawEntry - rf_spriteTable) * 32 + CK_INT(ck_exe_spriteArrayOffset, 0x0000)) : 0;
 }
 
 void RF_RemoveSpriteDrawUsing16BitOffset(int16_t *drawEntryOffset)

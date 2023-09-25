@@ -40,12 +40,6 @@ CK_EpisodeDef ck4_episode = {
 	&CK4_ScanInfoLayer,
 	&CK4_MapMiscFlagsCheck,
 	&CK4_IsPresent,
-	/* .objArrayOffset = */ 0xA807,
-	/* .tempObjOffset = */ 0xC5D3,
-	/* .spriteArrayOffset = */ 0xD622,
-	/* .printXOffset = */ 0xA537,
-	/* .animTilesOffset = */ 0xDDAE,
-	/* .animTileSize = */ 4,
 	/* .hasCreatureQuestion = */ false,
 };
 

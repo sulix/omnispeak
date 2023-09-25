@@ -460,19 +460,19 @@ void CK_RemoveObj(CK_object *obj)
 uint16_t CK_ConvertObjPointerTo16BitOffset(CK_object *obj)
 {
 	if ((obj >= ck_objArray) && (obj < ck_objArray + CK_MAX_OBJECTS))
-		return (obj - ck_objArray) * COMPAT_ORIG_OBJ_SIZE + ck_currentEpisode->objArrayOffset;
+		return (obj - ck_objArray) * COMPAT_ORIG_OBJ_SIZE + CK_INT(ck_exe_objArrayOffset, 0x0000);
 	if (obj == &tempObj)
-		return ck_currentEpisode->tempObjOffset;
+		return CK_INT(ck_exe_tempObjOffset, 0xFEFE);
 	return 0;
 }
 
 CK_object *CK_ConvertObj16BitOffsetToPointer(uint16_t offset)
 {
-	uint16_t objArrayOffset = ck_currentEpisode->objArrayOffset;
+	uint16_t objArrayOffset = CK_INT(ck_exe_objArrayOffset, 0x0000);
 	// Original size of each object was 76 bytes
 	if ((offset >= objArrayOffset) && (offset < objArrayOffset + COMPAT_ORIG_OBJ_SIZE * CK_MAX_OBJECTS))
 		return ck_objArray + (offset - objArrayOffset) / COMPAT_ORIG_OBJ_SIZE;
-	if (offset == ck_currentEpisode->tempObjOffset)
+	if (offset == CK_INT(ck_exe_tempObjOffset, 0xFEFE))
 		return &tempObj;
 	return NULL;
 }
