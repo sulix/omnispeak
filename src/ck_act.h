@@ -57,17 +57,17 @@ void CK_VAR_LoadVars(const char *filename);
 #endif
 
 #ifdef CK_VARS_LINKED
-#define CK_INT(name) INT_ ## name
-#define CK_CHUNKNUM(name) CHUNK_ ## name
+#define CK_INT(name, def) INT_ ## name
+#define CK_CHUNKNUM(name) INT_ ## name
 #define CK_SOUNDNUM(name) INT_ ## name
-#define CK_ACTION(name) ##name
+#define CK_ACTION(name) (&name)
 typedef int16_t chunk_id_t;
 #define CK_CHUNKID(name) CK_CHUNKNUM(name)
 #define CK_LookupChunk(id) (id)
 #define CK_INTARRAY(name) INTARRAY_ ## name
 #define CK_INTELEMENT(name, i) (CK_INTARRAY(name)[i])
 #define CK_STRINGARRAY(name) STRARRAY_ ## name
-#define CK_STRINGELEMENT(name) (CK_STRINGARRAY(name)[i])
+#define CK_STRINGELEMENT(name, i) (CK_STRINGARRAY(name)[i])
 #else
 #define CK_INT(name, default) CK_VAR_GetInt(#name, default)
 #define CK_CHUNKNUM(name) CK_VAR_GetInt(#name, 0)
