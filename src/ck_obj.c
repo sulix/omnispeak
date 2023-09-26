@@ -46,6 +46,7 @@ void CK_DoorOpen(CK_object *obj)
 	RF_ReplaceTiles(tilesToReplace, 1, obj->posX, obj->posY, 1, obj->user1 + 2);
 }
 
+#ifdef WITH_KEEN5
 void CK_SecurityDoorOpen(CK_object *obj)
 {
 	uint16_t tilesToReplace[0x30];
@@ -64,6 +65,7 @@ void CK_SecurityDoorOpen(CK_object *obj)
 		obj->currentAction = 0;
 	}
 }
+#endif
 
 chunk_id_t CK_ItemSpriteChunks[] = {
 	CK_CHUNKID(SPR_GEM_A1),
@@ -174,6 +176,7 @@ void CK_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
 		break;
 	}
 
+#ifdef WITH_KEEN5
 	if (purple)
 	{
 		obj->posX += 0x40;
@@ -181,6 +184,7 @@ void CK_SpawnAxisPlatform(int tileX, int tileY, int direction, bool purple)
 		CK_SetAction(obj, CK_ACTION(CK5_ACT_purpleAxisPlatform));
 	}
 	else
+#endif
 	{
 
 		CK_SetAction(obj, CK_ACTION(CK_ACT_AxisPlatform));
@@ -325,6 +329,8 @@ void CK_FallPlatRise(CK_object *obj)
 	}
 }
 
+#if defined(WITH_KEEN5) || defined(WITH_KEEN6)
+
 void CK_SpawnStandPlatform(int tileX, int tileY)
 {
 	CK_object *obj = CK_GetNewObj(false);
@@ -358,6 +364,7 @@ void CK_SpawnGoPlat(int tileX, int tileY, int direction, bool purple)
 	obj->yDirection = IN_motion_Down;
 	obj->clipped = CLIP_not;
 
+#ifdef WITH_KEEN5
 	if (purple)
 	{
 		obj->posX += 0x40;
@@ -365,6 +372,7 @@ void CK_SpawnGoPlat(int tileX, int tileY, int direction, bool purple)
 		CK_SetAction(obj, CK_ACTION(CK5_ACT_purpleGoPlat));
 	}
 	else
+#endif
 	{
 		CK_SetAction(obj, CK_ACTION(CK_ACT_GoPlat0));
 	}
@@ -374,6 +382,7 @@ void CK_SpawnGoPlat(int tileX, int tileY, int direction, bool purple)
 	obj->user1 = direction;
 	obj->user2 = 256;
 }
+
 
 int ck_infoplaneArrowsX[8] = {0, 1, 0, -1, 1, 1, -1, -1};
 int ck_infoplaneArrowsY[8] = {-1, 0, 1, 0, -1, 1, 1, -1};
@@ -599,11 +608,13 @@ void CK_TurretShotDraw(CK_object *obj)
 
 	RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->currentAction->chunkLeft, false, obj->zLayer);
 }
-
+#endif
 void CK_OBJ_SetupFunctions()
 {
 	CK_ACT_AddFunction("CK_DoorOpen", &CK_DoorOpen);
+#ifdef WITH_KEEN5
 	CK_ACT_AddFunction("CK_SecurityDoorOpen", &CK_SecurityDoorOpen);
+#endif
 	CK_ACT_AddFunction("CK_PointItem", &CK_PointItem);
 	CK_ACT_AddFunction("CK_FallingItem", &CK_FallingItem);
 
@@ -612,10 +623,12 @@ void CK_OBJ_SetupFunctions()
 	CK_ACT_AddFunction("CK_FallPlatSit", &CK_FallPlatSit);
 	CK_ACT_AddFunction("CK_FallPlatFall", &CK_FallPlatFall);
 	CK_ACT_AddFunction("CK_FallPlatRise", &CK_FallPlatRise);
+#if defined(WITH_KEEN5) || defined(WITH_KEEN6)
 	CK_ACT_AddFunction("CK_GoPlatThink", &CK_GoPlatThink);
 	CK_ACT_AddFunction("CK_SneakPlatThink", &CK_SneakPlatThink);
 
 	CK_ACT_AddFunction("CK_TurretShoot", &CK_TurretShoot);
 	CK_ACT_AddColFunction("CK_TurretShotCol", &CK_TurretShotCol);
 	CK_ACT_AddFunction("CK_TurretShotDraw", &CK_TurretShotDraw);
+#endif
 }
