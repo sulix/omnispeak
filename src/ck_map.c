@@ -281,6 +281,7 @@ static int ck_mapKeenAnimFrame[] = {1, 2, 0, 2};
 
 void CK_SpawnMapKeen(int tileX, int tileY)
 {
+#ifdef WITH_KEEN4
 	if (ck_currentEpisode->ep == EP_CK4 && ck_gameState.levelState == LS_Foot)
 	{
 		ck_keenObj->clipped = CLIP_not;
@@ -309,6 +310,7 @@ void CK_SpawnMapKeen(int tileX, int tileY)
 		CK_SetAction(ck_keenObj, CK_ACTION(CK4_ACT_MapKeenFoot0));
 		return;
 	}
+#endif
 
 	ck_keenObj->type = 2;
 	if (ck_gameState.mapPosX == 0)
@@ -420,7 +422,7 @@ void CK_MapKeenWalk(CK_object *obj)
 // =========================================================================
 
 // TELEPORTERS
-
+#if defined(WITH_KEEN5) || defined(WITH_KEEN6)
 void CK_AnimateMapTeleporter(int tileX, int tileY)
 {
 
@@ -552,10 +554,9 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 	ck_nextX = ck_nextY = 0;
 	CK_PhysUpdateNormalObj(ck_keenObj);
 }
-
+#endif
 // =========================================================================
 // Map Flags
-
 typedef struct
 {
 	uint16_t x, y;
@@ -588,6 +589,7 @@ void CK_MapFlagSpawn(int tileX, int tileY)
 
 	CK_SetAction(flag, CK_ACTION(CK_ACT_MapFlag0));
 }
+#if defined(WITH_KEEN4) || defined(WITH_KEEN6)
 
 int ck_flagTileSpotX, ck_flagTileSpotY;
 void CK_FlippingFlagSpawn(int tileX, int tileY)
@@ -616,6 +618,7 @@ void CK_FlippingFlagSpawn(int tileX, int tileY)
 	dy = (int32_t)obj->user2 - (int32_t)obj->posY;
 
 	// Make a table of coordinates for the flag's path
+#ifdef WITH_KEEN4
 	if (ck_currentEpisode->ep == EP_CK4)
 	{
 		for (int i = 0; i < 30; i++)
@@ -635,7 +638,9 @@ void CK_FlippingFlagSpawn(int tileX, int tileY)
 				ck_flagPoints[i].y -= (29 - i) * 0x30;
 		}
 	}
-	else if (ck_currentEpisode->ep == EP_CK6)
+#endif
+#ifdef WITH_KEEN6
+	if (ck_currentEpisode->ep == EP_CK6)
 	{
 		// I think this is just the same code from CK4 that's been optimized differently
 		// by the compiler
@@ -669,7 +674,7 @@ void CK_FlippingFlagSpawn(int tileX, int tileY)
 			i++;
 		} while (i != 30);
 	}
-
+#endif
 	CK_SetAction(obj, CK_ACTION(CK_ACT_MapFlagFlips0));
 }
 
@@ -716,7 +721,7 @@ void CK_MapFlagLand(CK_object *obj)
 		RF_ReplaceTiles(&tile, 1, ck_flagTileSpotX, ck_flagTileSpotY, 1, 1);
 	}
 }
-
+#endif
 /*
  * Setup all of the functions in this file.
  */
@@ -724,7 +729,9 @@ void CK_Map_SetupFunctions()
 {
 	CK_ACT_AddFunction("CK_MapKeenStill", &CK_MapKeenStill);
 	CK_ACT_AddFunction("CK_MapKeenWalk", &CK_MapKeenWalk);
+#if defined(WITH_KEEN4) || defined(WITH_KEEN6)
 	CK_ACT_AddFunction("CK_MapFlagThrown", &CK_MapFlagThrown);
 	CK_ACT_AddFunction("CK_MapFlagFall", &CK_MapFlagFall);
 	CK_ACT_AddFunction("CK_MapFlagLand", &CK_MapFlagLand);
+#endif
 }

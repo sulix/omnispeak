@@ -262,7 +262,7 @@ void CK_KeenGetTileCentilife(int tileX, int tileY)
 		obj->posX = RF_TileToUnit(tileX);
 		obj->posY = RF_TileToUnit(tileY);
 		obj->yDirection = IN_motion_Up;
-		obj->user2 = obj->gfxChunk = CK_CHUNKNUM(SPR_CENTILIFE1UPSHADOW);
+		obj->user2 = obj->gfxChunk = CK_CHUNKNUM(SPR_VIVASPLASH1);
 		CK_SetAction(obj, CK_ACTION(CK_ACT_itemNotify));
 		obj->clipped = CLIP_not;
 	}
@@ -877,12 +877,14 @@ void CK_KeenStandingThink(CK_object *obj)
 	if (obj->user2 == 1 && obj->user1 > 300)
 	{
 		obj->user2++;
+#ifdef WITH_KEEN4
 		if ((ck_currentEpisode->ep == EP_CK4) && (ck_keenMoon == 1))
 		{
 			ck_keenMoon = 2;
 			obj->currentAction = CK_ACTION(CK_ACT_keenMoon1);
 		}
 		else
+#endif
 		{
 			obj->currentAction = CK_ACTION(CK_ACT_keenBored1);
 		}
@@ -1205,10 +1207,12 @@ void CK_KeenJumpDrawFunc(CK_object *obj)
 		}
 		else
 		{
+#ifdef WITH_KEEN5
 			if (obj->topTI == 0x39) // Fuse
 			{
 				SD_PlaySound(CK_SOUNDNUM(SOUND_KEENLANDONFUSE));
 			}
+#endif
 #ifdef WITH_KEEN6
 			if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
 			{
@@ -1639,6 +1643,7 @@ void CK_KillKeen()
 	ck_scrollDisabled = true;
 	obj->clipped = CLIP_not;
 	obj->zLayer = 3;
+#ifdef WITH_KEEN4
 	if ((ck_currentEpisode->ep == EP_CK4) && ca_mapOn == 17)
 	{
 		if (US_RndT() < 0x80)
@@ -1651,6 +1656,7 @@ void CK_KillKeen()
 		}
 	}
 	else
+#endif
 	{
 		if (US_RndT() < 0x80)
 		{

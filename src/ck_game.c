@@ -536,20 +536,25 @@ void CK_MapLevelMarkAsDone(void)
 			w = *pw;
 			level = w & 0xFF;
 			if (level >= CK_INT(ck_minDoneLevel, 1) && level <= CK_INT(ck_maxDoneLevel, 17) && ck_gameState.levelsDone[level])
-			{ /* Is this a level tile */
+			{
+				/* Is this a level tile */
 				flags = w >> 8;
 				/* Set the info tile at this position to 0 */
 				*pw = 0;
 				if (flags == 0xD0)
-				{ /* If this is a 'blocking' part of the level */
+				{
+					/* If this is a 'blocking' part of the level */
 					/* Set the foreground tile at this position to 0 also (remove the fences) */
 					CA_SetTileAtPos(x, y, 1, 0);
 				}
 				else if (flags == 0xF0)
-				{ /* If this is the flag holder for the level */
+				{
+					/* If this is the flag holder for the level */
+#if defined(WITH_KEEN4) || defined(WITH_KEEN6)
 					if (ck_currentEpisode->ep != EP_CK5 && ck_lastLevelFinished == level)
 						CK_FlippingFlagSpawn(x, y);
 					else
+#endif
 						CK_MapFlagSpawn(x, y);
 				}
 			}
@@ -619,11 +624,13 @@ void CK_LoadLevel(bool doCache, bool silent)
 		{
 			CA_CacheMarks(CK_STRING(ck_str_demo));
 		}
+#ifdef WITH_KEEN5
 		else if (ck_currentEpisode->ep == EP_CK5 && ca_mapOn == 0 && ck_keenObj->clipRects.tileY1 > 100)
 		{
 			/* Stepping on to korath*/
 			CA_CacheMarks(CK_STRING(ck5_str_korath3));
 		}
+#endif
 		else
 		{
 			CA_CacheMarks(CK_STRINGELEMENT(ck_str_levelEntryText, ca_mapOn));
