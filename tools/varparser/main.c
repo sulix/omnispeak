@@ -74,6 +74,8 @@ typedef enum CK_VAR_VarType
 	VAR_Bool,
 	VAR_Int,
 	VAR_String,
+	VAR_IntArray,
+	VAR_StringArray,
 	VAR_Action,
 	VAR_TOK_Include
 } CK_VAR_VarType;
@@ -83,6 +85,7 @@ typedef struct CK_VAR_Variable
 {
 	CK_VAR_VarType type;
 	void *value;
+	size_t length;
 } CK_VAR_Variable;
 #endif
 
@@ -143,6 +146,14 @@ void OutputHeaderVars(FILE *outfile)
 			PrintQuotedString(outfile, (const char *)currentVar->value);
 			fprintf(outfile, "\n");
 		}
+		else if (currentVar->type == VAR_IntArray)
+		{
+			fprintf(outfile, "extern intptr_t %sINTARRAY_%s[%d];\n", prefix, ck_varTable->arr[index-1].str, currentVar->length);
+		}
+		else if (currentVar->type == VAR_StringArray)
+		{
+			fprintf(outfile, "extern const char *%sSTRARRAY_%s[%d];\n", prefix, ck_varTable->arr[index-1].str, currentVar->length);
+		}
 		else
 			fprintf(outfile, "#define %sINT_%s %d\n", prefix, ck_varTable->arr[index-1].str, currentVar->value);
 	}
@@ -165,6 +176,58 @@ void OutputStaticStrings(FILE *outfile)
 	}
 
 }
+
+void OutputStaticInts(FILE *outfile)
+{
+	size_t index = 0;
+	CK_VAR_Variable *currentVar = NULL;
+	while ((currentVar = (CK_VAR_Variable *)STR_GetNextEntry(ck_varTable, &index)))
+	{
+		if (currentVar->type == VAR_Int)
+		{
+			fprintf(outfile, "const intptr_t %sINT_%s = %ld", prefix, ck_varTable->arr[index-1].str, (intptr_t)currentVar->value);
+		}
+	}
+
+}
+
+void OutputStaticArrays(FILE *outfile)
+{
+	size_t index = 0;
+	CK_VAR_Variable *currentVar = NULL;
+	while ((currentVar = (CK_VAR_Variable *)STR_GetNextEntry(ck_varTable, &index)))
+	{
+		if (currentVar->type == VAR_IntArray)
+		{
+			fprintf(outfile, "intptr_t %sINTARRAY_%s[] = {\n", prefix, ck_varTable->arr[index-1].str);
+			for (int i = 0; i < currentVar->length; ++i)
+			{
+				fprintf(outfile, "\t%ld", ((intptr_t *)currentVar->value)[i]);
+				if (i != currentVar->length - 1)
+					fprintf(outfile, ",\n");
+				else
+					fprintf(outfile, "\n");
+			}
+			fprintf(outfile, "};\n");
+		}
+		else if (currentVar->type == VAR_StringArray)
+		{
+			fprintf(outfile, "const char *%sSTRARRAY_%s[%d] = {\n", prefix, ck_varTable->arr[index-1].str, currentVar->length);
+			for (int i = 0; i < currentVar->length; ++i)
+			{
+				fprintf(outfile, "\t");
+				PrintQuotedString(outfile, ((const char **)currentVar->value)[i]);
+				if (i != currentVar->length - 1)
+					fprintf(outfile, ",\n");
+				else
+					fprintf(outfile, "\n");
+			}
+			fprintf(outfile, "};\n");
+		}
+	}
+
+}
+
 void OutputActionsDOS16(FILE *outfile)
 {
 	size_t index = 0;
@@ -269,6 +332,15 @@ int main(int argc, char **argv)
 		{
 			FILE *f = fopen(argv[++i], "w");
 			OutputActionsOmnispeak(f);
+			fclose(f);
+		}
+		else if (!strcmp(argv[i], "--statics"))
+		{
+			FILE *f = fopen(argv[++i], "w");
+			OutputActionsOmnispeak(f);
+			if (staticStrings)
+				OutputStaticStrings(f);
+			OutputStaticArrays(f);
 			fclose(f);
 		}
 		else if (!strcmp(argv[i], "--static-strings"))
