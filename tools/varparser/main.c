@@ -121,9 +121,10 @@ void PrintQuotedString(FILE *f, const char *str)
 }
 
 // Global options
-bool staticStrings = false;	/* Strings are generated as variables if true, defines otherwise */
-const char *prefix = "";	/* Non-action variable prefix. */
-int maxVarNameLen = 30;		/* Warn if a variable name exceeds this length. */
+bool staticStrings = false;		/* Strings are generated as variables if true, defines otherwise */
+const char *prefix = "";		/* Non-action variable prefix. */
+int maxVarNameLen = 30;			/* Warn if a variable name exceeds this length. */
+bool declareActionFuncs = false;	/* Forward-declare any functions mentioned in an action. */
 
 
 void OutputHeaderVars(FILE *outfile)
@@ -138,6 +139,16 @@ void OutputHeaderVars(FILE *outfile)
 			printf("/* Var '%s' has length %d */\n", ck_varTable->arr[index-1].str, varNameLen);
 		if (currentVar->type == VAR_Action)
 		{
+			if (declareActionFuncs)
+			{
+				CK_action *act = (CK_action *)currentVar->value;
+				if (strcmp(act->think, "NULL"))
+					fprintf(outfile, "void %s(CK_object *obj);\n", act->think);
+				if (strcmp(act->draw, "NULL"))
+					fprintf(outfile, "void %s(CK_object *obj);\n", act->draw);
+				if (strcmp(act->collide, "NULL"))
+					fprintf(outfile, "void %s(CK_object *a, CK_object *b);\n", act->collide);
+			}
 			fprintf(outfile, "extern CK_action %s;\n", ck_varTable->arr[index-1].str);
 		}
 		else if (currentVar->type == VAR_String)
@@ -255,6 +266,14 @@ void OutputActionsDOS16(FILE *outfile)
 	}
 }
 
+const char *actionTypes[] = {
+	"AT_UnscaledOnce",
+	"AT_ScaledOnce",
+	"AT_Frame",
+	"AT_UnscaledFrame",
+	"AT_ScaledFrame"
+};
+
 void OutputActionsOmnispeak(FILE *outfile)
 {
 	size_t index = 0;
@@ -264,11 +283,11 @@ void OutputActionsOmnispeak(FILE *outfile)
 		if (currentVar->type == VAR_Action)
 		{
 			CK_action *act = (CK_action *)currentVar->value;
-			fprintf(outfile, "CK_action %s = {%d, %d, %d, %d, %d, %d, %d, %d, %s, %s, %s, %c%s, 0x%X};\n",
+			fprintf(outfile, "CK_action %s = {%d, %d, %s, %d, %d, %d, %d, %d, %s, %s, %s, %c%s, 0x%X};\n",
 				ck_varTable->arr[index-1].str,
 				act->chunkLeft,
 				act->chunkRight,
-				act->type,
+				actionTypes[act->type],
 				act->protectAnimation, act->stickToGround,
 				act->timer,
 				act->velX, act->velY,
@@ -350,6 +369,10 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--prefix"))
 		{
 			prefix = argv[++i];
+		}
+		else if (!strcmp(argv[i], "--declare-funcs"))
+		{
+			declareActionFuncs = true;
 		}
 		else
 		{
