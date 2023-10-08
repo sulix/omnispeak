@@ -945,6 +945,7 @@ void RFL_SmoothScrollLimit(int scrollXdelta, int scrollYdelta)
 			{
 				rf_scrollXUnit &= ~0xff;
 				rf_scrollXUnit += 256;
+				break;
 			}
 		}
 	}
@@ -969,6 +970,7 @@ void RFL_SmoothScrollLimit(int scrollXdelta, int scrollYdelta)
 			{
 				rf_scrollYUnit &= ~0xff;
 				rf_scrollYUnit += 256;
+				break;
 			}
 		}
 	}
