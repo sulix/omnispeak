@@ -333,7 +333,7 @@ void CK_VAR_SetInt(const char *name, intptr_t val)
 void CK_VAR_SetIntArray(const char *name, intptr_t *array, size_t arrayLen)
 {
 	const char *realName = MM_ArenaStrDup(ck_varArena, name);
-	intptr_t *realArray = (intptr_t *)MM_ArenaAlloc(ck_varArena, arrayLen * sizeof(intptr_t));
+	intptr_t *realArray = (intptr_t *)MM_ArenaAllocAligned(ck_varArena, arrayLen * sizeof(intptr_t), sizeof(intptr_t));
 	memcpy(realArray, array, arrayLen * sizeof(intptr_t));
 #ifdef CK_VAR_TYPECHECK
 	CK_VAR_Variable *var = (CK_VAR_Variable *)MM_ArenaAlloc(ck_varArena, sizeof(*var));
@@ -363,7 +363,7 @@ void CK_VAR_SetString(const char *name, const char *val)
 void CK_VAR_SetStringArray(const char *name, const char **array, size_t arrayLen)
 {
 	const char *realName = MM_ArenaStrDup(ck_varArena, name);
-	intptr_t *realArray = (intptr_t *)MM_ArenaAlloc(ck_varArena, arrayLen * sizeof(intptr_t));
+	intptr_t *realArray = (intptr_t *)MM_ArenaAllocAligned(ck_varArena, arrayLen * sizeof(const char *), sizeof(const char *));
 	memcpy(realArray, array, arrayLen * sizeof(const char *));
 #ifdef CK_VAR_TYPECHECK
 	CK_VAR_Variable *var = (CK_VAR_Variable *)MM_ArenaAlloc(ck_varArena, sizeof(*var));

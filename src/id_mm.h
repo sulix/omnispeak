@@ -56,6 +56,7 @@ void MML_UseSpace(void *off, intptr_t len);
 typedef struct ID_MM_Arena ID_MM_Arena;
 ID_MM_Arena *MM_ArenaCreate(size_t size);
 void *MM_ArenaAlloc(ID_MM_Arena *arena, size_t size);
+void *MM_ArenaAllocAligned(ID_MM_Arena *arena, size_t size, size_t alignment);
 char *MM_ArenaStrDup(ID_MM_Arena *arena, const char *str);
 void MM_ArenaReset(ID_MM_Arena *arena);
 void MM_ArenaDestroy(ID_MM_Arena *arena);

@@ -75,7 +75,7 @@ static CFG_Variable *CFG_GetOrCreateVariable(const char *name)
 	if (var)
 		return var;
 
-	var = (CFG_Variable *)MM_ArenaAlloc(cfg_configArena, sizeof(CFG_Variable));
+	var = (CFG_Variable *)MM_ArenaAllocAligned(cfg_configArena, sizeof(CFG_Variable), sizeof(void*));
 	const char *allocedName = MM_ArenaStrDup(cfg_configArena, name);
 	var->name = allocedName;
 

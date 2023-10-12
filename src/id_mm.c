@@ -305,6 +305,20 @@ void *MM_ArenaAlloc(ID_MM_Arena *arena, size_t size)
 	return ptr;
 }
 
+void *MM_ArenaAllocAligned(ID_MM_Arena *arena, size_t size, size_t alignment)
+{
+	if (alignment & (alignment - 1))
+	{
+		Quit("MM_ArenaAllocAligned: Alignment is not a power of two!");
+	}
+
+	// Align the current offset.
+	arena->currentOffset += alignment;
+	arena->currentOffset &= ~(alignment-1);
+
+	return MM_ArenaAlloc(arena, size);
+}
+
 char *MM_ArenaStrDup(ID_MM_Arena *arena, const char *str)
 {
 	size_t len = strlen(str) + 1;
@@ -368,6 +382,12 @@ void *MM_ArenaAlloc(ID_MM_Arena *arena, size_t size)
 	lastBlock->next->next = 0;
 
 	return lastBlock->data;
+}
+
+void *MM_ArenaAllocAligned(ID_MM_Arena *arena, size_t size, size_t alignment)
+{
+	//TODO: Actually align, though malloc() is usually okay.
+	return MM_ArenaAlloc(arena, size);
 }
 
 char *MM_ArenaStrDup(ID_MM_Arena *arena, const char *str)
