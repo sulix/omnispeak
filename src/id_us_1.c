@@ -666,8 +666,8 @@ int us_argc;
 void US_LoadConfig(void)
 {
 	int16_t inputDevice, configRev;
-	SD_SoundMode sd;
-	ID_MusicMode sm;
+	SD_SoundMode sd = sdm_AdLib;
+	ID_MusicMode sm = smm_AdLib;
 	bool hadQuietSfx = false;
 	bool hadAdlib = false; // Originally this is not set to 0 directly
 	char fileExt[4];
