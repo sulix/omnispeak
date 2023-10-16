@@ -330,7 +330,7 @@ void AnimateTerminator(void)
 	int elapsedCmdrScrollDist;
 
 	// How many pixels the left edge of the screen is away from the left edge of the KEEN image
-	int xpixel;
+	int xpixel = ck_introScreenWidth;
 
 	// start of the visible area in the screen buffer
 	unsigned screenofs;
@@ -981,7 +981,7 @@ void CK_FizzleFade()
 
 	// Write enable all memory planes
 	// out(0x3C4, 0xF02);
-	
+
 	IN_UserInput(420, false);
 
 	VL_DestroySurface(titleBuffer);
