@@ -1205,22 +1205,29 @@ void CA_CacheAudioChunk(int16_t chunk)
 
 void CA_LoadAllSounds(void)
 {
-	int16_t offset; // FIXME: What about a mode differing from 1 or 2?
+	int16_t offset;
+	bool unload = false;
 	uint16_t loopvar;
-	if (oldsoundmode != sdm_Off)
+
+	switch (oldsoundmode)
 	{
-		switch (oldsoundmode)
-		{
-		case sdm_PC:
-			offset = ca_audInfoE.startPCSounds; // STARTPCSOUNDS;
-			break;
-		case sdm_AdLib:
-			offset = ca_audInfoE.startAdlibSounds; //STARTADLIBSOUNDS;
-			break;
-		default:
-			// Shut up some gcc warnings.
-			break;
-		}
+	case sdm_Off:
+		break;
+	case sdm_PC:
+		offset = ca_audInfoE.startPCSounds; // STARTPCSOUNDS;
+		unload = true;
+		break;
+	case sdm_AdLib:
+		offset = ca_audInfoE.startAdlibSounds; //STARTADLIBSOUNDS;
+		unload = true;
+		break;
+	default:
+		// Shut up some gcc warnings.
+		break;
+	}
+
+	if (unload)
+	{
 		for (loopvar = 0; loopvar < ca_audInfoE.numSounds; loopvar++, offset++)
 		{
 			if (CA_audio[offset])
@@ -1229,24 +1236,24 @@ void CA_LoadAllSounds(void)
 			}
 		}
 	}
-	if (SD_GetSoundMode() != sdm_Off)
+
+	switch (SD_GetSoundMode())
 	{
-		switch (SD_GetSoundMode())
-		{
-		case sdm_PC:
-			offset = ca_audInfoE.startPCSounds; // STARTPCSOUNDS;
-			break;
-		case sdm_AdLib:
-			offset = ca_audInfoE.startAdlibSounds; // STARTADLIBSOUNDS;
-			break;
-		default:
-			// Shut up some gcc warnings.
-			break;
-		}
-		for (loopvar = 0; loopvar < ca_audInfoE.numSounds; loopvar++, offset++)
-		{
-			CA_CacheAudioChunk(offset);
-		}
+	case sdm_Off:
+		return;
+	case sdm_PC:
+		offset = ca_audInfoE.startPCSounds; // STARTPCSOUNDS;
+		break;
+	case sdm_AdLib:
+		offset = ca_audInfoE.startAdlibSounds; // STARTADLIBSOUNDS;
+		break;
+	default:
+		// Shut up some gcc warnings.
+		return;
+	}
+	for (loopvar = 0; loopvar < ca_audInfoE.numSounds; loopvar++, offset++)
+	{
+		CA_CacheAudioChunk(offset);
 	}
 }
 
