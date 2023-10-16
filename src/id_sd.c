@@ -436,7 +436,7 @@ static void SD_AL_MusicService()
 bool SD_SetSoundMode(SD_SoundMode mode)
 {
 	bool soundAvailable = false;
-	int16_t sfxChunkOffset;
+	int16_t sfxChunkOffset = 0;
 	SD_StopSound();
 	switch (mode)
 	{
