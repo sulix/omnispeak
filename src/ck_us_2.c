@@ -145,7 +145,7 @@ bool CK_US_VSyncMenuProc(US_CardMsg msg, US_CardItem *item)
 	USL_CtlDialog((vl_swapInterval ? "VSync is now on" : "VSync is now off"), "Press any key", NULL);
 	CK_US_UpdateOptionsMenus();
 	return true;
-}	
+}
 
 #endif
 
@@ -1029,9 +1029,15 @@ void USL_DrawPaddleWarScore(int16_t keen_score, int16_t comp_score)
 
 void USL_PlayPaddleWar(void)
 {
-	int16_t ball_visible, new_round, y_bounce, done, keen_won_last, comp_move_counter;
+	bool ball_visible = false;
+	bool new_round = true;
+	bool keen_won_last = false;
+	bool done = false;
+	int16_t y_bounce = 0;
+	int16_t comp_move_counter = 0;
 	int16_t ball_y, keen_x, comp_x, bounce_point, ball_real_x, ball_real_y;
-	int16_t old_keen_x, old_comp_x, old_ball_x, old_ball_y, keen_score, comp_score;
+	int16_t old_keen_x, old_comp_x, old_ball_x, old_ball_y;
+	int16_t keen_score = 0, comp_score = 0;
 	int16_t speedup_delay, ball_x_speed;
 	int32_t start_delay;
 	uint32_t lasttime, timediff;
@@ -1042,13 +1048,7 @@ void USL_PlayPaddleWar(void)
 	ball_real_x = ball_real_y = ball_y_speed = 0;
 	old_ball_x = old_comp_x = old_keen_x = 78;
 	old_ball_y = 62;
-	keen_score = comp_score = 0;
 	USL_DrawPaddleWarScore(0, 0);
-	comp_move_counter = 0;
-	y_bounce = 0;
-	new_round = 1;
-	done = 0;
-	keen_won_last = 0;
 	lasttime = SD_GetTimeCount();
 
 	do
@@ -1093,10 +1093,10 @@ void USL_PlayPaddleWar(void)
 			// Start a new round if there was a point
 			if (new_round)
 			{
-				ball_visible = 0;
+				ball_visible = false;
 				start_delay = 70;
 				speedup_delay = 10;
-				new_round = 0;
+				new_round = false;
 
 				/* Erase the ball */
 				VH_Bar(old_ball_x, old_ball_y, 6, 5, 8);
@@ -1115,11 +1115,11 @@ void USL_PlayPaddleWar(void)
 					comp_x--;
 			}
 
-			if (ball_visible == 0)
+			if (!ball_visible)
 			{
 				if (--start_delay == 0)
 				{
-					ball_visible = 1;
+					ball_visible = true;
 					ball_x_speed = 1 - (US_RndT() % 3);
 					ball_y_speed = 3;
 					if (keen_won_last)
@@ -1127,13 +1127,13 @@ void USL_PlayPaddleWar(void)
 					ball_real_x = 612;
 					ball_real_y = 396;
 				}
+				else
+				{
+					// Wait until the ball has been served
+					continue;
+				}
 			}
 
-			// Wait until the ball has been served
-			if (!ball_visible)
-			{
-				continue;
-			}
 
 			// Bounce ball off of side wall
 			if ((ball_real_x + ball_x_speed) / 4 > 228 || (ball_real_x + ball_x_speed) / 4 < 78)
@@ -1148,7 +1148,7 @@ void USL_PlayPaddleWar(void)
 			// Check if computer scores a point
 			if ((ball_real_y + ball_y_speed) / 4 > 137)
 			{
-				new_round = 1;
+				new_round = true;
 				keen_won_last = 0;
 				comp_score++;
 				SD_PlaySound(CK_SOUNDNUM(SOUND_COMPSCORE));
@@ -1156,22 +1156,22 @@ void USL_PlayPaddleWar(void)
 				if (comp_score == 21)
 				{
 					USL_CtlDialog(CK_STRING(ck_str_paddleWarDefeat), CK_STRING(ck_str_paddleWarPressAKey), NULL);
-					done = 1;
+					done = true;
 					continue;
 				}
 			}
 			// Check if Keen scores a point
 			else if ((ball_real_y + ball_y_speed) / 4 < 62)
 			{
-				new_round = 1;
-				keen_won_last = 1;
+				new_round = true;
+				keen_won_last = true;
 				keen_score++;
 				SD_PlaySound(CK_SOUNDNUM(SOUND_KEENSCORE)); /* play_sound */
 				USL_DrawPaddleWarScore(keen_score, comp_score);
 				if (keen_score == 21)
 				{
 					USL_CtlDialog(CK_STRING(ck_str_paddleWarVictory), CK_STRING(ck_str_paddleWarPressAKey), NULL);
-					done = 1;
+					done = true;
 					continue;
 				}
 			}
