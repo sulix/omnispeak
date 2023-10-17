@@ -306,7 +306,7 @@ static void VL_SDL2GL_SetSurfacePage(VL_SDL2GL_Surface *surf, int page)
 {
 	if (surf->use != VL_SurfaceUsage_FrontBuffer)
 		Quit("Tried to set page for a single buffered surface!");
-	
+
 	surf->activePage = page;
 	surf->data = surf->dataPages[page];
 	surf->textureHandle = surf->textureHandles[page];
@@ -316,11 +316,13 @@ static void VL_SDL2GL_SurfaceRect(void *dst_surface, int x, int y, int w, int h,
 static void *VL_SDL2GL_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 {
 	VL_SDL2GL_Surface *surf = (VL_SDL2GL_Surface *)malloc(sizeof(VL_SDL2GL_Surface));
+	if (!surf)
+		Quit("Couldn't create surface!");
 	surf->w = w;
 	surf->h = h;
 	surf->textureHandle = 0;
 	surf->use = usage;
-	
+
 	if (usage == VL_SurfaceUsage_FrontBuffer)
 	{
 		surf->data = malloc(w * h * VL_SDL2GL_NUM_BUFFERS); // 8-bit pal for now
@@ -330,7 +332,7 @@ static void *VL_SDL2GL_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 			id_glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, surf->w, surf->h, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
 			surf->dataPages[i] = (void*)((uintptr_t)surf->data + i * w * h);
 		}
-		
+
 		VL_SDL2GL_SetSurfacePage(surf, 0);
 	}
 	else
@@ -541,7 +543,7 @@ static void VL_SDL2GL_ScrollSurface(void *surface, int x, int y)
 		dy = -y;
 		sy = 0;
 	}
-	
+
 	int oldPage = surf->activePage;
 	if (surf->use == VL_SurfaceUsage_FrontBuffer)
 	{
