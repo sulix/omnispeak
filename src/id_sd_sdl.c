@@ -419,13 +419,18 @@ int SD_SDL_t0InterruptThread(void *param)
 			if (curQueueLen < sd_sdl_queueAudioMinBufSize)
 			{
 				int length = sd_sdl_queueAudioMinBufSize - curQueueLen;
-				YM3812UpdateOne(&oplChip, SD_ALOut_Samples, length);
-				if (SD_PC_Speaker_On)
-					PCSpeakerUpdateOne(SD_ALOut_Samples, length);
-				SDL_QueueAudio(1, SD_ALOut_Samples, length * numChannels * sizeof(int16_t));
 				sd_sdl_bonusSamplesQueued -= length;
 				if (sd_sdl_bonusSamplesQueued < 0)
 					sd_sdl_bonusSamplesQueued = 0;
+				while (length > 0)
+				{
+					int chunkLen = (length > 512) ? 512 : length;
+					YM3812UpdateOne(&oplChip, SD_ALOut_Samples, chunkLen);
+					if (SD_PC_Speaker_On)
+						PCSpeakerUpdateOne(SD_ALOut_Samples, chunkLen);
+					SDL_QueueAudio(1, SD_ALOut_Samples, chunkLen * numChannels * sizeof(int16_t));
+					length -= chunkLen;
+				}
 			}
 		}
 #endif
@@ -553,6 +558,7 @@ void SD_SDL_Startup(void)
 		if (!sd_sdl_queueAudio)
 			SD_SDL_AudioSpec.callback = SD_SDL_CallBack;
 		SD_SDL_AudioSpec.userdata = NULL;
+
 		if (SDL_OpenAudio(&SD_SDL_AudioSpec, NULL))
 		{
 			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
