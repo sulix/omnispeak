@@ -194,7 +194,7 @@ void CK_IncreaseScore(int score)
 	ck_gameState.keenScore += score;
 	if (IN_DemoGetMode() != IN_Demo_Off)
 		return;
-	if (ck_gameState.keenScore > ck_gameState.nextKeenAt)
+	if (ck_gameState.keenScore >= ck_gameState.nextKeenAt)
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_GOTEXTRALIFE));
 		ck_gameState.numLives++;
