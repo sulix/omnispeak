@@ -1103,6 +1103,24 @@ void CK_KeenJumpThink(CK_object *obj)
 
 		obj->xDirection = ck_inputFrame.xDirection;
 		CK_PhysAccelHorz(obj, ck_inputFrame.xDirection * 2, 24);
+
+		// K1n9_Duk3's fix for 70Hz ledge grabbing.
+		// See: https://pckf.com/viewtopic.php?p=108855#p108855
+		if (CFG_GetConfigBool("ck_fix70HzLedgeGrabbing", CK_NEW_FEATURE_DEFAULT))
+		{
+			// Keen can only grab edges reliably if the hiteast / hitwest values are
+			// set correctly, which requires the object to move by at least 1 unit
+			// along the x axis. CK_PhysAccelHorz only accelerates every other tic and
+			// hitting a wall while jumping always sets xVel to 0, which means it
+			// would take at least 2 tics to make the object move and set hiteast and
+			// hitwest to the correct values after hitting a wall. The original Keen
+			// games only ran at up to 35 fps (2 tics per frame), so the ck_nextX value
+			// would almost never be 0 here. This fix makes sure that Keen always
+			// moves by at least 1 unit while jumping and holding down the left or
+			// right key, so that Keen can grab edges reliably.
+			if (!ck_nextX && SD_GetSpriteSync() < 2)
+				ck_nextX = ck_inputFrame.xDirection;
+		}
 	}
 	else
 		CK_PhysDampHorz(obj);
