@@ -691,11 +691,7 @@ void IN_GetJoyMotion(int joystick, IN_Motion *p_x, IN_Motion *p_y)
 
 void IN_ReadCursor(IN_Cursor *cursor)
 {
-#ifdef VANILLA
-	bool forceJoyMenu = CFG_GetConfigBool("in_forceJoyMenu", false);
-#else
-	bool forceJoyMenu = CFG_GetConfigBool("in_forceJoyMenu", true);
-#endif
+	bool forceJoyMenu = CFG_GetConfigBool("in_forceJoyMenu", CK_NEW_FEATURE_DEFAULT);
 	cursor->button0 = false;
 	cursor->button1 = false;
 	cursor->xMotion = IN_motion_None;

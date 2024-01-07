@@ -72,6 +72,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Options for VANILLA builds only.
 // =================================
 #ifndef CK_VANILLA
+
+// Define a boolean for new features
+#define CK_NEW_FEATURE_DEFAULT false
+
 // The Fullscreen/Aspect Ratio/etc options
 #define EXTRA_GRAPHICS_OPTIONS
 
@@ -87,6 +91,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Use all input devices by default
 #define DEFAULT_INPUT IN_ctrl_All
 #define FORCE_DEFAULT_INPUT
+#else
+
+// Otherwise, enable default new features
+#define CK_NEW_FEATURE_DEFAULT false
 #endif
 
 // =================================
