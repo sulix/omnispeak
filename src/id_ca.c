@@ -742,7 +742,7 @@ void CA_CacheGrChunk(int chunk)
 			spriteTable[i].shifts = CK_Cross_SwapLE16(spriteTable[i].shifts);
 		}
 	}
-	else if (chunk >= FON_MAINFONT && chunk <= /*FON_WATCHFONT*/ FON_MAINFONT + 2)
+	else if (chunk >= CK_CHUNKNUM(FON_MAINFONT) && chunk <= /*FON_WATCHFONT*/ CK_CHUNKNUM(FON_MAINFONT) + 2)
 	{
 		VH_Font *font = (VH_Font *)ca_graphChunks[chunk];
 		font->height = CK_Cross_SwapLE16(font->height);
@@ -751,7 +751,7 @@ void CA_CacheGrChunk(int chunk)
 			font->location[i] = CK_Cross_SwapLE16(font->location[i]);
 		}
 	}
-	else if (chunk >= EXTERN_COMMANDER && chunk <= EXTERN_KEEN)
+	else if (chunk >= CK_CHUNKNUM(EXTERN_COMMANDER) && chunk <= CK_CHUNKNUM(EXTERN_KEEN))
 	{
 		introbmptype *intro = (introbmptype *)ca_graphChunks[chunk];
 		intro->height = CK_Cross_SwapLE16(intro->height);
