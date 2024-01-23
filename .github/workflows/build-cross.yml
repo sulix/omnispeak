@@ -1,0 +1,19 @@
+name: "CI: Build (Cross-compilers)"
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Dependencies
+      run: |
+        sudo apt update
+        sudo apt install gcc-multilib-powerpc64-linux-gnu linux-libc-dev-ppc64-cross
+    - name: Build (ppc64 gcc)
+      working-directory: ./src
+      run: |
+        make BINPREFIX=powerpc64-linux-gnu- STATIC=1 BUILDASCPP=0 RENDERER=null
