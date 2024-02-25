@@ -103,7 +103,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 
 // =================================
-// Filesystem (ID_FS) options. 
+// Filesystem (ID_FS) options.
 // =================================
 
 // Default paths for Omni / Keen / User files.
@@ -143,7 +143,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define FS_XDG_APPLICATION "Omnispeak"
 
 // =================================
-// Cache Manager (ID_CA) options. 
+// Cache Manager (ID_CA) options.
 // =================================
 
 // Read uncompressed audio data (AUDIOT, AUDIOHED)

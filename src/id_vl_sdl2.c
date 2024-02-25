@@ -42,7 +42,7 @@ static void VL_SDL2_ResizeWindow()
 #if SDL_VERSION_ATLEAST(2, 0, 12)
 		SDL_SetTextureScaleMode(vl_sdl2_scaledTarget, SDL_ScaleModeLinear);
 #endif
-	
+
 	}
 }
 

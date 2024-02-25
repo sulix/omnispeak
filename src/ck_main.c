@@ -128,7 +128,7 @@ void CK_InitGame()
 	CK_Misc_SetupFunctions();
 	ck_currentEpisode->setupFunctions();
 
-	
+
 	CK_VAR_Startup();
 	CK_VAR_LoadVars("EPISODE.EXT");
 

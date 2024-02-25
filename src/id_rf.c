@@ -137,9 +137,9 @@ RF_AnimTileTimer rf_animTileTimers[RF_MAX_ANIMTILETIMERS];
 RF_OnscreenAnimTile rf_onscreenAnimTiles[RF_MAX_ONSCREENANIMTILES];
 RF_OnscreenAnimTile *rf_firstOnscreenAnimTile, *rf_freeOnscreenAnimTile;
 
-// The minimum number of ticks permitted per frame. 
+// The minimum number of ticks permitted per frame.
 // Defaults to 2 (35Hz).
-int rf_minTics = 2;	
+int rf_minTics = 2;
 // Maximum number of ticks permitted per frame.
 // Defaults to 5 (14Hz)
 int rf_maxTics = 5;
@@ -1291,7 +1291,7 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 
 	int unshiftedX = RF_UnitToPixel(unitX + VH_GetSpriteTableEntry(sprite_number)->originX);
 	int shift = (unshiftedX&7) / 2;
-	
+
 	// If NOPAN is enabled, always use the unshifted sprite.
 	if (vl_noPan)
 		shift = 0;

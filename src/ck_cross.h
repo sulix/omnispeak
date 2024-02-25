@@ -94,6 +94,6 @@ int CK_Cross_strncasecmp(const char *s1, const char *s2, size_t n);
 #define CK_Cross_min(x, y) ((x) > (y) ? (y) : (x))
 
 // Let's have our own definiton of ABS() as well
-#define CK_Cross_abs(x) ((x) > 0 ? (x) : (-(x))) 
+#define CK_Cross_abs(x) ((x) > 0 ? (x) : (-(x)))
 
 #endif
