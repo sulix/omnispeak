@@ -21,7 +21,7 @@ option(WITH_KEEN6 "include Keen 6: Aliens Ate My Baby Sitter support" ON)
 
 set(KEENPATH "." CACHE STRING "set the default path to the Commander Keen data files")
 set(USERPATH "." CACHE STRING "set the default path for user savegames")
-set(OMNIPATH USERPATH CACHE STRING "set the default path for Omnispeak's bundled data files")
+set(OMNIPATH ${USERPATH} CACHE STRING "set the default path for Omnispeak's bundled data files")
 option(XDGUSERPATH "prefer XDG user paths to the default path above" OFF)
 
 
