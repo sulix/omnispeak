@@ -71,6 +71,11 @@ typedef enum CK_Log_Message_Class_T
 	CK_LOG_MSG_ERROR
 } CK_Log_Message_Class_T;
 
+extern const char *ck_cross_logLevel_strings[];
+
+// Log level.
+extern CK_Log_Message_Class_T ck_cross_logLevel;
+
 // Used for debugging
 void CK_PRINTF_FORMAT(2, 3) CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass, const char *format, ...);
 

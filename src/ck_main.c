@@ -515,6 +515,8 @@ int main(int argc, char *argv[])
 	// Load the config file. We do this before parsing command-line args.
 	CFG_Startup();
 
+	ck_cross_logLevel = (CK_Log_Message_Class_T)CFG_GetConfigEnum("logLevel", ck_cross_logLevel_strings, CK_DEFAULT_LOG_LEVEL);
+
 	// Default to the first episode with all files present.
 	// If no episodes are found, we default to the first DEMO_LOOP_ENABLED
 	// epside (usually Keen 4) in order to show the file not found messages.

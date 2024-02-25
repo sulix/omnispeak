@@ -9,10 +9,23 @@
 #include <execinfo.h>
 #endif
 
+const char *ck_cross_logLevel_strings[] = {
+	"normal",
+	"warning",
+	"error",
+	"none"
+};
+
+CK_Log_Message_Class_T ck_cross_logLevel = CK_DEFAULT_LOG_LEVEL;
+
 void CK_PRINTF_FORMAT(2, 3) CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass, const char *format, ...)
 {
 	// TODO: For now we simply do this.
 	va_list args;
+
+	// Only print messages for the enabled log level.
+	if (msgClass < ck_cross_logLevel)
+		return;
 	va_start(args, format);
 	switch (msgClass)
 	{

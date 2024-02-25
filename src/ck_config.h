@@ -54,6 +54,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Options for DEBUG builds only.
 // =================================
 #ifdef CK_DEBUG
+// Enable all debug messages by default.
+#define CK_DEFAULT_LOG_LEVEL CK_LOG_MSG_NORMAL
 // Debug version of the ID_MM_Arena allocator.
 #define ID_MM_DEBUGARENA
 // Typechecking for variables.
@@ -66,6 +68,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CK_WARN_ON_TILEINFO_OOB
 // Support the /DUMPFILE option for the playloop dumper
 #define CK_ENABLE_PLAYLOOP_DUMPER
+#else
+// Release builds only show warnings and higher
+#define CK_DEFAULT_LOG_LEVEL CK_LOG_MSG_WARNING
 #endif
 
 // =================================
