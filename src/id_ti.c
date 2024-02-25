@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdint.h>
 
 #ifdef CK_WARN_ON_TILEINFO_OOB
-#define TI_WARN_ON_OOB() CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Out of bounds tileinfo access in %s (tile = %d, $%x)\n", __PRETTY_FUNCTION__, tile, tile)
+#define TI_WARN_ON_OOB() CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Out of bounds tileinfo access in %s (tile = %d, $%x)\n", __FUNCTION__, tile, tile)
 #else
 #define TI_WARN_ON_OOB() do { } while (0)
 #endif
