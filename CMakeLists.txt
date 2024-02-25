@@ -219,6 +219,13 @@ if(WITH_OPLHW)
 	add_definitions(-DSD_OPL2_WITH_LIBOPLHW)
 endif()
 
+if(WIN32)
+	set(OMNISPEAK_PLATFORM_SRCS
+		${OMNISPEAK_PLATFORM_SRCS}
+		src/windowsres.rc
+	)
+endif()
+
 set(OMNISPEAK_ID_SRCS
 	src/id_heads.h
 	src/id_ca.h
