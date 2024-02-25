@@ -572,7 +572,7 @@ void CAL_CacheSprite(int chunkNumber, uint8_t *compressed, int compLength)
 
 void CAL_SetupGrFile()
 {
-	//TODO: Setup cfg mechanism for filenames, chunk data.
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CAL_SetupGrFile: Loading graphics headers...\n");
 
 	//Load the ?GADICT
 	CA_LoadFile("EGADICT.EXT", (void **)(&ca_gr_huffdict), 0);
@@ -819,6 +819,8 @@ void CA_CacheMarks(const char *msg)
 		}
 	}
 
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CA_CacheMarks: Caching %d chunks...\n%s\n", numChunksToCache, msg ? msg : "");
+
 	if (!numChunksToCache)
 		return;
 
@@ -943,6 +945,8 @@ uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
 extern uint8_t *ti_tileInfo;
 void CAL_SetupMapFile(void)
 {
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CAL_SetupMapFile: Loading map headers...\n");
+
 	int mapHeadFileSize = 0;
 	CA_LoadFile("MAPHEAD.EXT", (void **)(&ca_MapHead), &mapHeadFileSize);
 #ifdef CK_CROSS_IS_BIGENDIAN
@@ -974,6 +978,8 @@ int32_t *ca_audiostarts;
 
 void CAL_SetupAudioFile(void)
 {
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CAL_SetupAudioFile: Loading audio headers...\n");
+
 	// Read audio chunk type info from AUDINFOE
 	FS_File audinfoe = FS_OpenOmniFile(FS_AdjustExtension("AUDINFOE.EXT"));
 	size_t audinfoeLen = FS_Read(&ca_audInfoE, sizeof(ca_audinfo), 1, audinfoe);
@@ -1208,6 +1214,8 @@ void CA_LoadAllSounds(void)
 	int16_t offset;
 	bool unload = false;
 	uint16_t loopvar;
+
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CA_LoadAllSounds: Switching from sound mode %d → %d\n", oldsoundmode, SD_GetSoundMode());
 
 	switch (oldsoundmode)
 	{

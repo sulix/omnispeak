@@ -287,6 +287,7 @@ static bool US_LoadMain(int i, bool fromMenu)
 
 	if (error)
 	{
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "US_LoadMain: Failed to load savegame %d\n", i);
 		return false;
 	}
 	else
@@ -295,6 +296,7 @@ static bool US_LoadMain(int i, bool fromMenu)
 		e->used = 1;
 		in_Paused = 1;
 		in_PausedMessage = "GAME LOADED";
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "US_LoadMain: Loaded savegame %d\n", i);
 		return true;
 	}
 }
@@ -420,11 +422,13 @@ static bool US_SaveMain(int i)
 	{
 		remove(fname);
 		e->used = 0;
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "US_SaveMain: Failed to save game %d\n", i);
 		return false;
 	}
 	else
 	{
 		game_unsaved = 0;
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "US_SaveMain: Saved game %d\n", i);
 		return true;
 	}
 }

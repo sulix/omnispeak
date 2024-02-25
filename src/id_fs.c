@@ -421,6 +421,10 @@ void FS_Startup()
 		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Cannot write to user path \"%s\": savegames et al will not work.\n", fs_userPath);
 		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Use the /USERPATH option to set a different path.\n");
 	}
+
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "FS_Startup: Keen path is \"%s\"\n", fs_keenPath);
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "FS_Startup: Omnispeak path is \"%s\"\n", fs_omniPath);
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "FS_Startup: User path is \"%s\"\n", fs_userPath);
 }
 
 size_t FS_ReadInt8LE(void *ptr, size_t count, FS_File stream)

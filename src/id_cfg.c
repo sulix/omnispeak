@@ -58,7 +58,7 @@ int CFG_GetConfigEnum(const char *name, const char **strings, int defValue)
 	const char *valueStr = CFG_GetConfigString(name, NULL);
 	if (!valueStr)
 		return defValue;
-	
+
 	for (int i = 0; strings[i]; ++i)
 	{
 		if (!CK_Cross_strcasecmp(strings[i], valueStr))
@@ -162,7 +162,7 @@ void CFG_LoadConfig(const char *filename)
 	while (CFG_ParseConfigLine(&parserstate))
 		numVarsParsed++;
 
-	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Parsed %d config options from \"%s\" over %d lines\n", numVarsParsed, filename, parserstate.linecount);
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CFG_LoadConfig: Parsed %d config options from \"%s\" over %d lines\n", numVarsParsed, filename, parserstate.linecount);
 
 	MM_FreePtr((mm_ptr_t *)&parserstate.data);
 }

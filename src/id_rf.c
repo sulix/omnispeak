@@ -614,6 +614,8 @@ void RF_Startup()
 	rf_minTics = CFG_GetConfigInt("rf_minTics", 2);
 	rf_maxTics = CFG_GetConfigInt("rf_maxTics", 5);
 	rf_demoTics = CFG_GetConfigInt("rf_demoTics", 3);
+
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "RF_Startup: tileBuffer = (%d×%d), minTics = %d, maxTics = %d, demoTics = %d\n", RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS, rf_minTics, rf_maxTics, rf_demoTics);
 }
 
 void RF_Shutdown()
@@ -630,6 +632,8 @@ void RF_NewMap(void)
 	rf_scrollYMinUnit = 0x0200;
 	rf_scrollXMaxUnit = RF_TileToUnit(CA_MapHeaders[ca_mapOn]->width - RF_SCREEN_WIDTH_TILES - 2);
 	rf_scrollYMaxUnit = RF_TileToUnit(CA_MapHeaders[ca_mapOn]->height - RF_SCREEN_HEIGHT_TILES - 2);
+
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "RF_NewMap: Initialising map %d (%d×%d)\n",ca_mapOn, rf_mapWidthTiles, rf_mapHeightTiles);
 
 	// Reset the scroll-blocks
 	rf_numVertScrollBlocks = rf_numHorzScrollBlocks = 0;

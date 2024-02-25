@@ -617,6 +617,7 @@ void US_InitRndT(bool randomize)
 	{
 		us_randomIndex = 0;
 	}
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "US_InitRndT: Setting random seed to %d %s\n", us_randomIndex, randomize ? "(random)" : "(deterministic)");
 }
 
 // Get a random integer in the range 0-255
@@ -732,6 +733,7 @@ void US_LoadConfig(void)
 		FS_CloseFile(f);
 		//ck_highScoresDirty = 0; // Unused?
 		configFileLoaded = true;
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "US_LoadConfig: Loaded config from file (version %x)\n", configRev);
 	}
 	else
 	{
@@ -746,6 +748,7 @@ void US_LoadConfig(void)
 		in_gamepadButtons[2] = -1;
 		in_gamepadButtons[3] = -1;
 		//ck_highScoresDirty = 1; // Unused?
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "US_LoadConfig: Couldn't load config, setting defaults.\n");
 	}
 	SD_SetQuietSfx(hadQuietSfx);
 	SD_Default(configFileLoaded && (hadAdlib == SD_IsAdlibPresent()), sd, sm);
@@ -813,6 +816,8 @@ void US_SaveConfig(void)
 	FS_CloseFile(f);
 
 	IN_SaveKbdControls();
+
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "US_SaveConfig: Config saved to %s.\n", fileName);
 }
 
 //

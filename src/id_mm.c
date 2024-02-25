@@ -125,6 +125,8 @@ void MM_Startup(void)
 	mm_purgeable = 0;
 	// Misc buffer
 	MM_GetPtr(&buffer, BUFFERSIZE);
+
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "MM_Startup: %d blocks, %d KB Buffer\n", MM_MAXBLOCKS, BUFFERSIZE / 1024);
 }
 
 void MM_Shutdown(void)
