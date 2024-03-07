@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "id_in.h"
 #include "id_sd.h"
+#include "id_us.h"
 #include "ck_cross.h"
 
 #ifdef CK_RAND_DEBUG
@@ -104,3 +105,14 @@ int CK_Cross_strncasecmp(const char *s1, const char *s2, size_t n)
 	/* Assumption: An int can store any unsigned char value.      */
 	return ((int)uc1 - (int)uc2);
 }
+
+size_t CK_Cross_strscpy(char* dst, const char* src, size_t bufsiz)
+{
+	for (int len = 0; len < bufsiz; ++len)
+	{
+		dst[len] = src[len];
+		if (!src[len])
+			return len;
+	}
+	Quit("strscpy: Buffer too small!");
+};

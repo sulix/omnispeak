@@ -96,4 +96,7 @@ int CK_Cross_strncasecmp(const char *s1, const char *s2, size_t n);
 // Let's have our own definiton of ABS() as well
 #define CK_Cross_abs(x) ((x) > 0 ? (x) : (-(x)))
 
+// Safe strcpy variant which Quit()s if the buffer is too small.
+size_t CK_Cross_strscpy(char* dst, const char* src, size_t bufsiz);
+
 #endif
