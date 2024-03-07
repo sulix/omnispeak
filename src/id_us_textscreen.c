@@ -61,6 +61,7 @@ bool US_TerminalOk()
 
 	SetConsoleOutputCP(oldCP);
 
+	return true;
 }
 
 void US_PrintB8000Text(const uint8_t *textscreen, int numChars)
