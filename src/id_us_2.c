@@ -280,9 +280,7 @@ void USL_LoadSaveMessage(const char *s1, const char *s2)
 	uint16_t print_x, print_y;
 	char buf[36];
 
-	strcpy(buf, "'");
-	strcat(buf, s2);
-	strcat(buf, "'");
+	snprintf(buf, sizeof(buf), "'%s'", s2);
 
 	VH_MeasurePropString(s1, &w1, &h, 1);
 	VH_MeasurePropString(buf, &w2, &h, 1);

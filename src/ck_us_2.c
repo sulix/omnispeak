@@ -440,7 +440,7 @@ bool US_QuickSave(void)
 	US_Savefile *e;
 	e = &us_savefiles[US_MAX_NUM_OF_SAVED_GAMES - 1];
 	e->printXOffset = CK_INT(ck_exe_printXOffset, 0xF00D);
-	strcpy(e->name, "QuickSave");
+	CK_Cross_strscpy(e->name, "QuickSave", US_MAX_SAVEDGAMENAME_LEN + 1);
 	e->used = 1;
 	return US_SaveMain(US_MAX_NUM_OF_SAVED_GAMES - 1);
 }
@@ -468,7 +468,7 @@ void save_savegame_item(US_CardItem *item)
 
 	/* If they entered no name, give a default */
 	if (strlen(e->name) == 0)
-		strcpy(e->name, "Untitled");
+		CK_Cross_strscpy(e->name, "Untitled", US_MAX_SAVEDGAMENAME_LEN + 1);
 
 	/* If the input was not canceled */
 	if (n != 0)
@@ -821,7 +821,7 @@ bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 {
 	IN_JoyConfItem which_control;
 	int value;
-	char str[8], *spos;
+	char str[8];
 	int print_x, print_y;
 	static const int8_t deadzone_values[] = {
 		0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, -1};
@@ -853,21 +853,21 @@ bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 		str[0] = '\0';
 		if ((which_control != IN_joy_deadzone) && (value < 0))
 		{
-			strncpy(str, "None", 8);
+			CK_Cross_strscpy(str, "None", sizeof(str));
 		}
 		else
 		{
 			if (which_control == IN_joy_deadzone)
 			{
-				sprintf(str, "%d%%", value);
+				snprintf(str, sizeof(str), "%d%%", value);
 			}
 			else
 			{
 				const char *button_name = IN_GetJoyButtonName(0, value);
 				if (button_name)
-					strncpy(str, button_name, 8);
+					CK_Cross_strscpy(str, button_name, sizeof(str));
 				else
-					sprintf(str, "Btn %d", value);
+					snprintf(str, sizeof(str), "Btn %d", value);
 			}
 		}
 
@@ -996,7 +996,7 @@ void USL_DrawPaddleWarScore(int16_t keen_score, int16_t comp_score)
 	// NOTE: This is modified a little from the original
 	// exe in order to align the text and to set the proper font and color
 
-	int16_t print_color = 2;
+	int8_t print_color = 2;
 	int16_t print_y = 52;
 	uint16_t w, h;
 
@@ -1281,22 +1281,18 @@ void CK_US_SetJoystickName(US_CardItem *item, int joystick)
 	const char *name = IN_GetJoyName(joystick);
 	if (name)
 	{
-		strcpy(pos, "USE ");
-		pos += 4;
 		if ((strlen(name) + 4) > US_MAX_JOYSTICK_NAME_LENGTH)
 		{
 			int n = US_MAX_JOYSTICK_NAME_LENGTH - 7;
-			memcpy(pos, name, n);
-			pos += n;
-			strcpy(pos, "...");
+			snprintf(pos, US_MAX_JOYSTICK_NAME_LENGTH + 1, "USE %s...", name);
 		}
 		else
 		{
-			strcpy(pos, name);
+			snprintf(pos, US_MAX_JOYSTICK_NAME_LENGTH + 1, "USE %s", name);
 		}
 	}
 	else
-		sprintf(pos, "USE JOYSTICK #%d", joystick + 1);
+		snprintf(pos, US_MAX_JOYSTICK_NAME_LENGTH + 1, "USE JOYSTICK #%d", joystick + 1);
 	item->caption = str[joystick];
 }
 #endif
