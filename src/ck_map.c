@@ -145,7 +145,7 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		dest += (planeSize = spr->sprShiftByteWidths[0] * box->height);
 		dest += box->width * 4 + 1;
 
-		sprintf(buf, "%d", (int)ck_gameState.keenScore);
+		snprintf(buf, sizeof(buf), "%d", (int)ck_gameState.keenScore);
 		len = strlen(buf);
 
 		// Draw the leading emptiness
@@ -179,9 +179,9 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		dest += box->width * 20 + 8;
 
 		if (ck_gameState.numShots >= 99)
-			sprintf(buf, "99");
+			snprintf(buf, sizeof(buf), "99");
 		else
-			sprintf(buf, "%d", ck_gameState.numShots);
+			snprintf(buf, sizeof(buf), "%d", ck_gameState.numShots);
 
 		len = strlen(buf);
 
@@ -216,9 +216,9 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		dest += box->width * 20 + 3;
 
 		if (ck_gameState.numLives >= 99)
-			sprintf(buf, "99");
+			snprintf(buf, sizeof(buf), "99");
 		else
-			sprintf(buf, "%d", ck_gameState.numLives);
+			snprintf(buf, sizeof(buf), "%d", ck_gameState.numLives);
 
 		len = strlen(buf);
 
