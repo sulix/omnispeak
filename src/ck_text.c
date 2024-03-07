@@ -300,7 +300,8 @@ void HandleWord(void)
 
 void PageLayout(int show_status)
 {
-	int16_t old_print_color, i;
+	int8_t old_print_color;
+	int i;
 	char c;
 
 	/* Save the current print color */
@@ -368,15 +369,8 @@ void PageLayout(int show_status)
 	/* Show the current page number */
 	if (show_status)
 	{
-		char buf[64], buf2[64];
-		strcpy(buf, "pg ");
-		// itoa( help_cur_page, buf2, 10 );
-		sprintf(buf2, "%d", help_cur_page);
-		strcat(buf, buf2);
-		strcat(buf, " of ");
-		// itoa( help_num_pages, buf2, 10 );
-		sprintf(buf2, "%d", help_num_pages);
-		strcat(buf, buf2);
+		char buf[64];
+		snprintf(buf, sizeof(buf), "pg %d of %d", help_cur_page, help_num_pages);
 
 		US_SetPrintColour(8);
 		US_SetPrintY(186);
