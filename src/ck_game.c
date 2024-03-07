@@ -751,7 +751,7 @@ bool CK_TryAgainMenu()
 	char buf[80];
 
 	/* Copy and measure the level name */
-	strcpy(buf, CK_STRINGELEMENT(ck_str_levelNames, ca_mapOn));
+	CK_Cross_strscpy(buf, CK_STRINGELEMENT(ck_str_levelNames, ca_mapOn), sizeof(buf));
 	CK_MeasureMultiline(buf, &w, &h);
 
 	/* Take away all gems */
