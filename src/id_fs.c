@@ -150,7 +150,7 @@ FS_File FSL_OpenFileInDirCaseInsensitive(const char *dirPath, const char *fileNa
 	// TODO: We really should scan through the path on windows anyway, as that'll
 	// make sure there isn't any nasty path manipulation shenanigans going on.
 	char fullFileName[MAX_PATH];
-	sprintf(fullFileName, "%s\\%s", dirPath, fileName);
+	snprintf(fullFileName, MAX_PATH, "%s\\%s", dirPath, fileName);
 
 	return fopen(fullFileName, forWrite ? "wb" : "rb");
 }
@@ -160,7 +160,7 @@ FS_File FSL_CreateFileInDir(const char *dirPath, const char *fileName)
 	// TODO: We really should scan through the path on windows anyway, as that'll
 	// make sure there isn't any nasty path manipulation shenanigans going on.
 	char fullFileName[MAX_PATH];
-	sprintf(fullFileName, "%s\\%s", dirPath, fileName);
+	snprintf(fullFileName, MAX_PATH, "%s\\%s", dirPath, fileName);
 
 	return fopen(fullFileName, "wb");
 }
@@ -170,7 +170,7 @@ bool FSL_IsDirWritable(const char *dirPath)
 	// TODO: This is horrible. We probably should handle this by checking
 	// security contexts or whatnot.
 	char fullFileName[MAX_PATH];
-	sprintf(fullFileName, "%s\\TestFile", dirPath);
+	snprintf(fullFileName, MAX_PATH, "%s\\TestFile", dirPath);
 	FILE *testFile = fopen(fullFileName, "wb");
 	if (testFile)
 	{
@@ -314,8 +314,7 @@ bool FS_IsOmniFilePresent(const char *filename)
 char *FS_AdjustExtension(const char *filename)
 {
 	static char newname[16];
-	strcpy(newname, filename);
-	size_t fnamelen = strlen(filename);
+	size_t fnamelen = CK_Cross_strscpy(newname, filename, sizeof(newname));
 	newname[fnamelen - 3] = ck_currentEpisode->ext[0];
 	newname[fnamelen - 2] = ck_currentEpisode->ext[1];
 	newname[fnamelen - 1] = ck_currentEpisode->ext[2];
