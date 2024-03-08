@@ -145,7 +145,7 @@ void US_PrintF(const char *str, ...)
 	char buf[256];
 	va_list args;
 	va_start(args, str);
-	vsprintf(buf, str, args);
+	vsnprintf(buf, sizeof(buf), str, args);
 	va_end(args);
 	US_Print(buf);
 }
@@ -188,13 +188,16 @@ void US_CPrint(const char *str)
 	char lastChar;
 	char *strInLine, *strLineStart;
 	char buf[256];
+	size_t len;
 
-	if (strlen(str) > sizeof(buf) / sizeof(char))
+	len = strlen(str);
+
+	if (len >= sizeof(buf) / sizeof(char))
 	{
 		Quit("US_CPrint() - String too long");
 	}
 
-	strcpy(buf, str);
+	memcpy(buf, str, len+1);
 	strLineStart = buf;
 
 	while (*strLineStart)
@@ -251,7 +254,7 @@ void US_CPrintF(const char *str, ...)
 	char buf[256];
 	va_list args;
 	va_start(args, str);
-	vsprintf(buf, str, args);
+	vsnprintf(buf, sizeof(buf), str, args);
 	va_end(args);
 	US_CPrint(buf);
 }
@@ -337,14 +340,18 @@ void US_RestoreWindow(US_WindowRec *win)
 
 //	USL_XORICursor() - XORs the I-bar text cursor. Used by US_LineInput()
 
-static void USL_XORICursor(uint16_t x, uint16_t y, char *s, uint16_t cursor)
+static void USL_XORICursor(uint16_t x, uint16_t y, char *s, size_t cursor)
 {
 	//static	bool	status;		// VGA doesn't XOR...
 	static char cursorStr[2] = {(char)0x80, 0};
 	char buf[128];
 	uint16_t w, h;
 
-	strcpy(buf, s);
+	if (cursor > sizeof(buf))
+		Quit("USL_XORICursor: buffer too small!");
+
+	if (cursor)
+		memcpy(buf, s, cursor);
 	buf[cursor] = '\0';
 	VH_MeasurePropString(buf, &w, &h, us_printFont);
 	// TODO: More changes to do here?
@@ -386,14 +393,12 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 #endif
 	char c,
 		s[128], olds[128];
-	uint16_t i,
-		cursor,
-		w, h,
-		len /*, temp*/;
+	uint16_t w, h;
 	uint32_t lasttime;
+	size_t len, cursor;
 
 	if (def)
-		strcpy(s, def);
+		CK_Cross_strscpy(s, def, sizeof(s));
 	else
 		*s = '\0';
 	*olds = '\0';
@@ -459,7 +464,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 			break;
 
 		case IN_SC_Enter:
-			strcpy(buf, s);
+			CK_Cross_strscpy(buf, s, maxchars + 1);
 			done = true;
 			result = true;
 			c = 0;
@@ -476,7 +481,9 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 		case IN_SC_Backspace:
 			if (cursor)
 			{
-				strcpy(s + cursor - 1, s + cursor);
+				// Note: this (a) relies on strscpy supporting overlapping inputs,
+				// and (b) uses a smaller 'bufsiz', because both src and dst should fit.
+				CK_Cross_strscpy(s + cursor - 1, s + cursor, sizeof(s) - cursor);
 				cursor--;
 				redraw = true;
 			}
@@ -486,7 +493,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 		case IN_SC_Delete:
 			if (s[cursor])
 			{
-				strcpy(s + cursor, s + cursor + 1);
+				CK_Cross_strscpy(s + cursor, s + cursor + 1, sizeof(s) - cursor - 1);
 				redraw = true;
 			}
 			c = 0;
@@ -511,7 +518,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 			if (
 				isprint(c) && (len < 128 - 1) && ((!maxchars) || (len < maxchars)) && ((!maxwidth) || (w < maxwidth)))
 			{
-				for (i = len + 1; i > cursor; i--)
+				for (size_t i = len + 1; i > cursor; i--)
 					s[i] = s[i - 1];
 				s[cursor++] = c;
 				redraw = true;
@@ -528,7 +535,7 @@ bool US_LineInput(uint16_t x, uint16_t y, char *buf, char *def, bool escok, uint
 			//us_printColour = us_backColour;
 			VHB_DrawPropString(olds, x, y, us_printFont, us_printColour);
 			//us_printColour = temp;
-			strcpy(olds, s);
+			CK_Cross_strscpy(olds, s, sizeof(olds));
 
 			/*
 			px = x;
@@ -863,7 +870,7 @@ void US_GetSavefiles(void)
 				(FS_Read(psfe->name, sizeof(psfe->name), 1, handle) == 1) &&
 				(FS_Read(&padding, sizeof(padding), 1, handle) == 1))
 				//if( fread( psfe, sizeof( US_Savefile ), 1, handle) == 1 )
-				if (strcmp(psfe->id, ck_currentEpisode->ext) == 0) /* AZ:46AA */
+				if (strncmp(psfe->id, ck_currentEpisode->ext, 4) == 0) /* AZ:46AA */
 					if (psfe->printXOffset == CK_INT(ck_exe_printXOffset, 0xF00D))
 						valid = 1;
 
@@ -872,9 +879,9 @@ void US_GetSavefiles(void)
 
 		if (!valid)
 		{
-			strcpy(psfe->id, ck_currentEpisode->ext); /* AZ:46AE */
+			CK_Cross_strscpy(psfe->id, ck_currentEpisode->ext, 4);
 			psfe->used = false;
-			strcpy(psfe->name, "Empty"); /* AZ:46B2 */
+			CK_Cross_strscpy(psfe->name, "Empty", US_MAX_SAVEDGAMENAME_LEN + 1);
 		}
 		else
 		{
