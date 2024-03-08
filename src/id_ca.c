@@ -326,12 +326,15 @@ int CAL_RLEWCompress(void *src, int expLength, void *dest, uint16_t rletag)
 	uint16_t *dstptr = (uint16_t *)dest;
 	uint16_t count;
 
+	if (expLength & 1)
+		Quit("CAL_RLEWCompress: Expanded length must be divisible by 2.");
+
 	while (expLength)
 	{
 		count = 1;
 		uint16_t val = *srcptr++;
 		expLength -= 2;
-		while (*srcptr == val && expLength)
+		while (expLength && *srcptr == val)
 		{
 			count++;
 			expLength -= 2;
