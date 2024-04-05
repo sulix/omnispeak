@@ -7,13 +7,10 @@
 /*** ALL fields are printed as unsigned, making it possible to     ***/
 /*** read and print each object as an array of 16-bit values.      ***/
 
-/*** WARNING - Only little-endian is supported! ***/
-
 static size_t CK_Cross_freadInt16LE(void *ptr, size_t count, FILE *stream)
 {
 	count = fread(ptr, 2, count, stream);
-#if 0
-//#ifdef CK_CROSS_IS_BIGENDIAN
+#ifdef CK_CROSS_IS_BIGENDIAN
 	for (size_t loopVar = 0; loopVar < count; loopVar++, ((uint16_t *) ptr)++)
 		*(uint16_t *) ptr = CK_Cross_Swap16(*(uint16_t *) ptr);
 #endif
@@ -23,8 +20,7 @@ static size_t CK_Cross_freadInt16LE(void *ptr, size_t count, FILE *stream)
 static size_t CK_Cross_freadInt32LE(void *ptr, size_t count, FILE *stream)
 {
 	count = fread(ptr, 4, count, stream);
-#if 0
-//#ifdef CK_CROSS_IS_BIGENDIAN
+#ifdef CK_CROSS_IS_BIGENDIAN
 	for (size_t loopVar = 0; loopVar < count; loopVar++, ((uint32_t *) ptr)++)
 		*(uint32_t *) ptr = CK_Cross_Swap32(*(uint32_t *) ptr);
 #endif
@@ -171,15 +167,6 @@ static bool processObjects(FILE *fp)
 
 int main(int argc, char **argv)
 {
-	// Minor little-endian test
-	uint16_t someUInt16 = 0x1234;
-	uint8_t *someUint8Ptr = (uint8_t *)&someUInt16;
-	if ((someUint8Ptr[0] != 0x34) || (someUint8Ptr[1] != 0x12))
-	{
-		fprintf(stderr, "FATAL ERROR - Only Little-Endian architectures are supported!\n");
-		return 2;
-	}
-
 	if (argc != 3)
 	{
 		fprintf(stderr, "Usage: %s <inFile> <episode>\n", argv[0]);
