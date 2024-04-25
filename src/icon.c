@@ -1,7 +1,8 @@
 /* GIMP RGBA C-Source image dump (icon.c) */
 
 #ifdef WITH_SDL
-#include <SDL.h>
+// ck_cross.h includes the correct SDL header.
+#include "ck_cross.h"
 
 
 static const struct {
@@ -555,11 +556,18 @@ static const struct {
 
 void VL_SDL2GL_SetIcon(SDL_Window *wnd)
 {
+#if SDL_VERSION_ATLEAST(3,0,0)
+	SDL_Surface *iconSurf = SDL_CreateSurfaceFrom((void*)sparky_icon.pixel_data, sparky_icon.width, sparky_icon.height, sparky_icon.width*3, SDL_PIXELFORMAT_ARGB32);
+#else
 	SDL_Surface *iconSurf = SDL_CreateRGBSurfaceFrom((void*)sparky_icon.pixel_data, sparky_icon.width, sparky_icon.height, 32, sparky_icon.width*4, 0x000000FF, 0x0000FF00, 0x00FF0000,0xFF000000);
-
+#endif
 
 	SDL_SetWindowIcon(wnd, iconSurf);
+#if SDL_VERSION_ATLEAST(3,0,0)
+	SDL_DestroySurface(iconSurf);
+#else
 	SDL_FreeSurface(iconSurf);
+#endif
 }
 
 #endif
