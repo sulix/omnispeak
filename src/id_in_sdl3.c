@@ -25,6 +25,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <SDL3/SDL.h>
 #include <string.h>
 
+extern SDL_Window *vl_sdl3gpu_window;
+#define vl_sdl3_window vl_sdl3gpu_window
+
+
 #define IN_MAX_JOYSTICKS 2
 
 SDL_Joystick *in_joysticks[IN_MAX_JOYSTICKS];

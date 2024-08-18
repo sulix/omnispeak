@@ -176,6 +176,37 @@ elseif(RENDERER STREQUAL "sdl3")
 		${SDL3_INCLUDE_DIRS}
 	)
 	add_definitions(-DWITH_SDL=3)
+elseif(RENDERER STREQUAL "sdl3gpu")
+	message(STATUS "Using SDL3 gpu backend")
+	find_package(SDL3 REQUIRED)
+	add_custom_command(OUTPUT id_vl_vk_vert.h
+		COMMAND glslc -mfmt=c
+			${CMAKE_CURRENT_SOURCE_DIR}/src/id_vl_vk_shader.vert
+			-o id_vl_vk_vert.h
+		DEPENDS src/id_vl_vk_shader.vert
+	)
+
+	add_custom_command(OUTPUT id_vl_vk_frag.h
+		COMMAND glslc -mfmt=c
+			${CMAKE_CURRENT_SOURCE_DIR}/src/id_vl_vk_shader.frag
+			-o id_vl_vk_frag.h
+		DEPENDS src/id_vl_vk_shader.frag
+	)
+	set(OMNISPEAK_PLATFORM_SRCS
+		src/id_in_sdl3.c
+		src/id_sd_sdl3.c
+		src/id_vl_sdl3gpu.c
+		${CMAKE_CURRENT_BINARY_DIR}/id_vl_vk_vert.h
+		${CMAKE_CURRENT_BINARY_DIR}/id_vl_vk_frag.h
+	)
+	set(OMNISPEAK_PLATFORM_LIBRARIES
+		${SDL3_LIBRARIES}
+	)
+	include_directories(
+		${SDL3_INCLUDE_DIRS}
+		${CMAKE_CURRENT_BINARY_DIR}
+	)
+	add_definitions(-DWITH_SDL=3)
 else()
 	message(WARNING "Using NULL platform layer.")
 	set(OMNISPEAK_PLATFORM_SRCS
