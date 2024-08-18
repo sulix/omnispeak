@@ -34,6 +34,7 @@ This Makefile supports the following options:
 		  sdl2gl  = SDL 2.0 + OpenGL 2.0 (default)
 		  sdl2vk  = SDL 2.0 + Vulkan (experimental)
 		  sdl3    = SDL 3.0 + SDL_Renderer
+		  sdl3gpu = SDL 3.0 GPU
 		  null    = dummy renderer
 
   WITH_KEEN4    whether to include support for Keen 4: Secret of the Oracle (0/1; default: on)
@@ -374,6 +375,13 @@ ifeq ($(RENDERER), sdl3)
 	SDL_LIBS = `$(BINPREFIX)pkg-config sdl3 $(SDL_PKG_CONFIG_PREFIX) $(SDL_LIB_QUERY)`
 endif
 
+ifeq ($(RENDERER), sdl3gpu)
+	RENDER_OBJS = id_vl_sdl3gpu.o id_sd_sdl3.o id_in_sdl3.o
+	SDL_CFLAGS = `$(BINPREFIX)pkg-config sdl3 $(SDL_PKG_CONFIG_PREFIX) --cflags` -DWITH_SDL=3
+	SDL_LIBS = `$(BINPREFIX)pkg-config sdl3 $(SDL_PKG_CONFIG_PREFIX) $(SDL_LIB_QUERY)`
+	CXXFLAGS += -I$(OBJDIR) #For generated SPIR-V headers
+endif
+
 ifeq ($(RENDERER), dos)
 	RENDER_OBJS = id_vl_dos.o id_sd_dos.o id_in_dos.o
 	CXXFLAGS += -DVL_EGA=1
@@ -485,6 +493,7 @@ $(BINDIR):
 	mkdir -p $(BINDIR)
 
 $(OBJDIR)/id_vl_sdl2vk.o: $(OBJDIR)/id_vl_vk_frag.h $(OBJDIR)/id_vl_vk_vert.h
+$(OBJDIR)/id_vl_sdl3gpu.o: $(OBJDIR)/id_vl_vk_frag.h $(OBJDIR)/id_vl_vk_vert.h
 
 $(OBJDIR)/id_vl_vk_%.h: id_vl_vk_shader.%
 	@mkdir -p $(dir $@)

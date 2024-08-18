@@ -132,6 +132,7 @@ static VkDescriptorSet vl_sdl2vk_ubDescriptorSet;
 static VkDescriptorSetLayout vl_sdl2vk_samplerDescriptorSetLayout;
 static VkDescriptorPool vl_sdl2vk_samplerDescriptorPool;
 static VkDescriptorSet vl_sdl2vk_samplerDescriptorSet;
+static VkDescriptorSetLayout vl_sdl2vk_nullDescriptorSetLayout;
 
 static int vl_sdl2vk_integerWidth;
 static int vl_sdl2vk_integerHeight;
@@ -615,9 +616,9 @@ static void VL_SDL2VK_CreateDescriptorSetLayouts()
 		Quit("Couldn't create uniform buffer descriptor set layout.");
 
 	VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-	samplerLayoutBinding.binding = 1;
+	samplerLayoutBinding.binding = 0;
 	samplerLayoutBinding.descriptorCount = 1;
-	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	samplerLayoutBinding.pImmutableSamplers = 0;
 	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
@@ -629,6 +630,15 @@ static void VL_SDL2VK_CreateDescriptorSetLayouts()
 	result = vkCreateDescriptorSetLayout(vl_sdl2vk_device, &samplerDescriptorSetLayoutInfo, 0, &vl_sdl2vk_samplerDescriptorSetLayout);
 	if (result != VK_SUCCESS)
 		Quit("Couldn't create sampler descriptor set layout.");
+
+	VkDescriptorSetLayoutCreateInfo nullDescriptorSetLayoutInfo = {};
+	nullDescriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	nullDescriptorSetLayoutInfo.bindingCount = 0;
+	nullDescriptorSetLayoutInfo.pBindings = NULL;
+
+	result = vkCreateDescriptorSetLayout(vl_sdl2vk_device, &nullDescriptorSetLayoutInfo, 0, &vl_sdl2vk_nullDescriptorSetLayout);
+	if (result != VK_SUCCESS)
+		Quit("Couldn't create null descriptor set layout.");
 }
 
 static void VL_SDL2VK_CreatePipeline()
@@ -699,7 +709,7 @@ static void VL_SDL2VK_CreatePipeline()
 	rasterizeState.polygonMode = VK_POLYGON_MODE_FILL;
 	rasterizeState.lineWidth = 1.0f;
 	rasterizeState.cullMode = VK_CULL_MODE_BACK_BIT;
-	rasterizeState.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	rasterizeState.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizeState.depthBiasEnable = VK_FALSE;
 	rasterizeState.depthBiasConstantFactor = 0.0f;
 	rasterizeState.depthBiasSlopeFactor = 0.0f;
@@ -726,11 +736,11 @@ static void VL_SDL2VK_CreatePipeline()
 	blendState.attachmentCount = 1;
 	blendState.pAttachments = &attachmentBlendState;
 
-	VkDescriptorSetLayout layouts[2] = {vl_sdl2vk_ubDescriptorSetLayout, vl_sdl2vk_samplerDescriptorSetLayout};
+	VkDescriptorSetLayout layouts[4] = {vl_sdl2vk_nullDescriptorSetLayout, vl_sdl2vk_nullDescriptorSetLayout, vl_sdl2vk_samplerDescriptorSetLayout, vl_sdl2vk_ubDescriptorSetLayout};
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = 2;
+	pipelineLayoutInfo.setLayoutCount = 4;
 	pipelineLayoutInfo.pSetLayouts = layouts;
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 
@@ -931,7 +941,7 @@ static void VL_SDL2VK_CreateUniformBuffer()
 	ubDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	ubDescriptorPoolSize.descriptorCount = 1;
 	VkDescriptorPoolSize samplerDescriptorPoolSize = {};
-	samplerDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	samplerDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	samplerDescriptorPoolSize.descriptorCount = 1;
 
 	VkDescriptorPoolSize sizes[2] = {ubDescriptorPoolSize, samplerDescriptorPoolSize};
@@ -1061,10 +1071,10 @@ static void VL_SDL2VK_PopulateCommandBuffer(int i, VkRect2D fullRgn, VkRect2D re
 	blitRegion.dstSubresource.layerCount = 1;
 	blitRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	blitRegion.srcOffsets[0].x = 0;
-	blitRegion.srcOffsets[0].y = 0;
+	blitRegion.srcOffsets[1].y = 0;
 	blitRegion.srcOffsets[0].z = 0;
 	blitRegion.srcOffsets[1].x = vl_sdl2vk_integerWidth;
-	blitRegion.srcOffsets[1].y = vl_sdl2vk_integerHeight;
+	blitRegion.srcOffsets[0].y = vl_sdl2vk_integerHeight;
 	blitRegion.srcOffsets[1].z = 1;
 	blitRegion.srcSubresource.mipLevel = 0;
 	blitRegion.srcSubresource.baseArrayLayer = 0;
@@ -1078,8 +1088,8 @@ static void VL_SDL2VK_PopulateCommandBuffer(int i, VkRect2D fullRgn, VkRect2D re
 
 	vkCmdSetViewport(vl_sdl2vk_commandBuffers[i], 0, 1, &viewport);
 	vkCmdSetScissor(vl_sdl2vk_commandBuffers[i], 0, 1, &scissor);
-	vkCmdBindDescriptorSets(vl_sdl2vk_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vl_sdl2vk_pipelineLayout, 0, 1, &vl_sdl2vk_ubDescriptorSet, 0, 0);
-	vkCmdBindDescriptorSets(vl_sdl2vk_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vl_sdl2vk_pipelineLayout, 1, 1, &vl_sdl2vk_samplerDescriptorSet, 0, 0);
+	vkCmdBindDescriptorSets(vl_sdl2vk_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vl_sdl2vk_pipelineLayout, 3, 1, &vl_sdl2vk_ubDescriptorSet, 0, 0);
+	vkCmdBindDescriptorSets(vl_sdl2vk_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vl_sdl2vk_pipelineLayout, 2, 1, &vl_sdl2vk_samplerDescriptorSet, 0, 0);
 
 	vkCmdBindPipeline(vl_sdl2vk_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vl_sdl2vk_pipeline);
 
@@ -1226,6 +1236,7 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 		vkDestroyDescriptorPool(vl_sdl2vk_device, vl_sdl2vk_ubDescriptorPool, 0);
 		vkDestroyDescriptorSetLayout(vl_sdl2vk_device, vl_sdl2vk_ubDescriptorSetLayout, 0);
 		vkDestroyDescriptorSetLayout(vl_sdl2vk_device, vl_sdl2vk_samplerDescriptorSetLayout, 0);
+		vkDestroyDescriptorSetLayout(vl_sdl2vk_device, vl_sdl2vk_nullDescriptorSetLayout, 0);
 		vkFreeMemory(vl_sdl2vk_device, vl_sdl2vk_uniformBufferMemory, 0);
 		vkDestroyBuffer(vl_sdl2vk_device, vl_sdl2vk_uniformBuffer, 0);
 		vkDestroyRenderPass(vl_sdl2vk_device, vl_sdl2vk_renderPass, 0);
@@ -1310,7 +1321,7 @@ static void *VL_SDL2VK_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 		imageInfo.format = VK_FORMAT_R8_UINT;
 		imageInfo.tiling = VK_IMAGE_TILING_LINEAR;
 		imageInfo.initialLayout = VK_IMAGE_LAYOUT_PREINITIALIZED;
-		imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 
@@ -1368,7 +1379,7 @@ static void *VL_SDL2VK_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 
 		VkCommandBuffer layoutChange = VL_SDL2VK_StartCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 		VL_SDL2VK_ImageLayoutBarrier(layoutChange, surf->stagingImage, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_PREINITIALIZED, VK_ACCESS_HOST_WRITE_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_READ_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
-		VL_SDL2VK_ImageLayoutBarrier(layoutChange, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_PREINITIALIZED, VK_ACCESS_HOST_WRITE_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+		VL_SDL2VK_ImageLayoutBarrier(layoutChange, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_PREINITIALIZED, VK_ACCESS_HOST_WRITE_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_IMAGE_LAYOUT_GENERAL, VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
 		vkEndCommandBuffer(layoutChange);
 
 		VkSubmitInfo submitInfo = {};
@@ -1397,7 +1408,7 @@ static void VL_SDL2VK_UploadSurface(void *surface)
 
 	VkCommandBuffer copyImageCmdBuf = VL_SDL2VK_StartCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-	VL_SDL2VK_ImageLayoutBarrier(copyImageCmdBuf, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
+	VL_SDL2VK_ImageLayoutBarrier(copyImageCmdBuf, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_GENERAL, VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
 	// Copy
 	VkImageSubresourceLayers subresourceLayers = {};
 	subresourceLayers.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -1416,7 +1427,7 @@ static void VL_SDL2VK_UploadSurface(void *surface)
 
 	vkCmdCopyImage(copyImageCmdBuf, surf->stagingImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, surf->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
 
-	VL_SDL2VK_ImageLayoutBarrier(copyImageCmdBuf, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+	VL_SDL2VK_ImageLayoutBarrier(copyImageCmdBuf, surf->image, VK_FORMAT_R8_UINT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_IMAGE_LAYOUT_GENERAL, VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
 
 	vkEndCommandBuffer(copyImageCmdBuf);
 
@@ -1613,16 +1624,16 @@ static void VL_SDL2VK_BindTexture(void *surface)
 	VkResult result = VK_SUCCESS;
 
 	VkDescriptorImageInfo descriptorInfo = {};
-	descriptorInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	descriptorInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 	descriptorInfo.imageView = surf->view;
 	descriptorInfo.sampler = surf->sampler;
 
 	VkWriteDescriptorSet writeSet = {};
 	writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	writeSet.dstSet = vl_sdl2vk_samplerDescriptorSet;
-	writeSet.dstBinding = 1;
+	writeSet.dstBinding = 0;
 	writeSet.dstArrayElement = 0;
-	writeSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	writeSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	writeSet.descriptorCount = 1;
 	writeSet.pImageInfo = &descriptorInfo;
 
