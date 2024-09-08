@@ -64,7 +64,7 @@ void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 	{
 		CA_CacheGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
 		SD_PlaySound(CK_SOUNDNUM(SOUND_GRABBITER));
-
+		VL_FixRefreshBuffer();
 		US_CenterWindow(26, 8);
 		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 		US_SetWindowW(US_GetWindowW() - 0x30);
@@ -84,6 +84,7 @@ void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 	{
 		ck_gameState.ep.ck6.sandwich++;
 		CA_CacheGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
+		VL_FixRefreshBuffer();
 		US_CenterWindow(26, 8);
 		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 		US_SetWindowW(US_GetWindowW() - 0x30);
@@ -125,7 +126,7 @@ void CK6_RocketCol(CK_object *a, CK_object *b)
 	{
 
 		CA_CacheGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
-
+		VL_FixRefreshBuffer();
 		US_CenterWindow(26, 8);
 		VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 		US_SetWindowW(US_GetWindowW() - 0x30);
@@ -359,7 +360,7 @@ void CK6_MapCliffCol(CK_object *a, CK_object *b)
 		if (ck_gameState.ep.ck6.rope == 0)
 		{
 			CA_CacheGrChunk(CK_CHUNKNUM(PIC_KEENTALK1));
-
+			VL_FixRefreshBuffer();
 			US_CenterWindow(26, 8);
 			VHB_DrawBitmap(US_GetWindowX() + US_GetWindowW() - 0x30, US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK1));
 			US_SetWindowW(US_GetWindowW() - 0x30);
