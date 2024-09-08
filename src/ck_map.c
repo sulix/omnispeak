@@ -527,7 +527,6 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 
 	CK_UpdateScoreBox(ck_scoreBoxObj);
 	RF_Refresh();
-	VL_Present();
 	RF_Refresh();
 	SD_PlaySound(CK_SOUNDNUM(SOUND_UNKNOWN41));
 
@@ -539,7 +538,6 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 		RF_Refresh();
 		//VL_DelayTics(2);
 		//CK_SetTicsPerFrame();
-		VL_Present();
 
 		timer += SD_GetSpriteSync();
 		ck_keenObj->posY += SD_GetSpriteSync() * 3;
