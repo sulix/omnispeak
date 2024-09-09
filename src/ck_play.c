@@ -129,6 +129,7 @@ void CK_CountActiveObjects()
 		current = current->next;
 	}
 
+	VL_FixRefreshBuffer();
 	US_CenterWindow(18, 4);
 	US_PrintF("Active Objects : %d\n", active);
 	US_PrintF("Inactive Object : %d\n", inactive);
@@ -138,6 +139,7 @@ void CK_CountActiveObjects()
 
 void CK_DebugMemory()
 {
+	VL_FixRefreshBuffer();
 	US_CenterWindow(16, 10);
 
 	US_CPrint("Memory Usage:\n");
@@ -947,7 +949,7 @@ bool CK_DebugKeys()
 	if (IN_GetKeyState(IN_SC_J))
 	{
 		ck_gameState.jumpCheat = !ck_gameState.jumpCheat;
-		//TODO: Something here?
+		VL_FixRefreshBuffer();
 		US_CenterWindow(18, 3);
 
 		if (ck_gameState.jumpCheat)
@@ -968,6 +970,7 @@ bool CK_DebugKeys()
 
 	if (IN_GetKeyState(IN_SC_N))
 	{
+		VL_FixRefreshBuffer();
 		US_CenterWindow(18, 3);
 		if (ck_keenObj->clipped)
 		{
@@ -990,6 +993,7 @@ bool CK_DebugKeys()
 	if (IN_GetKeyState(IN_SC_S) && game_in_progress)
 	{
 		ck_slowMotionEnabled = !ck_slowMotionEnabled;
+		VL_FixRefreshBuffer();
 		US_CenterWindow(18, 3);
 
 		if (ck_slowMotionEnabled)
