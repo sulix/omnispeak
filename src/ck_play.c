@@ -1014,7 +1014,7 @@ bool CK_DebugKeys()
 	if (IN_GetKeyState(IN_SC_W) && game_in_progress)
 	{
 		char str[4];
-		const char *msg = "  Warp to which level(1-18):";
+		const char *msg = CK_STRING(ck_str_levelWarp);
 		uint16_t h, w, saveX, saveY; // omnispeak hacks
 
 		VL_FixRefreshBuffer();
@@ -1033,7 +1033,7 @@ bool CK_DebugKeys()
 			// Convert string into number
 			sscanf(str, "%d", &level);
 
-			if (level >= 1 && level <= 18)
+			if (level >= CK_INT(ck_minWarpLevel, 1) && level <= CK_INT(ck_maxWarpLevel, 18))
 			{
 				ck_gameState.currentLevel = level;
 				ck_gameState.levelState = LS_AboutToRecordDemo;

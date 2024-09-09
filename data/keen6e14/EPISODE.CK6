@@ -11,6 +11,13 @@
 %int CK_highScoreFontColour 15 # Invert the colour (Cyan -> Dark red)
 %int CK_EndingMusicLevel 1
 %int CK_StarWarsMusicLevel 13
+
+%int ck_minLevel 1
+%int ck_maxLevel 18
+%int ck_minWarpLevel @ck_minLevel
+%int ck_maxWarpLevel @ck_maxLevel
+%int ck_minEnterLevel @ck_minLevel
+%int ck_maxEnterLevel @ck_maxLevel
 %int ck_minDoneLevel 1
 %int ck_maxDoneLevel 17
 

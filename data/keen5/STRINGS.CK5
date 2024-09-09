@@ -43,6 +43,7 @@
 #TODO: Warp and some other debug cheats
 
 %string ck_str_debugKeysActive "Debug keys active"
+%string ck_str_levelWarp "  Warp to which level(1-18):"
 
 
 %string ck_str_paused "PAUSED"
