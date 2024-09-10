@@ -34,17 +34,17 @@ jobs:
         make PLATFORM=dos
         cp ../csdpmi7b/bin/CWSDPMI.EXE ../bin-dos
     - name: Upload (Linux)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Linux Build
         path: bin/
     - name: Upload (Windows)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Windows Build
         path: bin-win*/
     - name: Upload (MS-DOS)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: MS-DOS Build
         path: bin-dos/

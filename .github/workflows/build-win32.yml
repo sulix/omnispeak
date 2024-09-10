@@ -75,32 +75,32 @@ jobs:
         copy ..\contrib\mingw\SDL2-2.26.1\x86_64-w64-mingw32\bin\SDL2.dll .
 
     - name: Upload (Windows/MSVC/Debug/x86)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Windows Build (MSVC-x86-Debug)
         path: build32/Debug
     - name: Upload (Windows/MSVC/RelWithDebInfo/x64)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Windows Build (MSVC-x86-RelWithDebInfo)
         path: build32/Debug
     - name: Upload (Windows/MSVC/Debug/x64)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Windows Build (MSVC-x64-Debug)
         path: build64/Debug
     - name: Upload (Windows/MSVC/RelWithDebInfo/x64)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Windows Build (MSVC-x64-RelWithDebInfo)
         path: build64/Debug
     - name: Upload (Windows/mingw/RelWithDebInfo/i686)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Windows Build (mingw-i686-RelWithDebInfo)
         path: build32-mingw
     - name: Upload (Windows/mingw/RelWithDebInfo/x86_64)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Windows Build (mingw-x86_64-RelWithDebInfo)
         path: build64-mingw
