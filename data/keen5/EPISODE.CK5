@@ -14,6 +14,15 @@
 %int ck_minDoneLevel 1
 %int ck_maxDoneLevel 17
 
+%int ck_minLevel 1
+%int ck_maxLevel 18
+%int ck_minWarpLevel @ck_minLevel
+%int ck_maxWarpLevel @ck_maxLevel
+%int ck_minEnterLevel @ck_minLevel
+%int ck_maxEnterLevel @ck_maxLevel
+%int ck_minDoneLevel 1
+%int ck_maxDoneLevel 17
+
 # Offsets into the .exe for savegame compatability
 %int ck_exe_objArrayOffset 0x9E6F
 %int ck_exe_tempObjOffset 0xBC3B
