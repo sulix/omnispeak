@@ -170,9 +170,10 @@ void (*ca_beginCacheBox)(const char *title, int numcache);
 void (*ca_updateCacheBox)(void);
 void (*ca_finishCacheBox)(void);
 
-bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
+static bool CAL_LoadFile_Int(const char *filename, mm_ptr_t *ptr, int *memsize, bool adjustExt)
 {
-	FS_File f = FS_OpenOmniFile(FS_AdjustExtension(filename));
+	FS_File f = FS_OpenOmniFile(adjustExt ? FS_AdjustExtension(filename) :
+                                                filename);
 
 	if (!FS_IsFileValid(f))
 		return false;
@@ -195,6 +196,11 @@ bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 		return false;
 	}
 	return true;
+}
+
+bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
+{
+	return CAL_LoadFile_Int(filename, ptr, memsize, true);
 }
 
 //
