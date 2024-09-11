@@ -960,7 +960,8 @@ void CAL_SetupMapFile(void)
 	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CAL_SetupMapFile: Loading map headers...\n");
 
 	int mapHeadFileSize = 0;
-	CA_LoadFile("MAPHEAD.EXT", (void **)(&ca_MapHead), &mapHeadFileSize);
+	if (!CAL_LoadFile_Int("MTEMP.TMP", (void **)(&ca_MapHead), &mapHeadFileSize, false))
+		CA_LoadFile("MAPHEAD.EXT", (void **)(&ca_MapHead), &mapHeadFileSize);
 #ifdef CK_CROSS_IS_BIGENDIAN
 	ca_MapHead->rleTag = CK_Cross_SwapLE16(ca_MapHead->rleTag);
 	for (int i = 0; i < CA_NUMMAPS; ++i)

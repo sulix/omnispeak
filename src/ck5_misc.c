@@ -60,7 +60,8 @@ bool CK5_IsPresent()
 		return false;
 	if (!FS_IsOmniFilePresent("GFXINFOE.CK5"))
 		return false;
-	if (!FS_IsOmniFilePresent("MAPHEAD.CK5"))
+	// MTEMP.TMP was actually the header originally used for compressed maps
+	if (!FS_IsOmniFilePresent("MAPHEAD.CK5") && !FS_IsOmniFilePresent("MTEMP.TMP"))
 		return false;
 	// Map header file may include the tile info
 	//if (!FS_IsOmniFilePresent("TILEINFO.CK5"))
