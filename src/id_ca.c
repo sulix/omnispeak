@@ -190,7 +190,10 @@ bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 	FS_CloseFile(f);
 
 	if (amountRead != length)
+	{
+		MM_FreePtr(ptr);
 		return false;
+	}
 	return true;
 }
 
@@ -964,9 +967,6 @@ void CAL_SetupMapFile(void)
 	ti_tileInfo = NULL;
 	if (!CA_LoadFile("TILEINFO.EXT", (void **)(&ti_tileInfo), 0))
 	{
-		if (ti_tileInfo) // CA_LoadFile may leave a memory leak
-			MM_FreePtr((void **)&ti_tileInfo);
-
 		if (mapHeadFileSize <= sizeof(*ca_MapHead))
 			Quit("Can't open TILEINFO file, and MAPHEAD file lacks tileinfo data!");
 
