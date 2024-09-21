@@ -172,7 +172,7 @@ void (*ca_finishCacheBox)(void);
 
 bool CA_LoadFile(const char *filename, mm_ptr_t *ptr, int *memsize)
 {
-	FS_File f = FS_OpenOmniFile(FS_AdjustExtension(filename));
+	FS_File f = FS_OpenOmniFile(filename);
 
 	if (!FS_IsFileValid(f))
 		return false;
@@ -578,7 +578,9 @@ void CAL_SetupGrFile()
 	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CAL_SetupGrFile: Loading graphics headers...\n");
 
 	//Load the ?GADICT
-	CA_LoadFile("EGADICT.EXT", (void **)(&ca_gr_huffdict), 0);
+	const char *dictName = CK_FILENAME(ca_graphDict, "EGADICT.EXT");
+	if (!CA_LoadFile(dictName, (void **)(&ca_gr_huffdict), 0))
+		QuitF("Couldn't load EGA graphics huffman dictionary %s\n", dictName);
 
 #ifdef CK_CROSS_IS_BIGENDIAN
 	for (int i = 0; i < 256; ++i)
@@ -592,16 +594,18 @@ void CAL_SetupGrFile()
 	//CAL_OptimizeNodes(ca_gr_huffdict);
 
 	//Load the ?GAHEAD
-	CA_LoadFile("EGAHEAD.EXT", &ca_graphStarts, &ca_graphHeadSize);
+	const char *headName = CK_FILENAME(ca_graphHead, "EGAHEAD.EXT");
+	CA_LoadFile(headName, &ca_graphStarts, &ca_graphHeadSize);
 
-	// Read chunk type info from GFEINFO?
-	FS_File gfxinfoe = FS_OpenOmniFile(FS_AdjustExtension("GFXINFOE.EXT"));
+	// Read chunk type info from GFXINFOE?
+	const char *gfxinfoe_fname = CK_FILENAME(ca_gfxInfoFile, "GFXINFOE.EXT");
+	FS_File gfxinfoe = FS_OpenOmniFile(gfxinfoe_fname);
 	if (!FS_IsFileValid(gfxinfoe))
-		Quit("Couldn't load GFXINFOE!");
+		QuitF("Couldn't load %s!", gfxinfoe_fname);
 	size_t gfxinfoeLen = FS_Read(&ca_gfxInfoE, sizeof(ca_gfxinfo), 1, gfxinfoe);
 	FS_CloseFile(gfxinfoe);
 	if (gfxinfoeLen != 1)
-		Quit("Couldn't read GFXINFOE!");
+		QuitF("Couldn't read GFXINFOE from %s!", gfxinfoe_fname);
 #ifdef CK_CROSS_IS_BIGENDIAN
 	uint16_t *uptr = (uint16_t *)&ca_gfxInfoE;
 	for (size_t loopVar = 0; loopVar < sizeof(ca_gfxInfoE) / 2; loopVar++, uptr++)
@@ -609,7 +613,10 @@ void CAL_SetupGrFile()
 #endif
 
 	//Load the graphics --- we will keep the file open for the duration of the game.
-	ca_graphHandle = FS_OpenKeenFile(FS_AdjustExtension("EGAGRAPH.EXT"));
+	const char *graphName = CK_FILENAME(ca_graphFile, "EGAGRAPH.EXT");
+	ca_graphHandle = FS_OpenKeenFile(graphName);
+	if (!FS_IsFileValid(ca_graphHandle))
+		QuitF("Couldn't open %s!", graphName);
 
 	// Find the size of the file. Some mods do not have the last entry in the ?GAHEAD,
 	// so we compute it like so.
@@ -951,7 +958,9 @@ void CAL_SetupMapFile(void)
 	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CAL_SetupMapFile: Loading map headers...\n");
 
 	int mapHeadFileSize = 0;
-	CA_LoadFile("MAPHEAD.EXT", (void **)(&ca_MapHead), &mapHeadFileSize);
+	const char *mapHeadFileName = CK_FILENAME(ca_mapHead, "MAPHEAD.EXT");
+	if (!CA_LoadFile(mapHeadFileName, (void **)(&ca_MapHead), &mapHeadFileSize))
+		QuitF("Couldn't load map headers from %s\n", mapHeadFileName);
 #ifdef CK_CROSS_IS_BIGENDIAN
 	ca_MapHead->rleTag = CK_Cross_SwapLE16(ca_MapHead->rleTag);
 	for (int i = 0; i < CA_NUMMAPS; ++i)
@@ -959,16 +968,22 @@ void CAL_SetupMapFile(void)
 		ca_MapHead->headerOffsets[i] = CK_Cross_SwapLE32(ca_MapHead->headerOffsets[i]);
 	}
 #endif
-	ca_GameMaps = FS_OpenKeenFile(FS_AdjustExtension("GAMEMAPS.EXT"));
+	const char *gameMapsFileName = CK_FILENAME(ca_mapFile, "GAMEMAPS.EXT");
+	ca_GameMaps = FS_OpenKeenFile(gameMapsFileName);
+	if (!FS_IsFileValid(ca_GameMaps))
+		QuitF("Couldn't open %s!", gameMapsFileName);
 	// Try reading TILEINFO.EXT first, otherwise use data from MAPHEAD.EXT
 	ti_tileInfo = NULL;
-	if (!CA_LoadFile("TILEINFO.EXT", (void **)(&ti_tileInfo), 0))
+	const char *tileInfoName = CK_FILENAME(ca_tileInfo, "TILEINFO.EXT");
+	if (tileInfoName)
+		CA_LoadFile(tileInfoName, (void **)(&ti_tileInfo), 0);
+	if (!ti_tileInfo)
 	{
-		if (ti_tileInfo) // CA_LoadFile may leave a memory leak
-			MM_FreePtr((void **)&ti_tileInfo);
+		// CA_LoadFile may leave a memory leak
+		MM_FreePtr((void **)&ti_tileInfo);
 
 		if (mapHeadFileSize <= sizeof(*ca_MapHead))
-			Quit("Can't open TILEINFO file, and MAPHEAD file lacks tileinfo data!");
+			QuitF("Can't open TILEINFO file (%s), and MAPHEAD file lacks tileinfo data!", tileInfoName);
 
 		ti_tileInfo = (uint8_t *)(ca_MapHead + 1);
 	}
@@ -984,11 +999,14 @@ void CAL_SetupAudioFile(void)
 	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CAL_SetupAudioFile: Loading audio headers...\n");
 
 	// Read audio chunk type info from AUDINFOE
-	FS_File audinfoe = FS_OpenOmniFile(FS_AdjustExtension("AUDINFOE.EXT"));
+	const char *audinfoe_fname = CK_FILENAME(ca_audioInfoFile, "AUDINFOE.EXT");
+	FS_File audinfoe = FS_OpenOmniFile(audinfoe_fname);
+	if (!FS_IsFileValid(audinfoe))
+		QuitF("Couldn't open audio info file: %s!", audinfoe_fname);
 	size_t audinfoeLen = FS_Read(&ca_audInfoE, sizeof(ca_audinfo), 1, audinfoe);
 	FS_CloseFile(audinfoe);
 	if (audinfoeLen != 1)
-		Quit("Couldn't read AUDINFOE!");
+		QuitF("Couldn't read AUDINFOE data from %s!", audinfoe_fname);
 #ifdef CK_CROSS_IS_BIGENDIAN
 	uint16_t *uptr = (uint16_t *)&ca_audInfoE;
 	for (size_t loopVar = 0; loopVar < sizeof(ca_audInfoE) / 2; loopVar++, uptr++)
@@ -997,7 +1015,9 @@ void CAL_SetupAudioFile(void)
 
 #ifndef CA_AUDIOUNCOMPRESSED
 	//Load the AUDIODCT
-	CA_LoadFile("AUDIODCT.EXT", (void **)(&ca_audiohuffman), 0);
+	const char *dict_fname = CK_FILENAME(ca_audioDict, "AUDIODCT.EXT");
+	if (!CA_LoadFile(dict_fname, (void **)(&ca_audiohuffman), 0))
+		QuitF("Couldn't load audio dictionary %s\n", dict_fname);
 
 #ifdef CK_CROSS_IS_BIGENDIAN
 	for (int i = 0; i < 256; ++i)
@@ -1011,23 +1031,28 @@ void CAL_SetupAudioFile(void)
 	//CAL_OptimizeNodes(ca_audiohuffman);
 
 	//Load the AUDIOHHD
-	CA_LoadFile("AUDIOHHD.EXT", (void **)(&ca_audiostarts), 0);
+	const char *head_fname = CK_FILENAME(ca_audioHead, "AUDIOHHD.EXT");
+	if (!CA_LoadFile(head_fname, (void **)(&ca_audiostarts), 0))
+		QuitF("Couldn't load (compressed) audio header %s\n", head_fname);
 
 	//Load the sound data --- we will keep the file open for the duration of the game.
-	ca_audiohandle = FS_OpenKeenFile(FS_AdjustExtension("AUDIO.EXT"));
+	const char *audio_fname = CK_FILENAME(ca_audioFile, "AUDIO.EXT");
+	ca_audiohandle = FS_OpenKeenFile(audio_fname);
 	if (!ca_audiohandle)
 	{
-		Quit("Can't open AUDIO.CKx!");
+		QuitF("Can't open %s!", audio_fname);
 	}
 #else
-	//Load the AUDIOHHD
-	CA_LoadFile("AUDIOHED.EXT", (void **)(&ca_audiostarts), 0);
+	//Load the AUDIOHED
+	const char *head_fname = CK_FILENAME(ca_audioHead, "AUDIOHED.EXT");
+	CA_LoadFile(head_fname, (void **)(&ca_audiostarts), 0);
 
 	//Load the sound data --- we will keep the file open for the duration of the game.
-	ca_audiohandle = FS_OpenKeenFile(FS_AdjustExtension("AUDIOT.EXT"));
+	const char *audio_fname = CK_FILENAME(ca_audioFile, "AUDIOT.EXT");
+	ca_audiohandle = FS_OpenKeenFile(audio_fname);
 	if (!ca_audiohandle)
 	{
-		Quit("Can't open AUDIOT.CKx!");
+		QuitF("Can't open %s!", audio_fname);
 	}
 #endif
 }

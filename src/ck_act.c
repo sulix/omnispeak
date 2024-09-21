@@ -660,5 +660,5 @@ void CK_VAR_LoadVars(const char *filename)
 	while (CK_VAR_ParseVar(&parserstate))
 		numVarsParsed++;
 
-	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Parsed %d vars from \"%s\" over %d lines (%d actions created).\n", numVarsParsed, FS_AdjustExtension(filename), parserstate.linecount, ck_actionsUsed);
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Parsed %d vars from \"%s\" over %d lines (%d actions created).\n", numVarsParsed, filename, parserstate.linecount, ck_actionsUsed);
 }

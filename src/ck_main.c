@@ -130,7 +130,7 @@ void CK_InitGame()
 
 
 	CK_VAR_Startup();
-	CK_VAR_LoadVars("EPISODE.EXT");
+	CK_VAR_LoadVars(FS_AdjustExtension("EPISODE.EXT"));
 
 	// Load the core datafiles
 	CA_Startup();
@@ -615,7 +615,7 @@ int main(int argc, char *argv[])
 
 	if (!ck_currentEpisode->isPresent())
 	{
-		Quit("Couldn't find game data files!");
+	//	Quit("Couldn't find game data files!");
 	}
 
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER

@@ -68,6 +68,7 @@ typedef int16_t chunk_id_t;
 #define CK_INTELEMENT(name, i) (CK_INTARRAY(name)[i])
 #define CK_STRINGARRAY(name) STRARRAY_ ## name
 #define CK_STRINGELEMENT(name, i) (CK_STRINGARRAY(name)[i])
+#define CK_FILENAME(name, def) STRINGS_ ## name
 #else
 #define CK_INT(name, default) CK_VAR_GetInt(#name, default)
 #define CK_CHUNKNUM(name) CK_VAR_GetInt(#name, 0)
@@ -80,6 +81,7 @@ typedef const char *chunk_id_t;
 #define CK_INTELEMENT(name, i) CK_VAR_GetIntArrayElement(#name, i)
 #define CK_STRINGARRAY(name) CK_VAR_GetStringArray(#name)
 #define CK_STRINGELEMENT(name, i) CK_VAR_GetStringArrayElement(#name, i)
+#define CK_FILENAME(name, def) CK_VAR_GetString(#name, FS_AdjustExtension(def))
 #endif
 
 

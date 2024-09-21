@@ -3,6 +3,24 @@
 #
 
 # Episode variables
+
+# Graphics files
+%string ca_gfxInfoFile "GFXINFOE.CK4"
+%string ca_graphDict "EGADICT.CK4"
+%string ca_graphHead "EGAHEAD.CK4"
+%string ca_graphFile "EGAGRAPH.CK4"
+
+# Sound Files
+%string ca_audioInfoFile "AUDINFOE.CK4"
+%string ca_audioHead "AUDIOHHD.CK4"
+%string ca_audioDict "AUDIODCT.CK4"
+%string ca_audioFile "AUDIO.CK4"
+
+# Level Files
+%string ca_mapFile "GAMEMAPS.CK4"
+%string ca_mapHead "MAPHEAD.CK4"
+%string ca_tileInfo "TILEINFO.CK4"
+
 %int CK_activeLimit 4
 %int CK_highScoreLevel 19
 %int CK_highScoreTopMargin 0x33
