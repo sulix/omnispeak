@@ -29,11 +29,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // several episodes.
 // AFAIK, There never was a "ck_obj.c" in the DOS source
 
+// The maximum height of a gem door. Note that this is the height of the
+// _full_ door, including the two ground tiles, not just the main portion
+// stored in user1.
+#define CK_MAX_DOOR_HEIGHT 50
+
 void CK_DoorOpen(CK_object *obj)
 {
-	uint16_t tilesToReplace[0x30];
+	uint16_t tilesToReplace[CK_MAX_DOOR_HEIGHT];
 
-	if (obj->user1 + 2 > 0x30)
+	if (obj->user1 + 2 > CK_MAX_DOOR_HEIGHT)
 	{
 		Quit("Door too tall!");
 	}
