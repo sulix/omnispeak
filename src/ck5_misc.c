@@ -319,7 +319,7 @@ void CK5_ScanInfoLayer()
 			case 3:
 				CK_DemoSignSpawn();
 				CA_MarkGrChunk(CK_CHUNKNUM(SPR_SCOREBOX));
-				CA_MARKLUMP(LUMP_KEEN);
+				CA_MARKLUMP(LUMP_MAPKEEN);
 				if (ck_gameState.levelState != LS_TeleportToKorath)
 					CK_SpawnMapKeen(x, y);
 				break;
