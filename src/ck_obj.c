@@ -108,9 +108,6 @@ void CK_SpawnItem(int tileX, int tileY, int itemNumber)
 	obj->user2 = obj->gfxChunk;
 	obj->user3 = obj->gfxChunk + 2;
 	CK_SetAction(obj, CK_ACTION(CK_ACT_item));
-	// TODO: Wrong place to cache?
-	CA_CacheGrChunk(obj->gfxChunk);
-	CA_CacheGrChunk(obj->gfxChunk + 1);
 }
 
 void CK_SpawnCentilifeNotify(int tileX, int tileY)
