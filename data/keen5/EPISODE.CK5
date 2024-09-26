@@ -31,6 +31,8 @@
 %int ck_exe_animTilesOffset 0xD4DC
 %int ck_exe_animTileSize 4
 
+# Bugfixes and per-episode behaviour flags
+%int ck_turretShotsPersist 0
 
 %intarray ck_starWarsPalette
 	0x00, 0x01, 0x18, 0x1E, 0x1F, 0x1C, 0x06, 0x07,

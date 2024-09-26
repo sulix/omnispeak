@@ -563,7 +563,10 @@ void CK_TurretShoot(CK_object *obj)
 	CK_object *shot = CK_GetNewObj(true);
 
 	shot->type = CT5_EnemyShot; //TurretShot
-	shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
+	if (CFG_GetConfigBool("ck_turretShotsPersist", CK_INT(ck_turretShotsPersist, ck_currentEpisode->ep == EP_CK6)))
+		shot->active = OBJ_ACTIVE;
+	else
+		shot->active = OBJ_EXISTS_ONLY_ONSCREEN;
 	shot->clipped = CLIP_normal;
 	shot->posX = obj->posX;
 	shot->posY = obj->posY;
