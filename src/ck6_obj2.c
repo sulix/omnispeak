@@ -611,7 +611,7 @@ void CK6_FlectWalk(CK_object *obj)
 {
 	if (ck_keenObj->posX < obj->posX && obj->xDirection == IN_motion_Right)
 	{
-		if (obj->xDirection == IN_motion_Left)
+//		if (obj->xDirection != IN_motion_Left) // Always true
 			obj->currentAction = CK_ACTION(CK6_ACT_FlectTurn1);
 
 		obj->xDirection = IN_motion_Left;
@@ -619,7 +619,7 @@ void CK6_FlectWalk(CK_object *obj)
 
 	if (ck_keenObj->posX > obj->posX && obj->xDirection == IN_motion_Left)
 	{
-		if (obj->xDirection == IN_motion_Right)
+//		if (obj->xDirection != IN_motion_Right) // Always true
 			obj->currentAction = CK_ACTION(CK6_ACT_FlectTurn1);
 
 		obj->xDirection = IN_motion_Right;
