@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "id_heads.h"
 #include "ck_act.h"
 #include "ck_cross.h"
@@ -57,4 +58,14 @@ void Quit(const char *msg)
 #endif
 		exit(-1);
 	}
+}
+
+void QuitF(const char *msg, ...)
+{
+	char msg_buf[512];
+	va_list args;
+	va_start(args, msg);
+	vsnprintf(msg_buf, sizeof(msg_buf), msg, args);
+	va_end(args);
+	Quit(msg_buf);
 }

@@ -45,6 +45,7 @@ typedef struct
 
 // In ck_quit.c, as it may be customized by individual games.
 void Quit(const char *msg) _NORETURN;
+void QuitF(const char *msg, ...) _NORETURN CK_PRINTF_FORMAT(1, 2);
 
 // id_us_1.c:
 // Parameter Checking
