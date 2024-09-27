@@ -1010,7 +1010,6 @@ void CK_KeenRunDrawFunc(CK_object *obj)
 		// Keen6 conveyor belt right
 		ck_nextX = SD_GetSpriteSync() * 8;
 		ck_nextY = 0;
-		obj->user1 = 0;
 		CK_PhysUpdateNormalObj(obj);
 	}
 	else if (obj->topTI == 0x31)
@@ -1018,7 +1017,6 @@ void CK_KeenRunDrawFunc(CK_object *obj)
 		// Keen6 conveyor belt left
 		ck_nextX = SD_GetSpriteSync() * -8;
 		ck_nextY = 0;
-		obj->user1 = 0;
 		CK_PhysUpdateNormalObj(obj);
 	}
 
@@ -1476,13 +1474,28 @@ void CK_KeenPogoDrawFunc(CK_object *obj)
 		else
 		{
 #ifdef WITH_KEEN6
-			if (ck_currentEpisode->ep == EP_CK6 && obj->topTI == 0x21) // BigSwitch
+			if (ck_currentEpisode->ep == EP_CK6)
 			{
-				CK6_ToggleBigSwitch(obj, true);
+				if (obj->topTI == 0x21) // BigSwitch
+				{
+					CK6_ToggleBigSwitch(obj, true);
+				}
+				else if (obj->topTI == 0x29) // Keen 6 conveyor belt right
+				{
+					obj->velX += 8;
+					if (obj->velX > 8)
+						obj->velX = 8;
+				}
+				else if (obj->topTI == 0x31) // Keen 6 conveyor belt left
+				{
+					obj->velX -= 8;
+					if (obj->velX < -8)
+						obj->velX = -8;
+				}
 			}
 #endif
 #ifdef WITH_KEEN5
-			if (obj->topTI == 0x39) // Fuse
+			if (ck_currentEpisode->ep == EP_CK5 && obj->topTI == 0x39) // Fuse
 			{
 				if (obj->velY >= 0x30)
 				{
