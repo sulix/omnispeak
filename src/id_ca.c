@@ -1102,6 +1102,8 @@ void CA_CacheMap(int mapIndex)
 		//Make sure we don't purge it accidentally.
 		MM_SetPurge((void **)(&CA_MapHeaders[mapIndex]), 0);
 	}
+	
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CA_CacheMap: Loading map %d (\"%s\")\n", mapIndex, CA_MapHeaders[mapIndex]->name);
 
 	int planeSize = CA_MapHeaders[mapIndex]->width * CA_MapHeaders[mapIndex]->height * 2;
 
