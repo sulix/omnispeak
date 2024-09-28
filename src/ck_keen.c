@@ -140,7 +140,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		{
 			if (a->topTI)
 			{
-				if (ca_mapOn == 14) // Janitor level
+				if (ca_mapOn == CK_INT(CK4_JanitorLevel, 14)) // Janitor level
 				{
 					CK4_ShowJanitorMessage();
 					//RF_ForceRefresh();

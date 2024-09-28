@@ -63,6 +63,7 @@
 # --------------------------
 
 %int CK4_UnderwaterCameraLevel 17
+%int CK4_JanitorLevel 14
 
 # Music Table
 # -----------
