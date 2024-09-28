@@ -463,6 +463,28 @@ bool CK_VAR_ParseAction(STR_ParserState *ps)
 	char actName[ID_STR_MAX_TOKEN_LENGTH];
 	STR_GetIdent(ps, actName, ID_STR_MAX_TOKEN_LENGTH);
 
+	STR_Token next = STR_PeekToken(ps);
+	if (STR_IsTokenIdent(next, "="))
+	{
+		char targetName[ID_STR_MAX_TOKEN_LENGTH];
+		STR_GetToken(ps); // Eat the '=' we just read
+		STR_GetIdent(ps, targetName, ID_STR_MAX_TOKEN_LENGTH);
+		CK_action *target = CK_GetActionByName(targetName);
+		if (!target)
+			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Couldn't resolve action variable reerence %s on line %d.\n", targetName, ps->linecount);
+		const char *realName = MM_ArenaStrDup(ck_varArena, actName);
+		#ifdef CK_VAR_TYPECHECK
+		CK_VAR_Variable *var = (CK_VAR_Variable *)MM_ArenaAlloc(ck_varArena, sizeof(*var));
+		var->type = VAR_Action;
+		var->value = (void *)target;
+		CK_VAR_SetEntry(realName, (void *)var);
+		#else
+		CK_VAR_SetEntry(realName, (void *)target);
+		#endif
+
+		return true;
+	}
+
 	CK_action *act = CK_GetOrCreateActionByName(actName);
 
 	act->compatDosPointer = CK_VAR_ParseIntOrVar(ps);
