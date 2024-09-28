@@ -962,7 +962,7 @@ void CK_GameLoop()
 				ck_gameState.levelsDone[ca_mapOn] = 1;
 				CK4_ShowCouncilMessage();
 
-				if (ck_gameState.ep.ck4.membersRescued == 8)
+				if (ck_gameState.ep.ck4.membersRescued == CK_INT(CK4_NumCouncilsToRescue, 8))
 				{
 					// Game won
 					CK_EndingPurge();

@@ -2364,7 +2364,7 @@ void CK_PlayLoop()
 #ifdef WITH_KEEN4
 			if (ck_currentEpisode->ep == EP_CK4)
 			{
-				ck_gameState.ep.ck4.membersRescued = 7;
+				ck_gameState.ep.ck4.membersRescued = CK_INT(CK4_NumCouncilsToRescue, 8) - 1;
 				ck_gameState.levelState = LS_CouncilRescued;
 			}
 #endif

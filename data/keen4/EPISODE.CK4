@@ -64,6 +64,7 @@
 
 %int CK4_UnderwaterCameraLevel 17
 %int CK4_JanitorLevel 14
+%int CK4_NumCouncilsToRescue 8
 
 # Music Table
 # -----------
