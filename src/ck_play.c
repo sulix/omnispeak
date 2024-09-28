@@ -2304,7 +2304,7 @@ void CK_PlayLoop()
 		}
 
 		// Follow the player with the camera.
-		if (ca_mapOn == 0 || (ck_currentEpisode->ep == EP_CK4 && ca_mapOn == 17))
+		if (ca_mapOn == 0 || (ck_currentEpisode->ep == EP_CK4 && ca_mapOn == CK_INT(CK4_UnderwaterCameraLevel, 17)))
 			CK_MapCamera(ck_keenObj);
 		else
 			CK_NormalCamera(ck_keenObj);
