@@ -1568,6 +1568,25 @@ CK_HighScore ck_highScores[8] =
 		{"", 10000, 0},
 };
 
+void CK_SetDefaultHighScores()
+{
+	const char **names = CK_STRINGARRAY(ck_defaultHighScoreNames);
+	intptr_t *scores = CK_INTARRAY(ck_defaultHighScores);
+	intptr_t *args = CK_INTARRAY(ck_defaultHighScoreArgs);
+
+	for (int i = 0; i < 8; ++i)
+	{
+		//TODO: Work out a way to bounds-check these in debug mode.
+
+		if (names)
+			strncpy(ck_highScores[i].name, names[i], sizeof(ck_highScores[i].name));
+		if (scores)
+			ck_highScores[i].score = scores[i];
+		if (args)
+			ck_highScores[i].arg4 = args[i];
+	}
+}
+
 // Draw the high scores overtop the level
 extern void *rf_tileBuffer;
 void CK_OverlayHighScores()

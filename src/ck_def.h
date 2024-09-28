@@ -423,6 +423,7 @@ typedef struct CK_HighScore
 } CK_HighScore;
 
 extern CK_HighScore ck_highScores[8];
+void CK_SetDefaultHighScores();
 
 void CK_SpawnKeen(int tileX, int tileY, int direction);
 void CK_ShotHit(CK_object *obj);

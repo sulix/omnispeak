@@ -132,6 +132,9 @@ void CK_InitGame()
 	CK_VAR_Startup();
 	CK_VAR_LoadVars(FS_AdjustExtension("EPISODE.EXT"));
 
+	// Set the default high scores once we've loaded the episode.
+	CK_SetDefaultHighScores();
+
 	// Load the core datafiles
 	CA_Startup();
 	CA_InitLumps();

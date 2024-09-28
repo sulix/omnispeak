@@ -63,6 +63,41 @@
 	0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x05, 0
 
 
+# Default High Scores
+# -------------------
+
+%stringarray ck_defaultHighScoreNames
+	"Id Software - '91",
+	"",
+	"Jason Blochowiak",
+	"Adrian Carmack",
+	"John Carmack",
+	"Tom Hall",
+	"John Romero",
+	""
+
+%intarray ck_defaultHighScores
+	10000,
+	10000,
+	10000,
+	10000,
+	10000,
+	10000,
+	10000,
+	10000
+
+# Unused in Keen 6
+%intarray ck_defaultHighScoreArgs
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0
+
+
 # Music Table
 # -----------
 %int WONDER_MUS 0 # In a Land of Wonderment and Awe

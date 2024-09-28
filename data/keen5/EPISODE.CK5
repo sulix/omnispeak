@@ -64,6 +64,41 @@
 	0, 4, 4, 0x1c, 1, 1, 1, 1,
 	0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 4, 0
 
+# Default High Scores
+# -------------------
+
+%stringarray ck_defaultHighScoreNames
+	"Id Software - '91",
+	"",
+	"Jason Blochowiak",
+	"Adrian Carmack",
+	"John Carmack",
+	"Tom Hall",
+	"John Romero",
+	""
+
+%intarray ck_defaultHighScores
+	10000,
+	10000,
+	10000,
+	10000,
+	10000,
+	10000,
+	10000,
+	10000
+
+# Unused in Keen 5
+%intarray ck_defaultHighScoreArgs
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0
+
+
 # Music Table
 # -----------
 %int CAMEIN_MUS 0 # This Is Where I Came In!

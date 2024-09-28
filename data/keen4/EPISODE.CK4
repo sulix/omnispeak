@@ -59,6 +59,40 @@
 	0, 0x18, 0x18, 0x07, 1, 1, 1, 1,
 	0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x18, 0
 
+# Default High Scores
+# -------------------
+
+%stringarray ck_defaultHighScoreNames
+	"Id Software - '91",
+	"",
+	"Jason Blochowiak",
+	"Adrian Carmack",
+	"John Carmack",
+	"Tom Hall",
+	"John Romero",
+	""
+
+%intarray ck_defaultHighScores
+	10000,
+	10000,
+	10000,
+	10000,
+	10000,
+	10000,
+	10000,
+	10000
+
+# Number of council members saved
+%intarray ck_defaultHighScoreArgs
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0
+
 # Episode-specific Variables
 # --------------------------
 
