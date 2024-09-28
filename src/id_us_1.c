@@ -790,6 +790,10 @@ void US_SaveConfig(void)
 	FS_WriteInt16LE(&intVal, 1, f);
 
 	intVal = (int16_t)in_controlType;
+#ifndef CK_VANILLA
+	if (intVal == IN_ctrl_All)
+		intVal = (int16_t)in_backupControlType;
+#endif
 	FS_WriteInt16LE(&intVal, 1, f); // Input device
 
 	// Write most of in_kbdControls one-by-one (it's a struct):

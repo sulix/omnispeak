@@ -115,6 +115,7 @@ static char in_ASCIINames[] = // Unshifted ASCII for scan codes
 bool in_Paused;
 const char *in_PausedMessage = "PAUSED";
 IN_ControlType in_controlType = DEFAULT_INPUT;
+IN_ControlType in_backupControlType = IN_ctrl_Keyboard1;
 bool in_keyStates[256];
 IN_ScanCode in_lastKeyScanned = IN_SC_None;
 bool in_useTextEvents = false;
@@ -460,6 +461,8 @@ void IN_Default(bool gotit, int16_t inputChoice)
 	inputChoice = DEFAULT_INPUT;
 #endif
 	in_controlType = (IN_ControlType)inputChoice;
+	if (inputChoice != IN_ctrl_All)
+	    in_backupControlType = (IN_ControlType)inputChoice;
 }
 
 uint8_t *in_demoBuf;

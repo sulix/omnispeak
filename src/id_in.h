@@ -255,6 +255,7 @@ typedef struct IN_Cursor
 
 extern IN_DemoMode in_demoState;
 extern IN_ControlType in_controlType;
+extern IN_ControlType in_backupControlType;
 
 extern bool in_Paused;
 extern const char *in_PausedMessage;
