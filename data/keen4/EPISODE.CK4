@@ -343,6 +343,11 @@
 # Wetsuit
 %int CK4_WetsuitSpawnYOffset -0x100
 
+# Council Member
+%int CK4_CouncilSpawnYOffset 369
+%int CK4_CouncilPauseProbability 3
+%int CK4_CouncilMessageUnderwaterLevel 17
+
 %include "STRINGS.CK4"
 %include "ACTION.CK4"
 

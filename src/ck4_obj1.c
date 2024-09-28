@@ -72,7 +72,7 @@ void CK4_SpawnCouncilMember(int tileX, int tileY)
 	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
-	obj->posY = RF_TileToUnit(tileY) - 369;
+	obj->posY = RF_TileToUnit(tileY) - CK_INT(CK4_CouncilSpawnYOffset, 369);
 	obj->xDirection = US_RndT() < 0x80 ? IN_motion_Right : IN_motion_Left;
 	obj->yDirection = IN_motion_Down;
 	CK_SetAction(obj, CK_ACTION(CK4_ACT_CouncilWalk0));
@@ -80,7 +80,7 @@ void CK4_SpawnCouncilMember(int tileX, int tileY)
 
 void CK4_CouncilWalk(CK_object *obj)
 {
-	if (SD_GetSpriteSync() << 3 > US_RndT())
+	if (SD_GetSpriteSync() << CK_INT(CK4_CouncilPauseProbability, 3) > US_RndT())
 		obj->currentAction = CK_ACTION(CK4_ACT_CouncilPause);
 }
 

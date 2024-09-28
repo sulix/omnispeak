@@ -673,7 +673,7 @@ void CK4_ShowCouncilMessage(void)
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetWindowX(US_GetWindowX() + 0x30);
 
-	if (ca_mapOn == 17)
+	if (ca_mapOn == CK_INT(CK4_CouncilMessageUnderwaterLevel, 17))
 	{
 		// Underwater level
 		US_CPrint(CK_STRING(ck4_str_councilThanks2));
