@@ -502,7 +502,7 @@ void CK4_ShowPrincessMessage(void)
 	US_SetWindowX(US_GetWindowX() + 0x30);
 	US_CPrint(CK_STRING(ck4_str_lindsaySays));
 
-	if (ca_mapOn == 7)
+	if (ca_mapOn == CK_INT(CK4_LindseyMessage1Level, 7))
 		US_CPrint(CK_STRING(ck4_str_lindsayMessage1));
 	else
 		US_CPrint(CK_STRING(ck4_str_lindsayMessage2));
@@ -517,7 +517,7 @@ void CK4_ShowPrincessMessage(void)
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 
-	if (ca_mapOn == 7)
+	if (ca_mapOn == CK_INT(CK4_LindseyMessage1Level, 7))
 		US_CPrint(CK_STRING(ck4_str_lindsayThanks1));
 	else
 		US_CPrint(CK_STRING(ck4_str_lindsayThanks2));
