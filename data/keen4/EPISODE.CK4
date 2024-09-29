@@ -391,3 +391,5 @@
 %include "STRINGS.CK4"
 %include "ACTION.CK4"
 
+%action CK4_EggHatchAction = CK4_ACT_BirdHatched0
+

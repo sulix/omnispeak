@@ -245,7 +245,7 @@ void CK4_EggCol(CK_object *a, CK_object *b)
 		bird->posY = a->posY - CK_INT(CK4_BirdHatchYOffset, 0x80);
 		bird->xDirection = a->posX < ck_keenObj->posX ? IN_motion_Right : IN_motion_Left;
 		bird->yDirection = IN_motion_Down;
-		CK_SetAction(bird, CK_ACTION(CK4_ACT_BirdHatched0));
+		CK_SetAction(bird, CK_ACTION(CK4_EggHatchAction));
 
 		// Shell bits
 		CK_object *shell = CK_GetNewObj(true);
