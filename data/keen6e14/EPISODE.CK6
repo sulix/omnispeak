@@ -51,6 +51,7 @@
 # Bugfixes and per-episode behaviour flags
 %int ck_turretShotsPersist 1
 
+
 %intarray ck_starWarsPalette
 	0x00, 0x01, 0x18, 0x19, 0x04, 0x1C, 0x06, 0x07,
 	0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x00
@@ -148,6 +149,45 @@
 		@LUMP_5000PTS,
 		@LUMP_ONEUP,
 		@LUMP_STUNNER
+
+%int ck6_hasCreatureQuestion 1
+%int ck6_numCopyCreatures 12
+%stringarray ck6_copyCreatureNames
+	"Bip",
+	"Babobba",
+	"Blorb",
+	"Gik",
+	"Ceilick",
+	"Blooglet",
+	"Blooguard",
+	"Flect",
+	"Bobba",
+	"Nospike",
+	"Orbatrix",
+	"Fleex"
+%intarray ck6_copyCreatureSprites
+	@SPR_BIPSHIPR,
+	@SPR_BABOBBAR1,
+	@SPR_BLORB1,
+	@SPR_GIKWALKR1,
+	@SPR_CEILICK1,
+	@SPR_RBLOOGLETWALKR1,
+	@SPR_BLOOGUARDWALKL1,
+	@SPR_FLECTSTAND,
+	@SPR_BOBBAR1,
+	@SPR_NOSPIKESTAND,
+	@SPR_ORBATRIXR1,
+	@SPR_FLEEXWALKR1
+%intarray ck6_copyCreatureXOffsets
+	-2, 0, -2, -1,
+	0, -2, -3, -1,
+	-2, -2, -2, -2
+%intarray ck6_copyCreatureYOffsets
+	0, 0, 0, 0,
+	0, 0, -1, 0,
+	0, 0, 1, 0
+# The Ceilick sprite has its coordinates determined differently.
+%int ck6_copyCeilickSprite @SPR_CEILICK1
 
 # Sounds
 %int SOUND_KEENWALK0 0

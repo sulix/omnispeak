@@ -64,6 +64,11 @@
 
 # Keen 6
 
+# Creature Question
+%string ck6_str_creatureQuestion "What is the name of this creature?"
+%string ck6_str_copyWrong1 "Sorry, that's not quite right."
+%string ck6_str_copyWrong2 "Please check your manual and try again."
+
 
 %string ck_str_exitToMap "Exit to Fribbulus Xax"
 

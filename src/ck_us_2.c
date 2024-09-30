@@ -1355,40 +1355,34 @@ typedef struct
 
 static int currentCreature = -1;
 
-CK_CreatureType ck6_creatures[] = {
-	{"Bip", 269, -2, 0},
-	{"Babobba", 288, 0, 0},
-	{"Blorb", 399, -2, 0},
-	{"Gik", 387, -1, 0},
-	{"Ceilick", 246, 0, 0},
-	{"Blooglet", 351, -2, 0},
-	{"Blooguard", 254, -3, -1},
-	{"Flect", 317, -1, 0},
-	{"Bobba", 405, -2, 0},
-	{"Nospike", 298, -2, 0},
-	{"Orbatrix", 335, -2, 1},
-	{"Fleex", 239, -2, 0},
-};
-
 bool CK6_CreatureQuestion()
 {
 	static bool alreadyPassed = 0;
 
+	if (!CK_INT(ck6_hasCreatureQuestion, ck_currentEpisode->hasCreatureQuestion))
+		return true;
+
 	if (alreadyPassed)
 		return true;
 
-	int var2 = 0;
+	int numCreatures = CK_INT(ck6_copyNumCreatures, 12);
+
+	bool correct = false;
 	if (currentCreature == -1)
 	{
 		time_t t;
 		struct tm *tt;
 		time(&t);
 		tt = localtime(&t);
-		currentCreature = (tt->tm_hour + tt->tm_mday) % 12;
+		currentCreature = (tt->tm_hour + tt->tm_mday) % numCreatures;
 	}
 
 	CA_UpLevel();
-	CK_CreatureType creature = ck6_creatures[currentCreature];
+	CK_CreatureType creature;
+	creature.name = CK_STRINGELEMENT(ck6_copyCreatureNames, currentCreature);
+	creature.sprite = CK_INTELEMENT(ck6_copyCreatureSprites, currentCreature);
+	creature.xofs = CK_INTELEMENT(ck6_copyCreatureXOffsets, currentCreature);
+	creature.yofs = CK_INTELEMENT(ck6_copyCreatureYOffsets, currentCreature);
 	CA_ClearMarks();
 	CA_MarkGrChunk(creature.sprite);
 	CA_CacheMarks(NULL);
@@ -1400,11 +1394,11 @@ bool CK6_CreatureQuestion()
 
 	US_CenterWindow(30, (h + 41) / 8 + 1);
 	US_SetPrintY(US_GetWindowY() + 2);
-	US_CPrint("What is the name of this creature?");
+	US_CPrint(CK_STRING(ck6_str_creatureQuestion));
 	int x = US_GetWindowX() + (US_GetWindowW() - w) / 2 + (creature.xofs * 8);
 	int y = US_GetWindowY() + 15;
 
-	if (creature.sprite == 246)
+	if (creature.sprite == CK_CHUNKNUM(ck6_copyCeilickSprite))
 		y++;
 	else
 		y += creature.yofs * 3;
@@ -1424,23 +1418,23 @@ bool CK6_CreatureQuestion()
 	char buf[16];
 	if (US_LineInput(x, y, buf, NULL, true, 16, varC))
 	{
-		var2 = 1;
+		correct = true;
 		// In the disassembly, a loop which appears to do a  case-insensitve strcmp
 		if (CK_Cross_strcasecmp(buf, creature.name))
 		{
 			VH_Bar(0, 0, 320, 200, 8);
 			US_CenterWindow(35, 5);
 			US_SetPrintY(US_GetPrintY() + 11);
-			US_CPrint("Sorry, that's not quite right.");
-			US_CPrint("Please check your manual and try again.");
+			US_CPrint(CK_STRING(ck6_str_copyWrong1));
+			US_CPrint(CK_STRING(ck6_str_copyWrong2));
 			VL_Present();
 			IN_WaitButton();
-			var2 = 0;
+			correct = false;
 		}
 	}
 
 	VH_Bar(0, 0, 320, 200, 8);
 	CA_DownLevel();
-	alreadyPassed = var2;
-	return var2;
+	alreadyPassed = correct;
+	return correct;
 }
