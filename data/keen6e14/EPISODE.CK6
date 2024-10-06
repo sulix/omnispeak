@@ -50,7 +50,7 @@
 
 # Bugfixes and per-episode behaviour flags
 %int ck_turretShotsPersist 1
-
+%int ck6_impossibleBullet 1
 
 %intarray ck_starWarsPalette
 	0x00, 0x01, 0x18, 0x19, 0x04, 0x1C, 0x06, 0x07,

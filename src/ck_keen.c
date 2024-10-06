@@ -118,6 +118,13 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 		if (!ck_keenState.platform)
 			CK_PhysPushY(a, b);
 	}
+	else if (b->type == CT_Stunner && ck_currentEpisode->ep != EP_CK6)
+	{
+		// Support the impossible bullet on non-Keen6 episodes.
+		if (CFG_GetConfigBool("impossibleBullet", CK_INT(ck6_impossibleBullet, 0)))
+			goto impossibleBullet;
+
+	}
 #ifdef WITH_KEEN4
 	else if (ck_currentEpisode->ep == EP_CK4)
 	{
@@ -176,7 +183,7 @@ void CK_KeenColFunc(CK_object *a, CK_object *b)
 				CK_SetAction2(a, CK_ACTION(CK6_ACT_keenStunned0));
 			}
 
-			if (CFG_GetConfigBool("impossibleBullet", true))
+			if (CFG_GetConfigBool("impossibleBullet", CK_INT(ck6_impossibleBullet, 1)))
 				goto impossibleBullet;
 			// The legendary bug!  For some reason, the control flows to check if
 			// keen is riding a platform he contacts his own stunner bullet.
