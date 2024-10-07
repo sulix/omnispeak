@@ -305,8 +305,10 @@ void ScrollTerminatorCredits(uint16_t elapsedTime, uint16_t xpixel)
 
 		VL_SetMapMask(0x4);
 		VL_1bppToScreen_PM(plane_1, picX, creditY1, ck_currentTermPicWidth * 8, rowsToDraw, 0xF);
+		VL_ScreenRect_PM(picX + ck_currentTermPicWidth * 8, creditY1, 8, rowsToDraw, 0);
 		VL_SetMapMask(0x8);
 		VL_1bppToScreen_PM(plane_2, picX, creditY1, ck_currentTermPicWidth * 8, rowsToDraw, 0xF);
+		VL_ScreenRect_PM(picX + ck_currentTermPicWidth * 8, creditY1, 8, rowsToDraw, 0);
 	}
 }
 
