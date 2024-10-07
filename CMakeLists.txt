@@ -12,12 +12,26 @@ else ()
 	set(RENDERER "sdl2gl" CACHE STRING "the type of video output API")
 endif()
 
+# Other tools
+option(WITH_VARPARSER "include the 'varparser' tool to convert EPISODE.CKx files" ON)
+
 # Misc config options
 option(VANILLA "whether to disable omnispeak-only features" OFF)
 option(BUILDASCPP "compile all 'c' source files with the C++ compiler" OFF)
 option(WITH_KEEN4 "include Keen 4: Secret of the Oracle support" ON)
 option(WITH_KEEN5 "include Keen 5: The Armageddon Machine support" ON)
 option(WITH_KEEN6 "include Keen 6: Aliens Ate My Baby Sitter support" ON)
+option(BUILTIN "compile EPISODE.CKx variables into the execurable" ON)
+
+if (BUILTIN)
+	if ((WITH_KEEN4 AND WITH_KEEN5)
+		OR (WITH_KEEN4 AND WITH_KEEN6)
+		OR (WITH_KEEN5 AND WITH_KEEN6)
+	)
+		message (FATAL_ERROR "Only one episode can be built-in!")
+	endif()
+	set (WITH_VARPARSER ON)
+endif()
 
 set(KEENPATH "." CACHE STRING "set the default path to the Commander Keen data files")
 set(USERPATH "." CACHE STRING "set the default path for user savegames")
@@ -42,6 +56,7 @@ ENDIF()
 if(VANILLA)
 	add_definitions(-DVANILLA=1)
 endif()
+
 
 # Handle path magic
 if(KEENPATH)
@@ -316,12 +331,34 @@ set(OMNISPEAK_OPL_SRCS
 	src/opl/nuked_opl3.c
 )
 
+
+if (WITH_VARPARSER)
+	add_executable(varparser
+		src/ck_act.c
+		src/id_str.c
+		src/ck_cross.c
+		src/id_mm.c
+		tools/varparser/main.c
+	)
+	target_compile_definitions(varparser PUBLIC
+		-DCK_VAR_TYPECHECK=1
+		-DCK_VAR_FUNCTIONS_AS_STRINGS=1
+	)
+
+endif()
+
 # Build all episodes
 if (WITH_KEEN4)
 	add_definitions(-DWITH_KEEN4=1)
 	set(OMNISPEAK_EPISODE_SRCS
 		${OMNISPEAK_EPISODE_SRCS}
 		${OMNISPEAK_CK4_SRCS}
+	)
+	set(OMNISPEAK_EPISODE_DATA_DIR
+		${CMAKE_CURRENT_SOURCE_DIR}/data/keen4/
+	)
+	set(OMNISPEAD_EPISODE_DATA
+		${OMNISPEAK_EPISODE_DATA_DIR}/EPISODE.CK4
 	)
 endif()
 if (WITH_KEEN5)
@@ -336,6 +373,19 @@ if (WITH_KEEN6)
 	set(OMNISPEAK_EPISODE_SRCS
 		${OMNISPEAK_EPISODE_SRCS}
 		${OMNISPEAK_CK6_SRCS}
+	)
+endif()
+
+if (BUILTIN)
+	add_custom_command(OUTPUT "episode.h" "episode.c"
+		COMMAND varparser --in EPISODE.CK4 --header episode.h --actions episode.c
+		DEPENDS ${OMNISPEAK_EPISODE_DATA}
+		WORKING_DIRECTORY ${OMNISPEAK_EPISODE_DATA_DIR}
+	)
+	set (OMNISPEAK_EPISODE_SRCS
+		${OMNISPEAK_EPISODE_SRCS}
+		episode.h
+		episode.c
 	)
 endif()
 
