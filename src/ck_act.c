@@ -674,7 +674,8 @@ void CK_VAR_LoadVars(const char *filename)
 	int numVarsParsed = 0;
 	STR_ParserState parserstate;
 
-	CA_LoadFile(filename, (mm_ptr_t *)(&parserstate.data), &(parserstate.datasize));
+	if (!CA_LoadFile(filename, (mm_ptr_t *)(&parserstate.data), &(parserstate.datasize)))
+		QuitF("Couldn't load variable file %s", filename);
 	parserstate.dataindex = 0;
 	parserstate.linecount = 0;
 	parserstate.haveBufferedToken = false;
