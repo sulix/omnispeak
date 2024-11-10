@@ -35,6 +35,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * CK_INTER: Holds an assortment of screen drawing and state switching routines
  */
 
+// Hack for real EGA systems.
+#ifdef VL_EGA
+void VL_DOS_SetPageGap(int maxHScroll, int maxVScroll, int width);
+#endif
+
 int ck_startingSavedGame = 0;
 bool ck_inHighScores = false;
 CK_Difficulty ck_startingDifficulty = D_NotPlaying;
@@ -1000,7 +1005,9 @@ void CK_DrawTerminator(void)
 	int cmdrLineStarts[200];
 
 	bool terminator_complete = false;
-
+	#ifdef VL_EGA
+	VL_DOS_SetPageGap(0, 0, TERMINATORSCREENWIDTH * 8 + 64);
+	#endif
 	VL_ResizeScreen(TERMINATORSCREENWIDTH * 8 + 64, 200);
 	VL_ClearScreen(0);
 
@@ -1093,6 +1100,9 @@ void CK_DrawTerminator(void)
 	AnimateTerminator();
 
 	// Omnispeak
+	#ifdef VL_EGA
+	VL_DOS_SetPageGap(16, 16, 21 * 16);
+	#endif
 	VL_ResizeScreen(21 * 16, 14 * 16);
 
 	VL_SetScrollCoords(0, 0);

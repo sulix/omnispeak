@@ -142,6 +142,18 @@ static uint8_t *VL_DOS_GetSurfacePlanePointer(VL_DOS_Surface *surf, int plane)
 #define VL_DOS_MAX_SCROLL_VERT 16
 
 static void VL_DOS_SurfaceRect(void *dst_surface, int x, int y, int w, int h, int colour);
+
+// The "gap" to leave between pages. This should be maxHScroll + maxVscroll * (width),
+// where maxHScroll and maxVScroll are the maximum amounts scrolled by VL_DOS_ScrollSurface.
+// We can't make this constant, as there's not enough room to do a gap with the Terminator
+// scroller, but we need some for the main game. Equally, we don't care on non-DOS platforms,
+// so hack this in for now.
+static int vl_dos_screenPageGap = 16*21 + 16;
+void VL_DOS_SetPageGap(int maxHScroll, int maxVScroll, int width)
+{
+	vl_dos_screenPageGap = maxHScroll + maxVScroll * width;
+}
+
 static void *VL_DOS_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)malloc(sizeof(VL_DOS_Surface));
@@ -153,7 +165,8 @@ static void *VL_DOS_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 	{
 		if (__djgpp_nearptr_enable())
 		{
-			size_t bufferSize = w / 8 * h ;
+			// Add a "buffer gap" to make sure scrolling doesn't overwrite the next page.
+			size_t bufferSize = w / 8 * h + vl_dos_screenPageGap;
 			surf->data = (void *)(__djgpp_conventional_base + vl_dos_vmemAlloc);
 			surf->data2 = (void *)(__djgpp_conventional_base + vl_dos_vmemAlloc + bufferSize);
 		}
@@ -723,6 +736,9 @@ static void VL_DOS_BitInvBlitToSurface(void *src, void *dst_surface, int x, int 
 	}
 }
 
+
+static uint16_t crtc_offset = 0;
+
 void VL_DOS_ScrollSurface(void *surface, int x, int y)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
@@ -737,24 +753,46 @@ void VL_DOS_ScrollSurface(void *surface, int x, int y)
 	if (surf->use == VL_SurfaceUsage_FrontBuffer)
 	{
 		ssize_t bytesToShift = (x / 8) + y * (surf->w / 8);
-		size_t surfaceSize = surf->w / 8 * surf->h * 2;
-		volatile uint8_t *oldData = (uint8_t *)surf->data;
-		volatile uint8_t *newData = oldData + bytesToShift;
-		if (newData < (uint8_t *)(__djgpp_conventional_base + 0xA0000) || newData + surfaceSize > (uint8_t *)(__djgpp_conventional_base + 0xAFFFF))
+		size_t pageSize = surf->w / 8 * surf->h;
+		for (int page = 0; page < 2; ++page)
 		{
-			// We've shifted outside of valid video memory.
-			if (bytesToShift < 0)
-				newData = (uint8_t *)(__djgpp_conventional_base + 0xAFFFF - surfaceSize);
-			else
-				newData = (uint8_t *)(__djgpp_conventional_base + 0xA0000);
-			outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
-			VL_DOS_SetEGAWriteMode(1);
-			for (int i = 0; i < surfaceSize; ++i)
-				newData[i] = oldData[i];
-			newData += bytesToShift;
+			volatile uint8_t *oldData = (uint8_t *)(page ? surf->data2 : surf->data);
+			volatile uint8_t *newData = oldData + bytesToShift;
+			if (newData < (uint8_t *)(__djgpp_conventional_base + 0xA0000) || newData + pageSize > (uint8_t *)(__djgpp_conventional_base + 0xAFFFF))
+			{
+				// We've shifted outside of valid video memory.
+				if (bytesToShift < 0)
+					newData = oldData + 0x10000 - pageSize * 2;
+
+				else
+					newData = oldData - 0x10000 + pageSize * 2;
+
+				// Copy the _whole_ page. Some of the bits we would discard are still visible until the next present.
+				outportw(EGA_SC_INDEX, 0x0F00 | EGA_SC_MAP_MASK);
+				VL_DOS_SetEGAWriteMode(1);
+				for (int i = 0; i < pageSize; ++i)
+					newData[i] = oldData[i];
+
+				// If we've copied the onscreen page, update the CRTC to point to it. The contents should be identical,
+				// so we don't need to wait.
+				if (page != surf->activePage);
+				{
+					uint16_t crtc_addr = (uint16_t)((uintptr_t)newData - ((uintptr_t)__djgpp_conventional_base + 0xA0000)) + crtc_offset;
+					uint16_t crtc_start_low = ((crtc_offset & 0xFF) << 8) | EGA_CRTC_START_ADDR_LOW;
+					uint16_t crtc_start_high = (crtc_offset & 0xFF00) | EGA_CRTC_START_ADDR_HIGH;
+					// NOTE: According to the original game, some XT EGA cards don't like word OUTs to
+					// the CRTC index, so Keen splits these into two byte OUTs. (It doesn't for the CRTC_OFFSET,
+					// though, so clearly this wasn't a universal problem.)
+					bool were_enabled = disable();
+					outportw(EGA_CRTC_INDEX, crtc_start_high);
+					outportw(EGA_CRTC_INDEX, crtc_start_low);
+					if (were_enabled)
+						enable();
+				}
+				newData += bytesToShift;
+			}
+			(page ? surf->data2 : surf->data) = newData;
 		}
-		surf->data = newData;
-		surf->data2 = newData + surfaceSize / 2;
 	}
 	else
 	{
@@ -798,6 +836,7 @@ static void VL_DOS_Present(void *surface, int scrlX, int scrlY, bool singleBuffe
 	// Set the offset for scanout
 	uint16_t surface_vmem_offset = (uint16_t)(((uintptr_t)(surf->activePage ? surf->data : surf->data2) - (__djgpp_conventional_base + 0xA0000)) & 0xFFFF);
 	uint16_t byte_offset = surface_vmem_offset + ((scrlY * surf->w + scrlX) >> 3);
+	crtc_offset = byte_offset;
 	uint16_t crtc_start_low = ((byte_offset & 0xFF) << 8) | EGA_CRTC_START_ADDR_LOW;
 	uint16_t crtc_start_high = (byte_offset & 0xFF00) | EGA_CRTC_START_ADDR_HIGH;
 	// NOTE: According to the original game, some XT EGA cards don't like word OUTs to

@@ -146,6 +146,7 @@ elseif(RENDERER STREQUAL "dos")
 		src/id_sd_dos.c
 		src/id_vl_dos.c
 	)
+	add_definitions(-DVL_EGA)
 elseif(RENDERER STREQUAL "sdl1")
 	message(STATUS "Using SDL 1.2 renderer backend")
 	find_package(SDL REQUIRED)

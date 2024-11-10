@@ -354,6 +354,7 @@ endif
 
 ifeq ($(RENDERER), dos)
 	RENDER_OBJS = id_vl_dos.o id_sd_dos.o id_in_dos.o
+	CXXFLAGS += -DVL_EGA=1
 endif
 
 ifeq ($(RENDERER), null)
