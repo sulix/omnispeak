@@ -857,19 +857,15 @@ bool CK_TryAgainMenu()
 
 extern CK_Difficulty ck_startingDifficulty;
 
-bool ck_hasCreatureQuestion = false;
 bool CK6_CreatureQuestion();
 void CK_GameLoop()
 {
-	if (ck_currentEpisode->hasCreatureQuestion)
+	// if !demoParm
+	if (!CK6_CreatureQuestion())
 	{
-		// if !demoParm
-		if (!CK6_CreatureQuestion())
-		{
-			ck_startingSavedGame = false;
-			ck_startingDifficulty = D_NotPlaying;
-			return;
-		}
+		ck_startingSavedGame = false;
+		ck_startingDifficulty = D_NotPlaying;
+		return;
 	}
 
 	do

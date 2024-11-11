@@ -1354,18 +1354,17 @@ typedef struct
 } CK_CreatureType;
 
 static int currentCreature = -1;
+bool ck6_creatureQuestionDone = false;
 
 bool CK6_CreatureQuestion()
 {
-	static bool alreadyPassed = 0;
-
-	if (!CK_INT(ck6_hasCreatureQuestion, ck_currentEpisode->hasCreatureQuestion))
+	if (!CK_INT(ck6_hasCreatureQuestion, 0))
 		return true;
 
-	if (alreadyPassed)
+	if (ck6_creatureQuestionDone)
 		return true;
 
-	int numCreatures = CK_INT(ck6_copyNumCreatures, 12);
+	int numCreatures = CK_INT(ck6_numCopyCreatures, 12);
 
 	bool correct = false;
 	if (currentCreature == -1)
@@ -1435,6 +1434,6 @@ bool CK6_CreatureQuestion()
 
 	VH_Bar(0, 0, 320, 200, 8);
 	CA_DownLevel();
-	alreadyPassed = correct;
+	ck6_creatureQuestionDone = correct;
 	return correct;
 }

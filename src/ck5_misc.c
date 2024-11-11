@@ -37,7 +37,6 @@ CK_EpisodeDef ck5_episode = {
 	&CK5_ScanInfoLayer,
 	&CK5_MapMiscFlagsCheck,
 	&CK5_IsPresent,
-	/* .hasCreatureQuestion = */ false,
 };
 
 // Contains some keen-5 specific functions.

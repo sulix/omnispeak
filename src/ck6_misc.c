@@ -37,7 +37,6 @@ CK_EpisodeDef ck6_episode = {
 	&CK6_ScanInfoLayer,
 	&CK6_MapMiscFlagsCheck,
 	&CK6_IsPresent,
-	/* .hasCreatureQuestion = */ true,
 };
 
 void CK6_SetupFunctions()

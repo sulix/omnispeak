@@ -54,8 +54,6 @@ typedef struct CK_EpisodeDef
 
 	// Check if the episode's files are all present.
 	bool (*isPresent)();
-
-	bool hasCreatureQuestion;
 } CK_EpisodeDef;
 
 extern CK_EpisodeDef *ck_currentEpisode;

@@ -502,6 +502,8 @@ CK_EpisodeDef *ck_episodes[] = {
 	0
 };
 
+extern bool ck6_creatureQuestionDone;
+
 int main(int argc, char *argv[])
 {
 	// Send the cmd-line args to the User Manager.
@@ -639,7 +641,7 @@ int main(int argc, char *argv[])
 	VL_SetParams(isFullScreen, isAspectCorrected, hasBorder, isIntegerScaled);
 
 	if (overrideCopyProtection)
-		ck_currentEpisode->hasCreatureQuestion = false;
+		ck6_creatureQuestionDone = true;
 
 	CK_InitGame();
 

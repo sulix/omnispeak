@@ -40,7 +40,6 @@ CK_EpisodeDef ck4_episode = {
 	&CK4_ScanInfoLayer,
 	&CK4_MapMiscFlagsCheck,
 	&CK4_IsPresent,
-	/* .hasCreatureQuestion = */ false,
 };
 
 // Contains some keen-4 specific functions.
