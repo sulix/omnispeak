@@ -142,6 +142,8 @@ void CK6_ScanInfoLayer()
 			{
 				int color = (infoValue - 7) % 4;
 				CA_MarkLumpNeeded(CK_INT(LUMP_RBLOOGLET, -color) + color);
+				if (infoValue > 10)
+					CA_MARKLUMP(LUMP_KEYGEMS);
 				CK6_SpawnBlooglet(x, y, infoValue - 7);
 				break;
 			}
