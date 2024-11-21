@@ -100,7 +100,8 @@ void *STR_LookupEntry(STR_Table *tabl, const char *str)
 bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
 {
 	int hash = STR_HashString(str) % tabl->size;
-	for (size_t i = hash;; i = (i + 1) % tabl->size)
+	int lastHash = -1;
+	for (size_t i = hash; i != lastHash; i = (i + 1) % tabl->size)
 	{
 		if (tabl->arr[i].str == 0)
 		{
@@ -115,6 +116,7 @@ bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
 #endif
 			return true;
 		}
+		lastHash = hash;
 	}
 	return false;
 }
