@@ -32,13 +32,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Hash a string using an xor variant of the djb2 hash
 static unsigned int STR_HashString(const char *str)
 {
-	size_t slen = strlen(str);
-	unsigned int hash = 0;
-	for (int i = 0; i < slen; ++i)
+	unsigned int hash = 5381;
+	for (; *str; ++str)
 	{
-		hash = ((hash << 5) + hash) ^ (unsigned int)(str[i]);
+		hash = ((hash << 5) + hash) ^ (unsigned int)(*str);
 	}
-	return hash;
+	return hash * 0x9E3779B1;
 }
 
 // Allocate a table 'tabl' of size 'size'
