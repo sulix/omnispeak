@@ -791,7 +791,10 @@ void VL_DOS_ScrollSurface(void *surface, int x, int y)
 				}
 				newData += bytesToShift;
 			}
-			(page ? surf->data2 : surf->data) = newData;
+			if (page)
+				surf->data2 = newData;
+			else
+				surf->data = newData;
 		}
 	}
 	else
