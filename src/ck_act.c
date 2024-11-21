@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
 
-#define CK_FUNCTABL_SIZE 256
+#define CK_FUNCTABL_SIZE 1024
 
 STR_Table *ck_functionTable;
 
@@ -87,7 +87,7 @@ CK_ACT_ColFunction CK_ACT_GetColFunction(const char *fnName)
 	return fnPtr;
 }
 
-#define CK_VAR_MAXVARS 2048
+#define CK_VAR_MAXVARS 8192
 #define CK_VAR_MAXACTIONS 512
 #define CK_VAR_MAX_ARRAY_LEN 96
 

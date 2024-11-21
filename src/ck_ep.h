@@ -43,9 +43,6 @@ typedef struct CK_EpisodeDef
 	// Extension for data files
 	char ext[4];
 
-	// Setup function names for ACTIONS.EXT
-	void (*setupFunctions)();
-
 	// Scan the 'info layer' of a map.
 	void (*scanInfoLayer)();
 

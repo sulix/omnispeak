@@ -126,7 +126,17 @@ void CK_InitGame()
 	CK_OBJ_SetupFunctions();
 	CK_Map_SetupFunctions();
 	CK_Misc_SetupFunctions();
-	ck_currentEpisode->setupFunctions();
+
+	// Set up all of the episode functions.
+#ifdef WITH_KEEN4
+	CK4_SetupFunctions();
+#endif
+#ifdef WITH_KEEN5
+	CK5_SetupFunctions();
+#endif
+#ifdef WITH_KEEN6
+	CK6_SetupFunctions();
+#endif
 
 
 	CK_VAR_Startup();
