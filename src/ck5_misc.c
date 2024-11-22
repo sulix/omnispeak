@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 CK_EpisodeDef ck5_episode = {
 	EP_CK5,
 	"CK5",
+	"EPISODE.CK5",
 	&CK5_ScanInfoLayer,
 	&CK5_MapMiscFlagsCheck,
 	&CK5_IsPresent,

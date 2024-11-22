@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 CK_EpisodeDef ck4_episode = {
 	EP_CK4,
 	"CK4",
+	"EPISODE.CK4",
 	&CK4_ScanInfoLayer,
 	&CK4_MapMiscFlagsCheck,
 	&CK4_IsPresent,

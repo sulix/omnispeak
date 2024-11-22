@@ -4,6 +4,9 @@
 
 # Episode variables
 
+# The base episode number.
+%int ck_episodeNumber 4
+
 # Graphics files
 %string ca_gfxInfoFile "GFXINFOE.CK4"
 %string ca_graphDict "EGADICT.CK4"

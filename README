@@ -47,8 +47,11 @@ To run the game, simply switch to the directory with the data files, and run:
 	./omnispeak
 
 Omnispeak supports several command-line options, some of which are:
-	/EPISODE <4,5,6>
+	/EPISODE <episode>
 		- Runs the given episode of Commander Keen
+		  This should be the filename of the 'EPISODE.CKx' file for the
+		  given episode. But just using the numbers 4, 5, and 6 work as
+		  well.
 	/GAMEPATH <directory>
 		- Sets the path to the game data files.
 	/USERPATH <directory>

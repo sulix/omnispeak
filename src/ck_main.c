@@ -120,28 +120,6 @@ void CK_InitGame()
 #endif
 #endif
 
-	// Compile the actions
-	CK_ACT_SetupFunctions();
-	CK_KeenSetupFunctions();
-	CK_OBJ_SetupFunctions();
-	CK_Map_SetupFunctions();
-	CK_Misc_SetupFunctions();
-
-	// Set up all of the episode functions.
-#ifdef WITH_KEEN4
-	CK4_SetupFunctions();
-#endif
-#ifdef WITH_KEEN5
-	CK5_SetupFunctions();
-#endif
-#ifdef WITH_KEEN6
-	CK6_SetupFunctions();
-#endif
-
-
-	CK_VAR_Startup();
-	CK_VAR_LoadVars(FS_AdjustExtension("EPISODE.EXT"));
-
 	// Set the default high scores once we've loaded the episode.
 	CK_SetDefaultHighScores();
 
@@ -514,6 +492,8 @@ CK_EpisodeDef *ck_episodes[] = {
 
 extern bool ck6_creatureQuestionDone;
 
+const char *ck_episodeFile = NULL;
+
 int main(int argc, char *argv[])
 {
 	// Send the cmd-line args to the User Manager.
@@ -532,6 +512,26 @@ int main(int argc, char *argv[])
 
 	ck_cross_logLevel = (CK_Log_Message_Class_T)CFG_GetConfigEnum("logLevel", ck_cross_logLevel_strings, CK_DEFAULT_LOG_LEVEL);
 
+	// Compile the actions
+	CK_ACT_SetupFunctions();
+	CK_KeenSetupFunctions();
+	CK_OBJ_SetupFunctions();
+	CK_Map_SetupFunctions();
+	CK_Misc_SetupFunctions();
+
+	// Set up all of the episode functions.
+#ifdef WITH_KEEN4
+	CK4_SetupFunctions();
+#endif
+#ifdef WITH_KEEN5
+	CK5_SetupFunctions();
+#endif
+#ifdef WITH_KEEN6
+	CK6_SetupFunctions();
+#endif
+
+	CK_VAR_Startup();
+
 	// Default to the first episode with all files present.
 	// If no episodes are found, we default to the first DEMO_LOOP_ENABLED
 	// epside (usually Keen 4) in order to show the file not found messages.
@@ -541,6 +541,7 @@ int main(int argc, char *argv[])
 		if (ck_episodes[i]->isPresent())
 		{
 			ck_currentEpisode = ck_episodes[i];
+			ck_episodeFile = ck_currentEpisode->episodeFile;
 			break;
 		}
 	}
@@ -562,29 +563,32 @@ int main(int argc, char *argv[])
 			// A bit of stuff from the usual demo loop
 			if (argc >= i + 1)
 			{
+				if (FS_IsOmniFilePresent(argv[i + 1]))
+					ck_episodeFile = argv[i + 1];
+				else
 #ifdef WITH_KEEN4
 				if (!strcmp(argv[i + 1], "4"))
-					ck_currentEpisode = &ck4_episode;
+					ck_episodeFile = "EPISODE.CK4";
 				else
 #endif
 #ifdef WITH_KEEN5
 				if (!strcmp(argv[i + 1], "5"))
-					ck_currentEpisode = &ck5_episode;
+					ck_episodeFile = "EPISODE.CK5";
 				else
 #endif
 #ifdef WITH_KEEN6
 				if (!strcmp(argv[i + 1], "6"))
-					ck_currentEpisode = &ck6_episode;
+					ck_episodeFile = "EPISODE.CK6";
 				// For compatibility, we accept version-specific arguments for 6,
 				// as this used to matter. Now, as long as the data file are
 				// correct, either work.
 				else if (!strcmp(argv[i + 1], "6v14"))
-					ck_currentEpisode = &ck6_episode;
+					ck_episodeFile = "EPISODE.CK6";
 				else if (!strcmp(argv[i + 1], "6v15"))
-					ck_currentEpisode = &ck6_episode;
+					ck_episodeFile = "EPISODE.CK6";
 				else
 #endif
-					Quit("Unsupported episode!");
+					QuitF("Unsupported episode \"%s\"!", argv[i + 1]);
 			}
 		}
 		else if (!CK_Cross_strcasecmp(argv[i], "/FULLSCREEN"))
@@ -628,9 +632,59 @@ int main(int argc, char *argv[])
 #endif
 	}
 
-	if (!ck_currentEpisode->isPresent())
+	// Load the EPISODE.CKx file.
+	CK_VAR_LoadVars(ck_episodeFile);
+	int episodeNumber = CK_INT(ck_episodeNumber, -1);
+	if (episodeNumber == -1)
 	{
-	//	Quit("Couldn't find game data files!");
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Episode doesn't declare a base episode number.\n");
+		int fnamelen = strlen(ck_episodeFile);
+		if (ck_episodeFile[fnamelen-4] == '.' && tolower(ck_episodeFile[fnamelen-3]) == 'c' && tolower(ck_episodeFile[fnamelen-2]) == 'k')
+		{
+			switch (ck_episodeFile[fnamelen-1])
+			{
+			case '4':
+				episodeNumber = 4;
+				CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Assuming episode 4 from filename %s\n", ck_episodeFile);
+				break;
+			case '5':
+				episodeNumber = 5;
+				CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Assuming episode 5 from filename %s\n", ck_episodeFile);
+				break;
+			case '6':
+				episodeNumber = 6;
+				CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Assuming episode 6 from filename %s\n", ck_episodeFile);
+				break;
+			default:
+				QuitF("Episode %s doesn't provide an episode number, and one couldn't be guessed from the filename.", ck_episodeFile);
+			}
+		}
+	}
+	switch (episodeNumber)
+	{
+	case 4:
+#ifdef WITH_KEEN4
+		ck_currentEpisode = &ck4_episode;
+#else
+		Quit("This build of Omnispeak doesn't support Keen 4!");
+#endif
+		break;
+	case 5:
+#ifdef WITH_KEEN5
+		ck_currentEpisode = &ck5_episode;
+#else
+		Quit("This build of Omnispeak doesn't support Keen 5!");
+#endif
+		break;
+	case 6:
+#ifdef WITH_KEEN6
+		ck_currentEpisode = &ck6_episode;
+#else
+		Quit("This build of Omnispeak doesn't support Keen 6!");
+#endif
+		break;
+	default:
+		QuitF("No base episode specified in %s\n", ck_episodeFile);
 	}
 
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER

@@ -43,6 +43,9 @@ typedef struct CK_EpisodeDef
 	// Extension for data files
 	char ext[4];
 
+	// Name of the EPISODE.CKx variable file.
+	const char *episodeFile;
+
 	// Scan the 'info layer' of a map.
 	void (*scanInfoLayer)();
 
