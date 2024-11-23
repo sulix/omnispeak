@@ -546,6 +546,22 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	// If we don't have an episode with all files present, look for _just_
+	// an EPISODE.CKx file. This will often be the case for mods, which may
+	// rename files.
+	if (!ck_episodeFile)
+	{
+		for (int i = 0; ck_episodes[i]; ++i)
+		{
+			if (FS_IsOmniFilePresent(ck_episodes[i]->episodeFile))
+			{
+				ck_currentEpisode = ck_episodes[i];
+				ck_episodeFile = ck_currentEpisode->episodeFile;
+				break;
+			}
+		}
+	}
+
 	bool isFullScreen = CFG_GetConfigBool("fullscreen", false);
 	bool isAspectCorrected = CFG_GetConfigBool("aspect", true);
 	bool hasBorder = CFG_GetConfigBool("border", true);
@@ -633,7 +649,11 @@ int main(int argc, char *argv[])
 	}
 
 	// Load the EPISODE.CKx file.
+	if (!ck_episodeFile)
+		Quit("No episode found! Make sure the game files are present, and run with /EPISODE <EPISODE.CKx>");
 	CK_VAR_LoadVars(ck_episodeFile);
+
+	// Determine the base episode number
 	int episodeNumber = CK_INT(ck_episodeNumber, -1);
 	if (episodeNumber == -1)
 	{
