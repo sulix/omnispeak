@@ -388,7 +388,9 @@ CK_VAR_VarType CK_VAR_ParseVarType(STR_ParserState *ps)
 	}
 	if (tok.tokenType != STR_TOK_Ident)
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Got a non-ident token reading var type (line %d), value = %s\n", ps->linecount, tok.valuePtr);
+		char varTypeString[ID_STR_MAX_TOKEN_LENGTH];
+		STR_GetStringValue(tok, varTypeString, ID_STR_MAX_TOKEN_LENGTH);
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Got a non-ident token reading var type (line %d), value = %s\n", ps->linecount, varTypeString);
 		return VAR_Invalid;
 	}
 	if (STR_IsTokenIdent(tok, "%bool"))
@@ -407,7 +409,9 @@ CK_VAR_VarType CK_VAR_ParseVarType(STR_ParserState *ps)
 		varType = VAR_TOK_Include;
 	else
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Unknown var type \"%s\"\n", tok.valuePtr);
+		char varTypeString[ID_STR_MAX_TOKEN_LENGTH];
+		STR_GetStringValue(tok, varTypeString, ID_STR_MAX_TOKEN_LENGTH);
+		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Unknown var type on line %d \"%s\"\n", ps->linecount, varTypeString);
 	}
 
 	return varType;
