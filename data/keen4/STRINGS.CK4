@@ -60,57 +60,6 @@
 %string ck_str_statusKeys "KEYS"
 %string ck_str_statusAmmo "AMMO"
 %string ck_str_statusLives "KEENS"
-#NOTE: Centilives are in the per-episode STRINGS file
-
-
-%string ck_str_gameOver "Game Over!"
-
-# Loading box for demos
-%string ck_str_demo "DEMO"
-
-%string ck_str_tryAgainIntro "You didn't make it past"
-%string ck_str_tryAgainTryAgain "Try Again"
-
-
-#ck_play.c
-
-%string ck_str_itemCheat "Cheat Option!\n\nYou just got all\nthe keys, 99 shots,\nand an extra keen!"
-
-%string ck_str_godModeOn "God Mode ON"
-%string ck_str_godModeOff "God Mode OFF"
-
-%string ck_str_freeItems "Free Items!"
-
-%string ck_str_jumpCheatOn "\nJump cheat ON"
-%string ck_str_jumpCheatOff "\nJump cheat OFF"
-
-%string ck_str_noClippingOn "No clipping ON"
-%string ck_str_noClippingOff "No clipping OFF"
-
-%string ck_str_slowMotionOn "Slow motion ON"
-%string ck_str_slowMotionOff "Slow motion OFF"
-
-#TODO: Warp and some other debug cheats
-
-%string ck_str_debugKeysActive "Debug keys active"
-
-
-%string ck_str_paused "PAUSED"
-
-#NOTE: QuickSave feature
-%string ck_str_gameQuickSaved "GAME SAVED"
-
-# Status window
-%string ck_str_statusLocation "LOCATION"
-%string ck_str_statusScore "SCORE"
-%string ck_str_statusExtra "EXTRA"
-%string ck_str_statusLevel "LEVEL" # Difficulty level
-%string ck_str_statusEasy "Easy"
-%string ck_str_statusNormal "Normal"
-%string ck_str_statusHard "Hard"
-%string ck_str_statusKeys "KEYS"
-%string ck_str_statusAmmo "AMMO"
-%string ck_str_statusLives "KEENS"
 
 # Keen 4
 %string ck_str_exitToMap "Exit to Shadowlands"
