@@ -14,6 +14,7 @@
 %string ca_graphFile "EGAGRAPH.CK5"
 
 # Sound Files
+%int ca_audioUncompressed 0
 %string ca_audioInfoFile "AUDINFOE.CK5"
 %string ca_audioHead "AUDIOHHD.CK5"
 %string ca_audioDict "AUDIODCT.CK5"

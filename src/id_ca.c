@@ -990,6 +990,8 @@ void CAL_SetupMapFile(void)
 }
 
 static ca_huffnode *ca_audiohuffman;
+// 0 for Huffman, 1 for original AUDIOT, 2 for non-Huffman'd AUDIO (NULL-huffman style, with expLen still stored in the chunk)
+static int ca_audioUncompressed;
 
 static FS_File ca_audiohandle; //File Pointer for AUDIO file.
 int32_t *ca_audiostarts;
@@ -1013,48 +1015,54 @@ void CAL_SetupAudioFile(void)
 		*uptr = CK_Cross_Swap16(*uptr);
 #endif
 
-#ifndef CA_AUDIOUNCOMPRESSED
-	//Load the AUDIODCT
-	const char *dict_fname = CK_FILENAME(ca_audioDict, "AUDIODCT.EXT");
-	if (!CA_LoadFile(dict_fname, (void **)(&ca_audiohuffman), 0))
-		QuitF("Couldn't load audio dictionary %s\n", dict_fname);
+	ca_audioUncompressed = CK_INT(ca_audioUncompressed, 0);
+	if (!ca_audioUncompressed)
+	{
+		//Load the AUDIODCT
+		const char *dict_fname = CK_FILENAME(ca_audioDict, "AUDIODCT.EXT");
+		if (!CA_LoadFile(dict_fname, (void **)(&ca_audiohuffman), 0))
+			QuitF("Couldn't load audio dictionary %s\n", dict_fname);
 
 #ifdef CK_CROSS_IS_BIGENDIAN
-	for (int i = 0; i < 256; ++i)
-	{
-		ca_audiohuffman[i].bit_0 = CK_Cross_SwapLE16(ca_audiohuffman[i].bit_0);
-		ca_audiohuffman[i].bit_1 = CK_Cross_SwapLE16(ca_audiohuffman[i].bit_1);
-	}
+		for (int i = 0; i < 256; ++i)
+		{
+			ca_audiohuffman[i].bit_0 = CK_Cross_SwapLE16(ca_audiohuffman[i].bit_0);
+			ca_audiohuffman[i].bit_1 = CK_Cross_SwapLE16(ca_audiohuffman[i].bit_1);
+		}
 #endif
 
-	// We don't need to 'OptimizeNodes'.
-	//CAL_OptimizeNodes(ca_audiohuffman);
+		// We don't need to 'OptimizeNodes'.
+		//CAL_OptimizeNodes(ca_audiohuffman);
 
-	//Load the AUDIOHHD
-	const char *head_fname = CK_FILENAME(ca_audioHead, "AUDIOHHD.EXT");
-	if (!CA_LoadFile(head_fname, (void **)(&ca_audiostarts), 0))
-		QuitF("Couldn't load (compressed) audio header %s\n", head_fname);
+		//Load the AUDIOHHD
+		const char *head_fname = CK_FILENAME(ca_audioHead, "AUDIOHHD.EXT");
+		if (!CA_LoadFile(head_fname, (void **)(&ca_audiostarts), 0))
+			QuitF("Couldn't load (compressed) audio header %s\n", head_fname);
 
-	//Load the sound data --- we will keep the file open for the duration of the game.
-	const char *audio_fname = CK_FILENAME(ca_audioFile, "AUDIO.EXT");
-	ca_audiohandle = FS_OpenKeenFile(audio_fname);
-	if (!ca_audiohandle)
-	{
-		QuitF("Can't open %s!", audio_fname);
+		//Load the sound data --- we will keep the file open for the duration of the game.
+		const char *audio_fname = CK_FILENAME(ca_audioFile, "AUDIO.EXT");
+		ca_audiohandle = FS_OpenKeenFile(audio_fname);
+		if (!ca_audiohandle)
+		{
+			QuitF("Can't open %s!", audio_fname);
+		}
 	}
-#else
-	//Load the AUDIOHED
-	const char *head_fname = CK_FILENAME(ca_audioHead, "AUDIOHED.EXT");
-	CA_LoadFile(head_fname, (void **)(&ca_audiostarts), 0);
-
-	//Load the sound data --- we will keep the file open for the duration of the game.
-	const char *audio_fname = CK_FILENAME(ca_audioFile, "AUDIOT.EXT");
-	ca_audiohandle = FS_OpenKeenFile(audio_fname);
-	if (!ca_audiohandle)
+	else
 	{
-		QuitF("Can't open %s!", audio_fname);
+
+		//Load the AUDIOHED
+		const char *head_fname = CK_FILENAME(ca_audioHead, "AUDIOHED.EXT");
+		CA_LoadFile(head_fname, (void **)(&ca_audiostarts), 0);
+
+
+		//Load the sound data --- we will keep the file open for the duration of the game.
+		const char *audio_fname = CK_FILENAME(ca_audioFile, "AUDIOT.EXT");
+		ca_audiohandle = FS_OpenKeenFile(audio_fname);
+		if (!ca_audiohandle)
+		{
+			QuitF("Can't open %s!", audio_fname);
+		}
 	}
-#endif
 }
 
 void CA_CacheMap(int mapIndex)
@@ -1197,46 +1205,53 @@ void CA_CacheAudioChunk(int16_t chunk)
 
 	FS_SeekTo(ca_audiohandle, pos);
 
-#ifdef CA_AUDIOUNCOMPRESSED
-	MM_GetPtr((void**)&CA_audio[chunk], compressed);
-	FS_Read(CA_audio[chunk], 1, compressed, ca_audiohandle);
-#else
-	if (compressed <= BUFFERSIZE)
+	// If we're using uncompressed audio
+	if (ca_audioUncompressed)
 	{
-		size_t readSize = FS_Read(buffer, 1, compressed, ca_audiohandle);
-		if (readSize != compressed)
-			Quit("Couldn't read compressed audio chunk!");
-		source = buffer;
+		if (ca_audioUncompressed == 2)
+			FS_Read(&compressed, sizeof(compressed), 1, ca_audiohandle);
+
+		MM_GetPtr((void**)&CA_audio[chunk], compressed);
+		FS_Read(CA_audio[chunk], 1, compressed, ca_audiohandle);
 	}
 	else
 	{
-		MM_GetPtr(&bigbuffer, compressed);
+		if (compressed <= BUFFERSIZE)
+		{
+			size_t readSize = FS_Read(buffer, 1, compressed, ca_audiohandle);
+			if (readSize != compressed)
+				Quit("Couldn't read compressed audio chunk!");
+			source = buffer;
+		}
+		else
+		{
+			MM_GetPtr(&bigbuffer, compressed);
+			// TODO: Check for mmerror
+	#if 0
+			if (mmerror)
+				return;
+	#endif
+			MM_SetLock(&bigbuffer, true);
+			size_t readSize = FS_Read(bigbuffer, 1, compressed, ca_audiohandle);
+			source = bigbuffer;
+			if (readSize != compressed)
+				Quit("Couldn't read compressed audio chunk!");
+		}
+
+		expanded = CAL_ReadLong(source);
+		source = (mm_ptr_t)((uint8_t *)source + 4); // skip over length
+		MM_GetPtr((void **)(&CA_audio[chunk]), expanded);
 		// TODO: Check for mmerror
-#if 0
+	#if 0
 		if (mmerror)
-			return;
-#endif
-		MM_SetLock(&bigbuffer, true);
-		size_t readSize = FS_Read(bigbuffer, 1, compressed, ca_audiohandle);
-		source = bigbuffer;
-		if (readSize != compressed)
-			Quit("Couldn't read compressed audio chunk!");
+			goto done;
+	#endif
+		CAL_HuffExpand(source, CA_audio[chunk], expanded, ca_audiohuffman, compressed);
+
+		//done:
+		if (compressed > BUFFERSIZE)
+			MM_FreePtr(&bigbuffer);
 	}
-
-	expanded = CAL_ReadLong(source);
-	source = (mm_ptr_t)((uint8_t *)source + 4); // skip over length
-	MM_GetPtr((void **)(&CA_audio[chunk]), expanded);
-	// TODO: Check for mmerror
-#if 0
-	if (mmerror)
-		goto done;
-#endif
-	CAL_HuffExpand(source, CA_audio[chunk], expanded, ca_audiohuffman, compressed);
-
-	//done:
-	if (compressed > BUFFERSIZE)
-		MM_FreePtr(&bigbuffer);
-#endif
 }
 
 void CA_LoadAllSounds(void)
