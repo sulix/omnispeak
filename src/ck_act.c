@@ -95,6 +95,7 @@ STR_Table *ck_varTable;
 ID_MM_Arena *ck_varArena;
 CK_action *ck_actionData;
 int ck_actionsUsed;
+bool ck_varsLocked = false;
 
 typedef enum CK_VAR_VarType
 {
@@ -106,7 +107,8 @@ typedef enum CK_VAR_VarType
 	VAR_IntArray,
 	VAR_StringArray,
 	VAR_Action,
-	VAR_TOK_Include
+	VAR_TOK_Include,
+	VAR_TOK_Override,
 } CK_VAR_VarType;
 
 #ifdef CK_VAR_TYPECHECK
@@ -124,10 +126,13 @@ void CK_VAR_Startup()
 	ck_varArena = MM_ArenaCreate(65536);
 	MM_GetPtr((mm_ptr_t *)&ck_actionData, sizeof(CK_action) * CK_VAR_MAXACTIONS);
 	ck_actionsUsed = 0;
+	ck_varsLocked = false;
 }
 
 void CK_VAR_SetEntry(const char *name, void *val)
 {
+	if (ck_varsLocked && STR_DoesEntryExist(ck_varTable, name))
+		return;
 	STR_AddEntry(ck_varTable, name, val);
 }
 
@@ -407,6 +412,8 @@ CK_VAR_VarType CK_VAR_ParseVarType(STR_ParserState *ps)
 		varType = VAR_Action;
 	else if (STR_IsTokenIdent(tok, "%include"))
 		varType = VAR_TOK_Include;
+	else if (STR_IsTokenIdent(tok, "%override"))
+		varType = VAR_TOK_Override;
 	else
 	{
 		char varTypeString[ID_STR_MAX_TOKEN_LENGTH];
@@ -664,6 +671,16 @@ bool CK_VAR_ParseVar(STR_ParserState *ps)
 		char filename[ID_STR_MAX_TOKEN_LENGTH];
 		STR_GetString(ps, filename, ID_STR_MAX_TOKEN_LENGTH);
 		CK_VAR_LoadVars(filename);
+		break;
+	}
+	case VAR_TOK_Override:
+	{
+		char filename[ID_STR_MAX_TOKEN_LENGTH];
+		STR_GetString(ps, filename, ID_STR_MAX_TOKEN_LENGTH);
+		bool wereLocked = ck_varsLocked;
+		ck_varsLocked = true;
+		CK_VAR_LoadVars(filename);
+		ck_varsLocked = wereLocked;
 		break;
 	}
 	default:
