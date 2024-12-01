@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_mm.h"
 #include "id_us.h"
 #include "ck_cross.h"
+#include "ck_def.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -57,36 +58,43 @@ void STR_AllocTable(STR_Table **tabl, size_t size)
 	}
 }
 
+size_t STR_GetEntryIndex(STR_Table *tabl, const char *str)
+{
+	int hash = STR_HashString(str) % tabl->size;
+	int lastHash = -1;
+	for (size_t i = hash; i != lastHash; i = (i + 1) % tabl->size)
+	{
+		if (tabl->arr[i].str == 0)
+		{
+			return i;
+		}
+		else if (!strcmp(tabl->arr[i].str, str))
+		{
+			return i;
+		}
+		lastHash = hash;
+	}
+	return ID_STR_INVALID_INDEX;
+}
+
 // Checks if an entry 'str' in 'tabl' exists.
 bool STR_DoesEntryExist(STR_Table *tabl, const char *str)
 {
-	int hash = STR_HashString(str) % tabl->size;
-	for (size_t i = hash;; i = (i + 1) % tabl->size)
-	{
-		if (tabl->arr[i].str == 0)
-			break;
-		if (strcmp(str, tabl->arr[i].str) == 0)
-		{
-			return true;
-		}
-	}
+	size_t index = STR_GetEntryIndex(tabl, str);
+	if (index == -1)
+		return false;
+	if (tabl->arr[index].str)
+		return true;
 	return false;
 }
 
 // Returns the pointer associated with 'str' in 'tabl', defaulting to 'def'
 void *STR_LookupEntryWithDefault(STR_Table *tabl, const char *str, void *def)
 {
-	int hash = STR_HashString(str) % tabl->size;
-	for (size_t i = hash;; i = (i + 1) % tabl->size)
-	{
-		if (tabl->arr[i].str == 0)
-			break;
-		if (strcmp(str, tabl->arr[i].str) == 0)
-		{
-			return (tabl->arr[i].ptr);
-		}
-	}
-	return def;
+	size_t i = STR_GetEntryIndex(tabl, str);
+	if (i == ID_STR_INVALID_INDEX || tabl->arr[i].str == 0)
+		return def;
+	return (tabl->arr[i].ptr);
 }
 
 // Returns the pointer associated with 'str' in 'tabl'
@@ -98,24 +106,30 @@ void *STR_LookupEntry(STR_Table *tabl, const char *str)
 // Add an entry 'str' with pointer 'value' to 'tabl'. Returns 'true' on success
 bool STR_AddEntry(STR_Table *tabl, const char *str, void *value)
 {
-	int hash = STR_HashString(str) % tabl->size;
-	int lastHash = -1;
-	for (size_t i = hash; i != lastHash; i = (i + 1) % tabl->size)
+	size_t i = STR_GetEntryIndex(tabl, str);
+	if (i == ID_STR_INVALID_INDEX)
 	{
-		if (tabl->arr[i].str == 0)
-		{
-			tabl->arr[i].str = str;
-			tabl->arr[i].ptr = value;
+		// We've run out of space!
+		return false;
+	}
+	else
+	{
 #ifdef CK_DEBUG
-			tabl->numElements++;
-			if (tabl->numElements == tabl->size)
-			{
-				Quit("Tried to over-fill a hashtable!");
-			}
-#endif
-			return true;
+		if (tabl->arr[i].str != 0)
+		{
+			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "STR_AddEntry(\"%s\", %p): Overwriting an entry (\"%s\", %p)! This is probably a memory leak!\n", str, value, tabl->arr[i].str, tabl->arr[i].ptr);
 		}
-		lastHash = hash;
+#endif
+		tabl->arr[i].str = str;
+		tabl->arr[i].ptr = value;
+#ifdef CK_DEBUG
+		tabl->numElements++;
+		if (tabl->numElements == tabl->size)
+		{
+			Quit("Tried to over-fill a hashtable!");
+		}
+#endif
+		return true;
 	}
 	return false;
 }
