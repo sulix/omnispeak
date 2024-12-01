@@ -747,6 +747,19 @@ int main(int argc, char *argv[])
 			CK_PlayDemo(atoi(argv[i + 1]));
 			Quit(0);
 		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/ASLEV"))
+		{
+
+			CK_NewGame();
+			CA_LoadAllSounds();
+			ck_gameState.currentLevel = 1;
+			ck_startingDifficulty = D_Normal;
+			CA_CacheMapFromASLEV(argv[i+1]);
+
+			CK_GameLoop();
+			Quit(0); // run_ted
+
+		}
 
 	}
 

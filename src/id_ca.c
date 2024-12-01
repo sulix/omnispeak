@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "id_ca.h"
 #include "id_fs.h"
+#include "id_mm.h"
 #include "id_us.h"
 #include "id_vh.h"
 #include "ck_cross.h"
@@ -254,6 +255,134 @@ void CAL_HuffExpand(void *src, void *dest, int expLength, ca_huffnode *table, in
 	}
 }
 
+#ifndef VANILLA
+
+typedef struct CA_LZW_DictEntry
+{
+	int byteLen;
+	uint8_t *firstByte;
+} CA_LZW_DictEntry;
+
+uint32_t CAL_ReadLZWBits(uint8_t **srcPtr, int *bitOfs, int numBits)
+{
+#ifdef _DEBUG
+	if (numBits > 32)
+		QuitF("CAL_ReadLZWBits: tried to read too many bits (%d > 32)!", numBits);
+#endif
+	int bitsRead = 0;
+	uint32_t bitBuffer = 0;
+	while (bitsRead < numBits)
+	{
+		int bitsToRead = CK_Cross_min(numBits - bitsRead, *bitOfs);
+		uint8_t mask = ((1 << bitsToRead) - 1) << (*bitOfs - bitsToRead);
+		uint8_t val = ((**srcPtr) & mask) >> (*bitOfs - bitsToRead);
+
+
+		bitBuffer = (bitBuffer << bitsToRead) | (uint32_t)val;
+
+		//CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "LZW: [numBits = %d]: reading %d bits (%d -> %d), mask = %x, val = %x, buf = %x\n", numBits, bitsToRead, *bitOfs, *bitOfs - bitsToRead, mask, val, bitBuffer);
+
+		if (bitsToRead == *bitOfs)
+		{
+			*bitOfs = 8;
+			(*srcPtr)++;
+		}
+		else
+		{
+			*bitOfs -= bitsToRead;
+		}
+		bitsRead += bitsToRead;
+	}
+	return bitBuffer;
+}
+
+void CAL_LZWExpand(void *src, void *dest, int srcLength, int dictBits)
+{
+	// The first 258 codes are reserved for literals (0–255), error (256), and EOF (257)
+	int numDictEntries = (1 << dictBits) - 258;
+	CA_LZW_DictEntry *lzwDict;
+
+	// Note that this could be _very_ big: *.aslev files have up to 24-bit dict
+	// entries, so need 256 _megs_ of space for a full dictionary. We probably
+	// should grow this lazily.
+	MM_GetPtr((mm_ptr_t *)&lzwDict, numDictEntries * sizeof(CA_LZW_DictEntry));
+	MM_SetLock((mm_ptr_t *)&lzwDict, true);
+
+	int maxDictEntry = 258;
+	uint32_t code = 256;
+	int bitOfs = 8;
+	int codeLen = 9;
+	int prevMatchLen = 1;
+	uint32_t prevCode = 256;
+	uint8_t *dPtr = (uint8_t*)dest;
+	while (code != 257)
+	{
+		int matchLen = 1;
+		code = CAL_ReadLZWBits((uint8_t**)&src, &bitOfs, codeLen);
+		if (code < 256)
+			*dPtr++ = (uint8_t)code;
+		else if (code == 256)
+			Quit("CAL_LZWExpand: Error code in compressed data!");
+		else if (code == 257)
+			break;
+		else if (code < maxDictEntry)
+		{
+			matchLen = lzwDict[code-258].byteLen;
+			for (int i = 0; i < matchLen; ++i)
+			{
+				*dPtr++ = lzwDict[code-258].firstByte[i];
+			}
+		}
+		else
+		{
+			if (code != maxDictEntry)
+				QuitF("Expected code < %d, got %d!", maxDictEntry, code);
+			if (prevCode < 258)
+			{
+				matchLen = 1;
+				*dPtr++ = (uint8_t)prevCode;
+				*dPtr++ = (uint8_t)prevCode;
+			}
+			else
+			{
+				matchLen = lzwDict[prevCode-258].byteLen;
+				for (int i = 0; i < matchLen; ++i)
+				{
+					*dPtr++ = lzwDict[prevCode-258].firstByte[i];
+				}
+				*dPtr++ = lzwDict[prevCode-258].firstByte[0];
+			}
+			matchLen++;
+			if (prevMatchLen + 1 != matchLen)
+				QuitF("prevMatch + 1 (%d) should match match (%d), decoding %d", prevMatchLen + 1, matchLen, code);
+		}
+
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "LZW: got code %d (%x). Max Dict Entry %d, Code Len %d, match len %d\n", code, code, maxDictEntry, codeLen, matchLen);
+
+
+		// Add the new code to the dict.
+		if (prevCode != 256 && maxDictEntry < (1<<dictBits))
+		{
+			lzwDict[maxDictEntry - 258].byteLen = prevMatchLen + 1;
+			lzwDict[maxDictEntry - 258].firstByte = dPtr - matchLen - prevMatchLen;
+			CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "LZW: added code %d. match len %d. First byte %d, last %d\n", maxDictEntry, prevMatchLen + 1, lzwDict[maxDictEntry-258].firstByte[0], lzwDict[maxDictEntry-258].firstByte[prevMatchLen]);
+
+
+			maxDictEntry++;
+			if (maxDictEntry >= (1 << codeLen) - 1 && codeLen != dictBits)
+				codeLen++;
+		}
+		prevMatchLen = matchLen;
+		prevCode = code;
+	}
+
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "LZW: got EOF code %d. Max Dict Entry %d, Code Len %d, Total Len %ld\n", code, maxDictEntry, codeLen, (intptr_t)dPtr - (intptr_t)dest);
+
+	MM_FreePtr((mm_ptr_t *)&lzwDict);
+}
+
+#endif
+
 #define CA_CARMACK_NEARTAG 0xA700
 #define CA_CARMACK_FARTAG 0xA800
 
@@ -375,6 +504,7 @@ void CAL_RLEWExpand(void *src, void *dest, int expLength, uint16_t rletag)
 		{
 			count = *(srcptr++);
 			value = *(srcptr++);
+			CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "RLEW: Got tag %x (value = %x, count = %x)\n", rletag, value, count);
 			expLength -= count * 2;
 			if (expLength < 0)
 				return;
@@ -1059,6 +1189,7 @@ void CAL_SetupAudioFile(void)
 
 void CA_CacheMap(int mapIndex)
 {
+	return;
 	//TODO: Support having multiple maps cached at once.
 	//Unload the previous map.
 	for (int plane = 0; plane < CA_NUMMAPPLANES; ++plane)
@@ -1147,6 +1278,73 @@ void CA_CacheMap(int mapIndex)
 		MM_FreePtr((void **)(&rlewBuffer));
 	}
 }
+
+void CA_CacheMapFromASLEV(const char *fname)
+{
+	//TODO: Support having multiple maps cached at once.
+	//Unload the previous map.
+	for (int plane = 0; plane < CA_NUMMAPPLANES; ++plane)
+	{
+		if (CA_mapPlanes[plane])
+		{
+			MM_FreePtr((void **)(&CA_mapPlanes[plane]));
+		}
+	}
+	ca_mapOn = 1;
+
+	uint8_t *aslevFile;
+	int aslevFileLen;
+
+	if (!CA_LoadFile(fname, (void **)(&aslevFile), &aslevFileLen))
+		QuitF("Couldn't load map file %s\n", fname);
+
+	//Have we loaded this map's header?
+	if (CA_MapHeaders[ca_mapOn])
+	{
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Tried to override an already-loaded map (%d) with a .aslev!", ca_mapOn);
+		MM_FreePtr((void **)(&CA_MapHeaders[ca_mapOn]));
+	}
+	MM_GetPtr((void **)(&CA_MapHeaders[ca_mapOn]), sizeof(CA_MapHeader));
+
+	memcpy(CA_MapHeaders[ca_mapOn]->name, &aslevFile[12], 16);
+	memcpy(CA_MapHeaders[ca_mapOn]->signature, &aslevFile[8], 16);
+	memcpy(&CA_MapHeaders[ca_mapOn]->width, &aslevFile[28], 2);
+	memcpy(&CA_MapHeaders[ca_mapOn]->height, &aslevFile[30], 2);
+
+	#ifdef CK_CROSS_IS_BIGENDIAN
+	CA_MapHeaders[mapIndex]->width = CK_Cross_SwapLE16(CA_MapHeaders[mapIndex]->width);
+	CA_MapHeaders[mapIndex]->height = CK_Cross_SwapLE16(CA_MapHeaders[mapIndex]->height);
+	#endif
+
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CA_CacheMapFromASLEV: Loading map %d (\"%s\")\n", ca_mapOn, CA_MapHeaders[ca_mapOn]->name);
+
+	int planeSize = CA_MapHeaders[ca_mapOn]->width * CA_MapHeaders[ca_mapOn]->height * 2;
+	int decompSize = planeSize * CA_NUMMAPPLANES;
+
+	// Decompress the data.
+	void *decompData1, *decompData;
+	MM_GetPtr((mm_ptr_t*) &decompData1, decompSize);
+	// First, LZW
+	CAL_LZWExpand(&aslevFile[32], decompData1, aslevFileLen - 32, 24);
+
+	// We can now free the file.
+	MM_FreePtr((mm_ptr_t*)&aslevFile);
+
+	MM_GetPtr((mm_ptr_t*) &decompData, decompSize);
+	CAL_RLEWExpand((int8_t*)decompData1, (int16_t*)decompData, decompSize, 0x0539);
+	MM_FreePtr((mm_ptr_t*)&decompData1);
+
+	//Load the map data
+	for (int plane = 0; plane < CA_NUMMAPPLANES; ++plane)
+	{
+		int32_t planeOffset = plane * planeSize;
+
+		MM_GetPtr((void **)&CA_mapPlanes[plane], planeSize);
+		memcpy(CA_mapPlanes[plane], (uint8_t*)decompData + planeOffset, planeSize);
+	}
+	MM_FreePtr((mm_ptr_t*)&decompData);
+}
+
 
 // CA_Startup opens the core CA datafiles
 void CA_Startup(void)

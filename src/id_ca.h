@@ -117,6 +117,7 @@ extern void (*ca_updateCacheBox)(void);
 extern void (*ca_finishCacheBox)(void);
 
 void CA_CacheMap(int mapIndex);
+void CA_CacheMapFromASLEV(const char *fname);
 uint16_t *CA_TilePtrAtPos(int16_t x, int16_t y, int16_t plane);
 uint16_t CA_TileAtPos(int16_t x, int16_t y, int16_t plane);
 void CA_SetTileAtPos(int16_t x, int16_t y, int16_t plane, uint16_t value);
