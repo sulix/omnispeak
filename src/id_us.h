@@ -95,6 +95,7 @@ void US_SetPrintColour(int8_t parm);
 extern bool us_noWait;	// Debug mode enabled.
 extern bool us_tedLevel;      // Launching a level from TED
 extern int us_tedLevelNumber; // Number of level to launch from TED
+extern const char *us_aslevFilename; // Filename of an Abiather ASLEV file to play.
 
 // We need to steal these from main().
 extern const char **us_argv;

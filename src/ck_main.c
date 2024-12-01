@@ -759,6 +759,12 @@ int main(int argc, char *argv[])
 			CK_PlayDemo(atoi(argv[i + 1]));
 			Quit(0);
 		}
+		else if (!CK_Cross_strcasecmp(argv[i], "/ASLEV"))
+		{
+			us_tedLevel = true;
+			us_aslevFilename = argv[++i];
+
+		}
 
 	}
 

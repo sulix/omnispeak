@@ -679,7 +679,8 @@ static const char *us_parmStrings[] = {"TEDLEVEL", "NOWAIT", "\0", NULL};
 
 bool us_noWait;	// Debug mode enabled.
 bool us_tedLevel;      // Launching a level from TED
-int us_tedLevelNumber; // Number of level to launch from TED
+int us_tedLevelNumber = 1; // Number of level to launch from TED
+const char *us_aslevFilename = NULL;	// Filename of an Abiathar ASLEV file to play.
 
 // We need to steal these from main().
 const char **us_argv;
