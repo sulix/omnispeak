@@ -41,7 +41,7 @@
 %int ck_minEnterLevel @ck_minLevel
 %int ck_maxEnterLevel @ck_maxLevel
 %int ck_minDoneLevel 1
-%int ck_maxDoneLevel 17
+%int ck_maxDoneLevel 16
 
 # Offsets into the .exe for savegame compatability
 # Note these offsets are for version 1.4
