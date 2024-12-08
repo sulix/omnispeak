@@ -232,9 +232,15 @@ void CK_KeenGetTileItem(int tileX, int tileY, int itemNumber)
 
 	CK_IncreaseScore(ck_itemPoints[itemNumber]);
 
-	// TODO: Handle more kinds of pick-ups
-
-	if (itemNumber == 11)
+	if (itemNumber < 4)
+	{
+		ck_gameState.keyGems[itemNumber] = true;
+	}
+	else if (itemNumber == 10)
+	{
+		ck_gameState.numLives++;
+	}
+	else if (itemNumber == 11)
 	{
 		ck_gameState.numShots += (ck_gameState.difficulty == D_Easy) ? 8 : 5;
 	}
