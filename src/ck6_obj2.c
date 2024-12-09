@@ -26,8 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_play.h"
 #include "ck6_ep.h"
 
-#include <stdio.h>
-
 // =========================================================================
 
 // Nospikes
@@ -103,6 +101,7 @@ void CK6_NospikeCol(CK_object *a, CK_object *b)
 		if (--a->user4 == 0)
 		{
 			CK_StunCreature(a, b, CK_ACTION(CK6_ACT_NospikeStunned0));
+			a->velY = CK_INT(CK6_NospikeDeathHopYVel, -24);
 		}
 		else
 		{
@@ -110,8 +109,7 @@ void CK6_NospikeCol(CK_object *a, CK_object *b)
 			a->user2 |= 0x400;
 			a->visible = true;
 
-			if (a->currentAction == CK_ACTION(CK6_ACT_NospikeSit0) ||
-				a->currentAction == CK_ACTION(CK6_ACT_NospikeWalk0))
+			if (a->currentAction == CK_ACTION(CK6_ACT_NospikeSit0) || a->currentAction == CK_ACTION(CK6_ACT_NospikeWalk0))
 				CK_SetAction2(a, CK_ACTION(CK6_ACT_NospikeCharge1));
 			else if (a->currentAction == CK_ACTION(CK6_ACT_NospikeWalk1))
 				CK_SetAction2(a, CK_ACTION(CK6_ACT_NospikeCharge2));
@@ -189,9 +187,7 @@ void CK6_NospikeChargeDraw(CK_object *obj)
 
 	if (obj->user2 & 0xFF00)
 	{
-		uint16_t user2 = obj->user2 & 0xFFFF; // Need to use 16-bit arithmetic here
-		user2 -= 0x100;
-		obj->user2 = user2;
+		obj->user2 -= 0x100;
 		RF_AddSpriteDraw(&(obj->sde), obj->posX, obj->posY, obj->gfxChunk, true, obj->zLayer);
 	}
 	else
@@ -321,7 +317,7 @@ void CK6_OrbatrixFloat(CK_object *obj)
 	}
 	else if (obj->clipRects.unitY2 == ck_keenObj->clipRects.unitY2)
 	{
-		int dx = ck_keenObj->posX - obj->posX;
+		int16_t dx = ck_keenObj->posX - obj->posX;
 		obj->xDirection = dx < 0 ? IN_motion_Left : IN_motion_Right;
 		if (dx > -CK_INT(CK6_OrbatrixCurlKeenXRadius, 0x500) && dx < CK_INT(CK6_OrbatrixCurlKeenXRadius, 0x500))
 			obj->currentAction = CK_ACTION(CK6_ACT_OrbatrixCurl0);
@@ -447,6 +443,7 @@ void CK6_BipCol(CK_object *a, CK_object *b)
 	}
 }
 
+// Bipship
 void CK6_SpawnBipship(int tileX, int tileY)
 {
 	CK_object *obj = CK_GetNewObj(false);
@@ -476,12 +473,12 @@ void CK6_BipshipFly(CK_object *obj)
 {
 	CK_PhysAccelHorz(obj, obj->xDirection, CK_INT(CK6_BipshipXAccel, 20));
 	int xdir = obj->xDirection;
-	int ycheck = ck_keenObj->clipRects.unitY2 + CK_INT(CK6_BipshipSearchYOffset, 0x100) - obj->clipRects.unitY2;
-	if (ycheck <= CK_INT(CK6_BipshipSearchYDiameter, 0x200) && ycheck >= 0)
+	uint16_t ycheck = ck_keenObj->clipRects.unitY2 + CK_INT(CK6_BipshipSearchYOffset, 0x100) - obj->clipRects.unitY2;
+	if (ycheck <= CK_INT(CK6_BipshipSearchYDiameter, 0x200))
 	{
 		// Fire!!
 		xdir = (ck_keenObj->posX < obj->posX) ? IN_motion_Left : IN_motion_Right;
-		if (obj->xDirection == xdir && US_RndT() < SD_GetSpriteSync() * 2)
+		if (obj->xDirection == xdir && US_RndT() < SD_GetSpriteSync() * 4)
 		{
 			SD_PlaySound(CK_SOUNDNUM(SOUND_KEENSHOOT));
 			CK_object *shot = CK_GetNewObj(true);
@@ -505,7 +502,7 @@ void CK6_BipshipFly(CK_object *obj)
 		}
 	}
 
-	int startx = obj->clipRects.tileXmid + 2 * xdir;
+	int startx = obj->clipRects.tileXmid + 4 * xdir;
 	int y = obj->clipRects.tileY1;
 	uint16_t *tile = CA_TilePtrAtPos(startx, y, 1);
 

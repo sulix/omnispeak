@@ -26,20 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ck_play.h"
 #include "ck6_ep.h"
 
-#include <stdio.h>
-
-// =========================================================================
-
-/*
- * Setup all of the functions in this file.
- */
-
 // Fleex
-
 void CK6_SpawnFleex(int tileX, int tileY)
 {
 	CK_object *obj = CK_GetNewObj(false);
 	obj->type = CT6_Fleex;
+	obj->active = OBJ_ACTIVE;
 	obj->zLayer = PRIORITIES - 4;
 	obj->posX = RF_TileToUnit(tileX);
 	obj->posY = RF_TileToUnit(tileY) + CK_INT(CK6_FleexSpawnYOffset, -0x280);
@@ -51,7 +43,7 @@ void CK6_SpawnFleex(int tileX, int tileY)
 
 void CK6_FleexWalk(CK_object *obj)
 {
-	if (ck_keenObj->deltaPosX && !obj->user1)
+	if (!ck_keenObj->deltaPosX && !obj->user1)
 	{
 		obj->currentAction = CK_ACTION(CK6_ACT_FleexSearch0);
 	}
@@ -374,10 +366,9 @@ void CK6_SpawnCeilick(int tileX, int tileY)
 
 void CK6_Ceilick(CK_object *obj)
 {
-	if (ck_keenObj->posY - obj->posY < CK_INT(CK6_CeilickSearchHeight, 0x280) &&  // <- relies on unsignedness of posY
-		ck_keenObj->posY - obj->posY >= 0 && // this line not in dos version
-		obj->clipRects.unitX2 + CK_INT(CK6_CeilickSearchXRadius, 0x10) > ck_keenObj->clipRects.unitX1 &&
-		obj->clipRects.unitX1 - CK_INT(CK6_CeilickSearchXRadius, 0x10) < ck_keenObj->clipRects.unitX2)
+	if (((uint16_t)(ck_keenObj->posY - obj->posY) <= CK_INT(CK6_CeilickSearchHeight, 0x280)) &&  // <- relies on unsignedness of posY
+		(obj->clipRects.unitX2 + CK_INT(CK6_CeilickSearchXRadius, 0x10) >= ck_keenObj->clipRects.unitX1) &&
+		(obj->clipRects.unitX1 - CK_INT(CK6_CeilickSearchXRadius, 0x10) <= ck_keenObj->clipRects.unitX2))
 	{
 		SD_PlaySound(CK_SOUNDNUM(SOUND_CEILICKATTACK));
 		obj->currentAction = CK_ACTION(CK6_ACT_CeilickStrike00);

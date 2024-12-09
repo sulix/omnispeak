@@ -372,11 +372,11 @@ void CK_DieOnContactDraw(CK_object *obj)
 
 void CK_ShrapnelTileCol(CK_object *obj)
 {
-	int bouncePower; // is long in keen source
-	int topflags_0, velY, absvelX;
-	int d, motion;
+	uint32_t bouncePower; // is long in keen source
+	uint16_t topflags_0, velY, absvelX;
+	uint16_t d, motion;
 
-	static int bouncearray[8][8] = {
+	static uint16_t bouncearray[8][8] = {
 		{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
 		{0x7, 0x6, 0x5, 0x4, 0x3, 0x2, 0x1, 0x0},
 		{0x5, 0x4, 0x3, 0x2, 0x1, 0x0, 0xF, 0xE},
@@ -403,7 +403,9 @@ void CK_ShrapnelTileCol(CK_object *obj)
 	}
 
 	// Bounce sideways if a slope floor is hit
-	topflags_0 = obj->topTI;
+	// ORIGINAL GAME BUG: We only want the collision info for this, not anything else,
+	// as this needs to be in the range 0-7 for the array access. Mask it off here.
+	topflags_0 = obj->topTI & 7;
 	if (!topflags_0)
 		return;
 
@@ -445,7 +447,7 @@ void CK_ShrapnelTileCol(CK_object *obj)
 
 	bouncePower /= 2; // absorb energy
 
-	motion = bouncearray[obj->topTI][d];
+	motion = bouncearray[topflags_0][d];
 
 	switch (motion)
 	{

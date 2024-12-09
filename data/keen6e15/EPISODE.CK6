@@ -300,7 +300,7 @@
 %int CK6_BloogguardHealth 3
 %int CK6_BloogguardTurnChance 0x20
 %int CK6_BloogguardClubChance 0x20
-%int CK6_BloogguardSmashDist 25
+%int CK6_BloogguardSmashDist 23
 
 # Blooglet
 %int CK6_BloogletSpawnYOffset -0x80

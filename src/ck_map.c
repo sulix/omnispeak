@@ -57,7 +57,7 @@ void CK_DemoSignSpawn()
 	{
 		// If this is a demo, display the DEMO banner
 		CK_SetAction(ck_scoreBoxObj, CK_ACTION(CK_ACT_DemoSign));
-		CA_CacheGrChunk(CK_CHUNKNUM(SPR_DEMOSIGN));
+		CA_MarkGrChunk(CK_CHUNKNUM(SPR_DEMOSIGN));
 	}
 	else
 	{

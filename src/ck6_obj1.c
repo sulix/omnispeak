@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_ca.h"
 #include "id_in.h"
 #include "id_rf.h"
+#include "id_vh.h"
 #include "id_vl.h"
 #include "ck_act.h"
 #include "ck_def.h"
@@ -70,7 +71,8 @@ void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 5);
 		US_CPrint(CK_STRING(ck6_str_grabbiterHungry));
-		VL_Present();
+		VH_UpdateScreen();
+		SD_PlaySound(CK_SOUNDNUM(SOUND_NEEDKEYCARD));
 		VL_DelayTics(30); // VW_WaitVBL(30);
 		IN_ClearKeysDown();
 		IN_WaitButton();
@@ -90,7 +92,7 @@ void CK6_GrabbiterCol(CK_object *a, CK_object *b)
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 2);
 		US_CPrint(CK_STRING(ck6_str_grabbiterFed));
-		VL_Present();
+		VH_UpdateScreen();
 		VL_DelayTics(30); // VW_WaitVBL(30);
 		IN_ClearKeysDown();
 		IN_WaitButton();
@@ -132,7 +134,7 @@ void CK6_RocketCol(CK_object *a, CK_object *b)
 		US_SetWindowW(US_GetWindowW() - 0x30);
 		US_SetPrintY(US_GetPrintY() + 5);
 		US_CPrint(CK_STRING(ck6_str_rocketNoPasscard));
-		VL_Present();
+		VH_UpdateScreen();
 		SD_PlaySound(CK_SOUNDNUM(SOUND_NEEDKEYCARD));
 		VL_DelayTics(30); // VW_WaitVBL(30);
 		IN_ClearKeysDown();
@@ -366,7 +368,7 @@ void CK6_MapCliffCol(CK_object *a, CK_object *b)
 			US_SetWindowW(US_GetWindowW() - 0x30);
 			US_SetPrintY(US_GetPrintY() + 15);
 			US_CPrint(CK_STRING(ck6_str_cliffNoRope));
-			VL_Present();
+			VH_UpdateScreen();
 			SD_PlaySound(CK_SOUNDNUM(SOUND_NEEDKEYCARD));
 			VL_DelayTics(30); // VW_WaitVBL(30);
 			IN_ClearKeysDown();
@@ -594,7 +596,6 @@ void CK6_SpawnBloog(int tileX, int tileY)
 	CK_SetAction(obj, CK_ACTION(CK6_ACT_BloogWalk0));
 }
 
-// Bloogs
 void CK6_Bloog(CK_object *obj)
 {
 	if (US_RndT() < CK_INT(CK6_BloogTurnChance, 0x20))
@@ -652,7 +653,7 @@ void CK6_BloogguardWalk(CK_object *obj)
 void CK6_BloogguardSmash(CK_object *obj)
 {
 	SD_PlaySound(CK_SOUNDNUM(SOUND_BLOOGGUARDSMASH));
-	ck6_smashScreenDistance = CK_INT(CK6_BloogguardSmashDist, 25);
+	ck6_smashScreenDistance = CK_INT(CK6_BloogguardSmashDist, 23);
 	if (ck_keenObj->topTI)
 		CK_SetAction2(ck_keenObj, CK_ACTION(CK6_ACT_keenStunned0));
 }

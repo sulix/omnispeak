@@ -88,7 +88,6 @@ void CK6_ScanInfoLayer()
 {
 	CA_ClearLumps();
 
-	//TODO: Work out where to store current map number, etc.
 	int mapW = CA_MapHeaders[ca_mapOn]->width;
 	int mapH = CA_MapHeaders[ca_mapOn]->height;
 
@@ -153,12 +152,17 @@ void CK6_ScanInfoLayer()
 				CK6_SpawnMapCliff(x, y, infoValue - 15);
 				break;
 
+			// Molly (for some reason, values 21, 22, and 23 also work.
+			// (use 24 in-game)
+			case 21:
+			case 22:
+			case 23:
 			case 24:
 				CA_MARKLUMP(LUMP_MOLLY);
 				CK6_SpawnMolly(x, y);
 				break;
 
-				// Fleex
+			// Fleex
 			case 20:
 				if (ck_gameState.difficulty < D_Hard)
 					break;
@@ -359,7 +363,7 @@ void CK6_ScanInfoLayer()
 				CK6_SpawnBloogguard(x, y);
 				break;
 
-				// Grabbiter
+			// Grabbiter
 			case 88:
 				CK6_SpawnGrabbiter(x, y);
 				break;
@@ -395,7 +399,9 @@ void CK6_ScanInfoLayer()
 				CK6_SpawnBabobba(x, y);
 				break;
 
+			// Rocketship
 			case 105:
+			case 106:
 				CK6_SpawnRocket(x, y, infoValue - 105);
 				break;
 			}
@@ -406,12 +412,6 @@ void CK6_ScanInfoLayer()
 	{
 		if (obj->active != OBJ_ALWAYS_ACTIVE)
 			obj->active = OBJ_INACTIVE;
-	}
-	// TODO: Some more stuff (including opening elevator after breaking fuses)
-
-	if (ck_gameState.currentLevel == 0)
-	{
-		//int keenYTilePos = RF_UnitToTile(ck_keenObj->posY);
 	}
 
 	CA_MarkAllLumps();
