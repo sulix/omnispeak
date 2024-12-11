@@ -33,8 +33,6 @@
 %int CK_highScoreFontColour 12 # BLUE ^ LIGHTMAGENTA
 %int CK_EndingMusicLevel 14
 %int CK_StarWarsMusicLevel 17
-%int ck_minDoneLevel 1
-%int ck_maxDoneLevel 17
 
 %int ck_minLevel 1
 %int ck_maxLevel 18
