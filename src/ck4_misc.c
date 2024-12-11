@@ -38,7 +38,6 @@ CK_EpisodeDef ck4_episode = {
 	"CK4",
 	"EPISODE.CK4",
 	&CK4_ScanInfoLayer,
-	&CK4_MapMiscFlagsCheck,
 	&CK4_IsPresent,
 };
 

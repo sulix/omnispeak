@@ -27,11 +27,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_vl.h"
 #include "ck_def.h"
+#include "ck_ep.h"
 #include "ck_game.h"
 
 #include "ck_act.h"
 #include "ck_text.h"
+#include "ck4_ep.h"
 #include "ck5_ep.h"
+#include "ck6_ep.h"
 
 #include "ck_cross.h" /* For CK_Cross_SwapLE16 */
 
@@ -2268,12 +2271,32 @@ void CK_PlayLoop()
 			}
 		}
 
-		//TODO: If world map and keen4, check wetsuit.
-
-		//TODO: If not world map, check keen -> item-tile collision.
-
-		if (ca_mapOn == 0)
-			ck_currentEpisode->mapMiscFlagsCheck(ck_keenObj);
+		if (ca_mapOn == CK_INT(ck_worldMapNumber, 0))
+		{
+			CK_ACT_Function ck_mapMiscFlagsCheck = CK_FUNCTION(ck_mapMiscFlagsCheck);
+			if (!ck_mapMiscFlagsCheck)
+			{
+				switch (ck_currentEpisode->ep)
+				{
+				case EP_CK4:
+					ck_mapMiscFlagsCheck = &CK4_MapMiscFlagsCheck;
+					break;
+				case EP_CK5:
+					ck_mapMiscFlagsCheck = &CK5_MapMiscFlagsCheck;
+					break;
+				case EP_CK6:
+					ck_mapMiscFlagsCheck = &CK6_MapMiscFlagsCheck;
+					break;
+				default:
+					//TODO: Maybe print a warning here?
+					break;
+				}
+			}
+			// It's actually perfectly normal to not need these, if the world
+			// map is boring enough…
+			if (ck_mapMiscFlagsCheck)
+				ck_mapMiscFlagsCheck(ck_keenObj);
+		}
 		else
 			CK_KeenCheckSpecialTileInfo(ck_keenObj);
 

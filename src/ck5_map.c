@@ -356,4 +356,5 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 void CK5_Map_SetupFunctions()
 {
 	CK_ACT_AddFunction("CK5_MapKeenElevator", &CK5_MapKeenElevator);
+	CK_ACT_AddFunction("CK5_MapMiscFlagsCheck", &CK5_MapMiscFlagsCheck);
 }

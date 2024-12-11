@@ -68,8 +68,7 @@ CK_ACT_Function CK_ACT_GetFunction(const char *fnName)
 	CK_ACT_Function fnPtr = (CK_ACT_Function)(STR_LookupEntry(ck_functionTable, fnName));
 	if (fnPtr == 0)
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "GetFunction: Could not find function \"%s\"\n", fnName);
-		Quit("GetFunction: Function not found. Check your 'ACTION.CKx' file!");
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "GetFunction: Could not find function \"%s\"\n", fnName);
 	}
 	return fnPtr;
 }
@@ -106,6 +105,7 @@ typedef enum CK_VAR_VarType
 	VAR_String,
 	VAR_IntArray,
 	VAR_StringArray,
+	VAR_Function,
 	VAR_Action,
 	VAR_TOK_Include,
 	VAR_TOK_Override,
@@ -408,6 +408,8 @@ CK_VAR_VarType CK_VAR_ParseVarType(STR_ParserState *ps)
 		varType = VAR_IntArray;
 	else if (STR_IsTokenIdent(tok, "%stringarray"))
 		varType = VAR_StringArray;
+	else if (STR_IsTokenIdent(tok, "%function"))
+		varType = VAR_Function;
 	else if (STR_IsTokenIdent(tok, "%action"))
 		varType = VAR_Action;
 	else if (STR_IsTokenIdent(tok, "%include"))
@@ -462,11 +464,25 @@ intptr_t CK_VAR_ParseIntOrVar(STR_ParserState *ps)
 		// as we can't just use NULL as a default value.
 		if (!STR_DoesEntryExist(ck_varTable, varName+1))
 			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Couldn't resolve integer variable reference %s on line %d.\n", varName, ps->linecount);
-		
+
 		return CK_VAR_GetInt(varName+1, 0);
 	}
 	else
 		return STR_GetIntegerValue(tok);
+}
+
+void CK_VAR_ParseFunction(STR_ParserState *ps)
+{
+	char varName[ID_STR_MAX_TOKEN_LENGTH];
+	char valName[ID_STR_MAX_TOKEN_LENGTH];
+	STR_GetIdent(ps, varName, ID_STR_MAX_TOKEN_LENGTH);
+	STR_GetIdent(ps, valName, ID_STR_MAX_TOKEN_LENGTH);
+	CK_ACT_Function fn = CK_ACT_GetFunction(valName);
+	if (!fn)
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Function \"%s\" (referred to by \"%s\") doesn't seem to exist on line %d.\n", valName, varName, ps->linecount);
+
+	// NOTE: Functions are _still_ stored in the separate function table.
+	CK_ACT_AddFunction(MM_ArenaStrDup(ck_varArena, varName), fn);
 }
 
 bool CK_VAR_ParseAction(STR_ParserState *ps)
@@ -482,7 +498,7 @@ bool CK_VAR_ParseAction(STR_ParserState *ps)
 		STR_GetIdent(ps, targetName, ID_STR_MAX_TOKEN_LENGTH);
 		CK_action *target = CK_GetActionByName(targetName);
 		if (!target)
-			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Couldn't resolve action variable reerence %s on line %d.\n", targetName, ps->linecount);
+			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Couldn't resolve action variable reference %s on line %d.\n", targetName, ps->linecount);
 		const char *realName = MM_ArenaStrDup(ck_varArena, actName);
 		#ifdef CK_VAR_TYPECHECK
 		CK_VAR_Variable *var = (CK_VAR_Variable *)MM_ArenaAlloc(ck_varArena, sizeof(*var));
@@ -662,6 +678,9 @@ bool CK_VAR_ParseVar(STR_ParserState *ps)
 		break;
 	case VAR_StringArray:
 		CK_VAR_ParseStringArray(ps);
+		break;
+	case VAR_Function:
+		CK_VAR_ParseFunction(ps);
 		break;
 	case VAR_Action:
 		CK_VAR_ParseAction(ps);

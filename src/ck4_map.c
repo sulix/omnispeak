@@ -145,4 +145,5 @@ void CK4_Map_SetupFunctions()
 {
 	CK_ACT_AddFunction("CK4_MapKeenFoot", &CK4_MapKeenFoot);
 	CK_ACT_AddFunction("CK4_MapKeenSwim", &CK4_MapKeenSwim);
+	CK_ACT_AddFunction("CK4_MapMiscFlagsCheck", &CK4_MapMiscFlagsCheck);
 }

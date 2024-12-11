@@ -51,4 +51,5 @@ void CK6_MapMiscFlagsCheck(CK_object *obj)
 
 void CK6_Map_SetupFunctions()
 {
+	CK_ACT_AddFunction("CK6_MapMiscFlagsCheck", &CK6_MapMiscFlagsCheck);
 }

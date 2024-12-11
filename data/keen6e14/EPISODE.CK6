@@ -43,6 +43,9 @@
 %int ck_minDoneLevel 1
 %int ck_maxDoneLevel 16
 
+%int ck_worldMapNumber 0
+%function ck_mapMiscFlagsCheck CK6_MapMiscFlagsCheck
+
 # Offsets into the .exe for savegame compatability
 # Note these offsets are for version 1.4
 %int ck_exe_objArrayOffset 0xA995

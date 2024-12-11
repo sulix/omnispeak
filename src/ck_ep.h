@@ -49,9 +49,6 @@ typedef struct CK_EpisodeDef
 	// Scan the 'info layer' of a map.
 	void (*scanInfoLayer)();
 
-	// World map miscflags check function
-	void (*mapMiscFlagsCheck)(struct CK_object *);
-
 	// Check if the episode's files are all present.
 	bool (*isPresent)();
 } CK_EpisodeDef;
