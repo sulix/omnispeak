@@ -42,6 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // at the moment, as VL_SyncPages() isn't implemented. The performance hit on
 // DOS isn't really worth it, though.)
 //#define ALWAYS_REDRAW
+#define FS_MAX_FILENAME_LEN 24
 
 // =================================
 // Episode-specific config options

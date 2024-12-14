@@ -313,7 +313,7 @@ bool FS_IsOmniFilePresent(const char *filename)
 // valid until the NEXT invocation of this function.
 char *FS_AdjustExtension(const char *filename)
 {
-	static char newname[16];
+	static char newname[FS_MAX_FILENAME_LEN];
 	size_t fnamelen = CK_Cross_strscpy(newname, filename, sizeof(newname));
 	newname[fnamelen - 3] = ck_currentEpisode->ext[0];
 	newname[fnamelen - 2] = ck_currentEpisode->ext[1];
