@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_us.h"
 #include "id_vh.h"
 #include "id_vl.h"
+#include "ck_config.h"
 #include "ck_cross.h"
 #include "ck_def.h"
 #include "ck_ep.h"
@@ -679,7 +680,7 @@ void US_LoadConfig(void)
 	bool hadQuietSfx = false;
 	bool hadAdlib = false; // Originally this is not set to 0 directly
 	char fileExt[4];
-	const char *fileName = FS_AdjustExtension("CONFIG.EXT");
+	const char *fileName = CK_FILENAME(us_configFile, "CONFIG.EXT");
 	bool configFileLoaded;
 	FS_File f = FS_OpenUserFile(fileName);
 	if (FS_IsFileValid(f))
@@ -766,7 +767,7 @@ void US_LoadConfig(void)
 
 void US_SaveConfig(void)
 {
-	const char *fileName = FS_AdjustExtension("CONFIG.EXT");
+	const char *fileName = CK_FILENAME(us_configFile, "CONFIG.EXT");
 	int16_t intVal;
 	FS_File f = FS_CreateUserFile(fileName);
 	if (!FS_IsFileValid(f))
@@ -835,7 +836,7 @@ void US_SaveConfig(void)
 // Savefiles
 //
 
-static char us_savefile[] = "SAVEGAMx.EXT";
+static char us_savefile[FS_MAX_FILENAME_LEN];
 
 US_Savefile us_savefiles[US_MAX_NUM_OF_SAVED_GAMES];
 
@@ -844,8 +845,20 @@ US_Savefile us_savefiles[US_MAX_NUM_OF_SAVED_GAMES];
 /* as well as a similar internal buffer used by FS_AdjustExtension. */
 const char *US_GetSavefileName(int index)
 {
-	us_savefile[7] = (char)(index + '0'); /* 'x' in "SAVEGAMx.CK5" */
-	return FS_AdjustExtension(us_savefile);
+	const char *filename_pattern = CK_FILENAME(us_saveFile, "SAVEGAM?.EXT");
+	for (int i = 0; ; ++i)
+	{
+		if (i >= FS_MAX_FILENAME_LEN)
+			QuitF("Savegame filename \"%s\" too long! (Maximum length %d)", filename_pattern, FS_MAX_FILENAME_LEN);
+		char c = filename_pattern[i];
+		if (filename_pattern[i] == '?')
+			us_savefile[i] = (char)(index + '0');
+		else
+			us_savefile[i] = filename_pattern[i];
+		if (!c)
+			break;
+	}
+	return us_savefile;
 }
 
 void US_GetSavefiles(void)

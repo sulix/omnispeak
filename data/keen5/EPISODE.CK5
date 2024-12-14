@@ -25,6 +25,10 @@
 %string ca_mapHead "MAPHEAD.CK5"
 %string ca_tileInfo "TILEINFO.CK5"
 
+# Other Files
+%string us_configFile "CONFIG.CK5"
+%string us_saveFile "SAVEGAM?.CK5" # Use a '?' for the savegame number.
+
 %int CK_activeLimit 6
 %int CK_highScoreLevel 15
 %int CK_highScoreTopMargin 0x23
