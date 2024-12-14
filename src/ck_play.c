@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_sd.h"
 #include "id_us.h"
 #include "id_vl.h"
+#include "ck_config.h"
 #include "ck_def.h"
 #include "ck_ep.h"
 #include "ck_game.h"
@@ -182,7 +183,7 @@ void CK_BeginDemoRecord()
 
 void CK_EndDemoRecord()
 {
-	char demoFileName[] = "DEMO?.EXT";
+	char demoFileName[FS_MAX_FILENAME_LEN];
 	VL_FixRefreshBuffer();
 	IN_DemoStopPlaying();
 	US_CenterWindow(22, 3);
@@ -201,9 +202,20 @@ void CK_EndDemoRecord()
 	{
 		if (str[0] >= '0' && str[0] <= '9')
 		{
-			demoFileName[4] = str[0];
-			char *fixedFileName = FS_AdjustExtension(demoFileName);
-			IN_DemoSaveToFile(fixedFileName, ck_gameState.currentLevel);
+			const char *filename_pattern = CK_FILENAME(ck_demoFileName, "DEMO?.EXT");
+			for (int i = 0; ; ++i)
+			{
+				if (i >= FS_MAX_FILENAME_LEN)
+					QuitF("Savegame filename \"%s\" too long! (Maximum length %d)", filename_pattern, FS_MAX_FILENAME_LEN);
+				char c = filename_pattern[i];
+				if (filename_pattern[i] == '?')
+					demoFileName[i] = str[0];
+				else
+					demoFileName[i] = filename_pattern[i];
+				if (!c)
+					break;
+			}
+			IN_DemoSaveToFile(demoFileName, ck_gameState.currentLevel);
 		}
 		IN_DemoFreeBuffer();
 	}

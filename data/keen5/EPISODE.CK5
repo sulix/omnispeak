@@ -28,6 +28,7 @@
 # Other Files
 %string us_configFile "CONFIG.CK5"
 %string us_saveFile "SAVEGAM?.CK5" # Use a '?' for the savegame number.
+%string ck_demoFileName "DEMO?.CK5" # For F10+D, use '?' for the demo number.
 
 %int CK_activeLimit 6
 %int CK_highScoreLevel 15
