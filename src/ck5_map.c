@@ -180,14 +180,10 @@ void CK5_MapKeenElevator(CK_object *keen)
 	tileX = keen->posX >> 8;
 	tileY = keen->posY >> 8;
 	CK_MapCamera(keen);
-	// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
-	VL_SetScrollCoords((rf_scrollXUnit & 0xef) >> 4, (rf_scrollYUnit & 0xff) >> 4);
-
 	//Draw the scorebox
 	CK_UpdateScoreBox(ck_scoreBoxObj);
 
 	RF_Refresh();
-	VL_Present();
 	RF_Refresh();
 
 	keen->posY -= 0x100;
@@ -207,22 +203,18 @@ void CK5_MapKeenElevator(CK_object *keen)
 		}
 		RF_ReplaceTiles(tile_array, 1, tileX, tileY - 2, 2, 2);
 		RF_Refresh();
-		//VL_DelayTics(2);
 		VL_DelayTics(8); // Simulate 8 calls to VL_WaitVBL();
-		//CK_SetTicsPerFrame();
-		VL_Present();
+
 	}
 
 	// Draw keen walking out of elevator
 	for (int frame = 0; frame < 32; frame++)
 	{
 		keen->posY += 8;
-		keen->gfxChunk = 0xFB + (frame / 4) % 3;
+		keen->gfxChunk = CK_CHUNKNUM(SPR_MAPKEEN_WALK1_S) + (frame / 4) % 3;
 		RF_AddSpriteDraw(&keen->sde, keen->posX, keen->posY, keen->gfxChunk, false, keen->zLayer);
 		RF_Refresh();
-		//VL_DelayTics(2);
-		//CK_SetTicsPerFrame();
-		VL_Present();
+
 	}
 
 	keen->clipped = CLIP_normal;
@@ -255,11 +247,6 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 
 		// Draw screen and delay 1/35th of a second
 		RF_Refresh();
-		// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
-		VL_SetScrollCoords((rf_scrollXUnit & 0xef) >> 4, (rf_scrollYUnit & 0xff) >> 4);
-		//VL_DelayTics(2);
-		//CK_SetTicsPerFrame();
-		VL_Present();
 
 		ticsx2 = SD_GetSpriteSync() * 2;
 		timer += SD_GetSpriteSync();
@@ -297,7 +284,7 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 
 		// Draw Keen walking into target
 		// TODO: Is that done by the original code?
-		ck_keenObj->gfxChunk = ((SD_GetTimeCount() >> 3) % 3) + 0xF8;
+		ck_keenObj->gfxChunk = ((SD_GetTimeCount() >> 3) % 3) + CK_CHUNKNUM(SPR_MAPKEEN_WALK1_N);
 		RF_AddSpriteDraw(&ck_keenObj->sde, ck_keenObj->posX, ck_keenObj->posY, ck_keenObj->gfxChunk, false, ck_keenObj->zLayer);
 	}
 
@@ -316,10 +303,7 @@ void CK5_AnimateMapElevator(int tileX, int tileY, int dir)
 		}
 		RF_ReplaceTiles(tile_array, 1, tileX + dir, tileY - 1, 2, 2);
 		RF_Refresh();
-		//VL_DelayTics(2);
 		VL_DelayTics(8); // Simulate 8 calls to VL_WaitVBL();
-		//CK_SetTicsPerFrame();
-		VL_Present();
 	}
 
 	// Keen is now behind the elevator door, so don't draw him
