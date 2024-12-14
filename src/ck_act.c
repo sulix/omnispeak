@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_str.h"
 #include "id_us.h"
 
-#include <ctype.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "ck_act.h"
@@ -167,7 +167,7 @@ intptr_t CK_VAR_GetInt(const char *name, intptr_t def)
 	if (!var)
 	{
 #ifdef CK_VAR_WARNONNOTSET
-		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Integer variable \"%s\" not set, returning default %ld (0x%lX)\n", name, def, def);
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Integer variable \"%s\" not set, returning default %"PRIdPTR" (0x%"PRIXPTR")\n", name, def, def);
 #endif
 		return def;
 	}
