@@ -19,6 +19,11 @@ const char *ck_cross_logLevel_strings[] = {
 
 CK_Log_Message_Class_T ck_cross_logLevel = CK_DEFAULT_LOG_LEVEL;
 
+#ifdef VL_EGA
+#include <unistd.h>
+extern bool vl_started;
+#endif
+
 void CK_PRINTF_FORMAT(2, 3) CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass, const char *format, ...)
 {
 	// TODO: For now we simply do this.
@@ -31,13 +36,22 @@ void CK_PRINTF_FORMAT(2, 3) CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass,
 	switch (msgClass)
 	{
 	case CK_LOG_MSG_NORMAL:
+#ifdef VL_EGA
+		if (vl_started && isatty(STDOUT_FILENO)) break;
+#endif
 		vprintf(format, args);
 		break;
 	case CK_LOG_MSG_WARNING:
+#ifdef VL_EGA
+		if (vl_started && isatty(STDERR_FILENO)) break;
+#endif
 		fprintf(stderr, "Warning: ");
 		vfprintf(stderr, format, args);
 		break;
 	case CK_LOG_MSG_ERROR:
+#ifdef VL_EGA
+		if (vl_started && isatty(STDERR_FILENO)) break;
+#endif
 		fprintf(stderr, "Error: ");
 		vfprintf(stderr, format, args);
 		break;

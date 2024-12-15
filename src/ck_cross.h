@@ -68,7 +68,8 @@ typedef enum CK_Log_Message_Class_T
 {
 	CK_LOG_MSG_NORMAL,
 	CK_LOG_MSG_WARNING,
-	CK_LOG_MSG_ERROR
+	CK_LOG_MSG_ERROR,
+	CK_LOG_MSG_NONE
 } CK_Log_Message_Class_T;
 
 extern const char *ck_cross_logLevel_strings[];
