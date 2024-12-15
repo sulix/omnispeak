@@ -167,7 +167,7 @@ intptr_t CK_VAR_GetInt(const char *name, intptr_t def)
 	if (!var)
 	{
 #ifdef CK_VAR_WARNONNOTSET
-		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Integer variable \"%s\" not set, returning default %"PRIdPTR" (0x%"PRIXPTR")\n", name, def, def);
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Integer variable \"%s\" not set, returning default %" PRIdPTR " (0x%" PRIXPTR ")\n", name, def, def);
 #endif
 		return def;
 	}
