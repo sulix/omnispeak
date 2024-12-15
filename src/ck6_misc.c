@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_fs.h"
 #include "id_in.h"
 #include "id_rf.h"
+#include "id_vh.h"
 #include "id_vl.h"
 #include "ck_act.h"
 #include "ck_def.h"
@@ -537,7 +538,7 @@ void CK6_ShowGetSandwich()
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint(CK_STRING(ck6_str_getSandwich));
-	VL_Present();
+	VH_UpdateScreen();
 
 	VL_DelayTics(30); // VW_WaitVBL(30);
 	IN_ClearKeysDown();
@@ -558,7 +559,7 @@ void CK6_ShowGetRope()
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 12);
 	US_CPrint(CK_STRING(ck6_str_getRope));
-	VL_Present();
+	VH_UpdateScreen();
 
 	VL_DelayTics(30); // VW_WaitVBL(30);
 	IN_ClearKeysDown();
@@ -579,7 +580,7 @@ void CK6_ShowGetPasscard()
 	US_SetWindowW(US_GetWindowW() - 0x30);
 	US_SetPrintY(US_GetPrintY() + 4);
 	US_CPrint(CK_STRING(ck6_str_getPasscard));
-	VL_Present();
+	VH_UpdateScreen();
 
 	VL_DelayTics(30); // VW_WaitVBL(30);
 	IN_ClearKeysDown();
