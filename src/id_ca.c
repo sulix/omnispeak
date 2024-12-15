@@ -1083,7 +1083,12 @@ void CA_CacheMap(int mapIndex)
 	{
 		uint32_t headerOffset = ca_MapHead->headerOffsets[mapIndex];
 
-		if (headerOffset <= 0)
+		// NOTE: Keen checks if this is < 0, but it's nominally unsigned.
+		// Modern compilers consider that tautological. 0 is sometimes also
+		// used as a 'sparse' map identifier, but some mods don't have the
+		// 'TED5v1.0' header, and actually start maps at offset 0, so we can't
+		// check against that. This seems a good compromise.
+		if (headerOffset == 0xFFFFFFFF)
 		{
 			Quit("CA_CacheMap: Tried to load a non-existant map!");
 		}
