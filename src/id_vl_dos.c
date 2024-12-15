@@ -929,7 +929,13 @@ void VL_DOS_WaitVBLs(int vbls)
 	for (int i = 0; i < vbls; ++i)
 	{
 		uint32_t timeCount = SD_GetTimeCount();
-		// Wait for the previous retrace to end
+		// Wait for blank to begin
+		do
+		{
+			if (SD_GetTimeCount() - timeCount > 1)
+				break;
+		} while (!(inportb(0x3DA) & 8));
+		// And end
 		do
 		{
 			if (SD_GetTimeCount() - timeCount > 1)
