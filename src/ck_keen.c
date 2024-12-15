@@ -1092,8 +1092,7 @@ void CK_KeenJumpThink(CK_object *obj)
 	}
 	else
 	{
-		//TODO: Check this w/ K5Disasm and/or x-disasm
-		if (ck_gameState.difficulty == D_Easy)
+		if (ck_gameState.difficulty == D_Easy && CK_INT(ck_easyJumpGravity, 1))
 		{
 			CK_PhysGravityMid(obj);
 		}
