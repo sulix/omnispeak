@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_fs.h"
 #include "id_in.h"
 #include "id_rf.h"
+#include "id_vh.h"
 #include "id_vl.h"
 #include "ck_act.h"
 #include "ck_def.h"
@@ -843,7 +844,7 @@ void CK5_FuseMessage()
 	ca_graphChunkNeeded[CK_CHUNKNUM(PIC_KEENTALK2)] |= ca_levelbit;
 	CA_CacheMarks(0);
 
-	// VW_SyncPages();
+	VL_FixRefreshBuffer();
 
 	// Draw Keen Talking
 	US_CenterWindow(0x1A, 8);
@@ -856,21 +857,18 @@ void CK5_FuseMessage()
 	else
 		US_CPrint(CK_STRING(ck5_str_fuseDestroyed));
 
-	// VW_UpdateScreen();
-	VL_Present();
-	// VW_WaitVBL(30);
+	VH_UpdateScreen();
+	VL_DelayTics(30);
 
 	IN_ClearKeysDown();
-	// TODO: Add Joystick compatability here
-	// IN_WaitForButton();
 	IN_WaitButton();
 
 	// Draw the Keen Thumbs Up Pic
 	VHB_DrawBitmap(US_GetWindowW() + US_GetWindowX(), US_GetWindowY(), CK_CHUNKNUM(PIC_KEENTALK2));
-	VL_Present();
-	// VW_WaitVBL(30);
+	VH_UpdateScreen();
+	VL_DelayTics(30);
 	IN_ClearKeysDown();
 	IN_WaitButton();
 	CA_DownLevel();
-	// StopMusic();
+	StopMusic();
 }
