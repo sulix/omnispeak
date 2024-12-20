@@ -1339,7 +1339,7 @@ void CK_KeenPogoThink(CK_object *obj)
 {
 	if (!ck_keenState.jumpTimer)
 	{
-		if (ck_gameState.difficulty == D_Easy)
+		if (ck_gameState.difficulty == D_Easy && CK_INT(ck_easyJumpGravity, 1))
 		{
 			CK_PhysGravityMid(obj);
 		}
