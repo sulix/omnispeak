@@ -177,12 +177,16 @@ static void VL_SDL3GPU_SetVideoMode(int mode)
 	if (mode == 0xD)
 	{
 		SDL_Rect desktopBounds;
+		int scale = 3;
 		const SDL_DisplayID *displayIDs = SDL_GetDisplays(NULL);
-		if (!SDL_GetDisplayUsableBounds(*displayIDs, &desktopBounds))
+		if (displayIDs && !SDL_GetDisplayUsableBounds(*displayIDs, &desktopBounds))
 		{
 			CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Couldn't get usable display bounds to calculate default scale: \"%s\"\n", SDL_GetError());
 		}
-		int scale = VL_CalculateDefaultWindowScale(desktopBounds.w, desktopBounds.h);
+		else
+		{
+			scale = VL_CalculateDefaultWindowScale(desktopBounds.w, desktopBounds.h);
+		}
 		vl_sdl3_window = SDL_CreateWindow(VL_WINDOW_TITLE,
 			VL_DEFAULT_WINDOW_WIDTH(scale), VL_DEFAULT_WINDOW_HEIGHT(scale),
 			SDL_WINDOW_RESIZABLE | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN : 0));
