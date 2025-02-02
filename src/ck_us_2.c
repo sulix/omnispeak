@@ -23,10 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ck_config.h"
 
+#include "id_cfg.h"
 #include "id_fs.h"
 #include "id_in.h"
 #include "id_sd.h"
 #include "id_us.h"
+#include "id_vh.h"
 #include "id_vl.h"
 #include "ck_act.h"
 #include "ck_cross.h"
@@ -162,6 +164,21 @@ bool CK_US_JoyMotionModeMenuProc(US_CardMsg msg, US_CardItem *item)
 	return true;
 }
 
+#endif
+
+#ifdef QUICKSAVE_ENABLED
+
+bool CK_US_QuickSaveConfirmMenuProc(US_CardMsg msg, US_CardItem *item)
+{
+	if (msg != US_MSG_CardEntered)
+		return false;
+
+	bool quickSaveConfirm = !CFG_GetConfigBool("ck_quickSaveConfirm", true);
+	CFG_SetConfigBool("ck_quickSaveConfirm", quickSaveConfirm);
+	USL_CtlDialog((quickSaveConfirm ? "QuickSave Confirmation Enabled" : "QuickSave Confirmation Disabled"), "Press any key", NULL);
+	CK_US_UpdateOptionsMenus();
+	return true;
+}
 #endif
 
 bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item);
@@ -301,9 +318,61 @@ static bool US_LoadMain(int i, bool fromMenu)
 	}
 }
 
+bool USL_ConfirmQuick(bool saving, int quickSaveSlot)
+{
+	if (CFG_GetConfigBool("ck_quickSaveConfirm", true))
+	{
+		// Draw a hint that the confirmation can be disabled.
+
+		US_DrawWindow((320 / 8 - 20) / 2, 200 / 8 - 6, 20, 4);
+		US_SetPrintY(US_GetPrintY() + 1);
+		US_CPrint("Hint: This confirmation\ndialog can be disabled\nin the options menu.");
+
+		// Draw the main confirmation dialog.
+		US_CenterWindow(30, 6);
+		US_SetPrintY(US_GetPrintY() + 3);
+		if (saving)
+			US_CPrintF("QuickSave will save to slot number %d", quickSaveSlot + 1);
+		else
+			US_CPrintF("QuickLoad will load slot number %d", quickSaveSlot + 1);
+		US_SetPrintY(US_GetWindowY() + 20);
+		US_CPrintF("%s\n", us_savefiles[quickSaveSlot].name);
+		US_SetPrintY(US_GetWindowY() + 36);
+		if (saving)
+			US_CPrintF("Really overwrite this game (Y/N)?");
+		else
+			US_CPrintF("Really load this game (Y/N)?");
+
+		VH_UpdateScreen();
+
+		IN_ClearKeysDown();
+		while (IN_GetLastScan() != IN_SC_Y)
+		{
+			if (IN_GetLastScan() == IN_SC_N || IN_GetLastScan() == IN_SC_Escape)
+			{
+				IN_ClearKeysDown();
+				return false;
+			}
+			VL_Yield();
+			IN_PumpEvents();
+			VL_Present();
+		}
+
+		US_ClearWindow();
+		return true;
+	}
+	return true;
+}
+
 bool US_QuickLoad(void)
 {
-	return US_LoadMain(US_MAX_NUM_OF_SAVED_GAMES - 1, false);
+	int quickSaveSlot = CFG_GetConfigInt("quickSaveSlot", US_MAX_NUM_OF_SAVED_GAMES - 1);
+	quickSaveSlot = CK_Cross_clamp(quickSaveSlot, 0, US_MAX_NUM_OF_SAVED_GAMES - 1);
+	if (!us_savefiles[quickSaveSlot].used)
+		return false;
+	if (!USL_ConfirmQuick(false, quickSaveSlot))
+		return false;
+	return US_LoadMain(quickSaveSlot, false);
 }
 
 void load_savegame_item(US_CardItem *item)
@@ -311,6 +380,9 @@ void load_savegame_item(US_CardItem *item)
 	if (USL_ConfirmComm(US_Comm_LoadGame))
 	{
 		int i = item - ck_us_loadSaveMenuItems;
+#ifdef QUICKSAVE_ENABLED
+		CFG_SetConfigInt("quickSaveSlot", i);
+#endif
 		USL_LoadSaveMessage("Loading", us_savefiles[i].name);
 		if (!US_LoadMain(i, true))
 		{ /* is this condition right? */
@@ -437,12 +509,18 @@ static bool US_SaveMain(int i)
 
 bool US_QuickSave(void)
 {
+	int quickSaveSlot = CFG_GetConfigInt("quickSaveSlot", US_MAX_NUM_OF_SAVED_GAMES - 1);
+	quickSaveSlot = CK_Cross_clamp(quickSaveSlot, 0, US_MAX_NUM_OF_SAVED_GAMES - 1);
+	if (!USL_ConfirmQuick(true, quickSaveSlot))
+		return false;
 	US_Savefile *e;
-	e = &us_savefiles[US_MAX_NUM_OF_SAVED_GAMES - 1];
+	e = &us_savefiles[quickSaveSlot];
 	e->printXOffset = CK_INT(ck_exe_printXOffset, 0xF00D);
-	CK_Cross_strscpy(e->name, "QuickSave", US_MAX_SAVEDGAMENAME_LEN + 1);
+	/* Only update the name if it doesn't already exist. */
+	if (!e->name[0])
+		CK_Cross_strscpy(e->name, "QuickSave", US_MAX_SAVEDGAMENAME_LEN + 1);
 	e->used = 1;
-	return US_SaveMain(US_MAX_NUM_OF_SAVED_GAMES - 1);
+	return US_SaveMain(quickSaveSlot);
 }
 
 #endif
@@ -474,6 +552,9 @@ void save_savegame_item(US_CardItem *item)
 	if (n != 0)
 	{
 		e->used = 1;
+#ifdef QUICKSAVE_ENABLED
+		CFG_SetConfigInt("quickSaveSlot", i);
+#endif
 		USL_LoadSaveMessage("Saving", e->name);
 		US_SaveMain(i);
 	}
@@ -524,6 +605,9 @@ US_Card ck_us_vsyncMenu = {0, 0, 0, 0, 0, &CK_US_VSyncMenuProc, 0, 0, 0};
 #ifdef EXTRA_JOYSTICK_OPTIONS
 US_Card ck_us_joyMotionModeMenu = {0, 0, 0, 0, 0, &CK_US_JoyMotionModeMenuProc, 0, 0, 0};
 #endif
+#ifdef QUICKSAVE_ENABLED
+US_Card ck_us_quickSaveMenu = {0, 0, 0, 0, 0, &CK_US_QuickSaveConfirmMenuProc, 0, 0, 0};
+#endif
 // Options menu
 US_CardItem ck_us_optionsMenuItems[] = {
 	{US_ITEM_Submenu, 0, IN_SC_S, "", US_Comm_None, &ck_us_scoreBoxMenu, 0, 0},
@@ -536,6 +620,9 @@ US_CardItem ck_us_optionsMenuItems[] = {
 	{US_ITEM_Submenu, 0, IN_SC_B, "", US_Comm_None, &ck_us_borderMenu, 0, 0},
 	{US_ITEM_Submenu, 0, IN_SC_I, "", US_Comm_None, &ck_us_integerMenu, 0, 0},
 	{US_ITEM_Submenu, 0, IN_SC_V, "", US_Comm_None, &ck_us_vsyncMenu, 0, 0},
+#endif
+#ifdef QUICKSAVE_ENABLED
+	{US_ITEM_Submenu, 0, IN_SC_Q, "", US_Comm_None, &ck_us_quickSaveMenu, 0, 0},
 #endif
 	{US_ITEM_None, 0, IN_SC_None, 0, US_Comm_None, 0, 0, 0}};
 
@@ -1312,6 +1399,14 @@ void CK_US_UpdateOptionsMenus(void)
 #endif
 #ifdef EXTRA_JOYSTICK_OPTIONS
 	ck_us_joyconfMenuItems[(int)IN_joy_modern].caption = in_joyAdvancedMotion ? "MOTION MODE (MODERN)" : "MOTION MODE (CLASSIC)";
+#endif
+#ifdef QUICKSAVE_ENABLED
+#ifdef EXTRA_GRAPHICS_OPTIONS
+#define QUICKSAVE_OPTION_NUMBER 9
+#else
+#define QUICKSAVE_OPTION_NUMBER 4
+#endif
+	ck_us_optionsMenuItems[QUICKSAVE_OPTION_NUMBER].caption = CFG_GetConfigBool("ck_quickSaveConfirm", true) ? "CONFIRM QUICKSAVE (ON)" : "CONFIRM QUICKSAVE (OFF)";
 #endif
 
 	// Disable Two button firing selection if required
