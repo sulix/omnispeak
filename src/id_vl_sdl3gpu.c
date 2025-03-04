@@ -122,7 +122,7 @@ static void VL_SDL3GPU_CreatePipeline()
 	pipelineCreateInfo.rasterizer_state.cull_mode = SDL_GPU_CULLMODE_NONE;
 
 	pipelineCreateInfo.multisample_state.sample_count = SDL_GPU_SAMPLECOUNT_1;
-	pipelineCreateInfo.multisample_state.sample_mask = 0xFFFF;
+	pipelineCreateInfo.multisample_state.sample_mask = 0;
 
 	vl_sdl3gpu_pipeline = SDL_CreateGPUGraphicsPipeline(vl_sdl3gpu_device, &pipelineCreateInfo);
 }
