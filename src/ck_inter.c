@@ -1427,7 +1427,7 @@ void CK_ScrollSWText()
 		scrollDistance += SD_GetSpriteSync() / 4;
 		SD_SetSpriteSync(SD_GetSpriteSync() % 4);
 
-		if (IN_GetLastScan() == IN_SC_F1)
+		if (IN_CheckAck() && IN_GetLastScan() != IN_SC_F1)
 			IN_SetLastScan(IN_SC_Space);
 
 		if (IN_GetLastScan())
