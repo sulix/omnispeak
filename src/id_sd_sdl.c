@@ -545,7 +545,7 @@ void SD_SDL_Startup(void)
 	else
 	{
 		SD_SDL_AudioSpec.freq = CFG_GetConfigInt("sampleRate", 49716); // OPL rate
-		SD_SDL_AudioSpec.format = AUDIO_S16;
+		SD_SDL_AudioSpec.format = AUDIO_S16SYS;
 		SD_SDL_AudioSpec.channels = CFG_GetConfigInt("audioChannels", 2);
 		// Under wine, small buffer sizes cause a lot of crackling, so we double the
 		// buffer size. This will result in a tiny amount (~10ms) of extra lag on windows,
