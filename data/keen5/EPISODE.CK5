@@ -52,6 +52,9 @@
 %function ck_mapMiscFlagsCheck CK5_MapMiscFlagsCheck
 %int ck_easyJumpGravity 1 # Keen jumps higher on "Easy" difficulty.
 
+%int ck_minExtraVBLs 0
+%int ck_maxExtraVBLs 8
+
 # Offsets into the .exe for savegame compatability
 %int ck_exe_objArrayOffset 0x9E6F
 %int ck_exe_tempObjOffset 0xBC3B

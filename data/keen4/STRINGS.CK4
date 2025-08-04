@@ -38,6 +38,8 @@
 %string ck_str_slowMotionOn "Slow motion ON"
 %string ck_str_slowMotionOff "Slow motion OFF"
 
+%string ck_str_extraVBLs "  Add how many extra VBLs(0-8):"
+
 #TODO: Warp and some other debug cheats
 
 %string ck_str_debugKeysActive "Debug keys active"

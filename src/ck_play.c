@@ -72,6 +72,8 @@ CK_GameState ck_gameState;
 
 static bool ck_slowMotionEnabled = false;
 
+static int ck_extraVBLs = 0;
+
 // Switch to toggle Camera following keen.
 bool ck_scrollDisabled = false;
 
@@ -1028,6 +1030,23 @@ bool CK_DebugKeys()
 	}
 
 	// Extra Vibbles
+	if (IN_GetKeyState(IN_SC_V) && game_in_progress)
+	{
+		char str[4];
+		VL_FixRefreshBuffer();
+		US_CenterWindow(30, 3);
+		US_SetPrintY(US_GetPrintY() + 3);
+		US_Print(CK_STRING(ck_str_extraVBLs));
+		VH_UpdateScreen();
+		if (US_LineInput(US_GetPrintX(), US_GetPrintY(), str, NULL, true, 2, 0))
+		{
+			int extraVBLs;
+			sscanf(str, "%d", &extraVBLs);
+			if (extraVBLs > CK_INT(ck_minExtraVBLs, 0) && extraVBLs <= CK_INT(ck_maxExtraVBLs, 8))
+				ck_extraVBLs = extraVBLs;
+		}
+		return true;
+	}
 
 	// Level Warp
 	if (IN_GetKeyState(IN_SC_W) && game_in_progress)
@@ -2367,13 +2386,15 @@ void CK_PlayLoop()
 		}
 #endif
 
-		//TODO: Slow-mo, extra VBLs.
 		if (ck_slowMotionEnabled)
 		{
 			VL_DelayTics(14);
 			SD_SetLastTimeCount(SD_GetTimeCount());
 		}
-		// TODO: Extra VBLs come here
+
+		if (ck_extraVBLs)
+			VL_DelayTics(ck_extraVBLs);
+
 		// If we've finished playing back our demo, or the player presses a key,
 		// exit the playloop.
 		if (IN_DemoGetMode() == IN_Demo_Playback)
