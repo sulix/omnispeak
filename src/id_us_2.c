@@ -850,6 +850,9 @@ void USL_EndCards()
 
 	if (quit_to_dos)
 	{
+		// This should be TEDDeath(), but we don't actually have TED.
+		if (us_tedLevel)
+			Quit(NULL);
 		US_CenterWindow(0x14, 3);
 		US_SetPrintColour(3);
 		US_PrintCentered("Quitting...");

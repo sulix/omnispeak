@@ -893,9 +893,21 @@ void CK_GameLoop()
 				ck_gameState.ep.ck5.securityCard = 0;
 		}
 
-		//TODO: Some TED launching stuff
-
 		VL_FixRefreshBuffer();
+
+		if (us_tedLevel)
+		{
+			if (ck_gameState.levelState == LS_LoadedGame)
+				goto replayLevel;
+			else if (ck_gameState.levelState == LS_Died)
+				goto loadLevel;
+			else
+			{
+				// NOTE: We don't actually try to launch TED,
+				// which was done by TEDDeath().
+				Quit(NULL);
+			}
+		}
 
 		ck_lastLevelFinished = -1;
 		switch (ck_gameState.levelState)
