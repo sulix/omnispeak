@@ -24,7 +24,7 @@ void CK_GameLoop();
 void CK_LoadLevel(bool doCache, bool silent);
 
 void CK_BeginCacheBox(const char *title, int numChunks);
-void CK_UpdateCacheBox();
-void CK_FinishCacheBox();
+void CK_UpdateCacheBox(void);
+void CK_FinishCacheBox(void);
 
 #endif

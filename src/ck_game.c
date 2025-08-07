@@ -719,7 +719,7 @@ void CK_BeginCacheBox(const char *title, int numChunks)
 	}
 }
 
-void CK_UpdateCacheBox()
+void CK_UpdateCacheBox(void)
 {
 	ck_cacheBoxChunkCounter--;
 
@@ -738,7 +738,7 @@ void CK_UpdateCacheBox()
 	}
 }
 
-void CK_FinishCacheBox()
+void CK_FinishCacheBox(void)
 {
 }
 
