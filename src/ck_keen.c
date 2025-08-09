@@ -1046,6 +1046,14 @@ void CK_KeenRunDrawFunc(CK_object *obj)
 
 void CK_KeenReadThink(CK_object *obj)
 {
+	// If we're running in "Store Demo" mode, abort the game if the player
+	// isn't doing anything.
+	if (ck_storeDemo)
+	{
+		ck_gameState.levelState = LS_AbortGame;
+		IN_ClearKeysDown();
+	}
+
 	if (ck_inputFrame.xDirection != 0 || ck_keenState.jumpIsPressed || ck_keenState.pogoIsPressed)
 	{
 		obj->currentAction = CK_ACTION(CK_ACT_keenStowBook1);

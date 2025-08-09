@@ -49,33 +49,34 @@ void CK_HandleDemoKeys()
 	if (!IN_GetLastScan())
 		return;
 
-	/*
-	 * if Keen started with demo parameter
-	 * ck_gameState.levelState = 5;
-	 * startingDifficulty = 2;
-	 * IN_ClearKeysDown();
-	 * CK_NewGame(); (init_keen_stats)
-	 * return;
-	 */
+	if (ck_storeDemo)
+	{
+		ck_gameState.levelState = LS_ResetGame;
+		ck_startingDifficulty = D_Normal;
+		IN_ClearKeysDown();
+		CK_NewGame();
+	}
 
 #ifdef HAS_HELPSCREEN
-	if ((ck_currentEpisode->ep != EP_CK6) && (IN_GetLastScan() == IN_SC_F1))
+	else if ((ck_currentEpisode->ep != EP_CK6) && (IN_GetLastScan() == IN_SC_F1))
 	{
 		HelpScreens();
 		return;
 	}
 #endif
-
-	// Otherwise, start the wristwatch menu
-	US_RunCards();
-	if (ck_startingDifficulty)
+	else
 	{
-		ck_gameState.levelState = LS_ResetGame;
-		return;
-	}
+		// Otherwise, start the wristwatch menu
+		US_RunCards();
+		if (ck_startingDifficulty)
+		{
+			ck_gameState.levelState = LS_ResetGame;
+			return;
+		}
 
-	if (ck_startingSavedGame)
-		ck_gameState.levelState = LS_LoadedGame;
+		if (ck_startingSavedGame)
+			ck_gameState.levelState = LS_LoadedGame;
+	}
 }
 
 /*
@@ -1161,17 +1162,14 @@ void CK_DrawTerminator(void)
 		IN_WaitButton();
 		CA_ClearMarks();
 
-		// TODO: If started with /DEMO PARM
-#if 0
-		if (DemoSwitch)
+		if (ck_storeDemo)
 		{
-			ck_gameState.levelState = 5;
+			ck_gameState.levelState = LS_ResetGame;
 			ck_startingDifficulty = D_Normal;
 			IN_ClearKeysDown();
 			CK_NewGame();
 			return;
 		}
-#endif
 	}
 
 	US_RunCards();

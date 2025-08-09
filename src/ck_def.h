@@ -477,6 +477,8 @@ extern CK_object *ck_keenObj;
 void CK_OBJ_SetupFunctions();
 
 /* ck_main.c */
+extern bool ck_storeDemo;
+
 void CK_MeasureMultiline(const char *str, uint16_t *w, uint16_t *h);
 void CK_ShutdownID();
 

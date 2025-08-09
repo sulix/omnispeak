@@ -77,9 +77,6 @@ static int ck_extraVBLs = 0;
 // Switch to toggle Camera following keen.
 bool ck_scrollDisabled = false;
 
-// Set if game started with /DEMO parm
-int ck_demoParm;
-
 // invincibility switch
 bool ck_godMode;
 
@@ -1172,7 +1169,7 @@ void CK_CheckKeys()
 	}
 #endif
 
-	if (!ck_demoParm)
+	if (!ck_storeDemo)
 	{
 
 #ifdef QUICKSAVE_ENABLED
@@ -1279,7 +1276,31 @@ void CK_CheckKeys()
 		}
 	}
 
-	// TODO: CTRL+S sound
+	if (ck_storeDemo && IN_GetKeyState(IN_SC_Control) && IN_GetLastScan() == IN_SC_S)
+	{
+		if (SD_GetSoundMode() != sdm_Off)
+		{
+			SD_SetSoundMode(sdm_Off);
+			SD_SetMusicMode(smm_Off);
+		}
+		else
+		{
+			if (SD_IsAdlibPresent())
+			{
+				SD_SetSoundMode(sdm_AdLib);
+				SD_SetQuietSfx(false);
+				// Note that this won't actually start the music
+				// immediately.
+				SD_SetMusicMode(smm_AdLib);
+			}
+			else
+			{
+				SD_SetSoundMode(sdm_PC);
+				SD_SetMusicMode(smm_Off);
+			}
+			CA_LoadAllSounds();
+		}
+	}
 
 	// CTRL + Q
 	if (IN_GetKeyState(IN_SC_Control) && IN_GetLastScan() == IN_SC_Q)

@@ -48,6 +48,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 CK_EpisodeDef *ck_currentEpisode;
 
+// Are we running the "in-store demo", which quits after a few levels.
+bool ck_storeDemo = false;
+
 /*
  * Measure the containing box size of a string that spans multiple lines
  */
@@ -496,6 +499,10 @@ int main(int argc, char *argv[])
 	// Send the cmd-line args to the User Manager.
 	us_argc = argc;
 	us_argv = (const char **)argv;
+
+	// Check if we're running the store demo.
+	if (US_ParmPresent("DEMO"))
+		ck_storeDemo = true;
 
 	// We need to start the filesystem code before we look
 	// for any files.

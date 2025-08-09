@@ -68,12 +68,16 @@ void CK_EndingPurge()
 
 void CK_NewGame()
 {
-	// TODO: Zero the ck_gameState
+	// NOTE: the level state wasn't originally part of the game state,
+	// so preserve it. We also have to make it an int, as that's what it
+	// is in the gameState.
+	int ls = ck_gameState.levelState;
 	memset(&ck_gameState, 0, sizeof(ck_gameState));
 	ck_gameState.nextKeenAt = 20000;
 	ck_gameState.numLives = 3;
 	ck_gameState.numShots = 5;
 	ck_gameState.currentLevel = 0;
+	ck_gameState.levelState = ls;
 }
 
 void CK_GameOver()
@@ -860,12 +864,14 @@ extern CK_Difficulty ck_startingDifficulty;
 bool CK6_CreatureQuestion();
 void CK_GameLoop()
 {
-	// if !demoParm
-	if (!CK6_CreatureQuestion())
+	if (!ck_storeDemo)
 	{
-		ck_startingSavedGame = false;
-		ck_startingDifficulty = D_NotPlaying;
-		return;
+		if (!CK6_CreatureQuestion())
+		{
+			ck_startingSavedGame = false;
+			ck_startingDifficulty = D_NotPlaying;
+			return;
+		}
 	}
 
 	do
@@ -929,10 +935,16 @@ void CK_GameLoop()
 		case LS_TeleportToKorath:
 			if (ca_mapOn == 0)
 			{
-				// TODO: Print the "One Moment" message
-				// US_CenterWindow(8, 0x1A);
-				// window_print_y += 0x19;
-				// window_print("One Moment");
+				// NOTE: In theory, this is written directly to
+				// the current frontbuffer. It shouldn't matter,
+				// though, as we've already fixed the refresh
+				// buffer.
+				US_CenterWindow(26, 8);
+				US_SetPrintY(US_GetPrintY() + 25);
+				US_Print("One moment");
+				// The original only does this for CGA due to
+				// the frontbuffer hack above.
+				VH_UpdateScreen();
 			}
 			else
 			{
@@ -942,8 +954,13 @@ void CK_GameLoop()
 				ck_gameState.currentLevel = 0;
 				ck_lastLevelFinished = ca_mapOn;
 				ck_gameState.levelsDone[ca_mapOn] = 1;
-				// TODO: If Keen launched with /Demo switch
-				// Then function returns here based on ca_mapOn
+
+				// Quit out early if we're doing the store demo.
+				if (ck_storeDemo && ca_mapOn  == 2)
+				{
+					IN_ClearKeysDown();
+					return;
+				}
 			}
 			break;
 
