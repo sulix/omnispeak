@@ -62,6 +62,19 @@ int US_CheckParm(const char *parm, const char **strings)
 	return -1;
 }
 
+// Check if a boolean parameter is present.
+bool US_ParmPresent(const char* arg)
+{
+	const char *strings[] = {arg, NULL};
+
+	for (int i = 1; i < us_argc; ++i)
+	{
+		if (US_CheckParm(us_argv[i], strings) != -1)
+			return true;
+	}
+	return false;
+}
+
 // Coords in pixels
 static int16_t us_windowX;
 static int16_t us_windowY;

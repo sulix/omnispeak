@@ -52,6 +52,7 @@ void _NORETURN QuitF(const char *msg, ...) CK_PRINTF_FORMAT(1, 2);
 // id_us_1.c:
 // Parameter Checking
 int US_CheckParm(const char *parm, const char **strings);
+bool US_ParmPresent(const char *arg);
 // UI functions
 void US_Print(const char *str);
 void US_PrintF(const char *str, ...);
