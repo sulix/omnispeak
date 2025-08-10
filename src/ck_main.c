@@ -199,13 +199,21 @@ void CK_DemoLoop()
 
 	if (us_tedLevel)
 	{
+		static const char *difficultyParms[] = {"easy", "normal", "hard", ""};
 		CK_NewGame();
 		CA_LoadAllSounds();
 		ck_gameState.currentLevel = us_tedLevelNumber;
 		ck_startingDifficulty = D_Normal;
 
-		// TODO: Support selecting difficulty via an extra command line
-		// argument ("easy", "normal", "hard")
+		for (int i = 1; i < us_argc; ++i)
+		{
+			int difficulty = US_CheckParm(us_argv[i], difficultyParms);
+			if (difficulty == -1)
+				continue;
+
+			ck_startingDifficulty = (CK_Difficulty)((int)D_Easy + difficulty);
+			break;
+		}
 
 		CK_GameLoop();
 		Quit(0); // run_ted
