@@ -1,8 +1,8 @@
-#include "assert.h"
 #include <SDL3/SDL.h>
 #include <string.h>
 #include "id_vl.h"
 #include "id_vl_private.h"
+#include "id_us.h"
 #include "ck_cross.h"
 
 // We need the window to be exported so we can access it in ID_IN.
@@ -13,6 +13,12 @@ static SDL_Palette *vl_sdl3_palette;
 static SDL_Surface *vl_sdl3_stagingSurface;
 static SDL_Texture *vl_sdl3_scaledTarget;
 static bool vl_sdl3_bilinearSupport = true;
+// Should we resolve the palette on the CPU (as is required pre-SDL-3.4.0)
+#if SDL_VERSION_ATLEAST(3,4,0)
+static bool vl_sdl3_swPalette = false;
+#else
+static bool vl_sdl3_swPalette = true;
+#endif
 
 static void VL_SDL3_ResizeWindow()
 {
@@ -84,14 +90,26 @@ static void VL_SDL3_SetVideoMode(int mode)
 		if (!vl_isIntegerScaled && !vl_sdl3_bilinearSupport)
 			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Using SDL3 software renderer without integer scaling. Pixel size may be inconsistent.\n");
 
-		vl_sdl3_texture = SDL_CreateTexture(vl_sdl3_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT);
-		SDL_SetTextureScaleMode(vl_sdl3_texture, SDL_SCALEMODE_NEAREST);
+		if (vl_sdl3_swPalette)
+		{
+			vl_sdl3_texture = SDL_CreateTexture(vl_sdl3_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT);
+			SDL_SetTextureScaleMode(vl_sdl3_texture, SDL_SCALEMODE_NEAREST);
+			// As we can't do on-GPU palette conversions with SDL3,
+			// we do a PAL8->RGBA conversion of the visible area to this surface each frame.
+			vl_sdl3_stagingSurface = SDL_CreateSurface(VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT, SDL_PIXELFORMAT_RGBA8888);
+		}
+		else
+		{
+#if SDL_VERSION_ATLEAST(3,4,0)
+			vl_sdl3_texture = SDL_CreateTexture(vl_sdl3_renderer, SDL_PIXELFORMAT_INDEX8, SDL_TEXTUREACCESS_STREAMING, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT);
+			SDL_SetTextureScaleMode(vl_sdl3_texture, SDL_SCALEMODE_NEAREST);
+#else
+			Quit("This build requires SDL 3.4.0 or newer!");
+#endif
+		}
 
 		vl_sdl3_palette = SDL_CreatePalette(256);
 
-		// As we can't do on-GPU palette conversions with SDL3,
-		// we do a PAL8->RGBA conversion of the visible area to this surface each frame.
-		vl_sdl3_stagingSurface = SDL_CreateSurface(VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT, SDL_PIXELFORMAT_RGBA8888);
 
 		VL_SDL3_ResizeWindow();
 		SDL_HideCursor();
@@ -116,7 +134,8 @@ static void *VL_SDL3_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 
 static void VL_SDL3_DestroySurface(void *surface)
 {
-	//TODO: Implement
+	SDL_Surface *surf = (SDL_Surface *)surface;
+	SDL_DestroySurface(surf);
 }
 
 static long VL_SDL3_GetSurfaceMemUse(void *surface)
@@ -189,8 +208,6 @@ static void VL_SDL3_SurfaceRect_PM(void *dst_surface, int x, int y, int w, int h
 
 static void VL_SDL3_SurfaceToSurface(void *src_surface, void *dst_surface, int x, int y, int sx, int sy, int sw, int sh)
 {
-	// Sadly we cannot naively use SDL_BlitSurface, since the surfaces may
-	// both be 8-bit but with different palettes, which we ignore.
 	SDL_Surface *surf = (SDL_Surface *)src_surface;
 	SDL_Surface *dest = (SDL_Surface *)dst_surface;
 
@@ -334,10 +351,22 @@ static void VL_SDL3_Present(void *surface, int scrlX, int scrlY, bool singleBuff
 	SDL_Rect fullRect = {(Sint16)vl_fullRgn_x, (Sint16)vl_fullRgn_y, vl_fullRgn_w, vl_fullRgn_h};
 	SDL_FRect fullRectF = {(float)vl_fullRgn_x, (float)vl_fullRgn_y, (float)vl_fullRgn_w, (float)vl_fullRgn_h};
 
-	SDL_BlitSurface(surf, &srcr, vl_sdl3_stagingSurface, 0);
-	SDL_LockSurface(vl_sdl3_stagingSurface);
-	SDL_UpdateTexture(vl_sdl3_texture, 0, vl_sdl3_stagingSurface->pixels, vl_sdl3_stagingSurface->pitch);
-	SDL_UnlockSurface(vl_sdl3_stagingSurface);
+	if (vl_sdl3_swPalette)
+	{
+		SDL_BlitSurface(surf, &srcr, vl_sdl3_stagingSurface, 0);
+		SDL_LockSurface(vl_sdl3_stagingSurface);
+		SDL_UpdateTexture(vl_sdl3_texture, 0, vl_sdl3_stagingSurface->pixels, vl_sdl3_stagingSurface->pitch);
+		SDL_UnlockSurface(vl_sdl3_stagingSurface);
+	}
+#if SDL_VERSION_ATLEAST(3,4,0)
+	else
+	{
+		SDL_LockSurface(surf);
+		SDL_UpdateTexture(vl_sdl3_texture, 0, (uint8_t *)surf->pixels + (scrlY * surf->pitch) + scrlX, surf->pitch);
+		SDL_UnlockSurface(surf);
+		SDL_SetTexturePalette(vl_sdl3_texture, vl_sdl3_palette);
+	}
+#endif
 	if (vl_sdl3_scaledTarget)
 	{
 		SDL_SetRenderTarget(vl_sdl3_renderer, vl_sdl3_scaledTarget);
