@@ -139,7 +139,7 @@ RF_OnscreenAnimTile *rf_firstOnscreenAnimTile, *rf_freeOnscreenAnimTile;
 
 // The minimum number of ticks permitted per frame.
 // Defaults to 2 (35Hz).
-int rf_minTics = 2;
+int rf_minTics = 1;
 // Maximum number of ticks permitted per frame.
 // Defaults to 5 (14Hz)
 int rf_maxTics = 5;
@@ -799,7 +799,7 @@ void RFL_RenderForeTiles()
 			if (!(TI_ForeMisc(tile) & 0x80))
 				continue;
 			VL_MaskedBlitToScreen(CA_GetGrChunk(ca_gfxInfoE.offTiles16m, tile, "Tile16m", true),
-				(stx - scrollXtile) * 16, (sty - scrollYtile) * 16, 16, 16);
+				RF_TileToPixel(stx - scrollXtile), RF_TileToPixel(sty - scrollYtile), 16, 16);
 		}
 	}
 }
@@ -876,24 +876,27 @@ void RF_RepositionLimit(int scrollXunit, int scrollYunit)
 	int scrollXtile = RF_UnitToTile(rf_scrollXUnit);
 	int scrollYtile = RF_UnitToTile(rf_scrollYUnit);
 
+	int leftHalf = (RF_SCREEN_WIDTH_TILES / 2);
+	int topHalf = (RF_SCREEN_HEIGHT_TILES / 2);
+
 	// Loop through the horizontal scroll blocks.
 	for (int scrollBlockID = 0; scrollBlockID < rf_numHorzScrollBlocks; ++scrollBlockID)
 	{
 		// If one is in the left half of the screen...
 		if (rf_horzScrollBlocks[scrollBlockID] >= scrollXtile &&
-			scrollXtile + 10 >= rf_horzScrollBlocks[scrollBlockID])
+			scrollXtile + leftHalf >= rf_horzScrollBlocks[scrollBlockID])
 		{
 			// reposition ourselves to be to its right.
-			rf_scrollXUnit = RF_TileToUnit(rf_horzScrollBlocks[scrollBlockID]) + 0x100;
+			rf_scrollXUnit = RF_TileToUnit(rf_horzScrollBlocks[scrollBlockID]) + RF_TileToUnit(1);
 			break;
 		}
 
 		// If one is in the right half of the screen...
-		if (scrollXtile + 11 <= rf_horzScrollBlocks[scrollBlockID] &&
-			scrollXtile + 20 >= rf_horzScrollBlocks[scrollBlockID])
+		if (scrollXtile + leftHalf + 1 <= rf_horzScrollBlocks[scrollBlockID] &&
+			scrollXtile + RF_SCREEN_WIDTH_TILES >= rf_horzScrollBlocks[scrollBlockID])
 		{
 			// reposition ourselved to be at its left.
-			rf_scrollXUnit = RF_TileToUnit(rf_horzScrollBlocks[scrollBlockID]) - 0x1400;
+			rf_scrollXUnit = RF_TileToUnit(rf_horzScrollBlocks[scrollBlockID]) - RF_TileToUnit(RF_SCREEN_WIDTH_TILES);
 			break;
 		}
 	}
@@ -903,19 +906,19 @@ void RF_RepositionLimit(int scrollXunit, int scrollYunit)
 	{
 		// If one is in the top half of the screen...
 		if (rf_vertScrollBlocks[scrollBlockID] >= scrollYtile &&
-			scrollYtile + 6 >= rf_vertScrollBlocks[scrollBlockID])
+			scrollYtile + topHalf >= rf_vertScrollBlocks[scrollBlockID])
 		{
 			// reposition ourselves to be beneath it.
-			rf_scrollYUnit = RF_TileToUnit(rf_vertScrollBlocks[scrollBlockID]) + 0x100;
+			rf_scrollYUnit = RF_TileToUnit(rf_vertScrollBlocks[scrollBlockID]) + RF_TileToUnit(1);
 			break;
 		}
 
 		// If one is in the bottom half of the screen...
-		if (scrollYtile + 7 <= rf_vertScrollBlocks[scrollBlockID] &&
-			scrollYtile + 13 >= rf_vertScrollBlocks[scrollBlockID])
+		if (scrollYtile + topHalf + 1 <= rf_vertScrollBlocks[scrollBlockID] &&
+			scrollYtile + RF_SCREEN_HEIGHT_TILES >= rf_vertScrollBlocks[scrollBlockID])
 		{
 			// reposition ourselves to be above it.
-			rf_scrollYUnit = RF_TileToUnit(rf_vertScrollBlocks[scrollBlockID]) - 0xD00;
+			rf_scrollYUnit = RF_TileToUnit(rf_vertScrollBlocks[scrollBlockID]) - RF_TileToUnit(RF_SCREEN_HEIGHT_TILES);
 			break;
 		}
 	}

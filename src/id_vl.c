@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vl.h"
 #include "id_ca.h"
 #include "id_mm.h"
+#include "id_rf.h"
 #include "id_vl_private.h"
 
 #include "ck_cross.h"
@@ -716,7 +717,7 @@ void VL_InitScreen(void)
 	vl_memused = 0;
 	vl_numsurfaces = 1;
 	vl_currentBackend->setVideoMode(0xD);
-	vl_emuegavgaadapter.screen = vl_currentBackend->createSurface(21 * 16, 14 * 16, VL_SurfaceUsage_FrontBuffer);
+	vl_emuegavgaadapter.screen = vl_currentBackend->createSurface(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS, VL_SurfaceUsage_FrontBuffer);
 	vl_memused += vl_currentBackend->getSurfaceMemUse(vl_emuegavgaadapter.screen);
 	// NOTE: The overscan border color is *not* yet set to cyan here
 	VL_SetPaletteAndBorderColor(vl_palette[3]);

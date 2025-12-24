@@ -2043,16 +2043,16 @@ void CK_NormalCamera(CK_object *obj)
 		return;
 
 	// End level if keen makes it out either side
-	if (obj->clipRects.unitX1 < rf_scrollXMinUnit || obj->clipRects.unitX2 > rf_scrollXMaxUnit + RF_PixelToUnit(320))
+	if (obj->clipRects.unitX1 < rf_scrollXMinUnit || obj->clipRects.unitX2 > rf_scrollXMaxUnit + RF_TileToUnit(RF_SCREEN_WIDTH_TILES))
 	{
 		ck_gameState.levelState = LS_LevelComplete;
 		return;
 	}
 
 	// Kill keen if he falls out the bottom
-	if (obj->clipRects.unitY2 > (rf_scrollYMaxUnit + RF_PixelToUnit(208)))
+	if (obj->clipRects.unitY2 > (rf_scrollYMaxUnit + RF_TileToUnit(RF_SCREEN_HEIGHT_TILES)))
 	{
-		obj->posY -= obj->clipRects.unitY2 - (rf_scrollYMaxUnit + RF_PixelToUnit(208));
+		obj->posY -= obj->clipRects.unitY2 - (rf_scrollYMaxUnit + RF_TileToUnit(RF_SCREEN_HEIGHT_TILES));
 		SD_PlaySound(CK_SOUNDNUM(SOUND_KEENFALL));
 		ck_godMode = false;
 		CK_KillKeen();

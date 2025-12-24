@@ -1102,9 +1102,9 @@ void CK_DrawTerminator(void)
 
 	// Omnispeak
 	#ifdef VL_EGA
-	VL_DOS_SetPageGap(16, 16, 21 * 16);
+	VL_DOS_SetPageGap(16, 16, RF_BUFFER_WIDTH_TILES * 16);
 	#endif
-	VL_ResizeScreen(21 * 16, 14 * 16);
+	VL_ResizeScreen(RF_BUFFER_WIDTH_TILES * 16, RF_BUFFER_HEIGHT_TILES * 16);
 
 	VL_SetScrollCoords(0, 0);
 
