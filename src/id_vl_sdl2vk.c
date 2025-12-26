@@ -426,7 +426,7 @@ static void VL_SDL2VK_SetupSwapchain(int width, int height)
 	if (result != VK_SUCCESS)
 		Quit("Couldn't enumerate physical device surface formats.");
 
-	VkSurfaceFormatKHR *surfaceFormats = (VkSurfaceFormatKHR *)MM_ArenaAlloc(vl_sdl2vk_tempArena, sizeof(VkSurfaceFormatKHR) & surfaceFormatCount);
+	VkSurfaceFormatKHR *surfaceFormats = (VkSurfaceFormatKHR *)MM_ArenaAlloc(vl_sdl2vk_tempArena, sizeof(VkSurfaceFormatKHR) * surfaceFormatCount);
 	result = id_vkGetPhysicalDeviceSurfaceFormatsKHR(vl_sdl2vk_physicalDevice, vl_sdl2vk_windowSurface, &surfaceFormatCount, surfaceFormats);
 	if (result != VK_SUCCESS)
 		Quit("Couldn't enumerate physical device surface formats.");
