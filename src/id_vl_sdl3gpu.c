@@ -595,6 +595,8 @@ static void VL_SDL3GPU_Present(void *surface, int scrlX, int scrlY, bool singleB
 	float data[4 * 17];
 	data[0] = scrlX;
 	data[1] = scrlY;
+	data[2] = VL_EGAVGA_GFX_WIDTH;
+	data[3] = VL_EGAVGA_GFX_HEIGHT;
 	for (int i = 0; i < 16; ++i)
 	{
 		data[4 + 4 * i] = (float)VL_EGARGBColorTable[vl_emuegavgaadapter.palette[i]][0] / 255.0;
