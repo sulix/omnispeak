@@ -139,25 +139,25 @@ void USL_DrawCardItemIcon(US_CardItem *item)
 	if (item->state & US_IS_Disabled)
 	{
 		if (item->state & US_IS_Selected)
-			gfxChunk = 92 + 5;
+			gfxChunk = CK_INT(us_menu_itemDisabledSelectedTile, 92 + 5);
 		else
-			gfxChunk = 92 + 4;
+			gfxChunk = CK_INT(us_menu_itemDisabledTile, 92 + 4);
 	}
 	else
 	{
 		if ((item->type == US_ITEM_Radio) && !(item->state & US_IS_Checked))
 		{
 			if (item->state & US_IS_Selected)
-				gfxChunk = 92 + 3;
+				gfxChunk = CK_INT(us_menu_itemCheckedSelectedTile, 92 + 3);
 			else
-				gfxChunk = 92 + 2;
+				gfxChunk = CK_INT(us_menu_itemCheckedTile, 92 + 2);
 		}
 		else
 		{
 			if (item->state & US_IS_Selected)
-				gfxChunk = 92 + 1;
+				gfxChunk = CK_INT(us_menu_itemSelectedTile, 92 + 1);
 			else
-				gfxChunk = 92 + 0;
+				gfxChunk = CK_INT(us_menu_itemTile, 92 + 0);
 		}
 	}
 

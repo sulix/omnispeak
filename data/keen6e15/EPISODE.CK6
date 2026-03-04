@@ -84,6 +84,13 @@
 %int us_menu_foregroundColour 10
 %int us_menu_disabledColour 2
 
+%int us_menu_itemTile 92
+%int us_menu_itemSelectedTile 93
+%int us_menu_itemCheckedTile 94
+%int us_menu_itemCheckedSelectedTile 95
+%int us_menu_itemDisabledTile 96
+%int us_menu_itemDisabledSelectedTile 97
+
 # Default High Scores
 # -------------------
 
