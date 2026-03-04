@@ -107,6 +107,17 @@ void US_Shutdown(void);
 
 // ID_US_2
 
+// Colours
+#ifdef CK_VANILLA
+#define us_menu_backgroundColour 8
+#define us_menu_foregroundColour 10
+#define us_menu_disabledColour 2
+#else
+extern int us_menu_backgroundColour;
+extern int us_menu_foregroundColour;
+extern int us_menu_disabledColour;
+#endif
+
 // Messages passed to the callback.
 typedef enum US_CardMsg
 {

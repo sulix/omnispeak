@@ -88,11 +88,22 @@ US_CardItem main_menu_items[] = {
 //AS:00A2
 US_Card main_menu = {32, 4, CK_CHUNKID(PIC_MENUCARD), 0, main_menu_items, NULL, 0, 0, 0};
 
+#ifndef CK_VANILLA
+int us_menu_backgroundColour;
+int us_menu_foregroundColour;
+int us_menu_disabledColour;
+#endif
+
 void US_SetupCards(US_Card *initial)
 {
 	us_cardStackIndex = 0;
 	us_cardStack[0] = initial;
 	us_currentCard = initial;
+#ifndef CK_VANILLA
+	us_menu_backgroundColour = CK_INT(us_menu_backgroundColour, 8);
+	us_menu_foregroundColour = CK_INT(us_menu_foregroundColour, 10);
+	us_menu_disabledColour = CK_INT(us_menu_disabledColour, 2);
+#endif
 }
 
 US_Card *USL_PopCard()
@@ -160,14 +171,14 @@ void USL_DrawCardItem(US_CardItem *item)
 		return;
 
 	// Gray out the area underneath the text
-	VHB_Bar(75, item->y, 159, 8, 8);
+	VHB_Bar(75, item->y, 159, 8, us_menu_backgroundColour);
 
 	USL_DrawCardItemIcon(item);
 
 	if (!(item->state & US_IS_Selected) || (item->state & US_IS_Disabled))
-		US_SetPrintColour(10);
+		US_SetPrintColour(us_menu_foregroundColour);
 	else
-		US_SetPrintColour(2);
+		US_SetPrintColour(us_menu_disabledColour);
 
 	VHB_DrawPropString(item->caption, item->x + 8, item->y + 1, 1, US_GetPrintColour());
 
@@ -180,7 +191,7 @@ void USL_DrawMenuFooter(void)
 {
 	uint16_t w, h;
 
-	US_SetPrintColour(10);
+	US_SetPrintColour(us_menu_foregroundColour);
 
 	/* "Arrows move" */
 	VHB_DrawPropString(footer_str[2], 78, 135, 1, US_GetPrintColour());
@@ -195,7 +206,7 @@ void USL_DrawMenuFooter(void)
 
 	US_SetPrintColour(0);
 
-	VHB_HLine(77, 231, 133, 10);
+	VHB_HLine(77, 231, 133, us_menu_foregroundColour);
 }
 
 void USL_DrawCard()
@@ -207,7 +218,7 @@ void USL_DrawCard()
 	// Draw the header (if any))
 	if (us_currentCard->gfxChunk)
 	{
-		VHB_HLine(77, 231, 55, 10);
+		VHB_HLine(77, 231, 55, us_menu_foregroundColour);
 		VHB_DrawBitmap(80, 48, CK_LookupChunk(us_currentCard->gfxChunk));
 	}
 
@@ -264,13 +275,13 @@ void USL_DialogSetup(uint16_t w, uint16_t h, uint16_t *x, uint16_t *y)
 	*y = 48 + (102 - h) / 2;
 
 	/* Fill the background */
-	VHB_Bar(*x, *y, w + 1, h + 1, 8);
+	VHB_Bar(*x, *y, w + 1, h + 1, us_menu_backgroundColour);
 
 	/* Draw the border */
-	VHB_HLine(*x - 1, *x + w + 1, *y - 1, 10);
-	VHB_HLine(*x - 1, *x + w + 1, *y + h + 1, 10);
-	VHB_VLine(*y - 1, *y + h + 1, *x - 1, 10);
-	VHB_VLine(*y - 1, *y + h + 1, *x + w + 1, 10);
+	VHB_HLine(*x - 1, *x + w + 1, *y - 1, us_menu_foregroundColour);
+	VHB_HLine(*x - 1, *x + w + 1, *y + h + 1, us_menu_foregroundColour);
+	VHB_VLine(*y - 1, *y + h + 1, *x - 1, us_menu_foregroundColour);
+	VHB_VLine(*y - 1, *y + h + 1, *x + w + 1, us_menu_foregroundColour);
 }
 
 void USL_LoadSaveMessage(const char *s1, const char *s2)
@@ -325,17 +336,17 @@ int USL_CtlDialog(const char *s1, const char *s2, const char *s3)
 	USL_DialogSetup(window_w, h, &x, &y);
 
 	/* Print the message */
-	US_SetPrintColour(2);
+	US_SetPrintColour(us_menu_disabledColour);
 	print_x = x + (window_w - w1) / 2;
 	print_y = y + sh + 1;
 	VHB_DrawPropString(s1, print_x, print_y, 1, US_GetPrintColour());
 
 	print_y += (sh * 2) - 1;
-	VHB_HLine(x + 3, x + window_w - 3, print_y, 10);
+	VHB_HLine(x + 3, x + window_w - 3, print_y, us_menu_foregroundColour);
 
 	/* Print the OK prompt */
 	print_y += 2;
-	US_SetPrintColour(10);
+	US_SetPrintColour(us_menu_foregroundColour);
 	print_x = x + (window_w - w2) / 2;
 	VHB_DrawPropString(s2, print_x, print_y, 1, US_GetPrintColour());
 

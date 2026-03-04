@@ -245,8 +245,8 @@ void CK_US_DrawSavegameItemBorder(US_CardItem *item)
 	item->y += (item - ck_us_loadSaveMenuItems) * 11;
 
 	/* Choose an appropriate color */
-	US_SetPrintColour((item->state & US_IS_Selected) ? 2 : 10);
-	c = US_GetPrintColour() ^ 8;
+	US_SetPrintColour((item->state & US_IS_Selected) ? us_menu_disabledColour : us_menu_foregroundColour);
+	c = US_GetPrintColour() ^ (us_menu_foregroundColour ^ us_menu_disabledColour);
 
 	/* Draw the rectangle */
 	VH_HLine(item->x, item->x + 148, item->y, c);
@@ -424,7 +424,7 @@ bool CK_US_LoadGameMenuProc(US_CardMsg msg, US_CardItem *item)
 		CK_US_DrawSavegameItemBorder(item);
 
 		/* Draw the caption */
-		VH_Bar(item->x + 1, item->y + 2, 146, 7, 8);
+		VH_Bar(item->x + 1, item->y + 2, 146, 7, us_menu_backgroundColour);
 		i = item - ck_us_loadSaveMenuItems;
 		if (us_savefiles[i].used)
 			US_SetPrintX(item->x + 2);
@@ -538,9 +538,9 @@ void save_savegame_item(US_CardItem *item)
 	e = &us_savefiles[i];
 
 	/* Prompt the user to enter a name */
-	US_SetPrintColour(2);
+	US_SetPrintColour(us_menu_disabledColour);
 	//fontcolour = 2;
-	VH_Bar(item->x + 1, item->y + 2, 146, 7, 8);
+	VH_Bar(item->x + 1, item->y + 2, 146, 7, us_menu_backgroundColour);
 	e->printXOffset = CK_INT(ck_exe_printXOffset, 0xF00D);
 	n = US_LineInput(item->x + 2, item->y + 2, e->name, (e->used ? e->name : NULL), 1, 32, 138);
 
@@ -745,17 +745,17 @@ bool CK_US_ControlsMenuProc(US_CardMsg msg, US_CardItem *item)
 	case US_MSG_DrawItem:
 
 		// Draw the item Icon and the key's name
-		VH_Bar(75, item->y, 159, 8, 8);
+		VH_Bar(75, item->y, 159, 8, us_menu_backgroundColour);
 		USL_DrawCardItemIcon(item);
 
-		US_SetPrintColour((item->state & US_IS_Selected) ? 2 : 10);
+		US_SetPrintColour((item->state & US_IS_Selected) ? us_menu_disabledColour : us_menu_foregroundColour);
 		print_x = item->x + 8;
 		print_y = item->y + 1;
 		VH_DrawPropString(item->caption, print_x, print_y, 1, US_GetPrintColour());
 
-		// Draw the outer green bo
-		VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8);
-		VH_Bar(item->x + 91, item->y + 1, 38, 6, 8);
+		// Draw the outer green box
+		VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ (us_menu_disabledColour ^ us_menu_foregroundColour));
+		VH_Bar(item->x + 91, item->y + 1, 38, 6, us_menu_backgroundColour);
 
 		print_x = item->x + 96;
 		print_y = item->y + 1;
@@ -787,7 +787,7 @@ void CK_US_SetKeyBinding(US_CardItem *item, int which_control)
 
 	// TODO: Should be global variables (as in vanilla Keen 5)?
 	char last_scan = 0;
-	US_SetPrintColour(2);
+	US_SetPrintColour(us_menu_disabledColour);
 
 	IN_ClearKeysDown();
 
@@ -804,8 +804,8 @@ void CK_US_SetKeyBinding(US_CardItem *item, int which_control)
 			cursor = !cursor;
 
 			/* Draw the rectangle */
-			VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8);
-			VH_Bar(item->x + 91, item->y + 1, 38, 6, 8);
+			VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ (us_menu_disabledColour ^ us_menu_foregroundColour));
+			VH_Bar(item->x + 91, item->y + 1, 38, 6, us_menu_backgroundColour);
 
 			/* Draw the cursor */
 			if (cursor)
@@ -924,17 +924,17 @@ bool CK_US_JoyConfMenuProc(US_CardMsg msg, US_CardItem *item)
 	case US_MSG_DrawItem:
 
 		// Draw the item Icon and the key's name
-		VH_Bar(75, item->y, 159, 8, 8);
+		VH_Bar(75, item->y, 159, 8, us_menu_backgroundColour);
 		USL_DrawCardItemIcon(item);
 
-		US_SetPrintColour((item->state & US_IS_Selected) ? 2 : 10);
+		US_SetPrintColour((item->state & US_IS_Selected) ? us_menu_disabledColour : us_menu_foregroundColour);
 		print_x = item->x + 8;
 		print_y = item->y + 1;
 		VH_DrawPropString(item->caption, print_x, print_y, 1, US_GetPrintColour());
 
 		// Draw the outer green bo
-		VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8);
-		VH_Bar(item->x + 91, item->y + 1, 38, 6, 8);
+		VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ (us_menu_disabledColour ^ us_menu_foregroundColour));
+		VH_Bar(item->x + 91, item->y + 1, 38, 6, us_menu_backgroundColour);
 
 		// construct the value string
 		str[0] = '\0';
@@ -1007,8 +1007,8 @@ void CK_US_SetJoyBinding(US_CardItem *item, IN_JoyConfItem which_control)
 			cursor = !cursor;
 
 			/* Draw the rectangle */
-			VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ 8);
-			VH_Bar(item->x + 91, item->y + 1, 38, 6, 8);
+			VH_Bar(item->x + 90, item->y, 40, 8, US_GetPrintColour() ^ (us_menu_disabledColour ^ us_menu_foregroundColour));
+			VH_Bar(item->x + 91, item->y + 1, 38, 6, us_menu_backgroundColour);
 
 			/* Draw the cursor */
 			if (cursor)
@@ -1083,7 +1083,7 @@ void USL_DrawPaddleWarScore(int16_t keen_score, int16_t comp_score)
 	// NOTE: This is modified a little from the original
 	// exe in order to align the text and to set the proper font and color
 
-	int8_t print_color = 2;
+	int8_t print_color = us_menu_disabledColour;
 	int16_t print_y = 52;
 	uint16_t w, h;
 
@@ -1095,7 +1095,7 @@ void USL_DrawPaddleWarScore(int16_t keen_score, int16_t comp_score)
 
 	// Draw keen's score
 	int print_x = 80;
-	VH_Bar(print_x, print_y, 42, 6, 8);
+	VH_Bar(print_x, print_y, 42, 6, us_menu_backgroundColour);
 	const char *keenString = CK_STRING(ck_str_paddleWarKeen);
 	VH_MeasurePropString(keenString, &w, &h, 1);
 	VH_DrawPropString(keenString, print_x, print_y, 1, print_color);
@@ -1105,7 +1105,7 @@ void USL_DrawPaddleWarScore(int16_t keen_score, int16_t comp_score)
 
 	// Draw Comp score
 	print_x = 182;
-	VH_Bar(print_x, print_y, 50, 6, 8);
+	VH_Bar(print_x, print_y, 50, 6, us_menu_backgroundColour);
 	const char *compString = CK_STRING(ck_str_paddleWarComp);
 	VH_MeasurePropString(compString, &w, &h, 1);
 	VH_DrawPropString(compString, print_x, print_y, 1, print_color);
@@ -1190,7 +1190,7 @@ void USL_PlayPaddleWar(void)
 				new_round = false;
 
 				/* Erase the ball */
-				VH_Bar(old_ball_x, old_ball_y, 6, 5, 8);
+				VH_Bar(old_ball_x, old_ball_y, 6, 5, us_menu_backgroundColour);
 			}
 
 			if (ball_visible && (comp_move_counter++ % 3) != 0)
@@ -1308,7 +1308,7 @@ void USL_PlayPaddleWar(void)
 
 		if (ball_visible)
 		{
-			VH_Bar(old_ball_x, old_ball_y, 6, 5, 8);
+			VH_Bar(old_ball_x, old_ball_y, 6, 5, us_menu_backgroundColour);
 			old_ball_x = ball_x;
 			old_ball_y = ball_y;
 
@@ -1321,12 +1321,12 @@ void USL_PlayPaddleWar(void)
 		}
 
 		// Draw Computer Paddle
-		VH_Bar(old_comp_x - 3, 66, 16, 3, 8);
+		VH_Bar(old_comp_x - 3, 66, 16, 3, us_menu_backgroundColour);
 		old_comp_x = comp_x;
 		VH_DrawSprite(comp_x, 66, CK_CHUNKNUM(SPR_PADDLE));
 
 		// Draw Keen paddle
-		VH_Bar(old_keen_x - 3, 135, 16, 3, 8);
+		VH_Bar(old_keen_x - 3, 135, 16, 3, us_menu_backgroundColour);
 		old_keen_x = keen_x;
 		VH_DrawSprite(keen_x, 135, CK_CHUNKNUM(SPR_PADDLE));
 
@@ -1350,10 +1350,10 @@ bool CK_PaddleWar(US_CardMsg msg, US_CardItem *item)
 	VH_DrawBitmap(130, 48, CK_CHUNKNUM(PIC_PADDLEWAR));
 
 	/* Draw a line above the playing area */
-	VH_HLine(77, 231, 60, 10);
+	VH_HLine(77, 231, 60, us_menu_foregroundColour);
 
 	/* Draw a line below the playing area */
-	VH_HLine(77, 231, 143, 10);
+	VH_HLine(77, 231, 143, us_menu_foregroundColour);
 
 	/* Play the game */
 	USL_PlayPaddleWar();

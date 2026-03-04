@@ -79,6 +79,11 @@
 	0, 0x05, 0x05, 0x15, 1, 1, 1, 1,
 	0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 0x05, 0
 
+# Menu variables (ID_US_2):
+%int us_menu_backgroundColour 8
+%int us_menu_foregroundColour 10
+%int us_menu_disabledColour 2
+
 # Default High Scores
 # -------------------
 
