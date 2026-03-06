@@ -602,7 +602,7 @@ void CK_LoadLevel(bool doCache, bool silent)
 	}
 
 	if (us_aslevFilename)
-		CA_CacheMapFromASLEV(us_aslevFilename);
+		CA_CacheMapFromASLEV(ck_gameState.currentLevel, us_aslevFilename);
 	else
 		CA_CacheMap(ck_gameState.currentLevel);
 	RF_NewMap();

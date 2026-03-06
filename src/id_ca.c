@@ -1289,7 +1289,7 @@ void CA_CacheMap(int mapIndex)
 }
 
 // Cache a map from an Abiathar .aslev file.
-void CA_CacheMapFromASLEV(const char *fname)
+void CA_CacheMapFromASLEV(int mapIndex, const char *fname)
 {
 	//Unload the previous map.
 	for (int plane = 0; plane < CA_NUMMAPPLANES; ++plane)
@@ -1300,6 +1300,8 @@ void CA_CacheMapFromASLEV(const char *fname)
 		}
 	}
 
+	ca_mapOn = mapIndex;
+
 	uint8_t *aslevFile;
 	int aslevFileLen;
 
@@ -1309,7 +1311,7 @@ void CA_CacheMapFromASLEV(const char *fname)
 	//Have we loaded this map's header?
 	if (CA_MapHeaders[ca_mapOn])
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Tried to override an already-loaded map (%d) with a .aslev!", ca_mapOn);
+		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Tried to override an already-loaded map (%d) with a .aslev!\n", ca_mapOn);
 		MM_FreePtr((void **)(&CA_MapHeaders[ca_mapOn]));
 	}
 	MM_GetPtr((void **)(&CA_MapHeaders[ca_mapOn]), sizeof(CA_MapHeader));
@@ -1324,7 +1326,7 @@ void CA_CacheMapFromASLEV(const char *fname)
 	CA_MapHeaders[ca_mapOn]->height = CK_Cross_SwapLE16(CA_MapHeaders[ca_mapOn]->height);
 	#endif
 
-	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CA_CacheMapFromASLEV: Loading map \"%s\" (\"%s\")\n", fname, CA_MapHeaders[ca_mapOn]->name);
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CA_CacheMapFromASLEV: Loading map \"%s\" (\"%s\") as map %d.\n", fname, CA_MapHeaders[ca_mapOn]->name, ca_mapOn);
 
 	int planeSize = CA_MapHeaders[ca_mapOn]->width * CA_MapHeaders[ca_mapOn]->height * 2;
 	int decompSize = planeSize * CA_NUMMAPPLANES;
