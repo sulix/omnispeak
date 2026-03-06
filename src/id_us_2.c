@@ -206,7 +206,7 @@ void USL_DrawMenuFooter(void)
 
 	US_SetPrintColour(0);
 
-	VHB_HLine(77, 231, 133, us_menu_foregroundColour);
+	VHB_HLine(CK_INT(us_menu_horzLineX1, 77), CK_INT(us_menu_horzLineX2, 231), CK_INT(us_menu_horzLineY2, 133), us_menu_foregroundColour);
 }
 
 void USL_DrawCard()
@@ -218,7 +218,7 @@ void USL_DrawCard()
 	// Draw the header (if any))
 	if (us_currentCard->gfxChunk)
 	{
-		VHB_HLine(77, 231, 55, us_menu_foregroundColour);
+		VHB_HLine(CK_INT(us_menu_horzLineX1, 77), CK_INT(us_menu_horzLineX2, 231), CK_INT(us_menu_horzLineY1, 55), us_menu_foregroundColour);
 		VHB_DrawBitmap(80, 48, CK_LookupChunk(us_currentCard->gfxChunk));
 	}
 

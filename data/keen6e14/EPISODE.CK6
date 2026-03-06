@@ -91,6 +91,11 @@
 %int us_menu_itemDisabledTile 96
 %int us_menu_itemDisabledSelectedTile 97
 
+%int us_menu_horzLineX1 77
+%int us_menu_horzLineX2 231
+%int us_menu_horzLineY1 55
+%int us_menu_horzLineY2 133
+
 # Default High Scores
 # -------------------
 
