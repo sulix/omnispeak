@@ -144,7 +144,8 @@ typedef uint16_t US_CardItemState;
 	US_IS_Checked = 0x01,
 	US_IS_Selected = 0x02,
 	US_IS_Disabled = 0x04,
-	US_IS_Gap = 0x08
+	US_IS_Gap = 0x08,
+	US_IS_Hidden = 0x10	/* Used for scrolling */
 } /*US_CardItemState*/;
 
 /*

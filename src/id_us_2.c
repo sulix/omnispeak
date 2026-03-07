@@ -65,6 +65,10 @@ static int us_cardStackIndex;
 US_Card *us_currentCard;
 US_Card *us_cardStack[US_MAX_CARDSTACK];
 
+// Index of the top menu item in a scrolled screen.
+static int us_menuScrollOffset = 0;
+static bool us_menuScrollDirty = true;
+
 US_CardItem new_game_menu_items[] = {
 	{US_ITEM_Normal, 0, IN_SC_E, "BEGIN EASY GAME", US_Comm_NewEasyGame, NULL, 0, 0},
 	{US_ITEM_Normal, 0, IN_SC_N, "BEGIN NORMAL GAME", US_Comm_NewNormalGame, NULL, 0, 0},
@@ -115,6 +119,10 @@ US_Card *USL_PopCard()
 	--us_cardStackIndex;
 
 	us_currentCard = us_cardStack[us_cardStackIndex];
+#ifndef CK_VANILLA
+	us_menuScrollOffset = 0;
+	us_menuScrollDirty = true;
+#endif
 	return us_currentCard;
 }
 
@@ -125,6 +133,10 @@ void USL_PushCard(US_Card *card)
 
 	++us_cardStackIndex;
 	us_currentCard = card;
+#ifndef CK_VANILLA
+	us_menuScrollOffset = 0;
+	us_menuScrollDirty = true;
+#endif
 	us_cardStack[us_cardStackIndex] = card;
 }
 
@@ -166,12 +178,21 @@ void USL_DrawCardItemIcon(US_CardItem *item)
 
 void USL_DrawCardItem(US_CardItem *item)
 {
+	if (item->state & US_IS_Hidden)
+		return;
+
 	// Send a US_MSG_DrawItemIcon message to the card.
 	if (us_currentCard->msgCallback && us_currentCard->msgCallback(US_MSG_DrawItem, item))
 		return;
 
 	// Gray out the area underneath the text
+#ifndef CK_VANILLA
+	// If we're in a gap, grey out that, too.
+	if (item->state & US_IS_Gap)
+		VHB_Bar(75, item->y - 8, 159, 8, us_menu_backgroundColour);
+#endif
 	VHB_Bar(75, item->y, 159, 8, us_menu_backgroundColour);
+
 
 	USL_DrawCardItemIcon(item);
 
@@ -209,6 +230,74 @@ void USL_DrawMenuFooter(void)
 	VHB_HLine(CK_INT(us_menu_horzLineX1, 77), CK_INT(us_menu_horzLineX2, 231), CK_INT(us_menu_horzLineY2, 133), us_menu_foregroundColour);
 }
 
+#ifndef CK_VANILLA
+void USL_ScrollTo(int cardIndex)
+{
+	if (!us_currentCard || !us_currentCard->items)
+		return;
+
+	int firstIndex = CK_Cross_max(0, cardIndex - CK_INT(us_menu_maxCardItems, 9) + 1);
+	if (cardIndex < us_menuScrollOffset)
+	{
+		us_menuScrollOffset = cardIndex;
+		us_menuScrollDirty = true;
+	}
+	if (cardIndex >= us_menuScrollOffset + CK_INT(us_menu_maxCardItems, 9))
+	{
+		us_menuScrollOffset = firstIndex;
+		us_menuScrollDirty = true;
+	}
+}
+
+void USL_ScrollCardItems(bool redraw)
+{
+	if (!us_currentCard)
+		return;
+
+	// Scroll each card item
+	if (us_currentCard->items)
+	{
+		int itemX = us_currentCard->x + 74;
+		if (itemX % 8)
+			itemX += (8 - itemX % 8);
+
+		int itemY = us_currentCard->y + 60;
+
+		for (int itemIndex = 0; us_currentCard->items[itemIndex].type != US_ITEM_None; ++itemIndex)
+		{
+			US_CardItem *item = &(us_currentCard->items[itemIndex]);
+			if (itemIndex < us_menuScrollOffset)
+			{
+				item->state |= US_IS_Hidden;
+				continue;
+			}
+
+			if (itemIndex >= us_menuScrollOffset + CK_INT(us_menu_maxCardItems, 9))
+			{
+				item->state |= US_IS_Hidden;
+				continue;
+			}
+
+			item->state &= ~US_IS_Hidden;
+
+			if (item->state & US_IS_Gap)
+				itemY += 8;
+
+			item->x = itemX;
+			item->y = itemY;
+
+			if (redraw && us_menuScrollDirty)
+				USL_DrawCardItem(item);
+
+			itemY += 8;
+		}
+	}
+
+	if (redraw && us_menuScrollDirty)
+		us_menuScrollDirty = false;
+}
+#endif
+
 void USL_DrawCard()
 {
 	// Run the custom draw procedure if it exists
@@ -228,6 +317,7 @@ void USL_DrawCard()
 	// Draw each card item
 	if (us_currentCard->items)
 	{
+#if CK_VANILLA
 		int itemX = us_currentCard->x + 74;
 		if (itemX % 8)
 			itemX += (8 - itemX % 8);
@@ -247,6 +337,10 @@ void USL_DrawCard()
 			USL_DrawCardItem(item);
 			itemY += 8;
 		}
+#else
+		us_menuScrollDirty = true;
+		USL_ScrollCardItems(true);
+#endif
 
 		if (us_currentCard->msgCallback)
 			us_currentCard->msgCallback(US_MSG_PostDraw, 0);
@@ -475,6 +569,9 @@ void USL_EnableMenuItems(US_Card *card)
 			item->state &= ~US_IS_Disabled;
 			item->state &= ~US_IS_Selected;
 			item->state &= ~US_IS_Checked;
+#ifndef CK_VANILLA
+			item->state &= ~US_IS_Hidden;
+#endif
 
 			if (item->subMenu)
 				USL_EnableMenuItems(item->subMenu);
@@ -517,7 +614,10 @@ void USL_SelectCardItem(US_Card *card, int index, int redraw)
 	card->selectedItem = index;
 	item = &(card->items[card->selectedItem]);
 	item->state |= US_IS_Selected;
-
+#ifndef CK_VANILLA
+	USL_ScrollTo(index);
+	USL_ScrollCardItems(redraw);
+#endif
 	if (redraw)
 		USL_DrawCardItem(item);
 }
@@ -540,7 +640,10 @@ void US_SelectItem(US_Card *card, int itemIndex, bool redraw)
 	card->selectedItem = itemIndex;
 	item = &(card->items[card->selectedItem]);
 	item->state |= US_IS_Selected;
-
+#ifndef CK_VANILLA
+	USL_ScrollTo(itemIndex);
+	USL_ScrollCardItems(redraw);
+#endif
 	if (redraw)
 		USL_DrawCardItem(item);
 }
@@ -587,18 +690,22 @@ void US_SelectNextItem()
 {
 	if (us_currentCard->items[us_currentCard->selectedItem + 1].type != US_ITEM_None)
 	{
-
 		US_SelectItem(us_currentCard, us_currentCard->selectedItem + 1, true);
 	}
+#ifndef CK_VANILLA
+	USL_ScrollCardItems(true);
+#endif
 }
 
 void US_SelectPrevItem()
 {
 	if (us_currentCard->selectedItem > 0)
 	{
-
 		US_SelectItem(us_currentCard, us_currentCard->selectedItem - 1, true);
 	}
+#ifndef CK_VANILLA
+	USL_ScrollCardItems(true);
+#endif
 }
 
 void USL_SetMenuFooter(void)

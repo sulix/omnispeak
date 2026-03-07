@@ -92,6 +92,8 @@
 %int us_menu_horzLineY1 55
 %int us_menu_horzLineY2 133
 
+%int us_menu_maxCardItems 9	# Maximum number of menu items before we start scrolling
+
 # Default High Scores
 # -------------------
 
