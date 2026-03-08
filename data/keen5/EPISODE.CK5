@@ -81,6 +81,7 @@
 	0x11, 0x11, 0x11, 0x11, 0x13, 0x13, 0x13, 4, 0
 
 # Menu variables (ID_US_2):
+# -------------------------
 %int us_menu_backgroundColour 8
 %int us_menu_foregroundColour 10
 %int us_menu_disabledColour 2
@@ -92,12 +93,22 @@
 %int us_menu_itemDisabledTile 96
 %int us_menu_itemDisabledSelectedTile 97
 
+# Header / Footer options
 %int us_menu_horzLineX1 77
 %int us_menu_horzLineX2 231
 %int us_menu_horzLineY1 55
 %int us_menu_horzLineY2 133
 
+# Scrollable screen options
 %int us_menu_maxCardItems 9	# Maximum number of menu items before we start scrolling
+%int us_menu_scrollIconTopX 78
+%int us_menu_scrollIconTopY 60
+%int us_menu_scrollIconTopTile1 98
+%int us_menu_scrollIconTopTile2 102
+%int us_menu_scrollIconBottomX 78
+%int us_menu_scrollIconBottomY 124
+%int us_menu_scrollIconBottomTile1 99
+%int us_menu_scrollIconBottomTile2 103
 
 # Default High Scores
 # -------------------

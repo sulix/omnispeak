@@ -68,6 +68,8 @@ US_Card *us_cardStack[US_MAX_CARDSTACK];
 // Index of the top menu item in a scrolled screen.
 static int us_menuScrollOffset = 0;
 static bool us_menuScrollDirty = true;
+static bool us_menuScrollIconTop = false;
+static bool us_menuScrollIconBottom = false;
 
 US_CardItem new_game_menu_items[] = {
 	{US_ITEM_Normal, 0, IN_SC_E, "BEGIN EASY GAME", US_Comm_NewEasyGame, NULL, 0, 0},
@@ -231,6 +233,25 @@ void USL_DrawMenuFooter(void)
 }
 
 #ifndef CK_VANILLA
+
+void USL_DrawScrollIcons(bool blink)
+{
+	if (us_menuScrollIconTop)
+	{
+		int iconX = CK_INT(us_menu_scrollIconTopX, 78);
+		int iconY = CK_INT(us_menu_scrollIconTopY, 60);
+		int tile = blink ? CK_INT(us_menu_scrollIconTopTile1, 98) : CK_INT(us_menu_scrollIconTopTile2, 102);
+		VHB_DrawTile8(iconX, iconY, tile);
+	}
+	if (us_menuScrollIconBottom)
+	{
+		int iconX = CK_INT(us_menu_scrollIconBottomX, 78);
+		int iconY = CK_INT(us_menu_scrollIconBottomY, 124);
+		int tile = blink ? CK_INT(us_menu_scrollIconBottomTile1, 99) : CK_INT(us_menu_scrollIconBottomTile2, 103);
+		VHB_DrawTile8(iconX, iconY, tile);
+	}
+}
+
 void USL_ScrollTo(int cardIndex)
 {
 	if (!us_currentCard || !us_currentCard->items)
@@ -254,6 +275,9 @@ void USL_ScrollCardItems(bool redraw)
 	if (!us_currentCard)
 		return;
 
+	us_menuScrollIconTop = false;
+	us_menuScrollIconBottom = false;
+
 	// Scroll each card item
 	if (us_currentCard->items)
 	{
@@ -262,6 +286,10 @@ void USL_ScrollCardItems(bool redraw)
 			itemX += (8 - itemX % 8);
 
 		int itemY = us_currentCard->y + 60;
+		int lastItemY = itemY;
+
+		if (us_menuScrollOffset != 0)
+			us_menuScrollIconTop = true;
 
 		for (int itemIndex = 0; us_currentCard->items[itemIndex].type != US_ITEM_None; ++itemIndex)
 		{
@@ -274,6 +302,7 @@ void USL_ScrollCardItems(bool redraw)
 
 			if (itemIndex >= us_menuScrollOffset + CK_INT(us_menu_maxCardItems, 9))
 			{
+				us_menuScrollIconBottom = true;
 				item->state |= US_IS_Hidden;
 				continue;
 			}
@@ -285,6 +314,7 @@ void USL_ScrollCardItems(bool redraw)
 
 			item->x = itemX;
 			item->y = itemY;
+			lastItemY = itemY;
 
 			if (redraw && us_menuScrollDirty)
 				USL_DrawCardItem(item);
@@ -292,6 +322,8 @@ void USL_ScrollCardItems(bool redraw)
 			itemY += 8;
 		}
 	}
+
+	USL_DrawScrollIcons(true);
 
 	if (redraw && us_menuScrollDirty)
 		us_menuScrollDirty = false;
@@ -1072,6 +1104,11 @@ void US_RunCards()
 
 			USL_DrawCardItemIcon(item);
 			item->state |= US_IS_Selected;
+
+#ifndef CK_VANILLA
+			USL_DrawScrollIcons(cursor);
+#endif
+
 		}
 
 		VH_UpdateScreen();
