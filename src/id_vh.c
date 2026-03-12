@@ -73,6 +73,18 @@ int VH_GetShiftedSpriteWidth(VH_ShiftedSprite *shifted, int shift)
 	return shifted->sprShiftByteWidths[shift] * 8;
 }
 
+static VH_FontChar VH_GetFontCharInfo(int chunk, unsigned char ch)
+{
+	VH_FontChar charInfo;
+	uint8_t *fntData = (uint8_t *)CA_GetGrChunk(chunk, 3, "Font", true);
+
+	charInfo.height = fntData[0] | fntData[1] << 8;
+	charInfo.data = fntData + (fntData[ch * 2 + 2] | fntData[ch * 2 + 3] << 8);
+	charInfo.width = fntData[2 * 256 + 2 + ch];
+
+	return charInfo;
+}
+
 void VH_Plot(int x, int y, int colour)
 {
 	VL_ScreenRect(x, y, 1, 1, colour);
@@ -199,40 +211,33 @@ void VH_DrawShiftedSpriteMask(int x, int y, int chunk, int shift, int colour)
 	VL_1bppInvBlitToScreen(data, x, y, width, spr.height, colour);
 }
 
+
 void VH_DrawPropChar(int x, int y, int chunk, unsigned char c, int colour)
 {
-	VH_Font *fnt = (VH_Font *)CA_GetGrChunk(chunk, 3, "Font", true);
+	VH_FontChar charInfo = VH_GetFontCharInfo(chunk, c);
 
-	uint8_t *chardata = (uint8_t *)fnt + fnt->location[c];
-
-	VL_1bppXorWithScreen(chardata, x, y, fnt->width[c], fnt->height, colour);
-}
-
-void VH_MeasureString(const char *string, uint16_t *width, uint16_t *height, VH_Font *fnt)
-{
-	*height = fnt->height;
-
-	for (*width = 0; *string; string++)
-	{
-		*width += fnt->width[(uint8_t)*string];
-	}
+	VL_1bppXorWithScreen(charInfo.data, x, y, charInfo.width, charInfo.height, colour);
 }
 
 void VH_MeasurePropString(const char *string, uint16_t *width, uint16_t *height, int16_t chunk)
 {
-	VH_MeasureString(string, width, height, (VH_Font *)CA_GetGrChunk(chunk, 3, "Font", true));
+	for (*width = 0; *string; string++)
+	{
+		VH_FontChar chInfo = VH_GetFontCharInfo(chunk, (uint8_t)*string);
+		*width += chInfo.width;
+		*height = chInfo.height;
+	}
 }
 
 // TODO: More arguments passed than in the original code?
 void VH_DrawPropString(const char *string, int x, int y, int chunk, int colour)
 {
 	int w = 0;
-	VH_Font *font = (VH_Font *)CA_GetGrChunk(chunk, 3, "Font", true);
 	for (w = 0; *string; string++)
 	{
-		// FIXME: Bad cast to unsigned char, even if it seems to make sense
-		VH_DrawPropChar(x + w, y, chunk, (unsigned)(*string), colour);
-		w += font->width[(uint8_t)*string];
+		VH_FontChar chInfo = VH_GetFontCharInfo(chunk, (uint8_t)*string);
+		VH_DrawPropChar(x + w, y, chunk, (unsigned char)(*string), colour);
+		w += chInfo.width;
 	}
 }
 
