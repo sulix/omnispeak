@@ -178,7 +178,7 @@ int AdvanceTerminatorCredit(int elapsedTime)
 {
 
 	int picchunk;
-	VH_BitmapTableEntry *bmp;
+	VH_BitmapTableEntry bmp;
 
 	switch (ck_termCreditStage)
 	{
@@ -189,9 +189,9 @@ int AdvanceTerminatorCredit(int elapsedTime)
 		CA_CacheGrChunk(picchunk);
 		bmp = VH_GetBitmapTableEntry(picchunk - ca_gfxInfoE.offBitmaps);
 		ck_currentTermPicSeg = ca_graphChunks[picchunk];
-		ck_currentTermPicWidth = bmp->width; // This is width in EGA bytes (1/8 px)
+		ck_currentTermPicWidth = bmp.width; // This is width in EGA bytes (1/8 px)
 		ck_currentTermPicHalfWidth = (ck_currentTermPicWidth + 3) >> 1;
-		ck_currentTermPicHeight = bmp->height;
+		ck_currentTermPicHeight = bmp.height;
 		// The size in bytes of the pic.
 		ck_currentTermPicSize = (ck_currentTermPicWidth * ck_currentTermPicHeight);
 		ck_termCreditStage++;
@@ -890,9 +890,9 @@ void CK_FizzleFade()
 	// FIXME: This is cached somewhere else
 	CA_CacheGrChunk(CK_CHUNKNUM(PIC_TITLESCREEN));
 
-	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(CK_CHUNKNUM(PIC_TITLESCREEN) - ca_gfxInfoE.offBitmaps);
+	VH_BitmapTableEntry dimensions = VH_GetBitmapTableEntry(CK_CHUNKNUM(PIC_TITLESCREEN) - ca_gfxInfoE.offBitmaps);
 
-	VL_UnmaskedToSurface(ca_graphChunks[CK_CHUNKNUM(PIC_TITLESCREEN)], titleBuffer, 0, 0, dimensions->width * 8, dimensions->height);
+	VL_UnmaskedToSurface(ca_graphChunks[CK_CHUNKNUM(PIC_TITLESCREEN)], titleBuffer, 0, 0, dimensions.width * 8, dimensions.height);
 
 	// Do the fizzling
 	//

@@ -24,16 +24,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "id_vl.h"
 
 //TODO: Should these functions cache the bitmap tables?
-VH_BitmapTableEntry *VH_GetBitmapTableEntry(int bitmapNumber)
+VH_BitmapTableEntry VH_GetBitmapTableEntry(int bitmapNumber)
 {
-	VH_BitmapTableEntry *bitmapTable = (VH_BitmapTableEntry *)(ca_graphChunks[ca_gfxInfoE.hdrBitmaps]);
-	return &bitmapTable[bitmapNumber];
+	VH_BitmapTableEntry bitmapEntry;
+
+	uint16_t *bitmapTable = (uint16_t *)(ca_graphChunks[ca_gfxInfoE.hdrBitmaps]);
+	bitmapEntry.width = bitmapTable[bitmapNumber * 2];
+	bitmapEntry.height = bitmapTable[bitmapNumber * 2 + 1];
+	return bitmapEntry;
 }
 
-static VH_BitmapTableEntry *VH_GetMaskedBitmapTableEntry(int bitmapNumber)
+static VH_BitmapTableEntry VH_GetMaskedBitmapTableEntry(int bitmapNumber)
 {
-	VH_BitmapTableEntry *maskedTable = (VH_BitmapTableEntry *)(ca_graphChunks[ca_gfxInfoE.hdrMasked]);
-	return &maskedTable[bitmapNumber];
+	VH_BitmapTableEntry bitmapEntry;
+
+	uint16_t *maskedTable = (uint16_t *)(ca_graphChunks[ca_gfxInfoE.hdrMasked]);
+	bitmapEntry.width = maskedTable[bitmapNumber * 2];
+	bitmapEntry.height = maskedTable[bitmapNumber * 2 + 1];
+	return bitmapEntry;
 }
 
 VH_SpriteTableEntry *VH_GetSpriteTableEntry(int spriteNumber)
@@ -101,18 +109,18 @@ void VH_DrawBitmap(int x, int y, int chunk)
 {
 	int bitmapNumber = chunk - ca_gfxInfoE.offBitmaps;
 
-	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(bitmapNumber);
+	VH_BitmapTableEntry dimensions = VH_GetBitmapTableEntry(bitmapNumber);
 
-	VL_UnmaskedToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dimensions->width * 8, dimensions->height);
+	VL_UnmaskedToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dimensions.width * 8, dimensions.height);
 }
 
 void VH_DrawMaskedBitmap(int x, int y, int chunk)
 {
 	int bitmapNumber = chunk - ca_gfxInfoE.offMasked;
 
-	VH_BitmapTableEntry *dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
+	VH_BitmapTableEntry dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
 
-	VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "MaskedBitmap", true), x, y, dim->width * 8, dim->height);
+	VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "MaskedBitmap", true), x, y, dim.width * 8, dim.height);
 }
 
 void VH_DrawSprite(int x, int y, int chunk)
@@ -262,10 +270,10 @@ void VHB_DrawBitmap(int x, int y, int chunk)
 	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
 
-	VH_BitmapTableEntry *dimensions = VH_GetBitmapTableEntry(bitmapNumber);
+	VH_BitmapTableEntry dimensions = VH_GetBitmapTableEntry(bitmapNumber);
 
-	if (VH_MarkUpdateBlock(x, y, x + dimensions->width * 8, y + dimensions->height))
-		VL_UnmaskedToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dimensions->width * 8, dimensions->height);
+	if (VH_MarkUpdateBlock(x, y, x + dimensions.width * 8, y + dimensions.height))
+		VL_UnmaskedToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dimensions.width * 8, dimensions.height);
 }
 
 void VHB_DrawMaskedBitmap(int x, int y, int chunk)
@@ -274,10 +282,10 @@ void VHB_DrawMaskedBitmap(int x, int y, int chunk)
 	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
 
-	VH_BitmapTableEntry *dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
+	VH_BitmapTableEntry dim = VH_GetMaskedBitmapTableEntry(bitmapNumber);
 
-	if (VH_MarkUpdateBlock(x, y, x + dim->width * 8, y + dim->height))
-		VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dim->width * 8, dim->height);
+	if (VH_MarkUpdateBlock(x, y, x + dim.width * 8, y + dim.height))
+		VL_MaskedBlitToScreen(CA_GetGrChunk(chunk, 0, "Bitmap", true), x, y, dim.width * 8, dim.height);
 }
 
 void VHB_DrawSprite(int x, int y, int chunk)

@@ -26,11 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ck_cross.h"
 
-typedef CK_PACKED_STRUCT(VH_BitmapTableEntry
+typedef struct VH_BitmapTableEntry
 {
 	uint16_t width;
 	uint16_t height;
-}) VH_BitmapTableEntry;
+} VH_BitmapTableEntry;
 
 typedef CK_PACKED_STRUCT(VH_SpriteTableEntry
 {
@@ -47,7 +47,7 @@ typedef CK_PACKED_STRUCT(VH_Font
 	uint8_t width[256];
 }) VH_Font;
 
-VH_BitmapTableEntry *VH_GetBitmapTableEntry(int bitmapNumber);
+VH_BitmapTableEntry VH_GetBitmapTableEntry(int bitmapNumber);
 VH_SpriteTableEntry *VH_GetSpriteTableEntry(int spriteNumber);
 
 #define VH_MAXSPRSHIFTS 4
