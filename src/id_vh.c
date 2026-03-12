@@ -44,10 +44,22 @@ static VH_BitmapTableEntry VH_GetMaskedBitmapTableEntry(int bitmapNumber)
 	return bitmapEntry;
 }
 
-VH_SpriteTableEntry *VH_GetSpriteTableEntry(int spriteNumber)
+VH_SpriteTableEntry VH_GetSpriteTableEntry(int spriteNumber)
 {
-	VH_SpriteTableEntry *spriteTable = (VH_SpriteTableEntry *)(ca_graphChunks[ca_gfxInfoE.hdrSprites]);
-	return &spriteTable[spriteNumber];
+	VH_SpriteTableEntry spriteEntry;
+
+	uint16_t *spriteTable = (uint16_t *)(ca_graphChunks[ca_gfxInfoE.hdrSprites]);
+	spriteEntry.width = spriteTable[spriteNumber * 9];
+	spriteEntry.height = spriteTable[spriteNumber * 9 + 1];
+	spriteEntry.originX = (int16_t)spriteTable[spriteNumber * 9 + 2];
+	spriteEntry.originY = (int16_t)spriteTable[spriteNumber * 9 + 3];
+	spriteEntry.xl = (int16_t)spriteTable[spriteNumber * 9 + 4];
+	spriteEntry.yl = (int16_t)spriteTable[spriteNumber * 9 + 5];
+	spriteEntry.xh = (int16_t)spriteTable[spriteNumber * 9 + 6];
+	spriteEntry.yh = (int16_t)spriteTable[spriteNumber * 9 + 7];
+	spriteEntry.shifts = spriteTable[spriteNumber * 9 + 8];
+
+	return spriteEntry;
 }
 
 VH_ShiftedSprite *VH_GetShiftedSprite(int chunk)
@@ -127,7 +139,7 @@ void VH_DrawSprite(int x, int y, int chunk)
 {
 	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
 
-	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
+	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
 
 	VH_ShiftedSprite *shifted = VH_GetShiftedSprite(chunk);
 
@@ -137,14 +149,14 @@ void VH_DrawSprite(int x, int y, int chunk)
 
 	int width = shifted->sprShiftByteWidths[shift] * 8;
 
-	VL_MaskedBlitToScreen(data, x & ~7, y, width, spr->height);
+	VL_MaskedBlitToScreen(data, x & ~7, y, width, spr.height);
 }
 
 void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
 {
 	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
 
-	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
+	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
 
 	VH_ShiftedSprite *shifted = VH_GetShiftedSprite(chunk);
 
@@ -154,14 +166,14 @@ void VH_DrawSpriteMask(int x, int y, int chunk, int colour)
 
 	int width = shifted->sprShiftByteWidths[shift] * 8;
 
-	VL_1bppInvBlitToScreen(data, x & ~7, y, width, spr->height, colour);
+	VL_1bppInvBlitToScreen(data, x & ~7, y, width, spr.height, colour);
 }
 
 void VH_DrawShiftedSprite(int x, int y, int chunk, int shift)
 {
 	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
 
-	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
+	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
 
 	VH_ShiftedSprite *shifted = VH_GetShiftedSprite(chunk);
 
@@ -169,14 +181,14 @@ void VH_DrawShiftedSprite(int x, int y, int chunk, int shift)
 
 	int width = shifted->sprShiftByteWidths[shift] * 8;
 
-	VL_MaskedBlitToScreen(data, x, y, width, spr->height);
+	VL_MaskedBlitToScreen(data, x, y, width, spr.height);
 }
 
 void VH_DrawShiftedSpriteMask(int x, int y, int chunk, int shift, int colour)
 {
 	int spriteNumber = chunk - ca_gfxInfoE.offSprites;
 
-	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
+	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
 
 	VH_ShiftedSprite *shifted = VH_GetShiftedSprite(chunk);
 
@@ -184,7 +196,7 @@ void VH_DrawShiftedSpriteMask(int x, int y, int chunk, int shift, int colour)
 
 	int width = shifted->sprShiftByteWidths[shift] * 8;
 
-	VL_1bppInvBlitToScreen(data, x, y, width, spr->height, colour);
+	VL_1bppInvBlitToScreen(data, x, y, width, spr.height, colour);
 }
 
 void VH_DrawPropChar(int x, int y, int chunk, unsigned char c, int colour)
@@ -294,7 +306,7 @@ void VHB_DrawSprite(int x, int y, int chunk)
 	x += VL_GetScrollX() & 8;
 	y += VL_GetScrollY();
 
-	VH_SpriteTableEntry *spr = VH_GetSpriteTableEntry(spriteNumber);
+	VH_SpriteTableEntry spr = VH_GetSpriteTableEntry(spriteNumber);
 
 	VH_ShiftedSprite *shifted = (VH_ShiftedSprite *)CA_GetGrChunk(chunk, 0, "Sprite", true);
 
@@ -304,14 +316,14 @@ void VHB_DrawSprite(int x, int y, int chunk)
 
 	int width = shifted->sprShiftByteWidths[shift] * 8;
 
-	int realX = (x + RF_UnitToPixel(spr->originX)) & ~7;
-	int realY = y + RF_UnitToPixel(spr->originY);
+	int realX = (x + RF_UnitToPixel(spr.originX)) & ~7;
+	int realY = y + RF_UnitToPixel(spr.originY);
 
-	if (VH_MarkUpdateBlock(realX, realY, realX + spr->width * 8, realY + spr->height))
+	if (VH_MarkUpdateBlock(realX, realY, realX + spr.width * 8, realY + spr.height))
 	{
 		VL_MaskedBlitToScreen(data,
 			realX, realY,
-			width, spr->height);
+			width, spr.height);
 	}
 }
 

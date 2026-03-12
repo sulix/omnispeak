@@ -639,14 +639,14 @@ void CAL_CacheSprite(int chunkNumber, uint8_t *compressed, int compLength)
 {
 	int spriteNumber = chunkNumber - ca_gfxInfoE.offSprites;
 
-	VH_SpriteTableEntry *sprite = VH_GetSpriteTableEntry(spriteNumber);
+	VH_SpriteTableEntry sprite = VH_GetSpriteTableEntry(spriteNumber);
 
 	// The size of one plane of the unshifted sprite.
-	size_t smallPlane = sprite->width * sprite->height;
+	size_t smallPlane = sprite.width * sprite.height;
 	// The size of one plane of a shifted sprite (+ 1 byte/row)
-	size_t bigPlane = (sprite->width + 1) * sprite->height;
+	size_t bigPlane = (sprite.width + 1) * sprite.height;
 
-	size_t fullSize = (smallPlane + (sprite->shifts - 1) * bigPlane) * 5;
+	size_t fullSize = (smallPlane + (sprite.shifts - 1) * bigPlane) * 5;
 
 	MM_GetPtr(&ca_graphChunks[chunkNumber], sizeof(VH_ShiftedSprite) + fullSize);
 	VH_ShiftedSprite *shifted = (VH_ShiftedSprite *)ca_graphChunks[chunkNumber];
@@ -661,42 +661,42 @@ void CAL_CacheSprite(int chunkNumber, uint8_t *compressed, int compLength)
 
 	CAL_HuffExpand(compressed, shifted->data, smallPlane * 5, ca_gr_huffdict, compLength);
 
-	switch (sprite->shifts)
+	switch (sprite.shifts)
 	{
 	case 1:
 		for (int i = 0; i < 4; ++i)
 		{
-			shifted->sprShiftByteWidths[i] = sprite->width;
+			shifted->sprShiftByteWidths[i] = sprite.width;
 			shifted->sprShiftOffset[i] = shiftOffsets[0];
 		}
 		break;
 	case 2:
 		for (int i = 0; i < 2; ++i)
 		{
-			shifted->sprShiftByteWidths[i] = sprite->width;
+			shifted->sprShiftByteWidths[i] = sprite.width;
 			shifted->sprShiftOffset[i] = shiftOffsets[0];
 		}
 		for (int i = 2; i < 4; ++i)
 		{
-			shifted->sprShiftByteWidths[i] = sprite->width + 1;
+			shifted->sprShiftByteWidths[i] = sprite.width + 1;
 			shifted->sprShiftOffset[i] = shiftOffsets[1];
 		}
-		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[1]], sprite->width, sprite->height, 4);
+		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[1]], sprite.width, sprite.height, 4);
 		break;
 	case 4:
-		shifted->sprShiftByteWidths[0] = sprite->width;
-		shifted->sprShiftByteWidths[1] = sprite->width + 1;
-		shifted->sprShiftByteWidths[2] = sprite->width + 1;
-		shifted->sprShiftByteWidths[3] = sprite->width + 1;
+		shifted->sprShiftByteWidths[0] = sprite.width;
+		shifted->sprShiftByteWidths[1] = sprite.width + 1;
+		shifted->sprShiftByteWidths[2] = sprite.width + 1;
+		shifted->sprShiftByteWidths[3] = sprite.width + 1;
 
 		shifted->sprShiftOffset[0] = shiftOffsets[0];
 		shifted->sprShiftOffset[1] = shiftOffsets[1];
 		shifted->sprShiftOffset[2] = shiftOffsets[2];
 		shifted->sprShiftOffset[3] = shiftOffsets[3];
 
-		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[1]], sprite->width, sprite->height, 2);
-		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[2]], sprite->width, sprite->height, 4);
-		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[3]], sprite->width, sprite->height, 6);
+		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[1]], sprite.width, sprite.height, 2);
+		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[2]], sprite.width, sprite.height, 4);
+		CAL_ShiftSprite(shifted->data, &shifted->data[shiftOffsets[3]], sprite.width, sprite.height, 6);
 		break;
 	default:
 		Quit("CAL_CacheSprite: Bad shifts number!");

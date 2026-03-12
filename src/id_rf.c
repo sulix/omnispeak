@@ -1295,8 +1295,9 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 		Quit("RF_AddSpriteDraw: Placed an uncached sprite");
 
 	VH_ShiftedSprite *shifted = VH_GetShiftedSprite(chunk);
+	VH_SpriteTableEntry ste = VH_GetSpriteTableEntry(sprite_number);
 
-	int unshiftedX = RF_UnitToPixel(unitX + VH_GetSpriteTableEntry(sprite_number)->originX);
+	int unshiftedX = RF_UnitToPixel(unitX + ste.originX);
 	int shift = (unshiftedX&7) / 2;
 
 	// If NOPAN is enabled, always use the unshifted sprite.
@@ -1306,9 +1307,9 @@ void RF_AddSpriteDraw(RF_SpriteDrawEntry **drawEntry, int unitX, int unitY, int 
 	sde->chunk = chunk;
 	sde->zLayer = zLayer;
 	sde->x = unshiftedX & ~7;
-	sde->y = RF_UnitToPixel(unitY + VH_GetSpriteTableEntry(sprite_number)->originY);
+	sde->y = RF_UnitToPixel(unitY + ste.originY);
 	sde->sw = VH_GetShiftedSpriteWidth(shifted, shift);
-	sde->sh = VH_GetSpriteTableEntry(sprite_number)->height;
+	sde->sh = ste.height;
 	sde->maskOnly = allWhite;
 	sde->updateCount = VL_GetNumBuffers();
 

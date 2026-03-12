@@ -32,13 +32,13 @@ typedef struct VH_BitmapTableEntry
 	uint16_t height;
 } VH_BitmapTableEntry;
 
-typedef CK_PACKED_STRUCT(VH_SpriteTableEntry
+typedef struct VH_SpriteTableEntry
 {
 	uint16_t width, height;
 	int16_t originX, originY;
 	int16_t xl, yl, xh, yh;
 	uint16_t shifts;
-}) VH_SpriteTableEntry;
+} VH_SpriteTableEntry;
 
 typedef CK_PACKED_STRUCT(VH_Font
 {
@@ -48,7 +48,7 @@ typedef CK_PACKED_STRUCT(VH_Font
 }) VH_Font;
 
 VH_BitmapTableEntry VH_GetBitmapTableEntry(int bitmapNumber);
-VH_SpriteTableEntry *VH_GetSpriteTableEntry(int spriteNumber);
+VH_SpriteTableEntry VH_GetSpriteTableEntry(int spriteNumber);
 
 #define VH_MAXSPRSHIFTS 4
 

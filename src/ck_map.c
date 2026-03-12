@@ -128,7 +128,7 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 	if (!ck_scoreBoxEnabled)
 		return;
 
-	VH_SpriteTableEntry *box = VH_GetSpriteTableEntry(CK_CHUNKNUM(SPR_SCOREBOX) - ca_gfxInfoE.offSprites);
+	VH_SpriteTableEntry box = VH_GetSpriteTableEntry(CK_CHUNKNUM(SPR_SCOREBOX) - ca_gfxInfoE.offSprites);
 
 	VH_ShiftedSprite *spr = (VH_ShiftedSprite *)CA_GetGrChunk(CK_CHUNKNUM(SPR_SCOREBOX), 0, "ScoreBox", true);
 
@@ -142,8 +142,8 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		// Start drawing the tiles after the mask plane,
 		// and four rows from the top
 		dest = spr->data;
-		dest += (planeSize = spr->sprShiftByteWidths[0] * box->height);
-		dest += box->width * 4 + 1;
+		dest += (planeSize = spr->sprShiftByteWidths[0] * box.height);
+		dest += box.width * 4 + 1;
 
 		snprintf(buf, sizeof(buf), "%d", (int)ck_gameState.keenScore);
 		len = strlen(buf);
@@ -151,13 +151,13 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		// Draw the leading emptiness
 		for (place = 9; place > len; place--)
 		{
-			CK_ScoreBoxDrawTile8(0x29, dest++, box->width, planeSize);
+			CK_ScoreBoxDrawTile8(0x29, dest++, box.width, planeSize);
 		}
 
 		// Draw the score
 		for (char *c = buf; *c != 0; c++)
 		{
-			CK_ScoreBoxDrawTile8(*c - 6, dest++, box->width, planeSize);
+			CK_ScoreBoxDrawTile8(*c - 6, dest++, box.width, planeSize);
 		}
 
 		scorebox->user1 = ck_gameState.keenScore >> 16;
@@ -175,8 +175,8 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		// Start drawing the tiles after the mask plane,
 		// and 12 rows from the top
 		dest = spr->data;
-		dest += (planeSize = box->width * box->height);
-		dest += box->width * 20 + 8;
+		dest += (planeSize = box.width * box.height);
+		dest += box.width * 20 + 8;
 
 		if (ck_gameState.numShots >= 99)
 			snprintf(buf, sizeof(buf), "99");
@@ -188,13 +188,13 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		// Draw the leading emptiness
 		for (place = 2; place > len; place--)
 		{
-			CK_ScoreBoxDrawTile8(0x29, dest++, box->width, planeSize);
+			CK_ScoreBoxDrawTile8(0x29, dest++, box.width, planeSize);
 		}
 
 		// Draw the score
 		for (char *c = buf; *c != 0; c++)
 		{
-			CK_ScoreBoxDrawTile8(*c - 6, dest++, box->width, planeSize);
+			CK_ScoreBoxDrawTile8(*c - 6, dest++, box.width, planeSize);
 		}
 
 		scorebox->user3 = ck_gameState.numShots;
@@ -212,8 +212,8 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		// Start drawing the tiles after the mask plane,
 		// and 12 rows from the top
 		dest = spr->data;
-		dest += (planeSize = box->width * box->height);
-		dest += box->width * 20 + 3;
+		dest += (planeSize = box.width * box.height);
+		dest += box.width * 20 + 3;
 
 		if (ck_gameState.numLives >= 99)
 			snprintf(buf, sizeof(buf), "99");
@@ -225,13 +225,13 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 		// Draw the leading emptiness
 		for (place = 2; place > len; place--)
 		{
-			CK_ScoreBoxDrawTile8(0x29, dest++, box->width, planeSize);
+			CK_ScoreBoxDrawTile8(0x29, dest++, box.width, planeSize);
 		}
 
 		// Draw the score
 		for (char *c = buf; *c != 0; c++)
 		{
-			CK_ScoreBoxDrawTile8(*c - 6, dest++, box->width, planeSize);
+			CK_ScoreBoxDrawTile8(*c - 6, dest++, box.width, planeSize);
 		}
 
 		scorebox->user4 = ck_gameState.numLives;
@@ -248,9 +248,9 @@ void CK_UpdateScoreBox(CK_object *scorebox)
 
 	if (updated)
 	{
-		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[1]], box->width, box->height, 2);
-		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[2]], box->width, box->height, 4);
-		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[3]], box->width, box->height, 6);
+		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[1]], box.width, box.height, 2);
+		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[2]], box.width, box.height, 4);
+		CAL_ShiftSprite(spr->data, &spr->data[spr->sprShiftOffset[3]], box.width, box.height, 6);
 		RF_AddSpriteDraw(&scorebox->sde, scorebox->posX + 0x40, scorebox->posY + 0x40, CK_CHUNKNUM(SPR_SCOREBOX), false, 3);
 	}
 }
