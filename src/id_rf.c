@@ -626,12 +626,12 @@ void RF_Shutdown()
 // TODO: More to change? Also, originally mapNum is a global variable.
 void RF_NewMap(void)
 {
-	rf_mapWidthTiles = CA_MapHeaders[ca_mapOn]->width;
-	rf_mapHeightTiles = CA_MapHeaders[ca_mapOn]->height;
+	rf_mapWidthTiles = CA_GetMapWidth();
+	rf_mapHeightTiles = CA_GetMapHeight();
 	rf_scrollXMinUnit = 0x0200; //Two-tile wide border around map
 	rf_scrollYMinUnit = 0x0200;
-	rf_scrollXMaxUnit = RF_TileToUnit(CA_MapHeaders[ca_mapOn]->width - RF_SCREEN_WIDTH_TILES - 2);
-	rf_scrollYMaxUnit = RF_TileToUnit(CA_MapHeaders[ca_mapOn]->height - RF_SCREEN_HEIGHT_TILES - 2);
+	rf_scrollXMaxUnit = RF_TileToUnit(CA_GetMapWidth() - RF_SCREEN_WIDTH_TILES - 2);
+	rf_scrollYMaxUnit = RF_TileToUnit(CA_GetMapHeight() - RF_SCREEN_HEIGHT_TILES - 2);
 
 	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "RF_NewMap: Initialising map %d (%d×%d)\n",ca_mapOn, rf_mapWidthTiles, rf_mapHeightTiles);
 
@@ -647,9 +647,9 @@ void RF_NewMap(void)
 
 	// Set-up a two-tile wide border
 	RF_SetScrollBlock(0, 1, true);
-	RF_SetScrollBlock(0, CA_MapHeaders[ca_mapOn]->height - 2, true);
+	RF_SetScrollBlock(0, CA_GetMapHeight()- 2, true);
 	RF_SetScrollBlock(1, 0, false);
-	RF_SetScrollBlock(CA_MapHeaders[ca_mapOn]->width - 2, 0, false);
+	RF_SetScrollBlock(CA_GetMapWidth() - 2, 0, false);
 
 	SD_SetLastTimeCount(SD_GetTimeCount());
 	SD_SetSpriteSync(1);

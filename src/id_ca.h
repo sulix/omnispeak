@@ -96,14 +96,14 @@ void CA_DownLevel(void);
 #define CA_NUMMAPPLANES 3
 #define CA_NUMMAPS 100
 
-typedef CK_PACKED_STRUCT(CA_MapHeader
+typedef struct CA_MapHeader
 {
 	uint32_t planeOffsets[CA_NUMMAPPLANES];
 	uint16_t planeLengths[CA_NUMMAPPLANES];
 	uint16_t width, height;
 	char name[16];
 	char signature[4];
-}) CA_MapHeader;
+} CA_MapHeader;
 
 extern CA_MapHeader *CA_MapHeaders[CA_NUMMAPS];
 

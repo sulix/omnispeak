@@ -129,8 +129,8 @@ void CK4_ScanInfoLayer()
 	CA_ClearLumps();
 
 	//TODO: Work out where to store current map number, etc.
-	int mapW = CA_MapHeaders[ca_mapOn]->width;
-	int mapH = CA_MapHeaders[ca_mapOn]->height;
+	int mapW = CA_GetMapWidth();
+	int mapH = CA_GetMapHeight();
 
 	for (int y = 0; y < mapH; ++y)
 	{

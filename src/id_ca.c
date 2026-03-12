@@ -1223,19 +1223,34 @@ void CA_CacheMap(int mapIndex)
 		MM_GetPtr((void **)(&CA_MapHeaders[mapIndex]), sizeof(CA_MapHeader));
 
 		FS_SeekTo(ca_GameMaps, headerOffset);
+		printf("headeroffset = %x\n", headerOffset);
 
-		size_t mapHeaderSize = FS_Read(CA_MapHeaders[mapIndex], sizeof(CA_MapHeader), 1, ca_GameMaps);
-		if (mapHeaderSize != 1)
+		size_t entriesRead = FS_ReadInt32LE(CA_MapHeaders[mapIndex]->planeOffsets, CA_NUMMAPPLANES, ca_GameMaps);
+		if (entriesRead != CA_NUMMAPPLANES)
 			Quit("Couldn't read map header from GAMEMAPS!");
-#ifdef CK_CROSS_IS_BIGENDIAN
-		for (int plane = 0; plane < CA_NUMMAPPLANES; ++plane)
-		{
-			CA_MapHeaders[mapIndex]->planeOffsets[plane] = CK_Cross_SwapLE32(CA_MapHeaders[mapIndex]->planeOffsets[plane]);
-			CA_MapHeaders[mapIndex]->planeLengths[plane] = CK_Cross_SwapLE16(CA_MapHeaders[mapIndex]->planeLengths[plane]);
-		}
-		CA_MapHeaders[mapIndex]->width = CK_Cross_SwapLE16(CA_MapHeaders[mapIndex]->width);
-		CA_MapHeaders[mapIndex]->height = CK_Cross_SwapLE16(CA_MapHeaders[mapIndex]->height);
-#endif
+
+		entriesRead = FS_ReadInt16LE(CA_MapHeaders[mapIndex]->planeLengths, CA_NUMMAPPLANES, ca_GameMaps);
+		if (entriesRead != CA_NUMMAPPLANES)
+			Quit("Couldn't read map header from GAMEMAPS!");
+
+		entriesRead = FS_ReadInt16LE(&CA_MapHeaders[mapIndex]->width, 1, ca_GameMaps);
+		if (entriesRead != 1)
+			Quit("Couldn't read map header from GAMEMAPS!");
+
+		entriesRead = FS_ReadInt16LE(&CA_MapHeaders[mapIndex]->height, 1, ca_GameMaps);
+		if (entriesRead != 1)
+			Quit("Couldn't read map header from GAMEMAPS!");
+
+		entriesRead = FS_Read(CA_MapHeaders[mapIndex]->name, 1, 16, ca_GameMaps);
+		if (entriesRead != 16)
+			Quit("Couldn't read map header from GAMEMAPS!");
+
+		entriesRead = FS_Read(CA_MapHeaders[mapIndex]->signature, 1, 4, ca_GameMaps);
+		if (entriesRead != 4)
+			Quit("Couldn't read map header from GAMEMAPS!");
+
+
+		//size_t mapHeaderSize = FS_Read(CA_MapHeaders[mapIndex], sizeof(CA_MapHeader), 1, ca_GameMaps);
 	}
 	else
 	{

@@ -290,8 +290,8 @@ void CK5_ScanInfoLayer()
 	CA_InitLumps();
 
 	//TODO: Work out where to store current map number, etc.
-	int mapW = CA_MapHeaders[ca_mapOn]->width;
-	int mapH = CA_MapHeaders[ca_mapOn]->height;
+	int mapW = CA_GetMapWidth();
+	int mapH = CA_GetMapHeight();
 
 	ck_gameState.ep.ck5.fusesRemaining = 0;
 

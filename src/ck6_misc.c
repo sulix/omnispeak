@@ -88,8 +88,8 @@ void CK6_ScanInfoLayer()
 {
 	CA_ClearLumps();
 
-	int mapW = CA_MapHeaders[ca_mapOn]->width;
-	int mapH = CA_MapHeaders[ca_mapOn]->height;
+	int mapW = CA_GetMapWidth();
+	int mapH = CA_GetMapHeight();
 
 	for (int y = 0; y < mapH; ++y)
 	{
