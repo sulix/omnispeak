@@ -230,13 +230,13 @@ static bool CFG_SaveConfigLine(FS_File outputHandle, STR_ParserState *state)
 	else
 	{
 		int oldValue = 0;
-		if (!CK_Cross_strcasecmp(value.valuePtr, "false"))
+		if (!CK_Cross_strncasecmp(value.valuePtr, "false", value.valueLength))
 		{
 			oldValue = 0;
 			// Eat the token.
 			STR_GetToken(state);
 		}
-		else if (!CK_Cross_strcasecmp(value.valuePtr, "true"))
+		else if (!CK_Cross_strncasecmp(value.valuePtr, "true", value.valueLength))
 		{
 			oldValue = 1;
 			// Eat the token.
@@ -244,7 +244,6 @@ static bool CFG_SaveConfigLine(FS_File outputHandle, STR_ParserState *state)
 		}
 		else
 			oldValue = STR_GetInteger(state);
-
 
 		if (oldValue == var->int_value)
 		{
@@ -332,8 +331,11 @@ void CFG_SaveConfig(const char *filename)
 			FS_PrintF(outputHandle, "%s = %s\n", currentVar->name, currentVar->int_value ? "true" : "false");
 		else
 			FS_PrintF(outputHandle, "%s = %d\n", currentVar->name, currentVar->int_value);
+
+		numVarsSaved++;
 	}
 
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "CFG_SaveConfig: Saved %d config options to %s\n", numVarsSaved, filename);
 	FS_CloseFile(outputHandle);
 }
 
