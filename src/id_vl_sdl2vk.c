@@ -449,7 +449,7 @@ static void VL_SDL2VK_SetupSwapchain(int width, int height)
 	// trying to blit to a fullRgn that exceeds the surface size.
 	// See, for example: https://bugzilla.libsdl.org/show_bug.cgi?id=4671
 	// By using the actual swapchain size here, it should always be correct
-	VL_CalculateRenderRegions(vl_sdl2vk_swapchainSize.width, vl_sdl2vk_swapchainSize.height);
+	VL_CalculateRenderRegions(VL_ScreenWidth(), VL_ScreenHeight(), vl_sdl2vk_swapchainSize.width, vl_sdl2vk_swapchainSize.height);
 
 	int desiredFormat = 0;
 	for (int i = 0; i < surfaceFormatCount; ++i)
@@ -1183,7 +1183,7 @@ static void VL_SDL2VK_SetVideoMode(int mode)
 		vl_sdl2vk_screenWidth = VL_EGAVGA_GFX_WIDTH;
 		vl_sdl2vk_screenHeight = VL_EGAVGA_GFX_HEIGHT;
 
-		VL_CalculateRenderRegions(VL_DEFAULT_WINDOW_WIDTH(scale), VL_DEFAULT_WINDOW_HEIGHT(scale));
+		VL_CalculateRenderRegions(vl_sdl2vk_screenWidth, vl_sdl2vk_screenHeight, VL_DEFAULT_WINDOW_WIDTH(scale), VL_DEFAULT_WINDOW_HEIGHT(scale));
 
 		SDL_SetWindowMinimumSize(vl_sdl2vk_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER / VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER / VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 
@@ -1668,20 +1668,27 @@ static void VL_SDL2VK_ScrollSurface(void *surface, int x, int y)
 	VL_SDL2VK_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
 }
 
-static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
+static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY, int width, int height, bool singleBuffered)
 {
 	VkResult result = VK_SUCCESS;
 	uint32_t framebufferIndex;
 
 	int newW, newH;
 	SDL_Vulkan_GetDrawableSize(vl_sdl2vk_window, &newW, &newH);
-	if (vl_sdl2vk_flushSwapchain || vl_sdl2vk_swapchainSize.width != newW || vl_sdl2vk_swapchainSize.height != newH)
+	if (vl_sdl2vk_swapchainSize.width != newW || vl_sdl2vk_swapchainSize.height != newH)
+		vl_sdl2vk_flushSwapchain = true;
+	if (vl_sdl2vk_screenWidth != width || vl_sdl2vk_screenHeight != height)
+		vl_sdl2vk_flushSwapchain = true;
+	if (vl_sdl2vk_flushSwapchain)
 	{
+		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "VL_SDL2VK_Present: Recreating swapchain (%d×%d), (%d×%d)\n", newW, newH, width, height);
 		VL_SDL2VK_DestroySwapchain();
 		VL_SDL2VK_SetupSwapchain(newW, newH);
 		VL_SDL2VK_CreateFramebuffers(vl_integerWidth, vl_integerHeight);
 		VL_SDL2VK_CreatePipeline();
 		vl_sdl2vk_flushSwapchain = false;
+		vl_sdl2vk_screenWidth = width;
+		vl_sdl2vk_screenHeight = height;
 	}
 
 	result = vkAcquireNextImageKHR(vl_sdl2vk_device, vl_sdl2vk_swapchain, UINT64_MAX, vl_sdl2vk_imageAvailableSemaphore, VK_NULL_HANDLE, &framebufferIndex);
@@ -1724,8 +1731,8 @@ static void VL_SDL2VK_Present(void *surface, int scrlX, int scrlY, bool singleBu
 	vkMapMemory(vl_sdl2vk_device, vl_sdl2vk_uniformBufferMemory, 0, sizeof(float) * 4 * 17, 0, (void **)&data);
 	data[0] = scrlX;
 	data[1] = scrlY;
-	data[2] = VL_EGAVGA_GFX_WIDTH;
-	data[3] = VL_EGAVGA_GFX_HEIGHT;
+	data[2] = width;
+	data[3] = height;
 	for (int i = 0; i < 16; ++i)
 	{
 		data[4 + 4 * i] = (float)VL_EGARGBColorTable[vl_emuegavgaadapter.palette[i]][0] / 255.0;
