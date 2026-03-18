@@ -169,7 +169,7 @@ void CK_InitGame()
 
 	// Wolf loads fonts here, but we do it in CA_Startup()?
 
-	RF_Startup();
+	RF_Startup(320, 200);
 
 	VL_ColorBorder(3);
 	VL_ClearScreen(0);

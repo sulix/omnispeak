@@ -38,24 +38,9 @@ typedef struct RF_SpriteDrawEntry
 	struct RF_SpriteDrawEntry *next;
 } RF_SpriteDrawEntry;
 
-// Width/Height of the screen buffers in-game.
-#define RF_BUFFER_WIDTH_TILES 21
-#define RF_BUFFER_HEIGHT_TILES 14
-
-#define RF_BUFFER_WIDTH_PIXELS (RF_BUFFER_WIDTH_TILES << 4)
-#define RF_BUFFER_HEIGHT_PIXELS (RF_BUFFER_HEIGHT_TILES << 4)
-
-#define RF_BUFFER_WIDTH_UNITS (RF_BUFFER_WIDTH_TILES << 8)
-#define RF_BUFFER_HEIGHT_UNITS (RF_BUFFER_HEIGHT_TILES << 8)
-
-// Width/Height of the visible screen in tiles.
-#define RF_SCREEN_WIDTH_TILES 20
-#define RF_SCREEN_HEIGHT_TILES 13
-
-#define PRIORITIES 4
-#define MASKEDTILEPRIORITY 3 // planes go: 0, 1, 2, MTILES, 3
-#define TILEGLOBAL 256
-#define PIXGLOBAL 16
+#ifndef CK_VANILLA
+#define RF_DYNAMIC_LIMITS
+#endif
 
 #define G_T_SHIFT 8 // global >> ?? = tile
 #define G_P_SHIFT 4 // global >> ?? = pixels
@@ -67,6 +52,42 @@ typedef struct RF_SpriteDrawEntry
 #define RF_PixelToUnit(p) ((p) << G_P_SHIFT)
 #define RF_PixelToTile(p) ((p) >> P_T_SHIFT)
 #define RF_TileToPixel(t) ((t) << P_T_SHIFT)
+
+#define RF_PixelToTile_RoundUp(p) ((p + (1 << P_T_SHIFT) - 1) >> P_T_SHIFT)
+
+#define RF_DEFAULT_SCREEN_WIDTH_PIXELS 320
+#define RF_DEFAULT_SCREEN_HEIGHT_PIXELS 200
+
+#ifdef RF_DYNAMIC_LIMITS
+// Width/Height of the visible screen in tiles.
+extern int rf_screenWidthPixels, rf_screenHeightPixels;
+#define RF_SCREEN_WIDTH_TILES RF_PixelToTile_RoundUp(rf_screenWidthPixels)
+#define RF_SCREEN_HEIGHT_TILES RF_PixelToTile_RoundUp(rf_screenHeightPixels)
+
+extern int rf_bufferWidthTiles, rf_bufferHeightTiles;
+#define RF_BUFFER_WIDTH_TILES rf_bufferWidthTiles
+#define RF_BUFFER_HEIGHT_TILES rf_bufferHeightTiles
+
+#else
+// Width/Height of the visible screen in tiles.
+#define RF_SCREEN_WIDTH_TILES RF_PixelToTile_RoundUp(RF_DEFAULT_SCREEN_WIDTH_PIXELS) //20
+#define RF_SCREEN_HEIGHT_TILES RF_PixelToTile_RoundUp(RF_DEFAULT_SCREEN_HEIGHT_PIXELS) //13
+
+// Width/Height of the screen buffers in-game.
+#define RF_BUFFER_WIDTH_TILES RF_DEFAULT_SCREEN_WIDTH_TILES + 1 //21
+#define RF_BUFFER_HEIGHT_TILES RF_DEFAULT_SCREEN_HEIGHT_TILES + 1 //14
+#endif
+
+#define RF_BUFFER_WIDTH_PIXELS (RF_BUFFER_WIDTH_TILES << 4)
+#define RF_BUFFER_HEIGHT_PIXELS (RF_BUFFER_HEIGHT_TILES << 4)
+
+#define RF_BUFFER_WIDTH_UNITS (RF_BUFFER_WIDTH_TILES << 8)
+#define RF_BUFFER_HEIGHT_UNITS (RF_BUFFER_HEIGHT_TILES << 8)
+
+#define PRIORITIES 4
+#define MASKEDTILEPRIORITY 3 // planes go: 0, 1, 2, MTILES, 3
+#define TILEGLOBAL 256
+#define PIXGLOBAL 16
 
 extern int rf_scrollXUnit, rf_scrollYUnit;
 extern int rf_scrollXMinUnit;
@@ -82,7 +103,8 @@ uint8_t RFL_IsBlockDirty(int x, int y, int page);
 void RF_SetScrollBlock(int tileX, int tileY, bool vertical);
 void RF_MarkTileGraphics();
 void RF_SetDrawFunc(void (*func)(void));
-void RF_Startup();
+void RF_Startup(int screenPixelsX, int screenPixelsY);
+void RF_Resize(int screenWidth, int screenHeight);
 void RF_Shutdown();
 void RF_NewMap(void);
 void RF_RenderTile16(int x, int y, int tile);
