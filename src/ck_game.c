@@ -647,6 +647,25 @@ void CK_LoadLevel(bool doCache, bool silent)
 	// CA_CacheMarks(0);
 	if (doCache && !silent)
 		CK_BeginFadeDrawing();
+
+	// We need to resize RF _here_ for a number of reasons:
+	// - It's safe to do so, as — despite our already having called RF_NewMap() —
+	//   we've not yet drawn anything, or done anything dependent on the map
+	//   size (like fill animated tile lists).
+	// - The game needs to fade out the old screen (see above) with the old
+	//   screen contents (and hence size) still intact, so we can't do it
+	//   before now.
+	// - The fade in is deferred, so we are resizing before anything is seen
+	//   (and indeed, as mentioned above, before anything is drawn).
+	if (IN_DemoGetMode() != IN_Demo_Off)
+		RF_Resize(CK_INT(rf_demoScreenWidth, RF_DEFAULT_SCREEN_WIDTH_PIXELS), CK_INT(rf_demoScreenHeight, RF_DEFAULT_SCREEN_HEIGHT_PIXELS));
+	else
+	{
+		const int defaultWidth = CK_INT(rf_demoScreenWidth, RF_DEFAULT_SCREEN_WIDTH_PIXELS);
+		const int defaultHeight = CK_INT(rf_demoScreenHeight, RF_DEFAULT_SCREEN_HEIGHT_PIXELS);
+		RF_Resize(CFG_GetConfigInt("screenWidth", defaultWidth), CFG_GetConfigInt("screenHeight", defaultHeight));
+	}
+	CK_ResizeStatusBuffers();
 }
 
 // Cache Box Routines
