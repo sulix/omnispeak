@@ -657,7 +657,7 @@ void CK_LoadLevel(bool doCache, bool silent)
 	//   before now.
 	// - The fade in is deferred, so we are resizing before anything is seen
 	//   (and indeed, as mentioned above, before anything is drawn).
-	if (IN_DemoGetMode() != IN_Demo_Off)
+	if (CK_VanillaMode())
 		RF_Resize(CK_INT(rf_demoScreenWidth, RF_DEFAULT_SCREEN_WIDTH_PIXELS), CK_INT(rf_demoScreenHeight, RF_DEFAULT_SCREEN_HEIGHT_PIXELS));
 	else
 	{

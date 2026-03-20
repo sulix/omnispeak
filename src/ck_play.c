@@ -1936,29 +1936,34 @@ void CK_CentreCamera(CK_object *obj)
 {
 	uint16_t screenX, screenY;
 
-	screenYpx = 140;
+	// This is always set as though Keen is in-level, as the world map camera doesn't use this variable.
+	screenYpx = CK_VanillaMode() ? 140 : CK_PlayHeightPixels() / 2 + 36;
 
-	if (obj->posX < RF_PixelToUnit(152))
+	int screenCentreX = CK_VanillaMode() ? RF_PixelToUnit(152) : CK_PlayWidthUnits() / 2 - RF_PixelToUnit(8);
+
+	if (obj->posX < screenCentreX)
 		screenX = 0;
 	else
-		screenX = obj->posX - RF_PixelToUnit(152);
+		screenX = obj->posX - screenCentreX;
 
-	if (ca_mapOn == 0)
+	if (ca_mapOn == CK_INT(ck_worldMapNumber, 0))
 	{
 		// World Map
-		if (obj->posY < RF_PixelToUnit(80))
+		int mapCentreY = CK_VanillaMode() ? RF_PixelToUnit(80) : CK_PlayHeightUnits() / 2 - RF_PixelToUnit(24);
+		if (obj->posY < mapCentreY)
 			screenY = 0;
 		else
-			screenY = obj->posY - RF_PixelToUnit(80);
+			screenY = obj->posY - mapCentreY;
 	}
 	else
 	{
 		// In Level
-		if (obj->clipRects.unitY2 < RF_PixelToUnit(140))
+		int screenCentreY = CK_VanillaMode() ? RF_PixelToUnit(140) : CK_PlayHeightUnits() / 2 + RF_PixelToUnit(36);
+		if (obj->clipRects.unitY2 < screenCentreY)
 			screenY = 0;
 
 		else
-			screenY = obj->clipRects.unitY2 - RF_PixelToUnit(140);
+			screenY = obj->clipRects.unitY2 - screenCentreY;
 	}
 
 	// TODO: Find out why this is locking the game up
@@ -1967,9 +1972,9 @@ void CK_CentreCamera(CK_object *obj)
 
 	//TODO: This is 4 in Andy's disasm.
 	ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-	ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+	ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 	ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-	ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+	ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 }
 
 /*
@@ -1983,19 +1988,24 @@ void CK_MapCamera(CK_object *keen)
 	if (ck_scrollDisabled)
 		return;
 
+	int minScrollX = CK_VanillaMode() ? RF_PixelToUnit(144) : CK_PlayWidthUnits() / 2 - RF_PixelToUnit(16);
+	int maxScrollX = CK_VanillaMode() ? RF_PixelToUnit(192) : CK_PlayWidthUnits() / 2 + RF_PixelToUnit(32);
+	int minScrollY = CK_VanillaMode() ? RF_PixelToUnit(80) : CK_PlayHeightUnits() / 2 - RF_PixelToUnit(24);
+	int maxScrollY = CK_VanillaMode() ? RF_PixelToUnit(112) : CK_PlayHeightUnits() / 2 + RF_PixelToUnit(8);
+
 	// Scroll Left, Right, or nowhere
-	if (keen->clipRects.unitX1 < rf_scrollXUnit + RF_PixelToUnit(144))
-		scr_x = keen->clipRects.unitX1 - (rf_scrollXUnit + RF_PixelToUnit(144));
-	else if (keen->clipRects.unitX2 > rf_scrollXUnit + RF_PixelToUnit(192))
-		scr_x = keen->clipRects.unitX2 + 16 - (rf_scrollXUnit + RF_PixelToUnit(192));
+	if (keen->clipRects.unitX1 < rf_scrollXUnit + minScrollX)
+		scr_x = keen->clipRects.unitX1 - (rf_scrollXUnit + minScrollX);
+	else if (keen->clipRects.unitX2 > rf_scrollXUnit + maxScrollX)
+		scr_x = keen->clipRects.unitX2 + 16 - (rf_scrollXUnit + maxScrollX);
 	else
 		scr_x = 0;
 
 	// Scroll Up, Down, or nowhere
-	if (keen->clipRects.unitY1 < rf_scrollYUnit + RF_PixelToUnit(80))
-		scr_y = keen->clipRects.unitY1 - (rf_scrollYUnit + RF_PixelToUnit(80));
-	else if (keen->clipRects.unitY2 > rf_scrollYUnit + RF_PixelToUnit(112))
-		scr_y = keen->clipRects.unitY2 - (rf_scrollYUnit + RF_PixelToUnit(112));
+	if (keen->clipRects.unitY1 < rf_scrollYUnit + minScrollY)
+		scr_y = keen->clipRects.unitY1 - (rf_scrollYUnit + minScrollY);
+	else if (keen->clipRects.unitY2 > rf_scrollYUnit + maxScrollY)
+		scr_y = keen->clipRects.unitY2 - (rf_scrollYUnit + maxScrollY);
 	else
 		scr_y = 0;
 
@@ -2023,9 +2033,9 @@ void CK_MapCamera(CK_object *keen)
 
 		//TODO: This is 4 in Andy's disasm.
 		ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 		ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 	}
 }
 
@@ -2036,9 +2046,6 @@ void CK_NormalCamera(CK_object *obj)
 
 	int16_t deltaX = 0, deltaY = 0; // in Units
 
-	//TODO: some unknown var must be 0
-	//This var is a "ScrollDisabled flag." If keen dies, it's set so he
-	// can fall out the bottom
 	if (ck_scrollDisabled)
 		return;
 
@@ -2060,21 +2067,25 @@ void CK_NormalCamera(CK_object *obj)
 	}
 
 	// Keep keen's x-coord between 144-192 pixels
-	if (obj->posX < (rf_scrollXUnit + RF_PixelToUnit(144)))
-		deltaX = obj->posX - (rf_scrollXUnit + RF_PixelToUnit(144));
+	int screenCentreX = CK_PlayWidthUnits() / 2;
+	int minScrollX = CK_VanillaMode() ? RF_PixelToUnit(144) : screenCentreX - RF_PixelToUnit(16);
+	int maxScrollX = CK_VanillaMode() ? RF_PixelToUnit(192) : screenCentreX + RF_PixelToUnit(32);
+	if (obj->posX < (rf_scrollXUnit + minScrollX))
+		deltaX = obj->posX - (rf_scrollXUnit + minScrollX);
 
-	if (obj->posX > (rf_scrollXUnit + RF_PixelToUnit(192)))
-		deltaX = obj->posX - (rf_scrollXUnit + RF_PixelToUnit(192));
+	if (obj->posX > (rf_scrollXUnit + maxScrollX))
+		deltaX = obj->posX - (rf_scrollXUnit + maxScrollX);
 
 	// Keen should be able to look up and down.
 	if (obj->currentAction == CK_ACTION(CK_ACT_keenLookUp2))
 	{
 		int16_t pxToMove;
-		if (screenYpx + SD_GetSpriteSync() > 167)
+		int maxLookPx = CK_VanillaMode() ? 167 : CK_PlayHeightPixels() - 33;
+		if (screenYpx + SD_GetSpriteSync() > maxLookPx)
 		{
 			// Keen should never be so low on the screen that his
 			// feet are more than 167 px from the top.
-			pxToMove = 167 - screenYpx;
+			pxToMove = maxLookPx - screenYpx;
 		}
 		else
 		{
@@ -2169,15 +2180,15 @@ void CK_NormalCamera(CK_object *obj)
 	else
 	{
 		// Reset to 140px.
-		screenYpx = 140;
+		screenYpx = CK_VanillaMode() ? 140 : CK_PlayHeightPixels() / 2 + 36;
 	}
 
 	// Scroll the screen to keep keen between 33 and 167 px.
 	if (obj->clipRects.unitY2 < (rf_scrollYUnit + deltaY + RF_PixelToUnit(32)))
 		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + RF_PixelToUnit(32));
 
-	if (obj->clipRects.unitY2 > (rf_scrollYUnit + deltaY + RF_PixelToUnit(168)))
-		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + RF_PixelToUnit(168));
+	if (obj->clipRects.unitY2 > (rf_scrollYUnit + deltaY + CK_PlayHeightUnits() - RF_PixelToUnit(40)))
+		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + CK_PlayHeightUnits() - RF_PixelToUnit(40));
 
 	//Don't scroll more than one tile's worth per frame.
 	if (deltaX || deltaY)
@@ -2199,9 +2210,9 @@ void CK_NormalCamera(CK_object *obj)
 
 		// Update the rectangle of active objects
 		ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 		ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 	}
 }
 
@@ -2245,8 +2256,8 @@ void CK_PlayLoop()
 
 			if (!currentObj->active &&
 				(currentObj->clipRects.tileX2 >= RF_UnitToTile(rf_scrollXUnit) - 1) &&
-				(currentObj->clipRects.tileX1 <= RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + 1) &&
-				(currentObj->clipRects.tileY1 <= RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + 1) &&
+				(currentObj->clipRects.tileX1 <= RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles() + 1) &&
+				(currentObj->clipRects.tileY1 <= RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles() + 1) &&
 				(currentObj->clipRects.tileY2 >= RF_UnitToTile(rf_scrollYUnit) - 1))
 			{
 				currentObj->active = OBJ_ACTIVE;
