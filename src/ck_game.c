@@ -666,6 +666,14 @@ void CK_LoadLevel(bool doCache, bool silent)
 		RF_Resize(CFG_GetConfigInt("screenWidth", defaultWidth), CFG_GetConfigInt("screenHeight", defaultHeight));
 	}
 	CK_ResizeStatusBuffers();
+
+	// Determine and set the map garbage emulation.
+	// (If our screen resolution is higher than the levels support, we can end up
+	// seeing outside the level bounds, which often will crash on invalid tiles.)
+	if (RF_BUFFER_WIDTH_TILES > 21 || RF_BUFFER_HEIGHT_TILES > 14)
+		ca_emulateMapGarbage = CFG_GetConfigBool("ca_emulateMapGarbage", false);
+	else
+		ca_emulateMapGarbage = CFG_GetConfigBool("ca_emulateMapGarbage", true);
 }
 
 // Cache Box Routines
