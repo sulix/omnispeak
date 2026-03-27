@@ -1223,7 +1223,6 @@ void CA_CacheMap(int mapIndex)
 		MM_GetPtr((void **)(&CA_MapHeaders[mapIndex]), sizeof(CA_MapHeader));
 
 		FS_SeekTo(ca_GameMaps, headerOffset);
-		printf("headeroffset = %x\n", headerOffset);
 
 		size_t entriesRead = FS_ReadInt32LE(CA_MapHeaders[mapIndex]->planeOffsets, CA_NUMMAPPLANES, ca_GameMaps);
 		if (entriesRead != CA_NUMMAPPLANES)
@@ -1248,9 +1247,6 @@ void CA_CacheMap(int mapIndex)
 		entriesRead = FS_Read(CA_MapHeaders[mapIndex]->signature, 1, 4, ca_GameMaps);
 		if (entriesRead != 4)
 			Quit("Couldn't read map header from GAMEMAPS!");
-
-
-		//size_t mapHeaderSize = FS_Read(CA_MapHeaders[mapIndex], sizeof(CA_MapHeader), 1, ca_GameMaps);
 	}
 	else
 	{
