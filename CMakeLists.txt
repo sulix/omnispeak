@@ -361,6 +361,7 @@ set(OMNISPEAK_OPL_SRCS
 	src/opl/dbopl.c
 	src/opl/nuked_opl3.h
 	src/opl/nuked_opl3.c
+	src/opl/nuked_wf_rom.h
 )
 
 # Build all episodes

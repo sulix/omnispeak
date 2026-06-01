@@ -8,7 +8,9 @@ Includes the DOSBox OPL2/3 Emulator:
 	Copyright (C) 2002-2010  The DOSBox Team
 	https://www.dosbox.com/
 
-Includes the Nuked OPL3 Emulator:
+Includes the Nuked OPL3 (fast) Emulator:
 	Copyright (C) 2013-2020 Nuke.YKT
+	Copyright (C) 2026 Tony Gies (Nuked-OPL3-fast modifications)
+	https://github.com/tgies/Nuked-OPL3-fast
 	https://github.com/nukeykt/Nuked-OPL3
 	See src/opl/NUKEDOPL3-LICENSE
