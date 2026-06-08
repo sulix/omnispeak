@@ -558,13 +558,13 @@ static void VL_SDL2GL_ScrollSurface(void *surface, int x, int y)
 		VL_SDL2GL_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
 }
 
-static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
+static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY, int width, int height, bool singleBuffered)
 {
 	int realWinW, realWinH;
 	// Get the real window size
 	SDL_GL_GetDrawableSize(vl_sdl2gl_window, &realWinW, &realWinH);
 
-	VL_CalculateRenderRegions(realWinW, realWinH);
+	VL_CalculateRenderRegions(width, height, realWinW, realWinH);
 
 	if (vl_isAspectCorrected || vl_isIntegerScaled)
 	{
@@ -623,8 +623,8 @@ static void VL_SDL2GL_Present(void *surface, int scrlX, int scrlY, bool singleBu
 	id_glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	id_glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, surf->w, surf->h, GL_RED, GL_UNSIGNED_BYTE, surf->data);
 
-	float scaleX = (float)vl_sdl2gl_screenWidth / ((float)surf->w);
-	float scaleY = (float)vl_sdl2gl_screenHeight / ((float)surf->h);
+	float scaleX = (float)width / ((float)surf->w);
+	float scaleY = (float)height / ((float)surf->h);
 	float offX = (float)(scrlX) / (float)(surf->w);
 	float offY = (float)(scrlY) / (float)(surf->h);
 	float endX = offX + scaleX;

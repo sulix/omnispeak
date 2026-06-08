@@ -1531,6 +1531,7 @@ uint16_t *CA_TilePtrAtPos(int16_t x, int16_t y, int16_t plane)
 	return &CA_mapPlanes[plane][y * CA_MapHeaders[ca_mapOn]->width + x];
 }
 
+bool ca_emulateMapGarbage;
 uint16_t CA_TileAtPos(int16_t x, int16_t y, int16_t plane)
 {
 	// HACK - Somewhat reproducing a glitch occuring in Keen 4: Level 10,
@@ -1539,7 +1540,10 @@ uint16_t CA_TileAtPos(int16_t x, int16_t y, int16_t plane)
 	CA_MapHeader *mapheader = CA_MapHeaders[ca_mapOn];
 	if ((x >= 0) && (x < mapheader->width) && (y >= 0) && (y < mapheader->height))
 		return CA_mapPlanes[plane][y * mapheader->width + x];
-	return (y * x * y * x) % (ca_gfxInfoE.numTiles16 * 2 + ca_gfxInfoE.numTiles16m * 6);
+	if (ca_emulateMapGarbage)
+		return (y * x * y * x) % (ca_gfxInfoE.numTiles16 * 2 + ca_gfxInfoE.numTiles16m * 6);
+	else
+		return 0;
 }
 
 void CA_SetTileAtPos(int16_t x, int16_t y, int16_t plane, uint16_t value)

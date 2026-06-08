@@ -836,7 +836,7 @@ void CK_SetAction2(CK_object *obj, CK_action *act)
 bool CK_ObjectVisible(CK_object *obj)
 {
 	// TODO: Use ScrollX0_T,  ScrollX1_T and co. directly?
-	if (obj->clipRects.tileX2 < RF_UnitToTile(rf_scrollXUnit) || obj->clipRects.tileY2 < RF_UnitToTile(rf_scrollYUnit) || obj->clipRects.tileX1 > (RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320)) || obj->clipRects.tileY1 > (RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
+	if (obj->clipRects.tileX2 < RF_UnitToTile(rf_scrollXUnit) || obj->clipRects.tileY2 < RF_UnitToTile(rf_scrollYUnit) || obj->clipRects.tileX1 > (RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles()) || obj->clipRects.tileY1 > (RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles()))
 	{
 		return false;
 	}

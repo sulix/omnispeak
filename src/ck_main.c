@@ -107,6 +107,18 @@ void CK_ShutdownID(void)
 #endif
 }
 
+// Resize or create the video surfaces for the Status screen
+void CK_ResizeStatusBuffers()
+{
+	if (ck_statusSurface)
+		VL_DestroySurface(ck_statusSurface);
+	if (ck_backupSurface)
+		VL_DestroySurface(ck_backupSurface);
+
+	ck_statusSurface = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, STATUS_H + 16 + 16);
+	ck_backupSurface = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS);
+}
+
 /*
  * Start the game!
  */
@@ -169,15 +181,20 @@ void CK_InitGame()
 
 	// Wolf loads fonts here, but we do it in CA_Startup()?
 
-	RF_Startup();
+#ifdef CK_VANILLA
+	RF_Startup(RF_DEFAULT_SCREEN_WIDTH_PIXELS,RF_DEFAULT_SCREEN_HEIGHT_PIXELS);
+#else
+	const int defaultWidth = CK_INT(rf_demoScreenWidth, RF_DEFAULT_SCREEN_WIDTH_PIXELS);
+	const int defaultHeight = CK_INT(rf_demoScreenHeight, RF_DEFAULT_SCREEN_HEIGHT_PIXELS);
+	RF_Startup(CFG_GetConfigInt("screenWidth", defaultWidth), CFG_GetConfigInt("screenHeight", defaultHeight));
+#endif
 
 	VL_ColorBorder(3);
 	VL_ClearScreen(0);
 	VL_Present();
 
 	// Create a surface for the dropdown menu
-	ck_statusSurface = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, STATUS_H + 16 + 16);
-	ck_backupSurface = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS);
+	CK_ResizeStatusBuffers();
 }
 
 /*

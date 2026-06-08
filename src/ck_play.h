@@ -23,10 +23,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
+#ifdef CK_VANILLA
+#define CK_VanillaMode() (true)
+#define CK_PlayWidthPixels() (320)
+#define CK_PlayHeightPixels() (208)
+#define CK_PlayWidthTiles() (RF_PixelToTile(CK_PlayWidthPixels()))
+#define CK_PlayHeightTiles() (RF_PixelToTile(CK_PlayHeightPixels()))
+#else
+#include "id_rf.h"
+#include "id_in.h"
+#define CK_VanillaMode() (IN_DemoGetMode() != IN_Demo_Off)
+#define CK_PlayWidthTiles() (RF_SCREEN_WIDTH_TILES)
+#define CK_PlayHeightTiles() (RF_SCREEN_HEIGHT_TILES)
+#define CK_PlayWidthPixels() (RF_TileToPixel(RF_SCREEN_WIDTH_TILES))
+#define CK_PlayHeightPixels() (RF_TileToPixel(RF_SCREEN_HEIGHT_TILES))
+#endif
+#define CK_PlayWidthUnits() (RF_PixelToUnit(CK_PlayWidthPixels()))
+#define CK_PlayHeightUnits() (RF_PixelToUnit(CK_PlayHeightPixels()))
+
 // Status window constants
 #define STATUS_W 192	// Width in pixels
 #define STATUS_H 152	// Height in pixels
-#define STATUS_X 64	// X-coord in pixels (without scroll adjustment)
+#define STATUS_X ((VL_ScreenWidth() - STATUS_W) / 2)	// X-coord in pixels (without scroll adjustment)
 #define STATUS_Y 16	// Y-coord in pixels when fully down
 #define STATUS_BOTTOM (STATUS_H + STATUS_Y)	// Bottom of status window
 

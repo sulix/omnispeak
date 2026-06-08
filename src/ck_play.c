@@ -1508,16 +1508,18 @@ void CK_DrawStatusWindow(void)
 	int si, i, oldcolor;
 
 	// Draw the backdrop
-	int var2 = 64;
+	int statusX = STATUS_X;
 	int di = 16;
 	int statusWidth = STATUS_W - 8;
 	int statusHeight = STATUS_H - 8;
+	int leftColX = STATUS_X + 16;
+	int rightColX = STATUS_X + 112;
 
-	VHB_DrawTile8(var2, di, 54);
-	VHB_DrawTile8(var2, di + statusHeight, 60);
-	si = var2 + 8;
+	VHB_DrawTile8(statusX, di, 54);
+	VHB_DrawTile8(statusX, di + statusHeight, 60);
+	si = statusX + 8;
 
-	while (var2 + statusWidth - 8 >= si)
+	while (statusX + statusWidth - 8 >= si)
 	{
 
 		VHB_DrawTile8(si, di, 55);
@@ -1533,12 +1535,12 @@ void CK_DrawStatusWindow(void)
 	while (di + statusHeight - 8 >= si)
 	{
 
-		VHB_DrawTile8(var2, si, 57);
-		VHB_DrawTile8(var2 + statusWidth, si, 59);
+		VHB_DrawTile8(statusX, si, 57);
+		VHB_DrawTile8(statusX + statusWidth, si, 59);
 		si += 8;
 	}
 
-	VHB_Bar(72, 24, 176, 136, 7);
+	VHB_Bar(STATUS_X + 8, STATUS_Y + 8, 176, 136, 7);
 
 	// Print the stuff
 	oldcolor = US_GetPrintColour();
@@ -1547,11 +1549,11 @@ void CK_DrawStatusWindow(void)
 	uint16_t strW, strH;
 	char str[256];
 	US_SetPrintY(28);
-	US_SetWindowX(80);
+	US_SetWindowX(leftColX);
 	US_SetWindowW(160);
 	US_SetPrintColour(15);
 	US_CPrint(CK_STRING(ck_str_statusLocation));
-	VHB_Bar(79, 38, 162, 20, 15);
+	VHB_Bar(leftColX - 1, 38, 162, 20, 15);
 	strcpy(str, CK_STRINGELEMENT(ck_str_levelNames, ca_mapOn));
 	CK_MeasureMultiline(str, &strW, &strH);
 	US_SetPrintY((20 - strH) / 2 + 40 - 2);
@@ -1559,21 +1561,21 @@ void CK_DrawStatusWindow(void)
 
 	// Score
 	US_SetPrintY(61);
-	US_SetWindowX(80);
+	US_SetWindowX(leftColX);
 	US_SetWindowW(64);
 	US_SetPrintColour(15);
 	US_CPrint(CK_STRING(ck_str_statusScore));
 
-	VHB_Bar(79, 71, 66, 10, 0);
-	CK_DrawLongRight(80, 72, 8, 41, ck_gameState.keenScore);
+	VHB_Bar(STATUS_X + 16, 71, 66, 10, 0);
+	CK_DrawLongRight(leftColX, 72, 8, 41, ck_gameState.keenScore);
 
 	// Extra man
 	US_SetPrintY(61);
-	US_SetWindowX(176);
+	US_SetWindowX(rightColX);
 	US_SetWindowW(64);
 	US_CPrint(CK_STRING(ck_str_statusExtra));
-	VHB_Bar(175, 71, 66, 10, 0);
-	CK_DrawLongRight(176, 72, 8, 41, ck_gameState.nextKeenAt);
+	VHB_Bar(rightColX - 1, 71, 66, 10, 0);
+	CK_DrawLongRight(rightColX, 72, 8, 41, ck_gameState.nextKeenAt);
 
 	// Episode-dependent field
 	switch (ck_currentEpisode->ep)
@@ -1581,49 +1583,49 @@ void CK_DrawStatusWindow(void)
 #ifdef WITH_KEEN4
 	case EP_CK4:
 		US_SetPrintY(85);
-		US_SetWindowX(80);
+		US_SetWindowX(leftColX);
 		US_SetWindowW(64);
 		US_CPrint(CK_STRING(ck4_str_statusRescued));
 
-		VHB_Bar(79, 95, 66, 10, 0);
+		VHB_Bar(leftColX - 1, 95, 66, 10, 0);
 		for (int i = 0; i < ck_gameState.ep.ck4.membersRescued; i++)
 		{
-			VHB_DrawTile8(80 + 8 * i, 96, 40);
+			VHB_DrawTile8(leftColX + 8 * i, 96, 40);
 		}
 		break;
 #endif
 #ifdef WITH_KEEN5
 	case EP_CK5:
 		US_SetPrintY(91);
-		US_SetPrintX(80);
+		US_SetPrintX(leftColX);
 		US_Print(CK_STRING(ck5_str_statusKeycard));
 
-		VHB_Bar(135, 90, 10, 10, 0);
+		VHB_Bar(leftColX + 56 - 1, 90, 10, 10, 0);
 		if (ck_gameState.ep.ck5.securityCard)
-			VHB_DrawTile8(136, 91, 40);
+			VHB_DrawTile8(leftColX + 56, 91, 40);
 		break;
 #endif
 #ifdef WITH_KEEN6
 	case EP_CK6:
-		US_SetPrintX(80);
+		US_SetPrintX(leftColX);
 		US_SetPrintY(96);
 		US_Print(CK_STRING(ck6_str_statusItems));
-		VHB_Bar(127, 95, 26, 10, 0);
+		VHB_Bar(leftColX + 48 - 1, 95, 26, 10, 0);
 
 		if (ck_gameState.ep.ck6.sandwich == 1)
-			VHB_DrawTile8(128, 96, 2);
+			VHB_DrawTile8(leftColX + 48, 96, 2);
 		else
-			VHB_DrawTile8(128, 96, 1);
+			VHB_DrawTile8(leftColX + 48, 96, 1);
 
 		if (ck_gameState.ep.ck6.rope == 1)
-			VHB_DrawTile8(136, 96, 4);
+			VHB_DrawTile8(leftColX + 56, 96, 4);
 		else
-			VHB_DrawTile8(136, 96, 3);
+			VHB_DrawTile8(leftColX + 56, 96, 3);
 
 		if (ck_gameState.ep.ck6.passcard == 1)
-			VHB_DrawTile8(144, 96, 6);
+			VHB_DrawTile8(leftColX + 64, 96, 6);
 		else
-			VHB_DrawTile8(144, 96, 5);
+			VHB_DrawTile8(leftColX + 64, 96, 5);
 		break;
 #endif
 	default:
@@ -1632,14 +1634,14 @@ void CK_DrawStatusWindow(void)
 
 	// Difficulty
 	US_SetPrintY(85);
-	US_SetWindowX(176);
+	US_SetWindowX(rightColX);
 	US_SetWindowW(64);
 	US_SetPrintColour(15);
 	US_CPrint(CK_STRING(ck_str_statusLevel));
-	VHB_Bar(175, 95, 66, 10, 15);
+	VHB_Bar(rightColX - 1, 95, 66, 10, 15);
 
 	US_SetPrintY(96);
-	US_SetWindowX(176);
+	US_SetWindowX(rightColX);
 	US_SetWindowW(64);
 	US_SetPrintColour(15);
 
@@ -1659,39 +1661,43 @@ void CK_DrawStatusWindow(void)
 	}
 
 	// Key gems
-	US_SetPrintX(80);
+	int gemX = leftColX + 40;
+	US_SetPrintX(leftColX);
 	US_SetPrintY(112);
 	US_SetPrintColour(15);
 	US_Print(CK_STRING(ck_str_statusKeys));
 
-	VHB_Bar(119, 111, 34, 10, 0);
+	VHB_Bar(gemX - 1, 111, 34, 10, 0);
 
 	for (i = 0; i < 4; i++)
 	{
 		if (ck_gameState.keyGems[i])
-			VHB_DrawTile8(120 + i * 8, 112, 36 + i);
+			VHB_DrawTile8(gemX + i * 8, 112, 36 + i);
 	}
 
 	// AMMO
-	US_SetPrintX(176);
+	int ammoX = rightColX + 40;
+	US_SetPrintX(rightColX);
 	US_SetPrintY(112);
 	US_Print(CK_STRING(ck_str_statusAmmo));
-	VHB_Bar(215, 111, 26, 10, 0);
-	CK_DrawLongRight(216, 112, 3, 41, ck_gameState.numShots);
+	VHB_Bar(ammoX - 1, 111, 26, 10, 0);
+	CK_DrawLongRight(ammoX, 112, 3, 41, ck_gameState.numShots);
 
 	// Lives
-	US_SetPrintX(80);
+	int livesX = leftColX + 48;
+	US_SetPrintX(leftColX);
 	US_SetPrintY(128);
 	US_Print(CK_STRING(ck_str_statusLives));
-	VHB_Bar(127, 127, 18, 10, 0);
-	CK_DrawLongRight(128, 128, 2, 41, ck_gameState.numLives);
+	VHB_Bar(livesX - 1, 127, 18, 10, 0);
+	CK_DrawLongRight(livesX, 128, 2, 41, ck_gameState.numLives);
 
 	// Lifeups
-	US_SetPrintX(176);
+	int lifeUpX = rightColX + 48;
+	US_SetPrintX(rightColX);
 	US_SetPrintY(128);
 	US_Print(CK_STRING(ck_str_statusCentilives));
-	VHB_Bar(224, 127, 16, 10, 0);
-	CK_DrawLongRight(224, 128, 2, 41, ck_gameState.numCentilife);
+	VHB_Bar(lifeUpX, 127, 16, 10, 0);	// NOTE: Unlike the others, this isn't -1 even in the original.
+	CK_DrawLongRight(lifeUpX, 128, 2, 41, ck_gameState.numCentilife);
 
 	// Episode-dependent field
 	int addX = 0;
@@ -1701,10 +1707,10 @@ void CK_DrawStatusWindow(void)
 	case EP_CK4:
 
 		// Wetsuit
-		VHB_Bar(79, 143, 66, 10, 15);
+		VHB_Bar(leftColX - 1, 143, 66, 10, 15);
 
 		US_SetPrintY(144);
-		US_SetWindowX(80);
+		US_SetWindowX(leftColX);
 		US_SetWindowW(64);
 		US_SetPrintColour(15);
 		US_CPrint(ck_gameState.ep.ck4.wetsuit ? CK_STRING(ck4_str_statusWetsuit) : CK_STRING(ck4_str_statusNoWetsuit));
@@ -1720,7 +1726,7 @@ void CK_DrawStatusWindow(void)
 
 		for (int y = 0; y < 2; y++)
 			for (int x = 0; x < 10; x++)
-				VHB_DrawTile8(120 + 8 * (x + addX), 140 + 8 * y, 72 + y * 10 + x);
+				VHB_DrawTile8(leftColX + 40 + 8 * (x + addX), 140 + 8 * y, 72 + y * 10 + x);
 
 		break;
 	default:
@@ -1738,6 +1744,8 @@ void CK_ScrollStatusWindow(void)
 	int scrX = VL_GetScrollX() & 8;
 	int scrY = VL_GetScrollY() % 16;
 	int statusWindowXPx = STATUS_X + scrX;
+	int sidePicX = STATUS_X - 24;
+	int topPicX = STATUS_X + 72;
 
 	// Check if there's some game visible behind the top of the window.
 	if (ck_statusWindowYPx > STATUS_H)
@@ -1750,7 +1758,7 @@ void CK_ScrollStatusWindow(void)
 					STATUS_W, ck_statusWindowYPx);
 
 		// MPic atop the statusbox
-		VH_DrawMaskedBitmap(136 + scrX, (ck_statusWindowYPx - STATUS_BOTTOM) + scrY,
+		VH_DrawMaskedBitmap(topPicX + scrX, (ck_statusWindowYPx - STATUS_BOTTOM) + scrY,
 				CK_CHUNKNUM(MPIC_STATUSRIGHT));
 		
 		// Set up the position for the status box.
@@ -1797,8 +1805,8 @@ void CK_ScrollStatusWindow(void)
 		if (height > 0)
 		{
 			VL_SurfaceToScreen(ck_statusSurface,
-					40 + scrX, 0,
-					40 + scrX, 0,
+					sidePicX + scrX, 0,
+					sidePicX + scrX, 0,
 					24, height);
 		}
 
@@ -1811,13 +1819,13 @@ void CK_ScrollStatusWindow(void)
 		// Reset the area under the masked pic to the left
 		if (height > 0)
 		{
-			VL_SurfaceToScreen(ck_statusSurface, 40 + scrX % 16, 0, 40 + scrX % 16, 0, 24, height);
+			VL_SurfaceToScreen(ck_statusSurface, sidePicX + scrX % 16, 0, sidePicX + scrX % 16, 0, 24, height);
 		}
 	}
 
 	if (ck_statusWindowYPx >= 72)
 	{
-		VH_DrawMaskedBitmap(40 + scrX, ck_statusWindowYPx - STATUS_BOTTOM + scrY,
+		VH_DrawMaskedBitmap(sidePicX + scrX, ck_statusWindowYPx - STATUS_BOTTOM + scrY,
 				CK_CHUNKNUM(MPIC_STATUSLEFT));
 	}
 }
@@ -1936,29 +1944,34 @@ void CK_CentreCamera(CK_object *obj)
 {
 	uint16_t screenX, screenY;
 
-	screenYpx = 140;
+	// This is always set as though Keen is in-level, as the world map camera doesn't use this variable.
+	screenYpx = CK_VanillaMode() ? 140 : CK_PlayHeightPixels() / 2 + 36;
 
-	if (obj->posX < RF_PixelToUnit(152))
+	int screenCentreX = CK_VanillaMode() ? RF_PixelToUnit(152) : CK_PlayWidthUnits() / 2 - RF_PixelToUnit(8);
+
+	if (obj->posX < screenCentreX)
 		screenX = 0;
 	else
-		screenX = obj->posX - RF_PixelToUnit(152);
+		screenX = obj->posX - screenCentreX;
 
-	if (ca_mapOn == 0)
+	if (ca_mapOn == CK_INT(ck_worldMapNumber, 0))
 	{
 		// World Map
-		if (obj->posY < RF_PixelToUnit(80))
+		int mapCentreY = CK_VanillaMode() ? RF_PixelToUnit(80) : CK_PlayHeightUnits() / 2 - RF_PixelToUnit(24);
+		if (obj->posY < mapCentreY)
 			screenY = 0;
 		else
-			screenY = obj->posY - RF_PixelToUnit(80);
+			screenY = obj->posY - mapCentreY;
 	}
 	else
 	{
 		// In Level
-		if (obj->clipRects.unitY2 < RF_PixelToUnit(140))
+		int screenCentreY = CK_VanillaMode() ? RF_PixelToUnit(140) : CK_PlayHeightUnits() / 2 + RF_PixelToUnit(36);
+		if (obj->clipRects.unitY2 < screenCentreY)
 			screenY = 0;
 
 		else
-			screenY = obj->clipRects.unitY2 - RF_PixelToUnit(140);
+			screenY = obj->clipRects.unitY2 - screenCentreY;
 	}
 
 	// TODO: Find out why this is locking the game up
@@ -1967,9 +1980,9 @@ void CK_CentreCamera(CK_object *obj)
 
 	//TODO: This is 4 in Andy's disasm.
 	ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-	ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+	ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 	ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-	ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+	ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 }
 
 /*
@@ -1983,19 +1996,24 @@ void CK_MapCamera(CK_object *keen)
 	if (ck_scrollDisabled)
 		return;
 
+	int minScrollX = CK_VanillaMode() ? RF_PixelToUnit(144) : CK_PlayWidthUnits() / 2 - RF_PixelToUnit(16);
+	int maxScrollX = CK_VanillaMode() ? RF_PixelToUnit(192) : CK_PlayWidthUnits() / 2 + RF_PixelToUnit(32);
+	int minScrollY = CK_VanillaMode() ? RF_PixelToUnit(80) : CK_PlayHeightUnits() / 2 - RF_PixelToUnit(24);
+	int maxScrollY = CK_VanillaMode() ? RF_PixelToUnit(112) : CK_PlayHeightUnits() / 2 + RF_PixelToUnit(8);
+
 	// Scroll Left, Right, or nowhere
-	if (keen->clipRects.unitX1 < rf_scrollXUnit + RF_PixelToUnit(144))
-		scr_x = keen->clipRects.unitX1 - (rf_scrollXUnit + RF_PixelToUnit(144));
-	else if (keen->clipRects.unitX2 > rf_scrollXUnit + RF_PixelToUnit(192))
-		scr_x = keen->clipRects.unitX2 + 16 - (rf_scrollXUnit + RF_PixelToUnit(192));
+	if (keen->clipRects.unitX1 < rf_scrollXUnit + minScrollX)
+		scr_x = keen->clipRects.unitX1 - (rf_scrollXUnit + minScrollX);
+	else if (keen->clipRects.unitX2 > rf_scrollXUnit + maxScrollX)
+		scr_x = keen->clipRects.unitX2 + 16 - (rf_scrollXUnit + maxScrollX);
 	else
 		scr_x = 0;
 
 	// Scroll Up, Down, or nowhere
-	if (keen->clipRects.unitY1 < rf_scrollYUnit + RF_PixelToUnit(80))
-		scr_y = keen->clipRects.unitY1 - (rf_scrollYUnit + RF_PixelToUnit(80));
-	else if (keen->clipRects.unitY2 > rf_scrollYUnit + RF_PixelToUnit(112))
-		scr_y = keen->clipRects.unitY2 - (rf_scrollYUnit + RF_PixelToUnit(112));
+	if (keen->clipRects.unitY1 < rf_scrollYUnit + minScrollY)
+		scr_y = keen->clipRects.unitY1 - (rf_scrollYUnit + minScrollY);
+	else if (keen->clipRects.unitY2 > rf_scrollYUnit + maxScrollY)
+		scr_y = keen->clipRects.unitY2 - (rf_scrollYUnit + maxScrollY);
 	else
 		scr_y = 0;
 
@@ -2023,9 +2041,9 @@ void CK_MapCamera(CK_object *keen)
 
 		//TODO: This is 4 in Andy's disasm.
 		ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 		ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 	}
 }
 
@@ -2036,9 +2054,6 @@ void CK_NormalCamera(CK_object *obj)
 
 	int16_t deltaX = 0, deltaY = 0; // in Units
 
-	//TODO: some unknown var must be 0
-	//This var is a "ScrollDisabled flag." If keen dies, it's set so he
-	// can fall out the bottom
 	if (ck_scrollDisabled)
 		return;
 
@@ -2060,21 +2075,25 @@ void CK_NormalCamera(CK_object *obj)
 	}
 
 	// Keep keen's x-coord between 144-192 pixels
-	if (obj->posX < (rf_scrollXUnit + RF_PixelToUnit(144)))
-		deltaX = obj->posX - (rf_scrollXUnit + RF_PixelToUnit(144));
+	int screenCentreX = CK_PlayWidthUnits() / 2;
+	int minScrollX = CK_VanillaMode() ? RF_PixelToUnit(144) : screenCentreX - RF_PixelToUnit(16);
+	int maxScrollX = CK_VanillaMode() ? RF_PixelToUnit(192) : screenCentreX + RF_PixelToUnit(32);
+	if (obj->posX < (rf_scrollXUnit + minScrollX))
+		deltaX = obj->posX - (rf_scrollXUnit + minScrollX);
 
-	if (obj->posX > (rf_scrollXUnit + RF_PixelToUnit(192)))
-		deltaX = obj->posX - (rf_scrollXUnit + RF_PixelToUnit(192));
+	if (obj->posX > (rf_scrollXUnit + maxScrollX))
+		deltaX = obj->posX - (rf_scrollXUnit + maxScrollX);
 
 	// Keen should be able to look up and down.
 	if (obj->currentAction == CK_ACTION(CK_ACT_keenLookUp2))
 	{
 		int16_t pxToMove;
-		if (screenYpx + SD_GetSpriteSync() > 167)
+		int maxLookPx = CK_VanillaMode() ? 167 : CK_PlayHeightPixels() - 33;
+		if (screenYpx + SD_GetSpriteSync() > maxLookPx)
 		{
 			// Keen should never be so low on the screen that his
 			// feet are more than 167 px from the top.
-			pxToMove = 167 - screenYpx;
+			pxToMove = maxLookPx - screenYpx;
 		}
 		else
 		{
@@ -2169,15 +2188,15 @@ void CK_NormalCamera(CK_object *obj)
 	else
 	{
 		// Reset to 140px.
-		screenYpx = 140;
+		screenYpx = CK_VanillaMode() ? 140 : CK_PlayHeightPixels() / 2 + 36;
 	}
 
 	// Scroll the screen to keep keen between 33 and 167 px.
 	if (obj->clipRects.unitY2 < (rf_scrollYUnit + deltaY + RF_PixelToUnit(32)))
 		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + RF_PixelToUnit(32));
 
-	if (obj->clipRects.unitY2 > (rf_scrollYUnit + deltaY + RF_PixelToUnit(168)))
-		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + RF_PixelToUnit(168));
+	if (obj->clipRects.unitY2 > (rf_scrollYUnit + deltaY + CK_PlayHeightUnits() - RF_PixelToUnit(40)))
+		deltaY += obj->clipRects.unitY2 - (rf_scrollYUnit + deltaY + CK_PlayHeightUnits() - RF_PixelToUnit(40));
 
 	//Don't scroll more than one tile's worth per frame.
 	if (deltaX || deltaY)
@@ -2199,9 +2218,9 @@ void CK_NormalCamera(CK_object *obj)
 
 		// Update the rectangle of active objects
 		ck_activeX0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeX1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 		ck_activeY0Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) - CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
-		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
+		ck_activeY1Tile = CK_Cross_max(RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles() + CK_INT(CK_activeLimit, DEFAULT_ACTIVE_LIMIT), 0);
 	}
 }
 
@@ -2245,8 +2264,8 @@ void CK_PlayLoop()
 
 			if (!currentObj->active &&
 				(currentObj->clipRects.tileX2 >= RF_UnitToTile(rf_scrollXUnit) - 1) &&
-				(currentObj->clipRects.tileX1 <= RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320) + 1) &&
-				(currentObj->clipRects.tileY1 <= RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208) + 1) &&
+				(currentObj->clipRects.tileX1 <= RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles() + 1) &&
+				(currentObj->clipRects.tileY1 <= RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles() + 1) &&
 				(currentObj->clipRects.tileY2 >= RF_UnitToTile(rf_scrollYUnit) - 1))
 			{
 				currentObj->active = OBJ_ACTIVE;

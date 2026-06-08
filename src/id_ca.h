@@ -109,6 +109,8 @@ extern CA_MapHeader *CA_MapHeaders[CA_NUMMAPS];
 
 extern uint16_t *CA_mapPlanes[CA_NUMMAPPLANES];
 
+extern bool ca_emulateMapGarbage;
+
 extern uint8_t *CA_audio[CA_MAX_AUDIO_CHUNKS];
 
 // Keen: custom cachebox hooks

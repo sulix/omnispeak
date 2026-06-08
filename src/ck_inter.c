@@ -1010,6 +1010,9 @@ void CK_DrawTerminator(void)
 	VL_DOS_SetPageGap(0, 0, TERMINATORSCREENWIDTH * 8 + 64);
 	#endif
 	VL_ResizeScreen(TERMINATORSCREENWIDTH * 8 + 64, 200);
+#ifndef CK_VANILLA
+	VL_SetScreenSize(RF_DEFAULT_SCREEN_WIDTH_PIXELS, RF_DEFAULT_SCREEN_HEIGHT_PIXELS);
+#endif
 	VL_ClearScreen(0);
 
 	// Cache Intro Bitmaps
@@ -1436,6 +1439,9 @@ void CK_ScrollSWText()
 void CK_DrawStarWars()
 {
 	// Keen5 sets the palette to the default one here.
+#ifndef CK_VANILLA
+	VL_SetScreenSize(RF_DEFAULT_SCREEN_WIDTH_PIXELS, RF_DEFAULT_SCREEN_HEIGHT_PIXELS);
+#endif
 	VL_ClearScreen(0);
 	VL_SetScrollCoords(0, 0);
 
@@ -1709,7 +1715,12 @@ void CK_SubmitHighScore(int score, uint16_t arg_4)
 	{
 		ck_inHighScores = true;
 		ck_gameState.currentLevel = CK_INT(CK_highScoreLevel, 1);
+
 		CK_LoadLevel(true, false);
+#ifndef CK_VANILLA
+		// We're not technically playing a demo, so the RF size is wrong.
+		VL_SetScreenSize(RF_DEFAULT_SCREEN_WIDTH_PIXELS, RF_DEFAULT_SCREEN_HEIGHT_PIXELS);
+#endif
 		CK_OverlayHighScores();
 		US_SetPrintColour(CK_INT(CK_highScoreFontColour, 15));
 

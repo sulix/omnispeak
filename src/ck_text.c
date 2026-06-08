@@ -469,6 +469,9 @@ int ShowHelp(void)
 	//CONTROLLER_STATUS cstatus;
 
 	/* Erase the screen */
+#ifndef CK_VANILLA
+	VL_SetScreenSize(320, 200);
+#endif
 	VHB_Bar(0, 0, 320, 200, 4);
 
 	/* Cache graphics */
