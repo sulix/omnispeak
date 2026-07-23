@@ -5,6 +5,12 @@
 #include "id_vl_private.h"
 #include "ck_cross.h"
 
+#ifdef VL_MIYOO
+#define VL_SDL2_PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
+#else
+#define VL_SDL2_PIXEL_FORMAT SDL_PIXELFORMAT_ARGB8888
+#endif
+
 static SDL_Window *vl_sdl2_window;
 static SDL_Renderer *vl_sdl2_renderer;
 static SDL_Texture *vl_sdl2_texture;
@@ -38,7 +44,7 @@ static void VL_SDL2_ResizeWindow()
 #if !SDL_VERSION_ATLEAST(2, 0, 12)
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 #endif
-		vl_sdl2_scaledTarget = SDL_CreateTexture(vl_sdl2_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, vl_integerWidth, vl_integerHeight);
+		vl_sdl2_scaledTarget = SDL_CreateTexture(vl_sdl2_renderer, VL_SDL2_PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET, vl_integerWidth, vl_integerHeight);
 #if SDL_VERSION_ATLEAST(2, 0, 12)
 		SDL_SetTextureScaleMode(vl_sdl2_scaledTarget, SDL_ScaleModeLinear);
 #endif
@@ -59,7 +65,13 @@ static void VL_SDL2_SetVideoMode(int mode)
 		int scale = VL_CalculateDefaultWindowScale(desktopBounds.w, desktopBounds.h);
 		vl_sdl2_window = SDL_CreateWindow(VL_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			VL_DEFAULT_WINDOW_WIDTH(scale), VL_DEFAULT_WINDOW_HEIGHT(scale),
-			SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE | (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+			SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE
+#ifdef VL_MIYOO
+			| SDL_WINDOW_SHOWN
+#else
+			| (vl_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)
+#endif
+			);
 
 		SDL_SetWindowMinimumSize(vl_sdl2_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER / VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER / VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 
@@ -85,7 +97,7 @@ static void VL_SDL2_SetVideoMode(int mode)
 #if !SDL_VERSION_ATLEAST(2, 0, 12)
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 #endif
-		vl_sdl2_texture = SDL_CreateTexture(vl_sdl2_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT);
+		vl_sdl2_texture = SDL_CreateTexture(vl_sdl2_renderer, VL_SDL2_PIXEL_FORMAT, SDL_TEXTUREACCESS_STREAMING, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT);
 #if SDL_VERSION_ATLEAST(2, 0, 12)
 		SDL_SetTextureScaleMode(vl_sdl2_texture, SDL_ScaleModeNearest);
 #endif
@@ -94,7 +106,10 @@ static void VL_SDL2_SetVideoMode(int mode)
 
 		// As we can't do on-GPU palette conversions with SDL2,
 		// we do a PAL8->RGBA conversion of the visible area to this surface each frame.
-		vl_sdl2_stagingSurface = SDL_CreateRGBSurface(0, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT, 32, 0, 0, 0, 0);
+		int surfaceBpp;
+		Uint32 surfaceRMask, surfaceGMask, surfaceBMask, surfaceAMask;
+		SDL_PixelFormatEnumToMasks(VL_SDL2_PIXEL_FORMAT, &surfaceBpp, &surfaceRMask, &surfaceGMask, &surfaceBMask, &surfaceAMask);
+		vl_sdl2_stagingSurface = SDL_CreateRGBSurface(0, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT, surfaceBpp, surfaceRMask, surfaceGMask, surfaceBMask, surfaceAMask);
 
 		VL_SDL2_ResizeWindow();
 		SDL_ShowCursor(0);

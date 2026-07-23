@@ -26,6 +26,7 @@ This Makefile supports the following options:
                   win64   = MinGW cross-build for 64-bit Windows
                   dos     = DJGPP cross-build for DOS (with DOS Extender)
                   gcw0    = OpenDingux cross-build for GCW Zero
+                  miyoo   = cross-build for Miyoo Mini Plus (OnionOS)
 
   RENDERER      the type of video output API (not available for PLATFORM=dos)
 		  sdl1    = SDL 1.2 (deprecated; no win64 support)
@@ -157,6 +158,16 @@ ifeq ($(PLATFORM), gcw0)
         DEFAULT_BUILDASCPP = 1
         # HACK: gcw0 misel architecture doesn't define O_PATH
         CXXFLAGS += -DO_PATH=010000000
+endif
+
+ifeq ($(PLATFORM), miyoo)
+        OUTDIR_SUFFIX := -miyoo
+        MIYOO_TOOLCHAIN_DIR = /opt/miyoomini-toolchain
+        TOOLSET = arm-linux-gnueabihf
+        TOOLDIR = $(MIYOO_TOOLCHAIN_DIR)/usr/bin
+        DEFAULT_RENDERER = sdl2sw
+        SDL_CONFIG_PREFIX = $(MIYOO_SDL2_PREFIX)/bin/
+        DEFAULT_BUILDASCPP = 1
 endif
 
 ifeq ($(OUTDIR_SUFFIX),INVALID)
@@ -339,6 +350,20 @@ ifeq ($(PLATFORM), gcw0)
 		SHELLFILES += $(BINDIR)/keen6.sh
 	endif
         SHELLOPTS = /FULLSCREEN /NOBORDER /NOCOPY
+endif
+
+# set Miyoo Mini Plus-specific parameters
+ifeq ($(PLATFORM), miyoo)
+	ifeq ($(WITH_KEEN4),1)
+		SHELLFILES += $(BINDIR)/keen4.sh
+	endif
+	ifeq ($(WITH_KEEN5),1)
+		SHELLFILES += $(BINDIR)/keen5.sh
+	endif
+	ifeq ($(WITH_KEEN6),1)
+		SHELLFILES += $(BINDIR)/keen6.sh
+	endif
+        SHELLOPTS = /FULLSCREEN /NOBORDER /INTEGER /NOCOPY
 endif
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
