@@ -87,8 +87,8 @@ static int16_t us_printY;
 static int16_t us_printFont = 0;
 static int8_t us_printColour = 15;
 
-#define US_WINDOW_MAX_X 320
-#define US_WINDOW_MAX_Y 200
+#define US_WINDOW_MAX_X VL_ScreenWidth()
+#define US_WINDOW_MAX_Y VL_ScreenHeight()
 
 bool (*p_save_game)(FS_File handle);
 bool (*p_load_game)(FS_File handle, bool fromMenu);

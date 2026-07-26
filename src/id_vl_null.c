@@ -245,8 +245,14 @@ static void VL_NULL_ScrollSurface(void *surface, int x, int y)
 	VL_NULL_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
 }
 
-static void VL_NULL_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
+static void VL_NULL_Present(void *surface, int scrlX, int scrlY, int width, int height, bool singleBuffered)
 {
+	(void)surface;
+	(void)scrlX;
+	(void)scrlY;
+	(void)width;
+	(void)height;
+	(void)singleBuffered;
 	SD_SetTimeCount(SD_GetTimeCount() + 1);
 }
 

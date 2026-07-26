@@ -46,6 +46,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // tile-by-tile, not pixel by pixel. The smooth-scrolling effect
 // is implemented by changing which part of the buffer is displayed.
 
+#ifdef RF_DYNAMIC_LIMITS
+// We set these to the defaults statically, as ID_VL uses them, and is initialised
+// before ID_RF. We don't support a 0×0 pixel screen buffer, so we have to have
+// _something_.s
+int rf_bufferWidthTiles = RF_TileToPixel(21);
+int rf_bufferHeightTiles = RF_TileToPixel(14);
+int rf_screenWidthPixels = RF_DEFAULT_SCREEN_WIDTH_PIXELS;
+int rf_screenHeightPixels = RF_DEFAULT_SCREEN_HEIGHT_PIXELS;
+#endif
+
 // Scroll blocks prevent the camera from moving beyond a certain row/column
 #define RF_MAX_SCROLLBLOCKS 6
 static int rf_horzScrollBlocks[RF_MAX_SCROLLBLOCKS];
@@ -149,7 +159,11 @@ int rf_demoTics = 3;
 
 // Block dirty state
 #define RF_BUFFER_SIZE (RF_BUFFER_WIDTH_TILES * RF_BUFFER_HEIGHT_TILES)
+#ifdef RF_DYNAMIC_LIMITS
+uint8_t *rf_dirtyBlocks[RF_MAX_BUFFERS];
+#else
 uint8_t rf_dirtyBlocks[RF_MAX_BUFFERS][RF_BUFFER_SIZE];
+#endif
 
 // An offset added to the dirty block buffer to account for scrolling.
 int rf_dirtyBufferOffset = 0;
@@ -607,8 +621,20 @@ void RF_SetDrawFunc(void (*func)(void))
 	rf_drawFunc = func;
 }
 
-void RF_Startup()
+void RF_Startup(int screenWidth, int screenHeight)
 {
+	rf_screenWidthPixels = screenWidth;
+	rf_screenHeightPixels = screenHeight;
+	rf_bufferWidthTiles = RF_PixelToTile_RoundUp(rf_screenWidthPixels) + 1;
+	rf_bufferHeightTiles = RF_PixelToTile_RoundUp(rf_screenHeightPixels) + 1;
+
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "RF_Startup(%d, %d): screen in tiles (%d, %d), buffer in tiles (%d, %d)\n",
+		screenWidth, screenHeight, RF_SCREEN_WIDTH_TILES, RF_SCREEN_HEIGHT_TILES, RF_BUFFER_WIDTH_TILES, RF_BUFFER_HEIGHT_TILES);
+
+#ifdef RF_DYNAMIC_LIMITS
+	MM_GetPtr((mm_ptr_t *)&rf_dirtyBlocks[0], RF_BUFFER_SIZE);
+	MM_GetPtr((mm_ptr_t *)&rf_dirtyBlocks[1], RF_BUFFER_SIZE);
+#endif
 	// Create the tile backing buffer
 	rf_tileBuffer = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS);
 	rf_minTics = CFG_GetConfigInt("rf_minTics", 2);
@@ -616,10 +642,54 @@ void RF_Startup()
 	rf_demoTics = CFG_GetConfigInt("rf_demoTics", 3);
 
 	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "RF_Startup: tileBuffer = (%d×%d), minTics = %d, maxTics = %d, demoTics = %d\n", RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS, rf_minTics, rf_maxTics, rf_demoTics);
+
+	VL_ResizeScreen(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS);
+}
+
+void RF_Resize(int screenWidth, int screenHeight)
+{
+	// If we're the same size, don't resize.
+	if (rf_screenWidthPixels == screenWidth && rf_screenHeightPixels == screenHeight)
+		return;
+
+#ifndef RF_DYNAMIC_LIMITS
+	CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "RF_Resize() called, but dynamic limits not supported!\n");
+#else
+	rf_screenWidthPixels = screenWidth;
+	rf_screenHeightPixels = screenHeight;
+	rf_bufferWidthTiles = RF_PixelToTile_RoundUp(rf_screenWidthPixels) + 1;
+	rf_bufferHeightTiles = RF_PixelToTile_RoundUp(rf_screenHeightPixels) + 1;
+
+	// Reset the edge-of-screen scroll blocks.
+	rf_scrollXMaxUnit = RF_TileToUnit(CA_GetMapWidth() - RF_SCREEN_WIDTH_TILES - 2);
+	rf_scrollYMaxUnit = RF_TileToUnit(CA_GetMapHeight() - RF_SCREEN_HEIGHT_TILES - 2);
+
+	CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "RF_Resize(%d, %d): screen in tiles (%d, %d), buffer in tiles (%d, %d)\n",
+			    screenWidth, screenHeight, RF_SCREEN_WIDTH_TILES, RF_SCREEN_HEIGHT_TILES, RF_BUFFER_WIDTH_TILES, RF_BUFFER_HEIGHT_TILES);
+
+	if (rf_dirtyBlocks[0])
+		MM_FreePtr((mm_ptr_t *)&rf_dirtyBlocks[0]);
+	MM_GetPtr((mm_ptr_t *)&rf_dirtyBlocks[0], RF_BUFFER_SIZE);
+	if (rf_dirtyBlocks[1])
+		MM_FreePtr((mm_ptr_t *)&rf_dirtyBlocks[1]);
+	MM_GetPtr((mm_ptr_t *)&rf_dirtyBlocks[1], RF_BUFFER_SIZE);
+
+	// Create the tile backing buffer
+	VL_DestroySurface(rf_tileBuffer);
+	rf_tileBuffer = VL_CreateSurface(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS);
+
+	VL_ResizeScreen(RF_BUFFER_WIDTH_PIXELS, RF_BUFFER_HEIGHT_PIXELS);
+#endif
 }
 
 void RF_Shutdown()
 {
+#ifdef RF_DYNAMIC_LIMITS
+	if (rf_dirtyBlocks[0])
+		MM_FreePtr((mm_ptr_t *)&rf_dirtyBlocks[0]);
+	if (rf_dirtyBlocks[1])
+		MM_FreePtr((mm_ptr_t *)&rf_dirtyBlocks[1]);
+#endif
 	VL_DestroySurface(rf_tileBuffer);
 }
 
@@ -1448,6 +1518,9 @@ void RF_Refresh()
 
 	// 0xef for the X-direction to match EGA keen's 2px horz scrolling.
 	VL_SetScrollCoords(RF_UnitToPixel(rf_scrollXUnit & 0xef), RF_UnitToPixel(rf_scrollYUnit & 0xff));
+#ifndef CK_VANILLA
+	VL_SetScreenSize(rf_screenWidthPixels, rf_screenHeightPixels);
+#endif
 	VL_SwapOnNextPresent();
 	VL_Present();
 

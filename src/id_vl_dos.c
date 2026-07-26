@@ -813,11 +813,14 @@ void VL_DOS_ScrollSurface(void *surface, int x, int y)
 	}
 }
 
-static void VL_DOS_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
+static void VL_DOS_Present(void *surface, int scrlX, int scrlY, int width, int height, bool singleBuffered)
 {
 	VL_DOS_Surface *surf = (VL_DOS_Surface *)surface;
 	uint32_t timeCount = SD_GetTimeCount();
 	bool latchpel = ck_fixJerkyMotion;
+
+	if (width != 320 || height != 200)
+		Quit("Tried to set screen resolution to something other than EGA/VGA\n");
 
 	// Wait for the previous horizontal retrace to end
 	if (vl_swapInterval)

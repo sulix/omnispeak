@@ -11,6 +11,7 @@ static SDL_Renderer *vl_sdl3_renderer;
 static SDL_Texture *vl_sdl3_texture;
 static SDL_Palette *vl_sdl3_palette;
 static SDL_Surface *vl_sdl3_stagingSurface;
+static SDL_Surface *vl_sdl3_screenSurface = NULL;
 static SDL_Texture *vl_sdl3_scaledTarget;
 static bool vl_sdl3_bilinearSupport = true;
 // Should we resolve the palette on the CPU (as is required pre-SDL-3.4.0)
@@ -24,7 +25,7 @@ static void VL_SDL3_ResizeWindow()
 {
 	int realWinH, realWinW, curW, curH;
 	SDL_GetCurrentRenderOutputSize(vl_sdl3_renderer, &realWinW, &realWinH);
-	VL_CalculateRenderRegions(realWinW, realWinH);
+	VL_CalculateRenderRegions(VL_ScreenWidth(), VL_ScreenHeight(), realWinW, realWinH);
 
 	if (vl_sdl3_scaledTarget)
 	{
@@ -90,26 +91,7 @@ static void VL_SDL3_SetVideoMode(int mode)
 		if (!vl_isIntegerScaled && !vl_sdl3_bilinearSupport)
 			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Using SDL3 software renderer without integer scaling. Pixel size may be inconsistent.\n");
 
-		if (vl_sdl3_swPalette)
-		{
-			vl_sdl3_texture = SDL_CreateTexture(vl_sdl3_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT);
-			SDL_SetTextureScaleMode(vl_sdl3_texture, SDL_SCALEMODE_NEAREST);
-			// As we can't do on-GPU palette conversions with SDL3,
-			// we do a PAL8->RGBA conversion of the visible area to this surface each frame.
-			vl_sdl3_stagingSurface = SDL_CreateSurface(VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT, SDL_PIXELFORMAT_RGBA8888);
-		}
-		else
-		{
-#if SDL_VERSION_ATLEAST(3,4,0)
-			vl_sdl3_texture = SDL_CreateTexture(vl_sdl3_renderer, SDL_PIXELFORMAT_INDEX8, SDL_TEXTUREACCESS_STREAMING, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT);
-			SDL_SetTextureScaleMode(vl_sdl3_texture, SDL_SCALEMODE_NEAREST);
-#else
-			Quit("This build requires SDL 3.4.0 or newer!");
-#endif
-		}
-
 		vl_sdl3_palette = SDL_CreatePalette(256);
-
 
 		VL_SDL3_ResizeWindow();
 		SDL_HideCursor();
@@ -117,8 +99,8 @@ static void VL_SDL3_SetVideoMode(int mode)
 	else
 	{
 		SDL_ShowCursor();
-		SDL_DestroyTexture(vl_sdl3_scaledTarget);
-		SDL_DestroyTexture(vl_sdl3_texture);
+		if (vl_sdl3_scaledTarget)
+			SDL_DestroyTexture(vl_sdl3_scaledTarget);
 		SDL_DestroyRenderer(vl_sdl3_renderer);
 		SDL_DestroyWindow(vl_sdl3_window);
 	}
@@ -129,12 +111,40 @@ static void *VL_SDL3_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 {
 	SDL_Surface *s;
 	s = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_INDEX8);
+	if (usage == VL_SurfaceUsage_FrontBuffer)
+	{
+		if (vl_sdl3_swPalette)
+		{
+			vl_sdl3_texture = SDL_CreateTexture(vl_sdl3_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, w, h);
+			SDL_SetTextureScaleMode(vl_sdl3_texture, SDL_SCALEMODE_NEAREST);
+			// As we can't do on-GPU palette conversions with SDL3,
+			// we do a PAL8->RGBA conversion of the visible area to this surface each frame.
+			vl_sdl3_stagingSurface = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_RGBA8888);
+		}
+		else
+		{
+			#if SDL_VERSION_ATLEAST(3,4,0)
+			vl_sdl3_texture = SDL_CreateTexture(vl_sdl3_renderer, SDL_PIXELFORMAT_INDEX8, SDL_TEXTUREACCESS_STREAMING, w, h);
+			SDL_SetTextureScaleMode(vl_sdl3_texture, SDL_SCALEMODE_NEAREST);
+			#else
+			Quit("This build requires SDL 3.4.0 or newer!");
+			#endif
+		}
+		vl_sdl3_screenSurface = s;
+	}
 	return s;
 }
 
 static void VL_SDL3_DestroySurface(void *surface)
 {
 	SDL_Surface *surf = (SDL_Surface *)surface;
+	if (surf == vl_sdl3_screenSurface)
+	{
+		if (vl_sdl3_swPalette)
+			SDL_DestroySurface(vl_sdl3_stagingSurface);
+		SDL_DestroyTexture(vl_sdl3_texture);
+		vl_sdl3_screenSurface = NULL;
+	}
 	SDL_DestroySurface(surf);
 }
 
@@ -341,19 +351,19 @@ static void VL_SDL3_ScrollSurface(void *surface, int x, int y)
 	VL_SDL3_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
 }
 
-static void VL_SDL3_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
+static void VL_SDL3_Present(void *surface, int scrlX, int scrlY, int width, int height, bool singleBuffered)
 {
 	// TODO: Verify this is a VL_SurfaceUsage_FrontBuffer
 	VL_SDL3_ResizeWindow();
 	SDL_Surface *surf = (SDL_Surface *)surface;
-	SDL_Rect srcr = {(Sint16)scrlX, (Sint16)scrlY, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT};
+	SDL_FRect srcr = {(float)scrlX, (float)scrlY, (float)width, (float)height};
 	SDL_FRect renderRect = {(float)vl_renderRgn_x, (float)vl_renderRgn_y, (float)vl_renderRgn_w, (float)vl_renderRgn_h};
 	SDL_Rect fullRect = {(Sint16)vl_fullRgn_x, (Sint16)vl_fullRgn_y, vl_fullRgn_w, vl_fullRgn_h};
 	SDL_FRect fullRectF = {(float)vl_fullRgn_x, (float)vl_fullRgn_y, (float)vl_fullRgn_w, (float)vl_fullRgn_h};
 
 	if (vl_sdl3_swPalette)
 	{
-		SDL_BlitSurface(surf, &srcr, vl_sdl3_stagingSurface, 0);
+		SDL_BlitSurface(surf, NULL, vl_sdl3_stagingSurface, NULL);
 		SDL_LockSurface(vl_sdl3_stagingSurface);
 		SDL_UpdateTexture(vl_sdl3_texture, 0, vl_sdl3_stagingSurface->pixels, vl_sdl3_stagingSurface->pitch);
 		SDL_UnlockSurface(vl_sdl3_stagingSurface);
@@ -362,7 +372,7 @@ static void VL_SDL3_Present(void *surface, int scrlX, int scrlY, bool singleBuff
 	else
 	{
 		SDL_LockSurface(surf);
-		SDL_UpdateTexture(vl_sdl3_texture, 0, (uint8_t *)surf->pixels + (scrlY * surf->pitch) + scrlX, surf->pitch);
+		SDL_UpdateTexture(vl_sdl3_texture, 0, surf->pixels, surf->pitch);
 		SDL_UnlockSurface(surf);
 		SDL_SetTexturePalette(vl_sdl3_texture, vl_sdl3_palette);
 	}
@@ -376,7 +386,7 @@ static void VL_SDL3_Present(void *surface, int scrlX, int scrlY, bool singleBuff
 			VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][2],
 			255);
 		SDL_RenderClear(vl_sdl3_renderer);
-		SDL_RenderTexture(vl_sdl3_renderer, vl_sdl3_texture, 0, &renderRect);
+		SDL_RenderTexture(vl_sdl3_renderer, vl_sdl3_texture, &srcr, &renderRect);
 		SDL_SetRenderTarget(vl_sdl3_renderer, 0);
 		SDL_SetRenderDrawColor(vl_sdl3_renderer, 0, 0, 0, 255);
 		SDL_RenderClear(vl_sdl3_renderer);
@@ -399,7 +409,7 @@ static void VL_SDL3_Present(void *surface, int scrlX, int scrlY, bool singleBuff
 			VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][2],
 			255);
 		SDL_RenderFillRect(vl_sdl3_renderer, 0);
-		SDL_RenderTexture(vl_sdl3_renderer, vl_sdl3_texture, 0, &renderRect);
+		SDL_RenderTexture(vl_sdl3_renderer, vl_sdl3_texture, &srcr, &renderRect);
 
 	}
 

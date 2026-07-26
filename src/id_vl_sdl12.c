@@ -1,8 +1,8 @@
-#include "assert.h"
 #include <SDL.h>
 #include <string.h>
 #include "id_vl.h"
 #include "id_vl_private.h"
+#include "id_us.h"
 #include "ck_cross.h"
 
 static SDL_Surface *vl_sdl12_screenSurface;
@@ -321,10 +321,12 @@ static void VL_SDL12_ScrollSurface(void *surface, int x, int y)
 	VL_SDL12_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
 }
 
-static void VL_SDL12_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
+static void VL_SDL12_Present(void *surface, int scrlX, int scrlY, int width, int height, bool singleBuffered)
 {
 	// TODO: Verify this is a VL_SurfaceUsage_FrontBuffer
 	SDL_Surface *surf = (SDL_Surface *)surface;
+	if (vl_sdl12_screenBorderedRect.w != width || vl_sdl12_screenBorderedRect.h != height)
+		Quit("SDL 1.2 backend doesn't support non-default resolutions!");
 	SDL_Rect srcr = {(Sint16)scrlX, (Sint16)scrlY, vl_sdl12_screenBorderedRect.w, vl_sdl12_screenBorderedRect.h};
 	SDL_BlitSurface(surf, &srcr, vl_sdl12_screenSurface, &vl_sdl12_screenBorderedRect);
 	//VL_SDL12_SurfaceToSurface(surface, vl_sdl12_screenSurface, 0, 0, scrlX, scrlY, vl_sdl12_screenWidth, vl_sdl12_screenHeight);

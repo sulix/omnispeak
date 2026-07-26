@@ -100,7 +100,7 @@ extern int vl_integerWidth;
 extern int vl_integerHeight;
 
 // Calculates render regions taking the integer scaling into account.
-void VL_CalculateRenderRegions(int realW, int realH);
+void VL_CalculateRenderRegions(int vgaW, int vgaH, int realW, int realH);
 
 // Calculates a good default window size, given the desktop size.
 int VL_CalculateDefaultWindowScale(int desktopW, int desktopH);

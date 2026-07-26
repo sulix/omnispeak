@@ -1963,13 +1963,13 @@ void CK_ShotThink(CK_object *shot)
 	// Stun things which are offscreen.
 	if ((shot->clipRects.tileX2 < RF_UnitToTile(rf_scrollXUnit)) ||
 		(shot->clipRects.tileY2 < RF_UnitToTile(rf_scrollYUnit)) ||
-		(shot->clipRects.tileX1 > RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320)) ||
-		(shot->clipRects.tileY1 > RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
+		(shot->clipRects.tileX1 > RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles()) ||
+		(shot->clipRects.tileY1 > RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles()))
 	{
 		if ((shot->clipRects.tileX2 + 10 < RF_UnitToTile(rf_scrollXUnit)) ||
-			(shot->clipRects.tileX1 - 10 > RF_UnitToTile(rf_scrollXUnit) + RF_PixelToTile(320)) ||
+			(shot->clipRects.tileX1 - 10 > RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles()) ||
 			(shot->clipRects.tileY2 + 6 < RF_UnitToTile(rf_scrollYUnit)) ||
-			(shot->clipRects.tileY1 - 6 > RF_UnitToTile(rf_scrollYUnit) + RF_PixelToTile(208)))
+			(shot->clipRects.tileY1 - 6 > RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles()))
 		{
 			CK_RemoveObj(shot);
 			return;

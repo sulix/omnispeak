@@ -11,13 +11,15 @@ static SDL_Texture *vl_sdl2_texture;
 static SDL_Palette *vl_sdl2_palette;
 static SDL_Surface *vl_sdl2_stagingSurface;
 static SDL_Texture *vl_sdl2_scaledTarget;
+static SDL_Surface *vl_sdl2_screenSurface = NULL;
 static bool vl_sdl2_bilinearSupport = true;
 
 static void VL_SDL2_ResizeWindow()
 {
 	int realWinH, realWinW, curW, curH;
 	SDL_GetRendererOutputSize(vl_sdl2_renderer, &realWinW, &realWinH);
-	VL_CalculateRenderRegions(realWinW, realWinH);
+	//TODO: Plumb width through?
+	VL_CalculateRenderRegions(VL_ScreenWidth(), VL_ScreenHeight(), realWinW, realWinH);
 
 	if (vl_sdl2_scaledTarget)
 	{
@@ -82,19 +84,7 @@ static void VL_SDL2_SetVideoMode(int mode)
 		if (!vl_isIntegerScaled && !vl_sdl2_bilinearSupport)
 			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Using SDL2 software renderer without integer scaling. Pixel size may be inconsistent.\n");
 
-#if !SDL_VERSION_ATLEAST(2, 0, 12)
-		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
-#endif
-		vl_sdl2_texture = SDL_CreateTexture(vl_sdl2_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT);
-#if SDL_VERSION_ATLEAST(2, 0, 12)
-		SDL_SetTextureScaleMode(vl_sdl2_texture, SDL_ScaleModeNearest);
-#endif
-
 		vl_sdl2_palette = SDL_AllocPalette(256);
-
-		// As we can't do on-GPU palette conversions with SDL2,
-		// we do a PAL8->RGBA conversion of the visible area to this surface each frame.
-		vl_sdl2_stagingSurface = SDL_CreateRGBSurface(0, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT, 32, 0, 0, 0, 0);
 
 		VL_SDL2_ResizeWindow();
 		SDL_ShowCursor(0);
@@ -103,7 +93,6 @@ static void VL_SDL2_SetVideoMode(int mode)
 	{
 		SDL_ShowCursor(1);
 		SDL_DestroyTexture(vl_sdl2_scaledTarget);
-		SDL_DestroyTexture(vl_sdl2_texture);
 		SDL_DestroyRenderer(vl_sdl2_renderer);
 		SDL_DestroyWindow(vl_sdl2_window);
 	}
@@ -114,12 +103,34 @@ static void *VL_SDL2_CreateSurface(int w, int h, VL_SurfaceUsage usage)
 {
 	SDL_Surface *s;
 	s = SDL_CreateRGBSurface(0, w, h, 8, 0, 0, 0, 0);
+	if (usage == VL_SurfaceUsage_FrontBuffer)
+	{
+#if !SDL_VERSION_ATLEAST(2, 0, 12)
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+#endif
+		vl_sdl2_texture = SDL_CreateTexture(vl_sdl2_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w, h);
+#if SDL_VERSION_ATLEAST(2, 0, 12)
+		SDL_SetTextureScaleMode(vl_sdl2_texture, SDL_ScaleModeNearest);
+#endif
+		// As we can't do on-GPU palette conversions with SDL2,
+		// we do a PAL8->RGBA conversion of the visible area to this surface each frame.
+		vl_sdl2_stagingSurface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
+
+		vl_sdl2_screenSurface = s;
+	}
 	return s;
 }
 
 static void VL_SDL2_DestroySurface(void *surface)
 {
-	//TODO: Implement
+	SDL_Surface *s = (SDL_Surface *)surface;
+	if (s == vl_sdl2_screenSurface)
+	{
+		SDL_FreeSurface(vl_sdl2_stagingSurface);
+		SDL_DestroyTexture(vl_sdl2_texture);
+		vl_sdl2_screenSurface = NULL;
+	}
+	SDL_FreeSurface(s);
 }
 
 static long VL_SDL2_GetSurfaceMemUse(void *surface)
@@ -332,16 +343,16 @@ static void VL_SDL2_ScrollSurface(void *surface, int x, int y)
 	VL_SDL2_SurfaceToSelf(surface, dx, dy, sx, sy, w, h);
 }
 
-static void VL_SDL2_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
+static void VL_SDL2_Present(void *surface, int scrlX, int scrlY, int width, int height, bool singleBuffered)
 {
 	// TODO: Verify this is a VL_SurfaceUsage_FrontBuffer
 	VL_SDL2_ResizeWindow();
 	SDL_Surface *surf = (SDL_Surface *)surface;
-	SDL_Rect srcr = {(Sint16)scrlX, (Sint16)scrlY, VL_EGAVGA_GFX_WIDTH, VL_EGAVGA_GFX_HEIGHT};
+	SDL_Rect srcr = {(Sint16)scrlX, (Sint16)scrlY, width, height};
 	SDL_Rect renderRect = {(Sint16)vl_renderRgn_x, (Sint16)vl_renderRgn_y, vl_renderRgn_w, vl_renderRgn_h};
 	SDL_Rect fullRect = {(Sint16)vl_fullRgn_x, (Sint16)vl_fullRgn_y, vl_fullRgn_w, vl_fullRgn_h};
 
-	SDL_BlitSurface(surf, &srcr, vl_sdl2_stagingSurface, 0);
+	SDL_BlitSurface(surf, NULL, vl_sdl2_stagingSurface, NULL);
 	SDL_LockSurface(vl_sdl2_stagingSurface);
 	SDL_UpdateTexture(vl_sdl2_texture, 0, vl_sdl2_stagingSurface->pixels, vl_sdl2_stagingSurface->pitch);
 	SDL_UnlockSurface(vl_sdl2_stagingSurface);
@@ -354,7 +365,7 @@ static void VL_SDL2_Present(void *surface, int scrlX, int scrlY, bool singleBuff
 			VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][2],
 			255);
 		SDL_RenderClear(vl_sdl2_renderer);
-		SDL_RenderCopy(vl_sdl2_renderer, vl_sdl2_texture, 0, &renderRect);
+		SDL_RenderCopy(vl_sdl2_renderer, vl_sdl2_texture, &srcr, &renderRect);
 		SDL_SetRenderTarget(vl_sdl2_renderer, 0);
 		SDL_SetRenderDrawColor(vl_sdl2_renderer, 0, 0, 0, 255);
 		SDL_RenderClear(vl_sdl2_renderer);
@@ -377,7 +388,7 @@ static void VL_SDL2_Present(void *surface, int scrlX, int scrlY, bool singleBuff
 			VL_EGARGBColorTable[vl_emuegavgaadapter.bordercolor][2],
 			255);
 		SDL_RenderFillRect(vl_sdl2_renderer, 0);
-		SDL_RenderCopy(vl_sdl2_renderer, vl_sdl2_texture, 0, &renderRect);
+		SDL_RenderCopy(vl_sdl2_renderer, vl_sdl2_texture, &srcr, &renderRect);
 
 	}
 

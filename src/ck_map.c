@@ -516,8 +516,8 @@ void CK_AnimateMapTeleporter(int tileX, int tileY)
 	for (CK_object *obj = ck_keenObj->next; obj != NULL; obj = obj->next)
 	{
 
-		if (obj->active || obj->type != 8 ||
-			obj->clipRects.tileX2 < (rf_scrollXUnit >> 8) - 1 || obj->clipRects.tileX1 > (rf_scrollXUnit >> 8) + (320 >> 4) + 1 || obj->clipRects.tileY2 < (rf_scrollYUnit >> 8) - 1 || obj->clipRects.tileY1 > (rf_scrollYUnit >> 8) + (208 >> 4) + 1)
+		if (obj->active || obj->type != CT5_MapFlag ||
+			obj->clipRects.tileX2 < RF_UnitToTile(rf_scrollXUnit) - 1 || obj->clipRects.tileX1 > RF_UnitToTile(rf_scrollXUnit) + CK_PlayWidthTiles() + 1 || obj->clipRects.tileY2 < RF_UnitToTile(rf_scrollYUnit) - 1 || obj->clipRects.tileY1 > RF_UnitToTile(rf_scrollYUnit) + CK_PlayHeightTiles() + 1)
 			continue;
 
 		obj->visible = 1;

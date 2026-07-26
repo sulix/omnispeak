@@ -987,6 +987,15 @@ int VL_GetScrollY(void)
 	return vl_scrollYpixels;
 }
 
+static int vl_screenWidth = RF_DEFAULT_SCREEN_WIDTH_PIXELS;
+static int vl_screenHeight = RF_DEFAULT_SCREEN_HEIGHT_PIXELS;
+
+void VL_SetScreenSize(int width, int height)
+{
+	vl_screenWidth = width;
+	vl_screenHeight = height;
+}
+
 // The full on-screen region, including overscan border.
 int vl_fullRgn_x;
 int vl_fullRgn_y;
@@ -1003,17 +1012,31 @@ int vl_renderRgn_h;
 int vl_integerWidth;
 int vl_integerHeight;
 
-void VL_CalculateRenderRegions(int realW, int realH)
+
+void VL_CalculateRenderRegions(int vgaW, int vgaH, int realW, int realH)
 {
+	int scaledBorderW = VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH;
+	int scaledBorderH = VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT;
+
+	// Width/Height in CRT pixels (i.e., non-square pixels, but with line doubling applied).
+	int scaledWidthWithBorder = vgaW * VL_VGA_GFX_WIDTH_SCALEFACTOR + (vl_hasOverscanBorder ? scaledBorderW : 0);
+	int scaledHeightWithBorder = vgaH *VL_VGA_GFX_HEIGHT_SCALEFACTOR + (vl_hasOverscanBorder ? scaledBorderH : 0);
+	int shrunkHeightWithBorder = scaledHeightWithBorder / VL_VGA_GFX_HEIGHT_SCALEFACTOR;
+
+	int pixelAspectNumerator = 6;
+	int pixelAspectDenominator = vl_isAspectCorrected ? 5 : 6;
 	if (vl_isAspectCorrected)
 	{
+		int unscaledAspectW = scaledWidthWithBorder * VL_VGA_GFX_HEIGHT_SCALEFACTOR;
+		int unscaledAspectH = pixelAspectNumerator * VL_VGA_GFX_WIDTH_SCALEFACTOR * scaledHeightWithBorder / pixelAspectDenominator;
 		/* HACK: Naturally, the ratio to compare to may be 4:3,
 		 * but we use the default window dimensions instead
 		 * (so 4:3 covers the contents without the overscan border).
 		 */
-		if (realW * VL_DEFAULT_WINDOW_HEIGHT(2) > realH * VL_DEFAULT_WINDOW_WIDTH(2)) // Wider than default ratio
+		//printf("aspectW = %d, aspechH = %d, 4:%d\n", unscaledAspectW, unscaledAspectH, unscaledAspectW * 4 /unscaledAspectH);
+		if (realW * unscaledAspectH > realH * unscaledAspectW) // Wider than default ratio
 		{
-			vl_fullRgn_w = realH * VL_DEFAULT_WINDOW_WIDTH(2) / VL_DEFAULT_WINDOW_HEIGHT(2);
+			vl_fullRgn_w = realH * unscaledAspectW / unscaledAspectH;
 			vl_fullRgn_h = realH;
 			vl_fullRgn_x = (realW - vl_fullRgn_w) / 2;
 			vl_fullRgn_y = 0;
@@ -1021,7 +1044,7 @@ void VL_CalculateRenderRegions(int realW, int realH)
 		else // Thinner or equal to default ratio
 		{
 			vl_fullRgn_w = realW;
-			vl_fullRgn_h = realW * VL_DEFAULT_WINDOW_HEIGHT(2) / VL_DEFAULT_WINDOW_WIDTH(2);
+			vl_fullRgn_h = realW * unscaledAspectH / unscaledAspectW;
 			vl_fullRgn_x = 0;
 			vl_fullRgn_y = (realH - vl_fullRgn_h) / 2;
 		}
@@ -1037,8 +1060,8 @@ void VL_CalculateRenderRegions(int realW, int realH)
 
 	if (vl_isIntegerScaled)
 	{
-		vl_fullRgn_w = CK_Cross_max((vl_fullRgn_w / VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER) * VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER);
-		vl_fullRgn_h = CK_Cross_max((vl_fullRgn_h / VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER) * VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER, VL_VGA_GFX_SHRUNK_HEIGHT_PLUS_BORDER);
+		vl_fullRgn_w = CK_Cross_max((vl_fullRgn_w / scaledWidthWithBorder) * scaledWidthWithBorder, scaledWidthWithBorder);
+		vl_fullRgn_h = CK_Cross_max((vl_fullRgn_h / shrunkHeightWithBorder) * shrunkHeightWithBorder, shrunkHeightWithBorder);
 		vl_fullRgn_x = (realW - vl_fullRgn_w)/2;
 		vl_fullRgn_y = (realH - vl_fullRgn_h)/2;
 		vl_integerWidth = vl_fullRgn_w; 
@@ -1046,26 +1069,26 @@ void VL_CalculateRenderRegions(int realW, int realH)
 	}
 	else
 	{
-		vl_integerWidth = CK_Cross_max((vl_fullRgn_w / VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER) * VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER);
-		vl_integerHeight = CK_Cross_max((vl_fullRgn_h / VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER) * VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER);
+		vl_integerWidth = CK_Cross_max((vl_fullRgn_w / scaledWidthWithBorder) * scaledWidthWithBorder, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER);
+		vl_integerHeight = CK_Cross_max((vl_fullRgn_h / scaledHeightWithBorder) * scaledHeightWithBorder, scaledHeightWithBorder);
 	}
 
 	vl_renderRgn_x =
 		vl_integerWidth * VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH /
-		(VL_VGA_GFX_WIDTH_SCALEFACTOR * VL_EGAVGA_GFX_WIDTH +
+		(VL_VGA_GFX_WIDTH_SCALEFACTOR * vgaW +
 			VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
 	vl_renderRgn_y =
 		vl_integerHeight * VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT /
-		(VL_VGA_GFX_HEIGHT_SCALEFACTOR * VL_EGAVGA_GFX_HEIGHT +
+		(VL_VGA_GFX_HEIGHT_SCALEFACTOR * vgaH +
 			VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
 	// Tricky calculations that preserve symmetry for the VGA
 	vl_renderRgn_w = vl_integerWidth -
 		vl_integerWidth * (VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH) /
-			(VL_VGA_GFX_WIDTH_SCALEFACTOR * VL_EGAVGA_GFX_WIDTH +
+			(VL_VGA_GFX_WIDTH_SCALEFACTOR * vgaW +
 				VL_VGA_GFX_SCALED_LEFTBORDER_WIDTH + VL_VGA_GFX_SCALED_RIGHTBORDER_WIDTH);
 	vl_renderRgn_h = vl_integerHeight -
 		vl_integerHeight * (VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT) /
-			(VL_VGA_GFX_HEIGHT_SCALEFACTOR * VL_EGAVGA_GFX_HEIGHT +
+			(VL_VGA_GFX_HEIGHT_SCALEFACTOR * vgaH +
 				VL_VGA_GFX_SCALED_TOPBORDER_HEIGHT + VL_VGA_GFX_SCALED_BOTTOMBORDER_HEIGHT);
 }
 
@@ -1092,6 +1115,16 @@ void VL_ClearScreen(int colour)
 	vl_currentBackend->getSurfaceDimensions(vl_emuegavgaadapter.screen,
 		&screenWidth, &screenHeight);
 	VL_ScreenRect(0, 0, screenWidth, screenHeight, colour);
+}
+
+int VL_ScreenWidth()
+{
+	return vl_screenWidth;
+}
+
+int VL_ScreenHeight()
+{
+	return vl_screenHeight;
 }
 
 void VL_SetMapMask(int mapmask)
@@ -1129,6 +1162,6 @@ void VL_SwapOnNextPresent()
 void VL_Present()
 {
 	vl_lastFrameTime = SD_GetTimeCount();
-	vl_currentBackend->present(vl_emuegavgaadapter.screen, vl_scrollXpixels, vl_scrollYpixels, !vl_swapOnNextPresent);
+	vl_currentBackend->present(vl_emuegavgaadapter.screen, vl_scrollXpixels, vl_scrollYpixels, vl_screenWidth, vl_screenHeight, !vl_swapOnNextPresent);
 	vl_swapOnNextPresent = false;
 }

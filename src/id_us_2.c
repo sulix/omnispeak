@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string.h>
 
 #include "id_heads.h"
+#include "id_rf.h"
 #include "id_in.h"
 #include "id_sd.h"
 #include "id_us.h"
@@ -1073,6 +1074,9 @@ void US_RunCards()
 	// load all menu stuff and draw main menu
 	USL_BeginCards();
 	US_DrawCards();
+#ifndef CK_VANILLA
+	VL_SetScreenSize(RF_DEFAULT_SCREEN_WIDTH_PIXELS, RF_DEFAULT_SCREEN_HEIGHT_PIXELS);
+#endif
 
 	controller_dy = 0;
 	prev_controller_motion = 0;

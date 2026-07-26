@@ -59,9 +59,6 @@ static SDL_GPUGraphicsPipeline *vl_sdl3gpu_pipeline;
 
 static SDL_GPUSampler *vl_sdl3gpu_sampler;
 
-static int vl_sdl3gpu_integerWidth;
-static int vl_sdl3gpu_integerHeight;
-
 static SDL_GPUTexture *vl_sdl3gpu_integerFramebuffer;
 
 static SDL_GPUPresentMode vl_sdl3gpu_supportedNoVsyncMode;
@@ -214,7 +211,7 @@ static void VL_SDL3GPU_SetVideoMode(int mode)
 		VL_SDL3GPU_CreateShaders();
 		VL_SDL3GPU_CreatePipeline();
 
-		VL_CalculateRenderRegions(VL_DEFAULT_WINDOW_WIDTH(scale), VL_DEFAULT_WINDOW_HEIGHT(scale));
+		VL_CalculateRenderRegions(VL_ScreenWidth(), VL_ScreenHeight(), VL_DEFAULT_WINDOW_WIDTH(scale), VL_DEFAULT_WINDOW_HEIGHT(scale));
 		VL_SDL3GPU_CreateFramebuffers();
 
 
@@ -541,12 +538,12 @@ static void VL_SDL3GPU_BindTexture(VL_SDL3GPU_Surface *surf, SDL_GPURenderPass *
 	//SDL_BindGPUFragmentSamplers(renderPass, 0, &binding, 1);
 }
 
-static void VL_SDL3GPU_Present(void *surface, int scrlX, int scrlY, bool singleBuffered)
+static void VL_SDL3GPU_Present(void *surface, int scrlX, int scrlY, int width, int height, bool singleBuffered)
 {
 	SDL_GPUTexture *swapchainTexture;
 	VL_SDL3GPU_Surface *surf = (VL_SDL3GPU_Surface *)surface;
 
-	uint32_t newW, newH;
+	uint32_t newW, newH, oldIntWidth, oldIntHeight;
 	VL_SDL3GPU_UploadSurface(surface);
 	SDL_GPUCommandBuffer *renderBuffer = SDL_AcquireGPUCommandBuffer(vl_sdl3gpu_device);
 	if (!SDL_AcquireGPUSwapchainTexture(renderBuffer, vl_sdl3_window, &swapchainTexture, &newW, &newH) || !swapchainTexture)
@@ -560,7 +557,12 @@ static void VL_SDL3GPU_Present(void *surface, int scrlX, int scrlY, bool singleB
 		CK_Cross_LogMessage(CK_LOG_MSG_NORMAL, "Resizing swapchain: %d -> %d, %d -> %d\n", vl_sdl3gpu_screenWidth, vl_sdl3gpu_screenHeight, newW, newH);
 		vl_sdl3gpu_screenWidth = newW;
 		vl_sdl3gpu_screenHeight = newH;
-		VL_CalculateRenderRegions(newW, newH);
+	}
+	oldIntWidth = vl_integerWidth;
+	oldIntHeight = vl_integerHeight;
+	VL_CalculateRenderRegions(width, height, newW, newH);
+	if (vl_integerWidth != oldIntWidth || vl_integerHeight != oldIntHeight)
+	{
 		SDL_ReleaseGPUTexture(vl_sdl3gpu_device, vl_sdl3gpu_integerFramebuffer);
 		VL_SDL3GPU_CreateFramebuffers();
 		vl_sdl3gpu_flushSwapchain = false;
@@ -595,8 +597,8 @@ static void VL_SDL3GPU_Present(void *surface, int scrlX, int scrlY, bool singleB
 	float data[4 * 17];
 	data[0] = scrlX;
 	data[1] = scrlY;
-	data[2] = VL_EGAVGA_GFX_WIDTH;
-	data[3] = VL_EGAVGA_GFX_HEIGHT;
+	data[2] = width;
+	data[3] = height;
 	for (int i = 0; i < 16; ++i)
 	{
 		data[4 + 4 * i] = (float)VL_EGARGBColorTable[vl_emuegavgaadapter.palette[i]][0] / 255.0;
