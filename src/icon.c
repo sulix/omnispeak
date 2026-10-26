@@ -554,8 +554,10 @@ static const struct {
 
 #if SDL_VERSION_ATLEAST(1,3,0)
 
-void VL_SDL2GL_SetIcon(SDL_Window *wnd)
+void VL_SDL_SetIcon(SDL_Window *wnd)
 {
+#ifndef VL_SDL_NO_SET_ICON
+
 #if SDL_VERSION_ATLEAST(3,0,0)
 	SDL_Surface *iconSurf = SDL_CreateSurfaceFrom(sparky_icon.width, sparky_icon.height, SDL_PIXELFORMAT_ABGR8888, (void *)sparky_icon.pixel_data, sparky_icon.width*4);
 #else
@@ -568,6 +570,8 @@ void VL_SDL2GL_SetIcon(SDL_Window *wnd)
 #else
 	SDL_FreeSurface(iconSurf);
 #endif
+
+#endif // #ifndef VL_SDL_NO_SET_ICON
 }
 
 #endif

@@ -63,7 +63,7 @@ static void VL_SDL2_SetVideoMode(int mode)
 
 		SDL_SetWindowMinimumSize(vl_sdl2_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER / VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER / VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 
-		//VL_SDL2GL_SetIcon(vl_sdl2_window);
+		//VL_SDL_SetIcon(vl_sdl2_window);
 
 		// This should be SDL_RendererFlags, but it doesn't work with the gcw0 toolchain,
 		// which is absurdly strict in not counting integers as valid enum values (breaking

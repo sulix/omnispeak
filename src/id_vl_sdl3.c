@@ -50,7 +50,7 @@ static void VL_SDL3_ResizeWindow()
 	}
 }
 
-void VL_SDL2GL_SetIcon(SDL_Window *wnd);
+void VL_SDL_SetIcon(SDL_Window *wnd);
 
 static void VL_SDL3_SetVideoMode(int mode)
 {
@@ -73,7 +73,7 @@ static void VL_SDL3_SetVideoMode(int mode)
 
 		SDL_SetWindowMinimumSize(vl_sdl3_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER / VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER / VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 
-		VL_SDL2GL_SetIcon(vl_sdl3_window);
+		VL_SDL_SetIcon(vl_sdl3_window);
 
 		SDL_PropertiesID renderProps = SDL_CreateProperties();
 		if (vl_swapInterval)
