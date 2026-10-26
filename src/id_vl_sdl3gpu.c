@@ -162,7 +162,7 @@ typedef struct VL_SDL3GPU_Surface
 	void *bufferMaps[VL_SDL3GPU_NUM_BUFFERS];
 } VL_SDL3GPU_Surface;
 
-void VL_SDL2GL_SetIcon(SDL_Window *wnd);
+void VL_SDL_SetIcon(SDL_Window *wnd);
 
 void VL_SDL3GPU_FlushParams()
 {
@@ -193,7 +193,7 @@ static void VL_SDL3GPU_SetVideoMode(int mode)
 
 		SDL_SetWindowMinimumSize(vl_sdl3_window, VL_VGA_GFX_SCALED_WIDTH_PLUS_BORDER / VL_VGA_GFX_WIDTH_SCALEFACTOR, VL_VGA_GFX_SCALED_HEIGHT_PLUS_BORDER / VL_VGA_GFX_HEIGHT_SCALEFACTOR);
 
-		VL_SDL2GL_SetIcon(vl_sdl3_window);
+		VL_SDL_SetIcon(vl_sdl3_window);
 
 		SDL_PropertiesID props = SDL_CreateProperties();
 		vl_sdl3gpu_device = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_SPIRV, true, NULL);
