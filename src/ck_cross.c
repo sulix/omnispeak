@@ -55,6 +55,8 @@ void CK_PRINTF_FORMAT(2, 3) CK_Cross_LogMessage(CK_Log_Message_Class_T msgClass,
 		fprintf(stderr, "Error: ");
 		vfprintf(stderr, format, args);
 		break;
+	case CK_LOG_MSG_NONE:
+		break;
 	}
 	va_end(args);
 }

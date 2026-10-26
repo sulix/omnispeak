@@ -503,7 +503,7 @@ void SD_SDL_Startup(void)
 	const char *sdlDriver = CFG_GetConfigString("sd_sdl_audioDriver", defaultDriver);
 	SDL_SetHint(SDL_HINT_AUDIO_DRIVER, sdlDriver);
 
-	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
+	if (!SDL_InitSubSystem(SDL_INIT_AUDIO))
 	{
 		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
 		SD_SDL_AudioSubsystem_Up = false;
