@@ -257,7 +257,15 @@ size_t FS_GetFileSize(FS_File file)
 
 FS_File FS_OpenKeenFile(const char *fileName)
 {
-	return FSL_OpenFileInDirCaseInsensitive(fs_keenPath, fileName, false);
+	FS_File file = FSL_OpenFileInDirCaseInsensitive(fs_keenPath, fileName, false);
+	if (FS_IsFileValid(file))
+		return file;
+
+#ifdef FS_FALLBACK_OMNI_PATH
+	return FSL_OpenFileInDirCaseInsensitive(fs_omniPath, fileName, false);
+#else
+	return NULL;
+#endif
 }
 
 FS_File FS_OpenOmniFile(const char *fileName)
