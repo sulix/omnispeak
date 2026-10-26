@@ -578,7 +578,11 @@ int main(int argc, char *argv[])
 	bool isAspectCorrected = CFG_GetConfigBool("aspect", true);
 	bool hasBorder = CFG_GetConfigBool("border", true);
 	bool isIntegerScaled = CFG_GetConfigBool("integer", false);
-	bool overrideCopyProtection = CFG_GetConfigBool("ck6_noCreatureQuestion", false);
+	#ifdef WITH_KEEN6_COPY_PROTECTION_OVERRIDE
+		bool overrideCopyProtection = true;
+	#else
+		bool overrideCopyProtection = CFG_GetConfigBool("ck6_noCreatureQuestion", false);
+	#endif
 	int swapInterval = CFG_GetConfigInt("swapInterval", 1);
 #ifdef CK_ENABLE_PLAYLOOP_DUMPER
 	const char *dumperFilename = NULL;
