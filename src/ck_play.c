@@ -2330,15 +2330,21 @@ void CK_PlayLoop()
 			{
 				switch (ck_currentEpisode->ep)
 				{
+#ifdef WITH_KEEN4
 				case EP_CK4:
 					ck_mapMiscFlagsCheck = &CK4_MapMiscFlagsCheck;
 					break;
+#endif
+#ifdef WITH_KEEN5
 				case EP_CK5:
 					ck_mapMiscFlagsCheck = &CK5_MapMiscFlagsCheck;
 					break;
+#endif
+#ifdef WITH_KEEN6
 				case EP_CK6:
 					ck_mapMiscFlagsCheck = &CK6_MapMiscFlagsCheck;
 					break;
+#endif
 				default:
 					//TODO: Maybe print a warning here?
 					break;
