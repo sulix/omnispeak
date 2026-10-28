@@ -1,0 +1,13 @@
+How to play Keen 5 and 6:
+
+* Download audio.ck*, egagraph.ck*, and gamemaps.ck* from:
+* Keen 5: https://ia903209.us.archive.org/view_archive.php?archive=/18/items/keen5/keen5.zip
+* Keen 6: https://ia600401.us.archive.org/view_archive.php?archive=/13/items/keen6/keen6.zip (this is v1.4)
+* Right click Keen *.app > Show Package Contents
+* Open: Contents > Resources
+* Place the 3 downloaded files here
+* Click 'back' a few times to navigate outside of the app package contents
+* If you haven't already, read and follow the 'How to resolve macOS identity...' instructions.
+* It should run successfully now!
+
+Note: only Apple Silicon is supported, if you want to run on Intel, you can run 'make apps' yourself after installing Xcode command line tools and Homebrew.
