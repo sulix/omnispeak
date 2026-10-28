@@ -143,6 +143,23 @@ For example, you could build with:
 
 To see a full list of build options, just run `make help`.
 
+== COMPILING FOR MACOS / OSX ==
+
+To compile app bundles for macOS, run the following:
+
+    make -f Makefile.macos apps
+
+Prerequisites:
+
+* Xcode command line tools
+* Homebrew
+
+To build the release archive, run:
+
+    make -f Makefile.macos xz
+
+Instructions for dealing with code signing and Keen 5+6 are contained inside the above archive.
+
 == NEW FEATURES ==
 
 Omnispeak includes a new QuickLoad / QuickSave feature, which allows the game

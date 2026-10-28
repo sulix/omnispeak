@@ -1,0 +1,15 @@
+How to make this app run on macOS when it complains:
+
+"Can't be opened because the identity of the developer cannot be confirmed"
+
+* Put FooBar.app in your home folder (the parent of Documents / Desktop)
+* Open up the Terminal app
+* Type: xattr -r -d com.apple.quarantine FooBar.app
+* Press enter
+* Close Terminal
+
+Apologies that this is necessary, but Apple wants to charge $150/year to
+developers to 'sign' their apps to make these warnings go away.
+
+* Optional alternative that might be relevant in future macos:
+    codesign --force --deep --sign - FooBar.app

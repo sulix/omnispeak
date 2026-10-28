@@ -3,3 +3,6 @@ SDL-1.*
 ._SDL-1.*
 bin*
 obj*
+*.app
+KeenOmnispeak.tar.xz
+KeenOmnispeak.zip

@@ -1,0 +1,114 @@
+help:
+	cat Makefile.macos
+
+# Sources:
+CK4_SRCS = src/ck4_map.c src/ck4_misc.c src/ck4_obj1.c src/ck4_obj2.c src/ck4_obj3.c
+CK5_SRCS = src/ck5_map.c src/ck5_misc.c src/ck5_obj1.c src/ck5_obj2.c src/ck5_obj3.c
+CK6_SRCS = src/ck6_map.c src/ck6_misc.c src/ck6_obj1.c src/ck6_obj2.c src/ck6_obj3.c
+CK456_SRCS = $(CK4_SRCS) $(CK5_SRCS) $(CK6_SRCS)
+OPL_SRCS = src/opl/dbopl.c src/opl/nuked_opl3.c
+SRCS = \
+	src/ck_act.c \
+	src/ck_cross.c \
+	src/ck_game.c \
+	src/ck_inter.c \
+	src/ck_keen.c \
+	src/ck_main.c \
+	src/ck_map.c \
+	src/ck_misc.c \
+	src/ck_obj.c \
+	src/ck_phys.c \
+	src/ck_play.c \
+	src/ck_quit.c \
+	src/ck_text.c \
+	src/id_ca.c \
+	src/id_cfg.c \
+	src/id_fs.c \
+	src/id_in.c \
+	src/id_mm.c \
+	src/id_rf.c \
+	src/id_sd.c \
+	src/id_str.c \
+	src/id_ti.c \
+	src/id_us_1.c \
+	src/id_us_2.c \
+	src/id_us_textscreen.c \
+	src/id_vh.c \
+	src/id_vl.c \
+	src/id_vl_sdl3.c \
+	src/id_sd_sdl3.c \
+	src/id_in_sdl3.c \
+	src/icon.c \
+	$(CK456_SRCS) \
+	$(OPL_SRCS)
+
+# Feel free to prune these back if any cause you issues:
+OPTIMISATIONS = \
+	-std=c23 \
+	-O3 \
+	-flto \
+	-march=native
+
+# Compile for macOS, just the binary:
+bin/omnispeak%: $(SRCS) /opt/homebrew/include/SDL3/SDL.h
+	mkdir -p bin
+	cc \
+		-DWITH_SDL=3 \
+		-DWITH_KEEN$* \
+		-DWITH_KEEN6_COPY_PROTECTION_OVERRIDE \
+		-DFS_FALLBACK_OMNI_PATH \
+		-DVL_SDL_NO_SET_ICON \
+		$(OPTIMISATIONS) \
+		$(SRCS) \
+		-I /opt/homebrew/include \
+		-L /opt/homebrew/lib \
+		-l SDL3 \
+		-o $@
+
+# Assemble the macOS app bundle:
+Keen\ %\ Omnispeak.app: bin/omnispeak%
+	rm -rf Keen\ $*\ Omnispeak.app
+	mkdir -p Keen\ $*\ Omnispeak.app/Contents/MacOS
+	mkdir -p Keen\ $*\ Omnispeak.app/Contents/Resources
+	mkdir -p Keen\ $*\ Omnispeak.app/Contents/Frameworks
+	cp -R data/keen$*/* Keen\ $*\ Omnispeak.app/Contents/Resources
+	rm -f Keen\ $*\ Omnispeak.app/Contents/Resources/CONFIG.CK*
+	rm -f Keen\ $*\ Omnispeak.app/Contents/Resources/OMNISPK.CFG
+	cp /opt/homebrew/lib/libSDL3.dylib Keen\ $*\ Omnispeak.app/Contents/Frameworks
+	cp bin/omnispeak$* Keen\ $*\ Omnispeak.app/Contents/MacOS
+	cp macos/Info$*.plist Keen\ $*\ Omnispeak.app/Contents/Info.plist
+	cp macos/AppIcon$*.icns Keen\ $*\ Omnispeak.app/Contents/Resources
+	# Dynamically find the old lib path and update it to point to the Frameworks folder:
+	install_name_tool -change \
+		$$(otool -L Keen\ $*\ Omnispeak.app/Contents/MacOS/omnispeak$* | grep -oE '[^[:space:]]+libSDL3[^[:space:]]*') \
+		@executable_path/../Frameworks/libSDL3.dylib \
+		Keen\ $*\ Omnispeak.app/Contents/MacOS/omnispeak$*
+	# Ad-hoc code signing, no cert needed:
+	codesign --force --deep --sign - Keen\ $*\ Omnispeak.app
+
+# Auto-install SDL3:
+/opt/homebrew/include/SDL3/SDL.h:
+	brew install sdl3
+
+# Helper targets below:
+4: Keen\ 4\ Omnispeak.app
+apps: Keen\ 4\ Omnispeak.app Keen\ 5\ Omnispeak.app Keen\ 6\ Omnispeak.app
+
+# Maybe use xz instead of this zip:
+zip: apps
+	rm -rf KeenOmnispeak.zip
+	zip KeenOmnispeak.zip -r Keen\ 4\ Omnispeak.app
+	zip KeenOmnispeak.zip -r Keen\ 5\ Omnispeak.app
+	zip KeenOmnispeak.zip -r Keen\ 6\ Omnispeak.app
+	zip KeenOmnispeak.zip -j macos/*.txt # Junk the folder structure
+
+# Half the size of the zip and macOS finder opens it natively:
+xz: apps
+	rm -rf KeenOmnispeak.tar.xz
+	tar -cJf KeenOmnispeak.tar.xz \
+		"Keen 4 Omnispeak.app" \
+		"Keen 5 Omnispeak.app" \
+		"Keen 6 Omnispeak.app" \
+		-C macos \
+		"How to play Keen 5 and 6.txt" \
+		"How to resolve macOS identity of developer confirmation error.txt"
